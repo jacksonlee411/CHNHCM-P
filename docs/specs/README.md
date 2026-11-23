@@ -30,6 +30,10 @@
 
 501–503 规定人员登记只按现用主要证件号码判断重复，以及同一张登记单再次办理时如何查回结果。[501 业务与验收](m01/501-person-registration-requirements.md) · [502 页面交互](m01/502-person-directory-interactions.md) · [503 技术合同](m01/503-person-registration-design.md) · [方案评审](../verification/500-registration-without-name-prompts.md) · [实施与试办](../verification/500-personnel-registration-trial.md)
 
+## X03 本地账号与授权
+
+028 拟定首位客户管理员的引导与恢复、可委派范围和逐份授予规则，并以部门与单岗位核编给出正常菜单、例外处理和验收样例。当前处于文档评审阶段。[028 客户管理员合同](x03/028-local-account-and-authorization.md) · [027 分阶段实施计划](../plans/027-x03-local-access-rollout.md)
+
 ## M03职务基础
 
 313 规定后台部门总额、岗位定额、按日分配与调剂。315 先独立签收岗位核编和部门汇总，再签收部门额度与调剂。招聘预留、任职占编与调动有各自的后续验收条件。[313 编制管理合同](m03/313-position-capacity-contract.md) · [部门分配与减编](m03/313-position-capacity-contract.md#m03-br-040) · [315 后台实施计划](../plans/315-staffing-quota-administration.md) · [招聘与任职接入](m03/313-position-capacity-contract.md#m03-br-027)

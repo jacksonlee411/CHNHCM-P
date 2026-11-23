@@ -789,6 +789,50 @@
       "archive": null
     },
     {
+      "id": "CHNHCM-027",
+      "title": "X03 本地账号与首批业务授权实施计划",
+      "path": "docs/plans/027-x03-local-access-rollout.md",
+      "owner_branch": "wt-dev-a",
+      "owner_role": "Access、Organization、Staffing、体验及验证维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "plan",
+      "modules": [
+        "X03",
+        "M02",
+        "M03"
+      ],
+      "scope": "客户实例本地账号管理、部门与岗位核编人工授权的分批交付、事务判权、存量迁移、权限工具和开放验收。Casbin 和 OPA 暂缓。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": "not_started",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-028",
+      "title": "X03 客户管理员首批账号与授权合同",
+      "path": "docs/specs/x03/028-local-account-and-authorization.md",
+      "owner_branch": "wt-dev-a",
+      "owner_role": "Access 及客户管理员体验维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "functional_spec",
+      "modules": [
+        "X03",
+        "M02",
+        "M03"
+      ],
+      "scope": "首位管理员、账号管理边界、角色版本与逐份授予、授权选择、正常菜单、异常及历史处理和可复核业务场景。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
       "id": "CHNHCM-100",
       "title": "页面体验优化实施计划",
       "path": "docs/plans/100-ui-experience-improvement.md",
