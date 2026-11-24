@@ -4,6 +4,7 @@ package bootstrap_test
 
 import (
 	f "chnhcm.local/chnhcm/internal/foundation"
+	"encoding/json"
 	"testing"
 )
 
@@ -141,10 +142,13 @@ func TestPartialExitAndRehireKeepPermanentRecordNumbers(t *testing.T) {
 	decision := f.NewID()
 	elected := b.call("POST", "/api/v1/appointment-decisions", M{"source": decision, "number": "再次任用48", "roster": false, "rows": []M{{"person": x.person, "arrival": "2027-10-01"}}}, f.NewID(), 200)
 	query := "/api/v1/persons/" + x.person + "/appointment-decisions?rehireAction=" + left["action"].(string) + "&rehireRevision=" + left["revision"].(string)
-	code, _, err := b.response("GET", query, nil, "")
+	res, err := b.client.Get(x.h.f.server.URL + query)
 	must(t, err)
-	if code != 200 {
-		t.Fatalf("再聘人无法读取本人任用决定 %d", code)
+	defer res.Body.Close()
+	var options []M
+	must(t, json.NewDecoder(res.Body).Decode(&options))
+	if res.StatusCode != 200 || len(options) != 1 || options[0]["ref"].(M)["source"] != decision {
+		t.Fatalf("再聘原决定不可读 %v", options)
 	}
 	delete(cmd, "notice")
 	cmd["decision"] = M{"source": decision, "version": elected["version"]}
