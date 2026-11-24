@@ -636,6 +636,7 @@ test('T01 变更日志跨页、筛选、查看敏感差异与撤权', async ({ p
   await trigger.click({ modifiers: ['Control'] });
   const originalTab = await popup;
   try {
+    await originalTab.waitForURL(firstURL.href, { waitUntil: 'load' });
     await expect(originalTab.getByRole('heading', { name: prefix, exact: true })).toBeVisible();
     await expect(originalTab.getByRole('button', { name: '返回当前资料', exact: true })).toBeVisible();
     await expect(page).toHaveURL(logURL);

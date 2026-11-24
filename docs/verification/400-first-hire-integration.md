@@ -136,3 +136,12 @@ go test -tags=integration -count=1 -run '^TestUnifiedCorrectionFacetPermissionsW
 - 第 1、5 片的业务单元夹具清空了任职政策授权的写字段，触发该授权的数据库约束。两处夹具改为只变更 `bu.*`，保留原业务场景及断言。[单项更正](../../tests/e2e/correction-coverage.spec.ts) · [启停对](../../tests/e2e/lifecycle-pair.spec.ts)
 - 第 4 片在视口切为 320×900 和 320×256 后读到了上一次渲染的桌面按钮。首单用例现在按应用的媒体断点选择菜单，再等待对应入口可操作。[首单浏览器验收](../../tests/e2e/first-hire.spec.ts)
 - 第 6 片实测人员变更日志首次读取多发一次 POST，家庭职务写权撤回后的拒绝提示也随权限刷新消失。前者在本地开发构建复现；原家庭场景在本地有时只读到瞬时提示。复验在失权字段移除、获权草稿仍在、关闭明细后再次核对拒绝提示，并保存剩余草稿。[人员日志与家庭资料场景](../../tests/e2e/personnel.spec.ts)
+
+首次读取恢复为一次 POST 后，同一日志用例继续到 Ctrl+点击「查看当次资料」。实测新标签页发出创建事件时尚未到达原件 URL；一次本地开发构建从该事件到文档加载用时 4.88 秒，到资料标题可见用时 5.61 秒。用例先等链接指定的历史 URL 完成导航，再检查原人员标题、只读提示及原标签位置。[新标签页与原件验收](../../tests/e2e/personnel.spec.ts)
+
+复验时使用默认开发构建的 Chromium 和可丢弃 PostgreSQL，让 React StrictMode 参与首次打开日志。用例同时核对请求次数、历史版本、字段权限及再次保存结果。以下入口保留企业前置，并在选测中显式包括原先失败的消费者。
+
+```sh
+make smoke SMOKE_ARGS="tests/e2e/personnel.spec.ts --grep 'T01 变更日志跨页|504 第二批保存前撤回家庭职务写权|504 复核已打开的家庭明细使用当前行和字段权限'"
+make smoke SMOKE_ARGS="tests/e2e/correction-coverage.spec.ts tests/e2e/lifecycle-pair.spec.ts tests/e2e/first-hire.spec.ts --grep 'TL299|只有两项启停权限仍可从菜单插入|首单入职与未来撤销 320'"
+```
