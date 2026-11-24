@@ -10,6 +10,7 @@ import {
   UnsavedChangesDialog,
   recordedTime,
 } from '@chnhcm/ui';
+import { RelationshipContracts } from './RelationshipContracts';
 import { DutyOriginal, DutyUsage, lastDutyDay } from './ActualDutyFields';
 import {ExchangeOriginal} from './ExchangeFields';
 import {managerPurposes} from './LifecycleFields';
@@ -55,6 +56,8 @@ export function JobInformation({
   selectedAction?: string;
 }) {
   const [source, setSource] = useState('');
+  const [contractDraft,setContractDraft]=useState<Models['EmploymentContractCommand']>();
+  const contractInitial=useRef<Models['EmploymentContractCommand']|undefined>(undefined);
   const [draft, setDraft] = useState<JobDraft>();
   const initial = useRef<JobDraft | undefined>(undefined);
   const [chosen, setOpened] = useState<Action>();
@@ -104,11 +107,12 @@ export function JobInformation({
       ),
   );
   const close = () => {
+    setContractDraft(undefined);
     setDraft(undefined);
     setError('');
     requestAnimationFrame(() => opener.current?.focus());
   };
-  const dirty = !!draft && !!initial.current && draftChanged(draft, initial.current);
+  const dirty = !!draft && !!initial.current && draftChanged(draft, initial.current) || !!contractDraft && JSON.stringify(contractDraft)!==JSON.stringify(contractInitial.current);
   const exit = useDraftExit(dirty, () => saved.current, close);
   const submit = useRuleSubmission<Command, Models['HireReceipt']>('assignment-location', session, {
     send: async (cmd, key) => {
@@ -279,7 +283,7 @@ export function JobInformation({
       return;
     }
     if(record.kind==='Leave'||record.kind==='EndAssignment'){
-      void submit.submit({kind:'exit',leave:record.kind==='Leave',input:{date:record.day,meaning:record.meaning ?? 'last-active',expectedSourceVersion:record.source,notice:record.notice}});
+      void submit.submit({kind:'exit',leave:record.kind==='Leave',input:{date:record.day,meaning:record.meaning ?? 'last-active',expectedSourceVersion:record.source,notice:record.notice,contracts:record.contracts}});
       return;
     }
     const action = record.action?.id;
@@ -376,7 +380,7 @@ export function JobInformation({
             />
           ) : (
             <>
-              {(!selectedAction || source) && (
+              {!contractDraft && (!selectedAction || source) && (
                 <>
                   {availableDays.length > 0 && (
                     <EffectiveDates
@@ -450,12 +454,12 @@ export function JobInformation({
                     )}
                 </>
               )}
-              {opened && original.error && (
+              {!contractDraft && opened && original.error && (
                 <Alert severity="error" action={<Button onClick={original.refresh}>重试</Button>}>
                   {original.error}
                 </Alert>
               )}
-              {opened && original.data && (
+              {!contractDraft && opened && original.data && (
                 <Box>
                   <OriginalEvidence original={original.data} setRevision={setRevision} />
                   {original.data.action.revision === opened.revision && !source && (
@@ -513,6 +517,8 @@ export function JobInformation({
         </Alert>
       )}
       {notice && <Alert severity="success">{notice}</Alert>}
+      {data?.canReadContracts && !draft && !selectedAction && !source && <RelationshipContracts view={data} session={session} draft={contractDraft} update={setContractDraft}
+        begin={(cmd,b)=>{opener.current=b;saved.current=false;contractInitial.current=cmd;setContractDraft(cmd)}} cancel={()=>exit.request(close)} finish={()=>{saved.current=true;close()}}/>}
       {submit.pending.map((ref) => (
         <Button key={ref.submissionId} onClick={() => void submit.recover(ref)}>
           查回职务信息提交

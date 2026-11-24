@@ -118,6 +118,13 @@ func (st *Store) ExitAssignment(ctx context.Context, c f.Credentials, id, key st
 		if e = u.newEmploymentAction(ctx, item); e != nil {
 			return "", e
 		}
+		if leave {
+			if e = u.closeContracts(ctx, anchor, exit.FirstInactive, item.notice, item.id, in.Contracts); e != nil {
+				return "", e
+			}
+		} else if len(in.Contracts) > 0 {
+			return "", f.Fail(400, "CONTRACT_RELATION", "结束单份任职不处置关系合同")
+		}
 		if e = u.closeReporting(ctx, closing, exit.FirstInactive, item); e != nil {
 			return "", e
 		}

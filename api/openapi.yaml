@@ -12678,6 +12678,68 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/contracts:
+    get:
+      operationId: getEmploymentContracts
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: businessAt, schema: {type: string, format: date}}
+      - {in: query, name: exitDate, schema: {type: string, format: date}}
+      - {in: query, name: meaning, schema: {type: string, enum: [last-active, first-inactive]}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentContracts'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    post:
+      operationId: recordEmploymentContract
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentContractCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/ContractReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/employment-contracts/submissions/{sub}/resolve:
+    post:
+      operationId: resolveEmploymentContract
+      security:
+      - session: []
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: sub
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractReceipt'
+        default:
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/assignments/{id}/duty-sources:
     get:
       operationId: assignmentDutySources
@@ -13242,6 +13304,7 @@ components:
       additionalProperties: false
       required: [date, meaning, expectedSourceVersion, notice]
       properties:
+        contracts: {type: array, items: {$ref: '#/components/schemas/ContractRef'}}
         date: {type: string, format: date}
         meaning: {type: string, enum: [last-active, first-inactive]}
         expectedSourceVersion: {type: string, format: uuid}
@@ -13301,6 +13364,66 @@ components:
       properties:
         assignment: {type: string, format: uuid}
         sourceVersion: {type: string, format: uuid}
+    ContractRef:
+      type: object
+      required: [id, version]
+      properties:
+        id: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+    ContractProcess:
+      type: object
+      required: [version, operation, businessDate, operator, recordedAt, basis]
+      properties:
+        version: {type: string, format: uuid}
+        operation: {type: string, enum: [sign, renew, end]}
+        businessDate: {type: string, format: date}
+        operator: {type: string}
+        recordedAt: {type: string, format: date-time}
+        basis: {type: string}
+        leaveAction: {type: string, format: uuid}
+    EmploymentContract:
+      type: object
+      required: [id, version, employment, number, signed, from, processes]
+      properties:
+        id: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+        employment: {type: string, format: uuid}
+        number: {type: string}
+        signed: {type: string, format: date}
+        from: {type: string, format: date}
+        until: {type: string, format: date}
+        previous: {type: string, format: uuid}
+        next: {type: string, format: uuid}
+        firstInactive: {type: string, format: date}
+        processes: {type: array, items: {$ref: '#/components/schemas/ContractProcess'}}
+    EmploymentContracts:
+      type: object
+      required: [canManage, items]
+      properties:
+        required: {type: array, items: {$ref: '#/components/schemas/ContractRef'}}
+        canManage: {type: boolean}
+        items: {type: array, items: {$ref: '#/components/schemas/EmploymentContract'}}
+    EmploymentContractCommand:
+      type: object
+      required: [operation, expectedSourceVersion]
+      properties:
+        operation: {type: string, enum: [sign, renew, end]}
+        expectedSourceVersion: {type: string, format: uuid}
+        number: {type: string}
+        signed: {type: string, format: date}
+        from: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        ref: {$ref: '#/components/schemas/ContractRef'}
+        firstInactive: {type: string, format: date}
+        basis: {type: string}
+    ContractReceipt:
+      type: object
+      required: [submissionId, outcome]
+      properties:
+        submissionId: {type: string, format: uuid}
+        outcome: {type: string, enum: [accepted, not_applied]}
+        id: {type: string, format: uuid}
+        version: {type: string, format: uuid}
     DutyRef:
       type: object
       required: [id, version]
@@ -13691,8 +13814,9 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canRecordDuty, canVerifyDuty, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canReadContracts, canRecordDuty, canVerifyDuty, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
       properties:
+        canReadContracts: {type: boolean}
         canRecordDuty: {type: boolean}
         canVerifyDuty: {type: boolean}
         canHandover: {type: boolean}

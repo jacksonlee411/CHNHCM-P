@@ -17,6 +17,7 @@ export type JobDraft = {
   kind: 'ActualDuty' | 'PositionExchange' | 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment' | 'GradeRecord' | 'Promotion' | 'PromotionTransfer' | 'SetManager' | 'EndAssignment' | 'Leave';
   purpose?: 'direct' | 'functional';
   manager?: Option;
+  contracts?:Models['ContractRef'][];
   originalDuty?: Models['DutyEvidence'];
   observation?: Models['DutyEvidence'];
   paper?: Partial<Models['DutyObservation']>;
@@ -82,6 +83,7 @@ const operations = { add: '新增记录', insert: '插入记录', correct: '更�
 
 export function draftChanged(draft: JobDraft, initial: JobDraft) {
   return (
+    JSON.stringify(draft.contracts)!==JSON.stringify(initial.contracts) ||
     draft.observation?.version !== initial.observation?.version || JSON.stringify(draft.paper)!==JSON.stringify(initial.paper) ||
     draft.day !== initial.day ||
     draft.handover !== initial.handover || draft.incumbent?.assignment!==initial.incumbent?.assignment || draft.kind !== initial.kind || draft.peer?.assignment!==initial.peer?.assignment || draft.manager?.id!==initial.manager?.id ||
@@ -292,7 +294,7 @@ export function AssignmentRecordForm({
           value={draft.day}
           required
           disabled={draft.mode === 'correct' || draft.mode==='withdraw' || !!draft.successor}
-          onChange={(e) => update({ ...draft, day: e.target.value, peer:undefined, incumbent:undefined })}
+          onChange={(e) => update({ ...draft, day: e.target.value, peer:undefined, incumbent:undefined,contracts:undefined })}
         />}
         {draft.mode !== 'redate' &&
           (duty ? <ActualDutyFields draft={draft} update={update} view={view}/> : draft.kind==='PositionExchange' ? <ExchangeFields draft={draft} update={update} assignment={view.assignment} csrf={csrf}/> : lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} mode={targets} derived={derived.data} arrangementError={derived.error} /> : relation ? (

@@ -1472,3 +1472,42 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 满编门店的三天实况补录 原生200%',async()=>{await native200(dutyJourney,seedDuty)});
+
+async function contractJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
+  await hireAtLocation(page,sample);
+  await openEmployeeAssignment(page,sample);
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  const day=async(label:string,value:string)=>{const field=page.getByRole('textbox',{name:new RegExp('^'+label)});await field.fill(value);await field.press('Tab')};
+  const first='A-'+sample.name,second='B-'+sample.name;
+  await button('订立合同').click();
+  await page.getByLabel(/合同编号/).fill('未保存合同');
+  await button('取消').click();await page.getByRole('dialog').getByRole('button',{name:'放弃修改'}).click();
+  await expect(page.getByText('本关系尚无合同。',{exact:true})).toBeVisible();
+  await button('订立合同').click();
+  await page.getByLabel(/合同编号/).fill(first);
+  await day('签订日','2027-03-25');await day('合同起日','2027-04-06');await day('合同至','2027-06-30');
+  await button('保存合同').focus();await page.keyboard.press('Enter');
+  await expect(page.getByText('2027-04-06 至 2027-06-30',{exact:true})).toBeVisible();
+  await button('续订合同').click();await page.getByLabel(/合同编号/).fill(second);
+  await day('签订日','2027-06-20');await day('合同至','2028-06-30');
+  await button('保存合同').click();
+  await expect(page.getByText('2027-07-01 至 2028-06-30',{exact:true})).toBeVisible();
+  await button(first).last().click();
+  await expect(page.getByText('2027-03-25',{exact:true})).toBeVisible();
+  await button(second).last().click();
+  await button('新增记录').click();await page.getByRole('combobox',{name:/办理类型/}).click();await page.getByRole('option',{name:'离职',exact:true}).click();
+  await day('原通知日期','2027-08-31');await page.getByLabel(/退出依据/).fill('依通知终结本关系和续订合同');
+  await page.getByRole('combobox',{name:/合同处置/}).click();await page.getByRole('option',{name:'按离职通知终结上述合同',exact:true}).click();
+  await button('保存').click();
+  await expect(page.getByText('职务信息已保存。',{exact:true})).toBeVisible();
+  await button(second).first().click();
+  await expect(page.getByText('2027-09-01',{exact:true}).last()).toBeVisible();
+  await expect(page.getByText(/依通知终结本关系和续订合同 · admin/)).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 工作关系合同续订与离职 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});await contractJourney(page,sample);
+  });
+}
+test('M04 工作关系合同续订与离职 原生200%',async()=>{await native200(contractJourney)});
