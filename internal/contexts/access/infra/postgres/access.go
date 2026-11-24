@@ -589,8 +589,10 @@ func ChangeLocalPassword(ctx context.Context, pool *pgxpool.Pool, instance, logi
 }
 
 // Initialize is called only by the controlled upgrader, with credentials from outside the repository.
-func Initialize(ctx context.Context, tx pgx.Tx, instance, enterprise, login, password string, readOnly, developmentFixture bool) (string, error) {
-	return InitializePrincipal(ctx, tx, instance, enterprise, foundation.NewID(), login, password, readOnly, developmentFixture)
+func Initialize(ctx context.Context, tx pgx.Tx, instance, enterprise, login, password string, readOnly, developmentFixture bool) (subject string, created bool, err error) {
+	id := foundation.NewID()
+	subject, err = InitializePrincipal(ctx, tx, instance, enterprise, id, login, password, readOnly, developmentFixture)
+	return subject, err == nil && subject == id, err
 }
 
 // InitializePrincipal lets a disposable historical fixture retain its original

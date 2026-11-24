@@ -263,6 +263,8 @@ type FirstHireRuleInput struct {
 }
 
 type InitInput struct {
+	// Routine startup may seed a new synthetic account, never an existing one.
+	NewAccountFixturesOnly                                           bool
 	EmploymentFixture                                                bool
 	FirstHireRule                                                    *FirstHireRuleInput
 	HireIdentityFixture                                              bool
@@ -285,7 +287,7 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 	if e != nil {
 		return e
 	}
-	subject, e := accessdb.Initialize(ctx, tx, in.Instance, ent, in.Login, in.Password, in.ReadOnly, in.DevelopmentFixture)
+	subject, created, e := accessdb.Initialize(ctx, tx, in.Instance, ent, in.Login, in.Password, in.ReadOnly, in.DevelopmentFixture)
 	if e != nil {
 		return e
 	}
@@ -294,21 +296,8 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 			return e
 		}
 	}
-	if e = accessdb.InitializePersonnel(ctx, tx, in.Instance, subject, in.PersonnelProfile); e != nil {
-		return e
-	}
-	if in.EmploymentFixture {
-		if e = accessdb.InitializeEmployment(ctx, tx, in.Instance, subject); e != nil {
-			return e
-		}
-	}
-	if in.HireIdentityFixture {
-		if e = accessdb.InitializeHireIdentity(ctx, tx, in.Instance, subject); e != nil {
-			return e
-		}
-	}
-	if in.PersonalProfileFixture {
-		if e = accessdb.InitializePersonalProfileFixture(ctx, tx, in.Instance, subject); e != nil {
+	if created || !in.NewAccountFixturesOnly {
+		if e = initializeAccountFixtures(ctx, tx, in, subject); e != nil {
 			return e
 		}
 	}
@@ -316,6 +305,28 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 		return e
 	}
 	return tx.Commit(ctx)
+}
+
+func initializeAccountFixtures(ctx context.Context, tx pgx.Tx, in InitInput, subject string) error {
+	if e := accessdb.InitializePersonnel(ctx, tx, in.Instance, subject, in.PersonnelProfile); e != nil {
+		return e
+	}
+	if in.EmploymentFixture {
+		if e := accessdb.InitializeEmployment(ctx, tx, in.Instance, subject); e != nil {
+			return e
+		}
+	}
+	if in.HireIdentityFixture {
+		if e := accessdb.InitializeHireIdentity(ctx, tx, in.Instance, subject); e != nil {
+			return e
+		}
+	}
+	if in.PersonalProfileFixture {
+		if e := accessdb.InitializePersonalProfileFixture(ctx, tx, in.Instance, subject); e != nil {
+			return e
+		}
+	}
+	return nil
 }
 
 // RestoreGrantArchive is used only by the offline storage verification tools.

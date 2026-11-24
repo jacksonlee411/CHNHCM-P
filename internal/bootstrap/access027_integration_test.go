@@ -197,9 +197,9 @@ func TestAccess027Public38Upgrade(t *testing.T) {
 	pool := newStaffingMigrationPool(t)
 	ctx := t.Context()
 	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00038" })))
-	inst := foundation.NewID()
+	inst, password := foundation.NewID(), foundation.NewID()
 	for _, login := range []string{"reader", "empty", "disabled"} {
-		must(t, bootstrap.Initialize(ctx, pool, bootstrap.InitInput{Instance: inst, EnterpriseCode: "PUBLIC", EnterpriseName: "公共升级验收", Login: login, Password: foundation.NewID()}))
+		must(t, bootstrap.Initialize(ctx, pool, bootstrap.InitInput{Instance: inst, EnterpriseCode: "PUBLIC", EnterpriseName: "公共升级验收", Login: login, Password: password}))
 	}
 	_, err := pool.Exec(ctx, `UPDATE access.principal SET state='disabled' WHERE login='disabled';
 		INSERT INTO access.subject_grant
@@ -225,6 +225,20 @@ func TestAccess027Public38Upgrade(t *testing.T) {
 	must(t, err)
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
+	}
+	// A migrated ordinary login has no personnel or first-hire fixture marker.
+	// Replaying the local startup declarations must preserve that zero.
+	must(t, bootstrap.Initialize(ctx, pool, bootstrap.InitInput{
+		Instance: inst, EnterpriseCode: "PUBLIC", EnterpriseName: "公共升级验收", Login: "empty", Password: password,
+		NewAccountFixturesOnly: true, DevelopmentFixture: true, PersonnelProfile: "registrar",
+		PersonalProfileFixture: true, HireIdentityFixture: true, EmploymentFixture: true,
+	}))
+	must(t, pool.QueryRow(ctx, `SELECT NOT EXISTS(SELECT FROM access.person_grant)
+		AND NOT EXISTS(SELECT FROM access.employment_grant)
+		AND NOT EXISTS(SELECT FROM access.person_fixture)
+		AND NOT EXISTS(SELECT FROM access.employment_fixture)`).Scan(&intact))
+	if !intact {
+		t.Fatal("restart issued new grants to an existing ordinary account")
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
 	must(t, pool.QueryRow(ctx, `WITH actual AS (

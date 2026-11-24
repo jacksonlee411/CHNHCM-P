@@ -315,15 +315,22 @@ def execute(args):
     env = environment(config, conn)
     run([str(BIN / "upgrader"), "-mode", "runtime-roles"], env,
         dict(API=config["api_password"]))
-    if args.first_hire:
+    enable_hire = args.first_hire and not config.get("first_hire")
+    if enable_hire:
         config["first_hire"] = True
     for login, password, read_only in [(config["login"], config["password"], False),
                                         (config["reader_login"], config["reader_password"], True)]:
         enterprise = config.get("enterprise", dict(EnterpriseCode="LOCAL", EnterpriseName="本地学习企业"))
-        run([str(BIN / "upgrader"), "-mode", "initialize"], env,
-            dict(Instance=config["instance"], **enterprise,
-                 Login=login, Password=password, ReadOnly=read_only, DevelopmentFixture=runtime.temporary_profile(), PersonnelProfile="reader" if read_only else "registrar", PersonalProfileFixture=True,
-                 **(dict(HireIdentityFixture=True, EmploymentFixture=True, FirstHireRule=dict(Version="T02-employee-1", From="2027-04-01")) if config.get("first_hire") and not read_only else {})))
+        temporary = runtime.temporary_profile()
+        declaration = dict(Instance=config["instance"], **enterprise, Login=login, Password=password,
+                           ReadOnly=read_only, DevelopmentFixture=temporary, NewAccountFixturesOnly=not enable_hire)
+        if temporary or enable_hire:
+            declaration.update(PersonnelProfile="reader" if read_only else "registrar", PersonalProfileFixture=True)
+            if config.get("first_hire") and not read_only:
+                declaration.update(HireIdentityFixture=True, EmploymentFixture=True)
+        if config.get("first_hire") and not read_only:
+            declaration["FirstHireRule"] = dict(Version="T02-employee-1", From="2027-04-01")
+        run([str(BIN / "upgrader"), "-mode", "initialize"], env, declaration)
     for catalog in ("country-catalog", "geoarea-catalog"):
         run([str(BIN / "upgrader"), "-mode", catalog, "-skip-unauthorized-catalog"], env,
             dict(login=config["login"], password=config["password"]))
