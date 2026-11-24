@@ -35,6 +35,8 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   const apiRef = useGridApiRef(),
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
+  const [dateInput, setDateInput] = useState<string>();
+  useEffect(() => setDateInput(undefined), [query.businessAt]);
   const readyRef = useRef<string | undefined>(undefined),
     request = useRef(0);
   useEffect(() => {
@@ -66,7 +68,8 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   });
   function update(fields: Record<string, string>) {
     if (window.location.pathname !== route.pathname) return;
-    const next = new URLSearchParams(params);
+    // A search reply can arrive after another filter has already navigated.
+    const next = new URLSearchParams(window.location.search);
     next.delete('selected');
     for (const [k, v] of Object.entries(fields)) {
       if (v) next.set(k, v);
@@ -230,8 +233,18 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
               <ObjectTextField
                 type="date"
                 label="业务日期"
-                value={query.businessAt ?? data?.businessAt ?? ''}
-                onChange={(e) => update({ businessAt: e.target.value, page: '1' })}
+                value={dateInput ?? query.businessAt ?? data?.businessAt ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setDateInput(value);
+                  if (value && e.target.validity.valid) update({ businessAt: value, page: '1' });
+                }}
+                onBlur={() => {
+                  if (dateInput === '') {
+                    setDateInput(undefined);
+                    update({ businessAt: '', page: '1' });
+                  }
+                }}
               />
               {compact && (
                 <ObjectTextField
