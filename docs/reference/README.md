@@ -2,6 +2,8 @@
 
 公共仓库提供产品构建、合成测试及可分发的依赖。客户实库记录、历史运行包和仅供本地使用的来源包留在私有原仓。下文的私仓链接需要原仓访问权限。
 
+职务信息的来源索引定位 PeopleSoft 的任职编号、原 0 号再聘示例及关系内主次字段、Odoo 员工表单、本地 Bugs-And-Blossoms 的生命周期合同及兼岗验收。采用范围和本项目的独立预期分别见设计复核与规格。[506 来源索引](506-job-information-sources.json) · [业务与体验对照](../verification/506-job-information-design-review.md)
+
 人员登记与名录 T00 留存了 CubeBox 任职列表和多值资料设计的两份原文。501/502 记录采用范围，资产台账保留规格提炼与产品接线的区别。[人员来源包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-personnel-074fe044.zip) · [T00 评审](../verification/500-t00-personnel-specifications.md) · [资产台账](../assets/inventory.json)
 
 国家/地区251条运行资料已纳入Git：[可审阅JSON](../../internal/contexts/organization/infra/countryseed/countries.json)、[版次及许可说明](../../internal/contexts/organization/infra/countryseed/NOTICE.txt)。提供方来源资料保存在版本资产中；国家HTTP资源及页面不再重复展示，业务修订历史保持。

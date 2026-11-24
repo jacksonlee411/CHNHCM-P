@@ -8959,9 +8959,56 @@
       "verified": true,
       "evidence": "docs/verification/138-geo-area-interactions.md",
       "complete_asset_verified": false
+    },
+    {
+      "id": "EXTERNAL-E507-JOB-DATA",
+      "document": "CHNHCM-507",
+      "source_record": "docs/reference/506-job-information-sources.json",
+      "source_repository": "Oracle PeopleSoft HCM 9.2.055 与 Odoo 19.0",
+      "scope": "采用按雇用记录查看履历、从原行办理及员工身份区下的页签布局。部门树按任职筛选、0 号与兼岗的页签范围由本项目 502、507 规定。",
+      "registered": true,
+      "extracted": false,
+      "implemented": false,
+      "verified": false,
+      "complete_asset_verified": false,
+      "design_evidence": "docs/verification/506-job-information-design-review.md"
     }
   ],
   "external_verification_sources": [
+    {
+      "id": "EXTERNAL-B506-STAFFING-OPERATIONS",
+      "category": "business",
+      "source": {
+        "repository": "Bugs-And-Blossoms",
+        "workspace_head": "a76db79227fdc4a0805fcd6e37fe22898d8b02ea",
+        "path": "docs/dev-plans/staffing/894-staffing-domain-readmission-and-rename-contract.md",
+        "sha256": "145aa4a949591348234b8bc9251508ee1bc99ee2a0caa0b5d28bee894c404fc3",
+        "tracked_by_git": true
+      },
+      "source_record": "docs/reference/506-job-information-sources.json",
+      "preservation": "原件留在来源项目的指定提交，来源索引同时定位通用 899 合同。",
+      "target_owner": "M04-staffing",
+      "disposition": "提炼记录操作、业务类型与原因的绑定。按本项目的直接入职、两层主选择、同日依赖和未来撤销裁定实际效果。",
+      "state": {"registered": true, "extracted": false, "implemented": false, "verified": false},
+      "new_evidence": ["docs/verification/506-job-information-design-review.md"]
+    },
+    {
+      "id": "EXTERNAL-V506-CONCURRENT-ASSIGNMENTS",
+      "category": "verification",
+      "source": {
+        "repository": "Bugs-And-Blossoms",
+        "workspace_head": "a76db79227fdc4a0805fcd6e37fe22898d8b02ea",
+        "path": "docs/dev-plans/staffing/1113-basic-concurrent-assignment-and-organization-appointment-implementation-plan.md",
+        "sha256": "189f29199dedd5a126b8a2d6cdbfba45d85bd544d5c33d612aedaa230d9d0530",
+        "tracked_by_git": true
+      },
+      "source_record": "docs/reference/506-job-information-sources.json",
+      "preservation": "原菜单验收保存在来源项目 1113 第 4.42 节。",
+      "target_owner": "M04-staffing",
+      "disposition": "提取一主两兼、结束一岗和受限读取的业务问题。506、507 依本项目编号规则补入 0 号再聘、兼岗新号和同部门分行的独立预期。当前登记属于设计阶段。",
+      "state": {"registered": true, "extracted": false, "implemented": false, "verified": false},
+      "new_evidence": ["docs/verification/506-job-information-design-review.md"]
+    },
     {
       "id": "EXTERNAL-V308-JOB-CLASSIFICATION",
       "category": "verification",

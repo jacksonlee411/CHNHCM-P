@@ -1,6 +1,6 @@
 # 验证记录
 
-T03 已在共同版本复验两类同号旧库，106 已在首批范围采纳，首单等待 Personnel 的入职核对接口。[首笔直接入职的开工核对](400-first-hire-integration.md)
+职务信息已有主兼岗分行、再聘、受限页签及同日多笔的设计复核。本次补充跨员工办理查询、发生部门归属和两个入口查回同一原笔的预期。当前产品证据覆盖按职务首单、原件、查回及未来撤销。[办理列表设计复核](507-personnel-action-register-design-review.md) · [主兼岗与职务信息复核](506-job-information-design-review.md) · [已有首单实测](400-first-hire-integration.md#decision-first-hire)
 
 M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合同已记录实际验证范围。[T02 实施及交接](400-hire-simplification.md#t02-results) · [实施复评与修复](400-hire-simplification.md#t02-implementation-review) · [办理负担复核](400-hire-simplification.md) · [原四轮评审](400-hire-readiness-review.md)
 

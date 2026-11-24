@@ -2,6 +2,8 @@
 
 此索引保留公开项目前身的技术文档和验收导航。历史运行附件由原仓保管，对应链接需要私仓权限。
 
+人员方案设「员工」与「人事事务」两个入口。员工列表按部门列各份任职，同人同部门也分行。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。人事事务按笔跨员工查询，与职务信息的「当日办理」共用原记录。[编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [T03／T04 分批实施](plans/500-personnel-roadmap.md#job-information-delivery) · [设计复核与参考来源](verification/506-job-information-design-review.md)
+
 [M01 个人资料扩展](plans/504-personal-profile-extension.md)单列 T01 之后的九栏维护。字段、整页保存及七类弹框布局由[九栏目合同](specs/m01/505-personal-profile-contract.md)规定。[九栏方案评审](verification/504-personal-profile-review.md) · [弹框布局核对](verification/504-personal-profile-dialog-layout.md) · [第一批三栏实测与验收地址](verification/504-personal-profile-first-batch.md) · [第二批地址与家庭联系人实测及验收地址](verification/504-personal-profile-second-batch.md) · [第三批教育经历与专业凭证](verification/504-personal-profile-third-batch.md) · [第四批银行、健康及九栏联验](verification/504-personal-profile-fourth-batch.md)
 
 人员登记已按主要证件号码判断重复，同名可直接建档。旧档案升级核对和人事试办记录见[本次实施与试办](verification/500-personnel-registration-trial.md)。[三种登记情况](specs/m01/501-person-registration-requirements.md#m01-registration-examples) · [人员详情与变更日志](verification/500-personnel-change-log.md) · [4380 手工验收环境](verification/500-personnel-change-log.md#personnel-log-4380)
@@ -224,7 +226,7 @@ python3 scripts/local-bu.py verify
 
 - [126完整历史紧凑存储研究](plans/126-compact-history-storage-research.md)：覆盖现案例历史、审计和索引的隔离模型约191.5 MB；[实测与限制](verification/126-storage-feasibility.md)不等于产品迁移或容量P1关闭。
 
-- [M04同日人事动作、日级状态与统计口径 CHNHCM-106](adr/106-same-day-personnel-actions-and-daily-state.md)：仅为提案，未批准或实施，不改变现行M02合同。
+- M04 的日级模型已用于按职务首次入职。同日多项办理、实际转正和多任职按 T04 专项合同验收。[106 首单采纳决定](adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) · [职务信息业务样本](specs/m04/506-job-information-records.md#m04-ac-012)
 
 - [不必要限制清理记录](verification/111-defensive-design-cleanup.md)：构建与本地运行解耦、来源核对改显式、开放纯展示列设置及独立录入，保留必要业务保护；按实际检查范围读取。
 

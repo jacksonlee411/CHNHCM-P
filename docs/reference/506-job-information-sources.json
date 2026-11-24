@@ -1,0 +1,68 @@
+{
+  "documents": ["CHNHCM-506", "CHNHCM-507"],
+  "observed_on": "2026-11-24",
+  "peoplesoft": {
+    "publisher": "Oracle",
+    "release": "PeopleSoft HCM 9.2.055",
+    "pages": [
+      {
+        "title": "Employment Record Numbers",
+        "url": "https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/employment-record-numbers.html",
+        "observation": "人员和任职记录号可定位独立职务记录，并行任职有可区分的记录。"
+      },
+      {
+        "title": "Understanding Job Data",
+        "url": "https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/understanding-job-data.html",
+        "observation": "Bobby 回到原职的再聘例延续原 0 号记录。CHNHCM 据此在同一个人的 0 号履历中区分离职前、再聘后的任期。"
+      },
+      {
+        "title": "(Fluid) Adding Organizational Instances",
+        "url": "https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/fluid-adding-organizational-instances.html",
+        "observation": "PeopleSoft 的 Job Indicator 标明一段组织关系内的主次。本项目自行确定人层主岗固定为 0，正号分配给兼岗，已发号永久保留，主兼岗转换后置。"
+      },
+      {
+        "title": "(Fluid) Updating Job Data",
+        "url": "https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/fluid-updating-job-data.html",
+        "observation": "Job Actions Summary 按权限从一条职务记录进入新增、编辑、删除或查看。"
+      },
+      {
+        "title": "Changing Job Data",
+        "url": "https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/changing-job-data.html",
+        "observation": "新业务使用生效日、动作和原因，PeopleSoft 以 effective sequence 区分同日多动作。CHNHCM 采用项目日级状态和确切业务前序。"
+      }
+    ]
+  },
+  "bugs_and_blossoms": {
+    "repository": "Bugs-And-Blossoms",
+    "commit": "a76db79227fdc4a0805fcd6e37fe22898d8b02ea",
+    "files": [
+      {
+        "path": "docs/dev-plans/repo-governance/899-core-business-object-lifecycle-semantics-contract.md",
+        "sha256": "1205ef366a3d108853aa13b9476f311b27b63099ad71b1771497829e47a8f8d8",
+        "sections": ["3", "10.2", "10.3"],
+        "observation": "通用记录操作与业务类型、其下原因和服务端处理方式分开。"
+      },
+      {
+        "path": "docs/dev-plans/staffing/894-staffing-domain-readmission-and-rename-contract.md",
+        "sha256": "145aa4a949591348234b8bc9251508ee1bc99ee2a0caa0b5d28bee894c404fc3",
+        "sections": ["2.4", "21.1", "21.2", "21.4"],
+        "observation": "任职身份跨修订稳定。同一事件可影响多份任职，行和历史按任职范围授权。"
+      },
+      {
+        "path": "docs/dev-plans/staffing/1113-basic-concurrent-assignment-and-organization-appointment-implementation-plan.md",
+        "sha256": "189f29199dedd5a126b8a2d6cdbfba45d85bd544d5c33d612aedaa230d9d0530",
+        "sections": ["4.42"],
+        "observation": "源项目共享开发环境记录了一主两兼、免占或占编、未来撤回、离职再聘、受限读取和撤权的菜单验收。"
+      }
+    ]
+  },
+  "odoo": {
+    "repository": "odoo/odoo",
+    "release": "19.0",
+    "commit": "74d39b2fdaa8cd60885943fa58a08bff62e53207",
+    "path": "addons/hr/views/hr_employee_views.xml",
+    "url": "https://github.com/odoo/odoo/blob/74d39b2fdaa8cd60885943fa58a08bff62e53207/addons/hr/views/hr_employee_views.xml#L149-L168",
+    "observation": "在员工身份区下使用 notebook 和 Work 页签，工作分组展示公司、部门、岗位、经理，地点另组呈现。"
+  },
+  "adoption_evidence": "docs/verification/506-job-information-design-review.md"
+}

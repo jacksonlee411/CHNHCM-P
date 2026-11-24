@@ -2713,11 +2713,11 @@
       "scope": "直接入职的材料、主体、岗位模式、主选择、同日动作及分批验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理办理负担与实施范围复核",
-        "scope": "已有身份来源、无编号任用依据、必要决定、岗位期间、主选择和稳定验收场景。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对直接入职、未来撤销、关系内主任职与 506 人层 0 号的适用范围。",
         "result": "accepted",
-        "evidence": "docs/verification/400-hire-simplification.md"
+        "evidence": "docs/verification/506-job-information-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2740,14 +2740,14 @@
         "M03",
         "X03"
       ],
-      "scope": "主体用途、岗位政策与员工入职入口的字段、权限、日期、办理原件及恢复。",
+      "scope": "主体用途、岗位政策与员工入职字段，以及从职务信息承接原办理、原件与恢复。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理办理负担与实施范围复核",
-        "scope": "原档直办、按需补证、自动带入和分段、取消及原办理历史。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对人员档案发起首聘、保存后定位 0 号以及原任职地址、未来首单撤销的入口。",
         "result": "accepted",
-        "evidence": "docs/verification/400-hire-simplification.md"
+        "evidence": "docs/verification/506-job-information-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2770,14 +2770,14 @@
         "M03",
         "X03"
       ],
-      "scope": "入职来源的公开端口、分段采用、业务唯一性、主选择与动作修订、失败恢复及升级验证。",
+      "scope": "入职来源、分段采用、业务唯一性、主选择、动作修订和恢复，以及存量首单升级与跨人员办理查询。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理办理负担与实施范围复核",
-        "scope": "窄核对端口、按来源防重、仅对采用资源做事务校验、后继处理和分批验证。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "复核跨人员集合查询与既有单笔接口、获权后去重分页、原件授权及两处维护的期望修订。",
         "result": "accepted",
-        "evidence": "docs/verification/400-hire-simplification.md"
+        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2801,14 +2801,14 @@
         "M05",
         "X03"
       ],
-      "scope": "人员名录与登记、用工任职及招聘交接的交付顺序、页面继承、事实归属及独立验收。",
+      "scope": "人员名录与登记、用工任职、跨员工办理记录及招聘交接的交付顺序、页面继承、事实归属及独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "两轮独立 Codex 规格评审与首轮修订复核",
-        "scope": "复核人员详情与办理日志继承标准的范围和人员特有的敏感资料读取。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对 T03 首单现状与 T04 办理记录分批交付、双入口验收及 M20 待办边界。",
         "result": "accepted",
-        "evidence": "docs/verification/500-personnel-change-log.md"
+        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
       },
       "execution_status": "in_progress",
       "superseded_by": [],
@@ -2855,14 +2855,14 @@
         "M01",
         "X03"
       ],
-      "scope": "人员菜单、逐页标准继承、登记、个人资料正文与明细、证件维护、改号、历史与返回。",
+      "scope": "人员菜单、详情各面板授权、登记、个人资料与明细、证件维护、改号、人员历史与返回。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 对照登记及个人资料入口复核",
-        "scope": "区分登记表与在档多条资料的布局、移除与撤下主要、记录入口与整页保存，以及 501、505 的专项验收。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "复核人员菜单按授权进入员工或人事事务、人员档案与任职行的原有入口。",
         "result": "accepted",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2942,11 +2942,59 @@
       "scope": "九栏字段和多条资料、同人共享、敏感字段授权、整页办理、事务边界与独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 对照首批实页与字段授权复核",
-        "scope": "复核基本信息与多条摘要的断点、阅读和键盘顺序，018 的正文验收与 020 的逐行弹框和共用布局验收。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对一人一份资料、0 号及人员档案入口、兼岗详情的页签边界与九栏整页保存。",
         "result": "accepted",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/506-job-information-design-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-506",
+      "title": "M04 职务信息与任职记录业务规则",
+      "path": "docs/specs/m04/506-job-information-records.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing、人事业务及 Access 维护者",
+      "owner": null,
+      "status": "active",
+      "type": "business_spec",
+      "modules": ["M04", "X03"],
+      "scope": "主岗终身 0 号、兼岗递增、再聘任期、记录操作与类型绑定、同日状态及跨人员办理的计数与归属。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "复核同一关系多岗的一笔转正、动作发生部门、两种日期、原笔更正和跨员工样本。",
+        "result": "accepted",
+        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-507",
+      "title": "人员详情职务信息与人事事务办理记录页面设计",
+      "path": "docs/specs/m04/507-job-information-tab.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing、Personnel、体验及 Access 维护者",
+      "owner": null,
+      "status": "active",
+      "type": "functional_spec",
+      "modules": ["M01", "M04", "X03"],
+      "scope": "部门树联动的任职行、主兼岗职务信息、日期轴、跨员工办理列表、原笔维护及两个入口的返回与验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "对照 012 核对员工与事务两个入口、筛选、受限读者、同笔更正、原件往返和菜单验收。",
+        "result": "accepted",
+        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2966,6 +3014,45 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/507-personnel-action-register-design-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-403", "CHNHCM-500", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "56189a0e59a1a8f2f35c34f5ae2d8b8e408ca37a",
+        "working_tree": "dirty",
+        "change_description": "接续已有职务信息及主兼岗文稿，补入人事事务办理列表、查询合同和 T04 双入口验收。",
+        "environment": "wt-dev-f 本地文档工作区。",
+        "scope": "区分任职行与办理行，复核跨人、跨日期、同一办理身份、发生部门和授权范围。",
+        "results": [
+          {"check": "对照当前人员路由、原笔接口及待办归属", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
+          {"check": "两人四笔样本、关系级办理去重、发生部门、日期与受限一笔的独立复算", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
+          {"check": "文档及治理回归、领域边界、链接与锚点、差异及未跟踪文件空白", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
+          {"check": "跨人员办理列表的真实 DB/API 与菜单验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["本记录限于文稿、已有源代码和接口基线。新页面及跨人查询按 T04 分批实施。"]
+      },
+      {
+        "path": "docs/verification/506-job-information-design-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-401", "CHNHCM-402", "CHNHCM-403", "CHNHCM-500", "CHNHCM-502", "CHNHCM-505", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "56189a0e59a1a8f2f35c34f5ae2d8b8e408ca37a",
+        "working_tree": "dirty",
+        "change_description": "新增职务信息规格，补入确认的主兼岗编号、再聘与员工列表决定，同步路线图、人员及首单合同和来源索引。",
+        "environment": "公共 wt-dev-f 文档工作区，本地 Bugs-And-Blossoms 固定提交、Oracle 官方文档、Odoo 固定提交。",
+        "scope": "设计采用、按人发号、再聘沿用 0、部门筛选、页签授权、同日处理、首单升级及分批验收预期。",
+        "results": [
+          {"check": "对照原始依据、首单实物并逐项核对业务与页面预期", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "初次补充链接扫描重复读取文件清单，主动中止", "result": "interrupted", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "文档回归和仓库资料、领域边界、差异空白、链接与锚点及来源摘要复核", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "主岗终身 0 号与再聘、兼岗不回收、部门内多行及页签样本的文档复核", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "职务信息新页签、多笔办理与主兼岗的产品验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["本次为 Codex 主代理文稿复核。实施、运行时分权及用户菜单验收随相应产品批次进行。"]
+      },
       {
         "path": "docs/verification/504-personal-profile-fourth-batch.md",
         "related_documents": [
