@@ -61,6 +61,11 @@ type AccessEmploymentProbationFixture struct {
 	PrincipalID string
 }
 
+type AccessEmploymentPromotionFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessEmploymentRegisterFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1218,6 +1223,7 @@ type StaffingAssignmentSegment struct {
 	LocationRef  []byte
 	DepartmentID string
 	JobID        string
+	GradeRef     []byte
 }
 
 type StaffingAssignmentSource struct {
@@ -1885,6 +1891,15 @@ type StaffingPositionTerminal struct {
 	Digest       []byte
 	Result       []byte
 	ClosedAt     pgtype.Timestamptz
+}
+
+type StaffingPromotionTransfer struct {
+	InstanceID        string
+	AssignmentID      string
+	Promotion         string
+	PromotionRevision string
+	Transfer          string
+	TransferRevision  string
 }
 
 type StaffingQuotaControl struct {

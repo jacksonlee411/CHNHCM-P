@@ -79,6 +79,14 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-options", ruleBody(func(r *http.Request, in h.SecondaryOption) (any, error) {
 		return hires.SecondaryOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/grade-options", ruleBody(func(r *http.Request, in h.GradeSearch) (any, error) {
+		return hires.GradeOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	for _, op := range []struct{ path, kind string }{{"grade-records", "grade"}, {"promotions", "promotion"}, {"promotions/{action}/correct", "promotion"}, {"promotion-transfers", "pair"}} {
+		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.PromotionCommand) (any, error) {
+			return hires.RecordPromotion(r.Context(), credentials(r), r.PathValue("id"), r.PathValue("action"), op.kind, r.Header.Get("Idempotency-Key"), in)
+		}))
+	}
 	mux.HandleFunc("POST /api/v1/assignments/{id}/probation-departments", ruleBody(func(r *http.Request, in h.LocationSearch) (any, error) {
 		return hires.ProbationDepartments(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
@@ -129,14 +137,16 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/employment-actions/{id}/cancel", ruleBody(func(r *http.Request, in h.Cancel) (any, error) {
 		return hires.CancelHire(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), r.PathValue("id"), in)
 	}))
-	mux.HandleFunc("POST /api/v1/hires/submissions/{sub}/resolve", func(w http.ResponseWriter, r *http.Request) {
+	resolveEmployment := func(w http.ResponseWriter, r *http.Request) {
 		if _, err := queryValues(r); err != nil {
 			writeError(w, err)
 			return
 		}
 		v, e := hires.ResolveHire(r.Context(), credentials(r), r.PathValue("sub"))
 		respond(w, 200, v, e)
-	})
+	}
+	mux.HandleFunc("POST /api/v1/hires/submissions/{sub}/resolve", resolveEmployment)
+	mux.HandleFunc("POST /api/v1/employment-actions/submissions/{sub}/resolve", resolveEmployment)
 	mux.HandleFunc("GET /api/v1/persons/{id}/employment", func(w http.ResponseWriter, r *http.Request) {
 		q, e := queryValues(r, "businessAt")
 		if e != nil {

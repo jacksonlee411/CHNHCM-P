@@ -8,6 +8,7 @@ import (
 )
 
 type Adoption struct {
+	Grade    *GradeRef                 `json:"grade,omitempty"`
 	Decision *DecisionRef              `json:"decision,omitempty"`
 	Identity IdentitySource            `json:"identity"`
 	Rule     string                    `json:"rule"`
@@ -15,6 +16,7 @@ type Adoption struct {
 	Segments []staff.AssignmentSegment `json:"segments"`
 }
 type Hire struct {
+	Grade      string       `json:"grade,omitempty"`
 	TrialStart string       `json:"trialStart,omitempty"`
 	Person     string       `json:"person"`
 	Employer   string       `json:"employer"`
@@ -33,36 +35,40 @@ type Preview struct {
 	Missing  []string  `json:"missing,omitempty"`
 }
 type Receipt struct {
-	Revision     string `json:"revision,omitempty"`
-	Submission   string `json:"submissionId"`
-	Outcome      string `json:"outcome"`
-	Action       string `json:"action,omitempty"`
-	Employment   string `json:"employment,omitempty"`
-	Assignment   string `json:"assignment,omitempty"`
-	RecordNumber *int   `json:"recordNumber,omitempty"`
+	Related      []ActionRef `json:"related,omitempty"`
+	Revision     string      `json:"revision,omitempty"`
+	Submission   string      `json:"submissionId"`
+	Outcome      string      `json:"outcome"`
+	Action       string      `json:"action,omitempty"`
+	Employment   string      `json:"employment,omitempty"`
+	Assignment   string      `json:"assignment,omitempty"`
+	RecordNumber *int        `json:"recordNumber,omitempty"`
 }
 type Action struct {
-	Operation          string `json:"operation"`
-	CanCorrectTransfer bool   `json:"canCorrectTransfer"`
-	CanMaintain        bool   `json:"canMaintain"`
-	CanDelete          bool   `json:"canDelete"`
-	CanCorrectLocation bool   `json:"canCorrectLocation"`
-	BusinessDate       string `json:"businessDate"`
-	SourceVersion      string `json:"sourceVersion"`
-	ID                 string `json:"id"`
-	Revision           string `json:"revision"`
-	Kind               string `json:"kind"`
-	Employment         string `json:"employment"`
-	Assignment         string `json:"assignment"`
-	RecordNumber       int    `json:"recordNumber"`
-	PrimaryJob         bool   `json:"primaryJob"`
-	Person             string `json:"person"`
-	Employer           string `json:"employer"`
-	Department         string `json:"department"`
-	Job                string `json:"job"`
-	Notice             string `json:"notice"`
-	RecordedAt         string `json:"recordedAt"`
-	Original           string `json:"original,omitempty"`
+	Previous             *ActionRef `json:"-"`
+	CanCorrectPromotion  bool       `json:"canCorrectPromotion"`
+	CanWithdrawPromotion bool       `json:"canWithdrawPromotion"`
+	Operation            string     `json:"operation"`
+	CanCorrectTransfer   bool       `json:"canCorrectTransfer"`
+	CanMaintain          bool       `json:"canMaintain"`
+	CanDelete            bool       `json:"canDelete"`
+	CanCorrectLocation   bool       `json:"canCorrectLocation"`
+	BusinessDate         string     `json:"businessDate"`
+	SourceVersion        string     `json:"sourceVersion"`
+	ID                   string     `json:"id"`
+	Revision             string     `json:"revision"`
+	Kind                 string     `json:"kind"`
+	Employment           string     `json:"employment"`
+	Assignment           string     `json:"assignment"`
+	RecordNumber         int        `json:"recordNumber"`
+	PrimaryJob           bool       `json:"primaryJob"`
+	Person               string     `json:"person"`
+	Employer             string     `json:"employer"`
+	Department           string     `json:"department"`
+	Job                  string     `json:"job"`
+	Notice               string     `json:"notice"`
+	RecordedAt           string     `json:"recordedAt"`
+	Original             string     `json:"original,omitempty"`
 	f.Period
 	Cancelled  bool `json:"cancelled"`
 	CanCancel  bool `json:"canCancel"`
@@ -82,8 +88,11 @@ type Overview struct {
 	Seats       int        `json:"seats"`
 }
 type Cancel struct {
-	Revision string `json:"revision"`
-	Reason   string `json:"reason"`
+	Basis          *ActionRef `json:"basis,omitempty"`
+	ExpectedSource string     `json:"expectedSourceVersion,omitempty"`
+	Notice         string     `json:"notice,omitempty"`
+	Revision       string     `json:"revision"`
+	Reason         string     `json:"reason,omitempty"`
 }
 type RelationSummary struct {
 	f.Period
@@ -91,6 +100,9 @@ type RelationSummary struct {
 	Terms        []TermLink `json:"terms"`
 }
 type Original struct {
+	NoticeRef         *ActionRef         `json:"noticeRef,omitempty"`
+	Promotion         *PromotionEvidence `json:"promotion,omitempty"`
+	Previous          *ActionRef         `json:"previous,omitempty"`
 	Relation          *RelationSummary   `json:"relation,omitempty"`
 	TrialStart        string             `json:"trialStart,omitempty"`
 	Probation         *ProbationEvidence `json:"probation,omitempty"`
@@ -121,6 +133,7 @@ type EmployerSearch struct {
 	Page       int    `json:"page"`
 }
 type TargetSearch struct {
+	Job        string `json:"job,omitempty"`
 	Person     string `json:"person"`
 	Kind       string `json:"kind"`
 	Arrival    string `json:"arrival"`

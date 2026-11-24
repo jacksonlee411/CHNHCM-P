@@ -42,9 +42,9 @@ func (u *unit) assignmentAt(ctx context.Context, id, day, source string) (h.Acti
 	}
 	// Before entry or after exit the original identity remains addressable.
 	// Inside a covered period, authorize the arrangement in the requested source.
-	e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT department_id FROM staffing.assignment_segment
-      WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date),$5::uuid)::text`,
-		u.store.Instance, id, source, day, a.Department).Scan(&a.Department)
+	e = u.tx.QueryRow(ctx, `SELECT coalesce(s.department_id,$5::uuid),coalesce(s.job_id,$6::uuid) FROM (SELECT 1) anchor
+      LEFT JOIN staffing.assignment_segment s ON s.instance_id=$1 AND s.assignment_id=$2 AND s.version=$3 AND s.period @> $4::date`,
+		u.store.Instance, id, source, day, a.Department, a.Job).Scan(&a.Department, &a.Job)
 	if e == nil {
 		e = u.requireEmployment(ctx, "read", a.Person, a.Employer, a.Department)
 	}
@@ -119,8 +119,8 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		}
 		var state h.State
 		var location string
-		e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption->>'departmentName',adoption->>'jobName',coalesce(location_id::text,''),location_ref,(adoption->>'seats')::int
-			FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`, st.Instance, id, version, day).Scan(&state.From, &state.Until, &state.DepartmentID, &state.JobID, &state.Department, &state.Job, &location, &state.Location, &state.Seats)
+		e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption->>'departmentName',adoption->>'jobName',coalesce(location_id::text,''),location_ref,grade_ref,(adoption->>'seats')::int
+			FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`, st.Instance, id, version, day).Scan(&state.From, &state.Until, &state.DepartmentID, &state.JobID, &state.Department, &state.Job, &location, &state.Location, &state.Grade, &state.Seats)
 		if e == nil {
 			if state.Location == nil && location != "" {
 				// The original 00037 hire stored only the location identity.
@@ -142,6 +142,12 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			return e
 		}
 		if !a.Cancelled && version == a.SourceVersion && out.State != nil {
+			if out.CanRecordGrade, e = u.employmentAllowed(ctx, "grade.record", a.Person, a.Employer, a.Department, false); e != nil {
+				return e
+			}
+			if out.CanPromote, e = u.employmentAllowed(ctx, "promotion", a.Person, a.Employer, a.Department, false); e != nil {
+				return e
+			}
 			if out.Probation.Start == "" {
 				out.CanStartProbation, e = u.employmentAllowed(ctx, "probation.start", a.Person, a.Employer, a.Department, false)
 				if e != nil {
@@ -206,14 +212,24 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 				return e
 			}
 			item.CanHistory = history.from || history.to
-			mutable := !h.StartsAssignment(item.Kind) && item.Kind != "CancelHire" && item.Operation != "Delete" && !a.Cancelled && version == a.SourceVersion && item.CanHistory
+			mutable := !h.StartsAssignment(item.Kind) && item.Kind != "CancelHire" && item.Operation != "Delete" && item.Operation != "Withdraw" && !a.Cancelled && version == a.SourceVersion && item.CanHistory
 			if item.Kind == "Transfer" {
 				mutable = mutable && history.from && history.to
 				if !read.to {
 					item.Department, item.Job = read.before, read.beforeJob
 				}
 			}
-			if mutable {
+			if mutable && item.Kind == "Promotion" {
+				item.CanCorrectPromotion, e = u.employmentAllowed(ctx, "promotion", item.Person, item.Employer, item.Department, false)
+				if e != nil {
+					return e
+				}
+				item.CanWithdrawPromotion, e = u.employmentAllowed(ctx, "promotion.withdraw", item.Person, item.Employer, item.Department, false)
+				if e != nil {
+					return e
+				}
+			}
+			if mutable && (item.Kind == "DataChange" || item.Kind == "Transfer") {
 				permitted := func(permission string) (bool, error) {
 					ok, e := u.employmentAllowed(ctx, permission, item.Person, item.Employer, item.Department, false)
 					if e != nil || !ok || item.Kind != "Transfer" {
@@ -238,6 +254,26 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 				}
 			}
 			out.Actions = append(out.Actions, item)
+		}
+		for first := 0; first < len(out.Actions); {
+			last := first + 1
+			for last < len(out.Actions) && out.Actions[last].BusinessDate == out.Actions[first].BusinessDate {
+				last++
+			}
+			entries := make([]h.HistoryEntry, 0, last-first)
+			byID := map[string]h.Action{}
+			for _, a := range out.Actions[first:last] {
+				entries = append(entries, h.HistoryEntry{ID: a.ID, Previous: a.Previous})
+				byID[a.ID] = a
+			}
+			ordered, e := h.OrderDay(entries)
+			if e != nil {
+				return e
+			}
+			for n, r := range ordered {
+				out.Actions[first+n] = byID[r.ID]
+			}
+			first = last
 		}
 		return nil
 	})

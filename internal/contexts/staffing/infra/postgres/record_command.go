@@ -136,6 +136,9 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 			return out, assignmentConflict()
 		}
 		target = records[index]
+		if target.Kind == "Promotion" || target.Kind == "GradeRecord" {
+			return out, f.Fail(409, "GRADE_OPERATION", "请从原职级办理使用适用的更正或撤销入口")
+		}
 		if target.Removed || target.Revision != edit.ExpectedRevision || (edit.kind != "" && target.Kind != edit.kind) {
 			return out, assignmentConflict()
 		}
@@ -214,6 +217,12 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 	}
 	target.Revision = f.NewID()
 	target.Day = day
+	if edit.Previous != nil {
+		if e = u.validatePreceding(ctx, a, day, edit.Previous); e != nil {
+			return out, e
+		}
+		target.Previous = edit.Previous
+	}
 	target.Operation = edit.operation
 	target.Removed = edit.operation == "Delete"
 	if edit.kind == "Transfer" {
@@ -257,12 +266,25 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 		target.Evidence.LocationChange = &locEvidence
 		records[index] = target
 	}
-	if e = u.adoptRecordPeriods(ctx, a, records, originals, target.ID); e != nil {
+	return u.publishRecordEdit(ctx, a, initial, records, originals, index, permit, "")
+}
+
+func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Placement, records []savedRecord, originals map[string]savedRecord, index int, permit, pair string) (out employmentResult, err error) {
+	target := records[index]
+	id := a.Assignment
+	if e := u.adoptRecordPeriods(ctx, a, records, originals, target.ID); e != nil {
 		return out, e
 	}
 	projection, e := projectRecords(a, initial, records)
 	if e != nil {
 		return out, e
+	}
+	for _, seg := range projection.Segments {
+		if seg.Grade != nil {
+			if _, e = u.gradeForJob(ctx, seg.Job, seg.Grade.ID, seg.Period); e != nil {
+				return out, e
+			}
+		}
 	}
 	previous, e := u.recordChanges(ctx, a, records, originals, projection, target.ID, permit)
 	if e != nil {
@@ -291,6 +313,17 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 		}
 	}
 	target = records[index]
+	if pair != "" {
+		for _, other := range records {
+			if other.ID == pair {
+				_, e = u.tx.Exec(ctx, `INSERT INTO staffing.promotion_transfer(instance_id,assignment_id,promotion,promotion_revision,transfer,transfer_revision) VALUES($1,$2,$3,$4,$5,$6)`, u.store.Instance, a.Assignment, target.ID, target.Revision, other.ID, other.Revision)
+				if e != nil {
+					return out, e
+				}
+				break
+			}
+		}
+	}
 	e = u.saveReplayedSource(ctx, a, f.NewID(), target, records, projection.Segments)
 	return employmentResult{action: target.ID, revision: target.Revision}, e
 }
@@ -298,7 +331,7 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 func recordPeriod(term f.Period, records []savedRecord, kind, day string) f.Period {
 	period := f.Period{From: day, Until: term.Until}
 	for _, r := range records {
-		if !r.Removed && r.Kind == kind && r.Day > day && (period.Until == "" || r.Day < period.Until) {
+		if !r.Removed && (r.Kind == kind || kind == "Transfer" && r.Transfer != nil) && r.Day > day && (period.Until == "" || r.Day < period.Until) {
 			period.Until = r.Day
 		}
 	}
@@ -337,13 +370,17 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 		if r.Removed {
 			continue
 		}
-		span := recordPeriod(a.Period, records, r.Kind, r.Day)
+		kind := r.Kind
+		if r.Transfer != nil {
+			kind = "Transfer"
+		}
+		span := recordPeriod(a.Period, records, kind, r.Day)
 		orig, exists := originals[r.ID]
 		oldSpan := f.Period{}
 		if exists {
 			oldSpan = f.Period{From: orig.Day, Until: a.Until}
 			for _, after := range originals {
-				if !after.Removed && after.Kind == orig.Kind && after.Day > orig.Day && (oldSpan.Until == "" || after.Day < oldSpan.Until) {
+				if !after.Removed && (after.Kind == orig.Kind || kind == "Transfer" && after.Transfer != nil) && after.Day > orig.Day && (oldSpan.Until == "" || after.Day < oldSpan.Until) {
 					oldSpan.Until = after.Day
 				}
 			}
@@ -351,7 +388,7 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 		if r.ID != target && oldSpan.From == span.From && (oldSpan.Until == "" || (span.Until != "" && span.Until <= oldSpan.Until)) {
 			continue
 		}
-		switch r.Kind {
+		switch kind {
 		case "Transfer":
 			allowed, e := u.employmentAllowed(ctx, "transfer", a.Person, a.Employer, r.Transfer.Department, false)
 			if e != nil {
@@ -394,6 +431,26 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 		order[i] = i
 	}
 	slices.SortStableFunc(order, func(i, j int) int { return strings.Compare(records[i].Day, records[j].Day) })
+	for first := 0; first < len(order); {
+		last := first + 1
+		for last < len(order) && records[order[last]].Day == records[order[first]].Day {
+			last++
+		}
+		rows := make([]h.HistoryEntry, 0, last-first)
+		indices := map[string]int{}
+		for _, i := range order[first:last] {
+			rows = append(rows, records[i].HistoryEntry)
+			indices[records[i].ID] = i
+		}
+		sorted, err := h.OrderDay(rows)
+		if err != nil {
+			return nil, err
+		}
+		for offset, row := range sorted {
+			order[first+offset] = indices[row.ID]
+		}
+		first = last
+	}
 	previous := map[string]string{}
 	versions := map[string]string{}
 	for _, i := range order {
@@ -401,6 +458,40 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 		old := originals[r.ID]
 		if !r.Removed {
 			change := projection.Changes[r.ID]
+			if r.Previous != nil {
+				ref := *r.Previous
+				if revision := versions[ref.Action]; revision != "" {
+					ref.Revision = revision
+				}
+				r.Previous = &ref
+			}
+			if r.Evidence.Promotion != nil {
+				ev := *r.Evidence.Promotion
+				ev.Before = change.Before.Grade
+				ev.Department, ev.DepartmentName = change.Before.Department, change.Before.Adoption.DepartmentName
+				if other := change.Alternate; other != nil {
+					if other.Job != change.Before.Job {
+						for _, v := range []struct{ job, grade string }{{other.Job, ev.Before.ID}, {change.Before.Job, ev.After.ID}} {
+							if _, e := u.gradeForJob(ctx, v.job, v.grade, oneDay(r.Day)); e != nil {
+								return nil, f.Fail(409, "PROMOTION_ORDER", "请核对晋升与调动的先后，确认当时适用的任职资格")
+							}
+						}
+					}
+					if change.Before.Department != other.Department {
+						for _, right := range []string{"read", "promotion", permit} {
+							ok, e := u.employmentAllowed(ctx, right, a.Person, a.Employer, "", false)
+							if e != nil {
+								return nil, e
+							}
+							if !ok {
+								return nil, f.Fail(409, "PROMOTION_ORDER", "请核对晋升与调动的先后，以确定本次办理范围")
+							}
+						}
+						ev.Department, ev.DepartmentName = "", "未确定"
+					}
+				}
+				r.Evidence.Promotion = &ev
+			}
 			if r.Requires != nil {
 				req := *r.Requires
 				req.Revision = versions[req.Action]
@@ -411,7 +502,7 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 				evidence.Before = change.Before.Location
 				r.Evidence.LocationChange = &evidence
 			} else if r.Transfer != nil {
-				r.Evidence.Transfer = &h.TransferEvidence{After: *r.Transfer, BeforeDepartment: change.Before.Department, BeforeJob: change.Before.Job,
+				r.Evidence.Transfer = &h.TransferEvidence{After: *r.Transfer, BeforeGrade: change.Before.Grade, AfterGrade: change.After.Grade, BeforeDepartment: change.Before.Department, BeforeJob: change.Before.Job,
 					BeforeDepartmentName: change.Before.Adoption.DepartmentName, BeforeJobName: change.Before.Adoption.JobName}
 			}
 			if !reflect.DeepEqual(recordAdoption(*r), recordAdoption(old)) || r.ID == target {
@@ -433,7 +524,7 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 		}
 		if r.ID == target || !reflect.DeepEqual(recordAdoption(*r), recordAdoption(old)) {
 			previous[r.ID] = old.Revision
-			if r.ID != target {
+			if r.ID != target && old.ID != "" {
 				r.Operation = "Rebase"
 				r.Revision = f.NewID()
 			}

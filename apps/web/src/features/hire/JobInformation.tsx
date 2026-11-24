@@ -24,6 +24,8 @@ import {
 
 type Action = Models['EmploymentAction'];
 type Command =
+  | { kind: 'grade'; form:'Promotion'|'GradeRecord'|'PromotionTransfer'; action?:string; input:Models['AssignmentPromotionCommand'] }
+  | { kind: 'withdraw'; action:string; input:Models['HireCancel'] }
   | { kind: 'probation'; confirm: boolean; input: Models['ProbationCommand'] }
   | { kind: 'location'; action?: string; input: Models['EmploymentLocationChange'] }
   | { kind: 'transfer' | 'redate' | 'delete'; action?: string; input: Models['EmploymentRecordMaintenance'] };
@@ -72,10 +74,10 @@ export function JobInformation({
     if (!data || !draft) return;
     const a = data.actions.find((v) => v.id === draft.action?.id);
     const allowed =
-      draft.mode === 'redate'
+      draft.mode==='withdraw' ? a?.canWithdrawPromotion : draft.mode === 'redate'
         ? a?.canMaintain
         : draft.action
-          ? draft.kind === 'Transfer'
+          ? draft.kind === 'Promotion' ? a?.canCorrectPromotion : draft.kind === 'Transfer'
             ? a?.canCorrectTransfer
             : a?.canCorrectLocation
           : availableRecordTypes(data).includes(draft.kind);
@@ -104,6 +106,16 @@ export function JobInformation({
   const submit = useRuleSubmission<Command, Models['HireReceipt']>('assignment-location', session, {
     send: async (cmd, key) => {
       const headers = { ...header, 'Idempotency-Key': key };
+      if (cmd.kind==='withdraw') return unwrap(await api.POST('/api/v1/employment-actions/{id}/cancel',{
+        params:{path:{id:cmd.action},header:headers},body:cmd.input}));
+      if (cmd.kind==='grade') {
+        const params={path:{id:assignment},header:headers};
+        if(cmd.action) return unwrap(await api.POST('/api/v1/assignments/{id}/promotions/{action}/correct',
+          {params:{...params,path:{id:assignment,action:cmd.action}},body:cmd.input}));
+        const path=cmd.form==='GradeRecord'?'/api/v1/assignments/{id}/grade-records':
+          cmd.form==='PromotionTransfer'?'/api/v1/assignments/{id}/promotion-transfers':'/api/v1/assignments/{id}/promotions';
+        return unwrap(await api.POST(path,{params,body:cmd.input}));
+      }
       if (cmd.kind === 'probation') {
         const params = { path: { id: assignment }, header: headers };
         return cmd.confirm
@@ -148,7 +160,7 @@ export function JobInformation({
     },
     resolve: async (sub) =>
       unwrap(
-        await api.POST('/api/v1/hires/submissions/{sub}/resolve', { params: { path: { sub }, header } }),
+        await api.POST('/api/v1/employment-actions/submissions/{sub}/resolve', { params: { path: { sub }, header } }),
       ),
     finished: (r, recovery) => {
       if (r.outcome !== 'accepted') {
@@ -188,21 +200,25 @@ export function JobInformation({
       setRevision('');
     }
   }, [state.status]);
-  function begin(button: HTMLButtonElement, mode: JobDraft['mode'], a?: Action) {
+  function begin(button: HTMLButtonElement, mode: JobDraft['mode'], a?: Action, successor?:Action) {
     if (!data) return;
     opener.current = button;
     saved.current = false;
     setError('');
     setNotice('');
     submit.start();
-    const evidence = a ? original.data : undefined;
+    const evidence = a || successor ? original.data : undefined;
     const after = evidence?.transfer?.after;
     const state = data.state;
     const department = after?.department ?? state?.departmentId;
     const job = after?.job ?? state?.jobId;
     const next: JobDraft = {
       mode,
-      kind: a ? (a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
+      kind: successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
+      successor,
+      grade:evidence?.promotion?.after,originalGrade:evidence?.promotion?.before ?? state?.grade,
+      reason:evidence?.promotion?.reason,
+      predecessor:data.actions.find(item=>item.id===evidence?.previous?.action),
       action: a,
       day: a?.businessDate ?? day,
       source: data.sourceVersion,
@@ -214,6 +230,12 @@ export function JobInformation({
       notice: evidence?.action.notice ?? '',
       requires: evidence?.requires,
     };
+    if(successor && evidence?.transfer){
+      const prior=evidence.transfer;
+      next.department=prior.beforeDepartment ? {id:prior.beforeDepartment,name:prior.beforeDepartmentName ?? ''}:undefined;
+      next.job=prior.beforeJob ? {id:prior.beforeJob,name:prior.beforeJobName ?? ''}:undefined;
+      next.originalGrade=prior.beforeGrade;next.notice='';
+    }
     initial.current = next;
     setDraft(next);
   }
@@ -224,6 +246,21 @@ export function JobInformation({
       expectedRevision: record.action?.revision,
       businessDate: record.day,
     };
+    if(record.mode==='withdraw' && record.action){
+      void submit.submit({kind:'withdraw',action:record.action.id,input:{expectedSourceVersion:record.source,
+        revision:record.action.revision,reason:record.withdrawal?.trim(),basis:record.basis?{action:record.basis.id,revision:record.basis.revision}:undefined}});
+      return;
+    }
+    const reference=(a:Action|undefined)=>a?{action:a.id,revision:a.revision}:undefined;
+    if(record.kind==='GradeRecord'||record.kind==='Promotion'||record.kind==='PromotionTransfer'){
+      const changing=record.kind==='PromotionTransfer'||record.kind==='Promotion' &&
+        (record.job?.id!==initial.current?.job?.id || record.department?.id!==initial.current?.department?.id);
+      void submit.submit({kind:'grade',form:record.kind,action,input:{...input,grade:record.grade?.id,
+        reason:record.reason,notice:record.notice,transferNotice:record.transferNotice,
+        department:changing?record.department?.id:undefined,job:changing?record.job?.id:undefined,
+        previous:reference(record.predecessor),precedes:reference(record.successor)}});
+      return;
+    }
     if (record.mode === 'redate') {
       void submit.submit({ kind: 'redate', action, input });
       return;
@@ -250,7 +287,7 @@ export function JobInformation({
       void submit.submit({
         kind: 'transfer',
         action,
-        input: { ...changes, department: record.department?.id, job: record.job?.id, notice: record.notice },
+        input: { ...changes, department: record.department?.id, job: record.job?.id, notice: record.notice,previous:reference(record.predecessor) },
       });
   }
   function remove(a: Action) {
@@ -291,7 +328,7 @@ export function JobInformation({
             />
           ) : (
             <>
-              {!selectedAction && (
+              {(!selectedAction || source) && (
                 <>
                   {availableDays.length > 0 && (
                     <EffectiveDates
@@ -321,6 +358,7 @@ export function JobInformation({
                           .join(' · ')
                       : '该日无有效任职'}
                   </ObjectDetailField>
+                  {data.state && <ObjectDetailField label="个人职级">{data.state.grade?.name ?? '未记载'}</ObjectDetailField>}
                   {data.state && data.probation.status !== 'unrecorded' && (
                     <ObjectDetailField label="试用状态">
                       {data.probation.status === 'confirmed' ? '已转正' : '试用中'}
@@ -370,9 +408,12 @@ export function JobInformation({
                   <OriginalEvidence original={original.data} setRevision={setRevision} />
                   {original.data.action.revision === opened.revision && !source && (
                     <Stack direction="row" gap={1} flexWrap="wrap">
-                      {(opened.canCorrectLocation || opened.canCorrectTransfer) && (
+                      {(opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion) && (
                         <Button onClick={(e) => begin(e.currentTarget, 'correct', opened)}>更正记录</Button>
                       )}
+                      {opened.canWithdrawPromotion && <Button onClick={e=>begin(e.currentTarget,'withdraw',opened)}>撤销晋升</Button>}
+                      {opened.kind==='Transfer' && opened.canCorrectTransfer && data.canPromote &&
+                        <Button onClick={e=>begin(e.currentTarget,'insert',undefined,opened)}>在本次调动前补录晋升</Button>}
                       {opened.canMaintain && (
                         <Button onClick={(e) => begin(e.currentTarget, 'redate', opened)}>
                           调整生效日期
@@ -385,6 +426,9 @@ export function JobInformation({
                       )}
                     </Stack>
                   )}
+                  {!source && original.data.promotion?.priorSource && <Button onClick={()=>{
+                    setSource(original.data!.promotion!.priorSource!);setRevision('');setOpened(undefined);
+                  }}>查看撤销前来源</Button>}
                   {!selectedAction && original.data.action.sourceVersion !== data.sourceVersion && (
                     <Button
                       onClick={() => {
@@ -400,7 +444,7 @@ export function JobInformation({
               {source && (
                 <Button
                   onClick={() => {
-                    setSource('');
+                    setSource('');setRevision('');
                     setOpened(undefined);
                   }}
                 >
@@ -428,6 +472,22 @@ export function JobInformation({
   );
 }
 
+function NoticeSource({ reference, label }: { reference: Models['EmploymentActionRef']; label: string }) {
+  const [open, setOpen] = useState(false);
+  const source = useRead(open ? JSON.stringify(reference) : undefined, async () =>
+    unwrap(await api.GET('/api/v1/employment-actions/{id}', {
+      params: { path: { id: reference.action }, query: { adoptedRef: reference.revision } },
+    })));
+  const original = source.data;
+  return <Box>
+    <Button aria-expanded={open} onClick={() => setOpen(!open)}>{label}</Button>
+    {open && source.error && <Alert severity="error">{source.error}</Alert>}
+    {open && original && <ObjectDetailField label="引用的原件">
+      {actionLabel(original.action)} · {original.action.businessDate} · {original.action.notice}
+    </ObjectDetailField>}
+  </Box>;
+}
+
 export function OriginalEvidence({
   original,
   setRevision,
@@ -440,6 +500,13 @@ export function OriginalEvidence({
     <>
       <Typography component="h3">{actionLabel(original.action)}原件</Typography>
       <ObjectDetailField label="生效日期">{original.action.businessDate}</ObjectDetailField>
+      {original.promotion && <>
+        <ObjectDetailField label="个人职级">{original.promotion.before?.name ?? '未记载'} → {original.promotion.after.name}</ObjectDetailField>
+        <ObjectDetailField label="发生部门">{original.promotion.departmentName}</ObjectDetailField>
+        <ObjectDetailField label="办理原因">{original.promotion.reason}</ObjectDetailField>
+        {original.promotion.withdrawal && <ObjectDetailField label="撤销依据">{original.promotion.withdrawal}</ObjectDetailField>}
+      </>}
+      {original.action.operation==='Withdraw' && <ObjectDetailField label="办理状态">已撤销</ObjectDetailField>}
       {original.relation && (
         <>
           <ObjectDetailField label="所属工作关系">
@@ -455,6 +522,7 @@ export function OriginalEvidence({
           )}
         </>
       )}
+      {original.sources?.grade && <ObjectDetailField label="首任职级">{original.sources.grade.name}</ObjectDetailField>}
       {original.trialStart && (
         <ObjectDetailField label="实际试用开始日">{original.trialStart}</ObjectDetailField>
       )}
@@ -497,7 +565,7 @@ export function OriginalEvidence({
         </ObjectDetailField>
       )}
       <ObjectDetailField label="首次办理时间">{recordedTime(original.action.recordedAt)}</ObjectDetailField>
-      {original.departmentName && (
+      {original.departmentName && !original.promotion && (
         <ObjectDetailField label="发生部门">{original.departmentName}</ObjectDetailField>
       )}
       {original.locationChange && <ObjectDetailField label="业务原因">工作地点变更</ObjectDetailField>}
@@ -512,6 +580,8 @@ export function OriginalEvidence({
       {original.action.notice && (
         <ObjectDetailField label="人事依据">{original.action.notice}</ObjectDetailField>
       )}
+      {original.noticeRef && <NoticeSource key={original.noticeRef.revision} reference={original.noticeRef} label="查看通知来源" />}
+      {original.promotion?.withdrawalBasis && <NoticeSource key={original.promotion.withdrawalBasis.revision} reference={original.promotion.withdrawalBasis} label="查看撤销依据来源" />}
       {original.revisions?.map((r) => (
         <Button key={r.id} onClick={() => setRevision(r.id)} aria-pressed={r.id === original.action.revision}>
           查看修订 · {recordedTime(r.recordedAt)}

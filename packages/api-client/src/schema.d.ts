@@ -5162,6 +5162,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/grade-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assignmentGradeOptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/grade-records": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recordOriginalGrade"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/promotions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["promoteAssignment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/promotions/{action}/correct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["correctPromotion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/promotion-transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["promoteAndTransfer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/employment-actions/submissions/{sub}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolveEmploymentAction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/trial-start": {
         parameters: {
             query?: never;
@@ -5337,6 +5433,66 @@ export interface components {
             insert?: boolean;
             requires?: components["schemas"]["EmploymentRequiredFact"];
         };
+        EmploymentActionRef: {
+            /** Format: uuid */
+            action: string;
+            /** Format: uuid */
+            revision: string;
+        };
+        AssignmentGrade: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            /** Format: uuid */
+            revision: string;
+            /** Format: uuid */
+            job: string;
+            /** Format: uuid */
+            jobSource: string;
+            /** Format: uuid */
+            jobRevision: string;
+        };
+        AssignmentGradeSearch: {
+            /** Format: date */
+            businessDate: string;
+            /** Format: uuid */
+            job?: string;
+            search?: string;
+            page: number;
+        };
+        AssignmentPromotionCommand: {
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            /** Format: uuid */
+            expectedRevision?: string;
+            /** Format: date */
+            businessDate?: string;
+            /** Format: uuid */
+            grade?: string;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            job?: string;
+            notice?: string;
+            transferNotice?: string;
+            reason?: string;
+            previous?: components["schemas"]["EmploymentActionRef"];
+            precedes?: components["schemas"]["EmploymentActionRef"];
+        };
+        PromotionEvidence: {
+            /** Format: uuid */
+            priorSource?: string;
+            withdrawalBasis?: components["schemas"]["EmploymentActionRef"];
+            before?: components["schemas"]["AssignmentGrade"];
+            after: components["schemas"]["AssignmentGrade"];
+            /** Format: uuid */
+            department: string;
+            departmentName: string;
+            reason: string;
+            withdrawal?: string;
+        };
         EmploymentRequiredFact: {
             /** Format: uuid */
             action: string;
@@ -5350,6 +5506,7 @@ export interface components {
             job?: string;
         };
         EmploymentRecordMaintenance: {
+            previous?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
             expectedSourceVersion: string;
             /** Format: uuid */
@@ -5467,6 +5624,8 @@ export interface components {
             page: number;
         };
         EmploymentTransferEvidence: {
+            beforeGrade?: components["schemas"]["AssignmentGrade"];
+            afterGrade?: components["schemas"]["AssignmentGrade"];
             /** Format: uuid */
             beforeDepartment?: string;
             beforeDepartmentName?: string;
@@ -5498,6 +5657,7 @@ export interface components {
             recordedAt: string;
         };
         AssignmentDayState: {
+            grade?: components["schemas"]["AssignmentGrade"];
             /** Format: uuid */
             departmentId: string;
             /** Format: uuid */
@@ -5530,7 +5690,7 @@ export interface components {
             name: string;
             number: string;
             /** @enum {string} */
-            kind: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment";
+            kind: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment" | "GradeRecord" | "Promotion";
             /** @enum {string} */
             status: "effective" | "future" | "cancelled" | "deleted";
             /** Format: date */
@@ -5636,6 +5796,8 @@ export interface components {
             keyword: string;
         };
         AssignmentView: {
+            canRecordGrade: boolean;
+            canPromote: boolean;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -5669,9 +5831,11 @@ export interface components {
         };
         HireTargetSearch: {
             /** Format: uuid */
+            job?: string;
+            /** Format: uuid */
             person: string;
             /** @enum {string} */
-            kind: "department" | "job" | "bu" | "location";
+            kind: "department" | "job" | "bu" | "location" | "grade";
             /** Format: date */
             arrival: string;
             /** Format: date */
@@ -5700,6 +5864,9 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            noticeRef?: components["schemas"]["EmploymentActionRef"];
+            promotion?: components["schemas"]["PromotionEvidence"];
+            previous?: components["schemas"]["EmploymentActionRef"];
             relation?: components["schemas"]["EmploymentRelationSummary"];
             departmentName?: string;
             probation?: components["schemas"]["ProbationEvidence"];
@@ -5781,6 +5948,7 @@ export interface components {
             rows: components["schemas"]["DecisionRow"][];
         };
         HireAdoption: {
+            grade?: components["schemas"]["AssignmentGrade"];
             decision?: components["schemas"]["DecisionRef"];
             identity: components["schemas"]["HireIdentity"];
             rule: string;
@@ -5788,6 +5956,8 @@ export interface components {
             segments: components["schemas"]["AssignmentSegment"][];
         };
         HireInput: {
+            /** Format: uuid */
+            grade?: string;
             /** Format: date */
             trialStart?: string;
             decision?: components["schemas"]["DecisionRef"];
@@ -5815,6 +5985,7 @@ export interface components {
             missing?: string[];
         };
         HireReceipt: {
+            related?: components["schemas"]["EmploymentActionRef"][];
             /** Format: uuid */
             revision?: string;
             /** Format: uuid */
@@ -5830,13 +6001,19 @@ export interface components {
             recordNumber?: number;
         };
         HireCancel: {
+            basis?: components["schemas"]["EmploymentActionRef"];
+            /** Format: uuid */
+            expectedSourceVersion?: string;
+            notice?: string;
             /** Format: uuid */
             revision: string;
-            reason: string;
+            reason?: string;
         };
         EmploymentAction: {
+            canCorrectPromotion: boolean;
+            canWithdrawPromotion: boolean;
             /** @enum {string} */
-            operation: "Add" | "Insert" | "Correct" | "Redate" | "Delete" | "Rebase";
+            operation: "Add" | "Insert" | "Correct" | "Redate" | "Delete" | "Rebase" | "Withdraw";
             canMaintain: boolean;
             canDelete: boolean;
             canCorrectTransfer: boolean;
@@ -23200,7 +23377,7 @@ export interface operations {
                 businessTo?: string;
                 recordedFrom?: string;
                 recordedTo?: string;
-                kind?: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment";
+                kind?: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment" | "GradeRecord" | "Promotion";
                 status?: "effective" | "future" | "cancelled" | "deleted";
                 sort?: "recordedAt" | "-recordedAt" | "businessDate" | "-businessDate";
                 page?: number;
@@ -23612,6 +23789,229 @@ export interface operations {
                 };
             };
             /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentGradeOptions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentGradeSearch"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentGrade"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    recordOriginalGrade: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentPromotionCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    promoteAssignment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentPromotionCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    correctPromotion: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+                action: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentPromotionCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    promoteAndTransfer: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentPromotionCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    resolveEmploymentAction: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                sub: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Rejected or unavailable */
             default: {
                 headers: {
                     [name: string]: unknown;

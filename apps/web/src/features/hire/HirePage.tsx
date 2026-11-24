@@ -202,10 +202,12 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     setChoices((old) => ({
       ...old,
       [kind]: v,
+      ...(kind==='job'?{grade:undefined}:{}),
       ...(['bu', 'location', 'department'].includes(kind) ? { employer: undefined } : {}),
     }));
     update({
       [kind]: v?.id ?? '',
+      ...(kind==='job'?{grade:undefined}:{}),
       ...(!basis?.employer && ['bu', 'location', 'department'].includes(kind) ? { employer: '' } : {}),
     });
   };
@@ -238,7 +240,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       : field === 'expiryDate' && (editable.includes('expiryDate') || editable.includes('longTerm')),
   );
   const targets = (k: TargetKind) => {
-    const fixed = basis?.[k];
+    const fixed = k==='grade' ? undefined : basis?.[k];
     if (fixed)
       return (
         <ObjectDetailField key={k} label={labels[k]}>
@@ -351,7 +353,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                         onChange={(e) => update({ lastDay: e.target.value || undefined })}
                       />
                     )}
-                    {(['department', 'job', 'bu', 'location', 'employer'] as const).map(targets)}
+                    {(['department', 'job','grade', 'bu', 'location', 'employer'] as const).map(targets)}
                     {!draft.decision && (
                       <ObjectTextField
                         required

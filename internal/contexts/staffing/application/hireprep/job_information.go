@@ -39,8 +39,9 @@ type Revision struct {
 }
 
 type State struct {
-	DepartmentID string `json:"departmentId"`
-	JobID        string `json:"jobId"`
+	Grade        *GradeRef `json:"grade,omitempty"`
+	DepartmentID string    `json:"departmentId"`
+	JobID        string    `json:"jobId"`
 	f.Period
 	Department string       `json:"department"`
 	Job        string       `json:"job"`
@@ -49,6 +50,8 @@ type State struct {
 }
 
 type AssignmentView struct {
+	CanRecordGrade      bool           `json:"canRecordGrade"`
+	CanPromote          bool           `json:"canPromote"`
 	Probation           ProbationState `json:"probation"`
 	CanStartProbation   bool           `json:"canStartProbation"`
 	CanConfirm          bool           `json:"canConfirm"`
@@ -131,6 +134,8 @@ type TransferSearch struct {
 	Department   string `json:"department,omitempty"`
 }
 type JobInformation interface {
+	RecordPromotion(context.Context, f.Credentials, string, string, string, string, PromotionCommand) (Receipt, error)
+	GradeOptions(context.Context, f.Credentials, string, GradeSearch) ([]GradeRef, error)
 	RecordProbation(context.Context, f.Credentials, string, string, string, ProbationCommand) (Receipt, error)
 	ProbationDepartments(context.Context, f.Credentials, string, LocationSearch) ([]org.EligibleEntity, error)
 	AddSecondary(context.Context, f.Credentials, string, string, Secondary) (Receipt, error)

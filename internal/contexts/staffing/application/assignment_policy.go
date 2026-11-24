@@ -153,3 +153,8 @@ func HireTargetLabel(ctx context.Context, u Unit, field string, source PositionS
 	}
 	return source.Records[d.At(source.Timeline, term.From)].Data["name"], nil
 }
+
+// JobGradeVisible checks the job membership fields required to adopt a grade.
+func JobGradeVisible(ctx context.Context, u Unit, source PositionSource, day string) (bool, error) {
+	return positionRead(ctx, u, "jobId", source, day, true, true)
+}

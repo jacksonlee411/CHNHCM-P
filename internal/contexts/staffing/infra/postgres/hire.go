@@ -51,7 +51,7 @@ func hireTerm(in h.Hire) (f.Period, error) {
 	if err != nil {
 		return term, err
 	}
-	if !f.ValidID(in.Person) || !f.ValidID(in.Employer) || !f.ValidID(in.Department) || !f.ValidID(in.Job) || in.BU != "" && !f.ValidID(in.BU) || in.Location != "" && !f.ValidID(in.Location) || utf8.RuneCountInString(in.Notice) > 1000 {
+	if in.Grade != "" && !f.ValidID(in.Grade) || !f.ValidID(in.Person) || !f.ValidID(in.Employer) || !f.ValidID(in.Department) || !f.ValidID(in.Job) || in.BU != "" && !f.ValidID(in.BU) || in.Location != "" && !f.ValidID(in.Location) || utf8.RuneCountInString(in.Notice) > 1000 {
 		return term, f.Fail(400, "HIRE_INPUT", "请核对人员、任用说明、日期和拟任安排")
 	}
 	return term, nil
@@ -161,6 +161,15 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	if err != nil {
 		return plan, err
 	}
+	if in.Grade != "" {
+		adopt.Grade, err = u.gradeForJob(ctx, in.Job, in.Grade, term)
+		if err != nil {
+			return plan, err
+		}
+	}
+	if in.Expected != nil && !reflect.DeepEqual(in.Expected.Grade, adopt.Grade) {
+		return plan, assignmentConflict()
+	}
 	plan.Adoption = &adopt
 	return plan, nil
 }
@@ -202,7 +211,7 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 			adoption["trialStart"] = in.TrialStart
 		}
 		item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: "Hire", date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
-		if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location); err != nil {
+		if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location, p.Adoption.Grade); err != nil {
 			return "", err
 		}
 		if in.Decision != nil {
@@ -218,7 +227,7 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 	})
 }
 
-func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hire, number int, term f.Period, segments []staff.AssignmentSegment, location *h.LocationRef) error {
+func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hire, number int, term f.Period, segments []staff.AssignmentSegment, location *h.LocationRef, grade *h.GradeRef) error {
 	instance := u.store.Instance
 	version := f.NewID()
 	_, err := u.tx.Exec(ctx, `INSERT INTO staffing.assignment(instance_id,id,employment_id,department_id,job_id,bu_id,location_id,person_id,record_number,period)
@@ -233,8 +242,8 @@ func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hi
 		return err
 	}
 	for _, segment := range segments {
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref,department_id,job_id)
-                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8,$9,$10)`, instance, item.assignment, version, segment.From, segment.Until, in.Location, segment, location, in.Department, in.Job)
+		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref,department_id,job_id,grade_ref)
+                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8,$9,$10,$11)`, instance, item.assignment, version, segment.From, segment.Until, in.Location, segment, location, in.Department, in.Job, grade)
 		if err != nil {
 			return err
 		}
@@ -334,8 +343,8 @@ func (st *Store) HireTargets(ctx context.Context, c f.Credentials, in h.TargetSe
 	if err != nil {
 		return nil, err
 	}
-	field := map[string]string{"bu": "buId", "location": "locationId", "department": "departmentId", "job": "jobId"}[in.Kind]
-	if field == "" || !f.ValidID(in.Person) || in.Employer != "" && !f.ValidID(in.Employer) || in.Department != "" && !f.ValidID(in.Department) || in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 {
+	field := map[string]string{"bu": "buId", "location": "locationId", "department": "departmentId", "job": "jobId", "grade": "gradeId"}[in.Kind]
+	if field == "" || field == "gradeId" && !f.ValidID(in.Job) || !f.ValidID(in.Person) || in.Employer != "" && !f.ValidID(in.Employer) || in.Department != "" && !f.ValidID(in.Department) || in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 {
 		return nil, f.Fail(400, "HIRE_INPUT", "拟任目标查询无效")
 	}
 	items := []org.EligibleEntity{}
@@ -360,8 +369,21 @@ func (u *unit) arrangementTargets(ctx context.Context, term f.Period, in h.Targe
 	needle := strings.ToLower(strings.TrimSpace(in.Search))
 	skip := (in.Page - 1) * 20
 	const batch = 64
+	var members []string
+	var job app.PositionSource
+	if field == "gradeId" {
+		var e error
+		job, e = u.gradeJob(ctx, in.Job, term.From, false)
+		if e != nil {
+			return e
+		}
+		members = job.Records[d.At(job.Timeline, term.From)].Grades.IDs()
+		if len(members) == 0 {
+			return nil
+		}
+	}
 	for offset := 0; ; offset += batch {
-		ids, err := u.PositionCandidateIDs(ctx, field, term.From, needle, nil, offset, batch)
+		ids, err := u.PositionCandidateIDs(ctx, field, term.From, needle, members, offset, batch)
 		if err != nil {
 			return err
 		}
@@ -374,6 +396,9 @@ func (u *unit) arrangementTargets(ctx context.Context, term f.Period, in h.Targe
 			byID[source.ID] = source
 		}
 		for _, id := range ids {
+			if field == "gradeId" && d.PositionConflict(job.Timeline, term.From, term.Until, id) != "" {
+				continue
+			}
 			if field == "departmentId" {
 				ok, e := u.employmentAllowed(ctx, permission, in.Person, in.Employer, id, true)
 				if e != nil {

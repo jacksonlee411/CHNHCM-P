@@ -18,7 +18,7 @@ type savedRecord struct {
 
 func (u *unit) historyRows(ctx context.Context, a h.Action) ([]h.Placement, []savedRecord, error) {
 	rows, err := u.tx.Query(ctx, `SELECT lower(s.period)::text,coalesce(upper(s.period)::text,''),s.department_id,s.job_id,s.adoption,
-        coalesce(s.location_id::text,''),s.location_ref FROM staffing.assignment_segment s
+        coalesce(s.location_id::text,''),s.location_ref,s.grade_ref FROM staffing.assignment_segment s
         JOIN staffing.employment_revision_publication p USING(instance_id,assignment_id,version)
         WHERE p.instance_id=$1 AND p.assignment_id=$2 AND p.action_id=$3 AND p.revision=$4 ORDER BY lower(s.period)`, u.store.Instance, a.Assignment, a.ID, a.Revision)
 	if err != nil {
@@ -26,7 +26,7 @@ func (u *unit) historyRows(ctx context.Context, a h.Action) ([]h.Placement, []sa
 	}
 	initial, err := pgx.CollectRows(rows, func(r pgx.CollectableRow) (p h.Placement, e error) {
 		var id string
-		e = r.Scan(&p.From, &p.Until, &p.Department, &p.Job, &p.Adoption, &id, &p.Location)
+		e = r.Scan(&p.From, &p.Until, &p.Department, &p.Job, &p.Adoption, &id, &p.Location, &p.Grade)
 		if p.Location == nil && id != "" {
 			p.Location = &h.LocationRef{ID: id}
 		}
@@ -38,13 +38,17 @@ func (u *unit) historyRows(ctx context.Context, a h.Action) ([]h.Placement, []sa
 	rows, err = u.tx.Query(ctx, `SELECT a.id,r.revision,r.business_date::text,a.kind,r.operation,r.notice,r.adoption
         FROM staffing.assignment_member m JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
         JOIN staffing.employment_action_revision r ON (r.instance_id,r.assignment_id,r.action_id,r.revision)=(m.instance_id,m.assignment_id,m.action_id,m.revision)
-        WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind IN ('DataChange','Transfer')`, u.store.Instance, a.Assignment, a.SourceVersion)
+        WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind IN ('DataChange','Transfer','GradeRecord','Promotion')`, u.store.Instance, a.Assignment, a.SourceVersion)
 	if err != nil {
 		return nil, nil, err
 	}
 	records, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (r savedRecord, e error) {
 		e = row.Scan(&r.ID, &r.Revision, &r.Day, &r.Kind, &r.Operation, &r.Notice, &r.Evidence)
-		r.Removed = r.Operation == "Delete"
+		r.Removed = r.Operation == "Delete" || r.Operation == "Withdraw"
+		r.Previous = r.Evidence.Previous
+		if r.Evidence.Promotion != nil {
+			r.Grade = &r.Evidence.Promotion.After
+		}
 		r.Requires = r.Evidence.Requires
 		if r.Evidence.LocationChange != nil {
 			r.Location = &r.Evidence.LocationChange.After
@@ -79,6 +83,15 @@ func (u *unit) appendRecordRevision(ctx context.Context, assignment string, r sa
 
 func recordAdoption(r savedRecord) map[string]any {
 	fields := map[string]any{}
+	if r.Evidence.NoticeRef != nil {
+		fields["noticeRef"] = r.Evidence.NoticeRef
+	}
+	if r.Evidence.Promotion != nil {
+		fields["promotion"] = r.Evidence.Promotion
+	}
+	if r.Previous != nil {
+		fields["previous"] = r.Previous
+	}
 	if r.Evidence.LocationChange != nil {
 		fields["locationChange"] = r.Evidence.LocationChange
 	}
@@ -100,7 +113,7 @@ func (u *unit) saveReplayedSource(ctx context.Context, a h.Action, version strin
 	}
 	_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_member SELECT m.instance_id,m.assignment_id,$4::uuid,m.action_id,m.revision FROM staffing.assignment_member m
         JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
-        WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind NOT IN ('DataChange','Transfer')`, instance, a.Assignment, a.SourceVersion, version)
+        WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind NOT IN ('DataChange','Transfer','GradeRecord','Promotion')`, instance, a.Assignment, a.SourceVersion, version)
 	if e != nil {
 		return e
 	}
@@ -116,9 +129,9 @@ func (u *unit) saveReplayedSource(ctx context.Context, a h.Action, version strin
 		if s.Location != nil {
 			id = s.Location.ID
 		}
-		_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,department_id,job_id,adoption,location_id,location_ref)
-            VALUES($1,$2,$3,daterange($4::date,nullif($5,'')::date,'[)'),$6,$7,$8,nullif($9,'')::uuid,$10)`,
-			instance, a.Assignment, version, s.From, s.Until, s.Department, s.Job, s.Adoption, id, s.Location)
+		_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,department_id,job_id,adoption,location_id,location_ref,grade_ref)
+            VALUES($1,$2,$3,daterange($4::date,nullif($5,'')::date,'[)'),$6,$7,$8,nullif($9,'')::uuid,$10,$11)`,
+			instance, a.Assignment, version, s.From, s.Until, s.Department, s.Job, s.Adoption, id, s.Location, s.Grade)
 		if e != nil {
 			return e
 		}
@@ -128,9 +141,9 @@ func (u *unit) saveReplayedSource(ctx context.Context, a h.Action, version strin
 
 func (u *unit) assignmentPlacement(ctx context.Context, a h.Action, day string) (p h.Placement, err error) {
 	var location string
-	err = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption,coalesce(location_id::text,''),location_ref
+	err = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption,coalesce(location_id::text,''),location_ref,grade_ref
         FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`,
-		u.store.Instance, a.Assignment, a.SourceVersion, day).Scan(&p.From, &p.Until, &p.Department, &p.Job, &p.Adoption, &location, &p.Location)
+		u.store.Instance, a.Assignment, a.SourceVersion, day).Scan(&p.From, &p.Until, &p.Department, &p.Job, &p.Adoption, &location, &p.Location, &p.Grade)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return p, f.Fail(409, "ASSIGNMENT_PERIOD", "所选日期没有有效任职")
 	}
@@ -147,7 +160,7 @@ type actionDisclosure struct {
 
 func (u *unit) actionDisclosure(ctx context.Context, a h.Action, history bool) (v actionDisclosure, err error) {
 	allowed := func(dept string) (bool, error) {
-		if dept == "" {
+		if dept == "" && a.Kind != "Promotion" {
 			return false, nil
 		}
 		ok, e := u.employmentAllowed(ctx, "read", a.Person, a.Employer, dept, false)
