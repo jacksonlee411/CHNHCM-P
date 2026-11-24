@@ -40,7 +40,7 @@ func (r *runner) plans() (any, error) {
 		return nil, e
 	}
 	var grants []byte
-	if e := r.db.QueryRow(ctx, `SELECT jsonb_agg(jsonb_build_object('scopeKind',scope_kind,'scopeId',scope_id,'readFields',read_fields)) FROM access.subject_grant WHERE instance_id=$1 AND principal_id=$2 AND action='bu.read'`, r.instance, r.subject).Scan(&grants); e != nil {
+	if e := r.db.QueryRow(ctx, `SELECT jsonb_agg(jsonb_build_object('scopeKind',scope_kind,'scopeId',scope_id,'readFields',read_fields)) FROM access.bound_permission WHERE instance_id=$1 AND principal_id=$2 AND action='bu.read' AND purpose='bu' AND (valid_from IS NULL OR valid_from<=statement_timestamp()) AND (valid_until IS NULL OR statement_timestamp()<valid_until)`, r.instance, r.subject).Scan(&grants); e != nil {
 		return nil, e
 	}
 	list, e := sqlLiteral("internal/contexts/organization/infra/postgres/queries.go", "WITH grants AS")

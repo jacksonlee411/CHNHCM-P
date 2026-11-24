@@ -188,7 +188,7 @@ func TestStaffing315Quota(t *testing.T) {
 	total(reader, apr, 4, "complete")
 	f.exec("UPDATE access.subject_grant SET scope_kind='position',scope_id=$1 WHERE principal_id=$2 AND action LIKE 'staffingquota.%'", a, reader.subject)
 	// Controlled initializer reruns must retain the reader's narrowed position scope.
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "reader", Password: f.readPassword, ReadOnly: true}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "reader", Password: f.readPassword, ReadOnly: true}))
 	total(reader, apr, 3, "visible")
 	reader.call("GET", base+"/statistics/positions/"+other+"?businessAt="+apr, nil, "", 404)
 	f.exec("UPDATE access.subject_grant SET read_fields=array_remove(read_fields,'quota') WHERE principal_id=$1 AND action LIKE 'staffingquota.%'", reader.subject)
@@ -220,7 +220,7 @@ func TestStaffing315Quota(t *testing.T) {
 	total(b, jun, 6, "complete")
 	// Reverse the order with different principals and two real transactions.
 	passwd := foundation.NewID()
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "quota-admin", Password: passwd}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "quota-admin", Password: passwd}))
 	creds := []foundation.Credentials{geoCredentials203(t, f, "admin", f.password), geoCredentials203(t, f, "quota-admin", passwd)}
 	for round, code := range []string{"R315A", "R315B"} {
 		id := pos(code)

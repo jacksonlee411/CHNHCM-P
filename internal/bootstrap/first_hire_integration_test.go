@@ -4,6 +4,8 @@ package bootstrap_test
 
 import (
 	"chnhcm.local/chnhcm/internal/bootstrap"
+	accessdb "chnhcm.local/chnhcm/internal/contexts/access/infra/postgres"
+	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"chnhcm.local/chnhcm/internal/platform/dbtx"
@@ -174,6 +176,47 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	_, err = h.f.admin.Exec(h.f.ctx, `CREATE FUNCTION staffing.hold_test_hire() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN PERFORM pg_advisory_xact_lock(373737);RETURN NEW;END$$;
 	CREATE TRIGGER hold_test_hire BEFORE INSERT ON staffing.employment_outbox FOR EACH ROW EXECUTE FUNCTION staffing.hold_test_hire()`)
 	must(t, err)
+	hold, err = h.f.admin.Begin(h.f.ctx)
+	must(t, err)
+	defer hold.Rollback(h.f.ctx)
+	_, err = hold.Exec(h.f.ctx, "select pg_advisory_xact_lock(373737)")
+	must(t, err)
+	// A borrowed Organization guard supplies legalpurpose.check. Its last
+	// grant can expire after that port returns and before Staffing commits.
+	var originalGrant string
+	var binding access.VersionBinding
+	must(t, h.f.admin.QueryRow(h.f.ctx, `SELECT p.grant_id,r.role_id,r.scope_id,r.fields_id
+		FROM access.bound_permission p JOIN access.grant_revision r USING(instance_id,grant_id)
+		WHERE p.principal_id=$1 AND p.action='legalpurpose.check'`, b.subject).
+		Scan(&originalGrant, &binding.Role, &binding.Scope, &binding.Fields))
+	must(t, bootstrap.ChangeAccess(h.f.ctx, h.f.admin, bootstrap.AccessChange{Instance: h.f.instance, Login: "admin", Operation: "revoke", GrantID: originalGrant}))
+	issueCheck := func(until *time.Time) {
+		tx, e := h.f.admin.Begin(h.f.ctx)
+		must(t, e)
+		defer tx.Rollback(h.f.ctx)
+		from := time.Now().Add(-time.Minute)
+		_, e = accessdb.ChangeAssignment(h.f.ctx, tx, h.f.instance, access.AssignmentChange{
+			Operation: "issue", ID: f.NewID(), RequestID: f.NewID(), Actor: b.subject, Subject: b.subject,
+			Source: "duty", Purpose: "legalpurpose", Binding: binding, ValidFrom: &from, ValidUntil: until,
+		})
+		must(t, e)
+		must(t, tx.Commit(h.f.ctx))
+	}
+	expiry := time.Now().Add(1400 * time.Millisecond)
+	issueCheck(&expiry)
+	expiringKey := f.NewID()
+	req = async("/api/v1/hires", in, expiringKey)
+	waitOn(hold.Conn().PgConn().PID())
+	time.Sleep(time.Until(expiry) + 10*time.Millisecond)
+	must(t, hold.Commit(h.f.ctx))
+	if got := <-req; got.err != nil || got.status != 403 {
+		t.Fatal("cross-domain permission expired before commit", got)
+	}
+	zero("入职用途授权在发布等待中到期")
+	if h.f.scalar("SELECT count(*) FROM staffing.hire_terminal WHERE submission_id=$1", expiringKey) != 0 {
+		t.Fatal("expired nested grant left a receipt")
+	}
+	issueCheck(nil)
 	hold, err = h.f.admin.Begin(h.f.ctx)
 	must(t, err)
 	defer hold.Rollback(h.f.ctx)

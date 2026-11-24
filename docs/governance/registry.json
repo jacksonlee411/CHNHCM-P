@@ -805,7 +805,7 @@
       "scope": "客户实例本地账号管理、部门与岗位核编人工授权的分批交付、事务判权、存量迁移、权限工具和开放验收。Casbin 和 OPA 暂缓。",
       "format": "numbered",
       "review": null,
-      "execution_status": "not_started",
+      "execution_status": "in_progress",
       "superseded_by": [],
       "closure": null,
       "archive": null
@@ -3058,6 +3058,68 @@
         ],
         "limitations": [
           "仅本地产品验收。九栏完整容量和真实多任职随对应批次。"
+        ]
+      },
+      {
+        "path": "docs/verification/027-x03-grant-cutover.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-013",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-23",
+        "base_commit": "7f6fc89f0550843982bcb0900524318fb1c52ce5",
+        "working_tree": "dirty",
+        "change_description": "逐份授予、固定角色及策略版本、事务守卫、初始化切换与前向迁移。",
+        "environment": "wt-dev-a 本地 Go、独立 PostgreSQL 18.6 容器、HTTP API 及 Chromium。",
+        "scope": "T01 职责边界及 T02 内核、切换、并发与全量回归。",
+        "results": [
+          {
+            "check": "升级对账、原业务查回、两种提交顺序和等待中到期",
+            "result": "passed",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          },
+          {
+            "check": "首次浏览器全量因授权查询优化而中断",
+            "result": "interrupted",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          },
+          {
+            "check": "首轮 TL207 未观测到预期数据库死锁",
+            "result": "failed",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          },
+          {
+            "check": "DB/API 第 7 片两次达到包时限，保留失败与未完成根",
+            "result": "failed",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          },
+          {
+            "check": "DB/API 8 片分批复验，358 根中 345 通过、13 条件跳过，独占第 7 片在原时限通过",
+            "result": "passed",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          },
+          {
+            "check": "默认开发前端第 1、2、11 片共四项首错，含新账号未声明样例权限的 315 夹具",
+            "result": "failed",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          },
+          {
+            "check": "make check、构建、生成物一致性、文档与差异检查",
+            "result": "passed",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          },
+          {
+            "check": "Chromium 全量 616 个唯一个案、含前置依赖 671 项，3 个原分片复验后分批通过",
+            "result": "passed",
+            "evidence": "docs/verification/027-x03-grant-cutover.md"
+          }
+        ],
+        "limitations": [
+          "管理页面、客户管理员引导与恢复、页面撤权后的真实启动走查由 T04、T05 接续。"
         ]
       },
       {

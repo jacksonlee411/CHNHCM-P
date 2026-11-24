@@ -29,7 +29,7 @@ func TestStaffing309DefaultFloorAndInstanceIsolation(t *testing.T) {
 	// Two initialized instances share this physical DB, so the isolation proof
 	// cannot pass merely because the other database has no such identity.
 	other := &fixture{t: t, ctx: f.ctx, admin: f.admin, instance: foundation.NewID(), password: f.password}
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: other.instance, EnterpriseCode: "OTHER", EnterpriseName: "另一企业", Start: "1984-01-01", Login: "admin", Password: other.password}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: other.instance, EnterpriseCode: "OTHER", EnterpriseName: "另一企业", Start: "1984-01-01", Login: "admin", Password: other.password}))
 	var err error
 	other.runtime, err = bootstrap.Open(f.ctx, f.runtime.Pool.Config().ConnString(), other.instance)
 	must(t, err)

@@ -219,6 +219,9 @@ func insertRows(ctx context.Context, tx pgx.Tx, t tableSnapshot, rows []json.Raw
 	if err != nil {
 		return err
 	}
+	if t.Schema == "access" && t.Name == "subject_grant" {
+		return bootstrap.RestoreGrantArchive(ctx, tx, body)
+	}
 	_, err = tx.Exec(ctx, "INSERT INTO "+tableName(t)+" ("+columns(t.Columns)+") OVERRIDING SYSTEM VALUE SELECT "+columns(t.Columns)+" FROM jsonb_populate_recordset(NULL::"+tableName(t)+",$1::jsonb)", body)
 	return err
 }

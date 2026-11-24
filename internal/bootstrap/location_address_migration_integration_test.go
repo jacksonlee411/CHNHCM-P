@@ -54,7 +54,7 @@ func TestLocationAddressMigration(t *testing.T) {
 	defer pool.Close()
 	db := stdlib.OpenDBFromPool(pool)
 	defer db.Close()
-	old, e := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files, goose.WithExcludeNames([]string{"00016_location_address.sql", "00017_staffing.sql", "00018_grade.sql", "00019_grade_ladder.sql", "00020_staffing_member_reference_checks.sql", "00021_position.sql", "00022_position_hierarchy.sql", "00023_geoarea_macau.sql", "00024_job_function.sql", "00025_job_function_adoption.sql", "00026_position_reporting.sql", "00027_position_quota.sql", "00028_staffing_quota_convergence.sql", "00029_persons.sql", "00030_person_primary_document.sql", "00031_person_profile.sql", "00032_hire_readiness.sql", "00033_hire_rule_receipts.sql", "00034_person_address_family.sql", "00035_first_hire_rule.sql", "00036_hire_identity.sql", "00037_employee_hire.sql", "00038_person_education_credentials.sql"}))
+	old, e := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files, goose.WithExcludeNames([]string{"00016_location_address.sql", "00017_staffing.sql", "00018_grade.sql", "00019_grade_ladder.sql", "00020_staffing_member_reference_checks.sql", "00021_position.sql", "00022_position_hierarchy.sql", "00023_geoarea_macau.sql", "00024_job_function.sql", "00025_job_function_adoption.sql", "00026_position_reporting.sql", "00027_position_quota.sql", "00028_staffing_quota_convergence.sql", "00029_persons.sql", "00030_person_primary_document.sql", "00031_person_profile.sql", "00032_hire_readiness.sql", "00033_hire_rule_receipts.sql", "00034_person_address_family.sql", "00035_first_hire_rule.sql", "00036_hire_identity.sql", "00037_employee_hire.sql", "00038_person_education_credentials.sql", "00040_access_grant_versions.sql"}))
 	must(e)
 	_, e = old.Up(ctx)
 	must(e)
@@ -204,7 +204,7 @@ func TestLocationAddressMigration(t *testing.T) {
 	}
 	for i, action := range []string{"location.read", "location.history.read", "location.export", "location.create"} {
 		var b []byte
-		must(pool.QueryRow(ctx, `SELECT to_jsonb(read_fields) FROM access.subject_grant WHERE action=$1`, action).Scan(&b))
+		must(pool.QueryRow(ctx, `SELECT to_jsonb(read_fields) FROM access.bound_permission WHERE action=$1`, action).Scan(&b))
 		var fields []string
 		must(json.Unmarshal(b, &fields))
 		want := [][]string{{"addressLine"}, {}, {}, {"name"}}[i]

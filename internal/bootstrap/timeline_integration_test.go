@@ -20,6 +20,7 @@ import (
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"io"
+	"io/fs"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
@@ -27,6 +28,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"testing/fstest"
 	"time"
 )
 
@@ -58,6 +60,10 @@ func fresh(t *testing.T) *fixture {
 }
 
 func freshWithEnterpriseStart(t *testing.T, start string) *fixture {
+	return freshWithSchema(t, start, false)
+}
+
+func freshWithSchema(t *testing.T, start string, capturePredecessor bool) *fixture {
 	t.Helper()
 	ctx := context.Background()
 	// No privileged reaper sidecar: each fixture owns its container and explicitly terminates it.
@@ -89,7 +95,25 @@ func freshWithEnterpriseStart(t *testing.T, start string) *fixture {
 	admin, e := pgxpool.New(ctx, dsn("postgres", password))
 	must(t, e)
 	t.Cleanup(admin.Close)
+	if capturePredecessor {
+		prefix := fstest.MapFS{}
+		must(t, fs.WalkDir(migrations.Files, ".", func(path string, entry fs.DirEntry, err error) error {
+			if err != nil || entry.IsDir() || path == "00040_access_grant_versions.sql" {
+				return err
+			}
+			b, err := migrations.Files.ReadFile(path)
+			prefix[path] = &fstest.MapFile{Data: b}
+			return err
+		}))
+		must(t, bootstrap.Migrate(ctx, admin, prefix))
+		_, e = admin.Exec(ctx, "CREATE SCHEMA fixture; CREATE TABLE fixture.prefix_grant (LIKE access.subject_grant INCLUDING ALL)")
+		must(t, e)
+	}
 	must(t, bootstrap.Migrate(ctx, admin, migrations.Files))
+	fixtureSQL, e := os.ReadFile("../../tests/fixtures/access/policy.sql")
+	must(t, e)
+	_, e = admin.Exec(ctx, string(fixtureSQL))
+	must(t, e)
 	apiPass := foundation.NewID()
 	must(t, bootstrap.ConfigureLocalRoles(ctx, admin, apiPass))
 	f := &fixture{t: t, ctx: ctx, admin: admin, container: c, instance: foundation.NewID(), password: foundation.NewID(), readPassword: foundation.NewID()}
@@ -97,7 +121,7 @@ func freshWithEnterpriseStart(t *testing.T, start string) *fixture {
 		login, pass string
 		readOnly    bool
 	}{{"admin", f.password, false}, {"reader", f.readPassword, true}} {
-		must(t, bootstrap.Initialize(ctx, admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: start, Login: a.login, Password: a.pass, ReadOnly: a.readOnly}))
+		must(t, bootstrap.Initialize(ctx, admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: start, Login: a.login, Password: a.pass, ReadOnly: a.readOnly}))
 	}
 	f.runtime, e = bootstrap.Open(ctx, dsn("chnhcm_api", apiPass), f.instance)
 	must(t, e)

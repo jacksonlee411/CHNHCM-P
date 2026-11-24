@@ -25,7 +25,7 @@ wt-dev-b当前日常开发与手工验证基准为[4390](http://127.0.0.1:4390)�
 
 日常开发每个工作树通常复用一个当前模型的持久profile；普通代码修改不逐批新建环境。`make smoke`默认新建独占临时profile、自动选择端口、启动当前模型空库和Web/API，验收结束后回收；不使用当前手工验证库。特定故障或容量现场确需留存时才另建持久profile。既有环境保持原分类，临时属性不能用于将已有持久库改成可删除。
 
-当前按[128决定](../adr/128-authorization-evidence-removal.md)和[130方案](../plans/130-department-storage-optimization.md)安装00001身份及必要认证/安全事件、00002 BU紧凑历史、00003 BU导出授权、00004账号身份、00005部门紧凑历史及关系、00006字典引用侧索引、00007由Go生成的确切来源分段读取索引；00008增加选择草稿。当前API要求m02-compact-5/read-segment-4/query-seal /3及完整[1,2,3,4,5,6,7,8]履历；新开发环境使用当前迁移空库。4390已用00008，但已应用00002未重跑，不能将其原DDL视为新环境当前迁移的逐字副本。同模型完整前缀仅由显式upgrader推进，不同模型、空洞与未知版本拒绝；既有m02-compact-1、m02-department-1、m02-timeline-7等库保留原数据和匹配程序，不自动升级或清空。历史迁移过程保留在原报告与Git；126原结果见[126实施报告](../verification/126-compact-history-implementation.md)，当前删除授权档案和独立候选验证见[128实施记录](../verification/128-implementation.md)。
+128／130 批次按[128决定](../adr/128-authorization-evidence-removal.md)和[130方案](../plans/130-department-storage-optimization.md)安装00001身份及必要认证/安全事件、00002 BU紧凑历史、00003 BU导出授权、00004账号身份、00005部门紧凑历史及关系、00006字典引用侧索引、00007由Go生成的确切来源分段读取索引；00008增加选择草稿。该批 API 要求 m02-compact-5/read-segment-4/query-seal /3 及连续 00001—00008；新开发环境使用当前迁移空库。4390已用00008，但已应用00002未重跑，不能将其原DDL视为新环境当前迁移的逐字副本。同模型完整前缀仅由显式upgrader推进，不同模型、空洞与未知版本拒绝；既有m02-compact-1、m02-department-1、m02-timeline-7等库保留原数据和匹配程序，不自动升级或清空。历史迁移过程保留在原报告与Git；126原结果见[126实施报告](../verification/126-compact-history-implementation.md)，当前删除授权档案和独立候选验证见[128实施记录](../verification/128-implementation.md)。
 
 ## 3 启动与操作
 
@@ -41,6 +41,8 @@ make local-up
 python3 scripts/local-bu.py verify
 python3 scripts/local-bu.py credentials-path
 ```
+
+00040 起，普通新账号可以登录，业务授予为空。显式可丢弃的开发实例首次创建样例时才授予管理员和查询者的样例权限。已有持久实例按实际授权迁入，重复启动保留每个账号现有的权限。国家和地区目录导入使用现有账号权限，无权执行的包会在启动输出中显示跳过。[027 切换验证](../verification/027-x03-grant-cutover.md)
 
 开发过程统一使用公开登录预设：管理员`admin`、查询者`reader`，密码均为`admin1234567`，无需逐次人工查询。此约定仅适用于本地开发；生产、客户和共享交付环境另行配置。数据库管理员及API连接密码仍由脚本随机生成，运行配置仅保存在仓外`~/.local/state/chnhcm/<摘要>/runtime.json`，目录0700、文件0600；真实凭据不复制进仓库、日志或截图。迁移管理员与API角色分离；前端不接收数据库凭据。
 
@@ -82,7 +84,7 @@ make local-down
 
 除`make smoke`外，上述本地环境命令沿用本节export配置。make integration每例独立Testcontainers；make smoke使用自动创建的独占临时profile及合成BU，默认桌面Chromium，单worker。使用`make smoke SMOKE_ARGS='tests/e2e/bu.spec.ts --grep 关键词'`做定向验证。确需针对已选定的持久profile复查时，先verify，再运行`corepack pnpm test:smoke`并传相同Playwright参数；该入口不自动回收持久库，不与手工登录或同profile其他套件并跑。登录遵守20次/分钟限制，不放宽产品限流；Playwright关闭trace和可能包含密码的自动文本快照，失败截图遮罩账号及登录输入。make load为后置专项，不是本批综合容量验收。
 
-local-down仅停止本profile管理的进程和容器，保留容器和卷；程序/存储合同一致且配置完整时，重新local-up核对相同初始化，不创建重复业务事实。旧存储须按原配置及匹配程序恢复，不能直接用当前构建重启。脚本日志按profile位于.local/runtime；只允许非敏感输出。最小角色停用/撤权通过仓外维护连接运行upgrader的access-change，明确Instance/Login/Operation/Action；不建设权限配置界面。批次结束的盘点及收尾见第3.5节。
+local-down仅停止本profile管理的进程和容器，保留容器和卷；程序/存储合同一致且配置完整时，重新local-up核对相同初始化，不创建重复业务事实。旧存储须按原配置及匹配程序恢复，不能直接用当前构建重启。脚本日志按profile位于.local/runtime；只允许非敏感输出。受控维护通过仓外连接运行 upgrader 的 `access-change`。停用指定 Instance、Login 和 Operation=disable。逐份撤销指定 Operation=revoke 和 GrantID。旧 Action 参数仅在唯一匹配一份单动作授予时可用，重叠授予或多动作角色须明确 GrantID。客户日常管理入口由 027 T04 接入。批次结束的盘点及收尾见第3.5节。
 
 ### 3.4 T07专项复现
 

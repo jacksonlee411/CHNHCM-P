@@ -105,3 +105,45 @@ func TestReadDictionaryPreservesLargeGrantSetsAndInvalidScopeDenials(t *testing.
 		t.Fatal("read union survived revocation", err)
 	}
 }
+
+func TestAssignmentWindowUsesServiceTimeForReadAndWrite(t *testing.T) {
+	from := time.Date(2026, 11, 23, 1, 0, 0, 0, time.UTC)
+	until := from.Add(time.Hour)
+	obj := "12345678-abcd-4123-8123-123456789ab1"
+	g := &guard{windows: []timedGrant{
+		{access.Grant{Action: "bu.read", ScopeKind: "enterprise", ScopeID: obj, ReadFields: []string{"name"}}, from, until},
+		{access.Grant{Action: "bu.record.correct", ScopeKind: "enterprise", ScopeID: obj, WriteFields: []string{"name"}}, from, until},
+	}}
+	for _, tc := range []struct {
+		at      time.Time
+		allowed bool
+	}{{from.Add(-time.Microsecond), false}, {from, true}, {until.Add(-time.Microsecond), true}, {until, false}} {
+		g.selectAt(tc.at)
+		for _, intent := range []access.Intent{{Action: "bu.read", EnterpriseID: obj}, {Action: "bu.record.correct", EnterpriseID: obj, Fields: []string{"name"}}} {
+			if g.evaluate(intent).Allowed != tc.allowed {
+				t.Fatal(tc.at, intent.Action)
+			}
+		}
+	}
+}
+
+func TestPermissionOnlyRechecksTheRequestedFields(t *testing.T) {
+	obj := "12345678-abcd-4123-8123-123456789ab1"
+	surviving := access.Grant{Action: "bu.record.correct", ScopeKind: "enterprise", ScopeID: obj, WriteFields: []string{"name"}}
+	proxy := surviving
+	proxy.WriteFields = []string{"name", "nameEn"}
+	g := &guard{grants: []access.Grant{surviving, proxy}, boundary: time.Now().Add(time.Hour)}
+	in := access.Intent{Action: surviving.Action, EnterpriseID: obj, Fields: []string{"name"}, PermissionOnly: true}
+	d, err := g.Decide(context.Background(), in)
+	if err != nil || !d.Allowed || len(d.WriteFields) != 0 {
+		t.Fatal(d, err)
+	}
+	g.grants, g.changedWindow = []access.Grant{surviving}, true
+	if err := g.ValidateUse(); err != nil {
+		t.Fatal("the remaining grant still covers the command", err)
+	}
+	g.grants, g.changedWindow = nil, true
+	if err := g.ValidateUse(); err == nil {
+		t.Fatal("command remained allowed after its last grant")
+	}
+}

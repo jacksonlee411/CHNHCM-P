@@ -30,6 +30,8 @@ func (g *guard) PlanReads(ctx context.Context, enterprise string, at time.Time, 
 		}
 		return s
 	}
+	g.refresh()
+	var used []access.Grant
 	for _, grant := range g.grants {
 		if grant.Action != string(action) {
 			continue
@@ -39,6 +41,9 @@ func (g *guard) PlanReads(ctx context.Context, enterprise string, at time.Time, 
 		}
 		if !slices.Contains([]string{"enterprise", "bu", "department"}, grant.ScopeKind) || grant.ScopeKind == "department" && !strings.HasPrefix(string(action), "department.") {
 			continue
+		}
+		if !g.boundary.IsZero() {
+			used = append(used, grant)
 		}
 		p.Allowed = add(p.Allowed, grant)
 		for _, field := range grant.ReadFields {
@@ -56,6 +61,7 @@ func (g *guard) PlanReads(ctx context.Context, enterprise string, at time.Time, 
 	for k, v := range p.Fields {
 		p.Fields[k] = canonical(v)
 	}
+	g.retainProjection(used)
 	return p, nil
 }
 
@@ -65,6 +71,9 @@ func (g *guard) DecidePlan(ctx context.Context, p access.ReadPlan, r access.Read
 	}
 	if p.Origin != g || p.Instance != g.p.InstanceID || p.Subject != g.p.ID || p.Session != g.p.SessionID || p.Enterprise != r.EnterpriseID || string(p.Action) != r.Action || !slices.Contains([]string{"object", "reference"}, r.Kind) {
 		return access.Decision{}, errors.New("read plan binding differs")
+	}
+	if err := g.ValidateUse(); err != nil {
+		return access.Decision{}, err
 	}
 	out := access.Decision{ReadFields: []string{}, WriteFields: []string{}}
 	if !validIntentScope(r.Intent(), p.Day) {

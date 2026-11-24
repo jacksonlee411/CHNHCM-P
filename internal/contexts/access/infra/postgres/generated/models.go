@@ -8,6 +8,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AccessBoundPermission struct {
+	InstanceID  string
+	GrantID     string
+	PrincipalID string
+	ScopeKind   *string
+	ScopeID     *string
+	Action      interface{}
+	ReadFields  []string
+	WriteFields []string
+	Purpose     string
+	ValidFrom   pgtype.Timestamptz
+	ValidUntil  pgtype.Timestamptz
+}
+
 type AccessCredential struct {
 	InstanceID       string
 	PrincipalID      string
@@ -34,6 +48,34 @@ type AccessEmploymentGrant struct {
 	EmployerID   *string
 	DepartmentID *string
 	ExpiresAt    pgtype.Timestamptz
+}
+
+type AccessGrantAssignment struct {
+	InstanceID  string
+	GrantID     string
+	PrincipalID string
+	Source      string
+	Purpose     string
+	ValidFrom   pgtype.Timestamptz
+	ValidUntil  pgtype.Timestamptz
+	Revision    int64
+}
+
+type AccessGrantRevision struct {
+	InstanceID string
+	GrantID    string
+	Revision   int64
+	RoleID     string
+	ScopeID    string
+	FieldsID   string
+	RoleKind   *string
+	ScopeKind  *string
+	FieldsKind *string
+	Operation  string
+	ActorID    *string
+	RecordedAt pgtype.Timestamptz
+	RequestID  *string
+	Command    []byte
 }
 
 type AccessHireIdentityFixture struct {
@@ -95,6 +137,21 @@ type AccessPolicyGuard struct {
 	PolicyNo    int64
 }
 
+type AccessPolicyVersion struct {
+	InstanceID   string
+	Kind         string
+	VersionID    string
+	DefinitionID string
+	VersionNo    int64
+	Actions      []string
+	ScopeKind    *string
+	ScopeID      *string
+	ReadFields   []string
+	WriteFields  []string
+	DisabledAt   pgtype.Timestamptz
+	LockNo       int32
+}
+
 type AccessPrincipal struct {
 	InitializationDigest []byte
 	InstanceID           string
@@ -133,15 +190,18 @@ type AccessSession struct {
 	RevokedAt         pgtype.Timestamptz
 }
 
-type AccessSubjectGrant struct {
-	InstanceID  string
-	GrantID     string
-	PrincipalID string
-	ScopeKind   string
-	ScopeID     string
-	Action      string
-	ReadFields  []string
-	WriteFields []string
+type MigrationBinding struct {
+	InstanceID    string
+	GrantID       string
+	PrincipalID   string
+	ScopeKind     string
+	ScopeID       string
+	Action        string
+	ReadFields    []string
+	WriteFields   []string
+	RoleVersion   interface{}
+	ScopeVersion  interface{}
+	FieldsVersion interface{}
 }
 
 type OrganizationBuDictionary struct {

@@ -24,7 +24,7 @@ func t07Clone(v map[string]any) map[string]any {
 func t07Instance(t *testing.T, f *fixture, start string) *fixture {
 	t.Helper()
 	other := &fixture{t: t, ctx: f.ctx, admin: f.admin, instance: foundation.NewID(), password: foundation.NewID(), readPassword: foundation.NewID()}
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: other.instance, EnterpriseCode: "SECOND", EnterpriseName: "独立实例", Start: start, Login: "admin", Password: other.password}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: other.instance, EnterpriseCode: "SECOND", EnterpriseName: "独立实例", Start: start, Login: "admin", Password: other.password}))
 	var e error
 	other.runtime, e = bootstrap.Open(f.ctx, f.runtime.Pool.Config().ConnString(), other.instance)
 	must(t, e)
@@ -42,7 +42,7 @@ func TestT07InstanceSubjectAndReadonlyBoundaries(t *testing.T) {
 	key := foundation.NewID()
 	subjects := []*browser{}
 	for _, x := range []*fixture{f, g} {
-		must(t, bootstrap.Initialize(x.ctx, x.admin, bootstrap.InitInput{Instance: x.instance, EnterpriseCode: map[bool]string{true: "LOCAL", false: "SECOND"}[x == f], EnterpriseName: map[bool]string{true: "本地验证企业", false: "独立实例"}[x == f], Start: "2020-01-01", Login: "second", Password: x.readPassword}))
+		must(t, bootstrap.Initialize(x.ctx, x.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: x.instance, EnterpriseCode: map[bool]string{true: "LOCAL", false: "SECOND"}[x == f], EnterpriseName: map[bool]string{true: "本地验证企业", false: "独立实例"}[x == f], Start: "2020-01-01", Login: "second", Password: x.readPassword}))
 		subjects = append(subjects, x.login("admin", x.password), x.login("second", x.readPassword))
 	}
 	saved := make([]map[string]any, len(subjects))
@@ -155,7 +155,7 @@ func TestT07CodeDisplayCaseAndNormalizedUniqueness(t *testing.T) {
 
 func TestCompactSameObjectSubmissionRemainsSubjectScoped(t *testing.T) {
 	f := fresh(t)
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: "second", Password: f.readPassword}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: "second", Password: f.readPassword}))
 	a, b := f.login("admin", f.password), f.login("second", f.readPassword)
 	bu := a.call("POST", "/api/v1/business-units", createBody("SHARED_SUBMISSION", "2026-01-01"), foundation.NewID(), 201)
 	for _, kind := range []string{"business-units", "departments"} {

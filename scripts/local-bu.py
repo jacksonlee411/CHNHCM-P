@@ -162,6 +162,14 @@ def destroy_temporary():
     print("Removed this temporary profile's containers, network, volume and private configuration; sanitized logs retained.")
 
 
+def install_smoke_policy_fixture(command, env):
+    connection = json.loads(subprocess.check_output(command + ["connection"], cwd=ROOT, env=env))
+    with (ROOT / "tests/fixtures/access/policy.sql").open() as fixture:
+        subprocess.run(["docker", "exec", "-i", connection["project"] + "-postgres-1",
+                        "psql", "-Xq", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "chnhcm"],
+                       cwd=ROOT, env=env, stdin=fixture, check=True)
+
+
 def smoke(args):
     profile = args.profile or "smoke-" + uuid.uuid4().hex[:12]
     env = dict(os.environ, CHNHCM_LOCAL_PROFILE=profile)
@@ -184,6 +192,7 @@ def smoke(args):
         configured = True
         print(f"Temporary Chromium profile: {profile}; Web=http://127.0.0.1:{ports[0]}; API={ports[1]}; DB={ports[2]}", flush=True)
         run(command + ["up", "--first-hire"] + (["--fixed-web"] if getattr(args, "fixed_web", False) else []), env)
+        install_smoke_policy_fixture(command, env)
         extra = args.playwright_args
         if extra[:1] == ["--"]:
             extra = extra[1:]
@@ -313,12 +322,11 @@ def execute(args):
         enterprise = config.get("enterprise", dict(EnterpriseCode="LOCAL", EnterpriseName="本地学习企业"))
         run([str(BIN / "upgrader"), "-mode", "initialize"], env,
             dict(Instance=config["instance"], **enterprise,
-                 Login=login, Password=password, ReadOnly=read_only, PersonnelProfile="reader" if read_only else "registrar", PersonalProfileFixture=True,
+                 Login=login, Password=password, ReadOnly=read_only, DevelopmentFixture=runtime.temporary_profile(), PersonnelProfile="reader" if read_only else "registrar", PersonalProfileFixture=True,
                  **(dict(HireIdentityFixture=True, EmploymentFixture=True, FirstHireRule=dict(Version="T02-employee-1", From="2027-04-01")) if config.get("first_hire") and not read_only else {})))
-    run([str(BIN / "upgrader"), "-mode", "country-catalog"], env,
-        dict(login=config["login"], password=config["password"]))
-    run([str(BIN / "upgrader"), "-mode", "geoarea-catalog"], env,
-        dict(login=config["login"], password=config["password"]))
+    for catalog in ("country-catalog", "geoarea-catalog"):
+        run([str(BIN / "upgrader"), "-mode", catalog, "-skip-unauthorized-catalog"], env,
+            dict(login=config["login"], password=config["password"]))
     write_private(CONFIG, config)
     # Each process receives only the credential class it needs.
     owned = {}

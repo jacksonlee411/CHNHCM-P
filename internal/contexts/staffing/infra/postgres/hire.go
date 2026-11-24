@@ -94,7 +94,7 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		legal.Adopted = in.Expected.Legal
 		job.Adopted = in.Expected.Segments
 	}
-	ctx = dbtx.With(ctx, u.tx)
+	ctx = u.transactionContext(ctx)
 	plan.prepared, err = h.PrepareFirst(ctx, h.Sources{Rules: u.store, People: u.store.HirePeople}, u.credentials, request)
 	if err != nil {
 		return plan, err
@@ -234,7 +234,7 @@ func (st *Store) HireEmployers(ctx context.Context, c f.Credentials, in h.Employ
 		}
 		skip := (in.Page - 1) * 20
 		for page := 1; ; page++ {
-			chunk, e := st.HirePurposes.Candidates(dbtx.With(ctx, u.tx), c, org.PurposeCandidates{PurposeCheck: org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}, Search: in.Search, Page: page})
+			chunk, e := st.HirePurposes.Candidates(u.transactionContext(ctx), c, org.PurposeCandidates{PurposeCheck: org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}, Search: in.Search, Page: page})
 			if e != nil {
 				return e
 			}

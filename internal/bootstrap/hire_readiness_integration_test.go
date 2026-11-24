@@ -380,6 +380,14 @@ func TestHire400UpgradeFrom28(t *testing.T) {
 	must(t, bootstrap.Migrate(ctx, pool, prefix))
 	id := f.NewID()
 	must(t, bootstrap.Initialize(ctx, pool, bootstrap.InitInput{Instance: id, EnterpriseCode: "T400", EnterpriseName: "测试企业", Start: "1900-01-01", Login: "admin", Password: f.NewID()}))
+	// These two shipped permissions are the source of the 00032 maintenance grants.
+	_, err := pool.Exec(ctx, `INSERT INTO access.subject_grant
+		SELECT p.instance_id,gen_random_uuid(),p.principal_id,'enterprise',e.enterprise_id,action,
+		ARRAY['name','effectiveDate','status'],ARRAY['name','effectiveDate']
+		FROM access.principal p JOIN organization.enterprise e USING(instance_id)
+		CROSS JOIN unnest(ARRAY['job.record.correct','legalentity.record.correct']) action
+		WHERE p.instance_id=$1`, id)
+	must(t, err)
 	var original string
 	must(t, pool.QueryRow(ctx, "SELECT head_source_id::text FROM organization.enterprise_profile WHERE instance_id=$1", id).Scan(&original))
 	const m32 = "00032_hire_readiness.sql"
@@ -460,7 +468,7 @@ func TestHire400UpgradeFrom28(t *testing.T) {
  JOIN staffing.assignment_policy_outbox o USING(instance_id,owner_id,version)
  WHERE s.instance_id=$1 AND s.version=$3 AND s.submission_id=$4 AND m.revision=$5 AND m.fact->>'mode'='JobOnly')
  AND (SELECT count(*)=0 FROM staffing.assignment_policy_terminal)
- AND (SELECT count(*)=2 FROM access.subject_grant WHERE instance_id=$1 AND action IN ('assignmentpolicy.maintain','legalpurpose.maintain'))
+ AND (SELECT count(*)=2 FROM access.bound_permission WHERE instance_id=$1 AND action IN ('assignmentpolicy.maintain','legalpurpose.maintain'))
  FROM organization.enterprise_profile WHERE instance_id=$1`, id, original, version, key, rev).Scan(&preserved))
 	if !preserved {
 		t.Fatal("original source, ledger or controlled grants changed")

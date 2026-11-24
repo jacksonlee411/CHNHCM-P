@@ -314,6 +314,9 @@ func (svc Service) ChangeStaffingQuota(ctx context.Context, creds foundation.Cre
 					}
 					p.After.Records[i].Audit = a
 				}
+				if e = u.Access().ValidateUse(); e != nil {
+					return e
+				}
 				if e = u.SaveQuota(ctx, p, command, op); e != nil {
 					return e
 				}

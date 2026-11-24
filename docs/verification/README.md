@@ -18,6 +18,8 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 人员路线图第五稿通过评审。记录包含逐稿修订、页面继承、人员与任职的授权交集，以及未来入职撤销后旧请求重送的名额算例。[500 评审记录](500-personnel-roadmap-review.md) · [人员模块实施路线图](../plans/500-personnel-roadmap.md)
 
+
+[027 X03 授予内核与旧库切换](027-x03-grant-cutover.md)记录逐主体对账、原提交查回、重叠授权及真实事务提交顺序。
 [313 岗位核编首批实施验证](313-quota-implementation.md)记录按日核编、部门汇总、数据库重启查回，以及 AC090 中核编独验和补登旧职务职类的并存联验。
 
 140 的方案评审按授权翻页、业务日期、切片登记和历史回执逐轮复核，记录各稿差异。[分项实施验收](140-module-cohesion-implementation.md)覆盖 T01—T03，[阶段评审修复](140-module-cohesion-review-fixes.md)记录 SQL 归属及准确采用名称的反例与复验。[方案评审](140-module-cohesion-roadmap-review.md) · [实施路线图](../plans/140-module-cohesion-roadmap.md)
