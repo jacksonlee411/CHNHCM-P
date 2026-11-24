@@ -36,7 +36,7 @@
 
 ## 入口维护
 
-- 本文件保持在**8 KiB以内**，只放关键约束、按任务阅读的入口和必要保护提示。批次进展写入对应计划/验证记录，通过文档入口导航；不得继续追加实施流水账。
+- 本文件限 **8 KiB**，仅列关键约束、任务入口和保护提示。批次进展记入计划和验证记录，由文档入口导航。
 - 长期规则在对应合同维护并从此引用；冲突须明确适用范围和替代关系，不以文档较新自动覆盖旧约定。根目录Markdown仅保留本文件。
 - 新文档按[005编号](docs/governance/005-branches-and-documents.md)先登记，已用号不回收；分类、模板、稳定ID、生命周期与证据按[014](docs/governance/014-document-management.md)维护。纯结构检查不代替语义评审。
-- 精简前原文、规则去向和本次暂存信息见[入口整理记录](docs/verification/005-agents-entry-simplification.md)。历史按需查阅，不作为每次开工必读材料。
+- 按需查阅[入口整理记录](docs/verification/005-agents-entry-simplification.md)中的精简前原文、规则去向及暂存信息。

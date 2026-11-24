@@ -145,3 +145,7 @@ go test -tags=integration -count=1 -run '^TestUnifiedCorrectionFacetPermissionsW
 make smoke SMOKE_ARGS="tests/e2e/personnel.spec.ts --grep 'T01 变更日志跨页|504 第二批保存前撤回家庭职务写权|504 复核已打开的家庭明细使用当前行和字段权限'"
 make smoke SMOKE_ARGS="tests/e2e/correction-coverage.spec.ts tests/e2e/lifecycle-pair.spec.ts tests/e2e/first-hire.spec.ts --grep 'TL299|只有两项启停权限仍可从菜单插入|首单入职与未来撤销 320'"
 ```
+
+候选 `f19bf9b` 在本地通过 `make check` 和 `make ci-ready`。预检核对了 664 个浏览器用例，实际运行六项前置回归和五项企业依赖，十一项均通过。另行复验了上述三个权限更正子例、启停配对、两个 320 像素宽度的首单，以及人员变更日志、家庭撤权和已打开明细的权限刷新。一次单跑启停配对时，企业前置在页面导航处超时，目标用例未执行；在独立的固定构建和临时库中重跑，五项企业前置及启停配对全部通过。本地可丢弃环境已回收。[变更日志复验](500-personnel-change-log.md#6-公开仓库开发构建复验) · [家庭撤权复验](504-personal-profile-second-batch.md#6-家庭职务写权撤回复验)
+
+公开 PR 的 11 个浏览器分片全部实际运行。按各片完成日志统计，共 714 次通过，包含各片重复执行的五项企业前置。第 6 片 83 项全过。此次候选只改前端、测试和文档，未派发新的 DB/API 分片；公开基线的八片结果见本节首段。PR 的 quality、integration、browser 三项均通过后，合入 `main` 的 `73529dc`。[公开修复 PR](https://github.com/jacksonlee411/CHNHCM-P/pull/1) · [十一片运行](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45315256108) · [人员资料分片](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45315256108/job/138181294206)
