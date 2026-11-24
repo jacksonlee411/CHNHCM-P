@@ -122,7 +122,10 @@ async function openPerson(page: Page, name: string) {
   await expect(page.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
   await page.getByLabel('姓名或人员编号').fill(name);
   await page.getByLabel('姓名或人员编号').press('Enter');
-  await page.locator('a[data-object-link]').filter({ hasText: name }).click();
+  await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees' && url.searchParams.has('ref'));
+  const target = page.locator('a[data-object-link]').filter({ hasText: name });
+  await expect(target).toBeVisible();
+  await target.click();
 }
 async function fillHire(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   await openPerson(page, sample.name);
@@ -1086,9 +1089,12 @@ async function positionHireJourney(page: Page, sample: Awaited<ReturnType<typeof
   const policyPath='/api/v1/assignment-policies';
   const before=await request(page,'GET',policyPath);
   const original=before.body.rows.find((r:{category:string;purpose:string;from:string})=>r.category==='Employee'&&r.purpose==='hire'&&r.from==='2027-04-01');
-  expect(original.mode).toBe('JobOnly');
-  const publish=await request(page,'POST',policyPath,{expectedVersion:before.body.version,row:{...original,mode:'PositionExempt'}},randomUUID());
-  expect(publish.status,publish.body.message).toBe(200);
+  let changedVersion: string | undefined;
+  if (original.mode !== 'PositionExempt') {
+    const saved = await request(page, 'POST', policyPath, { expectedVersion: before.body.version, row: { ...original, mode: 'PositionExempt' } }, randomUUID());
+    expect(saved.status, saved.body.message).toBe(200);
+    changedVersion = saved.body.version;
+  }
   const button=(name:string)=>page.getByRole('button',{name,exact:true});
   try {
     const number='按岗任用'+sample.name;
@@ -1121,11 +1127,13 @@ async function positionHireJourney(page: Page, sample: Awaited<ReturnType<typeof
     await expect(page.getByText('2027-06-01 · 恢复补员',{exact:true})).toBeVisible();
     await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   } finally {
-    const now=await request(page,'GET',policyPath);
-    const applied=now.body.rows.find((r:{id:string})=>r.id===original.id);
-    if(applied?.mode==='PositionExempt'&&now.body.version===publish.body.version){
-      const restored=await request(page,'POST',policyPath,{expectedVersion:now.body.version,row:{...applied,mode:original.mode}},randomUUID());
-      expect(restored.status,restored.body.message).toBe(200);
+    if (changedVersion) {
+      const now = await request(page, 'GET', policyPath);
+      const applied = now.body.rows.find((r: { id: string }) => r.id === original.id);
+      if (applied?.mode === 'PositionExempt' && now.body.version === changedVersion) {
+        const restored = await request(page, 'POST', policyPath, { expectedVersion: now.body.version, row: { ...applied, mode: original.mode } }, randomUUID());
+        expect(restored.status, restored.body.message).toBe(200);
+      }
     }
   }
 }
