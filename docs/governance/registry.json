@@ -3008,6 +3008,79 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/027-public-main-grant-upgrade.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-013",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "2a7ef2abcdbca5fd8f939cfe6a2346b31e974f18",
+        "working_tree": "clean",
+        "change_description": "公共主线任用决定 00039 合流，逐份授予避让 f 的 00040 后使用 00041。",
+        "environment": "本地独立 PostgreSQL 18.6、公共旧版与候选 Go 服务、Chromium。",
+        "scope": "公共 00039 升级、既有授权、任用决定首单、同事务复验及实际重启。",
+        "results": [
+          {
+            "check": "公共 00039 两套旧库 272 份逐主体对账、原提交查回、撤尽与重启",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "独立副本执行 f 的 00040 原件及 a 的 00041 原件",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "任用决定实库第二经办人未显式持有办理所需权限",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "按实际规则和数据读取授权后，原首单决策与并发场景通过",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "全量 DB/API 两个分片，按相同条件补验后 375 根通过、20 条件跳过",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "DB 批次总时限及运行中候选变化导致交付预检首次失败",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "固定测试提交下重新生成、质量、构建及实际 DB 和 Chromium 前置",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "浏览器首次 747 次执行中 4 项在页面等待处超时",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "原公共主线中先输入部门定位词、后取得上下文时未发起首次定位",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          },
+          {
+            "check": "全部 667 个唯一浏览器用例在首轮或同产品补验中通过",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-main-grant-upgrade.md"
+          }
+        ],
+        "limitations": [
+          "远端集中领号尚未启用。f 的 00040 在本候选仅作 SQL 合流验收。",
+          "客户管理页面与受控恢复按 T04、T05 跟踪。"
+        ]
+      },
+      {
         "path": "docs/verification/027-public-grant-cutover.md",
         "related_documents": [
           "CHNHCM-027",
