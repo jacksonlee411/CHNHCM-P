@@ -41,6 +41,10 @@ type Receipt struct {
 	RecordNumber *int   `json:"recordNumber,omitempty"`
 }
 type Action struct {
+	Operation          string `json:"operation"`
+	CanCorrectTransfer bool   `json:"canCorrectTransfer"`
+	CanMaintain        bool   `json:"canMaintain"`
+	CanDelete          bool   `json:"canDelete"`
 	CanCorrectLocation bool   `json:"canCorrectLocation"`
 	BusinessDate       string `json:"businessDate"`
 	SourceVersion      string `json:"sourceVersion"`
@@ -63,18 +67,26 @@ type Action struct {
 	CanCancel  bool `json:"canCancel"`
 	CanHistory bool `json:"canHistory"`
 }
+type TermLink struct {
+	Assignment   string `json:"assignment"`
+	RecordNumber int    `json:"recordNumber"`
+	From         string `json:"from"`
+}
 type Overview struct {
-	CanHire     bool     `json:"canHire"`
-	Actions     []Action `json:"actions"`
-	People      int      `json:"people"`
-	Assignments int      `json:"assignments"`
-	Seats       int      `json:"seats"`
+	Terms       []TermLink `json:"terms"`
+	CanHire     bool       `json:"canHire"`
+	Actions     []Action   `json:"actions"`
+	People      int        `json:"people"`
+	Assignments int        `json:"assignments"`
+	Seats       int        `json:"seats"`
 }
 type Cancel struct {
 	Revision string `json:"revision"`
 	Reason   string `json:"reason"`
 }
 type Original struct {
+	Transfer          *TransferEvidence `json:"transfer,omitempty"`
+	Requires          *RequiredFact     `json:"requires,omitempty"`
 	DepartmentName    string            `json:"departmentName,omitempty"`
 	Revisions         []Revision        `json:"revisions,omitempty"`
 	LocationChange    *LocationEvidence `json:"locationChange,omitempty"`

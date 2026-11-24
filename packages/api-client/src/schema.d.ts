@@ -5114,6 +5114,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/transfer-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assignmentTransferOptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["transferAssignment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/transfers/{action}/correct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["correctAssignmentTransfer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/actions/{action}/redate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["redateAssignmentAction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/actions/{action}/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deleteAssignmentAction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hires/targets": {
         parameters: {
             query?: never;
@@ -5174,6 +5254,60 @@ export interface components {
             expectedSourceVersion: string;
             /** Format: uuid */
             expectedRevision?: string;
+            insert?: boolean;
+            requires?: components["schemas"]["EmploymentRequiredFact"];
+        };
+        EmploymentRequiredFact: {
+            /** Format: uuid */
+            action: string;
+            /** Format: uuid */
+            revision: string;
+            /** Format: uuid */
+            location?: string;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            job?: string;
+        };
+        EmploymentRecordMaintenance: {
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            /** Format: uuid */
+            expectedRevision?: string;
+            /** Format: date */
+            businessDate?: string;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            job?: string;
+            notice?: string;
+            insert?: boolean;
+            requires?: components["schemas"]["EmploymentRequiredFact"];
+        };
+        EmploymentTransferSearch: {
+            /** @enum {string} */
+            kind: "department" | "job";
+            /** Format: uuid */
+            department?: string;
+            /** Format: date */
+            businessDate: string;
+            search?: string;
+            page: number;
+        };
+        EmploymentTransferEvidence: {
+            /** Format: uuid */
+            beforeDepartment?: string;
+            beforeDepartmentName?: string;
+            /** Format: uuid */
+            beforeJob?: string;
+            beforeJobName?: string;
+            after: {
+                /** Format: uuid */
+                department?: string;
+                /** Format: uuid */
+                job?: string;
+                segments?: components["schemas"]["AssignmentSegment"][];
+            };
         };
         EmploymentLocationEvidence: {
             reason: string;
@@ -5192,6 +5326,10 @@ export interface components {
             recordedAt: string;
         };
         AssignmentDayState: {
+            /** Format: uuid */
+            departmentId: string;
+            /** Format: uuid */
+            jobId: string;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -5219,15 +5357,21 @@ export interface components {
             name: string;
             number: string;
             /** @enum {string} */
-            kind: "Hire" | "DataChange";
+            kind: "Hire" | "DataChange" | "Transfer";
             /** @enum {string} */
-            status: "effective" | "future" | "cancelled";
+            status: "effective" | "future" | "cancelled" | "deleted";
             /** Format: date */
             businessDate: string;
             /** Format: date-time */
             recordedAt: string;
             recordNumber: number;
             operator?: string;
+            /** Format: uuid */
+            fromDepartment?: string;
+            fromDepartmentName?: string;
+            /** Format: uuid */
+            toDepartment?: string;
+            toDepartmentName?: string;
             departmentName?: string;
             canHistory: boolean;
         };
@@ -5342,6 +5486,7 @@ export interface components {
             state?: components["schemas"]["AssignmentDayState"];
             actions: components["schemas"]["EmploymentAction"][];
             canChangeLocation: boolean;
+            canTransfer: boolean;
         };
         HireTargetSearch: {
             /** Format: uuid */
@@ -5377,6 +5522,8 @@ export interface components {
         };
         HireOriginal: {
             departmentName?: string;
+            transfer?: components["schemas"]["EmploymentTransferEvidence"];
+            requires?: components["schemas"]["EmploymentRequiredFact"];
             locationChange?: components["schemas"]["EmploymentLocationEvidence"];
             revisions?: components["schemas"]["EmploymentRevision"][];
             appointment?: components["schemas"]["DecisionOption"];
@@ -5502,6 +5649,11 @@ export interface components {
             reason: string;
         };
         EmploymentAction: {
+            /** @enum {string} */
+            operation: "Add" | "Insert" | "Correct" | "Redate" | "Delete" | "Rebase";
+            canMaintain: boolean;
+            canDelete: boolean;
+            canCorrectTransfer: boolean;
             /** Format: date */
             businessDate: string;
             /** Format: uuid */
@@ -5539,6 +5691,13 @@ export interface components {
             canCancel: boolean;
         };
         EmploymentOverview: {
+            terms: {
+                /** Format: uuid */
+                assignment: string;
+                recordNumber: number;
+                /** Format: date */
+                from: string;
+            }[];
             canHire: boolean;
             actions: components["schemas"]["EmploymentAction"][];
             people: number;
@@ -22855,8 +23014,8 @@ export interface operations {
                 businessTo?: string;
                 recordedFrom?: string;
                 recordedTo?: string;
-                kind?: "Hire" | "DataChange";
-                status?: "effective" | "future" | "cancelled";
+                kind?: "Hire" | "DataChange" | "Transfer";
+                status?: "effective" | "future" | "cancelled" | "deleted";
                 sort?: "recordedAt" | "-recordedAt" | "businessDate" | "-businessDate";
                 page?: number;
                 pageSize?: 20 | 50 | 100;
@@ -23142,6 +23301,198 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["EmploymentLocationChange"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentTransferOptions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentTransferSearch"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    transferAssignment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentRecordMaintenance"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    correctAssignmentTransfer: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+                action: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentRecordMaintenance"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    redateAssignmentAction: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+                action: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentRecordMaintenance"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    deleteAssignmentAction: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+                action: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentRecordMaintenance"];
             };
         };
         responses: {

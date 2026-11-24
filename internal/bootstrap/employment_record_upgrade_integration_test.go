@@ -62,7 +62,7 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 		if upgraded {
 			switch table {
 			case "assignment_segment":
-				expression += " - 'location_id' - 'location_ref' - 'version'"
+				expression += " - 'location_id' - 'location_ref' - 'version' - 'department_id' - 'job_id'"
 			case "hire_terminal", "employment_outbox":
 				expression += " - 'revision'"
 			case "employment_action":
@@ -86,6 +86,11 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 		if snapshot(table, true) != before[table] {
 			t.Fatalf("升级改变了旧数据 %s", table)
 		}
+	}
+	var covered bool
+	must(t, pool.QueryRow(ctx, `SELECT bool_and(s.department_id=t.department_id AND s.job_id=t.job_id) FROM staffing.assignment_segment s JOIN staffing.assignment t ON (t.instance_id,t.id)=(s.instance_id,s.assignment_id)`).Scan(&covered))
+	if !covered {
+		t.Fatal("旧采用的部门或职务没有按原任职身份回填")
 	}
 	var records, terms int
 	must(t, pool.QueryRow(ctx, `SELECT count(DISTINCT (r.instance_id,r.person_id,r.record_number)),count(*)

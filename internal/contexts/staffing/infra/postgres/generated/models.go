@@ -41,6 +41,11 @@ type AccessEmploymentGrant struct {
 	ExpiresAt    pgtype.Timestamptz
 }
 
+type AccessEmploymentHistoryFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessEmploymentLocationFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1200,6 +1205,8 @@ type StaffingAssignmentSegment struct {
 	Version      string
 	LocationID   pgtype.UUID
 	LocationRef  []byte
+	DepartmentID string
+	JobID        string
 }
 
 type StaffingAssignmentSource struct {
@@ -1244,6 +1251,7 @@ type StaffingEmploymentActionRevision struct {
 	OperatorSnapshot []byte
 	RecordedAt       pgtype.Timestamptz
 	Adoption         []byte
+	Operation        string
 }
 
 type StaffingEmploymentOutbox struct {
@@ -1267,6 +1275,14 @@ type StaffingEmploymentRecord struct {
 	InstanceID   string
 	PersonID     string
 	RecordNumber int32
+}
+
+type StaffingEmploymentRevisionPublication struct {
+	InstanceID   string
+	AssignmentID string
+	ActionID     string
+	Revision     string
+	Version      string
 }
 
 type StaffingGrade struct {

@@ -162,7 +162,7 @@ func (s *Store) PositionUses(ctx context.Context, enterprise, field, id string) 
 	}
 	// Adopted assignment usage follows the current published intervals, including
 	// corrections. A cancelled hire has no intervals in its current source.
-	column := map[string]string{"locationId": "s.location_id", "buId": "t.bu_id", "departmentId": "t.department_id", "jobId": "t.job_id"}[field]
+	column := map[string]string{"locationId": "s.location_id", "buId": "t.bu_id", "departmentId": "s.department_id", "jobId": "s.job_id"}[field]
 	if column == "" {
 		return uses, nil
 	}

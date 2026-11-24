@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Alert, Autocomplete, Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Stack, Typography } from '@mui/material';
 import { api, ApiError, unwrap, type Models } from '@chnhcm/api-client';
 import {
   EffectiveDates,
@@ -14,19 +14,12 @@ import { useDraftExit } from '../../shared/dated/useDraftExit';
 import { useRead, message } from '../personnel/api';
 import { useRuleSubmission } from '../readiness/useRuleSubmission';
 
-type Location = Models['EmploymentLocationRef'];
+import { AssignmentRecordForm, actionLabel, draftChanged, type JobDraft } from './AssignmentRecordForm';
+
 type Action = Models['EmploymentAction'];
-type Command = { action?: string; input: Models['EmploymentLocationChange'] };
-type Draft = {
-  action?: Action;
-  day: string;
-  initialDay: string;
-  original?: Location;
-  value?: Location;
-  source: string;
-};
-const actionLabel = (a: Action) =>
-  a.kind === 'DataChange' ? '数据更改' : a.kind === 'CancelHire' ? '撤销入职' : '入职';
+type Command =
+  | { kind: 'location'; action?: string; input: Models['EmploymentLocationChange'] }
+  | { kind: 'transfer' | 'redate' | 'delete'; action?: string; input: Models['EmploymentRecordMaintenance'] };
 
 export function JobInformation({
   assignment,
@@ -46,8 +39,8 @@ export function JobInformation({
   selectedAction?: string;
 }) {
   const [source, setSource] = useState('');
-  const [draft, setDraft] = useState<Draft>();
-  const [search, setSearch] = useState('');
+  const [draft, setDraft] = useState<JobDraft>();
+  const initial = useRef<JobDraft | undefined>(undefined);
   const [chosen, setOpened] = useState<Action>();
   const [revision, setRevision] = useState('');
   const [error, setError] = useState('');
@@ -70,9 +63,17 @@ export function JobInformation({
   const opened = selectedAction ? data?.actions.find((a) => a.id === selectedAction && a.canHistory) : chosen;
   useEffect(() => {
     if (!data || !draft) return;
-    const allowed = draft.action
-      ? data.actions.some((a) => a.id === draft.action?.id && a.canCorrectLocation)
-      : data.canChangeLocation;
+    const a = data.actions.find((v) => v.id === draft.action?.id);
+    const allowed =
+      draft.mode === 'redate'
+        ? a?.canMaintain
+        : draft.action
+          ? draft.kind === 'Transfer'
+            ? a?.canCorrectTransfer
+            : a?.canCorrectLocation
+          : draft.kind === 'Transfer'
+            ? data.canTransfer
+            : data.canChangeLocation;
     if (!allowed) {
       setDraft(undefined);
       setOpened(undefined);
@@ -88,27 +89,38 @@ export function JobInformation({
         }),
       ),
   );
-  const choices = useRead(
-    draft?.day ? JSON.stringify([assignment, draft.day, search]) : undefined,
-    async () =>
-      unwrap(
-        await api.POST('/api/v1/assignments/{id}/location-options', {
-          params: { path: { id: assignment }, header },
-          body: { businessDate: draft!.day, search, page: 1 },
-        }),
-      ),
-  );
   const close = () => {
     setDraft(undefined);
-    setSearch('');
     setError('');
     requestAnimationFrame(() => opener.current?.focus());
   };
-  const dirty = !!draft && (draft.day !== draft.initialDay || draft.value?.id !== draft.original?.id);
+  const dirty = !!draft && !!initial.current && draftChanged(draft, initial.current);
   const exit = useDraftExit(dirty, () => saved.current, close);
   const submit = useRuleSubmission<Command, Models['HireReceipt']>('assignment-location', session, {
     send: async (cmd, key) => {
       const headers = { ...header, 'Idempotency-Key': key };
+      if (cmd.kind !== 'location') {
+        const input = cmd.input;
+        if (cmd.kind === 'transfer' && !cmd.action)
+          return unwrap(
+            await api.POST('/api/v1/assignments/{id}/transfers', {
+              params: { path: { id: assignment }, header: headers },
+              body: input,
+            }),
+          );
+        const params = { path: { id: assignment, action: cmd.action! }, header: headers };
+        if (cmd.kind === 'transfer')
+          return unwrap(
+            await api.POST('/api/v1/assignments/{id}/transfers/{action}/correct', { params, body: input }),
+          );
+        if (cmd.kind === 'redate')
+          return unwrap(
+            await api.POST('/api/v1/assignments/{id}/actions/{action}/redate', { params, body: input }),
+          );
+        return unwrap(
+          await api.POST('/api/v1/assignments/{id}/actions/{action}/delete', { params, body: input }),
+        );
+      }
       return cmd.action
         ? unwrap(
             await api.POST('/api/v1/assignments/{id}/location-changes/{action}/correct', {
@@ -165,35 +177,65 @@ export function JobInformation({
       setRevision('');
     }
   }, [state.status]);
-  function begin(button: HTMLButtonElement, a?: Action) {
+  function begin(button: HTMLButtonElement, mode: JobDraft['mode'], a?: Action) {
     if (!data) return;
     opener.current = button;
     saved.current = false;
     setError('');
     setNotice('');
-    setSearch('');
     submit.start();
-    const date = a?.businessDate ?? day;
-    const initial = a ? original.data?.locationChange?.after : data.state?.location;
-    setDraft({
+    const evidence = a ? original.data : undefined;
+    const after = evidence?.transfer?.after;
+    const state = data.state;
+    const department = after?.department ?? state?.departmentId;
+    const job = after?.job ?? state?.jobId;
+    const next: JobDraft = {
+      mode,
+      kind: a?.kind === 'Transfer' || (!a && !data.canChangeLocation) ? 'Transfer' : 'DataChange',
       action: a,
-      day: date,
-      initialDay: date,
+      day: a?.businessDate ?? day,
       source: data.sourceVersion,
-      original: initial,
-      value: initial,
-    });
+      value: a ? evidence?.locationChange?.after : state?.location,
+      department: department
+        ? { id: department, name: after?.segments?.[0]?.departmentName ?? state?.department ?? '' }
+        : undefined,
+      job: job ? { id: job, name: after?.segments?.[0]?.jobName ?? state?.job ?? '' } : undefined,
+      notice: evidence?.action.notice ?? '',
+      requires: evidence?.requires,
+    };
+    initial.current = next;
+    setDraft(next);
   }
-  function save() {
-    if (!draft?.value) return;
+  function save(record: JobDraft) {
+    const action = record.action?.id;
+    const input = {
+      expectedSourceVersion: record.source,
+      expectedRevision: record.action?.revision,
+      businessDate: record.day,
+    };
+    if (record.mode === 'redate') {
+      void submit.submit({ kind: 'redate', action, input });
+      return;
+    }
+    const changes = { ...input, insert: record.mode === 'insert' || undefined, requires: record.requires };
+    if (record.kind === 'DataChange' && record.value)
+      void submit.submit({ kind: 'location', action, input: { ...changes, location: record.value.id } });
+    if (record.kind === 'Transfer')
+      void submit.submit({
+        kind: 'transfer',
+        action,
+        input: { ...changes, department: record.department?.id, job: record.job?.id, notice: record.notice },
+      });
+  }
+  function remove(a: Action) {
+    if (!data || !a.canDelete) return;
+    setError('');
+    setNotice('');
+    submit.start();
     void submit.submit({
-      action: draft.action?.id,
-      input: {
-        businessDate: draft.day,
-        expectedSourceVersion: draft.source,
-        expectedRevision: draft.action?.revision,
-        location: draft.value.id,
-      },
+      kind: 'delete',
+      action: a.id,
+      input: { expectedSourceVersion: data.sourceVersion, expectedRevision: a.revision },
     });
   }
   const at = data?.actions.filter((a) => a.businessDate === day) ?? [];
@@ -211,62 +253,16 @@ export function JobInformation({
             {data.recordNumber} · {data.primaryJob ? '主岗' : '兼岗'}
           </ObjectDetailField>
           {draft ? (
-            <Box
-              component="form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                save();
-              }}
-            >
-              <Stack spacing={1.5}>
-                <Typography component="h3">{draft.action ? '更正记录' : '新增记录'} · 数据更改</Typography>
-                <ObjectTextField
-                  type="date"
-                  label="生效日期"
-                  value={draft.day}
-                  required
-                  disabled={!!draft.action}
-                  onChange={(e) => setDraft({ ...draft, day: e.target.value })}
-                />
-                <ObjectDetailField label="业务原因">工作地点变更</ObjectDetailField>
-                <ObjectDetailField label="工作地点" inputId="assignment-location" required>
-                  <Autocomplete
-                    id="assignment-location"
-                    fullWidth
-                    size="small"
-                    value={draft.value ?? null}
-                    options={choices.data ?? []}
-                    filterOptions={(v) => v}
-                    isOptionEqualToValue={(a, b) => a.id === b.id}
-                    getOptionLabel={(v) => v.name ?? v.id}
-                    onInputChange={(_, text, reason) => {
-                      if (reason === 'input' || reason === 'clear') setSearch(text);
-                    }}
-                    onChange={(_, v) => setDraft({ ...draft, value: v ?? undefined })}
-                    noOptionsText={choices.error ?? '没有匹配的地点'}
-                    renderInput={(props) => (
-                      <TextField
-                        {...props}
-                        variant="standard"
-                        required
-                        error={!!choices.error}
-                        helperText={choices.error}
-                      />
-                    )}
-                  />
-                </ObjectDetailField>
-                <Stack direction="row" gap={1}>
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    disabled={!draft.value || !draft.day || !dirty || submit.busy}
-                  >
-                    保存
-                  </Button>
-                  <Button onClick={() => exit.request(close)}>取消</Button>
-                </Stack>
-              </Stack>
-            </Box>
+            <AssignmentRecordForm
+              draft={draft}
+              update={setDraft}
+              view={data}
+              csrf={session.csrf}
+              busy={submit.busy}
+              dirty={dirty}
+              close={() => exit.request(close)}
+              save={save}
+            />
           ) : (
             <>
               {!selectedAction && (
@@ -318,12 +314,17 @@ export function JobInformation({
                     )}
                     {!at.length && <Typography>没有当日办理</Typography>}
                   </Stack>
-                  {data.canChangeLocation &&
+                  {(data.canChangeLocation || data.canTransfer) &&
                     actionSlot &&
                     createPortal(
-                      <Button variant="contained" onClick={(e) => begin(e.currentTarget)}>
-                        新增记录
-                      </Button>,
+                      <Stack direction="row" gap={1} flexWrap="wrap">
+                        <Button variant="contained" onClick={(e) => begin(e.currentTarget, 'add')}>
+                          新增记录
+                        </Button>
+                        {data.actions.some((a) => a.kind !== 'Hire' && a.operation !== 'Delete') && (
+                          <Button onClick={(e) => begin(e.currentTarget, 'insert')}>插入记录</Button>
+                        )}
+                      </Stack>,
                       actionSlot,
                     )}
                 </>
@@ -336,9 +337,23 @@ export function JobInformation({
               {opened && original.data && (
                 <Box>
                   <OriginalEvidence original={original.data} setRevision={setRevision} />
-                  {opened.canCorrectLocation &&
-                    original.data.action.revision === opened.revision &&
-                    !source && <Button onClick={(e) => begin(e.currentTarget, opened)}>更正记录</Button>}
+                  {original.data.action.revision === opened.revision && !source && (
+                    <Stack direction="row" gap={1} flexWrap="wrap">
+                      {(opened.canCorrectLocation || opened.canCorrectTransfer) && (
+                        <Button onClick={(e) => begin(e.currentTarget, 'correct', opened)}>更正记录</Button>
+                      )}
+                      {opened.canMaintain && (
+                        <Button onClick={(e) => begin(e.currentTarget, 'redate', opened)}>
+                          调整生效日期
+                        </Button>
+                      )}
+                      {opened.canDelete && (
+                        <Button disabled={submit.busy} onClick={() => remove(opened)}>
+                          删除记录
+                        </Button>
+                      )}
+                    </Stack>
+                  )}
                   {!selectedAction && original.data.action.sourceVersion !== data.sourceVersion && (
                     <Button
                       onClick={() => {
@@ -373,7 +388,7 @@ export function JobInformation({
       {notice && <Alert severity="success">{notice}</Alert>}
       {submit.pending.map((ref) => (
         <Button key={ref.submissionId} onClick={() => void submit.recover(ref)}>
-          查回地点变更提交
+          查回职务信息提交
         </Button>
       ))}
       {submit.storageError && <Alert severity="error">无法保存提交号，请恢复浏览器存储后办理。</Alert>}
@@ -394,6 +409,23 @@ export function OriginalEvidence({
     <>
       <Typography component="h3">{actionLabel(original.action)}原件</Typography>
       <ObjectDetailField label="生效日期">{original.action.businessDate}</ObjectDetailField>
+      {original.action.operation === 'Delete' && (
+        <ObjectDetailField label="办理状态">已删除</ObjectDetailField>
+      )}
+      {original.transfer?.beforeDepartmentName && (
+        <ObjectDetailField label="调出安排">
+          {[original.transfer.beforeDepartmentName, original.transfer.beforeJobName]
+            .filter(Boolean)
+            .join(' · ')}
+        </ObjectDetailField>
+      )}
+      {original.transfer?.after.segments?.[0] && (
+        <ObjectDetailField label="调入安排">
+          {[original.transfer.after.segments[0].departmentName, original.transfer.after.segments[0].jobName]
+            .filter(Boolean)
+            .join(' · ')}
+        </ObjectDetailField>
+      )}
       <ObjectDetailField label="首次办理时间">{recordedTime(original.action.recordedAt)}</ObjectDetailField>
       {original.departmentName && (
         <ObjectDetailField label="发生部门">{original.departmentName}</ObjectDetailField>

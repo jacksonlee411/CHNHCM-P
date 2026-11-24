@@ -6,6 +6,7 @@ import { ObjectForm, RecordBackButton, RecordControl } from '@chnhcm/ui';
 import { usePageTitle } from '../../shared/navigation';
 import * as person from '../personnel/api';
 import { EmployeeHire, employment } from './HirePage';
+import { actionLabel } from './AssignmentRecordForm';
 import { JobInformation, OriginalEvidence } from './JobInformation';
 import { registerPath } from './EmploymentRegister';
 
@@ -23,12 +24,14 @@ export function RegisterActionPage({
     unwrap(await api.GET('/api/v1/employment-actions/{id}', { params: { path: { id: actionId } } })),
   );
   const a = original.data?.action;
-  const visibleAssignment = person.useRead(a?.assignment, async () =>
-    unwrap(
-      await api.GET('/api/v1/assignments/{id}', {
-        params: { path: { id: a!.assignment }, query: { businessAt: a!.businessDate } },
-      }),
-    ),
+  const visibleAssignment = person.useRead(
+    a ? JSON.stringify([a.assignment, a.businessDate, a.revision]) : undefined,
+    async () =>
+      unwrap(
+        await api.GET('/api/v1/assignments/{id}', {
+          params: { path: { id: a!.assignment }, query: { businessAt: a!.businessDate } },
+        }),
+      ),
   );
   const [revision, setRevision] = useState('');
   const archived = person.useRead(revision || undefined, async () =>
@@ -106,8 +109,7 @@ export function RegisterActionPage({
         {a && (
           <>
             <Typography component="h1" variant="h5">
-              {a.kind === 'DataChange' ? '数据更改' : a.kind === 'CancelHire' ? '撤销入职' : '入职'} ·{' '}
-              {a.recordNumber} 号{a.primaryJob ? '主岗' : '兼岗'}
+              {actionLabel(a)} · {a.recordNumber} 号{a.primaryJob ? '主岗' : '兼岗'}
             </Typography>
             {cancel && overview.data && !current?.canCancel && (
               <Alert severity="info">当前不可撤销这笔办理。</Alert>

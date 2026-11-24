@@ -12,7 +12,16 @@ import (
 	f "chnhcm.local/chnhcm/internal/foundation"
 )
 
-func TestAssignmentLocationChangesPreserveBusinessAndRevisionIdentity(t *testing.T) {
+type assignmentFixture struct {
+	h                            *legal206
+	init                         bootstrap.InitInput
+	entity, bu, dep, job, person string
+	locations                    []string
+	hire                         map[string]any
+}
+
+func setupAssignment(t *testing.T) assignmentFixture {
+	t.Helper()
 	type M = map[string]any
 	h := legalSetup206(t)
 	b := h.b
@@ -33,6 +42,14 @@ func TestAssignmentLocationChangesPreserveBusinessAndRevisionIdentity(t *testing
 		locations = append(locations, loc.create(code, "MO", "", "2026-01-01")["id"].(string))
 	}
 	hire := b.call("POST", "/api/v1/hires", M{"person": person, "employer": entity, "department": dep, "job": job, "arrival": "2027-04-01", "location": locations[0], "notice": "合成首任通知"}, f.NewID(), 200)
+	return assignmentFixture{h, init, entity, bu, dep, job, person, locations, hire}
+}
+
+func TestAssignmentLocationChangesPreserveBusinessAndRevisionIdentity(t *testing.T) {
+	type M = map[string]any
+	sample := setupAssignment(t)
+	h, init, entity, bu, dep, job, person, locations, hire := sample.h, sample.init, sample.entity, sample.bu, sample.dep, sample.job, sample.person, sample.locations, sample.hire
+	b := h.b
 	base := "/api/v1/assignments/" + hire["assignment"].(string)
 	view := func(date string, source string) M {
 		q := base + "?businessAt=" + date
