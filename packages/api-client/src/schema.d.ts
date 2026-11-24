@@ -5178,6 +5178,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/managers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["setActualManager"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["endEmploymentAssignment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["leaveEmployment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/grade-records": {
         parameters: {
             query?: never;
@@ -5462,6 +5510,47 @@ export interface components {
             search?: string;
             page: number;
         };
+        ActualManagerCommand: {
+            /** Format: date */
+            businessDate: string;
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            /** @enum {string} */
+            purpose: "direct" | "functional";
+            /** Format: uuid */
+            manager?: string;
+            /** Format: date */
+            lastDay?: string;
+        };
+        ActualManagerFact: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            until?: string;
+            /** @enum {string} */
+            purpose: "direct" | "functional";
+            recordNumber: number;
+            /** Format: uuid */
+            manager?: string;
+            name?: string;
+        };
+        AssignmentExitCommand: {
+            /** Format: date */
+            date: string;
+            /** @enum {string} */
+            meaning: "last-active" | "first-inactive";
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            notice: string;
+        };
+        AssignmentExitEvidence: {
+            /** Format: date */
+            date: string;
+            /** @enum {string} */
+            meaning: "last-active" | "first-inactive";
+            /** Format: date */
+            firstInactive: string;
+        };
         AssignmentPromotionCommand: {
             /** Format: uuid */
             expectedSourceVersion: string;
@@ -5690,7 +5779,7 @@ export interface components {
             name: string;
             number: string;
             /** @enum {string} */
-            kind: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment" | "GradeRecord" | "Promotion";
+            kind: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment" | "GradeRecord" | "Promotion" | "SetManager" | "EndAssignment" | "Leave" | "Rehire";
             /** @enum {string} */
             status: "effective" | "future" | "cancelled" | "deleted";
             /** Format: date */
@@ -5796,6 +5885,12 @@ export interface components {
             keyword: string;
         };
         AssignmentView: {
+            /** Format: date */
+            lastActive?: string;
+            managers: components["schemas"]["ActualManagerFact"][];
+            canSetManager: boolean;
+            canEnd: boolean;
+            canLeave: boolean;
             canRecordGrade: boolean;
             canPromote: boolean;
             /** Format: date */
@@ -5830,6 +5925,7 @@ export interface components {
             relationshipPrimary: boolean;
         };
         HireTargetSearch: {
+            rehireOf?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
             job?: string;
             /** Format: uuid */
@@ -5848,6 +5944,7 @@ export interface components {
             page: number;
         };
         HireEmployerSearch: {
+            rehireOf?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
             person: string;
             /** Format: date */
@@ -5864,6 +5961,9 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            rehireOf?: components["schemas"]["EmploymentActionRef"];
+            manager?: components["schemas"]["ActualManagerFact"];
+            exit?: components["schemas"]["AssignmentExitEvidence"];
             noticeRef?: components["schemas"]["EmploymentActionRef"];
             promotion?: components["schemas"]["PromotionEvidence"];
             previous?: components["schemas"]["EmploymentActionRef"];
@@ -5956,6 +6056,7 @@ export interface components {
             segments: components["schemas"]["AssignmentSegment"][];
         };
         HireInput: {
+            rehireOf?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
             grade?: string;
             /** Format: date */
@@ -6010,6 +6111,7 @@ export interface components {
             reason?: string;
         };
         EmploymentAction: {
+            canRehire: boolean;
             canCorrectPromotion: boolean;
             canWithdrawPromotion: boolean;
             /** @enum {string} */
@@ -6054,6 +6156,7 @@ export interface components {
             canCancel: boolean;
         };
         EmploymentOverview: {
+            rehireFrom?: components["schemas"]["EmploymentActionRef"];
             terms: {
                 /** Format: uuid */
                 assignment: string;
@@ -23161,7 +23264,10 @@ export interface operations {
     };
     listPersonAppointmentDecisions: {
         parameters: {
-            query?: never;
+            query?: {
+                rehireAction?: string;
+                rehireRevision?: string;
+            };
             header?: never;
             path: {
                 id: string;
@@ -23377,7 +23483,7 @@ export interface operations {
                 businessTo?: string;
                 recordedFrom?: string;
                 recordedTo?: string;
-                kind?: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment" | "GradeRecord" | "Promotion";
+                kind?: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment" | "GradeRecord" | "Promotion" | "SetManager" | "EndAssignment" | "Leave" | "Rehire";
                 status?: "effective" | "future" | "cancelled" | "deleted";
                 sort?: "recordedAt" | "-recordedAt" | "businessDate" | "-businessDate";
                 page?: number;
@@ -23823,6 +23929,120 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssignmentGrade"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    setActualManager: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActualManagerCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    endEmploymentAssignment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentExitCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    leaveEmployment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentExitCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
                 };
             };
             /** @description Unavailable */

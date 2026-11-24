@@ -35,7 +35,7 @@ func validRegisterQuery(q h.RegisterQuery) bool {
 		}
 	}
 	return (q.BusinessTo == "" || q.BusinessFrom <= q.BusinessTo) && (q.RecordedTo == "" || q.RecordedFrom <= q.RecordedTo) &&
-		slices.Contains([]string{"", "Hire", "DataChange", "Transfer", "AdditionalAssignment", "ParallelEmployment", "ProbationStart", "ConfirmEmployment", "Promotion", "GradeRecord"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
+		slices.Contains([]string{"", "Hire", "DataChange", "Transfer", "AdditionalAssignment", "ParallelEmployment", "ProbationStart", "ConfirmEmployment", "Promotion", "GradeRecord", "SetManager", "EndAssignment", "Leave", "Rehire"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
 		slices.Contains([]string{"", "recordedAt", "-recordedAt", "businessDate", "-businessDate"}, q.Sort) &&
 		q.Page >= 1 && q.Page <= 1000000 && slices.Contains([]int{20, 50, 100}, q.PageSize)
 }
@@ -60,7 +60,7 @@ const registerSQL = `SELECT a.id,r.revision,issued.version,a.kind,r.business_dat
     JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
     JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(a.instance_id,a.assignment_id) ` + assignmentRevisionJoin + `
     JOIN staffing.employment_action_revision first ON (first.instance_id,first.action_id,first.revision)=(a.instance_id,a.id,a.revision)
-    WHERE a.instance_id=$1 AND a.kind<>'CancelHire'
+    WHERE a.instance_id=$1 AND a.kind<>'CancelHire' AND (a.kind<>'SetManager' OR nullif(r.adoption->'managerExit','null'::jsonb) IS NULL)
     AND (NULLIF($2,'')::date IS NULL OR r.business_date>=NULLIF($2,'')::date) AND (NULLIF($3,'')::date IS NULL OR r.business_date<=NULLIF($3,'')::date)
     AND (NULLIF($4,'')::date IS NULL OR a.recorded_at >= (NULLIF($4,'')::date::timestamp AT TIME ZONE 'Asia/Shanghai'))
     AND (NULLIF($5,'')::date IS NULL OR a.recorded_at < ((NULLIF($5,'')::date+1)::timestamp AT TIME ZONE 'Asia/Shanghai'))

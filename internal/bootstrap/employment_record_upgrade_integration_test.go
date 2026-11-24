@@ -78,10 +78,25 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	for _, table := range tables {
 		before[table] = snapshot(table, false)
 	}
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00047" })))
+	for _, table := range tables {
+		if snapshot(table, true) != before[table] {
+			t.Fatalf("00047 前置升级改变了 %s", table)
+		}
+	}
+	publications := func() string {
+		var data string
+		must(t, pool.QueryRow(ctx, "SELECT jsonb_agg(to_jsonb(p) ORDER BY instance_id,assignment_id,version)::text FROM staffing.assignment_publication p").Scan(&data))
+		return data
+	}
+	originalSources := publications()
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+	if publications() != originalSources {
+		t.Fatal("升级改变了旧任期的已发布来源")
+	}
 	for _, table := range tables {
 		if snapshot(table, true) != before[table] {
 			t.Fatalf("升级改变了旧数据 %s", table)

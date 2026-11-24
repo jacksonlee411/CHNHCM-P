@@ -14,7 +14,7 @@ import (
 const assignmentActionSelect = `SELECT a.id,r.revision,a.kind,r.operation,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,
 coalesce(r.adoption#>>'{promotion,department}',origin.department_id::text,t.department_id::text) AS department,coalesce(origin.job_id,t.job_id) AS job,
 r.business_date::text,h.version,r.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
-lower(t.period)::text,coalesce(upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),r.adoption->'previous'
+lower(t.period)::text,coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member xm USING(instance_id,assignment_id,action_id,revision) WHERE x.instance_id=t.instance_id AND x.assignment_id=t.id AND xm.version=h.version),upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),r.adoption->'previous'
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
 JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
 `
@@ -61,6 +61,17 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 		if e != nil {
 			return e
 		}
+		eligible, e := u.employmentAllowed(ctx, "employment.rehire", person, "", "", true)
+		if e != nil {
+			return e
+		}
+		var latest *h.ActionRef
+		if eligible {
+			latest, e = u.rehireAnchor(ctx, person, "9999-12-31")
+			if e != nil {
+				return e
+			}
+		}
 		for _, a := range actions {
 			if h.RelationAction(a.Kind) {
 				scoped, visible, e := u.relationVisibleAssignment(ctx, a, "read")
@@ -74,11 +85,23 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 				if e != nil {
 					return e
 				}
+				if a.Kind == "Leave" && scoped.CanHistory && latest != nil && latest.Action == a.ID {
+					scoped.CanRehire = true
+					var eligibleDay string
+					if e = u.tx.QueryRow(ctx, `SELECT first_inactive::text FROM staffing.employment_exit WHERE instance_id=$1 AND action_id=$2`, st.Instance, a.ID).Scan(&eligibleDay); e != nil {
+						return e
+					}
+					if eligibleDay <= day {
+						out.RehireFrom = latest
+						out.CanHire = false
+					}
+				}
 				out.Actions = append(out.Actions, scoped)
 				continue
 			}
 
 			if h.StartsAssignment(a.Kind) && !a.Cancelled {
+				out.CanHire = false
 				var seats int
 				var department string
 				e = u.tx.QueryRow(ctx, `SELECT department_id,(adoption->>'seats')::int FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND period @> $3::date AND version=$4`, st.Instance, a.Assignment, day, a.SourceVersion).Scan(&department, &seats)
@@ -117,7 +140,7 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 			if a.Kind == "Transfer" && !read.to {
 				a.Department, a.Job = read.before, read.beforeJob
 			}
-			if a.Kind == "Hire" && !a.Cancelled && a.From > today {
+			if (a.Kind == "Hire" || a.Kind == "Rehire") && !a.Cancelled && a.From > today {
 				a.CanCancel, e = u.employmentAllowed(ctx, "cancel", person, a.Employer, a.Department, false)
 				if e != nil {
 					return e
@@ -138,6 +161,9 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if !f.ValidID(original) || !f.ValidID(in.Revision) || strings.TrimSpace(in.Reason) == "" || utf8.RuneCountInString(in.Reason) > 1000 {
 			return "", f.Fail(400, "HIRE_INPUT", "请核对原办理并填写撤销依据")
 		}
+		if err := u.lockReporting(ctx); err != nil {
+			return "", err
+		}
 		a, err := u.action(ctx, original)
 		if err != nil {
 			return "", err
@@ -157,7 +183,7 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if err != nil {
 			return "", err
 		}
-		if a.Kind != "Hire" || a.Cancelled || a.From <= today || in.Revision != a.Revision {
+		if (a.Kind != "Hire" && a.Kind != "Rehire") || a.Cancelled || a.From <= today || in.Revision != a.Revision {
 			return "", f.Fail(409, "HIRE_CANCEL_UNAVAILABLE", "原办理已生效、已撤销或修订已变化")
 		}
 		if err = u.requireEmployment(ctx, "cancel", a.Person, a.Employer, a.Department); err != nil {
@@ -168,6 +194,16 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
          JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(head.instance_id,head.assignment_id,head.version) WHERE x.instance_id=$1 AND x.person_id=$2 AND x.id<>$3 AND s.period && daterange($4::date,nullif($5,'')::date,'[)'))`, st.Instance, a.Person, a.Assignment, a.From, a.Until).Scan(&parallel)
 		if err != nil {
 			return "", err
+		}
+		var reporting bool
+		err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.manager_agreement g JOIN staffing.assignment_head h USING(instance_id,assignment_id)
+			JOIN staffing.assignment_member m USING(instance_id,assignment_id,version,action_id,revision)
+			WHERE g.instance_id=$1 AND g.manager_assignment=$2 AND g.period && daterange($3::date,nullif($4,'')::date,'[)'))`, st.Instance, a.Assignment, a.From, a.Until).Scan(&reporting)
+		if err != nil {
+			return "", err
+		}
+		if reporting {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "已有实际汇报引用本任期，请先核对后续安排")
 		}
 		if parallel {
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "原期间已有关联任职，请先核对后续安排")
@@ -396,6 +432,15 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			return e
 		}
 		e = u.tx.QueryRow(ctx, "SELECT adoption FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3", st.Instance, id, a.Revision).Scan(&out)
+		if e == nil && out.Manager != nil && out.Manager.Manager != "" {
+			ok, err := u.discloseManager(ctx, out.Manager, a.BusinessDate)
+			if err != nil {
+				return err
+			}
+			if !ok {
+				out.Manager = nil
+			}
+		}
 		if e == nil && out.Sources != nil && out.Sources.Decision != nil {
 			ref := out.Sources.Decision
 			opt, err := scanDecision(u.tx.QueryRow(ctx, `WITH versions AS (SELECT * FROM staffing.appointment_version WHERE instance_id=$1 AND source=$3 AND version=$4) `+memberSelect, st.Instance, a.Person, ref.Source, ref.Version))

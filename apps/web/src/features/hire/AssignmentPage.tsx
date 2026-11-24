@@ -13,7 +13,7 @@ export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
   const { id = '' } = useParams(),
     route = useLocation(),
     [params] = useSearchParams();
-  const manual = !!route.state?.hire || params.get('view') === 'history';
+  const manual = !!route.state?.hire || params.get('view') === 'history' || params.has('rehireAction');
   const overview = person.useRead(manual ? undefined : id + (params.get('businessAt') ?? ''), () =>
     employment(id, params.get('businessAt') ?? undefined),
   );
@@ -91,6 +91,8 @@ function AssignmentDetail({
   );
   const data = view.data?.person === id ? view.data : undefined;
   const profile = person.useRead(data?.primaryJob ? id : undefined, () => person.profile(id));
+  const history = person.useRead(data?.primaryJob ? JSON.stringify([id,day]) : undefined,()=>employment(id,day||undefined));
+  const otherTerms = history.data?.terms.filter(t=>t.recordNumber===0 && t.assignment!==assignment);
   const listed = params.get('from') === 'assignments';
   const query = person.parse(params);
   const navigation = person.useRead(listed ? params.toString() + assignment : undefined, async () =>
@@ -187,6 +189,13 @@ function AssignmentDetail({
               {data.from} 起
             </Typography>
             {data.relationshipPrimary && !data.primaryJob && <Typography>本工作关系主任职</Typography>}
+            {otherTerms && otherTerms.length>0 && <Stack direction="row" flexWrap="wrap" alignItems="center">
+              <Typography>同号任期</Typography>
+              {otherTerms.map(term=>{
+                const q=new URLSearchParams(params);q.set('assignmentDay',term.from);
+                return <Button component={Link} key={term.assignment} to={person.path+'/'+id+'/assignments/'+term.assignment+'?'+q}>{term.from} 起</Button>
+              })}
+            </Stack>}
             <Tabs value="job" aria-label="人员详情" variant="scrollable">
               {profile.data && (
                 <Tab component={Link} to={path + '?' + personQuery} value="person" label="个人资料" />

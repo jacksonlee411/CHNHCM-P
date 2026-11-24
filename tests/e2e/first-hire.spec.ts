@@ -526,10 +526,17 @@ test('M04 职务信息地点更改与原笔纠错 原生200%', async () => {
 async function openRegister(page: Page) {
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   if (await desktop.isVisible()) {
-    await desktop.click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-    await page.getByRole('button', { name: '人事事务', exact: true }).click();
-    await page.getByRole('menuitem', { name: '办理记录', exact: true }).click();
+    const transactions = page.getByRole('button', { name: '人事事务', exact: true });
+    if (!(await transactions.isVisible())) {
+      await desktop.click();
+      await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+      await expect(page.getByRole('heading', { name: /^(员工|办理记录|人员档案)$/ }).first()).toBeVisible();
+    }
+    await transactions.focus();
+    await page.keyboard.press('Enter');
+    const register = page.getByRole('menuitem', { name: '办理记录', exact: true });
+    await register.focus();
+    await page.keyboard.press('Enter');
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
     const personnel = page.getByRole('button', { name: '人员', exact: true });
@@ -1017,3 +1024,51 @@ for (const mode of ['pair','reverse'] as const) {
     await promotionJourney(page,await seed(page),mode);
   });
 }
+
+async function lifecycleJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
+  await hireAtLocation(page,sample);
+  const manager=await seed(page);
+  await hireAtLocation(page,manager);
+  await openEmployeeAssignment(page,sample);
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  const choose=async(label:string,name:string)=>{
+    await page.getByRole('combobox',{name:new RegExp('^'+label)}).fill(name);
+    await page.getByRole('option',{name,exact:true}).click();
+  };
+  const add=async(kind:string,label:string,day:string)=>{
+    await button('新增记录').click();
+    await page.getByRole('combobox',{name:/办理类型/}).click();
+    await page.getByRole('option',{name:kind,exact:true}).click();
+    const field=page.getByRole('textbox',{name:new RegExp('^'+label)});await field.fill(day);await field.press('Tab');
+  };
+  await add('实际汇报','生效日期','2027-05-01');
+  await page.getByRole('combobox',{name:/经理任职/}).fill(manager.name);
+  await page.getByRole('option',{name:new RegExp('^'+manager.name+' · 0 号')}).click();
+  await button('保存').focus();await page.keyboard.press('Enter');
+  await expect(page.getByText(manager.name+' · 0 号',{exact:true})).toBeVisible();
+  await button('实际汇报 · 2027-05-01').click();
+  await expect(page.getByRole('heading',{name:'实际汇报原件'})).toBeVisible();
+  await add('离职','原通知日期','2027-08-31');
+  await page.getByLabel(/退出依据/).fill('本关系最后在职日为八月三十一日');await button('保存').click();
+  await button('离职 · 2027-08-31').click();await expect(page.getByRole('heading',{name:'离职原件'})).toBeVisible();
+  await openRegister(page);
+  const name=page.getByRole('textbox',{name:'姓名或人员编号'});await name.fill(sample.name);await name.press('Enter');
+  const left=page.locator('a[data-object-link]').filter({hasText:'离职'});await expect(left).toHaveCount(1);
+  await left.focus();await page.keyboard.press('Enter');
+  await page.getByRole('link',{name:'办理再聘',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'办理再聘'})).toBeVisible();
+  const day=page.getByRole('textbox',{name:/^到岗日/});await day.fill('2027-10-01');await day.press('Tab');
+  for(const [label,value] of [['部门',sample.department],['职务',sample.job],['用人单位',sample.employer]])await choose(label,value);
+  await page.getByLabel(/任用通知说明/).fill('十月重新聘任');
+  await button('保存').click();
+  await expect(page.getByText('已保存。',{exact:true})).toBeVisible();
+  await expect(page.getByText(/再聘 ·/).first()).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 实际汇报离职及原记录再聘 ${width}x${height}`,async({page})=>{
+    test.setTimeout(180000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await lifecycleJourney(page,sample);
+  });
+}
+test('M04 实际汇报离职及原记录再聘 原生200%',async()=>{await native200(lifecycleJourney)});

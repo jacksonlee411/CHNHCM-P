@@ -16,6 +16,7 @@ type Adoption struct {
 	Segments []staff.AssignmentSegment `json:"segments"`
 }
 type Hire struct {
+	RehireOf   *ActionRef   `json:"rehireOf,omitempty"`
 	Grade      string       `json:"grade,omitempty"`
 	TrialStart string       `json:"trialStart,omitempty"`
 	Person     string       `json:"person"`
@@ -45,6 +46,7 @@ type Receipt struct {
 	RecordNumber *int        `json:"recordNumber,omitempty"`
 }
 type Action struct {
+	CanRehire            bool       `json:"canRehire"`
 	Previous             *ActionRef `json:"-"`
 	CanCorrectPromotion  bool       `json:"canCorrectPromotion"`
 	CanWithdrawPromotion bool       `json:"canWithdrawPromotion"`
@@ -80,6 +82,7 @@ type TermLink struct {
 	From         string `json:"from"`
 }
 type Overview struct {
+	RehireFrom  *ActionRef `json:"rehireFrom,omitempty"`
 	Terms       []TermLink `json:"terms"`
 	CanHire     bool       `json:"canHire"`
 	Actions     []Action   `json:"actions"`
@@ -100,6 +103,9 @@ type RelationSummary struct {
 	Terms        []TermLink `json:"terms"`
 }
 type Original struct {
+	Manager           *ManagerFact       `json:"manager,omitempty"`
+	Exit              *ExitEvidence      `json:"exit,omitempty"`
+	RehireOf          *ActionRef         `json:"rehireOf,omitempty"`
 	NoticeRef         *ActionRef         `json:"noticeRef,omitempty"`
 	Promotion         *PromotionEvidence `json:"promotion,omitempty"`
 	Previous          *ActionRef         `json:"previous,omitempty"`
@@ -123,30 +129,32 @@ type Original struct {
 	OriginalRevision  string             `json:"originalRevision,omitempty"`
 }
 type EmployerSearch struct {
-	Person     string `json:"person"`
-	Arrival    string `json:"arrival"`
-	LastDay    string `json:"lastDay,omitempty"`
-	BU         string `json:"bu,omitempty"`
-	Location   string `json:"location,omitempty"`
-	Department string `json:"department,omitempty"`
-	Search     string `json:"search,omitempty"`
-	Page       int    `json:"page"`
+	RehireOf   *ActionRef `json:"rehireOf,omitempty"`
+	Person     string     `json:"person"`
+	Arrival    string     `json:"arrival"`
+	LastDay    string     `json:"lastDay,omitempty"`
+	BU         string     `json:"bu,omitempty"`
+	Location   string     `json:"location,omitempty"`
+	Department string     `json:"department,omitempty"`
+	Search     string     `json:"search,omitempty"`
+	Page       int        `json:"page"`
 }
 type TargetSearch struct {
-	Job        string `json:"job,omitempty"`
-	Person     string `json:"person"`
-	Kind       string `json:"kind"`
-	Arrival    string `json:"arrival"`
-	LastDay    string `json:"lastDay,omitempty"`
-	Employer   string `json:"employer,omitempty"`
-	Department string `json:"department,omitempty"`
-	Search     string `json:"search,omitempty"`
-	Page       int    `json:"page"`
+	RehireOf   *ActionRef `json:"rehireOf,omitempty"`
+	Job        string     `json:"job,omitempty"`
+	Person     string     `json:"person"`
+	Kind       string     `json:"kind"`
+	Arrival    string     `json:"arrival"`
+	LastDay    string     `json:"lastDay,omitempty"`
+	Employer   string     `json:"employer,omitempty"`
+	Department string     `json:"department,omitempty"`
+	Search     string     `json:"search,omitempty"`
+	Page       int        `json:"page"`
 }
 type Hires interface {
 	JobInformation
 	PublishDecision(context.Context, f.Credentials, string, DecisionPublication) (DecisionEdition, error)
-	HireDecisions(context.Context, f.Credentials, string) ([]DecisionOption, error)
+	HireDecisions(context.Context, f.Credentials, string, *ActionRef) ([]DecisionOption, error)
 	HireTargets(context.Context, f.Credentials, TargetSearch) ([]org.EligibleEntity, error)
 	HireEmployers(context.Context, f.Credentials, EmployerSearch) ([]org.EligibleEntity, error)
 	OriginalAction(context.Context, f.Credentials, string, string) (Original, error)

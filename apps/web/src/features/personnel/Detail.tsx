@@ -247,6 +247,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
                 更正资料
               </Button>
             ) : null}
+            {hire.data?.rehireFrom && <Button component={Link} to={person.path+'/'+id+'/employment?rehireAction='+hire.data.rehireFrom.action+'&rehireRevision='+hire.data.rehireFrom.revision}>办理再聘</Button>}
             {hire.data && (hire.data.canHire || hire.data.actions.length > 0) && (
               <Button component={Link} to={person.path + '/' + id + '/employment?' + params}
                 state={{ hire: hire.data.actions.length === 0 }}>

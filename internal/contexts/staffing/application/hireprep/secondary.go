@@ -9,7 +9,7 @@ import (
 )
 
 func StartsAssignment(kind string) bool {
-	return kind == "Hire" || kind == "AdditionalAssignment" || kind == "ParallelEmployment"
+	return kind == "Hire" || kind == "Rehire" || kind == "AdditionalAssignment" || kind == "ParallelEmployment"
 }
 
 type Secondary struct {

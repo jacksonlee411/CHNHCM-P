@@ -83,6 +83,7 @@ export function RegisterActionPage({
         actions={
           a && (
             <Stack direction="row" gap={1}>
+              {current?.canRehire && <Button component={Link} to={person.path+'/'+a.person+'/employment?rehireAction='+a.id+'&rehireRevision='+a.revision} state={{fromAction:details}}>办理再聘</Button>}
               {current?.canCancel && (
                 <Button component={Link} to={registerPath + '/' + actionId + '/cancel?' + query}>
                   撤销未来入职

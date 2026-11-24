@@ -66,7 +66,7 @@ func (st *Store) AddSecondary(ctx context.Context, c f.Credentials, id, key stri
             FROM staffing.assignment t JOIN staffing.assignment_head head ON (head.instance_id,head.assignment_id)=(t.instance_id,t.id)
             JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(head.instance_id,head.assignment_id,head.version)
             WHERE t.instance_id=$1 AND t.person_id=$2 AND t.record_number=0),false)
-            AND ($6 OR EXISTS(SELECT FROM staffing.employment WHERE instance_id=$1 AND id=$3 AND period @> daterange($4::date,nullif($5,'')::date,'[)')))`,
+            AND ($6 OR EXISTS(SELECT FROM staffing.employment WHERE instance_id=$1 AND id=$3 AND period @> daterange($4::date,nullif($5,'')::date,'[)') AND NOT EXISTS(SELECT FROM staffing.employment_exit x WHERE x.instance_id=$1 AND x.employment_id=$3 AND ($5='' OR x.first_inactive<nullif($5,'')::date))))`,
 			st.Instance, a.Person, a.Employment, term.From, term.Until, in.Parallel).Scan(&covered)
 		if e != nil {
 			return "", e

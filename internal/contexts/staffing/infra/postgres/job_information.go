@@ -22,7 +22,7 @@ func (u *unit) assignmentIdentity(ctx context.Context, id string) (h.Action, err
 	if !f.ValidID(id) {
 		return h.Action{}, unknownAssignment()
 	}
-	a, err := scanHireAction(u.tx.QueryRow(ctx, hireActionSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment')", u.store.Instance, id))
+	a, err := scanHireAction(u.tx.QueryRow(ctx, hireActionSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment','Rehire')", u.store.Instance, id))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return a, unknownAssignment()
 	}
@@ -113,7 +113,16 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		}
 		out.Name, out.Number = recognized[0].Name, recognized[0].Number
 		out.Period = a.Period
-		e = u.tx.QueryRow(ctx, `SELECT e.relationship,coalesce((SELECT elem->>'entityName' FROM jsonb_array_elements(coalesce(r.adoption#>'{sources,legal}',r.adoption#>'{secondary,legal}')) elem WHERE (elem->>'from')<=$3 AND (coalesce(elem->>'until','')='' OR (elem->>'until')>$3) LIMIT 1),r.adoption#>>'{sources,legal,0,entityName}',r.adoption#>>'{secondary,legal,0,entityName}','') FROM staffing.employment e JOIN staffing.employment_action a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id) JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision) WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment')`, st.Instance, id, day).Scan(&out.Relationship, &out.EmployerName)
+		if version != a.SourceVersion {
+			if e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member m USING(instance_id,assignment_id,action_id,revision) WHERE x.instance_id=$1 AND x.assignment_id=$2 AND m.version=$3),upper(period)::text,'') FROM staffing.assignment WHERE instance_id=$1 AND id=$2`, st.Instance, id, version).Scan(&out.Until); e != nil {
+				return e
+			}
+		}
+		if out.Until != "" {
+			last, _ := time.Parse(time.DateOnly, out.Until)
+			out.LastActive = last.AddDate(0, 0, -1).Format(time.DateOnly)
+		}
+		e = u.tx.QueryRow(ctx, `SELECT e.relationship,coalesce((SELECT elem->>'entityName' FROM jsonb_array_elements(coalesce(r.adoption#>'{sources,legal}',r.adoption#>'{secondary,legal}')) elem WHERE (elem->>'from')<=$3 AND (coalesce(elem->>'until','')='' OR (elem->>'until')>$3) LIMIT 1),r.adoption#>>'{sources,legal,0,entityName}',r.adoption#>>'{secondary,legal,0,entityName}','') FROM staffing.employment e JOIN staffing.employment_action a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id) JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision) WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment','Rehire')`, st.Instance, id, day).Scan(&out.Relationship, &out.EmployerName)
 		if e != nil {
 			return e
 		}
@@ -141,7 +150,16 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		if out.Probation, e = u.probationAt(ctx, a, version, day); e != nil {
 			return e
 		}
+		out.Managers = []h.ManagerFact{}
+		if out.State != nil {
+			if out.Managers, e = u.managerFacts(ctx, a, day, version); e != nil {
+				return e
+			}
+		}
 		if !a.Cancelled && version == a.SourceVersion && out.State != nil {
+			if out.CanSetManager, e = u.employmentAllowed(ctx, "manager.change", a.Person, a.Employer, a.Department, false); e != nil {
+				return e
+			}
 			if out.CanRecordGrade, e = u.employmentAllowed(ctx, "grade.record", a.Person, a.Employer, a.Department, false); e != nil {
 				return e
 			}
@@ -162,11 +180,29 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			}
 		}
 
-		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment_primary WHERE instance_id=$1 AND layer='assignment' AND owner_id=$2 AND target_id=$3 AND period @> $4::date)`, st.Instance, a.Employment, id, day).Scan(&out.RelationshipPrimary)
+		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_member m JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
+            WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind IN ('Hire','Rehire','ParallelEmployment'))
+            AND EXISTS(SELECT FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date)`, st.Instance, id, version, day).Scan(&out.RelationshipPrimary)
 		if e != nil {
 			return e
 		}
 		if !a.Cancelled && version == a.SourceVersion {
+			var alreadyEnded bool
+			if e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_exit WHERE instance_id=$1 AND assignment_id=$2)`, st.Instance, id).Scan(&alreadyEnded); e != nil {
+				return e
+			}
+			if out.State != nil && !alreadyEnded {
+				out.CanLeave, e = u.employmentAllowed(ctx, "employment.leave", a.Person, a.Employer, a.Department, false)
+				if e != nil {
+					return e
+				}
+				if !a.PrimaryJob && !out.RelationshipPrimary {
+					out.CanEnd, e = u.employmentAllowed(ctx, "assignment.end", a.Person, a.Employer, a.Department, false)
+					if e != nil {
+						return e
+					}
+				}
+			}
 			if out.State != nil {
 				if out.CanAddSecondary, e = u.employmentAllowed(ctx, "assignment.add", a.Person, a.Employer, a.Department, false); e != nil {
 					return e

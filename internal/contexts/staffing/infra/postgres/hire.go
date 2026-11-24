@@ -76,10 +76,13 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	if in.TrialStart != "" && (!f.ValidDate(in.TrialStart) || !term.Includes(in.TrialStart)) {
 		return plan, f.Fail(400, "PROBATION_START", "实际试用开始日须在工作关系期间内")
 	}
-	if err = u.requireEmployment(ctx, "hire", in.Person, in.Employer, in.Department); err != nil {
+	if err = u.requireEmployment(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, in.Department); err != nil {
 		return plan, err
 	}
 	if err = lock(ctx, u.tx, false, "staffing.hire.person", u.store.Instance, in.Person); err != nil {
+		return plan, err
+	}
+	if err = u.checkRehireOrigin(ctx, in.Person, term.From, in.RehireOf); err != nil {
 		return plan, err
 	}
 	plan.employment, plan.assignment = f.NewID(), f.NewID()
@@ -121,7 +124,7 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	}
 	var existing bool
 	err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment e WHERE e.instance_id=$1 AND e.person_id=$2
-	AND e.period && daterange($3::date,NULLIF($4,'')::date,'[)') AND NOT EXISTS(SELECT FROM staffing.employment_action c
+	AND (e.period * daterange(NULL,(SELECT x.first_inactive FROM staffing.employment_exit x WHERE (x.instance_id,x.employment_id)=(e.instance_id,e.id)),'[)')) && daterange($3::date,NULLIF($4,'')::date,'[)') AND NOT EXISTS(SELECT FROM staffing.employment_action c
 	WHERE c.instance_id=e.instance_id AND c.employment_id=e.id AND c.kind='CancelHire'))`, u.store.Instance, in.Person, term.From, term.Until).Scan(&existing)
 	if err != nil {
 		return plan, err
@@ -188,7 +191,7 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		if len(p.Missing) > 0 {
 			return "", f.Fail(409, "HIRE_IDENTITY", "请先补齐入职所需资料")
 		}
-		if err = u.requireEmployment(ctx, "hire", in.Person, in.Employer, in.Department); err != nil {
+		if err = u.requireEmployment(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, in.Department); err != nil {
 			return "", err
 		}
 		if p.previousAction != "" {
@@ -210,7 +213,13 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		if in.TrialStart != "" {
 			adoption["trialStart"] = in.TrialStart
 		}
-		item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: "Hire", date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
+		kind := "Hire"
+		if in.RehireOf != nil {
+			kind = "Rehire"
+			adoption["rehireOf"] = in.RehireOf
+			adoption["reason"] = "rehire"
+		}
+		item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: kind, date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
 		if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location, p.Adoption.Grade); err != nil {
 			return "", err
 		}
@@ -295,14 +304,19 @@ func (st *Store) HireEmployers(ctx context.Context, c f.Credentials, in h.Employ
 	}
 	candidates := []org.EligibleEntity{}
 	err = st.within(ctx, c, false, false, func(u *unit) error {
-		allowed, e := u.employmentAllowed(ctx, "hire", in.Person, "", "", true)
+		allowed, e := u.employmentAllowed(ctx, hirePermission(in.RehireOf), in.Person, "", "", true)
 		if e != nil {
 			return e
 		}
 		if !allowed {
 			return f.Fail(403, "HIRE_DENIED", "没有本次办理权限")
 		}
-		return u.employerTargets(ctx, term, in, "hire", &candidates)
+		if in.RehireOf != nil {
+			if e := u.checkRehireOrigin(ctx, in.Person, in.Arrival, in.RehireOf); e != nil {
+				return e
+			}
+		}
+		return u.employerTargets(ctx, term, in, hirePermission(in.RehireOf), &candidates)
 	})
 	return candidates, err
 }
@@ -353,14 +367,19 @@ func (st *Store) HireTargets(ctx context.Context, c f.Credentials, in h.TargetSe
 		if field == "departmentId" {
 			dept = ""
 		}
-		allowed, err := u.employmentAllowed(ctx, "hire", in.Person, in.Employer, dept, true)
+		allowed, err := u.employmentAllowed(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, dept, true)
 		if err != nil {
 			return err
 		}
 		if !allowed {
 			return f.Fail(403, "HIRE_DENIED", "没有本次办理权限")
 		}
-		return u.arrangementTargets(ctx, term, in, field, "hire", &items)
+		if in.RehireOf != nil {
+			if e := u.checkRehireOrigin(ctx, in.Person, in.Arrival, in.RehireOf); e != nil {
+				return e
+			}
+		}
+		return u.arrangementTargets(ctx, term, in, field, hirePermission(in.RehireOf), &items)
 	})
 	return items, err
 }

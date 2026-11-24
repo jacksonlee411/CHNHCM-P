@@ -50,6 +50,11 @@ type State struct {
 }
 
 type AssignmentView struct {
+	LastActive          string         `json:"lastActive,omitempty"`
+	CanEnd              bool           `json:"canEnd"`
+	CanLeave            bool           `json:"canLeave"`
+	Managers            []ManagerFact  `json:"managers"`
+	CanSetManager       bool           `json:"canSetManager"`
 	CanRecordGrade      bool           `json:"canRecordGrade"`
 	CanPromote          bool           `json:"canPromote"`
 	Probation           ProbationState `json:"probation"`
@@ -134,6 +139,8 @@ type TransferSearch struct {
 	Department   string `json:"department,omitempty"`
 }
 type JobInformation interface {
+	ExitAssignment(context.Context, f.Credentials, string, string, bool, ExitCommand) (Receipt, error)
+	SetManager(context.Context, f.Credentials, string, string, ManagerCommand) (Receipt, error)
 	RecordPromotion(context.Context, f.Credentials, string, string, string, string, PromotionCommand) (Receipt, error)
 	GradeOptions(context.Context, f.Credentials, string, GradeSearch) ([]GradeRef, error)
 	RecordProbation(context.Context, f.Credentials, string, string, string, ProbationCommand) (Receipt, error)

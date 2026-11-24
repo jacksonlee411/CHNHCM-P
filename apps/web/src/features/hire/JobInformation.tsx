@@ -10,6 +10,7 @@ import {
   UnsavedChangesDialog,
   recordedTime,
 } from '@chnhcm/ui';
+import {managerPurposes} from './LifecycleFields';
 import { useDraftExit } from '../../shared/dated/useDraftExit';
 import { useRead, message } from '../personnel/api';
 import { useRuleSubmission } from '../readiness/useRuleSubmission';
@@ -24,6 +25,8 @@ import {
 
 type Action = Models['EmploymentAction'];
 type Command =
+  | { kind:'manager'; input:Models['ActualManagerCommand'] }
+  | { kind:'exit'; leave:boolean; input:Models['AssignmentExitCommand'] }
   | { kind: 'grade'; form:'Promotion'|'GradeRecord'|'PromotionTransfer'; action?:string; input:Models['AssignmentPromotionCommand'] }
   | { kind: 'withdraw'; action:string; input:Models['HireCancel'] }
   | { kind: 'probation'; confirm: boolean; input: Models['ProbationCommand'] }
@@ -106,6 +109,8 @@ export function JobInformation({
   const submit = useRuleSubmission<Command, Models['HireReceipt']>('assignment-location', session, {
     send: async (cmd, key) => {
       const headers = { ...header, 'Idempotency-Key': key };
+      if (cmd.kind==='manager') return unwrap(await api.POST('/api/v1/assignments/{id}/managers',{params:{path:{id:assignment},header:headers},body:cmd.input}));
+      if (cmd.kind==='exit') return unwrap(await api.POST(cmd.leave ? '/api/v1/assignments/{id}/leave' : '/api/v1/assignments/{id}/end',{params:{path:{id:assignment},header:headers},body:cmd.input}));
       if (cmd.kind==='withdraw') return unwrap(await api.POST('/api/v1/employment-actions/{id}/cancel',{
         params:{path:{id:cmd.action},header:headers},body:cmd.input}));
       if (cmd.kind==='grade') {
@@ -240,6 +245,14 @@ export function JobInformation({
     setDraft(next);
   }
   function save(record: JobDraft) {
+    if(record.kind==='SetManager'){
+      void submit.submit({kind:'manager',input:{businessDate:record.day,expectedSourceVersion:record.source,purpose:record.purpose ?? 'direct',manager:record.endReporting ? undefined : record.manager?.id,lastDay:record.endReporting ? undefined : record.managerLastDay || undefined}});
+      return;
+    }
+    if(record.kind==='Leave'||record.kind==='EndAssignment'){
+      void submit.submit({kind:'exit',leave:record.kind==='Leave',input:{date:record.day,meaning:record.meaning ?? 'last-active',expectedSourceVersion:record.source,notice:record.notice}});
+      return;
+    }
     const action = record.action?.id;
     const input = {
       expectedSourceVersion: record.source,
@@ -358,6 +371,8 @@ export function JobInformation({
                           .join(' · ')
                       : '该日无有效任职'}
                   </ObjectDetailField>
+                  {data.managers.map(fact=><ObjectDetailField key={fact.purpose} label={managerPurposes[fact.purpose]}>{fact.name} · {fact.recordNumber} 号</ObjectDetailField>)}
+                  {data.lastActive && <ObjectDetailField label="最后任职日">{data.lastActive}</ObjectDetailField>}
                   {data.state && <ObjectDetailField label="个人职级">{data.state.grade?.name ?? '未记载'}</ObjectDetailField>}
                   {data.state && data.probation.status !== 'unrecorded' && (
                     <ObjectDetailField label="试用状态">
@@ -500,6 +515,11 @@ export function OriginalEvidence({
     <>
       <Typography component="h3">{actionLabel(original.action)}原件</Typography>
       <ObjectDetailField label="生效日期">{original.action.businessDate}</ObjectDetailField>
+      {original.manager && <ObjectDetailField label={managerPurposes[original.manager.purpose]}>{original.manager.manager ? original.manager.name+' · '+original.manager.recordNumber+' 号' : '汇报结束'}</ObjectDetailField>}
+      {original.exit && <>
+        <ObjectDetailField label={original.exit.meaning==='last-active'?'最后在职日':'首个不在职日'}>{original.exit.date}</ObjectDetailField>
+        {original.exit.meaning==='last-active' && <ObjectDetailField label="首个不在职日">{original.exit.firstInactive}</ObjectDetailField>}
+      </>}
       {original.promotion && <>
         <ObjectDetailField label="个人职级">{original.promotion.before?.name ?? '未记载'} → {original.promotion.after.name}</ObjectDetailField>
         <ObjectDetailField label="发生部门">{original.promotion.departmentName}</ObjectDetailField>

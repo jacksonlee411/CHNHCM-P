@@ -79,6 +79,17 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-options", ruleBody(func(r *http.Request, in h.SecondaryOption) (any, error) {
 		return hires.SecondaryOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
+	for _, op := range []struct {
+		path  string
+		leave bool
+	}{{"end", false}, {"leave", true}} {
+		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.ExitCommand) (any, error) {
+			return hires.ExitAssignment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.leave, in)
+		}))
+	}
+	mux.HandleFunc("POST /api/v1/assignments/{id}/managers", ruleBody(func(r *http.Request, in h.ManagerCommand) (any, error) {
+		return hires.SetManager(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
 	mux.HandleFunc("POST /api/v1/assignments/{id}/grade-options", ruleBody(func(r *http.Request, in h.GradeSearch) (any, error) {
 		return hires.GradeOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
@@ -115,11 +126,16 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 		return hires.PublishDecision(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), in)
 	}))
 	mux.HandleFunc("GET /api/v1/persons/{id}/appointment-decisions", func(w http.ResponseWriter, r *http.Request) {
-		if _, e := queryValues(r); e != nil {
+		q, e := queryValues(r, "rehireAction", "rehireRevision")
+		if e != nil {
 			writeError(w, e)
 			return
 		}
-		result, e := hires.HireDecisions(r.Context(), credentials(r), r.PathValue("id"))
+		var ref *h.ActionRef
+		if q.Has("rehireAction") || q.Has("rehireRevision") {
+			ref = &h.ActionRef{Action: q.Get("rehireAction"), Revision: q.Get("rehireRevision")}
+		}
+		result, e := hires.HireDecisions(r.Context(), credentials(r), r.PathValue("id"), ref)
 		respond(w, 200, result, e)
 	})
 	mux.HandleFunc("POST /api/v1/hires/targets", ruleBody(func(r *http.Request, in h.TargetSearch) (any, error) {
