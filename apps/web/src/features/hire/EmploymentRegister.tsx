@@ -25,6 +25,7 @@ const kinds = {
   ParallelEmployment: '并行关系聘任',
   ProbationStart: '试用开始',
   ConfirmEmployment: '转正',
+  SetManager:'实际汇报',EndAssignment:'结束任职',Leave:'离职',Rehire:'再聘',
   GradeRecord:'补录实际职级',
   Promotion:'晋升',
 } as const;

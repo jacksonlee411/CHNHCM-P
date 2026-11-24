@@ -50,6 +50,7 @@ type State struct {
 }
 
 type AssignmentView struct {
+	LastActive          string         `json:"lastActive,omitempty"`
 	CanEnd              bool           `json:"canEnd"`
 	CanLeave            bool           `json:"canLeave"`
 	Managers            []ManagerFact  `json:"managers"`

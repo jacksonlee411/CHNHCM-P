@@ -3,6 +3,7 @@ import { Autocomplete, Box, Button, MenuItem, Stack, TextField, Typography } fro
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField, ObjectTextField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
+import { LifecycleFields } from './LifecycleFields';
 import { EarlierAction, PromotionFields } from './PromotionFields';
 import { ProbationFields } from './ProbationFields';
 import type { Option } from './Target';
@@ -10,7 +11,12 @@ import type { Option } from './Target';
 type Action = Models['EmploymentAction'];
 export type JobDraft = {
   mode: 'add' | 'insert' | 'correct' | 'redate' | 'withdraw';
-  kind: 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment' | 'GradeRecord' | 'Promotion' | 'PromotionTransfer';
+  kind: 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment' | 'GradeRecord' | 'Promotion' | 'PromotionTransfer' | 'SetManager' | 'EndAssignment' | 'Leave';
+  purpose?: 'direct' | 'functional';
+  manager?: Option;
+  endReporting?: boolean;
+  managerLastDay?: string;
+  meaning?: 'last-active' | 'first-inactive';
   grade?: Models['AssignmentGrade'];
   originalGrade?: Models['AssignmentGrade'];
   successor?: Action;
@@ -31,7 +37,7 @@ export type JobDraft = {
 };
 
 const names = {
-  Hire: '入职',
+  Hire: '入职', SetManager: '实际汇报', EndAssignment:'结束任职', Leave:'离职', Rehire:'再聘',
   Promotion: '晋升',
   PromotionTransfer: '晋升并调动',
   GradeRecord: '补录实际职级',
@@ -43,7 +49,7 @@ const names = {
   ProbationStart: '试用开始',
   ConfirmEmployment: '转正',
 };
-export const relationAction = (kind: string) => kind === 'ProbationStart' || kind === 'ConfirmEmployment';
+export const relationAction = (kind: string) => kind === 'ProbationStart' || kind === 'ConfirmEmployment' || kind==='Leave';
 export function availableRecordTypes(view: Models['AssignmentView']): JobDraft['kind'][] {
   const result: JobDraft['kind'][] = [];
   if (view.canChangeLocation) result.push('DataChange');
@@ -53,6 +59,9 @@ export function availableRecordTypes(view: Models['AssignmentView']): JobDraft['
   if (view.canRecordGrade) result.push('GradeRecord');
   if (view.canPromote) result.push('Promotion');
   if (view.canPromote && view.canTransfer) result.push('PromotionTransfer');
+  if (view.canSetManager) result.push('SetManager');
+  if (view.canEnd) result.push('EndAssignment');
+  if (view.canLeave) result.push('Leave');
   return result;
 }
 export const actionLabel = (action: Action) => names[action.kind as keyof typeof names] ?? action.kind;
@@ -61,7 +70,9 @@ const operations = { add: '新增记录', insert: '插入记录', correct: '更�
 export function draftChanged(draft: JobDraft, initial: JobDraft) {
   return (
     draft.day !== initial.day ||
-    draft.kind !== initial.kind ||
+    draft.kind !== initial.kind || draft.manager?.id!==initial.manager?.id ||
+    draft.purpose!==initial.purpose || draft.endReporting!==initial.endReporting ||
+    draft.meaning!==initial.meaning || draft.managerLastDay!==initial.managerLastDay ||
     draft.grade?.id !== initial.grade?.id ||
     draft.reason !== initial.reason ||
     draft.withdrawal !== initial.withdrawal || draft.basis?.id!==initial.basis?.id ||
@@ -186,11 +197,12 @@ export function AssignmentRecordForm({
       ),
   );
   const relation = relationAction(draft.kind);
+  const lifecycle = ['Leave','EndAssignment','SetManager'].includes(draft.kind);
   const grade = ['GradeRecord','Promotion','PromotionTransfer'].includes(draft.kind);
   const options = availableRecordTypes(view);
   const valid =
     !!draft.day &&
-    (draft.mode === 'withdraw' ? !!draft.basis || !!draft.withdrawal?.trim() : draft.mode === 'redate' ||
+    (lifecycle ? (draft.kind === 'SetManager' ? !!draft.manager || !!draft.endReporting : !!draft.notice.trim()) : draft.mode === 'withdraw' ? !!draft.basis || !!draft.withdrawal?.trim() : draft.mode === 'redate' ||
       ((grade ? !!draft.grade && !!draft.notice.trim() && (draft.kind!=='PromotionTransfer'||!!draft.job&&!!draft.department) : relation
         ? !!draft.notice.trim()
         : location
@@ -239,14 +251,14 @@ export function AssignmentRecordForm({
         )}
         <ObjectTextField
           type="date"
-          label="生效日期"
+          label={draft.kind==='Leave'||draft.kind==='EndAssignment' ? '原通知日期' : '生效日期'}
           value={draft.day}
           required
           disabled={draft.mode === 'correct' || draft.mode==='withdraw' || !!draft.successor}
           onChange={(e) => update({ ...draft, day: e.target.value })}
         />
         {draft.mode !== 'redate' &&
-          (grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} /> : relation ? (
+          (lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} /> : relation ? (
             <ProbationFields view={view} draft={draft} csrf={csrf} update={update} />
           ) : location ? (
             <>

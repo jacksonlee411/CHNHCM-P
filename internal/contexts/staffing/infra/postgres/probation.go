@@ -17,7 +17,7 @@ func (u *unit) probationAt(ctx context.Context, a h.Action, version, day string)
 	err = u.tx.QueryRow(ctx, `SELECT coalesce(
      (SELECT rr.adoption->>'trialStart' FROM staffing.employment_action origin JOIN staffing.employment_action_revision rr
       ON (rr.instance_id,rr.action_id,rr.revision)=(origin.instance_id,origin.id,origin.revision)
-      WHERE origin.instance_id=$1 AND origin.employment_id=$2 AND origin.kind='Hire'),
+      WHERE origin.instance_id=$1 AND origin.employment_id=$2 AND origin.kind IN ('Hire','Rehire')),
      max(r.business_date::text) FILTER(WHERE evt.kind='ProbationStart'),''),
      coalesce(max(r.business_date::text) FILTER(WHERE evt.kind='ConfirmEmployment'),'')
      FROM staffing.assignment_member m JOIN staffing.employment_action evt ON (evt.instance_id,evt.id)=(m.instance_id,m.action_id)
@@ -172,7 +172,7 @@ func (st *Store) RecordProbation(ctx context.Context, c f.Credentials, id, key, 
 		if e != nil {
 			return "", e
 		}
-		if a.Cancelled || a.SourceVersion != in.ExpectedSource {
+		if a.Cancelled || !a.Includes(anchorDay) || a.SourceVersion != in.ExpectedSource {
 			return "", assignmentConflict()
 		}
 		var term f.Period
@@ -249,10 +249,16 @@ func (st *Store) RecordProbation(ctx context.Context, c f.Credentials, id, key, 
 
 func (u *unit) relationVisibleAssignment(ctx context.Context, a h.Action, required string) (h.Action, bool, error) {
 	// Prefer the original anchor only when that assignment is presently readable.
+	scopeDay := a.BusinessDate
+	if a.Kind == "Leave" {
+		if e := u.tx.QueryRow(ctx, `SELECT (first_inactive-1)::text FROM staffing.employment_exit WHERE instance_id=$1 AND action_id=$2`, u.store.Instance, a.ID).Scan(&scopeDay); e != nil {
+			return a, false, e
+		}
+	}
 	rows, e := u.tx.Query(ctx, `SELECT t.id,t.record_number,coalesce(s.department_id,t.department_id),coalesce(s.job_id,t.job_id),h.version
       FROM staffing.assignment t JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(t.instance_id,t.id)
       LEFT JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(h.instance_id,h.assignment_id,h.version) AND s.period @> greatest($3::date,lower(t.period))
-      WHERE t.instance_id=$1 AND t.employment_id=$2 AND (t.id=$4 OR s.assignment_id IS NOT NULL) ORDER BY (t.id=$4) DESC,t.record_number`, u.store.Instance, a.Employment, a.BusinessDate, a.Assignment)
+      WHERE t.instance_id=$1 AND t.employment_id=$2 AND (t.id=$4 OR s.assignment_id IS NOT NULL) ORDER BY (t.id=$4) DESC,t.record_number`, u.store.Instance, a.Employment, scopeDay, a.Assignment)
 	if e != nil {
 		return a, false, e
 	}
@@ -332,6 +338,9 @@ func (u *unit) relationOriginal(ctx context.Context, a h.Action, revision string
 		return ev, e
 	}
 	ev.Relation, e = u.relationshipSummary(ctx, a, scoped, true)
+	if e == nil && ev.Exit != nil {
+		ev.Relation.Until = ev.Exit.FirstInactive
+	}
 
 	ev.Revisions = []h.Revision{rev}
 	return ev, e
@@ -346,7 +355,7 @@ func (u *unit) relationshipSummary(ctx context.Context, a, scoped h.Action, incl
       r.adoption#>>'{sources,legal,0,entityName}',r.adoption#>>'{secondary,legal,0,entityName}','')
       FROM staffing.employment e JOIN staffing.employment_action origin ON (origin.instance_id,origin.employment_id)=(e.instance_id,e.id)
       JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(origin.instance_id,origin.id,origin.revision)
-      WHERE e.instance_id=$1 AND origin.assignment_id=$2 AND origin.kind IN ('Hire','AdditionalAssignment','ParallelEmployment')`, u.store.Instance, scoped.Assignment, a.BusinessDate).Scan(&out.From, &out.Until, &out.EmployerName)
+      WHERE e.instance_id=$1 AND origin.assignment_id=$2 AND origin.kind IN ('Hire','AdditionalAssignment','ParallelEmployment','Rehire')`, u.store.Instance, scoped.Assignment, a.BusinessDate).Scan(&out.From, &out.Until, &out.EmployerName)
 	if e != nil || !includeTerms {
 		return out, e
 	}

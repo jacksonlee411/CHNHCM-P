@@ -186,13 +186,13 @@ func (u *unit) previousDecisionHire(ctx context.Context, in h.Hire, term f.Perio
 	err := u.tx.QueryRow(ctx, `SELECT d.action_id, e.person_id=$4 AND e.employer_id=$5 AND a.department_id=$6 AND a.job_id=$7
  AND e.period=daterange($8::date,NULLIF($9,'')::date,'[)') AND a.bu_id IS NOT DISTINCT FROM NULLIF($10,'')::uuid
  AND a.location_id IS NOT DISTINCT FROM NULLIF($11,'')::uuid
- AND coalesce(r.adoption#>>'{sources,grade,id}','')=$12 AND coalesce(r.adoption->>'trialStart','')=$13
+ AND coalesce(r.adoption#>>'{sources,grade,id}','')=$12 AND coalesce(r.adoption->>'trialStart','')=$13 AND (r.adoption->'rehireOf') IS NOT DISTINCT FROM $14::jsonb
  FROM staffing.hire_decision_use d JOIN staffing.employment_action h ON (h.instance_id,h.id)=(d.instance_id,d.action_id)
  JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(h.instance_id,h.id,h.revision)
  JOIN staffing.employment e ON (e.instance_id,e.id)=(h.instance_id,h.employment_id)
  JOIN staffing.assignment a ON (a.instance_id,a.id)=(h.instance_id,h.assignment_id)
  WHERE d.instance_id=$1 AND d.source=$2 AND d.line_id IS NOT DISTINCT FROM NULLIF($3,'')::uuid`,
-		u.store.Instance, in.Decision.Source, in.Decision.Line, in.Person, in.Employer, in.Department, in.Job, term.From, term.Until, in.BU, in.Location, in.Grade, in.TrialStart).Scan(&id, &same)
+		u.store.Instance, in.Decision.Source, in.Decision.Line, in.Person, in.Employer, in.Department, in.Job, term.From, term.Until, in.BU, in.Location, in.Grade, in.TrialStart, in.RehireOf).Scan(&id, &same)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return "", nil
 	}

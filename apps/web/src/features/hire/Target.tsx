@@ -33,7 +33,7 @@ export function Target({
   const key = [
     kind,
     search,
-    draft.arrival,
+    draft.arrival, draft.rehireOf,
     draft.lastDay,
     draft.department,
     draft.job,
@@ -44,7 +44,7 @@ export function Target({
   const candidates = useRead(enabled ? JSON.stringify(key) : undefined, async (): Promise<Option[]> => {
     const params = { header: { 'X-CSRF-Token': session.csrf } };
     const query = {
-      person: draft.person,
+      person: draft.person, rehireOf:draft.rehireOf,
       arrival: draft.arrival,
       lastDay: draft.lastDay || undefined,
       department: draft.department || undefined,

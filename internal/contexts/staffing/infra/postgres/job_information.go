@@ -22,7 +22,7 @@ func (u *unit) assignmentIdentity(ctx context.Context, id string) (h.Action, err
 	if !f.ValidID(id) {
 		return h.Action{}, unknownAssignment()
 	}
-	a, err := scanHireAction(u.tx.QueryRow(ctx, hireActionSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment')", u.store.Instance, id))
+	a, err := scanHireAction(u.tx.QueryRow(ctx, hireActionSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment','Rehire')", u.store.Instance, id))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return a, unknownAssignment()
 	}
@@ -118,7 +118,11 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 				return e
 			}
 		}
-		e = u.tx.QueryRow(ctx, `SELECT e.relationship,coalesce((SELECT elem->>'entityName' FROM jsonb_array_elements(coalesce(r.adoption#>'{sources,legal}',r.adoption#>'{secondary,legal}')) elem WHERE (elem->>'from')<=$3 AND (coalesce(elem->>'until','')='' OR (elem->>'until')>$3) LIMIT 1),r.adoption#>>'{sources,legal,0,entityName}',r.adoption#>>'{secondary,legal,0,entityName}','') FROM staffing.employment e JOIN staffing.employment_action a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id) JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision) WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment')`, st.Instance, id, day).Scan(&out.Relationship, &out.EmployerName)
+		if out.Until != "" {
+			last, _ := time.Parse(time.DateOnly, out.Until)
+			out.LastActive = last.AddDate(0, 0, -1).Format(time.DateOnly)
+		}
+		e = u.tx.QueryRow(ctx, `SELECT e.relationship,coalesce((SELECT elem->>'entityName' FROM jsonb_array_elements(coalesce(r.adoption#>'{sources,legal}',r.adoption#>'{secondary,legal}')) elem WHERE (elem->>'from')<=$3 AND (coalesce(elem->>'until','')='' OR (elem->>'until')>$3) LIMIT 1),r.adoption#>>'{sources,legal,0,entityName}',r.adoption#>>'{secondary,legal,0,entityName}','') FROM staffing.employment e JOIN staffing.employment_action a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id) JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision) WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment','Rehire')`, st.Instance, id, day).Scan(&out.Relationship, &out.EmployerName)
 		if e != nil {
 			return e
 		}
@@ -181,7 +185,11 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			return e
 		}
 		if !a.Cancelled && version == a.SourceVersion {
-			if out.State != nil {
+			var alreadyEnded bool
+			if e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_exit WHERE instance_id=$1 AND assignment_id=$2)`, st.Instance, id).Scan(&alreadyEnded); e != nil {
+				return e
+			}
+			if out.State != nil && !alreadyEnded {
 				out.CanLeave, e = u.employmentAllowed(ctx, "employment.leave", a.Person, a.Employer, a.Department, false)
 				if e != nil {
 					return e

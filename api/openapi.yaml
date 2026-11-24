@@ -12248,7 +12248,7 @@ paths:
       - {in: query, name: businessTo, schema: {type: string, format: date}}
       - {in: query, name: recordedFrom, schema: {type: string, format: date}}
       - {in: query, name: recordedTo, schema: {type: string, format: date}}
-      - {in: query, name: kind, schema: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment, ProbationStart, ConfirmEmployment, GradeRecord, Promotion]}}
+      - {in: query, name: kind, schema: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment, ProbationStart, ConfirmEmployment, GradeRecord, Promotion, SetManager, EndAssignment, Leave, Rehire]}}
       - {in: query, name: status, schema: {type: string, enum: [effective, future, cancelled, deleted]}}
       - {in: query, name: sort, schema: {type: string, enum: [recordedAt, '-recordedAt', businessDate, '-businessDate']}}
       - {in: query, name: page, schema: {type: integer, minimum: 1, default: 1}}
@@ -12447,6 +12447,60 @@ paths:
         '200':
           description: Authorized result
           content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/AssignmentGrade'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/managers:
+    post:
+      operationId: setActualManager
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ActualManagerCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/end:
+    post:
+      operationId: endEmploymentAssignment
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/AssignmentExitCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/leave:
+    post:
+      operationId: leaveEmployment
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/AssignmentExitCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
@@ -12775,6 +12829,42 @@ components:
         job: {type: string, format: uuid}
         search: {type: string}
         page: {type: integer, minimum: 1}
+    ActualManagerCommand:
+      type: object
+      additionalProperties: false
+      required: [businessDate, expectedSourceVersion, purpose]
+      properties:
+        businessDate: {type: string, format: date}
+        expectedSourceVersion: {type: string, format: uuid}
+        purpose: {type: string, enum: [direct, functional]}
+        manager: {type: string, format: uuid}
+        lastDay: {type: string, format: date}
+    ActualManagerFact:
+      type: object
+      required: [from, purpose, recordNumber]
+      properties:
+        from: {type: string, format: date}
+        until: {type: string, format: date}
+        purpose: {type: string, enum: [direct, functional]}
+        recordNumber: {type: integer, minimum: 0}
+        manager: {type: string, format: uuid}
+        name: {type: string}
+    AssignmentExitCommand:
+      type: object
+      additionalProperties: false
+      required: [date, meaning, expectedSourceVersion, notice]
+      properties:
+        date: {type: string, format: date}
+        meaning: {type: string, enum: [last-active, first-inactive]}
+        expectedSourceVersion: {type: string, format: uuid}
+        notice: {type: string, minLength: 1, maxLength: 1000}
+    AssignmentExitEvidence:
+      type: object
+      required: [date, meaning, firstInactive]
+      properties:
+        date: {type: string, format: date}
+        meaning: {type: string, enum: [last-active, first-inactive]}
+        firstInactive: {type: string, format: date}
     AssignmentPromotionCommand:
       type: object
       additionalProperties: false
@@ -12983,7 +13073,7 @@ components:
         department: {type: string, format: uuid}
         name: {type: string}
         number: {type: string}
-        kind: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment, ProbationStart, ConfirmEmployment, GradeRecord, Promotion]}
+        kind: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment, ProbationStart, ConfirmEmployment, GradeRecord, Promotion, SetManager, EndAssignment, Leave, Rehire]}
         status: {type: string, enum: [effective, future, cancelled, deleted]}
         businessDate: {type: string, format: date}
         recordedAt: {type: string, format: date-time}
@@ -13069,8 +13159,13 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade]
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
       properties:
+        lastActive: {type: string, format: date}
+        managers: {type: array, items: {$ref: '#/components/schemas/ActualManagerFact'}}
+        canSetManager: {type: boolean}
+        canEnd: {type: boolean}
+        canLeave: {type: boolean}
         canRecordGrade: {type: boolean}
         canPromote: {type: boolean}
         from: {type: string, format: date}
@@ -13101,6 +13196,7 @@ components:
       additionalProperties: false
       required: [person, kind, arrival, page]
       properties:
+        rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
         job: {type: string, format: uuid}
         person: {type: string, format: uuid}
         kind: {type: string, enum: [department, job, bu, location, grade]}
@@ -13115,6 +13211,7 @@ components:
       additionalProperties: false
       required: [person, arrival, page]
       properties:
+        rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
         person: {type: string, format: uuid}
         arrival: {type: string, format: date}
         lastDay: {type: string, format: date}
@@ -13128,6 +13225,9 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
+        manager: {$ref: '#/components/schemas/ActualManagerFact'}
+        exit: {$ref: '#/components/schemas/AssignmentExitEvidence'}
         noticeRef: {$ref: '#/components/schemas/EmploymentActionRef'}
         promotion: {$ref: '#/components/schemas/PromotionEvidence'}
         previous: {$ref: '#/components/schemas/EmploymentActionRef'}
@@ -13255,6 +13355,7 @@ components:
       - job
       - arrival
       properties:
+        rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
         grade: {type: string, format: uuid}
         trialStart: {type: string, format: date}
         decision: {$ref: '#/components/schemas/DecisionRef'}
@@ -13366,11 +13467,13 @@ components:
       - canCorrectLocation
       - canCorrectTransfer
       - canCorrectPromotion
+      - canRehire
       - canWithdrawPromotion
       - operation
       - canMaintain
       - canDelete
       properties:
+        canRehire: {type: boolean}
         canCorrectPromotion: {type: boolean}
         canWithdrawPromotion: {type: boolean}
         operation: {type: string, enum: [Add, Insert, Correct, Redate, Delete, Rebase, Withdraw]}
@@ -13441,6 +13544,7 @@ components:
       - assignments
       - seats
       properties:
+        rehireFrom: {$ref: '#/components/schemas/EmploymentActionRef'}
         terms:
           type: array
           items:

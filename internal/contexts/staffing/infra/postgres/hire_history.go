@@ -61,6 +61,17 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 		if e != nil {
 			return e
 		}
+		eligible, e := u.employmentAllowed(ctx, "employment.rehire", person, "", "", true)
+		if e != nil {
+			return e
+		}
+		var latest *h.ActionRef
+		if eligible {
+			latest, e = u.rehireAnchor(ctx, person, "9999-12-31")
+			if e != nil {
+				return e
+			}
+		}
 		for _, a := range actions {
 			if h.RelationAction(a.Kind) {
 				scoped, visible, e := u.relationVisibleAssignment(ctx, a, "read")
@@ -74,11 +85,23 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 				if e != nil {
 					return e
 				}
+				if a.Kind == "Leave" && scoped.CanHistory && latest != nil && latest.Action == a.ID {
+					scoped.CanRehire = true
+					var eligibleDay string
+					if e = u.tx.QueryRow(ctx, `SELECT first_inactive::text FROM staffing.employment_exit WHERE instance_id=$1 AND action_id=$2`, st.Instance, a.ID).Scan(&eligibleDay); e != nil {
+						return e
+					}
+					if eligibleDay <= day {
+						out.RehireFrom = latest
+						out.CanHire = false
+					}
+				}
 				out.Actions = append(out.Actions, scoped)
 				continue
 			}
 
 			if h.StartsAssignment(a.Kind) && !a.Cancelled {
+				out.CanHire = false
 				var seats int
 				var department string
 				e = u.tx.QueryRow(ctx, `SELECT department_id,(adoption->>'seats')::int FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND period @> $3::date AND version=$4`, st.Instance, a.Assignment, day, a.SourceVersion).Scan(&department, &seats)
@@ -117,7 +140,7 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 			if a.Kind == "Transfer" && !read.to {
 				a.Department, a.Job = read.before, read.beforeJob
 			}
-			if a.Kind == "Hire" && !a.Cancelled && a.From > today {
+			if (a.Kind == "Hire" || a.Kind == "Rehire") && !a.Cancelled && a.From > today {
 				a.CanCancel, e = u.employmentAllowed(ctx, "cancel", person, a.Employer, a.Department, false)
 				if e != nil {
 					return e
@@ -157,7 +180,7 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if err != nil {
 			return "", err
 		}
-		if a.Kind != "Hire" || a.Cancelled || a.From <= today || in.Revision != a.Revision {
+		if (a.Kind != "Hire" && a.Kind != "Rehire") || a.Cancelled || a.From <= today || in.Revision != a.Revision {
 			return "", f.Fail(409, "HIRE_CANCEL_UNAVAILABLE", "原办理已生效、已撤销或修订已变化")
 		}
 		if err = u.requireEmployment(ctx, "cancel", a.Person, a.Employer, a.Department); err != nil {

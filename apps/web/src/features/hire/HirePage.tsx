@@ -40,10 +40,12 @@ export function HirePage({ session }: { session: Models['Principal'] }) {
 }
 export function EmployeeHire({ id, session, cancellation }: { id: string; session: Models['Principal']; cancellation?: {action:Models['EmploymentAction']; returnTo:string; done:()=>void} }) {
   const route = useLocation(),
-    back = cancellation?.returnTo ?? person.path + '/' + id + route.search;
+    params = new URLSearchParams(route.search),
+    origin = params.get('rehireAction') && params.get('rehireRevision') ? {action:params.get('rehireAction')!,revision:params.get('rehireRevision')!} : undefined,
+    back = cancellation?.returnTo ?? (route.state?.fromAction?.startsWith('/personnel/actions/') ? route.state.fromAction : person.path + '/' + id + route.search);
   const [day, setDay] = useState(''),
-    [mode, setMode] = useState<'hire' | 'cancel' | ''>(cancellation ? 'cancel' : route.state?.hire ? 'hire' : '');
-  const [draft, setDraft] = useState(() => empty(id)),
+    [mode, setMode] = useState<'hire' | 'cancel' | ''>(cancellation ? 'cancel' : (origin || route.state?.hire) ? 'hire' : '');
+  const [draft, setDraft] = useState<Models['HireInput']>(() => ({...empty(id),rehireOf:origin})),
     [choices, setChoices] = useState<Partial<Record<TargetKind, Option>>>({});
   const [reason, setReason] = useState(''),
     [action, setAction] = useState<Models['EmploymentAction'] | undefined>(cancellation?.action),
@@ -55,7 +57,9 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     saved = useRef(false);
   const details = person.useRead(id, () => person.profile(id));
   const overview = person.useRead(JSON.stringify([id, day]), () => employment(id, day));
-  const decisions = person.useRead(mode === 'hire' && overview.data?.canHire ? id : undefined, async () =>
+  const eligibleHire=draft.rehireOf ? !!overview.data?.actions.some(a=>a.canRehire&&a.id===draft.rehireOf?.action&&a.revision===draft.rehireOf.revision) : !!overview.data?.canHire;
+  const hireTitle=draft.rehireOf ? '办理再聘' : '办理入职';
+  const decisions = person.useRead(mode === 'hire' && overview.data?.canHire && !draft.rehireOf ? id : undefined, async () =>
     unwrap(await api.GET('/api/v1/persons/{id}/appointment-decisions', { params: { path: { id } } })),
   );
   const basis = decisions.data?.find(
@@ -67,7 +71,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   const header = { 'X-CSRF-Token': session.csrf };
   const ready =
     mode === 'hire' &&
-    overview.data?.canHire &&
+    eligibleHire &&
     draft.arrival &&
     draft.employer &&
     draft.department &&
@@ -95,7 +99,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     setError('');
   };
   const leave = useDraftExit(
-    !!mode && (JSON.stringify(draft) !== JSON.stringify(empty(id)) || !!reason),
+    !!mode && (JSON.stringify({...draft,rehireOf:undefined}) !== JSON.stringify(empty(id)) || !!reason),
     () => saved.current,
     close,
   );
@@ -140,7 +144,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       setError(person.message(e));
     },
   });
-  usePageTitle(mode === 'hire' ? '办理入职' : '工作关系与任职');
+  usePageTitle(mode === 'hire' ? hireTitle : '工作关系与任职');
   useEffect(() => {
     send.start();
   }, [send.start]);
@@ -153,7 +157,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       details.status === 404 ||
       overview.status === 403 ||
       overview.status === 404 ||
-      (mode === 'hire' && overview.data && !overview.data.canHire) ||
+      (mode === 'hire' && overview.data && !eligibleHire) ||
       (mode === 'cancel' &&
         overview.data &&
         !overview.data.actions.some(
@@ -174,7 +178,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     selected.current = undefined;
     setDraft({
       ...empty(id),
-      decision: item?.ref,
+      rehireOf:draft.rehireOf,decision: item?.ref,
       arrival: item?.arrival ?? '',
       lastDay: item?.lastDay,
       department: item?.department?.id ?? '',
@@ -214,6 +218,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   const begin = (next: 'hire' | 'cancel', row?: Models['EmploymentAction']) => {
     saved.current = false;
     setAction(row);
+    if(next==='hire') setDraft({...empty(id),rehireOf:row ? {action:row.id,revision:row.revision}:overview.data?.rehireFrom});
     setReason('');
     setMode(next);
     setNotice('');
@@ -269,9 +274,9 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
           </>
         }
         actions={
-          !mode && overview.data?.canHire ? (
+          !mode && (overview.data?.canHire || overview.data?.rehireFrom) ? (
             <Button variant="contained" onClick={() => begin('hire')}>
-              办理入职
+              {overview.data?.rehireFrom ? '办理再聘' : '办理入职'}
             </Button>
           ) : null
         }
@@ -279,7 +284,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       <Box className="page-scroll" data-page-scroll role="region" tabIndex={0} aria-label="入职与任职">
         <Paper sx={{ p: { xs: 1.5, sm: 3 }, maxWidth: 1000, mx: 'auto' }}>
           <Typography variant="h5" component="h1">
-            {mode === 'hire' ? '办理入职' : mode === 'cancel' ? '撤销未来入职' : '工作关系与任职'}
+            {mode === 'hire' ? hireTitle : mode === 'cancel' ? '撤销未来入职' : '工作关系与任职'}
           </Typography>
           {details.data && (
             <Typography>
@@ -307,7 +312,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
               }}
             >
               <ObjectForm>
-                {mode === 'hire' && overview.data.canHire && (
+                {mode === 'hire' && eligibleHire && (
                   <ObjectDetailSection title="拟任安排">
                     {!!decisions.data?.length && (
                       <ObjectTextField
@@ -452,6 +457,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                     {a.canHistory && (
                       <Button onClick={() => setOriginal(original === a.id ? '' : a.id)}>查看原办理</Button>
                     )}
+                    {a.canRehire && <Button onClick={()=>begin('hire',a)}>从原离职办理再聘</Button>}
                     {a.canCancel && <Button onClick={() => begin('cancel', a)}>撤销未来入职</Button>}
                     {a.canHistory && original === a.id && source.error && (
                       <Alert severity="error">{source.error}</Alert>

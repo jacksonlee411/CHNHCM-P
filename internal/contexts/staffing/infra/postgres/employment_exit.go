@@ -47,7 +47,7 @@ func (st *Store) ExitAssignment(ctx context.Context, c f.Credentials, id, key st
 		}
 		var primary, unresolved bool
 		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment_primary WHERE instance_id=$1 AND layer='assignment' AND target_id=$2 AND period @> $3::date),
-  EXISTS(SELECT FROM staffing.assignment t JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(t.instance_id,t.id) JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
+  EXISTS(SELECT FROM staffing.assignment t JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(t.instance_id,t.id) JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(h.instance_id,h.assignment_id,h.version)
     WHERE t.instance_id=$1 AND t.person_id=$4 AND t.employment_id<>$5 AND s.period && daterange($6::date,NULL,'[)'))`,
 			st.Instance, id, last, anchor.Person, anchor.Employment, exit.FirstInactive).Scan(&primary, &unresolved)
 		if e != nil {
