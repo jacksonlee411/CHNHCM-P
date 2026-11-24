@@ -6,6 +6,7 @@ import (
 	"maps"
 	"reflect"
 	"testing"
+	"time"
 
 	"chnhcm.local/chnhcm/internal/bootstrap"
 	f "chnhcm.local/chnhcm/internal/foundation"
@@ -91,6 +92,47 @@ func TestAssignmentLocationChangesPreserveBusinessAndRevisionIdentity(t *testing
 	if after(old) != locations[1] || after(latest) != locations[2] || len(latest["revisions"].([]any)) != 2 {
 		t.Fatal(old, latest)
 	}
+	register := func(query string) M { return b.call("GET", "/api/v1/employment-actions"+query, nil, "", 200) }
+	other := b.call("POST", "/api/v1/persons", M{"submissionId": f.NewID(), "name": "登记试办另一员工", "primaryDocument": M{"kind": "passport", "number": "TEST-REG43"}}, "", 200)["id"].(string)
+	otherDep := b.call("POST", "/api/v1/departments", departmentCreateBody("D43", bu), f.NewID(), 201)["departmentId"].(string)
+	otherHire := b.call("POST", "/api/v1/hires", M{"person": other, "employer": entity, "department": otherDep, "job": job, "arrival": "2027-04-02", "notice": "另一员工的首任通知"}, f.NewID(), 200)
+	full := register("")
+	if full["total"] != 3.0 || len(full["departments"].([]any)) != 2 || len(full["operators"].([]any)) != 1 {
+		t.Fatal("跨人登记笔数或候选错误", full)
+	}
+	effective := register("?kind=DataChange&businessFrom=2027-05-01&businessTo=2027-05-01&department=" + dep)
+	row := effective["rows"].([]any)[0].(M)
+	if effective["total"] != 1.0 || row["id"] != target || row["revision"] != changed["revision"] || row["businessDate"] != "2027-05-01" || row["recordedAt"] != latest["action"].(M)["recordedAt"] || row["operator"] == "" || row["departmentName"] == "" {
+		t.Fatal("登记行与原笔不符", effective, latest)
+	}
+	stamp, e := time.Parse(time.RFC3339Nano, row["recordedAt"].(string))
+	must(t, e)
+	recordedDay := stamp.In(f.Shanghai).Format(time.DateOnly)
+	if listed := register("?recordedFrom=" + recordedDay + "&recordedTo=" + recordedDay + "&kind=DataChange"); listed["total"] != 1.0 {
+		t.Fatal(listed)
+	}
+	if listed := register("?recordedTo=1900-01-01"); listed["total"] != 0.0 {
+		t.Fatal(listed)
+	}
+	b.call("POST", "/api/v1/employment-actions/"+otherHire["action"].(string)+"/cancel", M{"revision": otherHire["revision"], "reason": "已撤回另一员工的未来通知"}, f.NewID(), 200)
+	if cancelled := register("?status=cancelled"); cancelled["total"] != 1.0 || cancelled["rows"].([]any)[0].(M)["id"] != otherHire["action"] {
+		t.Fatal(cancelled)
+	}
+	h.policy("UPDATE access.employment_grant SET person_id=$2,fields=ARRAY['arrangement','basis'] WHERE principal_id=$1 AND action='register.read'", b.subject, person)
+	restricted := register("")
+	if restricted["total"] != 2.0 || len(restricted["departments"].([]any)) != 0 || len(restricted["operators"].([]any)) != 0 || restricted["rows"].([]any)[0].(M)["operator"] != nil {
+		t.Fatal("登记范围或敏感字段泄露", restricted)
+	}
+	if got := register("?department=" + dep); got["total"] != 0.0 {
+		t.Fatal("不能按未披露部门匹配", got)
+	}
+	h.policy("DELETE FROM access.employment_grant WHERE principal_id=$1 AND action='register.read'", b.subject)
+	must(t, bootstrap.Initialize(h.f.ctx, h.f.admin, init))
+	b.call("GET", "/api/v1/employment-actions", nil, "", 403)
+	if b.call("GET", "/api/v1/employment-actions/context", nil, "", 200)["canList"] != false {
+		t.Fatal("撤权后跨人访问仍可用")
+	}
+	b.call("GET", orig+"?adoptedRef="+saved["revision"].(string), nil, "", 200)
 	b.call("POST", correctPath, correct, f.NewID(), 409)
 	current := view("2027-05-01", "")
 	if len(current["actions"].([]any)) != 2 {

@@ -400,7 +400,7 @@ test('T03 原生 200% 首单办理及撤销', async () => {
   await native200(journey);
 });
 
-async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+async function hireAtLocation(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   const suffix = randomUUID().slice(0, 7),
     locations: { id: string; name: string }[] = [];
   const countries = await request(page, 'GET', '/api/v1/country-regions?q=MO');
@@ -441,6 +441,10 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
     randomUUID(),
   );
   expect(hired.status, hired.body.message).toBe(200);
+  return { locations, hire: hired.body };
+}
+async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const { locations } = await hireAtLocation(page, sample);
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   if (await desktop.isVisible()) {
     await desktop.click();
@@ -509,4 +513,117 @@ for (const [width, height] of [
 }
 test('M04 职务信息地点更改与原笔纠错 原生200%', async () => {
   await native200(assignmentJourney);
+});
+
+async function openRegister(page: Page) {
+  const desktop = page.getByRole('button', { name: '切换应用', exact: true });
+  if (await desktop.isVisible()) {
+    await desktop.click();
+    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+    await page.getByRole('button', { name: '人事事务', exact: true }).click();
+    await page.getByRole('menuitem', { name: '办理记录', exact: true }).click();
+  } else {
+    await page.getByRole('button', { name: '打开导航', exact: true }).click();
+    await page.getByRole('button', { name: '人员', exact: true }).click();
+    await page.getByRole('button', { name: '人事事务', exact: true }).click();
+    await page.getByRole('button', { name: '办理记录', exact: true }).click();
+  }
+  await expect(page.getByRole('heading', { name: '办理记录', exact: true })).toBeVisible();
+}
+async function registerJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const { locations, hire } = await hireAtLocation(page, sample);
+  const view = await request(
+    page,
+    'GET',
+    '/api/v1/assignments/' + hire.assignment + '?businessAt=2027-04-01',
+  );
+  const created = await request(
+    page,
+    'POST',
+    '/api/v1/assignments/' + hire.assignment + '/location-changes',
+    { businessDate: '2027-05-01', expectedSourceVersion: view.body.sourceVersion, location: locations[1].id },
+    randomUUID(),
+  );
+  expect(created.status, created.body.message).toBe(200);
+  await openRegister(page);
+  const search = page.getByRole('textbox', { name: '姓名或人员编号' });
+  await search.fill(sample.name);
+  await search.press('Enter');
+  await expect(page).toHaveURL((url) => url.searchParams.has('ref'));
+  await expect(page.getByText('2 笔办理', { exact: true })).toBeVisible();
+  await page.getByText('筛选条件', { exact: true }).click();
+  await page.getByLabel('办理类型', { exact: true }).selectOption('DataChange');
+  await page.getByLabel('生效起日', { exact: true }).fill('2027-05-01');
+  await page.getByLabel('生效止日', { exact: true }).fill('2027-05-01');
+  await page.getByRole('button', { name: '应用筛选' }).click();
+  await expect(page.getByText('1 笔办理', { exact: true })).toBeVisible();
+  const row = page.locator('a[data-object-link]').filter({ hasText: '数据更改' });
+  await row.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL((url) => url.pathname.endsWith('/' + created.body.action));
+  await expect(page.getByRole('heading', { name: '数据更改原件', exact: true })).toBeVisible();
+  await expect(page.getByText(sample.department, { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '更正记录', exact: true }).click();
+  const loc = page.getByRole('combobox', { name: /工作地点/ });
+  await expect(loc).toHaveValue(locations[1].name);
+  await loc.fill(locations[2].name);
+  await page.getByRole('option', { name: locations[2].name, exact: true }).click();
+  await page.getByRole('button', { name: '保存', exact: true }).click();
+  await expect(page.getByText(locations[0].name + ' → ' + locations[2].name, { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /查看修订/ })).toHaveCount(2);
+  await page.getByRole('link', { name: '查看任职', exact: true }).click();
+  await page.getByRole('button', { name: '数据更改 · 2027-05-01', exact: true }).click();
+  await expect(page.getByText(locations[0].name + ' → ' + locations[2].name, { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: '返回办理明细', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '数据更改原件', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: '返回办理记录', exact: true }).click();
+  await expect(row).toBeFocused();
+  await expect(search).toHaveValue(sample.name);
+  await expect(page.getByText('1 笔办理', { exact: true })).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+    .toBe(true);
+}
+for (const [width, height] of [
+  [1440, 900],
+  [1440, 540],
+  [390, 844],
+  [320, 900],
+  [320, 256],
+]) {
+  test(`M04 办理记录查询和原笔更正 ${width}x${height}`, async ({ page }) => {
+    test.setTimeout(150000);
+    await signIn(page);
+    const sample = await seed(page);
+    await page.setViewportSize({ width, height });
+    await registerJourney(page, sample);
+  });
+}
+test('M04 办理记录查询和原笔更正 原生200%', async () => {
+  await native200(registerJourney);
+});
+
+test('M04 办理记录中的未来首单撤销后原件仍占一行', async ({ page }) => {
+  test.setTimeout(150000);
+  await signIn(page);
+  const sample = await seed(page);
+  await hireAtLocation(page, sample);
+  await openRegister(page);
+  const search = page.getByRole('textbox', { name: '姓名或人员编号' });
+  await search.fill(sample.name);
+  await search.press('Enter');
+  await expect(page).toHaveURL((u) => u.searchParams.has('ref'));
+  await expect(page.getByText('1 笔办理', { exact: true })).toBeVisible();
+  const row = page.locator('a[data-object-link]').filter({ hasText: '入职' });
+  await row.click();
+  await page.getByRole('link', { name: '撤销未来入职' }).click();
+  await expect(page.getByRole('heading', { name: '撤销未来入职', exact: true })).toBeVisible();
+  await page.getByRole('textbox', { name: /^撤销说明/ }).fill('任用通知在到岗前撤回');
+  await page.getByRole('button', { name: '保存', exact: true }).click();
+  await page.getByRole('button', { name: '查看撤销依据' }).click();
+  await expect(page.getByText('任用通知在到岗前撤回', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: '返回办理记录' }).click();
+  await expect(row).toBeFocused();
+  await expect(page.getByText('1 笔办理', { exact: true })).toBeVisible();
+  await expect(page.getByRole('gridcell', { name: '已撤销', exact: true })).toBeVisible();
 });

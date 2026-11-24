@@ -12234,6 +12234,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/employment-actions:
+    get:
+      operationId: listEmploymentRegister
+      security: [{session: []}]
+      parameters:
+      - {in: query, name: ref, schema: {type: string, format: uuid}}
+      - {in: query, name: department, schema: {type: string, format: uuid}}
+      - {in: query, name: fromDepartment, schema: {type: string, format: uuid}}
+      - {in: query, name: toDepartment, schema: {type: string, format: uuid}}
+      - {in: query, name: operator, schema: {type: string, format: uuid}}
+      - {in: query, name: businessFrom, schema: {type: string, format: date}}
+      - {in: query, name: businessTo, schema: {type: string, format: date}}
+      - {in: query, name: recordedFrom, schema: {type: string, format: date}}
+      - {in: query, name: recordedTo, schema: {type: string, format: date}}
+      - {in: query, name: kind, schema: {type: string, enum: [Hire, DataChange]}}
+      - {in: query, name: status, schema: {type: string, enum: [effective, future, cancelled]}}
+      - {in: query, name: sort, schema: {type: string, enum: [recordedAt, '-recordedAt', businessDate, '-businessDate']}}
+      - {in: query, name: page, schema: {type: integer, minimum: 1, default: 1}}
+      - {in: query, name: pageSize, schema: {type: integer, enum: [20, 50, 100], default: 20}}
+      responses:
+        '200':
+          description: Authorized base actions counted once
+          content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentRegister'}}}
+        default:
+          description: Invalid query or unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/employment-actions/context:
+    get:
+      operationId: employmentRegisterContext
+      security: [{session: []}]
+      responses:
+        '200':
+          description: Authority to search across personnel
+          content: {application/json: {schema: {type: object, required: [canList], properties: {canList: {type: boolean}}}}}
+        default:
+          description: Invalid query or unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/employment-actions/{id}:
     get:
       operationId: readEmploymentAction
@@ -12439,6 +12476,38 @@ components:
         job: {type: string}
         location: {$ref: '#/components/schemas/EmploymentLocationRef'}
         seats: {type: integer, minimum: 0}
+    EmploymentRegisterRow:
+      type: object
+      required: [id, revision, sourceVersion, employment, assignment, person, name, number, kind, status, businessDate, recordedAt, recordNumber, canHistory]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        sourceVersion: {type: string, format: uuid}
+        employment: {type: string, format: uuid}
+        assignment: {type: string, format: uuid}
+        person: {type: string, format: uuid}
+        department: {type: string, format: uuid}
+        name: {type: string}
+        number: {type: string}
+        kind: {type: string, enum: [Hire, DataChange]}
+        status: {type: string, enum: [effective, future, cancelled]}
+        businessDate: {type: string, format: date}
+        recordedAt: {type: string, format: date-time}
+        recordNumber: {type: integer}
+        operator: {type: string}
+        departmentName: {type: string}
+        canHistory: {type: boolean}
+    EmploymentRegister:
+      type: object
+      required: [rows, departments, fromDepartments, toDepartments, operators, total, keyword]
+      properties:
+        rows: {type: array, items: {$ref: '#/components/schemas/EmploymentRegisterRow'}}
+        departments: {type: array, items: {type: object, required: [id, name], properties: {id: {type: string, format: uuid}, name: {type: string}}}}
+        fromDepartments: {type: array, items: {type: object, required: [id, name], properties: {id: {type: string, format: uuid}, name: {type: string}}}}
+        toDepartments: {type: array, items: {type: object, required: [id, name], properties: {id: {type: string, format: uuid}, name: {type: string}}}}
+        operators: {type: array, items: {type: object, required: [id, name], properties: {id: {type: string, format: uuid}, name: {type: string}}}}
+        total: {type: integer}
+        keyword: {type: string}
     EmployeeAssignmentQuery:
       type: object
       additionalProperties: false
@@ -12551,6 +12620,7 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        departmentName: {type: string}
         locationChange: {$ref: '#/components/schemas/EmploymentLocationEvidence'}
         revisions: {type: array, items: {$ref: '#/components/schemas/EmploymentRevision'}}
         appointment: {$ref: '#/components/schemas/DecisionOption'}

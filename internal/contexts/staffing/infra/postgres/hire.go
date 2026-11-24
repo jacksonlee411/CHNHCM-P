@@ -21,8 +21,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (u *unit) employmentAllowed(ctx context.Context, action, person, employer, department string, anyTarget bool) (bool, error) {
-	return u.store.EmploymentAllowed(ctx, u.tx, u.guard.Principal().ID, action, person, employer, department, anyTarget)
+func (u *unit) employmentAllowed(ctx context.Context, action, person, employer, department string, anyTarget bool, fields ...string) (bool, error) {
+	return u.store.EmploymentAllowed(ctx, u.tx, u.guard.Principal().ID, action, person, employer, department, anyTarget, fields...)
 }
 func (u *unit) requireEmployment(ctx context.Context, action, person, employer, department string) error {
 	ok, err := u.employmentAllowed(ctx, action, person, employer, department, false)
