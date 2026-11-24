@@ -12,9 +12,9 @@ import (
 )
 
 const assignmentActionSelect = `SELECT a.id,r.revision,a.kind,r.operation,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,
-coalesce(origin.department_id,t.department_id) AS department,coalesce(origin.job_id,t.job_id) AS job,
+coalesce(nullif(r.adoption#>>'{promotion,department}','')::uuid,origin.department_id,t.department_id) AS department,coalesce(origin.job_id,t.job_id) AS job,
 r.business_date::text,h.version,r.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
-lower(t.period)::text,coalesce(upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire')
+lower(t.period)::text,coalesce(upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),r.adoption->'previous'
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
 JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
 `
@@ -26,7 +26,7 @@ LEFT JOIN staffing.employment_revision_publication issued ON (issued.instance_id
 LEFT JOIN staffing.assignment_segment origin ON (origin.instance_id,origin.assignment_id,origin.version)=(issued.instance_id,issued.assignment_id,issued.version) AND origin.period @> r.business_date `
 
 func scanHireAction(row pgx.Row) (a h.Action, err error) {
-	err = row.Scan(&a.ID, &a.Revision, &a.Kind, &a.Operation, &a.Employment, &a.Assignment, &a.RecordNumber, &a.Person, &a.Employer, &a.Department, &a.Job, &a.BusinessDate, &a.SourceVersion, &a.Notice, &a.RecordedAt, &a.Original, &a.From, &a.Until, &a.Cancelled)
+	err = row.Scan(&a.ID, &a.Revision, &a.Kind, &a.Operation, &a.Employment, &a.Assignment, &a.RecordNumber, &a.Person, &a.Employer, &a.Department, &a.Job, &a.BusinessDate, &a.SourceVersion, &a.Notice, &a.RecordedAt, &a.Original, &a.From, &a.Until, &a.Cancelled, &a.Previous)
 	a.PrimaryJob = a.RecordNumber == 0
 	return
 }
@@ -131,6 +131,9 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 }
 
 func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, original string, in h.Cancel) (h.Receipt, error) {
+	if in.ExpectedSource != "" || in.Notice != "" {
+		return st.RecordPromotion(ctx, c, "", original, "withdraw", submission, h.PromotionCommand{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.Revision, Reason: in.Reason, Notice: in.Notice})
+	}
 	return st.hireCommand(ctx, c, submission, []any{"CancelHire", original, in}, func(u *unit) (string, error) {
 		if !f.ValidID(original) || !f.ValidID(in.Revision) || strings.TrimSpace(in.Reason) == "" || utf8.RuneCountInString(in.Reason) > 1000 {
 			return "", f.Fail(400, "HIRE_INPUT", "请核对原办理并填写撤销依据")
@@ -227,6 +230,25 @@ func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, 
 		r.Action, r.Employment, r.Assignment = id, a.Employment, a.Assignment
 		r.RecordNumber = &a.RecordNumber
 		r.Revision = revision
+		if a.Kind == "Promotion" {
+			var other h.ActionRef
+			e := u.tx.QueryRow(ctx, `SELECT transfer,transfer_revision FROM staffing.promotion_transfer WHERE instance_id=$1 AND promotion=$2 AND promotion_revision=$3`, u.store.Instance, id, revision).Scan(&other.Action, &other.Revision)
+			if e == nil {
+				peer, e := u.action(ctx, other.Action)
+				if e != nil {
+					return r, digest, e
+				}
+				sides, e := u.actionDisclosure(ctx, peer, false)
+				if e != nil {
+					return r, digest, e
+				}
+				if sides.from || sides.to {
+					r.Related = []h.ActionRef{other}
+				}
+			} else if !errors.Is(e, pgx.ErrNoRows) {
+				return r, digest, e
+			}
+		}
 	}
 	return r, digest, err
 }
@@ -425,6 +447,24 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 			if !visible {
 				out.Requires = nil
+			}
+		}
+		if ref := out.Previous; ref != nil {
+			prior, e := u.action(ctx, ref.Action)
+			if e != nil {
+				return e
+			}
+			var visible bool
+			if h.RelationAction(prior.Kind) {
+				_, visible, e = u.relationVisibleAssignment(ctx, prior, "history")
+			} else {
+				visible, e = u.revisionVisible(ctx, prior, ref.Revision)
+			}
+			if e != nil {
+				return e
+			}
+			if !visible {
+				out.Previous = nil
 			}
 		}
 		out.Action = a

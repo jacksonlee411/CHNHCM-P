@@ -35,7 +35,7 @@ func validRegisterQuery(q h.RegisterQuery) bool {
 		}
 	}
 	return (q.BusinessTo == "" || q.BusinessFrom <= q.BusinessTo) && (q.RecordedTo == "" || q.RecordedFrom <= q.RecordedTo) &&
-		slices.Contains([]string{"", "Hire", "DataChange", "Transfer", "AdditionalAssignment", "ParallelEmployment", "ProbationStart", "ConfirmEmployment"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
+		slices.Contains([]string{"", "Hire", "DataChange", "Transfer", "AdditionalAssignment", "ParallelEmployment", "ProbationStart", "ConfirmEmployment", "Promotion", "GradeRecord"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
 		slices.Contains([]string{"", "recordedAt", "-recordedAt", "businessDate", "-businessDate"}, q.Sort) &&
 		q.Page >= 1 && q.Page <= 1000000 && slices.Contains([]int{20, 50, 100}, q.PageSize)
 }
@@ -50,10 +50,10 @@ type registerCandidate struct {
 // The current source selects the adopted revision. The source which published that
 // revision supplies the department as recorded then, even if the hire was cancelled later.
 const registerSQL = `SELECT a.id,r.revision,issued.version,a.kind,r.business_date::text,a.recorded_at,
-    e.id,t.id,t.record_number,e.person_id,e.employer_id,coalesce(origin.department_id,t.department_id),
-    coalesce(origin.adoption->>'departmentName',''),a.actor,
+    e.id,t.id,t.record_number,e.person_id,e.employer_id,coalesce(nullif(r.adoption#>>'{promotion,department}','')::uuid,origin.department_id,t.department_id),
+    coalesce(r.adoption#>>'{promotion,departmentName}',origin.adoption->>'departmentName',''),a.actor,
     coalesce(nullif(first.operator_snapshot->>'displayName',''),nullif(first.operator_snapshot->>'login',''),a.actor::text),
-    EXISTS (SELECT FROM staffing.employment_action cancelled WHERE cancelled.instance_id=a.instance_id AND cancelled.original_id=a.id AND cancelled.kind='CancelHire'),
+    EXISTS (SELECT FROM staffing.employment_action cancelled WHERE cancelled.instance_id=a.instance_id AND cancelled.original_id=a.id AND cancelled.kind='CancelHire') OR r.operation='Withdraw',
     r.operation='Delete',coalesce(r.adoption#>>'{transfer,beforeDepartment}',''),coalesce(r.adoption#>>'{transfer,beforeDepartmentName}',''),
     coalesce(r.adoption#>>'{transfer,after,department}',''),coalesce(r.adoption#>>'{transfer,after,segments,0,departmentName}','')
     FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)

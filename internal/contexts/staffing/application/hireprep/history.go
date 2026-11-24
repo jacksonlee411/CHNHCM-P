@@ -20,6 +20,7 @@ type Placement struct {
 	Job        string
 	Adoption   staff.AssignmentSegment
 	Location   *LocationRef
+	Grade      *GradeRef
 }
 type RequiredFact struct {
 	Action     string `json:"action"`
@@ -33,6 +34,8 @@ type HistoryEntry struct {
 	Removed                 bool
 	Location                *LocationRef
 	Transfer                *JobTransfer
+	Grade                   *GradeRef
+	Previous                *ActionRef
 	Requires                *RequiredFact
 }
 type HistoryChange struct {
@@ -84,6 +87,7 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 	}
 	var activeTransfer *JobTransfer
 	var activeLocation *LocationRef
+	var activeGrade *GradeRef
 	for _, span := range term.Split(days) {
 		day := span.From
 		base, ok := placementAt(initial, day)
@@ -105,9 +109,27 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 		if activeLocation != nil {
 			state.Location = activeLocation
 		}
-		before := state
-		var location, transfer bool
-		for _, r := range byDay[day] {
+		if activeGrade != nil {
+			state.Grade = activeGrade
+		}
+		dayStart := state
+		var location, transfer, grade bool
+		ordered, err := OrderDay(byDay[day])
+		if err != nil {
+			return result, err
+		}
+		for _, r := range ordered {
+			before := dayStart
+			if r.Previous != nil {
+				if pred, ok := entries[r.Previous.Action]; ok {
+					if pred.Day > day {
+						return result, historyConflict("前序办理晚于本项生效日期")
+					}
+					if pred.Day == day {
+						before = result.Changes[pred.ID].After
+					}
+				}
+			}
 			change := HistoryChange{Before: before}
 			if req := r.Requires; req != nil {
 				pred, ok := entries[req.Action]
@@ -118,6 +140,14 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 				change.RequiredRevision = pred.Revision
 			}
 			after := before
+			if r.Kind == "Promotion" || r.Kind == "GradeRecord" {
+				if grade || r.Grade == nil || (r.Kind == "Promotion" && (before.Grade == nil || before.Grade.ID == r.Grade.ID)) || (r.Kind == "GradeRecord" && before.Grade != nil) {
+					return result, historyConflict("请核对该任期的实际原职级、拟任职级及同日办理")
+				}
+				grade = true
+				activeGrade = r.Grade
+				state.Grade, after.Grade = r.Grade, r.Grade
+			}
 			switch r.Kind {
 			case "DataChange":
 				if r.Location == nil || location {
@@ -127,7 +157,11 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 				activeLocation = r.Location
 				state.Location = r.Location
 				after.Location = r.Location
-			case "Transfer":
+			case "GradeRecord":
+			case "Promotion", "Transfer":
+				if r.Kind == "Promotion" && r.Transfer == nil {
+					break
+				}
 				if r.Transfer == nil || transfer {
 					return result, historyConflict("同日的调动存在冲突")
 				}
@@ -178,8 +212,11 @@ type RecordMaintenance struct {
 	Notice           string        `json:"notice,omitempty"`
 	Insert           bool          `json:"insert,omitempty"`
 	Requires         *RequiredFact `json:"requires,omitempty"`
+	Previous         *ActionRef    `json:"previous,omitempty"`
 }
 type TransferEvidence struct {
+	BeforeGrade          *GradeRef   `json:"beforeGrade,omitempty"`
+	AfterGrade           *GradeRef   `json:"afterGrade,omitempty"`
 	BeforeDepartment     string      `json:"beforeDepartment,omitempty"`
 	BeforeJob            string      `json:"beforeJob,omitempty"`
 	BeforeDepartmentName string      `json:"beforeDepartmentName,omitempty"`

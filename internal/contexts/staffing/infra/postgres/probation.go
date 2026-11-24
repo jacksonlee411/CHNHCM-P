@@ -234,8 +234,8 @@ func (st *Store) RecordProbation(ctx context.Context, c f.Credentials, id, key, 
 			if e = u.startAssignmentSource(ctx, t.ID, t.Version, version, item.id, item.revision); e != nil {
 				return "", e
 			}
-			_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,location_ref,adoption,department_id,job_id)
-              SELECT instance_id,assignment_id,$4,period,location_id,location_ref,adoption,department_id,job_id FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3`, st.Instance, t.ID, t.Version, version)
+			_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,location_ref,adoption,department_id,job_id,grade_ref)
+              SELECT instance_id,assignment_id,$4,period,location_id,location_ref,adoption,department_id,job_id,grade_ref FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3`, st.Instance, t.ID, t.Version, version)
 			if e != nil {
 				return "", e
 			}
