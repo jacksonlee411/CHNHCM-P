@@ -26,6 +26,8 @@ import {
   requiredByGroup,
   reconcileItem,
   itemOptions,
+  rowFields,
+  isProfileItem,
   type Places,
   fromProfile,
   kinds,
@@ -42,8 +44,19 @@ const titles = {
   contacts: '联系方式',
   addresses: '地址',
   family: '家庭成员与紧急联系人',
+  education: '教育经历',
+  credentials: '专业技术职称、职业资格与技能等级证书',
 };
-const isFlag = (k: string) => ['longTerm', 'contactPrimary', 'addressPrimary', 'emergency'].includes(k);
+const isFlag = (k: string) =>
+  [
+    'longTerm',
+    'contactPrimary',
+    'addressPrimary',
+    'emergency',
+    'highestEducation',
+    'highestDegree',
+    'indefinite',
+  ].includes(k);
 export type RowError = { group: Group; key: string; field: string; message: string };
 type Editing = {
   scope: string;
@@ -88,7 +101,7 @@ function RowDialog({
   const [basis, setBasis] = useState({ scope, row: view ? undefined : s.row });
   if (basis.scope !== scope) {
     setBasis({ scope, row: view ? undefined : s.row });
-    if (basis.row && !view && (s.group === 'addresses' || s.group === 'family')) {
+    if (basis.row && !view && isProfileItem(s.group)) {
       const current = reconcileItem(basis.row, { ...basis.row, fields: inputs, places }, s.row, write);
       set(current.fields);
       setPlaces(current.places || {});
@@ -106,12 +119,24 @@ function RowDialog({
     dirtyChanged?.(dirty);
     return () => dirtyChanged?.(false);
   }, [dirty, dirtyChanged]);
-  const full = person.useRead(reveal ? data.id + s.row.key : undefined, () =>
-    person.profile(data.id, undefined, 'document-' + s.row.key),
+  const cert = s.group === 'credentials';
+  const numberField = cert ? 'certificateNumber' : 'documentNumber';
+  const canReveal =
+    view &&
+    (cert || s.group === 'documents') &&
+    !!s.row.fields[numberField] &&
+    read.includes(numberField) &&
+    !s.row.masked?.includes(numberField) &&
+    !s.row.hidden?.includes(numberField);
+  const full = person.useRead(
+    reveal && canReveal ? JSON.stringify([data.id, s.row.key, data.sourceVersion, scope]) : undefined,
+    () => person.profile(data.id, undefined, (cert ? 'credential-' : 'document-') + s.row.key),
   );
   const number =
-    full.data?.sourceVersion === data.sourceVersion
-      ? full.data?.documents?.find((x) => x.itemId === s.row.key)?.fields.documentNumber
+    canReveal && full.data?.sourceVersion === data.sourceVersion
+      ? (cert ? full.data?.credentials : full.data?.documents)?.find((x) => x.itemId === s.row.key)?.fields[
+          numberField
+        ]
       : undefined;
   function update(k: string, v: string) {
     setError('');
@@ -122,12 +147,23 @@ function RowDialog({
       ...(k === 'longTerm' && v ? { expiryDate: '' } : {}),
     }));
   }
+  const visibleKeys = rowFields(s.group, fields);
+  const clears =
+    s.group === 'education' && s.row.fields.educationType !== fields.educationType
+      ? Object.keys(s.row.fields).filter(
+          (k) =>
+            s.row.fields[k] && !visibleKeys.includes(k) && read.includes(k) && !s.row.hidden?.includes(k),
+        )
+      : [];
+  const required = [...requiredByGroup[s.group]];
+  if (s.group === 'education' && fields.educationType === '已取得学历') required.push('educationLevel');
+  if (s.group === 'education' && fields.educationType === '学位授予') required.push('degree');
   function cancel() {
     if (dirty) setDiscard(true);
     else close();
   }
   function submit() {
-    const key = requiredByGroup[s.group].find(
+    const key = required.find(
       (k) => !fields[k] && (!s.row.revision || write.includes(k) || k === 'value' || k === 'kind'),
     );
     if (key) {
@@ -135,7 +171,15 @@ function RowDialog({
       requestAnimationFrame(() => document.getElementById('row-' + key)?.focus());
       return;
     }
-    apply({ ...s.row, fields, country, places });
+    const submitted = { ...fields };
+    if (s.group === 'education' || s.group === 'credentials') {
+      for (const k of Object.keys(submitted))
+        if (!visibleKeys.includes(k)) {
+          if (s.row.fields[k] && write.includes(k)) submitted[k] = '';
+          else delete submitted[k];
+        }
+    }
+    apply({ ...s.row, fields: submitted, country, places });
   }
   return (
     <>
@@ -162,9 +206,8 @@ function RowDialog({
         <DialogContent tabIndex={0}>
           <ObjectForm>
             <div className="profile-grid">
-              {Object.keys(labels).map((k) => {
+              {visibleKeys.map((k) => {
                 if (
-                  (k === 'expiryDate' && fields.longTerm) ||
                   s.row.hidden?.includes(k) ||
                   !(
                     k === 'kind' ||
@@ -181,7 +224,7 @@ function RowDialog({
                 if (!can)
                   return (
                     <ObjectDetailField label={label} key={k}>
-                      {(k === 'documentNumber' ? number : undefined) ||
+                      {(k === numberField ? number : undefined) ||
                         (isFlag(k)
                           ? v
                             ? '是'
@@ -189,12 +232,12 @@ function RowDialog({
                           : k === 'kind' || k === 'documentKind'
                             ? kinds[v]
                             : v) || <span className="profile-empty">未填写</span>}
-                      {view && k === 'documentNumber' && read.includes(k) && (
+                      {canReveal && k === numberField && (
                         <Button size="small" onClick={() => setReveal(!reveal)}>
                           {reveal ? '隐藏号码' : '查看完整号码'}
                         </Button>
                       )}
-                      {k === 'documentNumber' && full.error && <span role="alert">{full.error}</span>}
+                      {k === numberField && full.error && <span role="alert">{full.error}</span>}
                     </ObjectDetailField>
                   );
                 if (k === 'issuingCountry' || ['addressCountry', 'province', 'area'].includes(k))
@@ -263,11 +306,22 @@ function RowDialog({
                     label={label}
                     value={v}
                     onChange={(e) => update(k, e.target.value)}
-                    required={requiredByGroup[s.group].includes(k)}
+                    required={required.includes(k)}
                     select={!!choices}
                     type={
-                      k === 'issueDate' || k === 'expiryDate' || k === 'familyBirthDate' ? 'date' : 'text'
+                      [
+                        'issueDate',
+                        'expiryDate',
+                        'familyBirthDate',
+                        'awardDate',
+                        'issuedOn',
+                        'validFrom',
+                        'validUntil',
+                      ].includes(k)
+                        ? 'date'
+                        : 'text'
                     }
+                    placeholder={['startMonth', 'endMonth'].includes(k) ? 'YYYY-MM' : undefined}
                     error={error === k}
                     helperText={error === k ? s.error?.message || '请填写' + label : undefined}
                   >
@@ -281,6 +335,9 @@ function RowDialog({
               })}
             </div>
           </ObjectForm>
+          {!view && clears.length > 0 && (
+            <p role="status">更换教育记录类型将清除{clears.map((k) => labels[k]).join('、')}。</p>
+          )}
         </DialogContent>
         <DialogActions>
           {!view && <span>应用到本页草稿后，请在页顶保存。</span>}
@@ -309,7 +366,7 @@ export function ProfileSections({ data, editing }: { data: person.Profile; editi
     write = data.editable || [];
   const [selection, select] = useState<Selection>();
   // A view follows the latest authorized projection, including changes to a single open row.
-  const item = selection?.group === 'addresses' || selection?.group === 'family';
+  const item = isProfileItem(selection?.group);
   const scope =
     editing?.scope ??
     JSON.stringify([

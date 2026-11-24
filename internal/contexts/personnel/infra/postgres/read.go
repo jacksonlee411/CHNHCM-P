@@ -106,7 +106,7 @@ func (r *request) editable(id string) []string {
 			fields = append(fields, key)
 		}
 	}
-	for _, s := range []d.ItemSection{d.Addresses, d.Family} {
+	for _, s := range d.ItemSections {
 		if !r.itemRead(s, id, "", s.Required[0]) {
 			continue
 		}
@@ -118,8 +118,12 @@ func (r *request) editable(id string) []string {
 	}
 	return fields
 }
+func validItemView(view, prefix string) bool {
+	id, ok := strings.CutPrefix(view, prefix)
+	return ok && f.ValidID(id)
+}
 func (s *Store) Detail(ctx context.Context, c f.Credentials, id, version, view string) (p.Detail, error) {
-	if view != "" && view != "fullDocument" && !(version == "" && (view == "edit" || strings.HasPrefix(view, "document-") && f.ValidID(strings.TrimPrefix(view, "document-")))) {
+	if view != "" && view != "fullDocument" && !(version == "" && (view == "edit" || validItemView(view, "document-") || validItemView(view, "credential-"))) {
 		return p.Detail{}, d.Invalid("view", "无效的查看方式")
 	}
 	return run(ctx, s, c, func(r *request) (p.Detail, error) {

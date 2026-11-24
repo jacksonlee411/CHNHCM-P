@@ -23,6 +23,7 @@ import {
   fromProfile,
   reconcileItem,
   requiredByGroup,
+  isProfileItem,
   groups,
   type Group,
   command as profileCommand,
@@ -128,6 +129,8 @@ export function Editor({
           patch.documents.length ||
           patch.addresses.length ||
           patch.family.length ||
+          patch.education.length ||
+          patch.credentials.length ||
           lineDirty
         )
       : nameChanged || documentChanged || evidenceChanged || contactEdits.length > 0;
@@ -160,7 +163,7 @@ export function Editor({
   );
   function fail(msg: string, id = '', code?: string) {
     setNotice({ message: msg, field: id, code });
-    if (!/^(documents|contacts|addresses|family)\.\d+\./.test(id))
+    if (!/^(documents|contacts|addresses|family|education|credentials)\.\d+\./.test(id))
       focusObjectField('person-error', 'person-error');
   }
   const patchRow = (key: string, change: Partial<Row>) =>
@@ -229,7 +232,9 @@ export function Editor({
         e instanceof ApiError ? e.code : undefined,
       );
       if (e instanceof ApiError) {
-        const match = /^(documents|contacts|addresses|family)\.(\d+)\.(.+)$/.exec(e.field || '');
+        const match = /^(documents|contacts|addresses|family|education|credentials)\.(\d+)\.(.+)$/.exec(
+          e.field || '',
+        );
         if (match) {
           const group = match[1] as Group,
             index = Number(match[2]),
@@ -276,7 +281,7 @@ export function Editor({
   const scope = JSON.stringify([
     fields,
     profile?.readable,
-    ...[profile?.addresses, profile?.family].map((rows) =>
+    ...[profile?.addresses, profile?.family, profile?.education, profile?.credentials].map((rows) =>
       rows?.map((x) => [x.itemId, x.locked, x.hidden, x.masked, x.canRemove]),
     ),
     profile?.documents?.map((x) => [x.itemId, x.locked]),
@@ -324,7 +329,7 @@ export function Editor({
         const latest = existing.find((x) => x.key === row.key);
         const old = fromProfile(basis)[group].find((x) => x.key === row.key);
         if (row.revision && (!latest || !old)) continue;
-        if (group === 'addresses' || group === 'family') {
+        if (isProfileItem(group)) {
           if (!latest && !requiredByGroup[group].every((k) => fields.includes(k))) continue;
           const next = reconcileItem(old, row, latest || { key: row.key, fields: {} }, fields);
           if (latest) existing[existing.indexOf(latest)] = next;

@@ -392,12 +392,20 @@ func TestPersonnelMainlinePrefixes(t *testing.T) {
 // Restore the immediately preceding manual fixture. Compare complete rows,
 // including the original profile payloads and the stored submission digests.
 func TestPersonnelProfileV31Backup(t *testing.T) {
-	path := os.Getenv("CHNHCM_PERSONNEL_V31_DUMP")
+	checkPersonnelProfileBackup(t, 31)
+}
+
+func TestPersonnelProfileV36Backup(t *testing.T) {
+	checkPersonnelProfileBackup(t, 36)
+}
+
+func checkPersonnelProfileBackup(t *testing.T, version int) {
+	path := os.Getenv("CHNHCM_PERSONNEL_V" + strconv.Itoa(version) + "_DUMP")
 	if path == "" {
-		t.Skip("requires private first-batch acceptance backup")
+		t.Skip("requires the matching private acceptance backup")
 	}
 	f := fresh(t)
-	const database = "profile_v31_copy"
+	const database = "profile_backup_copy"
 	_, err := f.admin.Exec(f.ctx, "create database "+database)
 	must(t, err)
 	dump, err := os.Open(path)
@@ -413,12 +421,16 @@ func TestPersonnelProfileV31Backup(t *testing.T) {
 	defer db.Close()
 	var ledger int
 	must(t, db.QueryRow(f.ctx, "select max(version_id) from goose_db_version where is_applied").Scan(&ledger))
-	if ledger != 31 {
+	if ledger != version {
 		t.Fatalf("input version %d", ledger)
+	}
+	tables := []string{"person", "number", "counter", "source", "material", "terminal", "outbox", "hold", "disposition", "identity_payload", "evidence_payload", "contact_payload", "document_payload"}
+	if version >= 34 {
+		tables = append(tables, "profile_item_payload")
 	}
 	fingerprint := func() map[string]string {
 		values := map[string]string{}
-		for _, table := range []string{"person", "number", "counter", "source", "material", "terminal", "outbox", "hold", "disposition", "identity_payload", "evidence_payload", "contact_payload", "document_payload"} {
+		for _, table := range tables {
 			var checksum string
 			must(t, db.QueryRow(f.ctx, "select md5(coalesce(string_agg(to_jsonb(v)::text,'|' order by to_jsonb(v)::text),'')) from personnel."+table+" v").Scan(&checksum))
 			values[table] = checksum
@@ -434,7 +446,7 @@ func TestPersonnelProfileV31Backup(t *testing.T) {
 	var instance string
 	var count, receipts, items int
 	must(t, db.QueryRow(f.ctx, "select instance_id,(select count(*) from personnel.person),(select count(*) from personnel.terminal),(select count(*) from personnel.profile_item_payload) from personnel.person limit 1").Scan(&instance, &count, &receipts, &items))
-	if items != 0 || count == 0 || receipts == 0 {
+	if (version == 31 && items != 0) || (version == 36 && items == 0) || count == 0 || receipts == 0 {
 		t.Fatal("invalid upgraded fixture")
 	}
 	u, err := url.Parse(f.runtime.Pool.Config().ConnString())
@@ -455,7 +467,7 @@ func TestPersonnelProfileV31Backup(t *testing.T) {
 		var id, number, head string
 		must(t, rows.Scan(&id, &number, &head))
 		detail := b.call("GET", "/api/v1/persons/"+id, nil, "", 200)
-		if detail["number"] != number || detail["sourceVersion"] != head || detail["family"] != nil || detail["addresses"] != nil {
+		if detail["number"] != number || detail["sourceVersion"] != head || (version == 31 && (detail["family"] != nil || detail["addresses"] != nil)) || detail["education"] != nil || detail["credentials"] != nil {
 			t.Fatal("old detail mismatch")
 		}
 	}
@@ -479,5 +491,5 @@ func TestPersonnelProfileV31Backup(t *testing.T) {
 		t.Fatal("missing accepted receipts")
 	}
 	must(t, db.QueryRow(f.ctx, "SELECT max(version_id) FROM goose_db_version WHERE is_applied").Scan(&ledger))
-	t.Logf("00031 → %05d，13 张原表一致，%d 人，%d 回执，API 查回 %d 个已接受的原回执，地址及家庭行数 %d", ledger, count, receipts, checked, items)
+	t.Logf("%05d → %05d，%d 张原表一致，%d 人，%d 回执，API 查回 %d 个已接受的原回执，既有地址及家庭行数 %d", version, ledger, len(tables), count, receipts, checked, items)
 }

@@ -5249,7 +5249,10 @@ export interface components {
          * @description 地址 fields 支持 addressType、addressCountry、province、area、street、postalCode、addressPrimary。
          *     新地址需要类型、国家或地区及详细地址，邮编按文本录入。家庭 fields 支持 familyName、relationship、
          *     familyBirthDate、employer、familyJob、familyPhone、familyEmail、emergency，新家庭行需要姓名和关系。
-         *     两个标记使用 yes 或空串。未传字段沿用原值。目录字段可在 fields 中填写原文，或在 choices
+         *     education 使用 educationType、school、major、educationLevel、degree、studyMode、educationPath、
+         *     startMonth、endMonth、completion、awardDate、highestEducation、highestDegree；年月仅存 YYYY-MM。
+         *     credentials 使用 credentialKind、credentialName、credentialLevel、specialty、certificateNumber、
+         *     awardingBody、issuedOn、validFrom、validUntil、indefinite。各标记使用 yes 或空串。未传字段沿用原值。目录字段可在 fields 中填写原文，或在 choices
          *     中选用目录版本。省州及地址地区的 ancestors 按国家到直接上级的顺序传递候选路径及版本。
          *     更新和移除已有行须带 itemId 与 expectedRevision。remove 为 true 时只传原行定位。
          */
@@ -5306,6 +5309,8 @@ export interface components {
             documents?: components["schemas"]["PersonDocumentEdit"][];
             addresses?: components["schemas"]["PersonProfileItemEdit"][];
             family?: components["schemas"]["PersonProfileItemEdit"][];
+            education?: components["schemas"]["PersonProfileItemEdit"][];
+            credentials?: components["schemas"]["PersonProfileItemEdit"][];
             /** Format: uuid */
             submissionId: string;
             /** Format: uuid */
@@ -5372,6 +5377,8 @@ export interface components {
             documents?: components["schemas"]["PersonDocumentRow"][];
             addresses?: components["schemas"]["PersonProfileItem"][];
             family?: components["schemas"]["PersonProfileItem"][];
+            education?: components["schemas"]["PersonProfileItem"][];
+            credentials?: components["schemas"]["PersonProfileItem"][];
             /** Format: uuid */
             id: string;
             name?: string;

@@ -512,6 +512,12 @@ func (s *Store) Correct(ctx context.Context, c f.Credentials, id string, in p.Co
 		if e := r.applyItems(&v, d.Family, in.Family); e != nil {
 			return p.Result{}, e
 		}
+		if e := r.applyItems(&v, d.Education, in.Education); e != nil {
+			return p.Result{}, e
+		}
+		if e := r.applyItems(&v, d.Credentials, in.Credentials); e != nil {
+			return p.Result{}, e
+		}
 		newPrimary := map[string]string{}
 		seen := map[string]bool{}
 		for _, x := range in.Contacts {

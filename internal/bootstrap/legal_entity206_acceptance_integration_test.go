@@ -294,7 +294,7 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 		if f.scalar("SELECT (SELECT count(*) FROM personnel.person)+(SELECT count(*) FROM personnel.terminal)+(SELECT count(*) FROM access.person_grant)") != 0 {
 			t.Fatal("prefix fixture would remove personnel facts")
 		}
-		f.exec("DROP SCHEMA personnel CASCADE; DROP TABLE access.person_address_family_fixture,access.person_profile_fixture,access.person_fixture,access.person_grant,access.person_policy CASCADE; DROP FUNCTION access.person_grant_guard(); DELETE FROM public.goose_db_version WHERE version_id IN (29,30,31,34)")
+		f.exec("DROP SCHEMA personnel CASCADE; DROP TABLE access.person_qualification_fixture,access.person_address_family_fixture,access.person_profile_fixture,access.person_fixture,access.person_grant,access.person_policy CASCADE; DROP FUNCTION access.person_grant_guard(); DELETE FROM public.goose_db_version WHERE version_id IN (29,30,31,34,38)")
 	}
 
 	if f.scalar(`SELECT count(*) FROM pg_namespace WHERE nspname='staffing'`) > 0 {

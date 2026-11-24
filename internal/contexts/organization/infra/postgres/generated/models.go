@@ -84,6 +84,11 @@ type AccessPersonProfileFixture struct {
 	PrincipalID string
 }
 
+type AccessPersonQualificationFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessPolicyGuard struct {
 	InstanceID  string
 	PrincipalID string
