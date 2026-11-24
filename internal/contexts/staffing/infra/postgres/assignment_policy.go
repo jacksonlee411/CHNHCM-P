@@ -150,7 +150,7 @@ func (st *Store) checkOwnerAssignment(ctx context.Context, c f.Credentials, in s
 			return e
 		}
 		if in.Position != "" {
-			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked, retained, owner, prior)
+			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked, retained, owner, prior, false)
 		} else {
 			out, e = app.CheckJobAssignment(ctx, u, in, head, rows, locked)
 		}

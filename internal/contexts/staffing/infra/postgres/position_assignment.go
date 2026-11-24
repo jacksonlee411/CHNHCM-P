@@ -31,7 +31,7 @@ func (u *unit) positionReadable(ctx context.Context, enterprise string) (bool, e
 	return true, nil
 }
 
-func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool, retained []f.Period, owner, prior string) ([]s.AssignmentSegment, error) {
+func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool, retained []f.Period, owner, prior string, listFull bool) ([]s.AssignmentSegment, error) {
 	if !f.ValidID(in.Position) || !in.Period.Valid() || in.Category == "" || in.Purpose == "" {
 		return nil, f.Fail(400, "M03_INVALID_INPUT", "请核对岗位、任期、人员类别与用途")
 	}
@@ -145,10 +145,12 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: owner}
 			if _, e = evidence.PlanUse(intent, rules, quota, d.QuotaEligibility(pos)); e != nil {
 				var fault *f.Fault
-				if errors.As(e, &fault) && fault.Code == "M03_QUOTA_SHORTAGE" {
+				if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" {
+					return nil, e
+				}
+				if !listFull {
 					return nil, f.Fail(409, fault.Code, record.Data["name"]+"："+fault.Message)
 				}
-				return nil, e
 			}
 			for _, c := range evidence.Coverage {
 				if c.Owner == "M05" && c.Contains(p.From) {
