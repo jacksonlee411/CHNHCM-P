@@ -190,24 +190,26 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 		WHERE p.principal_id=$1 AND p.action='legalpurpose.check'`, b.subject).
 		Scan(&originalGrant, &binding.Role, &binding.Scope, &binding.Fields))
 	must(t, bootstrap.ChangeAccess(h.f.ctx, h.f.admin, bootstrap.AccessChange{Instance: h.f.instance, Login: "admin", Operation: "revoke", GrantID: originalGrant}))
-	issueCheck := func(until *time.Time) {
+	issueCheck := func(until *time.Time) string {
 		tx, e := h.f.admin.Begin(h.f.ctx)
 		must(t, e)
 		defer tx.Rollback(h.f.ctx)
 		from := time.Now().Add(-time.Minute)
+		grantID := f.NewID()
 		_, e = accessdb.ChangeAssignment(h.f.ctx, tx, h.f.instance, access.AssignmentChange{
-			Operation: "issue", ID: f.NewID(), RequestID: f.NewID(), Actor: b.subject, Subject: b.subject,
+			Operation: "issue", ID: grantID, RequestID: f.NewID(), Actor: b.subject, Subject: b.subject,
 			Source: "duty", Purpose: "legalpurpose", Binding: binding, ValidFrom: &from, ValidUntil: until,
 		})
 		must(t, e)
 		must(t, tx.Commit(h.f.ctx))
+		return grantID
 	}
 	expiry := time.Now().Add(1400 * time.Millisecond)
-	issueCheck(&expiry)
+	expiringGrant := issueCheck(&expiry)
 	expiringKey := f.NewID()
 	req = async("/api/v1/hires", in, expiringKey)
 	waitOn(hold.Conn().PgConn().PID())
-	time.Sleep(time.Until(expiry) + 10*time.Millisecond)
+	waitForStoredGrantExpiry(t, h.f, hold, expiringGrant)
 	must(t, hold.Commit(h.f.ctx))
 	if got := <-req; got.err != nil || got.status != 403 {
 		t.Fatal("cross-domain permission expired before commit", got)

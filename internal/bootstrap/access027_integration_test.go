@@ -104,14 +104,14 @@ func TestAccess027AssignmentOrderAndExpiry(t *testing.T) {
 
 	// Wait on a real business table after authorization. Only the proxy remains.
 	deadline := time.Now().Add(1150 * time.Millisecond)
-	issue("proxy", &deadline)
+	expiring := issue("proxy", &deadline)
 	tx = begin()
 	_, err = tx.Exec(f.ctx, "LOCK TABLE organization.bu_shape IN ACCESS EXCLUSIVE MODE")
 	must(t, err)
 	key = id()
 	done = pending("X03_EXPIRED", key)
 	waitBehind(tx)
-	time.Sleep(time.Until(deadline.Add(10 * time.Millisecond)))
+	waitForStoredGrantExpiry(t, f, tx, expiring.ID)
 	must(t, tx.Commit(f.ctx))
 	if <-done != 403 {
 		t.Fatal("authorization survived expiry inside a business lock wait")
@@ -191,6 +191,22 @@ func TestAccess027AssignmentOrderAndExpiry(t *testing.T) {
 		t.Fatal("ordinary account received business permissions")
 	}
 	save(newUser, "X03_ZERO", 403)
+}
+
+// Keep the business request blocked until the grant's stored wall-clock deadline.
+// Record both clocks so an early release cannot be mistaken for an expiry denial.
+func waitForStoredGrantExpiry(t *testing.T, f *fixture, blocker pgx.Tx, grantID string) {
+	t.Helper()
+	var deadline, released time.Time
+	must(t, blocker.QueryRow(f.ctx, "SELECT valid_until FROM access.grant_assignment WHERE instance_id=$1 AND grant_id=$2", f.instance, grantID).Scan(&deadline))
+	_, err := blocker.Exec(f.ctx, "SELECT pg_sleep_until($1::timestamptz)", deadline)
+	must(t, err)
+	must(t, blocker.QueryRow(f.ctx, "SELECT clock_timestamp()").Scan(&released))
+	now := time.Now()
+	t.Logf("授权到期 %s，释放前数据库 %s，服务端 %s", deadline.UTC(), released.UTC(), now.UTC())
+	if released.Before(deadline) || now.Before(deadline) {
+		t.Fatal("expiry precondition not reached while business request blocked")
+	}
 }
 
 func TestAccess027Public38Upgrade(t *testing.T) {
