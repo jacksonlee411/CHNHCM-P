@@ -11544,7 +11544,7 @@ paths:
         name: view
         schema:
           type: string
-          pattern: '^(fullDocument|edit|(document|credential)-[0-9a-f-]{36})$'
+          pattern: '^(fullDocument|edit|(document|credential|bank)-[0-9a-f-]{36})$'
   /api/v1/persons/{id}/sources/{version}:
     get:
       operationId: getPersonSource
@@ -12834,6 +12834,8 @@ components:
         family: {type: array, items: {$ref: '#/components/schemas/PersonProfileItemEdit'}}
         education: {type: array, items: {$ref: '#/components/schemas/PersonProfileItemEdit'}}
         credentials: {type: array, items: {$ref: '#/components/schemas/PersonProfileItemEdit'}}
+        bankAccounts: {type: array, items: {$ref: '#/components/schemas/PersonProfileItemEdit'}}
+        healthSummary: {type: string, description: 获健康用途授权的摘要，空字符串表示清空}
         submissionId:
           type: string
           format: uuid
@@ -12992,6 +12994,8 @@ components:
         family: {type: array, items: {$ref: '#/components/schemas/PersonProfileItem'}}
         education: {type: array, items: {$ref: '#/components/schemas/PersonProfileItem'}}
         credentials: {type: array, items: {$ref: '#/components/schemas/PersonProfileItem'}}
+        bankAccounts: {type: array, items: {$ref: '#/components/schemas/PersonProfileItem'}}
+        healthSummary: {type: string, description: 获健康用途授权的摘要，空字符串表示清空}
         id:
           type: string
           format: uuid

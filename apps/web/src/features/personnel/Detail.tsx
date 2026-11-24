@@ -35,8 +35,10 @@ export const documentLabels: Record<string, string> = {
 };
 function DocumentFields({ data, version }: { data: person.Profile; version?: string }) {
   const [show, setShow] = useState(false);
-  const full = person.useRead(show && data.canReadDocument ? data.id + data.sourceVersion : undefined, () =>
-    person.profile(data.id, version, 'fullDocument'),
+  const full = person.useRead(
+    show && data.canReadDocument ? data.id + data.sourceVersion : undefined,
+    () => person.profile(data.id, version, 'fullDocument'),
+    'fresh',
   );
   const doc = full.data?.primaryDocument || data.primaryDocument;
   if (!doc) return null;
@@ -238,12 +240,18 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
         }
         actions={
           <>
-          {hire.data && (hire.data.canHire || hire.data.actions.length>0) && <Button component={Link} to={person.path+"/"+id+"/employment?"+params} state={{hire:hire.data.actions.length===0}}>{hire.data.actions.length?"工作关系与任职":"办理入职"}</Button>}
-          {data?.editable?.length && !version ? (
-            <Button variant="contained" onClick={() => edit({ action: 'correct' })}>
-              更正资料
-            </Button>
-          ) : null}</>
+            {data?.editable?.length && !version ? (
+              <Button variant="contained" onClick={() => edit({ action: 'correct' })}>
+                更正资料
+              </Button>
+            ) : null}
+            {hire.data && (hire.data.canHire || hire.data.actions.length > 0) && (
+              <Button component={Link} to={person.path + '/' + id + '/employment?' + params}
+                state={{ hire: hire.data.actions.length === 0 }}>
+                {hire.data.actions.length ? '工作关系与任职' : '办理入职'}
+              </Button>
+            )}
+          </>
         }
         navigation={
           nav.data && (
@@ -374,7 +382,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
               selected === 'profile' && data && (
                 <>
                   {!version && (
-                    <ProfileSections data={data} />
+                    <ProfileSections data={data} recheck={record.refresh} />
                   )}
                   {!version && data.primaryDocument && !data.readable?.includes('documentKind') && (
                     <DocumentFields data={data} />

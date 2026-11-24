@@ -205,31 +205,23 @@ func (r *request) save(v *snapshot, action, previous string) (p.Result, error) {
 	if r.a.Policy.Version != "" {
 		policy = r.a.Policy.Version
 	}
-	_, e := r.tx.Exec(r.ctx, `insert into personnel.source values($1,$2,$3,nullif($4,'')::uuid,$5,$6,$7,$8,$9,$10,$11,$12)`, r.instance, v.ID, version, previous, v.Number, actor.ID, actor.Login, r.a.At, action, v.Decision, policy, nil)
-	if e != nil {
-		return p.Result{}, e
-	}
+	payload := &pgx.Batch{}
+	payload.Queue(`insert into personnel.source values($1,$2,$3,nullif($4,'')::uuid,$5,$6,$7,$8,$9,$10,$11,$12)`, r.instance, v.ID, version, previous, v.Number, actor.ID, actor.Login, r.a.At, action, v.Decision, policy, nil)
 	if v.Basic == nil {
 		v.Basic = map[string]string{}
 	}
-	_, e = r.tx.Exec(r.ctx, "insert into personnel.identity_payload(instance_id,person_id,version,name,basic,nationality_adoption) values($1,$2,$3,$4,$5,$6)", r.instance, v.ID, version, v.Name, v.Basic, v.Nationality)
-	if e != nil {
-		return p.Result{}, e
-	}
+	payload.Queue("insert into personnel.identity_payload(instance_id,person_id,version,name,basic,nationality_adoption) values($1,$2,$3,$4,$5,$6)", r.instance, v.ID, version, v.Name, v.Basic, v.Nationality)
 	for i, x := range v.profileItems {
 		if !r.a.At.Before(x.ordinary) {
 			continue
 		}
-		_, e = r.tx.Exec(r.ctx, `insert into personnel.profile_item_payload(instance_id,person_id,version,section,item_id,revision,ordinal,fields,adoptions,ordinary_until,evidence_until,collection_policy) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`, r.instance, v.ID, version, x.Section, x.ItemID, x.Revision, i, x.Fields, x.Adoptions, x.ordinary, x.evidence, x.policy)
-		if e != nil {
-			return p.Result{}, e
-		}
+		payload.Queue(`insert into personnel.profile_item_payload(instance_id,person_id,version,section,item_id,revision,ordinal,fields,adoptions,ordinary_until,evidence_until,collection_policy) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`, r.instance, v.ID, version, x.Section, x.ItemID, x.Revision, i, x.Fields, x.Adoptions, x.ordinary, x.evidence, x.policy)
 	}
 	if previous != "" {
-		_, e = r.tx.Exec(r.ctx, "update personnel.document_payload set occupied=false where instance_id=$1 and person_id=$2 and version=$3 and occupied", r.instance, v.ID, previous)
-		if e != nil {
-			return p.Result{}, e
-		}
+		payload.Queue("update personnel.document_payload set occupied=false where instance_id=$1 and person_id=$2 and version=$3 and occupied", r.instance, v.ID, previous)
+	}
+	if err := r.tx.SendBatch(r.ctx, payload).Close(); err != nil {
+		return p.Result{}, err
 	}
 	for i, row := range v.docs {
 		attrs := maps.Clone(row.Fields)
@@ -249,31 +241,23 @@ func (r *request) save(v *snapshot, action, previous string) (p.Result, error) {
 			return owner, &f.Fault{Status: 409, Code: "PERSON_DOCUMENT_USED", Field: "documentNumber", Message: "无法按此证件办理，请联系人事核对"}
 		}
 	}
+	publication := &pgx.Batch{}
 	if v.Evidence != nil && r.a.At.Before(v.materialEvidenceUntil) {
-		_, e = r.tx.Exec(r.ctx, "insert into personnel.evidence_payload values($1,$2,$3,$4,$5)", r.instance, v.ID, version, v.Evidence.Kind, v.Evidence.Reference)
-		if e != nil {
-			return p.Result{}, e
-		}
+		publication.Queue("insert into personnel.evidence_payload values($1,$2,$3,$4,$5)", r.instance, v.ID, version, v.Evidence.Kind, v.Evidence.Reference)
 	}
 	for i, x := range v.items {
 		if !r.a.At.Before(x.evidence) {
 			continue
 		}
-		_, e = r.tx.Exec(r.ctx, "insert into personnel.contact_payload values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", r.instance, v.ID, version, x.ItemID, x.Revision, i, x.Kind, x.Value.Value, x.ordinary, x.evidence, x.policy, x.Purpose, x.Primary && r.a.At.Before(x.ordinary))
-		if e != nil {
-			return p.Result{}, e
-		}
+		publication.Queue("insert into personnel.contact_payload values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)", r.instance, v.ID, version, x.ItemID, x.Revision, i, x.Kind, x.Value.Value, x.ordinary, x.evidence, x.policy, x.Purpose, x.Primary && r.a.At.Before(x.ordinary))
 	}
 	if previous == "" {
-		_, e = r.tx.Exec(r.ctx, "insert into personnel.person values($1,$2,$3,$4,$5,$6,$7,$8,$9)", r.instance, v.ID, v.Number, version, v.ordinary, v.evidence, r.a.Policy.Version, v.materialUntil, v.materialEvidenceUntil)
+		publication.Queue("insert into personnel.person values($1,$2,$3,$4,$5,$6,$7,$8,$9)", r.instance, v.ID, v.Number, version, v.ordinary, v.evidence, r.a.Policy.Version, v.materialUntil, v.materialEvidenceUntil)
 	} else {
-		_, e = r.tx.Exec(r.ctx, "update personnel.person set number=$3,head=$4 where instance_id=$1 and person_id=$2", r.instance, v.ID, v.Number, version)
+		publication.Queue("update personnel.person set number=$3,head=$4 where instance_id=$1 and person_id=$2", r.instance, v.ID, v.Number, version)
 	}
-	if e != nil {
-		return p.Result{}, e
-	}
-	_, e = r.tx.Exec(r.ctx, "insert into personnel.outbox values($1,$2,$3,$4,$5)", r.instance, f.NewID(), v.ID, version, action)
-	return p.Result{Outcome: "accepted", ID: v.ID, Version: version}, e
+	publication.Queue("insert into personnel.outbox values($1,$2,$3,$4,$5)", r.instance, f.NewID(), v.ID, version, action)
+	return p.Result{Outcome: "accepted", ID: v.ID, Version: version}, r.tx.SendBatch(r.ctx, publication).Close()
 }
 func (r *request) occupy(id, number string) (bool, error) {
 	count, err := generated.New(r.tx).OccupyNumber(r.ctx, generated.OccupyNumberParams{InstanceID: r.instance, Number: number, PersonID: id})
@@ -517,6 +501,12 @@ func (s *Store) Correct(ctx context.Context, c f.Credentials, id string, in p.Co
 		}
 		if e := r.applyItems(&v, d.Credentials, in.Credentials); e != nil {
 			return p.Result{}, e
+		}
+		if err := r.applyItems(&v, d.BankAccounts, in.BankAccounts); err != nil {
+			return p.Result{}, err
+		}
+		if err := r.applyHealth(&v, in.HealthSummary); err != nil {
+			return p.Result{}, err
 		}
 		newPrimary := map[string]string{}
 		seen := map[string]bool{}

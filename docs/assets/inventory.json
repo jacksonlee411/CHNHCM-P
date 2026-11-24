@@ -8786,11 +8786,11 @@
             "docs/plans/504-personal-profile-extension.md",
             "docs/specs/m01/505-personal-profile-contract.md"
           ],
-          "implemented": false,
-          "verified": false,
+          "implemented": true,
+          "verified": true,
           "complete_asset_verified": false,
-          "evidence": "docs/verification/504-personal-profile-dialog-layout.md",
-          "verification_limit": "已完成九栏方案及 CubeBox 弹框参考布局的文档审阅。CHNHCM 七类弹框的产品验收按 505 的 020 分批执行。原 T01 采用范围见 disposition 与原验收记录。"
+          "evidence": "docs/verification/504-personal-profile-fourth-batch.md",
+          "verification_limit": "4180 参考布局在 504 弹框布局记录定稿。七类记录在产品页累计验证 21/21，真实主岗与兼岗共享留到 T04。"
         },
         {
           "document": "CHNHCM-504",
@@ -8836,6 +8836,20 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/504-personal-profile-third-batch.md",
           "verification_limit": "第三批六个组合及五种字段变体已验证。七类记录累计完成 18/21 个组合，银行账户随第四批。"
+        },
+        {
+          "document": "CHNHCM-504",
+          "scope": "银行三态、健康摘要和七类集合的整页草稿。银行账户沿用原型三行六字段及窄屏次序。",
+          "target_files": [
+            "apps/web/src/features/personnel/ProfileSections.tsx",
+            "apps/web/src/features/personnel/profileDraft.ts",
+            "tests/e2e/personnel.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/504-personal-profile-fourth-batch.md",
+          "verification_limit": "七类弹框 21/21，九栏普通资料维护与按权读取。真实任职共享由 T04 联验。"
         }
       ]
     }

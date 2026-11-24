@@ -33,6 +33,11 @@ type PersonPolicy struct {
 	ValidUntil                                                           time.Time
 	AllowPermanentDecision                                               bool
 }
+type PersonDataPurpose struct {
+	Version                    string
+	ValidUntil                 time.Time
+	OrdinaryDays, EvidenceDays int
+}
 type PersonGrant struct {
 	Action, Purpose, Source, ItemID string
 	Fields, IDs                     []string
@@ -43,11 +48,16 @@ type PersonAccess struct {
 	Principal Principal
 	Policy    PersonPolicy
 	Grants    []PersonGrant
+	Purposes  map[string]PersonDataPurpose
 	At        time.Time
 }
 
 func PersonPurpose(action string) string {
 	switch action {
+	case "bank.read", "bank.correct":
+		return "personal-bank"
+	case "health.read", "health.correct":
+		return "health-summary"
 	case "qualification.read", "qualification.correct":
 		return "education-credentials"
 	case "hire.check":
@@ -90,6 +100,13 @@ func (a PersonAccess) ItemWritable(person, item string, fields ...string) bool {
 }
 func (a PersonAccess) scope(version, item, action string, fields ...string) PersonScope {
 	s := PersonScope{Include: []string{}, Exclude: []string{}}
+	purpose := PersonPurpose(action)
+	if purpose == "personal-bank" || purpose == "health-summary" {
+		p, ok := a.Purposes[purpose]
+		if !ok || (!p.ValidUntil.IsZero() && !a.At.Before(p.ValidUntil)) {
+			return s
+		}
+	}
 	for _, g := range a.Grants {
 		if g.ItemID != "" && g.ItemID != item {
 			continue
@@ -97,7 +114,7 @@ func (a PersonAccess) scope(version, item, action string, fields ...string) Pers
 		if g.Source != version && !(g.Denied && g.Source == "") {
 			continue
 		}
-		if g.Action != action || g.Purpose != PersonPurpose(action) || (!g.Expires.IsZero() && !a.At.Before(g.Expires)) {
+		if g.Action != action || g.Purpose != purpose || (!g.Expires.IsZero() && !a.At.Before(g.Expires)) {
 			continue
 		}
 		complete, overlap := true, len(g.Fields) == 0

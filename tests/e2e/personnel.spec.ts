@@ -985,6 +985,7 @@ async function check504(page: Page, section: string, variant: string, mode: stri
   await expect(dlg.locator('.MuiDialogActions-root button')).toHaveText(reference.modes[mode].footer_right);
   const fields = dlg.locator('.profile-grid .object-detail-field');
   const requiredFields: Record<string, string[]> = {
+    银行账户: ['银行名称', '户名', '银行账号', '币种'],
     地址: ['地址类型', '国家/地区', '详细地址'],
     家庭成员与紧急联系人: ['联系人姓名', '与员工关系'],
     教育经历: ['教育记录类型', '学校/授予院校', ...(variant === '已取得学历' ? ['学历'] : variant === '学位授予' ? ['学位'] : [])],
@@ -1878,6 +1879,203 @@ test('504 第三批学习经历五种视口及原生缩放', async () => {
       await expect(dlg.getByRole('button', { name: '应用' })).toBeFocused();
       await p.keyboard.press('Escape');
       await expect(opener).toBeFocused();
+    }
+  } finally {
+    await browser.close();
+  }
+});
+
+for (const [width, height] of [
+  [1440, 900],
+  [390, 844],
+]) {
+  test('504 第四批银行三态、健康与整页保存取消 ' + width, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    const { path } = await openFamilySample(page);
+    const button = (name: string) => page.getByRole('button', { name, exact: true });
+    const bank = page.getByRole('group', { name: '银行账户', exact: true });
+    const dlg = page.getByRole('dialog');
+    await button('更正资料').click();
+    await bank.getByRole('button', { name: '添加一行' }).click();
+    await check504(page, '银行账户', '通用', '新增');
+    for (const [id, value] of Object.entries({
+      bankName: '合成银行',
+      branchName: '合成支行',
+      accountHolder: '合成户名',
+      accountNumber: '000abc504',
+      currency: 'CNY',
+    })) {
+      await dlg.locator('#row-' + id).fill(value);
+    }
+    await dlg.getByLabel('主要账户').check();
+    await button('应用').click();
+    await page.getByLabel('健康状况简述').fill('合成摘要甲');
+    await page.getByLabel('曾用名').fill('合成九栏');
+    await button('保存').click();
+    const opener = button('查看 · 合成银行');
+    await opener.press('Enter');
+    await check504(page, '银行账户', '通用', '查看');
+    await expect(dlg).toContainText('********');
+    await button('查看完整号码').click();
+    await expect(dlg).toContainText('000abc504');
+    if (width === 1440) {
+      await button('隐藏号码').click();
+      await expect(dlg).not.toContainText('000abc504');
+      const sql = personnelSQL(), deny = randomUUID();
+      const personId = path.split('/').at(-1)!;
+      expect(personId).toMatch(/^[0-9a-f-]{36}$/);
+      sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id,denied)
+        select instance_id,principal_id,'bank.read','personal-bank',array['accountNumber'],array['${personId}'::uuid],'${deny}',true from access.principal where login='admin'`);
+      let resume!: () => void, entered!: () => void;
+      const pending = new Promise<void>((resolve) => { resume = resolve; });
+      const intercepted = new Promise<void>((resolve) => { entered = resolve; });
+      try {
+        await page.route((url) => url.searchParams.get('view')?.startsWith('bank-') === true, async (route) => {
+          entered();
+          await pending;
+          await route.continue();
+        }, { times: 1 });
+        await button('查看完整号码').click();
+        await intercepted;
+        await expect(dlg).not.toContainText('000abc504');
+        await expect(dlg).toContainText('********');
+        resume();
+        await expect(dlg.getByText('银行账号', { exact: true })).toHaveCount(0);
+      } finally {
+        resume();
+        sql(`delete from access.person_grant where grant_id='${deny}'`);
+      }
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      await expect(button('查看完整号码')).toBeVisible();
+      await expect(dlg).not.toContainText('000abc504');
+    }
+    await page.keyboard.press('Escape');
+    await expect(opener).toBeFocused();
+    const saved = (await request(page, 'GET', path)).body;
+    expect(saved.healthSummary).toBe('合成摘要甲');
+    expect(saved.basic.formerName).toBe('合成九栏');
+    expect(saved.bankAccounts[0].fields.accountNumber).toBe('********');
+    await button('更正资料').click();
+    await button('编辑 · 合成银行').click();
+    await expect(dlg.locator('#row-accountNumber')).toHaveValue('000abc504');
+    await check504(page, '银行账户', '通用', '编辑');
+    if (width === 1440) {
+      await dlg.locator('#row-accountNumber').fill('000different');
+      await dlg.locator('#row-accountNumber').fill('000abc504');
+      await page.keyboard.press('Escape');
+      await expect(dlg).toHaveCount(0);
+      await button('编辑 · 合成银行').click();
+    }
+    await dlg.locator('#row-branchName').fill('草稿支行');
+    await button('应用').click();
+    await button('编辑 · 合成甲').click();
+    await dlg.locator('#row-employer').fill('草稿单位');
+    await button('应用').click();
+    await page
+      .getByRole('group', { name: '地址', exact: true })
+      .getByRole('button', { name: '添加一行' })
+      .click();
+    await select(page, '地址类型', '通讯地址');
+    await dlg.locator('#row-addressCountry').fill('原文国家');
+    await dlg.locator('#row-street').fill('草稿地址');
+    await button('应用').click();
+    await page.getByLabel('健康状况简述').fill('');
+    await button('取消').click();
+    await button('放弃修改').click();
+    await expect(opener).toBeVisible();
+    expect((await request(page, 'GET', path)).body).toEqual(saved);
+    await button('退出').click();
+    await expect(page.getByLabel('密码')).toBeVisible();
+    await login(page, 'reader');
+    await menu(page);
+    await search(page, saved.name);
+    await page.getByRole('link', { name: saved.name, exact: true }).click();
+    await expect(page.getByRole('heading', { name: '基本信息', exact: true })).toBeVisible();
+    await expect(bank).toHaveCount(0);
+    await expect(page.getByText('健康信息', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('合成摘要甲')).toHaveCount(0);
+    const grant = randomUUID(), sql = personnelSQL();
+    expect(saved.id).toMatch(/^[0-9a-f-]{36}$/);
+    try {
+      sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id)
+        select instance_id,principal_id,'bank.read','personal-bank',${width === 390 ? "array['accountNumber.masked']" : "array['bankName','accountNumber.masked']"},array['${saved.id}'::uuid],'${grant}' from access.principal where login='reader'`);
+      await page.reload();
+      const restrictedOpener = width === 390 ? button('查看 · 银行账户') : opener;
+      await restrictedOpener.press('Enter');
+      await expect(dlg.locator('.object-field-label')).toHaveText(width === 390 ? ['银行账号'] : ['银行名称', '银行账号']);
+      await expect(dlg).toContainText('********');
+      await expect(dlg.getByRole('button', {name: '查看完整号码'})).toHaveCount(0);
+      await expect(dlg).not.toContainText('000abc504');
+      await page.keyboard.press('Escape');
+      await expect(restrictedOpener).toBeFocused();
+    } finally { sql(`delete from access.person_grant where grant_id='${grant}'`); }
+  });
+}
+
+test('504 第四批健康撤权时整页回滚并清理草稿', async ({ page }) => {
+  const { id, path, source } = await openFamilySample(page);
+  const button = (name: string) => page.getByRole('button', { name, exact: true });
+  await button('更正资料').click();
+  await page.getByLabel('曾用名').fill('获权草稿');
+  await page.getByLabel('健康状况简述').fill('甲'.repeat(201));
+  await button('保存').click();
+  await expect(page.getByLabel('健康状况简述')).toBeFocused();
+  await expect(page.getByLabel('健康状况简述')).toHaveAttribute('aria-invalid', 'true');
+  await page.getByLabel('健康状况简述').fill('撤权前输入');
+  const sql = personnelSQL(),
+    grant = randomUUID();
+  expect(id).toMatch(/^[0-9a-f-]{36}$/);
+  try {
+    sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id,denied)
+      select instance_id,principal_id,'health.read','health-summary',array['healthSummary'],array['${id}'::uuid],'${grant}',true from access.principal where login='admin'`);
+    await button('保存').click();
+    await expect(page.locator('#person-error')).toContainText('没有本次办理权限');
+    await expect(page.getByText('健康信息', { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel('曾用名')).toHaveValue('获权草稿');
+    const detail = (await request(page, 'GET', path)).body;
+    expect(detail.sourceVersion).toBe(source);
+    expect(detail.healthSummary).toBeUndefined();
+    expect(detail.basic.formerName).toBe('');
+  } finally {
+    sql(`delete from access.person_grant where grant_id='${grant}'`);
+  }
+});
+
+test('504 第四批整页末栏和银行弹框的视口与原生缩放', async () => {
+  test.setTimeout(150000);
+  const browser = await nativeZoomBrowser(),
+    page = browser.page;
+  try {
+    await openFamilySample(page);
+    await page.getByRole('button', { name: '更正资料', exact: true }).click();
+    for (const [width, height, zoom] of [
+      [1440, 900, 1],
+      [1440, 540, 1],
+      [390, 844, 1],
+      [320, 900, 1],
+      [320, 256, 1],
+      [1280, 900, 2],
+      [1280, 900, 4],
+    ]) {
+      await page.setViewportSize({ width, height });
+      if (zoom !== 1) await browser.setZoom(zoom);
+      const summary = page.getByLabel('健康状况简述');
+      await summary.focus();
+      await expect(summary).toBeInViewport();
+      await summary.fill('合成末栏');
+      const add = page
+        .getByRole('group', { name: '银行账户', exact: true })
+        .getByRole('button', { name: '添加一行' });
+      await add.focus();
+      await add.press('Enter');
+      await check504(page, '银行账户', '通用', '新增');
+      const primary = page.getByLabel('主要账户');
+      await primary.focus();
+      await expect(primary).toBeInViewport();
+      await primary.press('Tab');
+      await expect(page.getByRole('dialog').getByRole('button', { name: '取消' })).toBeFocused();
+      await page.keyboard.press('Escape');
+      await expect(add).toBeFocused();
     }
   } finally {
     await browser.close();

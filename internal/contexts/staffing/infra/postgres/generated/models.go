@@ -51,6 +51,15 @@ type AccessPersonAddressFamilyFixture struct {
 	PrincipalID string
 }
 
+type AccessPersonDataPurpose struct {
+	InstanceID   string
+	Purpose      string
+	Version      string
+	ValidUntil   pgtype.Timestamptz
+	OrdinaryDays int32
+	EvidenceDays int32
+}
+
 type AccessPersonFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -90,6 +99,11 @@ type AccessPersonProfileFixture struct {
 }
 
 type AccessPersonQualificationFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessPersonSensitiveFixture struct {
 	InstanceID  string
 	PrincipalID string
 }
@@ -911,6 +925,12 @@ type OrganizationStorageContract struct {
 	Contract  string
 }
 
+type PersonnelBankAccount struct {
+	InstanceID string
+	PersonID   string
+	AccountID  string
+}
+
 type PersonnelContactPayload struct {
 	InstanceID       string
 	PersonID         string
@@ -1030,6 +1050,7 @@ type PersonnelProfileItemPayload struct {
 	OrdinaryUntil    pgtype.Timestamptz
 	EvidenceUntil    pgtype.Timestamptz
 	CollectionPolicy string
+	AccountID        pgtype.UUID
 }
 
 type PersonnelQuery struct {

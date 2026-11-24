@@ -180,7 +180,7 @@ func TestPersonnelEducationCredentials(t *testing.T) {
 	sql("update personnel.profile_item_payload set ordinary_until=now()-interval '2 days', evidence_until=now()-interval '1 day' where person_id=$1 and section in ('education','credentials')", id)
 	sql("insert into personnel.hold values($1,$2,$3,'education',now()+interval '1 day','合成保全')", f.instance, id, saved["sourceVersion"])
 	// Take a database copy before the disposition, just as an earlier backup would contain the payload.
-	sql("create table public.qualification_backup as select * from personnel.profile_item_payload where person_id=$1", id)
+	sql("create table public.qualification_backup as select instance_id,person_id,version,section,item_id,revision,ordinal,fields,adoptions,ordinary_until,evidence_until,collection_policy from personnel.profile_item_payload where person_id=$1", id)
 	must(t, bootstrap.Migrate(f.ctx, f.admin, migrations.Files))
 	verifyDisposition := func() {
 		var kept, other, disposed int

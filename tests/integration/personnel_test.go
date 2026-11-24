@@ -23,7 +23,7 @@ func personnelFixture(t *testing.T) *fixture {
 		login, pw, profile string
 		read               bool
 	}{{"admin", f.password, "registrar", false}, {"reader", f.readPassword, "reader", true}} {
-		must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: a.login, Password: a.pw, ReadOnly: a.read, PersonnelProfile: a.profile, PersonalProfileFixture: true}))
+		must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: a.login, Password: a.pw, ReadOnly: a.read, PersonnelProfile: a.profile, PersonalProfileFixture: true, SensitiveProfileFixture: !a.read}))
 	}
 	return f
 }
@@ -440,6 +440,20 @@ func TestPersonnelCustomerIsolation(t *testing.T) {
 			t.Fatal("cross-customer search")
 		}
 		[]*browser{b, a}[i].call("GET", persons+"?ref="+ref, nil, "", 404)
+	}
+	// Enabling collection in one customer does not enable it for another customer's registrar.
+	apath, bpath := persons+"/"+x["id"].(string), persons+"/"+y["id"].(string)
+	a.call("POST", apath+"/corrections", M{"submissionId": foundation.NewID(), "expectedSourceVersion": x["sourceVersion"],
+		"bankAccounts":  []M{{"fields": M{"bankName": "合成银行", "accountHolder": "甲", "accountNumber": "000ISO1", "currency": "CNY"}}},
+		"healthSummary": "甲客户合成摘要"}, "", 200)
+	account := a.call("GET", apath, nil, "", 200)["bankAccounts"].([]any)[0].(M)["itemId"].(string)
+	b.call("GET", apath+"?view=bank-"+account, nil, "", 404)
+	_, e = f.admin.Exec(f.ctx, `insert into access.person_grant(instance_id,principal_id,action,purpose,fields)
+		select $1,$2,action,'health-summary',array['healthSummary'] from unnest(array['health.read','health.correct']) action`, other, b.subject)
+	must(t, e)
+	b.call("POST", bpath+"/corrections", M{"submissionId": foundation.NewID(), "expectedSourceVersion": y["sourceVersion"], "healthSummary": "未启用用途"}, "", 403)
+	if d := b.call("GET", bpath+"?view=bank-"+account, nil, "", 200); d["healthSummary"] != nil || d["bankAccounts"] != nil {
+		t.Fatal("customer purpose crossed instance boundary")
 	}
 	a.call("GET", persons+"/"+y["id"].(string), nil, "", 404)
 	b.call("GET", persons+"/"+x["id"].(string), nil, "", 404)

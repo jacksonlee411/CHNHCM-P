@@ -5391,6 +5391,9 @@ export interface components {
             family?: components["schemas"]["PersonProfileItemEdit"][];
             education?: components["schemas"]["PersonProfileItemEdit"][];
             credentials?: components["schemas"]["PersonProfileItemEdit"][];
+            bankAccounts?: components["schemas"]["PersonProfileItemEdit"][];
+            /** @description 获健康用途授权的摘要，空字符串表示清空 */
+            healthSummary?: string;
             /** Format: uuid */
             submissionId: string;
             /** Format: uuid */
@@ -5459,6 +5462,9 @@ export interface components {
             family?: components["schemas"]["PersonProfileItem"][];
             education?: components["schemas"]["PersonProfileItem"][];
             credentials?: components["schemas"]["PersonProfileItem"][];
+            bankAccounts?: components["schemas"]["PersonProfileItem"][];
+            /** @description 获健康用途授权的摘要，空字符串表示清空 */
+            healthSummary?: string;
             /** Format: uuid */
             id: string;
             name?: string;

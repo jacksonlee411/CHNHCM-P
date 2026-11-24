@@ -2918,9 +2918,12 @@
         "result": "accepted",
         "evidence": "docs/plans/504-personal-profile-extension.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
+      "closure": {
+        "date": "2026-11-24",
+        "reason": "四批完成当前 M01 的九栏维护、21 个弹框组合和万人容量验收。真实主岗与兼岗共享由 T04 接续。"
+      },
       "archive": null
     },
     {
@@ -2963,6 +2966,74 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/504-personal-profile-fourth-batch.md",
+        "related_documents": [
+          "CHNHCM-003",
+          "CHNHCM-012",
+          "CHNHCM-502",
+          "CHNHCM-504",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "bc769ff43a4b0fafd7114b0c022c26515a93e71b",
+        "working_tree": "dirty",
+        "change_description": "公共 f 新增个人账户身份、银行和健康用途、整页草稿及事务校验。",
+        "environment": "公共 wt-dev-f 本地工作区，PostgreSQL 18.6、Go 1.26.0、Chromium 固定构建，持久 m01-profile-f 的 Web 4386、API 8386、DB 54376。",
+        "scope": "第四批 M01 范围、七类弹框、万人底库、1 和 20 会话以及公共树手工验收。",
+        "results": [
+          {
+            "check": "00038 副本和有原任用决定的 00039 连续升级至 00040，重跑及到期处置恢复",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "41 个受影响 DB/API 根用例，含账户身份、用途、跨栏保存及整笔回滚",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "首次整包执行触及 20 分钟总超时，两个中断用例随后单独复跑通过",
+            "result": "interrupted",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "固定 Chromium 共 29 项，七类弹框 21/21、常规视口和原生缩放",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "写入合批前首测，20 会话整页更正读回 P95 超过 500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "合批后独立复测，万人九栏 1 与 20 会话四组共 800 次、零错误",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "4386 固定构建、原样本双角色从正常菜单办理和重读",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "多轮复评后复测遮罩读权、等待期间授权到期、重复账户定位及跨栏回滚，4386 原样本双角色通过",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-fourth-batch.md"
+          },
+          {
+            "check": "真实主岗与兼岗的共享资料",
+            "result": "not_run",
+            "evidence": "docs/plans/504-personal-profile-extension.md"
+          }
+        ],
+        "limitations": [
+          "真实主岗和兼岗共享在 T04 联验。"
+        ]
+      },
       {
         "path": "docs/verification/504-personal-profile-third-batch.md",
         "related_documents": [
