@@ -451,7 +451,8 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
     await page.getByRole('menuitem', { name: '人员', exact: true }).click();
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
+    const personnel = page.getByRole('button', { name: '人员', exact: true });
+    if ((await personnel.getAttribute('aria-expanded')) !== 'true') await personnel.click();
     await page.getByRole('button', { name: '员工列表', exact: true }).click();
   }
   await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
@@ -467,10 +468,11 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
   await row.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('tab', { name: '职务信息' })).toHaveAttribute('aria-selected', 'true');
+  return { row, search };
 }
 async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   const { locations } = await hireAtLocation(page, sample);
-  await openEmployeeAssignment(page,sample);
+  const { row, search } = await openEmployeeAssignment(page,sample);
   await expect(page.getByText(new RegExp(locations[0].name))).toBeVisible();
   await page.getByRole('button', { name: '新增记录', exact: true }).click();
   const effective = page.getByRole('textbox', { name: /^生效日期/ });
@@ -497,6 +499,7 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
     .toBe(true);
   await page.getByRole('link', { name: '返回列表', exact: true }).click();
+  await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible({timeout:15000});
   await expect(row).toBeFocused();
   await expect(search).toHaveValue(sample.name);
 }
