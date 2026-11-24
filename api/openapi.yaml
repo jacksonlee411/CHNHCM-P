@@ -12240,10 +12240,107 @@ paths:
       security: [{session: []}]
       parameters:
       - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: adoptedRef, schema: {type: string, format: uuid}}
       responses:
         '200':
           description: Original action under current history access
           content: {application/json: {schema: {$ref: '#/components/schemas/HireOriginal'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/context:
+    get:
+      operationId: employeeDirectoryContext
+      security: [{session: []}]
+      responses:
+        '200':
+          description: Current employee directory authority
+          content: {application/json: {schema: {type: object, required: [canList], properties: {canList: {type: boolean}}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/query:
+    post:
+      operationId: listEmployeeAssignments
+      security: [{session: []}]
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/EmployeeAssignmentQuery'}}}
+      responses:
+        '200':
+          description: Authorized dated assignments and distinct employees
+          content: {application/json: {schema: {$ref: '#/components/schemas/EmployeeAssignmentDirectory'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}:
+    get:
+      operationId: readAssignmentInfo
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: businessAt, schema: {type: string, format: date}}
+      - {in: query, name: sourceVersion, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/AssignmentView'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/location-options:
+    post:
+      operationId: assignmentLocationOptions
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentLocationSearch'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/EmploymentLocationRef'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/location-changes:
+    post:
+      operationId: changeAssignmentLocation
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentLocationChange'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/location-changes/{action}/correct:
+    post:
+      operationId: correctAssignmentLocation
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: path, name: action, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentLocationChange'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
@@ -12286,6 +12383,143 @@ components:
       in: cookie
       name: chnhcm_session
   schemas:
+    EmploymentLocationRef:
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id: {type: string, format: uuid}
+        name: {type: string}
+        sourceVersion: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+    EmploymentLocationSearch:
+      type: object
+      additionalProperties: false
+      required: [businessDate, page]
+      properties:
+        businessDate: {type: string, format: date}
+        search: {type: string}
+        page: {type: integer, minimum: 1}
+    EmploymentLocationChange:
+      type: object
+      additionalProperties: false
+      required: [businessDate, location, expectedSourceVersion]
+      properties:
+        businessDate: {type: string, format: date}
+        location: {type: string, format: uuid}
+        expectedSourceVersion: {type: string, format: uuid}
+        expectedRevision: {type: string, format: uuid}
+    EmploymentLocationEvidence:
+      type: object
+      additionalProperties: false
+      required: [reason, after, legal]
+      properties:
+        reason: {type: string}
+        before: {$ref: '#/components/schemas/EmploymentLocationRef'}
+        replaced: {$ref: '#/components/schemas/EmploymentLocationRef'}
+        after: {$ref: '#/components/schemas/EmploymentLocationRef'}
+        legal: {type: array, items: {$ref: '#/components/schemas/LegalAdoption'}}
+    EmploymentRevision:
+      type: object
+      additionalProperties: false
+      required: [id, actor, operator, recordedAt]
+      properties:
+        operator: {type: string}
+        id: {type: string, format: uuid}
+        actor: {type: string, format: uuid}
+        recordedAt: {type: string, format: date-time}
+    AssignmentDayState:
+      type: object
+      additionalProperties: false
+      required: [from, department, job, seats]
+      properties:
+        from: {type: string, format: date}
+        until: {type: string, format: date}
+        department: {type: string}
+        job: {type: string}
+        location: {$ref: '#/components/schemas/EmploymentLocationRef'}
+        seats: {type: integer, minimum: 0}
+    EmployeeAssignmentQuery:
+      type: object
+      additionalProperties: false
+      required: [page, pageSize]
+      properties:
+        anchor: {type: string, format: uuid}
+        businessAt: {type: string, format: date}
+        department: {type: string, format: uuid}
+        person: {type: string, format: uuid}
+        ref: {type: string, format: uuid}
+        page: {type: integer, minimum: 1}
+        pageSize: {type: integer, enum: [20, 50, 100]}
+        sort: {type: string}
+    EmployeeAssignmentRow:
+      type: object
+      required: [id, person, employment, name, number, recordNumber, primaryJob, department, departmentName, jobName, from]
+      properties:
+        id: {type: string, format: uuid}
+        person: {type: string, format: uuid}
+        employment: {type: string, format: uuid}
+        name: {type: string}
+        number: {type: string}
+        recordNumber: {type: integer}
+        primaryJob: {type: boolean}
+        department: {type: string, format: uuid}
+        departmentName: {type: string}
+        jobName: {type: string}
+        from: {type: string, format: date}
+        until: {type: string, format: date}
+    EmployeeAssignmentLink:
+      type: object
+      required: [person, assignment]
+      properties:
+        person: {type: string, format: uuid}
+        assignment: {type: string, format: uuid}
+    EmployeeAssignmentDirectory:
+      type: object
+      required: [rows, departments, people, total, businessAt, keyword]
+      properties:
+        navigation:
+          type: object
+          required: [position]
+          properties:
+            position: {type: integer}
+            previous: {$ref: '#/components/schemas/EmployeeAssignmentLink'}
+            next: {$ref: '#/components/schemas/EmployeeAssignmentLink'}
+        rows: {type: array, items: {$ref: '#/components/schemas/EmployeeAssignmentRow'}}
+        departments:
+          type: array
+          items:
+            type: object
+            required: [id, name]
+            properties:
+              id: {type: string, format: uuid}
+              name: {type: string}
+              parent: {type: string, format: uuid}
+        people: {type: integer}
+        total: {type: integer}
+        businessAt: {type: string, format: date}
+        keyword: {type: string}
+    AssignmentView:
+      type: object
+      additionalProperties: false
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation]
+      properties:
+        from: {type: string, format: date}
+        until: {type: string, format: date}
+        employerName: {type: string}
+        relationship: {type: string}
+        name: {type: string}
+        number: {type: string}
+        person: {type: string, format: uuid}
+        assignment: {type: string, format: uuid}
+        employment: {type: string, format: uuid}
+        recordNumber: {type: integer, minimum: 0}
+        primaryJob: {type: boolean}
+        sourceVersion: {type: string, format: uuid}
+        businessAt: {type: string, format: date}
+        state: {$ref: '#/components/schemas/AssignmentDayState'}
+        actions: {type: array, items: {$ref: '#/components/schemas/EmploymentAction'}}
+        canChangeLocation: {type: boolean}
     HireTargetSearch:
       type: object
       additionalProperties: false
@@ -12317,6 +12551,8 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        locationChange: {$ref: '#/components/schemas/EmploymentLocationEvidence'}
+        revisions: {type: array, items: {$ref: '#/components/schemas/EmploymentRevision'}}
         appointment: {$ref: '#/components/schemas/DecisionOption'}
         action: {$ref: '#/components/schemas/EmploymentAction'}
         sources: {$ref: '#/components/schemas/HireAdoption'}
@@ -12477,6 +12713,7 @@ components:
       - submissionId
       - outcome
       properties:
+        revision: {type: string, format: uuid}
         submissionId:
           type: string
           format: uuid
@@ -12495,6 +12732,9 @@ components:
         assignment:
           type: string
           format: uuid
+        recordNumber:
+          type: integer
+          minimum: 0
     HireCancel:
       type: object
       additionalProperties: false
@@ -12516,6 +12756,8 @@ components:
       - kind
       - employment
       - assignment
+      - recordNumber
+      - primaryJob
       - person
       - employer
       - department
@@ -12526,7 +12768,13 @@ components:
       - cancelled
       - canCancel
       - canHistory
+      - businessDate
+      - sourceVersion
+      - canCorrectLocation
       properties:
+        businessDate: {type: string, format: date}
+        sourceVersion: {type: string, format: uuid}
+        canCorrectLocation: {type: boolean}
         id:
           type: string
           format: uuid
@@ -12541,6 +12789,11 @@ components:
         assignment:
           type: string
           format: uuid
+        recordNumber:
+          type: integer
+          minimum: 0
+        primaryJob:
+          type: boolean
         person:
           type: string
           format: uuid

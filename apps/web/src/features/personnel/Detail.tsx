@@ -166,7 +166,9 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   }
   const cancelParams = new URLSearchParams(params);
   cancelParams.delete('action');
-  const back = person.path + '?' + backParams;
+  const assignment=params.get('assignment');
+  const assignmentParams=new URLSearchParams(params);assignmentParams.delete('assignment');assignmentParams.delete('tab');if(assignmentParams.get('returnTo')==='assignments'){assignmentParams.set('from','assignments');assignmentParams.delete('returnTo');}
+  const back = assignment ? person.path+'/'+id+'/assignments/'+assignment+'?'+assignmentParams : person.path + '?' + backParams;
   const permitted =
     mode === 'register'
       ? access.data?.canRegister

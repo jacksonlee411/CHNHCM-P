@@ -14,6 +14,7 @@ import (
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
+	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
 	staff "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"chnhcm.local/chnhcm/internal/platform/dbtx"
@@ -62,6 +63,7 @@ type hirePlan struct {
 	term                   f.Period
 	employment, assignment string
 	previousAction         string
+	location               *h.LocationRef
 }
 
 func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
@@ -144,6 +146,10 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 				return plan, e
 			}
 		}
+		if label != "" && ref.field == "locationId" {
+			source := sources[0]
+			plan.location = &h.LocationRef{ID: ref.id, Name: label, Source: source.Source, Revision: source.Records[d.At(source.Timeline, term.From)].Revision}
+		}
 		if label == "" {
 			return plan, f.Fail(409, "HIRE_CONTEXT_UNAVAILABLE", "所选业务单元或地点不可用于拟任期间")
 		}
@@ -182,20 +188,33 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		if err != nil {
 			return "", err
 		}
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid,NULLIF($7,'')::uuid)`, instance, p.assignment, p.employment, in.Department, in.Job, in.BU, in.Location)
+		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_record(instance_id,person_id,record_number) VALUES($1,$2,0)
+            ON CONFLICT(instance_id,person_id,record_number) DO NOTHING`, instance, in.Person)
 		if err != nil {
 			return "", err
 		}
+		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment(instance_id,id,employment_id,department_id,job_id,bu_id,location_id,person_id,record_number)
+            VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid,NULLIF($7,'')::uuid,$8,0)`, instance, p.assignment, p.employment, in.Department, in.Job, in.BU, in.Location, in.Person)
+		if err != nil {
+			return "", err
+		}
+		revision, version := f.NewID(), f.NewID()
+		adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
+		err = u.newEmploymentAction(ctx, employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: "Hire", date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption})
+		if err != nil {
+			return "", err
+		}
+		if err = u.startAssignmentSource(ctx, p.assignment, "", version, id, revision); err != nil {
+			return "", err
+		}
 		for _, segment := range p.Adoption.Segments {
-			_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment VALUES($1,$2,daterange($3::date,NULLIF($4,'')::date,'[)'),$5)`, instance, p.assignment, segment.From, segment.Until, segment)
+			_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref)
+                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8)`, instance, p.assignment, version, segment.From, segment.Until, in.Location, segment, p.location)
 			if err != nil {
 				return "", err
 			}
 		}
-		adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_action(instance_id,id,revision,kind,employment_id,assignment_id,business_date,actor,notice,adoption)
-		VALUES($1,$2,$3,'Hire',$4,$5,$6,$7,$8,$9)`, instance, id, f.NewID(), p.employment, p.assignment, in.Arrival, u.guard.Principal().ID, p.prepared.Basis.Notice, adoption)
-		if err != nil {
+		if err = u.publishAssignmentSource(ctx, p.assignment, "", version); err != nil {
 			return "", err
 		}
 		if in.Decision != nil {
@@ -216,10 +235,11 @@ func (st *Store) EmploymentPurposeUses(ctx context.Context, instance, employer s
 	if !ok || instance != st.Instance {
 		return nil, errors.New("employment coverage requires the employer transaction")
 	}
-	rows, err := tx.Query(ctx, `SELECT greatest(lower(e.period),(clock_timestamp() AT TIME ZONE 'Asia/Shanghai')::date)::text,coalesce(upper(e.period)::text,''),coalesce(a.bu_id::text,''),coalesce(a.location_id::text,'')
+	rows, err := tx.Query(ctx, `SELECT greatest(lower(s.period),(clock_timestamp() AT TIME ZONE 'Asia/Shanghai')::date)::text,coalesce(upper(s.period)::text,''),coalesce(a.bu_id::text,''),coalesce(s.location_id::text,'')
 	FROM staffing.employment e JOIN staffing.assignment a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id)
-	WHERE e.instance_id=$1 AND e.employer_id=$2 AND (upper_inf(e.period) OR upper(e.period)>(clock_timestamp() AT TIME ZONE 'Asia/Shanghai')::date)
-	AND NOT EXISTS(SELECT FROM staffing.employment_action c WHERE c.instance_id=e.instance_id AND c.employment_id=e.id AND c.kind='CancelHire')`, instance, employer)
+	JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(a.instance_id,a.id)
+	JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(h.instance_id,h.assignment_id,h.version)
+	WHERE e.instance_id=$1 AND e.employer_id=$2 AND (upper_inf(s.period) OR upper(s.period)>(clock_timestamp() AT TIME ZONE 'Asia/Shanghai')::date)`, instance, employer)
 	if err != nil {
 		return nil, err
 	}

@@ -291,7 +291,7 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 		if f.scalar("SELECT (SELECT count(*) FROM staffing.employment)+(SELECT count(*) FROM staffing.hire_terminal)+(SELECT count(*) FROM access.employment_grant)") != 0 {
 			t.Fatal("prefix fixture contains employment data")
 		}
-		f.exec("DROP TABLE access.employment_fixture,access.employment_grant; DELETE FROM public.goose_db_version WHERE version_id=37")
+		f.exec("DROP TABLE access.employment_location_fixture,access.employment_fixture,access.employment_grant; DELETE FROM public.goose_db_version WHERE version_id=37")
 	}
 	if f.scalar("SELECT (to_regclass('access.hire_identity_fixture') IS NOT NULL)::int") > 0 {
 		f.exec("DROP TABLE access.hire_identity_fixture; DELETE FROM public.goose_db_version WHERE version_id=36")
@@ -315,7 +315,7 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 				t.Fatal("prefix fixture would remove Staffing facts", table)
 			}
 		}
-		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%'; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35);`)
+		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%'; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35,41,42);`)
 	}
 
 	t.Helper()

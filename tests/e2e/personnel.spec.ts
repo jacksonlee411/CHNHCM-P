@@ -70,17 +70,43 @@ async function login(page: Page, role: string) {
   await expect(page.getByRole('button', { name: '退出', exact: true })).toBeVisible();
 }
 async function menu(page: Page) {
+  const archivePath = '/personnel/employees';
+  const directoryPath = '/personnel/assignments';
+  const heading = page.getByRole('heading', { name: '人员档案', exact: true });
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   const mobile = page.getByRole('button', { name: '打开导航', exact: true });
   await expect(desktop.or(mobile).first()).toBeVisible();
+  const current = new URL(page.url());
+  if (current.pathname === archivePath && !current.search) {
+    await expect(heading).toBeVisible();
+    return;
+  }
   if (await desktop.isVisible()) {
-    await desktop.click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+    const section = page.getByRole('button', { name: '员工', exact: true });
+    if (current.pathname.startsWith('/personnel/') && await section.isVisible()) {
+      await section.click();
+      await page.getByRole('menuitem', { name: '人员档案', exact: true }).click();
+    } else {
+      await desktop.click();
+      await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+      await expect(page).toHaveURL(url => !url.search && [archivePath, directoryPath].includes(url.pathname));
+      if (new URL(page.url()).pathname === directoryPath) {
+        await page.getByRole('link', { name: '人员档案', exact: true }).click();
+      }
+    }
   } else {
     await mobile.click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
+    const app = page.getByRole('button', { name: '人员', exact: true });
+    const expanded = await app.getAttribute('aria-expanded');
+    if (expanded !== 'true') await app.click();
+    if (expanded !== null) {
+      const section = page.getByRole('button', { name: '员工', exact: true });
+      if (await section.getAttribute('aria-expanded') === 'false') await section.click();
+      await page.getByRole('button', { name: '人员档案', exact: true }).click();
+    }
   }
-  await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
+  await expect(page).toHaveURL(url => url.pathname === archivePath && !url.search);
+  await expect(heading).toBeVisible();
 }
 async function select(page: Page, label: string, choice: string) {
   await page.getByRole('combobox', { name: label, exact: true }).click();
@@ -890,7 +916,7 @@ test('人事试办：同名两人、两人同时登记同一证号、同一张�
     const wonNumber = (await winner.locator('.object-identity-summary').innerText()).trim();
     await button(loser, '取消').click();
     await button(loser, '放弃修改').click();
-    await expect(loser.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
+    await expect(loser.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
     // The losing clerk already returned to the directory when discarding the form.
     if (winner === page) await menu(page);
     await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees');

@@ -5,7 +5,9 @@ import (
 	"chnhcm.local/chnhcm/internal/contexts/personnel/infra/postgres/generated"
 	p "chnhcm.local/chnhcm/internal/contexts/personnel/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"context"
+	"errors"
 	"github.com/jackc/pgx/v5"
 	"slices"
 	"strings"
@@ -288,4 +290,38 @@ func (s *Store) GetRecordedNumber(ctx context.Context, c f.Credentials, id, vers
 		return "", d.Missing()
 	}
 	return source.Number, nil
+}
+
+// RecognizedPeople discloses only directory identity fields for the supplied candidates.
+// The consumer intersects these with its own authorized records before sorting or counting.
+func (s *Store) RecognizedPeople(ctx context.Context, c f.Credentials, ids []string, ref string) ([]p.Summary, string, error) {
+	tx, ok := dbtx.From(ctx)
+	if !ok {
+		return nil, "", errors.New("person identity lookup requires caller transaction")
+	}
+	access, _, err := s.Authorize(ctx, tx, c)
+	if err != nil {
+		return nil, "", err
+	}
+	r := request{ctx: ctx, tx: tx, a: access, instance: access.Principal.InstanceID}
+	if !r.entry().CanRead {
+		return nil, "", d.Denied()
+	}
+	keyword := ""
+	if ref != "" {
+		if !f.ValidID(ref) {
+			return nil, "", d.Missing()
+		}
+		if err = tx.QueryRow(ctx, `SELECT keyword FROM personnel.query WHERE instance_id=$1 AND subject=$2 AND session_id=$3 AND ref=$4 AND expires_at>clock_timestamp()`, r.instance, access.Principal.ID, access.Principal.SessionID, ref).Scan(&keyword); err != nil {
+			return nil, "", noRows(err)
+		}
+	}
+	scope := access.Scope("read", "name", "number")
+	number, _ := d.Number(keyword)
+	rows, err := tx.Query(ctx, directorySQL+` SELECT person_id,name,number,historical FROM visible WHERE person_id=ANY($7::uuid[])`, r.instance, scope.All, scope.Include, scope.Exclude, keyword, number, ids)
+	if err != nil {
+		return nil, "", err
+	}
+	values, err := pgx.CollectRows(rows, pgx.RowToStructByPos[p.Summary])
+	return values, keyword, err
 }

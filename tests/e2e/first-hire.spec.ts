@@ -102,7 +102,15 @@ async function openPerson(page: Page, name: string) {
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
     await page.getByRole('button', { name: '人员', exact: true }).click();
+    const archive = page.getByRole('button', { name: '人员档案', exact: true });
+    const heading = page.getByRole('heading', { name: '人员档案', exact: true });
+    await expect(archive.or(heading).first()).toBeVisible();
+    if (await archive.isVisible()) await archive.click();
   }
+  const archive = page.getByRole('link', { name: '人员档案', exact: true });
+  const heading = page.getByRole('heading', { name: '人员档案', exact: true });
+  await expect(archive.or(heading).first()).toBeVisible();
+  if (await archive.isVisible()) await archive.click();
   await page.getByLabel('姓名或人员编号').fill(name);
   await page.getByLabel('姓名或人员编号').press('Enter');
   await page.locator('a[data-object-link]').filter({ hasText: name }).click();
@@ -324,7 +332,7 @@ for (const [width, height] of [
     await journey(page, sample, width === 1440 && height === 540, width <= 390);
   });
 }
-test('T03 原生 200% 首单办理及撤销', async () => {
+async function native200(run: (page: Page, sample: Awaited<ReturnType<typeof seed>>) => Promise<void>) {
   test.setTimeout(140000);
   let display = 5800 + (process.pid % 1000);
   while (existsSync('/tmp/.X11-unix/X' + display) || existsSync('/tmp/.X' + display + '-lock')) display++;
@@ -379,11 +387,126 @@ test('T03 原生 200% 首单办理及撤销', async () => {
       });
     zoom(5);
     await expect.poll(dims).toEqual([640, 450, 2]);
-    await journey(page, sample);
+    await run(page, sample);
     zoom(0);
     await expect.poll(dims).toEqual([1280, 900, 1]);
   } finally {
     await browser?.close();
     xvfb.kill();
   }
+}
+
+test('T03 原生 200% 首单办理及撤销', async () => {
+  await native200(journey);
+});
+
+async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const suffix = randomUUID().slice(0, 7),
+    locations: { id: string; name: string }[] = [];
+  const countries = await request(page, 'GET', '/api/v1/country-regions?q=MO');
+  const mo = countries.body.items.find((c: { code: string }) => c.code === 'MO');
+  for (const label of ['甲', '乙', '丙']) {
+    const name = '工作地点' + label + suffix;
+    const created = await request(
+      page,
+      'POST',
+      '/api/v1/locations',
+      {
+        code: 'L' + locations.length + suffix,
+        name,
+        countryRegionId: mo.id,
+        addressLine: '合成地址',
+        effectiveDate: '2026-01-01',
+        operationType: 'CREATE',
+        operationReason: 'NEW_LOCATION',
+      },
+      randomUUID(),
+    );
+    expect(created.status, created.body.message).toBe(201);
+    locations.push({ name, id: created.body.locationId });
+  }
+  const hired = await request(
+    page,
+    'POST',
+    '/api/v1/hires',
+    {
+      person: sample.id,
+      employer: sample.employerId,
+      department: sample.departmentId,
+      job: sample.jobId,
+      location: locations[0].id,
+      arrival: '2027-04-01',
+      notice: '合成入职通知',
+    },
+    randomUUID(),
+  );
+  expect(hired.status, hired.body.message).toBe(200);
+  const desktop = page.getByRole('button', { name: '切换应用', exact: true });
+  if (await desktop.isVisible()) {
+    await desktop.click();
+    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+  } else {
+    await page.getByRole('button', { name: '打开导航', exact: true }).click();
+    await page.getByRole('button', { name: '人员', exact: true }).click();
+    await page.getByRole('button', { name: '员工列表', exact: true }).click();
+  }
+  await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
+  const date = page.getByRole('textbox', { name: /^业务日期/ });
+  await date.fill('2027-04-01');
+  await date.press('Tab');
+  const search = page.getByRole('textbox', { name: '姓名或人员编号' });
+  await search.fill(sample.name);
+  await search.press('Enter');
+  await expect(page).toHaveURL((url) => url.searchParams.has('ref'));
+  await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible();
+  const row = page.locator('a[data-object-link]').filter({ hasText: sample.name });
+  await row.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('tab', { name: '职务信息' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText(new RegExp(locations[0].name))).toBeVisible();
+  await page.getByRole('button', { name: '新增记录', exact: true }).click();
+  const effective = page.getByRole('textbox', { name: /^生效日期/ });
+  await effective.fill('2027-05-01');
+  await effective.press('Tab');
+  const changeTo = async (name: string) => {
+    const loc = page.getByRole('combobox', { name: /工作地点/ });
+    await loc.fill(name);
+    await page.getByRole('option', { name, exact: true }).click();
+    await page.getByRole('button', { name: '保存', exact: true }).click();
+  };
+  await changeTo(locations[1].name);
+  await expect(page.getByText('职务信息已保存。')).toBeVisible();
+  await page.getByRole('button', { name: '数据更改 · 2027-05-01', exact: true }).click();
+  await page.getByRole('button', { name: '更正记录', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: /工作地点/ })).toHaveValue(locations[1].name);
+  await changeTo(locations[2].name);
+  await page.getByRole('button', { name: '数据更改 · 2027-05-01', exact: true }).click();
+  const revisions = page.getByRole('button', { name: /查看修订/ });
+  await expect(revisions).toHaveCount(2);
+  await revisions.last().click();
+  await expect(page.getByText(locations[0].name + ' → ' + locations[1].name, { exact: true })).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+    .toBe(true);
+  await page.getByRole('link', { name: '返回列表', exact: true }).click();
+  await expect(row).toBeFocused();
+  await expect(search).toHaveValue(sample.name);
+}
+for (const [width, height] of [
+  [1440, 900],
+  [1440, 540],
+  [390, 844],
+  [320, 900],
+  [320, 256],
+]) {
+  test(`M04 职务信息地点更改与原笔纠错 ${width}x${height}`, async ({ page }) => {
+    test.setTimeout(150000);
+    await signIn(page);
+    const sample = await seed(page);
+    await page.setViewportSize({ width, height });
+    await assignmentJourney(page, sample);
+  });
+}
+test('M04 职务信息地点更改与原笔纠错 原生200%', async () => {
+  await native200(assignmentJourney);
 });

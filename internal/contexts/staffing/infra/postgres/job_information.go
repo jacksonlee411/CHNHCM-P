@@ -1,0 +1,360 @@
+package postgres
+
+import (
+	"context"
+	"errors"
+	"strings"
+	"time"
+	"unicode/utf8"
+
+	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
+	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
+	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
+	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
+	f "chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
+	"github.com/jackc/pgx/v5"
+)
+
+func unknownAssignment() error { return f.Fail(404, "ASSIGNMENT_UNAVAILABLE", "所选任职不可用") }
+
+func (u *unit) assignmentHire(ctx context.Context, id string) (h.Action, error) {
+	if !f.ValidID(id) {
+		return h.Action{}, unknownAssignment()
+	}
+	a, err := scanHireAction(u.tx.QueryRow(ctx, hireActionSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind='Hire'", u.store.Instance, id))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return a, unknownAssignment()
+	}
+	if err == nil {
+		err = u.requireEmployment(ctx, "read", a.Person, a.Employer, a.Department)
+	}
+	return a, err
+}
+
+func (u *unit) locationAt(ctx context.Context, id, date string) (*h.LocationRef, error) {
+	if id == "" {
+		return nil, nil
+	}
+	targets, err := u.PositionSources(ctx, "locationId", []string{id}, false)
+	if err != nil {
+		return nil, err
+	}
+	if len(targets) == 0 {
+		return nil, nil
+	}
+	source := targets[0]
+	day, err := time.Parse(time.DateOnly, date)
+	if err != nil {
+		return nil, err
+	}
+	label, err := app.HireTargetLabel(ctx, u, "locationId", source, f.Period{From: date, Until: day.AddDate(0, 0, 1).Format(time.DateOnly)})
+	if err != nil || label == "" {
+		return nil, err
+	}
+	return &h.LocationRef{ID: id, Name: label, Source: source.Source, Revision: source.Records[d.At(source.Timeline, date)].Revision}, nil
+}
+
+func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, version string) (out h.AssignmentView, err error) {
+	if day != "" && !f.ValidDate(day) || version != "" && !f.ValidID(version) {
+		return out, f.Fail(400, "ASSIGNMENT_INPUT", "业务日或来源无效")
+	}
+	err = st.within(ctx, c, false, true, func(u *unit) error {
+		a, e := u.assignmentHire(ctx, id)
+		if e != nil {
+			return e
+		}
+		if day == "" {
+			day = u.now.In(f.Shanghai).Format("2006-01-02")
+		}
+		history, e := u.employmentAllowed(ctx, "history", a.Person, a.Employer, a.Department, false)
+		if e != nil {
+			return e
+		}
+		if version == "" {
+			version = a.SourceVersion
+		} else if !history {
+			return f.Fail(403, "ASSIGNMENT_HISTORY", "当前权限不允许查看该来源")
+		}
+		var exists bool
+		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_publication WHERE instance_id=$1 AND assignment_id=$2 AND version=$3)`, st.Instance, id, version).Scan(&exists)
+		if e != nil {
+			return e
+		}
+		if !exists {
+			return unknownAssignment()
+		}
+		out = h.AssignmentView{Person: a.Person, Assignment: id, Employment: a.Employment, RecordNumber: a.RecordNumber, PrimaryJob: a.PrimaryJob, SourceVersion: version, BusinessAt: day, Actions: []h.Action{}}
+		recognized, _, e := st.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, []string{a.Person}, "")
+		if e != nil {
+			return e
+		}
+		if len(recognized) != 1 {
+			return unknownAssignment()
+		}
+		out.Name, out.Number = recognized[0].Name, recognized[0].Number
+		out.Period = a.Period
+		e = u.tx.QueryRow(ctx, `SELECT e.relationship,coalesce((SELECT elem->>'entityName' FROM jsonb_array_elements(r.adoption->'sources'->'legal') elem WHERE (elem->>'from')<=$3 AND (coalesce(elem->>'until','')='' OR (elem->>'until')>$3) LIMIT 1),r.adoption#>>'{sources,legal,0,entityName}','') FROM staffing.employment e JOIN staffing.employment_action a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id) JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision) WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind='Hire'`, st.Instance, id, day).Scan(&out.Relationship, &out.EmployerName)
+		if e != nil {
+			return e
+		}
+		var state h.State
+		var location string
+		e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),adoption->>'departmentName',adoption->>'jobName',coalesce(location_id::text,''),location_ref,(adoption->>'seats')::int
+			FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`, st.Instance, id, version, day).Scan(&state.From, &state.Until, &state.Department, &state.Job, &location, &state.Location, &state.Seats)
+		if e == nil {
+			if state.Location == nil && location != "" {
+				// The original 00037 hire stored only the location identity.
+				// Read a permitted label without claiming its current revision was adopted at hire.
+				state.Location, e = u.locationAt(ctx, location, day)
+				if state.Location != nil {
+					state.Location.Source = ""
+					state.Location.Revision = ""
+				}
+			}
+			if e != nil {
+				return e
+			}
+			out.State = &state
+		} else if !errors.Is(e, pgx.ErrNoRows) {
+			return e
+		}
+		if !a.Cancelled && version == a.SourceVersion {
+			out.CanChangeLocation, e = u.employmentAllowed(ctx, "location.change", a.Person, a.Employer, a.Department, false)
+			if e != nil {
+				return e
+			}
+		}
+		canCorrect, e := u.employmentAllowed(ctx, "location.correct", a.Person, a.Employer, a.Department, false)
+		if e != nil {
+			return e
+		}
+		rows, e := u.tx.Query(ctx, assignmentActionAtSourceSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 ORDER BY r.business_date DESC,a.recorded_at DESC,a.id", st.Instance, id, version)
+		if e != nil {
+			return e
+		}
+		items, e := pgx.CollectRows(rows, func(row pgx.CollectableRow) (h.Action, error) { return scanHireAction(row) })
+		if e != nil {
+			return e
+		}
+		for _, item := range items {
+			item.CanHistory = history
+			item.CanCorrectLocation = item.Kind == "DataChange" && !a.Cancelled && canCorrect && history && version == a.SourceVersion
+			out.Actions = append(out.Actions, item)
+		}
+		return nil
+	})
+	return
+}
+
+func (u *unit) locationPeriod(ctx context.Context, a h.Action, day string) (f.Period, error) {
+	if !f.ValidDate(day) || !a.Includes(day) || a.Cancelled {
+		return f.Period{}, f.Fail(409, "LOCATION_PERIOD", "请选择实际任职期间的生效日期")
+	}
+	term := f.Period{From: day, Until: a.Until}
+	var next string
+	err := u.tx.QueryRow(ctx, `SELECT coalesce(min(r.business_date)::text,'') FROM staffing.assignment_member m
+		JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
+		JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(m.instance_id,m.action_id,m.revision)
+		WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind='DataChange' AND r.business_date>$4::date`, u.store.Instance, a.Assignment, a.SourceVersion, day).Scan(&next)
+	if next != "" {
+		term.Until = next
+	}
+	return term, err
+}
+
+func (st *Store) LocationOptions(ctx context.Context, c f.Credentials, id string, in h.LocationSearch) (out []h.LocationRef, err error) {
+	out = []h.LocationRef{}
+	if in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 {
+		return nil, f.Fail(400, "LOCATION_SEARCH", "地点查询条件无效")
+	}
+	err = st.within(ctx, c, false, true, func(u *unit) error {
+		a, e := u.assignmentHire(ctx, id)
+		if e != nil {
+			return e
+		}
+		allowed, e := u.employmentAllowed(ctx, "location.change", a.Person, a.Employer, a.Department, false)
+		if e != nil {
+			return e
+		}
+		if !allowed {
+			if e = u.requireEmployment(ctx, "location.correct", a.Person, a.Employer, a.Department); e != nil {
+				return e
+			}
+		}
+		period, e := u.locationPeriod(ctx, a, in.BusinessDate)
+		if e != nil {
+			return e
+		}
+		needle := strings.ToLower(strings.TrimSpace(in.Search))
+		skip := (in.Page - 1) * 20
+		for offset := 0; ; offset += 64 {
+			ids, e := u.PositionCandidateIDs(ctx, "locationId", period.From, needle, nil, offset, 64)
+			if e != nil {
+				return e
+			}
+			sources, e := u.PositionSources(ctx, "locationId", ids, false)
+			if e != nil {
+				return e
+			}
+			byID := map[string]app.PositionSource{}
+			for _, src := range sources {
+				byID[src.ID] = src
+			}
+			for _, id := range ids {
+				src := byID[id]
+				label, e := app.HireTargetLabel(ctx, u, "locationId", src, period)
+				if e != nil {
+					return e
+				}
+				if label == "" || !strings.Contains(strings.ToLower(label), needle) {
+					continue
+				}
+				if skip > 0 {
+					skip--
+					continue
+				}
+				out = append(out, h.LocationRef{ID: id, Name: label, Source: src.Source, Revision: src.Records[d.At(src.Timeline, period.From)].Revision})
+				if len(out) == 20 {
+					return nil
+				}
+			}
+			if len(ids) < 64 {
+				return nil
+			}
+		}
+	})
+	return
+}
+
+func (st *Store) ChangeLocation(ctx context.Context, c f.Credentials, key, id, original string, in h.LocationChange) (h.Receipt, error) {
+	return st.employmentCommand(ctx, c, key, []any{"DataChange", id, original, in}, func(u *unit) (result employmentResult, err error) {
+		if !f.ValidID(in.Location) || !f.ValidID(in.ExpectedSource) || !f.ValidDate(in.BusinessDate) || (original != "" && (!f.ValidID(original) || !f.ValidID(in.ExpectedRevision))) || (original == "" && in.ExpectedRevision != "") {
+			return result, f.Fail(400, "LOCATION_INPUT", "请核对任职、原办理、生效日和新地点")
+		}
+		a, e := u.assignmentHire(ctx, id)
+		if e != nil {
+			return result, e
+		}
+		permission := "location.change"
+		if original != "" {
+			permission = "location.correct"
+		}
+		if e = u.requireEmployment(ctx, permission, a.Person, a.Employer, a.Department); e != nil {
+			return result, e
+		}
+		if e = lock(ctx, u.tx, false, "staffing.hire.person", st.Instance, a.Person); e != nil {
+			return result, e
+		}
+		a, e = u.assignmentHire(ctx, id)
+		if e != nil {
+			return result, e
+		}
+		if a.SourceVersion != in.ExpectedSource {
+			return result, assignmentConflict()
+		}
+		period, e := u.locationPeriod(ctx, a, in.BusinessDate)
+		if e != nil {
+			return result, e
+		}
+		if original != "" {
+			if e = u.requireEmployment(ctx, "history", a.Person, a.Employer, a.Department); e != nil {
+				return result, e
+			}
+			target, e := u.action(ctx, original)
+			if e != nil {
+				return result, e
+			}
+			if target.Assignment != id || target.Kind != "DataChange" || target.Revision != in.ExpectedRevision || target.BusinessDate != in.BusinessDate {
+				return result, assignmentConflict()
+			}
+		} else {
+			var occupied bool
+			e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_member m JOIN staffing.employment_action_revision r USING(instance_id,assignment_id,action_id,revision) JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id) WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind='DataChange' AND r.business_date=$4)`, st.Instance, id, a.SourceVersion, in.BusinessDate).Scan(&occupied)
+			if e != nil {
+				return result, e
+			}
+			if occupied {
+				return result, f.Fail(409, "LOCATION_EXISTING", "同日已有地点变更，请从原办理核对")
+			}
+		}
+		var previous, bu string
+		e = u.tx.QueryRow(ctx, `SELECT coalesce(s.location_id::text,''),coalesce(t.bu_id::text,'') FROM staffing.assignment_segment s JOIN staffing.assignment t ON (t.instance_id,t.id)=(s.instance_id,s.assignment_id)
+			WHERE s.instance_id=$1 AND s.assignment_id=$2 AND s.version=$3 AND s.period @> $4::date`, st.Instance, id, a.SourceVersion, in.BusinessDate).Scan(&previous, &bu)
+		if e != nil {
+			return result, e
+		}
+		if previous == in.Location {
+			return result, f.Fail(409, "LOCATION_UNCHANGED", "工作地点未改变")
+		}
+		sources, e := u.PositionSources(ctx, "locationId", []string{in.Location}, true)
+		if e != nil {
+			return result, e
+		}
+		if len(sources) != 1 {
+			return result, f.Fail(409, "LOCATION_UNAVAILABLE", "所选地点不可用于该任职期间")
+		}
+		src := sources[0]
+		label, e := app.HireTargetLabel(ctx, u, "locationId", src, period)
+		if e != nil {
+			return result, e
+		}
+		if label == "" {
+			return result, f.Fail(409, "LOCATION_UNAVAILABLE", "所选地点不可用于该任职期间")
+		}
+		after := h.LocationRef{ID: in.Location, Name: label, Source: src.Source, Revision: src.Records[d.At(src.Timeline, period.From)].Revision}
+		legal, e := st.HirePurposes.CheckPurpose(dbtx.With(ctx, u.tx), u.credentials, a.Employer, org.PurposeCheck{Role: "employer", BU: bu, Location: in.Location, Period: period})
+		if e != nil {
+			return result, e
+		}
+		before, e := u.locationAt(ctx, previous, in.BusinessDate)
+		if e != nil {
+			return result, e
+		}
+		if before == nil && previous != "" {
+			before = &h.LocationRef{ID: previous}
+		}
+		evidence := h.LocationEvidence{Reason: "工作地点变更", Before: before, After: after, Legal: legal}
+		if original != "" {
+			var prior h.Original
+			e = u.tx.QueryRow(ctx, `SELECT adoption FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3`, st.Instance, original, in.ExpectedRevision).Scan(&prior)
+			if e != nil {
+				return result, e
+			}
+			if prior.LocationChange == nil {
+				return result, assignmentConflict()
+			}
+			evidence.Before = prior.LocationChange.Before
+			evidence.Replaced = &prior.LocationChange.After
+		}
+		result = employmentResult{action: original, revision: f.NewID()}
+		if original == "" {
+			result.action = f.NewID()
+			e = u.newEmploymentAction(ctx, employmentEntry{id: result.action, revision: result.revision, employment: a.Employment, assignment: id, kind: "DataChange", date: in.BusinessDate, adoption: map[string]any{"locationChange": evidence}})
+		} else {
+			operator, snapshotErr := u.guard.OperatorSnapshot(ctx)
+			if snapshotErr != nil {
+				return result, snapshotErr
+			}
+			_, e = u.tx.Exec(ctx, `INSERT INTO staffing.employment_action_revision(instance_id,assignment_id,action_id,revision,previous_revision,business_date,notice,actor,adoption,operator_snapshot) VALUES($1,$2,$3,$4,$5,$6,'',$7,$8,$9)`, st.Instance, id, original, result.revision, in.ExpectedRevision, in.BusinessDate, u.guard.Principal().ID, map[string]any{"locationChange": evidence}, operator)
+		}
+		if e != nil {
+			return result, e
+		}
+		version := f.NewID()
+		if e = u.startAssignmentSource(ctx, id, a.SourceVersion, version, result.action, result.revision); e != nil {
+			return result, e
+		}
+		_, e = u.tx.Exec(ctx, `WITH span AS (SELECT daterange($5::date,NULLIF($6,'')::date,'[)') p)
+			INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,adoption,location_id,location_ref)
+			SELECT s.instance_id,s.assignment_id,$4,x.period,s.adoption,CASE WHEN x.changed THEN $7::uuid ELSE s.location_id END,CASE WHEN x.changed THEN $8::jsonb ELSE s.location_ref END
+			FROM staffing.assignment_segment s CROSS JOIN span CROSS JOIN LATERAL (
+				SELECT s.period*span.p AS period,true AS changed WHERE s.period && span.p
+				UNION ALL SELECT rest,false FROM unnest(datemultirange(s.period)-datemultirange(span.p)) rest
+			) x WHERE s.instance_id=$1 AND s.assignment_id=$2 AND s.version=$3`, st.Instance, id, a.SourceVersion, version, period.From, period.Until, in.Location, after)
+		if e != nil {
+			return result, e
+		}
+		return result, u.publishAssignmentSource(ctx, id, a.SourceVersion, version)
+	})
+}

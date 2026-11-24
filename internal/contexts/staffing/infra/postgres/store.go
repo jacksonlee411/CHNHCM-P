@@ -5,6 +5,7 @@ package postgres
 import (
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
+	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
 	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	"chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
@@ -29,6 +30,7 @@ import (
 type Store struct {
 	HirePeople interface {
 		hireprep.Personnel
+		RecognizedPeople(context.Context, foundation.Credentials, []string, string) ([]person.Summary, string, error)
 		CheckHirePerson(context.Context, foundation.Credentials, string) error
 	}
 	HirePurposes      org.LegalPurposes
