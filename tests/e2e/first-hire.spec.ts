@@ -99,21 +99,27 @@ async function seed(page: Page, withDocument = true, employerFrom='2027-04-01') 
   };
 }
 async function openPerson(page: Page, name: string) {
-  if (await page.evaluate(() => matchMedia('(min-width:900px)').matches)) {
+  const drawerButton = page.getByRole('button', { name: '打开导航', exact: true });
+  if (await drawerButton.isVisible()) {
+    await drawerButton.click();
+    const drawer = page.locator('#navigation-drawer');
+    const personnel = drawer.getByRole('button', { name: '人员', exact: true });
+    const expanded = await personnel.getAttribute('aria-expanded');
+    if (expanded !== 'true') await personnel.click();
+    if (expanded !== null) {
+      const employees = drawer.getByRole('button', { name: '员工', exact: true });
+      if ((await employees.getAttribute('aria-expanded')) !== 'true') await employees.click();
+      await drawer.getByRole('button', { name: '人员档案', exact: true }).click();
+    }
+  } else {
     await page.getByRole('button', { name: '切换应用', exact: true }).click();
     await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-  } else {
-    await page.getByRole('button', { name: '打开导航', exact: true }).click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
-    const archive = page.getByRole('button', { name: '人员档案', exact: true });
-    const heading = page.getByRole('heading', { name: '人员档案', exact: true });
-    await expect(archive.or(heading).first()).toBeVisible();
-    if (await archive.isVisible()) await archive.click();
+    await expect(page).toHaveURL((url) => ['/personnel/employees', '/personnel/assignments'].includes(url.pathname));
+    if (new URL(page.url()).pathname === '/personnel/assignments') {
+      await page.getByRole('link', { name: '人员档案', exact: true }).click();
+    }
   }
-  const archive = page.getByRole('link', { name: '人员档案', exact: true });
-  const heading = page.getByRole('heading', { name: '人员档案', exact: true });
-  await expect(archive.or(heading).first()).toBeVisible();
-  if (await archive.isVisible()) await archive.click();
+  await expect(page.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
   await page.getByLabel('姓名或人员编号').fill(name);
   await page.getByLabel('姓名或人员编号').press('Enter');
   await page.locator('a[data-object-link]').filter({ hasText: name }).click();
