@@ -12383,6 +12383,23 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/additional-arrangement:
+    post:
+      operationId: assignmentSecondaryArrangement
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/AdditionalArrangementQuery'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireArrangementMode'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/{id}/additional-options:
     post:
       operationId: assignmentSecondaryOptions
@@ -13605,7 +13622,7 @@ components:
     AdditionalAssignmentInput:
       type: object
       additionalProperties: false
-      required: [from, parallel, department, job, notice, expectedSourceVersion]
+      required: [from, parallel, notice, expectedSourceVersion]
       properties:
         from: {type: string, format: date}
         lastDay: {type: string, format: date}
@@ -13613,8 +13630,10 @@ components:
         employer: {type: string, format: uuid}
         department: {type: string, format: uuid}
         job: {type: string, format: uuid}
+        position: {type: string, format: uuid}
         bu: {type: string, format: uuid}
         location: {type: string, format: uuid}
+        grade: {type: string, format: uuid}
         notice: {type: string}
         expectedSourceVersion: {type: string, format: uuid}
     AdditionalAssignmentOptions:
@@ -13627,16 +13646,29 @@ components:
         parallel: {type: boolean}
         employer: {type: string, format: uuid}
         department: {type: string, format: uuid}
+        position: {type: string, format: uuid}
         bu: {type: string, format: uuid}
         location: {type: string, format: uuid}
-        kind: {type: string, enum: [department, job, employer, bu, location]}
+        job: {type: string, format: uuid}
+        kind: {type: string, enum: [department, job, employer, bu, location, position, grade]}
         page: {type: integer, minimum: 1}
         search: {type: string}
+    AdditionalArrangementQuery:
+      type: object
+      additionalProperties: false
+      required: [from, parallel]
+      properties:
+        from: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        parallel: {type: boolean}
+        employer: {type: string, format: uuid}
+        position: {type: string, format: uuid}
     SecondaryAssignmentEvidence:
       type: object
       additionalProperties: false
       required: [relationshipPrimary, legal, segments]
       properties:
+        grade: {$ref: '#/components/schemas/AssignmentGrade'}
         relationshipPrimary: {type: boolean}
         legal: {type: array, items: {$ref: '#/components/schemas/LegalAdoption'}}
         segments: {type: array, items: {$ref: '#/components/schemas/AssignmentSegment'}}

@@ -1512,3 +1512,58 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 工作关系合同续订与离职 原生200%',async()=>{await native200(contractJourney)});
+
+async function secondaryPositionJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>) {
+  const first='2027-04-01', policy='/api/v1/assignment-policies';
+  const previous:{id:string;mode:string;revision:string}[]=[];
+  const setMode=async(purpose:string,mode:string)=>{
+    const current=(await request(page,'GET',policy)).body;
+    const before=current.rows.find((r:{category:string;purpose:string;from:string})=>r.category==='Employee'&&r.purpose===purpose&&r.from===first);
+    if(before?.mode===mode)return;
+    const row=before??{id:randomUUID(),category:'Employee',purpose,from:first};
+    const saved=await request(page,'POST',policy,{expectedVersion:current.version,row:{...row,mode}},randomUUID());
+    expect(saved.status,saved.body.message).toBe(200);
+    const after=(await request(page,'GET',policy)).body.rows.find((r:{id:string})=>r.id===row.id);
+    previous.push({id:row.id,mode:before?.mode??'JobOnly',revision:after.revision});
+  };
+  try{
+    await setMode('hire','PositionCounted');await setMode('secondary','PositionCounted');
+    const family=await seed308(page,'jobfamily');
+    const main=await seedPosition(page,'position',family.id),second=await seedPosition(page,'position',family.id);
+    for(const p of [main,second]) {
+      const q=await request(page,'POST','/api/v1/staffing-quotas',{positionId:p.id,effectiveDate:first,quota:2,reason:'本岗位核两编'},randomUUID());
+      expect(q.status,q.body.message).toBe(200);
+    }
+    const hire=await request(page,'POST','/api/v1/hires',{person:sample.id,employer:sample.employerId,position:main.id,arrival:first,notice:'主岗聘任'},randomUUID());
+    expect(hire.status,hire.body.message).toBe(200);
+    await openEmployeeAssignment(page,sample);await page.getByRole('link',{name:'新增兼岗'}).click();
+    const positions=page.getByRole('combobox',{name:/^岗位/});
+    await positions.fill(second.name);await page.getByRole('option',{name:second.name,exact:true}).click();
+    await expect(page.getByText(second.department,{exact:true})).toBeVisible();await expect(page.getByText(second.job.name,{exact:true})).toBeVisible();
+    const end=page.getByRole('textbox',{name:/^最后任职日/});await end.fill('2027-04-30');await end.press('Tab');
+    await page.getByLabel(/任用依据/).fill('兼任第二岗位至四月底');
+    const save=page.getByRole('button',{name:'保存',exact:true});await save.focus();await page.keyboard.press('Enter');
+    await expect(page.getByRole('heading',{name:/1 号兼岗/})).toBeVisible();
+    await expect(page.getByText(second.name+' · 占编',{exact:true})).toBeVisible();
+    for(const [p,day,n] of [[main,first,1],[second,first,1],[second,'2027-05-01',0]] as const) {
+      const usage=await request(page,'GET','/api/v1/positions/'+p.id+'/replenishment?businessAt='+day);expect(usage.body.occupied).toBe(n);
+    }
+    await page.getByRole('button',{name:'新增兼岗 · '+first,exact:true}).click();
+    await expect(page.getByText([second.department,second.job.name,second.name].join(' · '),{exact:true})).toBeVisible();
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  } finally {
+    for(const p of previous.reverse()){
+      const current=(await request(page,'GET',policy)).body,row=current.rows.find((r:{id:string})=>r.id===p.id);
+      if(row.revision===p.revision){
+        const saved=await request(page,'POST',policy,{expectedVersion:current.version,row:{...row,mode:p.mode}},randomUUID());
+        expect(saved.status,saved.body.message).toBe(200);
+      }
+    }
+  }
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+  test(`M04 一人两个占编岗位 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});await secondaryPositionJourney(page,sample);
+  });
+}
+test('M04 一人两个占编岗位 原生200%',async()=>{await native200(secondaryPositionJourney)});

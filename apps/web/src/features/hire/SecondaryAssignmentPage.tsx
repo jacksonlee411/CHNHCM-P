@@ -47,7 +47,7 @@ function SecondaryTarget({
       }),
     ),
   );
-  const required = kind !== 'bu' && kind !== 'location';
+  const required = kind !== 'bu' && kind !== 'location' && kind !== 'grade';
   return (
     <ObjectDetailField label={labels[kind]} inputId={'secondary-' + kind} required={required}>
       <Autocomplete
@@ -151,20 +151,27 @@ export function SecondaryAssignmentPage({ session }: { session: Principal }) {
     if (error) errorRef.current?.focus();
   }, [error]);
   const effective = from || data?.businessAt || '';
+  const arrangementRequest = {from:effective, lastDay:last||undefined, parallel, employer:parallel?selected.employer?.id:undefined,position:selected.position?.id};
+  const arrangement = useRead(available && effective ? JSON.stringify([assignment, arrangementRequest]) : undefined,()=>api.POST('/api/v1/assignments/{id}/additional-arrangement',{
+    params:{path:{id:assignment},header},body:arrangementRequest,
+  }).then(unwrap));
+  const arrangementMode=arrangement.data;
   const query = {
     from: effective,
     lastDay: last || undefined,
     parallel,
     employer: parallel ? selected.employer?.id : undefined,
-    department: selected.department?.id,
+    department: arrangementMode?.jobRequired ? selected.department?.id : undefined,
+    job: arrangementMode?.jobRequired ? selected.job?.id : arrangementMode?.job?.id,
     bu: selected.bu?.id,
     location: selected.location?.id,
   };
   const valid = !!(
     available &&
     effective &&
-    selected.department &&
-    selected.job &&
+    arrangementMode &&
+    (!arrangementMode.jobRequired || (!!selected.department && !!selected.job)) &&
+    (!arrangementMode.positionRequired || !!selected.position) &&
     (!parallel || selected.employer) &&
     notice.trim()
   );
@@ -176,7 +183,7 @@ export function SecondaryAssignmentPage({ session }: { session: Principal }) {
       assignment={assignment}
       session={session}
       selected={selected[kind]}
-      choose={(v) => setSelected({ ...selected, [kind]: v })}
+      choose={(v) => setSelected({ ...selected, ...(kind==='job'||kind==='position'?{grade:undefined}:{}), [kind]: v })}
     />
   );
   function save() {
@@ -185,8 +192,10 @@ export function SecondaryAssignmentPage({ session }: { session: Principal }) {
     void command.submit({
       ...query,
       expectedSourceVersion: data.sourceVersion,
-      department: selected.department!.id,
-      job: selected.job!.id,
+      position: arrangementMode?.positionRequired ? selected.position?.id:undefined,
+      department: arrangementMode?.jobRequired ? selected.department?.id:undefined,
+      job: arrangementMode?.jobRequired ? selected.job?.id:undefined,
+      grade: selected.grade?.id,
       notice,
     });
   }
@@ -263,8 +272,12 @@ export function SecondaryAssignmentPage({ session }: { session: Principal }) {
                   ) : (
                     <ObjectDetailField label="用人单位">{data.employerName}</ObjectDetailField>
                   )}
-                  {target('department')}
-                  {target('job')}
+                  {arrangementMode?.jobRequired && <>{target('department')}{target('job')}</>}
+                  {(arrangementMode?.positionRequired || selected.position) && target('position')}
+                  {arrangementMode?.department && <ObjectDetailField label="岗位所属部门">{arrangementMode.department.name}</ObjectDetailField>}
+                  {arrangementMode?.job && <ObjectDetailField label="岗位对应职务">{arrangementMode.job.name}</ObjectDetailField>}
+                  {query.job && target('grade')}
+                  {arrangement.error && <Alert severity="error">{arrangement.error}</Alert>}
                   <ObjectTextField
                     type="date"
                     label="最后任职日（含）"

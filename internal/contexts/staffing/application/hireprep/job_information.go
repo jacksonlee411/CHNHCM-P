@@ -163,6 +163,7 @@ type JobInformation interface {
 	RecordProbation(context.Context, f.Credentials, string, string, string, ProbationCommand) (Receipt, error)
 	ProbationDepartments(context.Context, f.Credentials, string, LocationSearch) ([]org.EligibleEntity, error)
 	AddSecondary(context.Context, f.Credentials, string, string, Secondary) (Receipt, error)
+	SecondaryArrangement(context.Context, f.Credentials, string, SecondaryArrangementQuery) (ArrangementMode, error)
 	SecondaryOptions(context.Context, f.Credentials, string, SecondaryOption) ([]org.EligibleEntity, error)
 	TransferOptions(context.Context, f.Credentials, string, TransferSearch) ([]org.EligibleEntity, error)
 	MaintainRecord(context.Context, f.Credentials, string, string, string, string, RecordMaintenance) (Receipt, error)
