@@ -64,6 +64,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
       session.subjectId,
       query.ref,
       query.department,
+      query.person,
       query.businessAt,
     ].join(':'),
     ready: !!data,
@@ -140,7 +141,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
         renderCell: ({ row }) => (
           <Stack>
             {row.jobName}
-            {row.positionName && <small>{row.positionName}</small>}
+            <small>{row.positionName || '—'}</small>
           </Stack>
         ),
       },
@@ -248,6 +249,9 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
             }
           >
             <Stack direction="row" flexWrap="wrap" gap={2} alignItems="center">
+              {query.person && (
+                <Button onClick={() => update({ person: '', page: '1', selected: '' })}>查看全部员工</Button>
+              )}
               <ObjectTextField
                 inputRef={dateField}
                 type="date"

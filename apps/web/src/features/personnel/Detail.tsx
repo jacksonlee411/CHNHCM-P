@@ -89,7 +89,15 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
     person.profile(id, version, mode === 'correct' && !version ? 'edit' : undefined),
   );
   const offers=person.useRead(record.data && !creating && !version && !mode ? id:undefined,()=>offerAccess(id));
-  const hire=person.useRead(record.data && !creating && !version && !mode ? id:undefined,()=>employment(id));
+  const assignment = params.get('assignment');
+  const assignmentDay = assignment ? params.get('assignmentDay') ?? params.get('businessAt') ?? undefined : undefined;
+  const hire = person.useRead(
+    record.data && !creating && !version && !mode ? JSON.stringify([id, assignmentDay]) : undefined,
+    () => employment(id, assignmentDay),
+  );
+  const hasJobTab = !!assignment && !!hire.data?.terms.some(
+    (term) => term.assignment === assignment && term.recordNumber === 0,
+  );
   const data = record.data,
     nav = person.useRead(data && params.has('from') ? id + JSON.stringify(query) : undefined, () =>
       person.navigation(id, query),
@@ -109,21 +117,22 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
       setCheckingProfile(false);
     }
   }, [log, data, mode, version, record.error, record.invalidate, checkingProfile]);
-  const hasTabs = !version && (data?.history || (checkingProfile && !data && !record.error));
-  const selected = hasTabs && log ? 'history' : 'profile';
+  const showHistory = !version && (data?.history || (checkingProfile && !data && !record.error));
+  const hasTabs = showHistory || hasJobTab;
+  const selected = showHistory && log ? 'history' : 'profile';
   useEffect(() => {
     if (version) {
       wasSource.current = true;
       return;
     }
-    if (record.error || (data && !hasTabs)) positions.clear();
-    if (data && log && !hasTabs) {
+    if (record.error || (data && !showHistory)) positions.clear();
+    if (data && log && !showHistory) {
       const current = new URLSearchParams(params);
       current.delete('tab');
       setParams(current, { replace: true });
       focusIdentity();
     }
-  }, [data, hasTabs, log, params, record.error, setParams, version]);
+  }, [data, showHistory, log, params, record.error, setParams, version]);
   useEffect(() => {
     const target = route.state?.profileSection;
     if (
@@ -168,9 +177,14 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   }
   const cancelParams = new URLSearchParams(params);
   cancelParams.delete('action');
-  const assignment=params.get('assignment');
-  const assignmentParams=new URLSearchParams(params);assignmentParams.delete('assignment');assignmentParams.delete('tab');if(assignmentParams.get('returnTo')==='assignments'){assignmentParams.set('from','assignments');assignmentParams.delete('returnTo');}
-  const back = assignment ? person.path+'/'+id+'/assignments/'+assignment+'?'+assignmentParams : person.path + '?' + backParams;
+  const assignmentParams = new URLSearchParams(params);
+  for (const key of ['assignment', 'tab', 'action', 'source']) assignmentParams.delete(key);
+  if (assignmentParams.get('returnTo') === 'assignments') {
+    assignmentParams.set('from', 'assignments');
+    assignmentParams.delete('returnTo');
+  }
+  const assignmentPath = person.path + '/' + id + '/assignments/' + assignment + '?' + assignmentParams;
+  const back = assignment ? assignmentPath : person.path + '?' + backParams;
   const permitted =
     mode === 'register'
       ? access.data?.canRegister
@@ -251,7 +265,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
             ) : null}
             {offers.data?.canRead&&<Button component={Link} to={offerPath+'?person='+id}>招聘录用</Button>}
             {hire.data?.rehireFrom && <Button component={Link} to={person.path+'/'+id+'/employment?rehireAction='+hire.data.rehireFrom.action+'&rehireRevision='+hire.data.rehireFrom.revision}>办理再聘</Button>}
-            {hire.data && (hire.data.canHire || hire.data.actions.length > 0) && (
+            {!hasJobTab && hire.data && (hire.data.canHire || hire.data.actions.length > 0) && (
               <Button component={Link} to={person.path + '/' + id + '/employment?' + params}
                 state={{ hire: hire.data.actions.length === 0 }}>
                 {hire.data.actions.length ? '工作关系与任职' : '办理入职'}
@@ -347,6 +361,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
                   variant="scrollable"
                   allowScrollButtonsMobile
                   onChange={(_, tab: string) => {
+                    if (tab === 'job') return;
                     wasSource.current = false;
                     edit({ tab: tab === 'history' ? 'history' : '' });
                   }}
@@ -357,12 +372,15 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
                     aria-controls="person-profile-panel"
                     label="个人资料"
                   />
-                  <Tab
-                    value="history"
-                    id="person-history-tab"
-                    aria-controls="person-history-panel"
-                    label="变更日志"
-                  />
+                  {hasJobTab && <Tab component={Link} to={assignmentPath} value="job" label="职务信息" />}
+                  {showHistory && (
+                    <Tab
+                      value="history"
+                      id="person-history-tab"
+                      aria-controls="person-history-panel"
+                      label="变更日志"
+                    />
+                  )}
                 </Tabs>
               )
             }

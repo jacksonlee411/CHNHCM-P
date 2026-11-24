@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Alert, Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectForm, RecordBackButton, RecordControl, RecordPager } from '@chnhcm/ui';
 import * as person from '../personnel/api';
@@ -36,21 +36,12 @@ export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
         session={session}
       />
     );
-  if (terms.length > 1)
-    return (
-      <div className="standard-page">
-        <Typography component="h1">选择任职</Typography>
-        {terms.map((a) => (
-          <Button
-            key={a.assignment}
-            component={Link}
-            to={person.path + '/' + id + '/assignments/' + a.assignment + '?' + params}
-          >
-            {a.recordNumber} 号 · {a.from}
-          </Button>
-        ))}
-      </div>
-    );
+  if (terms.length > 1) {
+    const selection = new URLSearchParams({ person: id });
+    const businessAt = params.get('businessAt');
+    if (businessAt) selection.set('businessAt', businessAt);
+    return <Navigate replace to={employees + '?' + selection} />;
+  }
   return <HirePage session={session} />;
 }
 export function AssignmentPage({ session }: { session: Models['Principal'] }) {
@@ -124,6 +115,7 @@ function AssignmentDetail({
   const backQuery = new URLSearchParams(params);
   backQuery.delete('from');
   backQuery.delete('view');
+  backQuery.delete('assignmentDay');
   const returnAction = params.get('returnAction');
   const registerQuery = new URLSearchParams(params);
   for (const key of ['returnAction', 'assignmentDay']) registerQuery.delete(key);
@@ -136,8 +128,11 @@ function AssignmentDetail({
   personQuery.delete('from');
   if (listed) personQuery.set('returnTo', 'assignments');
   personQuery.set('assignment', assignment);
+  const selectedDay = date || data?.businessAt;
+  if (selectedDay) personQuery.set('assignmentDay', selectedDay);
   const path = person.path + '/' + id;
-  const secondary=new URLSearchParams(params);if(date||data?.businessAt)secondary.set("assignmentDay",date||data!.businessAt);
+  const secondary = new URLSearchParams(params);
+  if (selectedDay) secondary.set('assignmentDay', selectedDay);
   const legacy = new URLSearchParams(params);
   legacy.set('view', 'history');
   return (
