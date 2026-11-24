@@ -1590,6 +1590,7 @@ test('504 第二批保存前撤回家庭职务写权保留其余草稿', async (
     await expect(page.getByRole('dialog')).not.toContainText('已撤权草稿');
     await expect(page.locator('#row-employer')).toHaveValue('获权单位');
     await page.keyboard.press('Escape');
+    await expect(page.locator('#person-error')).toContainText('没有本次办理权限');
     await btn('保存').click();
     await expect(btn('更正资料')).toBeVisible();
     const result = (await request(page, 'GET', path)).body;

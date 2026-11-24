@@ -127,3 +127,12 @@ go test -tags=integration -count=1 -run '^TestUnifiedCorrectionFacetPermissionsW
 ```
 
 按本次仓库规则调整，正式候选默认在本地按影响验证浏览器，原先等待十一片的结果保留在对应提交下。上述四片结果可追溯至相同的首单实现和测试代码。正式 CI 对新候选按当前规则重新判定。[浏览器执行规则](../governance/137-actions-and-validation.md#3-提交同步与触发)
+
+<a id="public-browser-regressions"></a>
+## 11 公开仓库首轮浏览器回归
+
+公开基线 `6f2c0dd` 自动运行八个 DB/API 分片和十一个浏览器分片。DB/API 全过，浏览器第 1、4、5、6 片失败，其余七片通过。[首次公开运行](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45308193575)
+
+- 第 1、5 片的业务单元夹具清空了任职政策授权的写字段，触发该授权的数据库约束。两处夹具改为只变更 `bu.*`，保留原业务场景及断言。[单项更正](../../tests/e2e/correction-coverage.spec.ts) · [启停对](../../tests/e2e/lifecycle-pair.spec.ts)
+- 第 4 片在视口切为 320×900 和 320×256 后读到了上一次渲染的桌面按钮。首单用例现在按应用的媒体断点选择菜单，再等待对应入口可操作。[首单浏览器验收](../../tests/e2e/first-hire.spec.ts)
+- 第 6 片实测人员变更日志首次读取多发一次 POST，家庭职务写权撤回后的拒绝提示也随权限刷新消失。前者在本地开发构建复现；原家庭场景在本地有时只读到瞬时提示。复验在失权字段移除、获权草稿仍在、关闭明细后再次核对拒绝提示，并保存剩余草稿。[人员日志与家庭资料场景](../../tests/e2e/personnel.spec.ts)

@@ -92,9 +92,10 @@ export function Editor({
   const [rowError, setRowError] = useState<RowError>();
   const personal = !!profile && mode === 'correct';
   const legacyDocument = personal && !profile?.readable?.includes('documentKind');
-  const [error, setError] = useState(''),
-    [field, setField] = useState(''),
-    [conflict, setConflict] = useState(false),
+  const [notice, setNotice] = useState<{ message: string; field?: string; code?: string }>();
+  const error = notice?.message ?? '';
+  const field = notice?.field;
+  const [conflict, setConflict] = useState(false),
     [existingId, setExistingId] = useState('');
   const contactEdits: Models['PersonEdit'][] = [];
   for (const x of rows) {
@@ -146,7 +147,7 @@ export function Editor({
       saved(r, personal ? groups.find((group) => patch[group].length) || 'basic' : undefined);
     } else {
       setExistingId(r.existingPersonId || '');
-      setError(r.outcome === 'not_applied' ? '原提交未执行，可重新保存' : '原提交已拒绝，请重新核对');
+      setNotice({ message: r.outcome === 'not_applied' ? '原提交未执行，可重新保存' : '原提交已拒绝，请重新核对' });
     }
   }
   const exit = useDraftExit(
@@ -157,9 +158,8 @@ export function Editor({
       flow.clearPayload();
     },
   );
-  function fail(msg: string, id = '') {
-    setError(msg);
-    setField(id);
+  function fail(msg: string, id = '', code?: string) {
+    setNotice({ message: msg, field: id, code });
     if (!/^(documents|contacts|addresses|family)\.\d+\./.test(id))
       focusObjectField('person-error', 'person-error');
   }
@@ -217,7 +217,7 @@ export function Editor({
         },
       };
     }
-    setError('');
+    setNotice(undefined);
     setExistingId('');
     const result = await flow.submit(command);
     if (result.kind === 'saved') finish(result.result);
@@ -226,6 +226,7 @@ export function Editor({
       fail(
         result.definitive ? person.message(e) : '结果待确认，请查看上次保存结果',
         e instanceof ApiError ? e.field : '',
+        e instanceof ApiError ? e.code : undefined,
       );
       if (e instanceof ApiError) {
         const match = /^(documents|contacts|addresses|family)\.(\d+)\.(.+)$/.exec(e.field || '');
@@ -296,6 +297,7 @@ export function Editor({
     submissionScope.current = scope;
   }, [scope, flow]);
   function reconcile(scopeChanged: boolean) {
+    const denial = notice?.code === 'PERSON_DENIED' ? { message: notice.message, code: notice.code } : undefined;
     setExistingId('');
     if (!canDocument || !documentChanged) {
       setDocumentKind(canDocument ? profile?.primaryDocument?.kind || '' : '');
@@ -307,8 +309,7 @@ export function Editor({
         setRef('');
       }
       setRows((current) => current.filter((row) => !row.kind || kinds.includes(row.kind)));
-      setError('');
-      setField('');
+      setNotice(denial);
       return;
     }
     // Keep unrelated authorized drafts while dropping revoked values and row snapshots.
@@ -377,8 +378,12 @@ export function Editor({
     const stale = scopeChanged && basis && basis.sourceVersion !== profile.sourceVersion;
     setBasis(stale ? { ...profile, sourceVersion: basis.sourceVersion } : profile);
     setConflict(!!stale);
-    setField('');
-    setError(scopeChanged ? '' : '已载入当前资料，请核对后保存');
+    if (scopeChanged) {
+      // Keep the definitive denial while discarding stale field names and values.
+      setNotice(denial);
+    } else {
+      setNotice({ message: '已载入当前资料，请核对后保存' });
+    }
   }
   const disabled = flow.inFlight || flow.unknown;
   const input = (

@@ -238,15 +238,16 @@ export function PersonChangeLog({
     const controller = new AbortController(),
       same = sessionGuard();
     const current = () => !controller.signal.aborted && same();
-    person
-      .changes(session, id, { ...query, throughSourceVersion: through.current }, controller.signal)
-      .then((value) => {
-        if (current()) {
-          through.current = value.throughSourceVersion;
-          setPage(value);
-        }
-      })
-      .catch((e) => {
+    async function load() {
+      if (!current()) return;
+      try {
+        const value = await person.changes(
+          session, id, { ...query, throughSourceVersion: through.current }, controller.signal,
+        );
+        if (!current()) return;
+        through.current = value.throughSourceVersion;
+        setPage(value);
+      } catch (e) {
         if (!current()) return;
         setPage(undefined);
         if (e instanceof ApiError && e.field === 'filterValue' && query.filterField === 'changedField') {
@@ -261,7 +262,10 @@ export function PersonChangeLog({
           recheckProfile();
         }
         setError(person.message(e));
-      });
+      }
+    }
+    // A StrictMode mount can be cleaned up before its first read should reach the API.
+    queueMicrotask(load);
     return () => controller.abort();
   }, [session.csrf, id, query, attempt, positions, recheckProfile]);
   useLayoutEffect(() => {
