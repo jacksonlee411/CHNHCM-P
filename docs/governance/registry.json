@@ -2964,6 +2964,59 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/504-personal-profile-third-batch.md",
+        "related_documents": [
+          "CHNHCM-003",
+          "CHNHCM-012",
+          "CHNHCM-502",
+          "CHNHCM-504",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "91730333ffd8b5bcce2d47a7ccea2e505a59cb55",
+        "working_tree": "clean",
+        "change_description": "人员原档新增三类教育行、独立最高标记、专业凭证及其用途授权。",
+        "environment": "私仓 f 的原始固定环境及 PostgreSQL、Go HTTP、Chromium 结果见第 1—4 节。公共 f 在主机 3 的独立可丢弃环境复验，见第 5 节。",
+        "scope": "014、016、017、019 第三批场景和 020 两栏六个组合，00036 备份升级、处置恢复、旧路径及 4380 正常菜单。",
+        "results": [
+          {
+            "check": "私仓原验收：未填证号的凭证仍显示查看完整号码，独立断言复现",
+            "result": "failed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "私仓原验收：修正后 34 项人员浏览器回归、实库失败与恢复、行字段授权及原档查回",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "私仓原验收：并行容量首轮两条 20 会话链路超过 500 毫秒",
+            "result": "failed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "私仓原验收：同候选同阈值独立容量复验，持久环境原表、构建与实机菜单验收",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "第四批账户、健康、九栏容量及 T04 兼岗共享",
+            "result": "not_run",
+            "evidence": "docs/plans/504-personal-profile-extension.md"
+          },
+          {
+            "check": "公共基线及旧 f 账本升级、教育凭证与首单回归，17 个实库测试根和 12 项 Chromium 通过",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          }
+        ],
+        "limitations": [
+          "仅本地产品验收。九栏完整容量和真实多任职随对应批次。"
+        ]
+      },
+      {
         "path": "docs/verification/400-first-hire-integration.md",
         "related_documents": [
           "CHNHCM-400",
