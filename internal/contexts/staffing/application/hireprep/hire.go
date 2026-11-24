@@ -15,6 +15,7 @@ type Adoption struct {
 	Segments []staff.AssignmentSegment `json:"segments"`
 }
 type Hire struct {
+	TrialStart string       `json:"trialStart,omitempty"`
 	Person     string       `json:"person"`
 	Employer   string       `json:"employer"`
 	Department string       `json:"department"`
@@ -84,7 +85,15 @@ type Cancel struct {
 	Revision string `json:"revision"`
 	Reason   string `json:"reason"`
 }
+type RelationSummary struct {
+	f.Period
+	EmployerName string     `json:"employerName"`
+	Terms        []TermLink `json:"terms"`
+}
 type Original struct {
+	Relation          *RelationSummary   `json:"relation,omitempty"`
+	TrialStart        string             `json:"trialStart,omitempty"`
+	Probation         *ProbationEvidence `json:"probation,omitempty"`
 	Secondary         *SecondaryEvidence `json:"secondary,omitempty"`
 	Transfer          *TransferEvidence  `json:"transfer,omitempty"`
 	Requires          *RequiredFact      `json:"requires,omitempty"`

@@ -12248,7 +12248,7 @@ paths:
       - {in: query, name: businessTo, schema: {type: string, format: date}}
       - {in: query, name: recordedFrom, schema: {type: string, format: date}}
       - {in: query, name: recordedTo, schema: {type: string, format: date}}
-      - {in: query, name: kind, schema: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment]}}
+      - {in: query, name: kind, schema: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment, ProbationStart, ConfirmEmployment]}}
       - {in: query, name: status, schema: {type: string, enum: [effective, future, cancelled, deleted]}}
       - {in: query, name: sort, schema: {type: string, enum: [recordedAt, '-recordedAt', businessDate, '-businessDate']}}
       - {in: query, name: page, schema: {type: integer, minimum: 1, default: 1}}
@@ -12409,6 +12409,59 @@ paths:
       requestBody:
         required: true
         content: {application/json: {schema: {$ref: '#/components/schemas/AdditionalAssignmentInput'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/probation-departments:
+    post:
+      operationId: probationDepartments
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentLocationSearch'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/EligibleEntity'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/trial-start:
+    post:
+      operationId: startRelationshipProbation
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ProbationCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/confirm-employment:
+    post:
+      operationId: confirmEmployment
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ProbationCommand'}}}
       responses:
         '200':
           description: Authorized result
@@ -12598,6 +12651,50 @@ components:
         notice: {type: string}
         insert: {type: boolean}
         requires: {$ref: '#/components/schemas/EmploymentRequiredFact'}
+    EmploymentRelationSummary:
+      type: object
+      required: [from, employerName, terms]
+      properties:
+        from: {type: string, format: date}
+        until: {type: string, format: date}
+        employerName: {type: string}
+        terms:
+          type: array
+          items:
+            type: object
+            required: [assignment, recordNumber, from]
+            properties:
+              assignment: {type: string, format: uuid}
+              recordNumber: {type: integer}
+              from: {type: string, format: date}
+    ProbationCommand:
+      type: object
+      additionalProperties: false
+      required: [businessDate, expectedSourceVersion, notice]
+      properties:
+        businessDate: {type: string, format: date}
+        expectedSourceVersion: {type: string, format: uuid}
+        notice: {type: string}
+        department: {type: string, format: uuid}
+        afterAction: {type: string, format: uuid}
+        afterRevision: {type: string, format: uuid}
+    ProbationState:
+      type: object
+      required: [status]
+      properties:
+        status: {type: string, enum: [unrecorded, probation, confirmed]}
+        start: {type: string, format: date}
+        confirmed: {type: string, format: date}
+    ProbationEvidence:
+      type: object
+      required: [start, attribution]
+      properties:
+        start: {type: string, format: date}
+        attribution: {type: string, enum: [relationship, notice, relationship-primary, primary-unavailable, same-day-order-undetermined, preceding-transfer]}
+        department: {type: string, format: uuid}
+        departmentName: {type: string}
+        afterAction: {type: string, format: uuid}
+        afterRevision: {type: string, format: uuid}
     AdditionalAssignmentInput:
       type: object
       additionalProperties: false
@@ -12696,6 +12793,7 @@ components:
       type: object
       required: [id, revision, sourceVersion, employment, assignment, person, name, number, kind, status, businessDate, recordedAt, recordNumber, canHistory]
       properties:
+        relation: {$ref: '#/components/schemas/EmploymentRelationSummary'}
         id: {type: string, format: uuid}
         revision: {type: string, format: uuid}
         sourceVersion: {type: string, format: uuid}
@@ -12705,7 +12803,7 @@ components:
         department: {type: string, format: uuid}
         name: {type: string}
         number: {type: string}
-        kind: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment]}
+        kind: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment, ProbationStart, ConfirmEmployment]}
         status: {type: string, enum: [effective, future, cancelled, deleted]}
         businessDate: {type: string, format: date}
         recordedAt: {type: string, format: date-time}
@@ -12791,7 +12889,7 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canAddSecondary, canAddParallel, relationshipPrimary]
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation]
       properties:
         from: {type: string, format: date}
         until: {type: string, format: date}
@@ -12810,6 +12908,9 @@ components:
         actions: {type: array, items: {$ref: '#/components/schemas/EmploymentAction'}}
         canChangeLocation: {type: boolean}
         canTransfer: {type: boolean}
+        canStartProbation: {type: boolean}
+        canConfirm: {type: boolean}
+        probation: {$ref: '#/components/schemas/ProbationState'}
         canAddSecondary: {type: boolean}
         canAddParallel: {type: boolean}
         relationshipPrimary: {type: boolean}
@@ -12844,7 +12945,10 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        relation: {$ref: '#/components/schemas/EmploymentRelationSummary'}
         departmentName: {type: string}
+        probation: {$ref: '#/components/schemas/ProbationEvidence'}
+        trialStart: {type: string, format: date}
         secondary: {$ref: '#/components/schemas/SecondaryAssignmentEvidence'}
         transfer: {$ref: '#/components/schemas/EmploymentTransferEvidence'}
         requires: {$ref: '#/components/schemas/EmploymentRequiredFact'}
@@ -12964,6 +13068,7 @@ components:
       - job
       - arrival
       properties:
+        trialStart: {type: string, format: date}
         decision: {$ref: '#/components/schemas/DecisionRef'}
         person:
           type: string

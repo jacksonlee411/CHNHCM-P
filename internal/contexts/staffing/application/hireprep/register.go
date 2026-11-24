@@ -9,27 +9,28 @@ type RegisterQuery struct {
 }
 
 type RegisterRow struct {
-	FromDepartment     string `json:"fromDepartment,omitempty"`
-	FromDepartmentName string `json:"fromDepartmentName,omitempty"`
-	ToDepartment       string `json:"toDepartment,omitempty"`
-	ToDepartmentName   string `json:"toDepartmentName,omitempty"`
-	ID                 string `json:"id"`
-	Revision           string `json:"revision"`
-	Source             string `json:"sourceVersion"`
-	Kind               string `json:"kind"`
-	Status             string `json:"status"`
-	BusinessDate       string `json:"businessDate"`
-	RecordedAt         string `json:"recordedAt"`
-	Employment         string `json:"employment"`
-	Assignment         string `json:"assignment"`
-	RecordNumber       int    `json:"recordNumber"`
-	Person             string `json:"person"`
-	Name               string `json:"name"`
-	Number             string `json:"number"`
-	Department         string `json:"department,omitempty"`
-	DepartmentName     string `json:"departmentName,omitempty"`
-	Operator           string `json:"operator,omitempty"`
-	CanHistory         bool   `json:"canHistory"`
+	Relation           *RelationSummary `json:"relation,omitempty"`
+	FromDepartment     string           `json:"fromDepartment,omitempty"`
+	FromDepartmentName string           `json:"fromDepartmentName,omitempty"`
+	ToDepartment       string           `json:"toDepartment,omitempty"`
+	ToDepartmentName   string           `json:"toDepartmentName,omitempty"`
+	ID                 string           `json:"id"`
+	Revision           string           `json:"revision"`
+	Source             string           `json:"sourceVersion"`
+	Kind               string           `json:"kind"`
+	Status             string           `json:"status"`
+	BusinessDate       string           `json:"businessDate"`
+	RecordedAt         string           `json:"recordedAt"`
+	Employment         string           `json:"employment"`
+	Assignment         string           `json:"assignment"`
+	RecordNumber       int              `json:"recordNumber"`
+	Person             string           `json:"person"`
+	Name               string           `json:"name"`
+	Number             string           `json:"number"`
+	Department         string           `json:"department,omitempty"`
+	DepartmentName     string           `json:"departmentName,omitempty"`
+	Operator           string           `json:"operator,omitempty"`
+	CanHistory         bool             `json:"canHistory"`
 }
 type RegisterOperator struct {
 	ID   string `json:"id"`

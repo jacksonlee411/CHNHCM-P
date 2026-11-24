@@ -79,6 +79,15 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-options", ruleBody(func(r *http.Request, in h.SecondaryOption) (any, error) {
 		return hires.SecondaryOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/probation-departments", ruleBody(func(r *http.Request, in h.LocationSearch) (any, error) {
+		return hires.ProbationDepartments(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	for _, op := range []struct{ path, kind string }{{"trial-start", "ProbationStart"}, {"confirm-employment", "ConfirmEmployment"}} {
+		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.ProbationCommand) (any, error) {
+			return hires.RecordProbation(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.kind, in)
+		}))
+	}
+
 	changeLocation := ruleBody(func(r *http.Request, in h.LocationChange) (any, error) {
 		return hires.ChangeLocation(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), r.PathValue("id"), r.PathValue("action"), in)
 	})

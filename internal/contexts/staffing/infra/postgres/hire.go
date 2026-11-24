@@ -73,6 +73,9 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		return plan, err
 	}
 	plan.term = term
+	if in.TrialStart != "" && (!f.ValidDate(in.TrialStart) || !term.Includes(in.TrialStart)) {
+		return plan, f.Fail(400, "PROBATION_START", "实际试用开始日须在工作关系期间内")
+	}
 	if err = u.requireEmployment(ctx, "hire", in.Person, in.Employer, in.Department); err != nil {
 		return plan, err
 	}
@@ -195,6 +198,9 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		}
 		revision := f.NewID()
 		adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
+		if in.TrialStart != "" {
+			adoption["trialStart"] = in.TrialStart
+		}
 		item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: "Hire", date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
 		if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location); err != nil {
 			return "", err
@@ -232,6 +238,12 @@ func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hi
 		if err != nil {
 			return err
 		}
+	}
+	// Later assignments inherit relationship facts already issued, with their exact original revisions.
+	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_member(instance_id,assignment_id,version,action_id,revision)
+        SELECT a.instance_id,$2,$3,a.id,a.revision FROM staffing.employment_action a WHERE a.instance_id=$1 AND a.employment_id=$4 AND a.kind IN ('ProbationStart','ConfirmEmployment')`, instance, item.assignment, version, item.employment)
+	if err != nil {
+		return err
 	}
 	if err = u.publishAssignmentSource(ctx, item.assignment, "", version); err != nil {
 		return err

@@ -56,6 +56,11 @@ type AccessEmploymentParallelFixture struct {
 	PrincipalID string
 }
 
+type AccessEmploymentProbationFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessEmploymentRegisterFixture struct {
 	InstanceID  string
 	PrincipalID string
