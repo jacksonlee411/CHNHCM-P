@@ -36,6 +36,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
   const [dateEdit, setDateEdit] = useState<{ base?: string; value: string }>();
+  const [dateAtFocus, setDateAtFocus] = useState<string>();
   const dateField = useRef<HTMLInputElement>(null);
   const dateInput = dateEdit && dateEdit.base === query.businessAt ? dateEdit.value : undefined;
   const appliedParams = useRef(params);
@@ -256,15 +257,17 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
                 inputRef={dateField}
                 type="date"
                 label="业务日期"
-                value={dateInput ?? query.businessAt ?? data?.businessAt ?? ''}
+                value={dateInput ?? query.businessAt ?? dateAtFocus ?? data?.businessAt ?? ''}
+                onFocus={(e) => setDateAtFocus(e.target.value)}
                 onChange={(e) => {
                   const value = e.target.value;
                   setDateEdit({ base: query.businessAt, value });
                   if (value && e.target.validity.valid) update({ businessAt: value, page: '1' });
                 }}
                 onBlur={() => {
+                  setDateAtFocus(undefined);
                   const field = dateField.current;
-                  if (field && dateEdit && field.validity.valid && field.value !== (appliedParams.current.get('businessAt') ?? '')) {
+                  if (field && dateInput !== undefined && field.validity.valid && field.value !== (appliedParams.current.get('businessAt') ?? '')) {
                     update({ businessAt: field.value, page: '1' });
                   }
                 }}

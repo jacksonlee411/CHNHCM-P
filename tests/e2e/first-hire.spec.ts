@@ -1659,6 +1659,37 @@ test('M04 员工列表首次默认日期延迟时保留已输入的业务日和�
   await expect(page.getByRole('textbox',{name:/^业务日期/})).toHaveValue('2027-04-01');
 });
 
+test('M04 从本人范围聚焦日期后收到默认日仍可按键盘选任职', async ({ page }) => {
+  test.setTimeout(90000);
+  await signIn(page);
+  const sample = await seed(page);
+  await hireAtLocation(page, sample);
+  await page.setViewportSize({ width: 320, height: 900 });
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => { release = resolve; });
+  await page.route('**/api/v1/assignments/query', async (route) => {
+    if (!route.request().postDataJSON().businessAt) await pending;
+    await route.continue();
+  });
+  const day = page.getByRole('textbox', { name: /^业务日期/ });
+  try {
+    await page.goto('/personnel/assignments?person=' + sample.id);
+    await day.focus();
+    await day.press('ControlOrMeta+a');
+  } finally {
+    release();
+  }
+  await expect(page.getByText(/^\d+ 份任职，\d+ 人$/)).toBeVisible();
+  await expect(day).toHaveValue('');
+  await page.keyboard.insertText('2027-04-01');
+  await day.press('Tab');
+  await expect(page).toHaveURL((url) =>
+    url.searchParams.get('person') === sample.id && url.searchParams.get('businessAt') === '2027-04-01',
+  );
+  await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible();
+  await expect(page.locator('a[data-object-link]').filter({ hasText: sample.name })).toHaveCount(1);
+});
+
 async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   await concurrentJourney(page, sample);
   await openPerson(page, sample.name);
