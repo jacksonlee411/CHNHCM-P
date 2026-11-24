@@ -529,8 +529,10 @@ async function openRegister(page: Page) {
     await page.getByRole('menuitem', { name: '办理记录', exact: true }).click();
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
-    await page.getByRole('button', { name: '人事事务', exact: true }).click();
+    const personnel = page.getByRole('button', { name: '人员', exact: true });
+    if ((await personnel.getAttribute('aria-expanded')) !== 'true') await personnel.click();
+    const transactions = page.getByRole('button', { name: '人事事务', exact: true });
+    if ((await transactions.getAttribute('aria-expanded')) !== 'true') await transactions.click();
     await page.getByRole('button', { name: '办理记录', exact: true }).click();
   }
   await expect(page.getByRole('heading', { name: '办理记录', exact: true })).toBeVisible();
