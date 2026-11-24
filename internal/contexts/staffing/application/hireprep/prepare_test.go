@@ -3,6 +3,7 @@ package hireprep
 import (
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"context"
+	"reflect"
 	"slices"
 	"testing"
 )
@@ -20,7 +21,7 @@ func (r *recordedIdentity) CheckIdentity(_ context.Context, _ f.Credentials, in 
 type recordedDecision struct{ expected Appointment }
 
 func (d recordedDecision) CheckAppointment(_ context.Context, _ f.Credentials, ref DecisionRef, actual Appointment) error {
-	if actual != d.expected || ref.Source != "appointment" || ref.Version != "decision-v1" {
+	if !reflect.DeepEqual(actual, d.expected) || ref.Source != "appointment" || ref.Version != "decision-v1" {
 		return f.Fail(409, "HIRE_BASIS", "采用与任用决定不符")
 	}
 	return nil

@@ -16,13 +16,14 @@ type Adoption struct {
 	Segments []staff.AssignmentSegment `json:"segments"`
 }
 type Hire struct {
+	Position   string       `json:"position,omitempty"`
 	RehireOf   *ActionRef   `json:"rehireOf,omitempty"`
 	Grade      string       `json:"grade,omitempty"`
 	TrialStart string       `json:"trialStart,omitempty"`
 	Person     string       `json:"person"`
 	Employer   string       `json:"employer"`
-	Department string       `json:"department"`
-	Job        string       `json:"job"`
+	Department string       `json:"department,omitempty"`
+	Job        string       `json:"job,omitempty"`
 	BU         string       `json:"bu,omitempty"`
 	Location   string       `json:"location,omitempty"`
 	Arrival    string       `json:"arrival"`
@@ -151,7 +152,21 @@ type TargetSearch struct {
 	Search     string     `json:"search,omitempty"`
 	Page       int        `json:"page"`
 }
+type ArrangementQuery struct {
+	Position string     `json:"position,omitempty"`
+	Person   string     `json:"person"`
+	Arrival  string     `json:"arrival"`
+	LastDay  string     `json:"lastDay,omitempty"`
+	RehireOf *ActionRef `json:"rehireOf,omitempty"`
+}
+type ArrangementMode struct {
+	Department       *org.EligibleEntity `json:"department,omitempty"`
+	Job              *org.EligibleEntity `json:"job,omitempty"`
+	JobRequired      bool                `json:"jobRequired"`
+	PositionRequired bool                `json:"positionRequired"`
+}
 type Hires interface {
+	HireArrangement(context.Context, f.Credentials, ArrangementQuery) (ArrangementMode, error)
 	JobInformation
 	PublishDecision(context.Context, f.Credentials, string, DecisionPublication) (DecisionEdition, error)
 	HireDecisions(context.Context, f.Credentials, string, *ActionRef) ([]DecisionOption, error)

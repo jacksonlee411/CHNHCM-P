@@ -10,6 +10,7 @@ import (
 // These are the identities and display names on the issued original.
 // An omitted arrangement may be completed during hiring.
 type DecisionRow struct {
+	Position   *org.EligibleEntity `json:"position,omitempty"`
 	Person     string              `json:"person"`
 	Line       string              `json:"line,omitempty"`
 	Employer   *org.EligibleEntity `json:"employer,omitempty"`
@@ -61,7 +62,7 @@ func (p DecisionPublication) Validate() error {
 		if row.Arrival != "" && !f.ValidDate(row.Arrival) || row.LastDay != "" && (!f.ValidDate(row.LastDay) || row.LastDay < row.Arrival) {
 			return invalid
 		}
-		for _, target := range []*org.EligibleEntity{row.Employer, row.Department, row.Job, row.BU, row.Location} {
+		for _, target := range []*org.EligibleEntity{row.Employer, row.Department, row.Job, row.Position, row.BU, row.Location} {
 			if target != nil && (!f.ValidID(target.ID) || strings.TrimSpace(target.Name) == "" || utf8.RuneCountInString(target.Name) > 400) {
 				return invalid
 			}

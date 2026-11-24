@@ -5418,6 +5418,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/positions/{id}/replenishment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["getPositionReplenishment"];
+        put?: never;
+        post: operations["changePositionReplenishment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/replenishment/submissions/{sub}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolveReplenishment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hires/arrangement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getHireArrangement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hires/targets": {
         parameters: {
             query?: never;
@@ -5746,6 +5796,9 @@ export interface components {
             recordedAt: string;
         };
         AssignmentDayState: {
+            /** Format: uuid */
+            position?: string;
+            positionName?: string;
             grade?: components["schemas"]["AssignmentGrade"];
             /** Format: uuid */
             departmentId: string;
@@ -5924,6 +5977,47 @@ export interface components {
             canAddParallel: boolean;
             relationshipPrimary: boolean;
         };
+        ReplenishmentView: {
+            covered: boolean;
+            canChange: boolean;
+            paused: boolean;
+            version: string;
+            exempt?: number;
+            records: {
+                /** Format: date */
+                date: string;
+                paused: boolean;
+                reason: string;
+                /** Format: uuid */
+                revision: string;
+                /** Format: date-time */
+                recordedAt: string;
+            }[];
+        };
+        ReplenishmentChange: {
+            /** Format: date */
+            date: string;
+            paused: boolean;
+            reason: string;
+            expected: string;
+        };
+        HireArrangementMode: {
+            department?: components["schemas"]["EligibleEntity"];
+            job?: components["schemas"]["EligibleEntity"];
+            jobRequired: boolean;
+            positionRequired: boolean;
+        };
+        HireArrangementQuery: {
+            /** Format: uuid */
+            position?: string;
+            /** Format: uuid */
+            person: string;
+            /** Format: date */
+            arrival: string;
+            /** Format: date */
+            lastDay?: string;
+            rehireOf?: components["schemas"]["EmploymentActionRef"];
+        };
         HireTargetSearch: {
             rehireOf?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
@@ -5931,7 +6025,7 @@ export interface components {
             /** Format: uuid */
             person: string;
             /** @enum {string} */
-            kind: "department" | "job" | "bu" | "location" | "grade";
+            kind: "department" | "job" | "position" | "bu" | "location" | "grade";
             /** Format: date */
             arrival: string;
             /** Format: date */
@@ -6019,6 +6113,7 @@ export interface components {
             version: string;
         };
         DecisionRow: {
+            position?: components["schemas"]["EligibleEntity"];
             /** Format: uuid */
             person: string;
             /** Format: uuid */
@@ -6056,6 +6151,8 @@ export interface components {
             segments: components["schemas"]["AssignmentSegment"][];
         };
         HireInput: {
+            /** Format: uuid */
+            position?: string;
             rehireOf?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
             grade?: string;
@@ -6067,9 +6164,9 @@ export interface components {
             /** Format: uuid */
             employer: string;
             /** Format: uuid */
-            department: string;
+            department?: string;
             /** Format: uuid */
-            job: string;
+            job?: string;
             /** Format: uuid */
             bu?: string;
             /** Format: uuid */
@@ -6532,8 +6629,8 @@ export interface components {
             enterprise: string;
             category: string;
             purpose: string;
-            department: string;
-            job: string;
+            department?: string;
+            job?: string;
             position?: string;
             expectedVersion?: string;
             /** Format: date */
@@ -6542,6 +6639,13 @@ export interface components {
             until?: string;
         };
         AssignmentSegment: {
+            departmentId?: string;
+            jobId?: string;
+            positionName?: string;
+            positionSource?: string;
+            positionRevision?: string;
+            replenishmentSource?: string;
+            coverageSource?: string;
             departmentName?: string;
             jobName?: string;
             policyVersion: string;
@@ -24497,6 +24601,150 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getPositionReplenishment: {
+        parameters: {
+            query?: {
+                businessAt?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Position replenishment decisions and authorized usage at the selected date */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplenishmentView"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    changePositionReplenishment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplenishmentChange"];
+            };
+        };
+        responses: {
+            /** @description Persisted dated decision */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplenishmentView"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    resolveReplenishment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+                sub: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Private submission outcome */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuleSaved"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getHireArrangement: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HireArrangementQuery"];
+            };
+        };
+        responses: {
+            /** @description Arrangement fields required by the effective policies */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireArrangementMode"];
                 };
             };
             /** @description Unavailable */

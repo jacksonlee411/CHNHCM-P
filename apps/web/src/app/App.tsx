@@ -9,6 +9,7 @@ import { PersonDetail } from "../features/personnel/Detail";
 import { PersonRecovery } from "../features/personnel/Submission";
 import * as person from "../features/personnel/api";
 import { StaffingList } from '../features/staffing/List';
+import { PositionReplenishment } from '../features/staffing/Replenishment';
 import { StaffingDetail } from '../features/staffing/Detail';
 import { HierarchyPage, hierarchyPath } from '../features/staffing/Hierarchy';
 import { StaffingRecovery } from '../features/staffing/useSubmission';
@@ -252,7 +253,7 @@ export function App() {
             <Route path={person.path+"/new"} element={<PersonDetail session={session} creating />}/>
             <Route path={person.path+"/:id/employment"} element={<EmploymentEntry session={session}/>}/>
             <Route path={person.path+"/:id"} element={<PersonDetail session={session} />}/>
-            <Route path={quotaPath} element={<QuotaList/>}/><Route path={quotaPath+'/departments/:id'} element={<QuotaDepartment session={session}/>}/><Route path={staffingPaths.position+'/:id/quota'} element={<QuotaDetail session={session}/>}/>
+            <Route path={staffingPaths.position+'/:id/replenishment'} element={<PositionReplenishment session={session}/>}/><Route path={quotaPath} element={<QuotaList/>}/><Route path={quotaPath+'/departments/:id'} element={<QuotaDepartment session={session}/>}/><Route path={staffingPaths.position+'/:id/quota'} element={<QuotaDetail session={session}/>}/>
             <Route path={hierarchyPath} element={invalidHierarchyLink ? missingPage : <HierarchyPage session={session}/>}/>
             {staffingKinds.map(kind=><Route key={kind} path={staffingPaths[kind]} element={<StaffingList key={kind} kind={kind} session={session}/>}/>)}
             {staffingKinds.map(kind=><Route key={`${kind}-new`} path={`${staffingPaths[kind]}/new`} element={<StaffingDetail key={`${kind}-new`} kind={kind} session={session} creating/>}/>)}

@@ -6,7 +6,8 @@ import { localConnection } from '../../scripts/local-runtime.mjs';
 import { test, expect, type Page } from './fixtures';
 import { request, apiBU, apiDepartment } from './dated-object-support';
 import { database } from './community-list-support.mjs';
-import { seed308 } from './staffing308-support';
+import { namedMenu308, seed308 } from './staffing308-support';
+import { seedPosition } from './staffing312-support';
 
 async function signIn(page: Page, login = 'admin') {
   await page.goto('/');
@@ -98,24 +99,33 @@ async function seed(page: Page, withDocument = true) {
   };
 }
 async function openPerson(page: Page, name: string) {
-  if (await page.evaluate(() => matchMedia('(min-width:900px)').matches)) {
+  const drawerButton = page.getByRole('button', { name: '打开导航', exact: true });
+  if (await drawerButton.isVisible()) {
+    await drawerButton.click();
+    const drawer = page.locator('#navigation-drawer');
+    const personnel = drawer.getByRole('button', { name: '人员', exact: true });
+    const expanded = await personnel.getAttribute('aria-expanded');
+    if (expanded !== 'true') await personnel.click();
+    if (expanded !== null) {
+      const employees = drawer.getByRole('button', { name: '员工', exact: true });
+      if ((await employees.getAttribute('aria-expanded')) !== 'true') await employees.click();
+      await drawer.getByRole('button', { name: '人员档案', exact: true }).click();
+    }
+  } else {
     await page.getByRole('button', { name: '切换应用', exact: true }).click();
     await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-  } else {
-    await page.getByRole('button', { name: '打开导航', exact: true }).click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
-    const archive = page.getByRole('button', { name: '人员档案', exact: true });
-    const heading = page.getByRole('heading', { name: '人员档案', exact: true });
-    await expect(archive.or(heading).first()).toBeVisible();
-    if (await archive.isVisible()) await archive.click();
+    await expect(page).toHaveURL((url) => ['/personnel/employees', '/personnel/assignments'].includes(url.pathname));
+    if (new URL(page.url()).pathname === '/personnel/assignments') {
+      await page.getByRole('link', { name: '人员档案', exact: true }).click();
+    }
   }
-  const archive = page.getByRole('link', { name: '人员档案', exact: true });
-  const heading = page.getByRole('heading', { name: '人员档案', exact: true });
-  await expect(archive.or(heading).first()).toBeVisible();
-  if (await archive.isVisible()) await archive.click();
+  await expect(page.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
   await page.getByLabel('姓名或人员编号').fill(name);
   await page.getByLabel('姓名或人员编号').press('Enter');
-  await page.locator('a[data-object-link]').filter({ hasText: name }).click();
+  await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees' && url.searchParams.has('ref'));
+  const target = page.locator('a[data-object-link]').filter({ hasText: name });
+  await expect(target).toBeVisible();
+  await target.click();
 }
 async function fillHire(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   await openPerson(page, sample.name);
@@ -1072,3 +1082,65 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 实际汇报离职及原记录再聘 原生200%',async()=>{await native200(lifecycleJourney)});
+
+async function positionHireJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const family = await seed308(page,'jobfamily');
+  const position = await seedPosition(page,'position',family.id);
+  const policyPath='/api/v1/assignment-policies';
+  const before=await request(page,'GET',policyPath);
+  const original=before.body.rows.find((r:{category:string;purpose:string;from:string})=>r.category==='Employee'&&r.purpose==='hire'&&r.from==='2027-04-01');
+  let changedVersion: string | undefined;
+  if (original.mode !== 'PositionExempt') {
+    const saved = await request(page, 'POST', policyPath, { expectedVersion: before.body.version, row: { ...original, mode: 'PositionExempt' } }, randomUUID());
+    expect(saved.status, saved.body.message).toBe(200);
+    changedVersion = saved.body.version;
+  }
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  try {
+    const number='按岗任用'+sample.name;
+    const issued=await request(page,'POST','/api/v1/appointment-decisions',{source:randomUUID(),number,roster:false,
+      rows:[{person:sample.id,arrival:'2027-04-01',employer:{id:sample.employerId,name:sample.employer}}]},randomUUID());
+    expect(issued.status,issued.body.message).toBe(200);
+    await openPerson(page,sample.name);
+    await page.getByRole('link',{name:'办理入职',exact:true}).click();
+    await page.getByRole('combobox',{name:'任用依据'}).click();
+    await page.getByRole('option',{name:number,exact:true}).click();
+    await page.getByRole('combobox',{name:/^岗位/}).fill(position.name);
+    await page.getByRole('option',{name:position.name,exact:true}).click();
+    await expect(page.getByText(position.department,{exact:true})).toBeVisible();
+    await expect(page.getByText(position.job.name,{exact:true})).toBeVisible();
+    await expect(button('保存')).toBeEnabled();await button('保存').focus();await page.keyboard.press('Enter');
+    await expect(page.getByText('可见在职 1 人，任职 1 份，占编 0')).toBeVisible();
+    await button('查看原办理').click();
+    await expect(page.getByText(new RegExp(position.name+' · 免占编'))).toBeVisible();
+    await namedMenu308(page,'岗位','职务配置','/settings/staffing/positions');
+    await page.getByRole('textbox',{name:'搜索编码或名称'}).fill(position.code);await button('查询').click();
+    await page.getByRole('link',{name:position.name,exact:true}).click();
+    await page.getByRole('link',{name:'查看补员安排'}).click();
+    const day=page.getByLabel('业务日期',{exact:true});
+    await day.fill('2027-05-01');await day.press('Tab');
+    await expect(page.getByText('1',{exact:true})).toBeVisible();
+    await button('暂停补员').click();await page.getByLabel(/补员原因/).fill('五月保留已有任职');
+    await button('保存').click();await expect(page.getByText('已保存补员安排。')).toBeVisible();
+    await day.fill('2027-06-01');await day.press('Tab');await button('恢复补员').click();
+    await page.getByLabel(/补员原因/).fill('六月重开');await button('保存').click();
+    await expect(page.getByText('2027-06-01 · 恢复补员',{exact:true})).toBeVisible();
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  } finally {
+    if (changedVersion) {
+      const now = await request(page, 'GET', policyPath);
+      const applied = now.body.rows.find((r: { id: string }) => r.id === original.id);
+      if (applied?.mode === 'PositionExempt' && now.body.version === changedVersion) {
+        const restored = await request(page, 'POST', policyPath, { expectedVersion: now.body.version, row: { ...applied, mode: original.mode } }, randomUUID());
+        expect(restored.status, restored.body.message).toBe(200);
+      }
+    }
+  }
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 按岗免占首单与岗位补员 ${width}x${height}`,async({page})=>{
+    test.setTimeout(180000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await positionHireJourney(page,sample);
+  });
+}
+test('M04 按岗免占首单与岗位补员 原生200%',async()=>{await native200(positionHireJourney)});

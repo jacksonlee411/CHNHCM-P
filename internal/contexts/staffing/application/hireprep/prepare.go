@@ -4,6 +4,7 @@ package hireprep
 
 import (
 	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
+	staff "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"context"
 	"slices"
@@ -42,7 +43,8 @@ type DecisionRef struct {
 // Decisions checks the original decision under current authority. A different
 // person, appointment, obsolete revision or inaccessible line is rejected.
 type Appointment struct {
-	Person, Employer, Department, Job, BU, Location string
+	Person, Employer, Department, Job, BU, Location, Position string
+	Segments                                                  []staff.AssignmentSegment
 	f.Period
 }
 type Decisions interface {

@@ -39,6 +39,8 @@ type Revision struct {
 }
 
 type State struct {
+	Position     string    `json:"position,omitempty"`
+	PositionName string    `json:"positionName,omitempty"`
 	Grade        *GradeRef `json:"grade,omitempty"`
 	DepartmentID string    `json:"departmentId"`
 	JobID        string    `json:"jobId"`

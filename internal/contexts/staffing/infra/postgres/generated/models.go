@@ -1859,6 +1859,13 @@ type StaffingPositionHierarchyVersion struct {
 	SubmissionID string
 }
 
+type StaffingPositionIntake struct {
+	InstanceID string
+	PositionID string
+	SourceID   string
+	Period     pgtype.Range[pgtype.Date]
+}
+
 type StaffingPositionOutbox struct {
 	InstanceID string
 	ObjectID   string
@@ -1877,6 +1884,25 @@ type StaffingPositionRead struct {
 	Active       bool
 	Fact         []byte
 	ValidPeriod  pgtype.Range[pgtype.Date]
+}
+
+type StaffingPositionReplenishment struct {
+	InstanceID   string
+	PositionID   string
+	Revision     string
+	Actor        string
+	BusinessDate pgtype.Date
+	Paused       bool
+	Reason       string
+	Digest       string
+	RecordedAt   pgtype.Timestamptz
+}
+
+type StaffingPositionReplenishmentClosed struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	RecordedAt   pgtype.Timestamptz
 }
 
 type StaffingPositionRevision struct {

@@ -59,6 +59,11 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   const overview = person.useRead(JSON.stringify([id, day]), () => employment(id, day));
   const eligibleHire=draft.rehireOf ? !!overview.data?.actions.some(a=>a.canRehire&&a.id===draft.rehireOf?.action&&a.revision===draft.rehireOf.revision) : !!overview.data?.canHire;
   const hireTitle=draft.rehireOf ? '办理再聘' : '办理入职';
+  const arrangementQuery = { person: id, arrival: draft.arrival, lastDay: draft.lastDay || undefined, rehireOf: draft.rehireOf, position: undefined };
+  const arrangement = person.useRead(mode === 'hire' && eligibleHire && draft.arrival ? JSON.stringify(arrangementQuery) : undefined, async () =>
+    unwrap(await api.POST('/api/v1/hires/arrangement', {params:{header:{'X-CSRF-Token':session.csrf}},body:arrangementQuery})));
+  const selectedArrangement = person.useRead(draft.position && arrangement.data?.positionRequired && !arrangement.data.jobRequired ? JSON.stringify([arrangementQuery,draft.position]) : undefined, async () =>
+    unwrap(await api.POST('/api/v1/hires/arrangement', {params:{header:{'X-CSRF-Token':session.csrf}},body:{...arrangementQuery,position:draft.position}})));
   const decisions = person.useRead(mode === 'hire' && eligibleHire ? JSON.stringify([id, draft.rehireOf]) : undefined, async () =>
     unwrap(await api.GET('/api/v1/persons/{id}/appointment-decisions', {
       params: { path: { id }, query: {rehireAction: draft.rehireOf?.action, rehireRevision: draft.rehireOf?.revision} }
@@ -76,8 +81,9 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     eligibleHire &&
     draft.arrival &&
     draft.employer &&
-    draft.department &&
-    draft.job &&
+    arrangement.data &&
+    (!arrangement.data.jobRequired || draft.department && draft.job) &&
+    (!arrangement.data.positionRequired || draft.position) &&
     (draft.decision ? !!basis : draft.notice?.trim());
   const previewKey = JSON.stringify([draft, generation]);
   const selected = useRef<{ key: string; adoption: Models['HireAdoption'] } | undefined>(undefined);
@@ -183,6 +189,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       rehireOf:draft.rehireOf,decision: item?.ref,
       arrival: item?.arrival ?? '',
       lastDay: item?.lastDay,
+      position: item?.position?.id,
       department: item?.department?.id ?? '',
       job: item?.job?.id ?? '',
       bu: item?.bu?.id,
@@ -208,12 +215,12 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     setChoices((old) => ({
       ...old,
       [kind]: v,
-      ...(kind==='job'?{grade:undefined}:{}),
+      ...(kind==='job'||kind==='position'?{grade:undefined}:{}),
       ...(['bu', 'location', 'department'].includes(kind) ? { employer: undefined } : {}),
     }));
     update({
       [kind]: v?.id ?? '',
-      ...(kind==='job'?{grade:undefined}:{}),
+      ...(kind==='job'||kind==='position'?{grade:undefined}:{}),
       ...(!basis?.employer && ['bu', 'location', 'department'].includes(kind) ? { employer: '' } : {}),
     });
   };
@@ -247,7 +254,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       : field === 'expiryDate' && (editable.includes('expiryDate') || editable.includes('longTerm')),
   );
   const targets = (k: TargetKind) => {
-    const fixed = k==='grade' ? undefined : basis?.[k];
+    const fixed = k==='grade' ? undefined : basis?.[k] ?? ((k==='department'||k==='job') && !arrangement.data?.jobRequired ? selectedArrangement.data?.[k] : undefined);
     if (fixed)
       return (
         <ObjectDetailField key={k} label={labels[k]}>
@@ -258,7 +265,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       <Target
         key={k}
         kind={k}
-        draft={draft}
+        draft={k==='grade' && selectedArrangement.data?.job ? {...draft,job:selectedArrangement.data.job.id} : draft}
         session={session}
         choice={choices[k]}
         onChange={(v) => changeTarget(k, v)}
@@ -360,7 +367,11 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                         onChange={(e) => update({ lastDay: e.target.value || undefined })}
                       />
                     )}
-                    {(['department', 'job','grade', 'bu', 'location', 'employer'] as const).map(targets)}
+                    {(arrangement.error || selectedArrangement.error) && <Alert severity="error">{arrangement.error ?? selectedArrangement.error}</Alert>}
+                    {arrangement.data?.positionRequired && targets('position')}
+                    {(!arrangement.data || arrangement.data.jobRequired || selectedArrangement.data?.department || basis?.department) && targets('department')}
+                    {(!arrangement.data || arrangement.data.jobRequired || selectedArrangement.data?.job || basis?.job) && targets('job')}
+                    {(['grade', 'bu', 'location', 'employer'] as const).map(targets)}
                     {!draft.decision && (
                       <ObjectTextField
                         required
@@ -478,7 +489,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                             ))}
                             {source.data.sources.segments.map((v) => (
                               <Typography key={v.from}>
-                                {v.from} 起 · {v.departmentName} · {v.jobName}
+                                {v.from} 起 · {v.departmentName} · {v.jobName}{v.positionName && ` · ${v.positionName} · ${v.seats ? "占编" : "免占编"}`}
                               </Typography>
                             ))}
                             {source.data.appointment && (

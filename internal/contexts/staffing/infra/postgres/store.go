@@ -660,6 +660,9 @@ func (u *unit) Save(ctx context.Context, p d.Plan, c s.Command, operator access.
 	batch := &pgx.Batch{}
 	batch.Queue("INSERT INTO "+name+"(instance_id,enterprise_id,id,code,source_id,source_no,first_date,head) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(instance_id,id) DO UPDATE SET source_id=excluded.source_id,source_no=excluded.source_no,first_date=excluded.first_date,head=excluded.head", u.store.Instance, t.Enterprise, t.ID, t.Code, t.Source, t.Number, t.Records[0].Date, b)
 	batch.Queue("INSERT INTO "+name+"_source(instance_id,object_id,source_id,source_no,subject_id,submission_id,digest,snapshot,operation,operator,recorded_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", u.store.Instance, t.ID, t.Source, t.Number, u.guard.Principal().ID, c.SubmissionID, c.Digest, b, op, actor, u.Now())
+	if t.Kind == d.Position && len(p.Before.Records) == 0 {
+		batch.Queue("INSERT INTO staffing.position_intake(instance_id,position_id,source_id,period) VALUES($1,$2,$3,daterange($4::date,NULL,'[)'))", u.store.Instance, t.ID, t.Source, t.Records[0].Date)
+	}
 	// A revision already contains its complete decided dates and facts. Reuse
 	// unchanged consumer projections while moving them to the new head source;
 	// only replaced/deleted decisions require index deletion and reinsertion.

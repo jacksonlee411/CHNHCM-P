@@ -128,8 +128,8 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		}
 		var state h.State
 		var location string
-		e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption->>'departmentName',adoption->>'jobName',coalesce(location_id::text,''),location_ref,grade_ref,(adoption->>'seats')::int
-			FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`, st.Instance, id, version, day).Scan(&state.From, &state.Until, &state.DepartmentID, &state.JobID, &state.Department, &state.Job, &location, &state.Location, &state.Grade, &state.Seats)
+		e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption->>'departmentName',adoption->>'jobName',coalesce(adoption->>'position',''),coalesce(adoption->>'positionName',''),coalesce(location_id::text,''),location_ref,grade_ref,(adoption->>'seats')::int
+			FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`, st.Instance, id, version, day).Scan(&state.From, &state.Until, &state.DepartmentID, &state.JobID, &state.Department, &state.Job, &state.Position, &state.PositionName, &location, &state.Location, &state.Grade, &state.Seats)
 		if e == nil {
 			if state.Location == nil && location != "" {
 				// The original 00037 hire stored only the location identity.

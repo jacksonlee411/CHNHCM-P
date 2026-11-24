@@ -373,6 +373,7 @@ export function JobInformation({
                   </ObjectDetailField>
                   {data.managers.map(fact=><ObjectDetailField key={fact.purpose} label={managerPurposes[fact.purpose]}>{fact.name} · {fact.recordNumber} 号</ObjectDetailField>)}
                   {data.lastActive && <ObjectDetailField label="最后任职日">{data.lastActive}</ObjectDetailField>}
+                  {data.state?.positionName && <ObjectDetailField label="岗位">{data.state.positionName} · {data.state.seats ? "占编" : "免占编"}</ObjectDetailField>}
                   {data.state && <ObjectDetailField label="个人职级">{data.state.grade?.name ?? '未记载'}</ObjectDetailField>}
                   {data.state && data.probation.status !== 'unrecorded' && (
                     <ObjectDetailField label="试用状态">
