@@ -527,10 +527,17 @@ test('M04 职务信息地点更改与原笔纠错 原生200%', async () => {
 async function openRegister(page: Page) {
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   if (await desktop.isVisible()) {
-    await desktop.click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-    await page.getByRole('button', { name: '人事事务', exact: true }).click();
-    await page.getByRole('menuitem', { name: '办理记录', exact: true }).click();
+    const transactions = page.getByRole('button', { name: '人事事务', exact: true });
+    if (!(await transactions.isVisible())) {
+      await desktop.click();
+      await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+      await expect(page.getByRole('heading', { name: /^(员工|办理记录|人员档案)$/ }).first()).toBeVisible();
+    }
+    await transactions.focus();
+    await page.keyboard.press('Enter');
+    const register = page.getByRole('menuitem', { name: '办理记录', exact: true });
+    await register.focus();
+    await page.keyboard.press('Enter');
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
     const personnel = page.getByRole('button', { name: '人员', exact: true });
