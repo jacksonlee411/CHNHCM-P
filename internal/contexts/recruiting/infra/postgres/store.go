@@ -104,13 +104,13 @@ func (s *Store) Usage(ctx context.Context, instance, position string) (out r.Usa
 	return
 }
 
-const offerHead = `SELECT o.terms,v.version,v.operation,v.status,v.business_date::text,v.basis,to_char(v.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
+const offerHead = `SELECT coalesce(d.terms,o.terms),d.version IS NOT NULL,v.version,v.operation,v.status,v.business_date::text,v.basis,to_char(v.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"')
  FROM recruiting.offer o JOIN recruiting.offer_head h ON (h.instance_id,h.offer_id)=(o.instance_id,o.id)
- JOIN recruiting.offer_revision v ON (v.instance_id,v.offer_id,v.version)=(h.instance_id,h.offer_id,coalesce(nullif($3,'')::uuid,h.version)) WHERE o.instance_id=$1 AND o.id=$2`
+ JOIN recruiting.offer_revision v ON (v.instance_id,v.offer_id,v.version)=(h.instance_id,h.offer_id,coalesce(nullif($3,'')::uuid,h.version)) LEFT JOIN recruiting.offer_revised_terms d ON (d.instance_id,d.offer_id,d.version)=(v.instance_id,v.offer_id,v.version) WHERE o.instance_id=$1 AND o.id=$2`
 
 func (u *unit) load(ctx context.Context, id, version string) (v r.Offer, err error) {
 	v.ID = id
-	err = u.tx.QueryRow(ctx, offerHead, u.Instance, id, version).Scan(&v.PublishedTerms, &v.Version, &v.Operation, &v.Status, &v.BusinessDate, &v.Basis, &v.RecordedAt)
+	err = u.tx.QueryRow(ctx, offerHead, u.Instance, id, version).Scan(&v.PublishedTerms, &v.RevisedTerms, &v.Version, &v.Operation, &v.Status, &v.BusinessDate, &v.Basis, &v.RecordedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return v, f.Fail(404, "OFFER_UNAVAILABLE", "所选录用不可用")
 	}
@@ -238,8 +238,11 @@ func (s *Store) Get(ctx context.Context, c f.Credentials, id, version string) (o
 		if version != "" {
 			return nil
 		}
-		for _, op := range []string{"accept", "decline", "release", "reserve"} {
+		for _, op := range []string{"accept", "decline", "reschedule", "release", "reserve"} {
 			right := op
+			if op == "reschedule" {
+				right = "issue"
+			}
 			if op == "decline" {
 				right = "accept"
 			}
@@ -319,7 +322,7 @@ func (s *Store) Resolve(ctx context.Context, c f.Credentials, key string) (out r
 	return
 }
 func (s *Store) Submit(ctx context.Context, c f.Credentials, id, key string, in r.Change) (out r.Receipt, err error) {
-	if !f.ValidID(key) || id != "" && !f.ValidID(id) || !f.ValidDate(in.BusinessDate) || in.Basis == "" || utf8.RuneCountInString(in.Basis) > 1000 {
+	if (in.Operation == "reschedule") != (in.Dates != nil) || !f.ValidID(key) || id != "" && !f.ValidID(id) || !f.ValidDate(in.BusinessDate) || in.Basis == "" || utf8.RuneCountInString(in.Basis) > 1000 {
 		return out, f.Fail(400, "OFFER_INPUT", "请核对录用、业务日期及办理依据")
 	}
 	in.Basis = strings.TrimSpace(in.Basis)
@@ -361,6 +364,9 @@ func (s *Store) Submit(ctx context.Context, c f.Credentials, id, key string, in 
 func (u *unit) change(ctx context.Context, id string, in r.Change) (out r.Receipt, err error) {
 	var v r.Offer
 	right := in.Operation
+	if in.Operation == "reschedule" {
+		right = "issue"
+	}
 	if right == "decline" {
 		right = "accept"
 	}
@@ -394,6 +400,18 @@ func (u *unit) change(ctx context.Context, id string, in r.Change) (out r.Receip
 			return out, f.Fail(409, "OFFER_CHANGED", "录用版本已变化，请重读")
 		}
 	}
+	var retained []r.AssignmentSegment
+	if dates := in.Dates; dates != nil {
+		if dates.Arrival == v.Arrival && dates.ReserveFrom == v.ReserveFrom && dates.LastDay == v.LastDay {
+			return out, f.Fail(400, "OFFER_DATE", "约定日期没有变化")
+		}
+		if dates.Arrival < in.BusinessDate || dates.ReserveFrom != v.ReserveFrom && dates.ReserveFrom < in.BusinessDate {
+			return out, f.Fail(409, "OFFER_DATE", "改期不能追溯更改已经使用的份额")
+		}
+		retained = beforeDate(v.Segments, in.BusinessDate)
+		v.Arrival, v.ReserveFrom, v.LastDay = dates.Arrival, dates.ReserveFrom, dates.LastDay
+		v.RevisedTerms = true
+	}
 	span, e := domain.ValidateTerms(domain.Terms(v.Terms))
 	if e != nil {
 		return out, e
@@ -404,7 +422,11 @@ func (u *unit) change(ctx context.Context, id string, in r.Change) (out r.Receip
 	if in.BusinessDate > v.Arrival && in.Operation != "release" && in.Operation != "decline" {
 		return out, f.Fail(409, "OFFER_DATE", "办理日期超过约定到岗日")
 	}
-	status, e := domain.Next(v.Status, in.Operation, held(v, in.BusinessDate))
+	availabilityDay := in.BusinessDate
+	if v.Operation == "cancel_conversion" && in.Operation == "reserve" {
+		availabilityDay = max(availabilityDay, v.Arrival)
+	}
+	status, e := domain.Next(v.Status, in.Operation, held(v, availabilityDay))
 	if e != nil {
 		return out, e
 	}
@@ -414,9 +436,12 @@ func (u *unit) change(ctx context.Context, id string, in r.Change) (out r.Receip
 	if id != "" && in.BusinessDate < v.BusinessDate {
 		return out, f.Fail(409, "OFFER_DATE", "办理日期早于上一笔录用决定")
 	}
-	if in.Operation == "issue" || in.Operation == "reserve" || in.Operation == "accept" {
+	if in.Operation == "issue" || in.Operation == "reschedule" || in.Operation == "reserve" || in.Operation == "accept" {
 		if in.Operation != "issue" && in.BusinessDate > span.From {
 			span.From = in.BusinessDate
+		}
+		if in.Operation == "reserve" && v.Operation == "cancel_conversion" && span.From < v.Arrival {
+			span.From = v.Arrival
 		}
 		name, e := u.Person(ctx, u.cred, v.Person)
 		if e != nil {
@@ -434,7 +459,8 @@ func (u *unit) change(ctx context.Context, id string, in r.Change) (out r.Receip
 		if len(legal) == 0 {
 			return out, f.Fail(409, "OFFER_EMPLOYER", "录用期间缺少用人单位依据")
 		}
-		if in.Operation == "issue" {
+		if in.Operation == "issue" || in.Operation == "reschedule" {
+			v.EmployerAdoption = nil
 			v.EmployerName = legal[0].EntityName
 			for _, source := range legal {
 				v.EmployerAdoption = append(v.EmployerAdoption, r.LegalAdoption(source))
@@ -461,7 +487,7 @@ func (u *unit) change(ctx context.Context, id string, in r.Change) (out r.Receip
 			}
 			scope := v.Terms
 			scope.Department = dept
-			if in.Operation == "issue" && seg.Seats > 0 {
+			if (in.Operation == "issue" || in.Operation == "reschedule") && seg.Seats > 0 {
 				if e = u.require(ctx, "reserve", scope, false); e != nil {
 					return out, e
 				}
@@ -485,7 +511,7 @@ func (u *unit) change(ctx context.Context, id string, in r.Change) (out r.Receip
 			v.Segments = append(beforeDate(v.Segments, span.From), segs...)
 		default:
 			v.ReservationRequired = slices.ContainsFunc(segs, func(s r.AssignmentSegment) bool { return s.Seats > 0 })
-			v.Segments = segs
+			v.Segments = append(retained, segs...)
 		}
 	} else if in.Operation == "release" || in.Operation == "decline" {
 		if v.Position != "" {
@@ -532,6 +558,11 @@ func (u *unit) append(ctx context.Context, v r.Offer, op, status, day, basis str
 	_, e := u.tx.Exec(ctx, `INSERT INTO recruiting.offer_revision(instance_id,offer_id,version,previous,operation,status,business_date,basis,actor) VALUES($1,$2,$3,nullif($4,'')::uuid,$5,$6,$7::date,$8,$9)`, u.Instance, v.ID, version, v.Version, op, status, day, basis, u.actor)
 	if e != nil {
 		return r.Receipt{}, e
+	}
+	if v.RevisedTerms {
+		if _, e = u.tx.Exec(ctx, "INSERT INTO recruiting.offer_revised_terms VALUES($1,$2,$3,$4)", u.Instance, v.ID, version, v.PublishedTerms); e != nil {
+			return r.Receipt{}, e
+		}
 	}
 	for _, seg := range v.Segments {
 		effect := "none"

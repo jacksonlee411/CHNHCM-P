@@ -235,60 +235,70 @@ func (st *Store) PreviewHire(ctx context.Context, c f.Credentials, in h.Hire) (o
 
 func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, in h.Hire) (h.Receipt, error) {
 	return st.hireCommand(ctx, c, submission, []any{"Hire", in}, func(u *unit) (string, error) {
-		p, err := u.prepareHire(ctx, in)
-		if err != nil {
+		return u.createHire(ctx, in)
+	})
+}
+
+func (u *unit) createHire(ctx context.Context, in h.Hire) (string, error) {
+	p, err := u.prepareHire(ctx, in)
+	if err != nil {
+		return "", err
+	}
+	in.Department, in.Job = p.department, p.job
+	if proof, ok := ctx.Value(offerContext{}).(offerAdmission); ok && len(p.Missing) == 0 {
+		if err = checkOfferHire(proof.offer, in, p); err != nil {
 			return "", err
 		}
-		in.Department, in.Job = p.department, p.job
-		if len(p.Missing) > 0 {
-			return "", f.Fail(409, "HIRE_IDENTITY", "请先补齐入职所需资料")
-		}
-		if err = u.requireEmployment(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, in.Department); err != nil {
-			return "", err
-		}
-		if p.previousAction != "" {
-			return p.previousAction, nil
-		}
-		id := f.NewID()
-		instance := st.Instance
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment VALUES($1,$2,$3,$4,'Employee',daterange($5::date,NULLIF($6,'')::date,'[)'))`, instance, p.employment, in.Person, in.Employer, p.term.From, p.term.Until)
-		if err != nil {
-			return "", err
-		}
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_record(instance_id,person_id,record_number) VALUES($1,$2,0)
+		p.Adoption.Offer = &proof.ref
+	}
+	if len(p.Missing) > 0 {
+		return "", f.Fail(409, "HIRE_IDENTITY", "请先补齐入职所需资料")
+	}
+	if err = u.requireEmployment(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, in.Department); err != nil {
+		return "", err
+	}
+	if p.previousAction != "" {
+		return p.previousAction, nil
+	}
+	id := f.NewID()
+	instance := u.store.Instance
+	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment VALUES($1,$2,$3,$4,'Employee',daterange($5::date,NULLIF($6,'')::date,'[)'))`, instance, p.employment, in.Person, in.Employer, p.term.From, p.term.Until)
+	if err != nil {
+		return "", err
+	}
+	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_record(instance_id,person_id,record_number) VALUES($1,$2,0)
             ON CONFLICT(instance_id,person_id,record_number) DO NOTHING`, instance, in.Person)
+	if err != nil {
+		return "", err
+	}
+	revision := f.NewID()
+	adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
+	if in.Position != "" {
+		adoption["plannedPosition"] = in.Position
+	}
+	if in.TrialStart != "" {
+		adoption["trialStart"] = in.TrialStart
+	}
+	kind := "Hire"
+	if in.RehireOf != nil {
+		kind = "Rehire"
+		adoption["rehireOf"] = in.RehireOf
+		adoption["reason"] = "rehire"
+	}
+	item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: kind, date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
+	if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location, p.Adoption.Grade); err != nil {
+		return "", err
+	}
+	if in.Decision != nil {
+		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.hire_decision_use(instance_id,source,version,line_id,action_id) VALUES($1,$2,$3,NULLIF($4,'')::uuid,$5)`, instance, in.Decision.Source, in.Decision.Version, in.Decision.Line, id)
 		if err != nil {
 			return "", err
 		}
-		revision := f.NewID()
-		adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
-		if in.Position != "" {
-			adoption["plannedPosition"] = in.Position
-		}
-		if in.TrialStart != "" {
-			adoption["trialStart"] = in.TrialStart
-		}
-		kind := "Hire"
-		if in.RehireOf != nil {
-			kind = "Rehire"
-			adoption["rehireOf"] = in.RehireOf
-			adoption["reason"] = "rehire"
-		}
-		item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: kind, date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
-		if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location, p.Adoption.Grade); err != nil {
-			return "", err
-		}
-		if in.Decision != nil {
-			_, err = u.tx.Exec(ctx, `INSERT INTO staffing.hire_decision_use(instance_id,source,version,line_id,action_id) VALUES($1,$2,$3,NULLIF($4,'')::uuid,$5)`, instance, in.Decision.Source, in.Decision.Version, in.Decision.Line, id)
-			if err != nil {
-				return "", err
-			}
-		}
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_primary
+	}
+	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_primary
 		SELECT $1::uuid,$2::uuid,v.layer,v.owner,v.target,$6,daterange($7::date,NULLIF($8,'')::date,'[)')
 		FROM (VALUES ('employment',$3::uuid,$4::uuid),('assignment',$4::uuid,$5::uuid)) v(layer,owner,target)`, instance, id, in.Person, p.employment, p.assignment, p.prepared.PrimaryPurpose, p.term.From, p.term.Until)
-		return id, err
-	})
+	return id, err
 }
 
 func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hire, number int, term f.Period, segments []staff.AssignmentSegment, location *h.LocationRef, grade *h.GradeRef) error {

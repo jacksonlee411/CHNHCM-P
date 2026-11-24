@@ -1229,6 +1229,7 @@ async function recruitingJourney(page:Page,sample:Awaited<ReturnType<typeof seed
   await button('2027-04-01 · 发出录用').click();await expect(page.getByText('已发出',{exact:true})).toBeVisible();
   await button('返回当前录用').click();await expect(page.getByText('已接受',{exact:true})).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  return {number,position};
 }
 for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
   test(`M05 录用预留与本人接受 ${width}x${height}`,async({page})=>{
@@ -1301,11 +1302,11 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
 }
 test('M04 占编岗位晋升与调动 原生200%',async()=>{await native200(countedPromotionJourney)});
 
-async function withCountedPolicies(page:Page,run:()=>Promise<void>){
+async function withCountedPolicies(page:Page,run:()=>Promise<void>,purposes=['hire','transfer']){
   const policy='/api/v1/assignment-policies', from='2027-04-01';
   const altered:{id:string; prior:string;revision:string}[]=[];
   try {
-    for(const purpose of ['hire','transfer']){
+    for(const purpose of purposes){
       const current=await request(page,'GET',policy);
       const old=current.body.rows.find((r:{category:string;purpose:string;from:string})=>r.category==='Employee'&&r.purpose===purpose&&r.from===from);
       const rule=old??{id:randomUUID(),purpose,category:'Employee',from};
@@ -1512,3 +1513,57 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 工作关系合同续订与离职 原生200%',async()=>{await native200(contractJourney)});
+
+async function offerHireJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>) {
+  await withCountedPolicies(page,async()=>{
+    const {number,position}=await recruitingJourney(page,sample);
+    const currentOffer=page.url();
+    const usage=async(day:string)=>{
+      const r=await request(page,'GET','/api/v1/positions/'+position.id+'/replenishment?businessAt='+day);
+      expect(r.status,r.body.message).toBe(200);
+      return [r.body.reserved,r.body.occupied];
+    };
+    const arrival='2027-05-07';
+    const button=(name:string)=>page.getByRole('button',{name,exact:true});
+    const date=async(label:string,value:string)=>{const input=page.getByRole('textbox',{name:new RegExp('^'+label)});await input.fill(value);await input.press('Tab')};
+    await button('调整录用日期').click();
+    await expect(page.getByRole('textbox',{name:/^约定到岗日/})).toHaveValue('2027-05-01');
+    await date('约定到岗日',arrival);await date('业务日期','2027-04-04');
+    await page.getByLabel(/办理依据/).fill('双方确认推迟六天到岗');await button('保存').click();
+    await expect(page.getByText('已发出',{exact:true})).toBeVisible();
+    await button('登记接受').click();await date('业务日期','2027-04-05');
+    await page.getByLabel(/办理依据/).fill('本人接受新的到岗日');await button('保存').click();
+    await expect(page.getByText('已接受',{exact:true})).toBeVisible();
+    expect(await usage(arrival)).toEqual([1,0]);
+    await button('按录用办理入职').focus();await page.keyboard.press('Enter');
+    await expect(page.getByText('已入职',{exact:true})).toBeVisible();
+    await page.getByRole('link',{name:'查看入职任职'}).click();
+    await expect(page.getByText(position.name+' · 占编',{exact:true})).toBeVisible();
+    expect(await usage('2027-04-30')).toEqual([1,0]);expect(await usage(arrival)).toEqual([0,1]);
+    await button('入职 · '+arrival).click();
+    await page.getByRole('link',{name:number,exact:true}).click();
+    await expect(page.getByText('已接受',{exact:true})).toBeVisible();
+    await expect(button('按录用办理入职')).toHaveCount(0);
+    await openRegister(page);
+    const search=page.getByRole('textbox',{name:'姓名或人员编号'});await search.fill(sample.name);await search.press('Enter');
+    await expect(page.getByText('1 笔办理',{exact:true})).toBeVisible();
+    await page.locator('a[data-object-link]').filter({hasText:'入职'}).click();
+    await page.getByRole('link',{name:'撤销未来入职'}).click();
+    await page.getByRole('textbox',{name:/^撤销说明/}).fill('本人已在到岗前撤回');
+    await button('保存').click();
+    await button('查看撤销依据').click();await expect(page.getByText('本人已在到岗前撤回',{exact:true})).toBeVisible();
+    expect(await usage(arrival)).toEqual([0,0]);
+    await page.goto(currentOffer);await expect(page.getByText('已发出',{exact:true})).toBeVisible();
+    await button('重新预留').click();
+    await date('业务日期','2027-04-15');
+    await page.getByLabel(/办理依据/).fill('招聘重新取得该份额');await button('保存').click();
+    await expect(page.getByText('招聘重新取得该份额',{exact:true})).toBeVisible();expect(await usage(arrival)).toEqual([1,0]);
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  },['hire']);
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`T06 已接受录用转入职与未来撤销 ${width}x${height}`,async({page})=>{
+    test.setTimeout(170000);await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});await offerHireJourney(page,sample);
+  });
+}
+test('T06 已接受录用转入职与未来撤销 原生200%',async()=>{await native200(offerHireJourney)});

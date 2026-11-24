@@ -2,12 +2,14 @@ package hireprep
 
 import (
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
+	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	staff "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"context"
 )
 
 type Adoption struct {
+	Offer    *recruit.HandoffRef       `json:"offer,omitempty"`
 	Grade    *GradeRef                 `json:"grade,omitempty"`
 	Decision *DecisionRef              `json:"decision,omitempty"`
 	Identity IdentitySource            `json:"identity"`
@@ -209,6 +211,8 @@ type Hires interface {
 	Contracts(context.Context, f.Credentials, string, string, string, string) (ContractList, error)
 	RecordContract(context.Context, f.Credentials, string, string, ContractCommand) (ContractReceipt, error)
 	ResolveContract(context.Context, f.Credentials, string) (ContractReceipt, error)
+	OfferHireState(context.Context, f.Credentials, string, string) (OfferHireState, error)
+	HireFromOffer(context.Context, f.Credentials, string, string, OfferHireCommand) (Receipt, error)
 	OriginalAction(context.Context, f.Credentials, string, string) (Original, error)
 	PreviewHire(context.Context, f.Credentials, Hire) (Preview, error)
 	Hire(context.Context, f.Credentials, string, Hire) (Receipt, error)

@@ -33,6 +33,10 @@ func Next(status, op string, held bool) (string, error) {
 		if status == "" {
 			return "issued", nil
 		}
+	case "reschedule":
+		if status == "accepted" || status == "issued" {
+			return "issued", nil
+		}
 	case "accept":
 		if status == "issued" {
 			return "accepted", nil

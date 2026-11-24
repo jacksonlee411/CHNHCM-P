@@ -28,6 +28,8 @@ import { useRead, path as people } from '../personnel/api';
 import { Target, type Option } from '../hire/Target';
 import { useRuleSubmission } from '../readiness/useRuleSubmission';
 
+import { OfferHireHandoff } from './OfferHireHandoff';
+
 export const offerPath = '/recruiting/offers';
 type Session = Models['Principal'];
 type Offer = Models['RecruitingOffer'];
@@ -36,6 +38,7 @@ type Operation = Change['operation'];
 type Key = 'department' | 'job' | 'employer' | 'position';
 const operations: Record<Operation, string> = {
   issue: '发出录用',
+  reschedule: '调整录用日期',
   accept: '登记接受',
   decline: '登记放弃',
   reserve: '重新预留',
@@ -199,7 +202,7 @@ export function OfferDetail({
     navigate = useNavigate();
   const person = params.get('person') ?? '',
     header = { 'X-CSRF-Token': session.csrf };
-  const [revision, setRevision] = useState(''),
+  const [revision, setRevision] = useState(params.get('sourceVersion') ?? ''),
     [op, setOp] = useState<Operation | undefined>(
       creating ? 'issue' : undefined,
     );
@@ -251,14 +254,17 @@ export function OfferDetail({
       : undefined,
     () => readMode(options.position?.id),
   );
+  const scheduleChanged =
+    arrival !== item?.arrival ||
+    start !== item?.reserveFrom ||
+    last !== (item?.lastDay ?? '');
   const dirty = !!(
     day ||
     basis ||
-    number ||
-    arrival ||
-    start ||
-    last ||
-    Object.keys(options).length
+    (op === 'reschedule'
+      ? scheduleChanged
+      : creating &&
+        (number || arrival || start || last || Object.keys(options).length))
   );
   const close = () => {
     setOp(undefined);
@@ -323,11 +329,14 @@ export function OfferDetail({
   }, [error]);
   const title = creating ? '发出录用' : (item?.number ?? '招聘录用');
   usePageTitle(title);
-  const back = offerPath + '?' + params.toString();
+  const backParams = new URLSearchParams(params);
+  backParams.delete('sourceVersion');
+  const back = offerPath + '?' + backParams.toString();
   const ready =
     !!op &&
     !!day &&
     !!basis.trim() &&
+    (op !== 'reschedule' || (!!arrival && !!start && scheduleChanged)) &&
     (!creating ||
       (entry.data?.canIssue &&
         !!number.trim() &&
@@ -367,6 +376,10 @@ export function OfferDetail({
       businessDate: day,
       basis,
       expected: item?.version,
+      dates:
+        op === 'reschedule'
+          ? { arrival, reserveFrom: start, lastDay: last || undefined }
+          : undefined,
       terms: creating
         ? {
             number,
@@ -471,6 +484,14 @@ export function OfferDetail({
                   ))}
                 </ObjectDetailSection>
               )}
+              {!op && (
+                <OfferHireHandoff
+                  item={item}
+                  session={session}
+                  historical={!!revision}
+                  refresh={view.refresh}
+                />
+              )}
               {!op && !revision && (
                 <Stack direction="row" gap={1} flexWrap="wrap">
                   {item.actions?.map((action) => (
@@ -480,6 +501,11 @@ export function OfferDetail({
                         opener.current = e.currentTarget;
                         saved.current = false;
                         setOp(action as Operation);
+                        if (action === 'reschedule') {
+                          setArrival(item.arrival);
+                          setStart(item.reserveFrom);
+                          setLast(item.lastDay ?? '');
+                        }
                         setDay('');
                         setBasis('');
                         setError('');
@@ -501,7 +527,14 @@ export function OfferDetail({
                       onClick={() => setRevision(r.version)}
                     >
                       {r.businessDate} ·{' '}
-                      {operations[r.operation as Operation] ?? r.operation}
+                      {operations[r.operation as Operation] ??
+                        (
+                          {
+                            convert: '转入职',
+                            cancel_conversion: '撤销未来入职',
+                          } as Record<string, string>
+                        )[r.operation] ??
+                        r.operation}
                     </Button>
                   ))}
                   {revision && (
@@ -535,6 +568,10 @@ export function OfferDetail({
                       value={number}
                       onChange={(e) => setNumber(e.target.value)}
                     />
+                  </>
+                )}
+                {(creating || op === 'reschedule') && (
+                  <>
                     <ObjectTextField
                       required
                       type="date"
@@ -558,6 +595,10 @@ export function OfferDetail({
                       value={last}
                       onChange={(e) => setLast(e.target.value)}
                     />
+                  </>
+                )}
+                {creating && (
+                  <>
                     {choose('employer')}
                     {m?.jobRequired && (
                       <>

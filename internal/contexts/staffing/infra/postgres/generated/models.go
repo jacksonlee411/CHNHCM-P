@@ -1154,6 +1154,25 @@ type PersonnelTerminal struct {
 	Fault        []byte
 }
 
+type RecruitingHandoffCancellation struct {
+	InstanceID       string
+	OfferID          string
+	AcceptedVersion  string
+	CancelledVersion string
+	CancelAction     string
+	CancelRevision   string
+}
+
+type RecruitingHireHandoff struct {
+	InstanceID       string
+	OfferID          string
+	AcceptedVersion  string
+	ConvertedVersion string
+	HireAction       string
+	HireRevision     string
+	AssignmentID     string
+}
+
 type RecruitingOffer struct {
 	InstanceID   string
 	ID           string
@@ -1173,6 +1192,13 @@ type RecruitingOfferHead struct {
 	InstanceID string
 	OfferID    string
 	Version    string
+}
+
+type RecruitingOfferRevisedTerm struct {
+	InstanceID string
+	OfferID    string
+	Version    string
+	Terms      []byte
 }
 
 type RecruitingOfferRevision struct {
@@ -1701,6 +1727,15 @@ type StaffingHireTerminal struct {
 	Outcome      string
 	ActionID     pgtype.UUID
 	Revision     pgtype.UUID
+}
+
+type StaffingHiredOffer struct {
+	InstanceID        string
+	OfferID           string
+	AcceptedVersion   string
+	ConversionVersion string
+	ActionID          string
+	Revision          string
 }
 
 type StaffingJob struct {

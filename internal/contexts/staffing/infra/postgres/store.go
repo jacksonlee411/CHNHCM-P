@@ -6,6 +6,7 @@ import (
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
+	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	"chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
@@ -28,6 +29,7 @@ import (
 )
 
 type Store struct {
+	OfferHandoffs  recruit.Handoffs
 	OfferAllowed   func(context.Context, pgx.Tx, string, string, string, string, string, bool) (bool, error)
 	PositionOpened func(context.Context, string, string, string, string) error
 	HirePeople     interface {
