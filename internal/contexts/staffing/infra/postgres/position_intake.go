@@ -26,13 +26,17 @@ func (st *Store) AssignmentPositionUsage(ctx context.Context, instance, position
 	}
 	c.Owner = "M04"
 	out.Coverage = []d.SourceCoverage{c}
-	// Quota-only administration remains available until a position-based policy
-	// or an actual assignment applies in this enterprise and period.
+	// The Employee hire, transfer, secondary and recruiting paths consume these
+	// rules. Another category or purpose cannot take over this position's quota.
 	rows, e := tx.Query(ctx, `WITH current_policy AS (
     SELECT x.version FROM staffing.position p JOIN staffing.assignment_policy_source x ON (x.instance_id,x.owner_id)=(p.instance_id,p.enterprise_id)
     WHERE p.instance_id=$1 AND p.id=$2 ORDER BY x.sequence DESC LIMIT 1)
- SELECT lower(m.period)::text,coalesce(upper(m.period)::text,'') FROM current_policy x JOIN staffing.assignment_policy_member m USING(version)
- WHERE m.instance_id=$1 AND m.fact->>'mode' IN ('PositionExempt','PositionCounted')`, instance, position)
+ SELECT lower(applicable)::text,coalesce(upper(applicable)::text,'')
+ FROM current_policy x JOIN staffing.assignment_policy_member m USING(version)
+ CROSS JOIN LATERAL (SELECT m.period * daterange($3::date,nullif($4,'')::date,'[)') AS applicable) p
+ WHERE m.instance_id=$1 AND NOT isempty(applicable)
+   AND m.fact->>'category'='Employee' AND m.fact->>'purpose' IN ('hire','transfer','secondary','recruit')
+   AND m.fact->>'mode' IN ('PositionExempt','PositionCounted')`, instance, position, c.From, c.Until)
 	if e != nil {
 		return out, e
 	}
