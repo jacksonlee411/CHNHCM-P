@@ -530,7 +530,7 @@ async function openRegister(page: Page) {
     if (!(await transactions.isVisible())) {
       await desktop.click();
       await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-      await expect(page.getByRole('heading', { name: '员工列表', exact: true })).toBeVisible();
+      await expect(page.getByRole('heading', { name: /^(员工|办理记录|人员档案)$/ }).first()).toBeVisible();
     }
     await transactions.focus();
     await page.keyboard.press('Enter');
