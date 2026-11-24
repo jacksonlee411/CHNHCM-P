@@ -85,6 +85,9 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/location-options", ruleBody(func(r *http.Request, in h.LocationSearch) (any, error) {
 		return hires.LocationOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/transfer-arrangement", ruleBody(func(r *http.Request, in h.TransferArrangementQuery) (any, error) {
+		return hires.TransferArrangement(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
 	mux.HandleFunc("POST /api/v1/assignments/{id}/transfer-options", ruleBody(func(r *http.Request, in h.TransferSearch) (any, error) {
 		return hires.TransferOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))

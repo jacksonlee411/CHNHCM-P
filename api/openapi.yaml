@@ -12644,6 +12644,23 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/transfer-arrangement:
+    post:
+      operationId: assignmentTransferArrangement
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/TransferArrangementQuery'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireArrangementMode'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/{id}/transfer-options:
     post:
       operationId: assignmentTransferOptions
@@ -12971,6 +12988,7 @@ components:
         location: {type: string, format: uuid}
         department: {type: string, format: uuid}
         job: {type: string, format: uuid}
+        position: {type: string, format: uuid}
     EmploymentRecordMaintenance:
       type: object
       additionalProperties: false
@@ -12982,6 +13000,7 @@ components:
         businessDate: {type: string, format: date}
         department: {type: string, format: uuid}
         job: {type: string, format: uuid}
+        position: {type: string, format: uuid}
         notice: {type: string}
         insert: {type: boolean}
         requires: {$ref: '#/components/schemas/EmploymentRequiredFact'}
@@ -13067,13 +13086,20 @@ components:
         relationshipPrimary: {type: boolean}
         legal: {type: array, items: {$ref: '#/components/schemas/LegalAdoption'}}
         segments: {type: array, items: {$ref: '#/components/schemas/AssignmentSegment'}}
+    TransferArrangementQuery:
+      type: object
+      required: [businessDate]
+      properties:
+        businessDate: {type: string, format: date}
+        position: {type: string, format: uuid}
     EmploymentTransferSearch:
       type: object
       additionalProperties: false
       required: [businessDate, page, kind]
       properties:
-        kind: {type: string, enum: [department, job]}
+        kind: {type: string, enum: [department, job, position]}
         department: {type: string, format: uuid}
+        job: {type: string, format: uuid}
         businessDate: {type: string, format: date}
         search: {type: string}
         page: {type: integer, minimum: 1}
@@ -13086,11 +13112,14 @@ components:
         beforeDepartment: {type: string, format: uuid}
         beforeDepartmentName: {type: string}
         beforeJob: {type: string, format: uuid}
+        beforePosition: {type: string, format: uuid}
+        beforePositionName: {type: string}
         beforeJobName: {type: string}
         after:
           type: object
           properties:
             department: {type: string, format: uuid}
+            position: {type: string, format: uuid}
             job: {type: string, format: uuid}
             segments: {type: array, items: {$ref: '#/components/schemas/AssignmentSegment'}}
     EmploymentLocationEvidence:

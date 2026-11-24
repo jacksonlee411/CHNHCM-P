@@ -30,7 +30,7 @@ func (u *unit) positionReadable(ctx context.Context, enterprise string) (bool, e
 	return true, nil
 }
 
-func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool) ([]s.AssignmentSegment, error) {
+func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool, retained []f.Period) ([]s.AssignmentSegment, error) {
 	if !f.ValidID(in.Position) || !in.Period.Valid() || in.Category == "" || in.Purpose == "" {
 		return nil, f.Fail(400, "M03_INVALID_INPUT", "请核对岗位、任期、人员类别与用途")
 	}
@@ -101,6 +101,9 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	for _, c := range evidence.Coverage {
 		boundaries = append(boundaries, c.From, c.Until)
 	}
+	for _, r := range retained {
+		boundaries = append(boundaries, r.From, r.Until)
+	}
 	for _, r := range settings {
 		boundaries = append(boundaries, r.Date)
 	}
@@ -138,7 +141,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			intake = coverage
 			if r := replenishmentAt(settings, p.From); r != nil {
 				intake = r.Revision
-				if r.Paused {
+				if r.Paused && !slices.ContainsFunc(retained, func(v f.Period) bool { return v.Includes(p.From) }) {
 					return nil, f.Fail(409, "POSITION_PAUSED", p.From+" 起岗位暂停补员")
 				}
 			}

@@ -30,6 +30,7 @@ export type JobDraft = {
   day: string;
   source: string;
   value?: Models['EmploymentLocationRef'];
+  position?: Option;
   department?: Option;
   job?: Option;
   notice: string;
@@ -81,6 +82,7 @@ export function draftChanged(draft: JobDraft, initial: JobDraft) {
     draft.occurrence?.id !== initial.occurrence?.id ||
     draft.predecessor?.id !== initial.predecessor?.id ||
     draft.value?.id !== initial.value?.id ||
+    draft.position?.id !== initial.position?.id ||
     draft.department?.id !== initial.department?.id ||
     draft.job?.id !== initial.job?.id ||
     draft.requires?.action !== initial.requires?.action
@@ -88,13 +90,14 @@ export function draftChanged(draft: JobDraft, initial: JobDraft) {
 }
 
 export function TransferTarget({
-  kind,
+  kind, mixed,
   draft,
   assignment,
   csrf,
   change,
 }: {
-  kind: 'department' | 'job';
+  kind: 'department' | 'job' | 'position';
+  mixed?: boolean;
   draft: JobDraft;
   assignment: string;
   csrf: string;
@@ -104,7 +107,8 @@ export function TransferTarget({
   const query = {
     kind,
     businessDate: draft.day,
-    department: kind === 'job' ? draft.department?.id : undefined,
+    department: kind === 'job' || mixed ? draft.department?.id : undefined,
+    job: mixed ? draft.job?.id : undefined,
     search,
     page: 1,
   };
@@ -116,7 +120,7 @@ export function TransferTarget({
       }),
     ),
   );
-  const label = kind === 'department' ? '调入部门' : '拟任职务';
+  const label = kind === 'department' ? '调入部门' : kind === 'position' ? '调入岗位' : '拟任职务';
   return (
     <ObjectDetailField label={label} inputId={'transfer-' + kind} required>
       <Autocomplete
@@ -199,6 +203,18 @@ export function AssignmentRecordForm({
   const relation = relationAction(draft.kind);
   const lifecycle = ['Leave','EndAssignment','SetManager'].includes(draft.kind);
   const grade = ['GradeRecord','Promotion','PromotionTransfer'].includes(draft.kind);
+  const transfer = draft.kind === 'Transfer' && draft.mode !== 'redate';
+  const readMode = (position?: string) => api.POST('/api/v1/assignments/{id}/transfer-arrangement', {
+    params: {path: {id: view.assignment}, header: {'X-CSRF-Token': csrf}},
+    body: {businessDate: draft.day, position},
+  }).then(unwrap);
+  const mode = useRead(transfer && draft.day ? JSON.stringify([view.assignment, draft.day]) : undefined, () => readMode());
+  const targets = mode.data;
+  const derived = useRead(transfer && targets?.positionRequired && !targets.jobRequired && draft.position ?
+    JSON.stringify([view.assignment,draft.day,draft.position.id]) : undefined, () => readMode(draft.position?.id));
+  const targetReady = !!targets && (!targets.positionRequired || !!draft.position) &&
+    (!targets.jobRequired || !!draft.department && !!draft.job) &&
+    (targets.jobRequired || !!derived.data?.department && !!derived.data.job);
   const options = availableRecordTypes(view);
   const valid =
     !!draft.day &&
@@ -207,21 +223,25 @@ export function AssignmentRecordForm({
         ? !!draft.notice.trim()
         : location
           ? !!draft.value
-          : !!draft.department && !!draft.job && !!draft.notice.trim()) &&
+          : targetReady && !!draft.notice.trim()) &&
         (!prior || !!basis.data)));
   function submit() {
     if (!valid || !dirty || busy) return;
     const record = basis.data;
     let requires = prior;
-    if (prior && record && !prior.location && !prior.department && !prior.job) {
+    if (prior && record && !prior.location && !prior.department && !prior.job && !prior.position) {
       requires = {
         ...prior,
         location: record.locationChange?.after.id,
         department: record.transfer?.after.department,
         job: record.transfer?.after.job,
+        position: record.transfer?.after.position,
       };
     }
-    save({ ...draft, requires });
+    if (transfer && targets) {
+      save({...draft, requires, position: targets.positionRequired ? draft.position : undefined,
+        department: targets.jobRequired ? draft.department : undefined, job: targets.jobRequired ? draft.job : undefined});
+    } else save({ ...draft, requires });
   }
   return (
     <Box
@@ -297,6 +317,7 @@ export function AssignmentRecordForm({
                   {view.state.department} · {view.state.job}
                 </ObjectDetailField>
               )}
+              {targets?.jobRequired && <>
               <TransferTarget
                 kind="department"
                 draft={draft}
@@ -311,6 +332,12 @@ export function AssignmentRecordForm({
                 csrf={csrf}
                 change={(v) => update({ ...draft, job: v })}
               />
+              </>}
+              {targets?.positionRequired && <TransferTarget kind="position" mixed={targets.jobRequired} draft={draft} assignment={view.assignment} csrf={csrf}
+                change={(position) => update({ ...draft, position })}/>}
+              {derived.data?.department && <ObjectDetailField label="岗位所属部门">{derived.data.department.name}</ObjectDetailField>}
+              {derived.data?.job && <ObjectDetailField label="岗位对应职务">{derived.data.job.name}</ObjectDetailField>}
+              {(mode.error || derived.error) && <Typography role="alert" color="error">{mode.error || derived.error}</Typography>}
               <ObjectTextField
                 label="调动依据"
                 value={draft.notice}

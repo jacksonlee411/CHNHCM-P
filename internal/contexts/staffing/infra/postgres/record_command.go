@@ -72,8 +72,8 @@ func (e recordEdit) permission(kind string) string {
 func (e recordEdit) validate() error {
 	if !f.ValidID(e.ExpectedSource) || (e.action == "" && e.ExpectedRevision != "") || (e.action != "" && (!f.ValidID(e.action) || !f.ValidID(e.ExpectedRevision) || e.Insert)) ||
 		(e.operation != "Delete" && !f.ValidDate(e.BusinessDate)) || (e.operation == "Delete" && (e.action == "" || e.BusinessDate != "")) ||
-		((e.operation == "Redate" || e.operation == "Delete") && (e.Department != "" || e.Job != "" || e.Notice != "" || e.Requires != nil)) ||
-		(e.kind == "Transfer" && (!f.ValidID(e.Department) || !f.ValidID(e.Job))) || (e.kind == "DataChange" && !f.ValidID(e.location)) {
+		((e.operation == "Redate" || e.operation == "Delete") && (e.Position != "" || e.Department != "" || e.Job != "" || e.Notice != "" || e.Requires != nil)) ||
+		(e.kind == "Transfer" && ((e.Position == "" || e.Department != "") && !f.ValidID(e.Department) || (e.Position == "" || e.Job != "") && !f.ValidID(e.Job) || e.Position != "" && !f.ValidID(e.Position))) || (e.kind == "DataChange" && !f.ValidID(e.location)) {
 		return f.Fail(400, "RECORD_INPUT", "请核对任职、原办理、生效日期与实际修改")
 	}
 	if e.Requires != nil && (!f.ValidID(e.Requires.Action) || !f.ValidID(e.Requires.Revision)) {
@@ -226,25 +226,27 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 	target.Operation = edit.operation
 	target.Removed = edit.operation == "Delete"
 	if edit.kind == "Transfer" {
-		for _, grant := range []string{"read", "transfer"} {
-			if e = u.requireEmployment(ctx, grant, a.Person, a.Employer, edit.Department); e != nil {
-				return out, e
+		if edit.Department != "" {
+			for _, grant := range []string{"read", "transfer"} {
+				if e = u.requireEmployment(ctx, grant, a.Person, a.Employer, edit.Department); e != nil {
+					return out, e
+				}
 			}
 		}
 		if edit.action == "" && strings.TrimSpace(edit.Notice) == "" {
 			return out, f.Fail(400, "TRANSFER_NOTICE", "请填写调动依据")
 		}
-		if edit.action != "" && target.Transfer != nil && edit.Department == target.Transfer.Department && edit.Job == target.Transfer.Job &&
+		if edit.action != "" && target.Transfer != nil && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
 			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) {
-			return out, f.Fail(409, "TRANSFER_UNCHANGED", "部门、职务和调动依据均未改变")
+			return out, f.Fail(409, "TRANSFER_UNCHANGED", "任职安排和调动依据均未改变")
 		}
 
 		if edit.Notice != "" {
 			target.Notice = strings.TrimSpace(edit.Notice)
 		}
-		target.Transfer = &h.JobTransfer{Department: edit.Department, Job: edit.Job}
-		if edit.action == "" && scope.Department == edit.Department && scope.Job == edit.Job {
-			return out, f.Fail(409, "TRANSFER_UNCHANGED", "部门和职务均未改变")
+		target.Transfer = &h.JobTransfer{Department: edit.Department, Job: edit.Job, Position: edit.Position}
+		if edit.action == "" && scope.Adoption.Position == edit.Position && (edit.Department == "" || scope.Department == edit.Department) && (edit.Job == "" || scope.Job == edit.Job) {
+			return out, f.Fail(409, "TRANSFER_UNCHANGED", "任职安排未改变")
 		}
 	}
 	records[index] = target
@@ -272,6 +274,9 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Placement, records []savedRecord, originals map[string]savedRecord, index int, permit, pair string) (out employmentResult, err error) {
 	target := records[index]
 	id := a.Assignment
+	if e := u.lockRecordPositions(ctx, initial, records); e != nil {
+		return out, e
+	}
 	if e := u.adoptRecordPeriods(ctx, a, records, originals, target.ID); e != nil {
 		return out, e
 	}
@@ -285,6 +290,9 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 				return out, e
 			}
 		}
+	}
+	if projection.Segments, e = u.restoredPositions(ctx, a, projection.Segments, records); e != nil {
+		return out, e
 	}
 	previous, e := u.recordChanges(ctx, a, records, originals, projection, target.ID, permit)
 	if e != nil {
@@ -390,18 +398,45 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 		}
 		switch kind {
 		case "Transfer":
-			allowed, e := u.employmentAllowed(ctx, "transfer", a.Person, a.Employer, r.Transfer.Department, false)
-			if e != nil {
-				return e
-			}
-			if !allowed {
-				return f.Fail(403, "TRANSFER_DENIED", "当前权限不允许调整受影响的调动")
-			}
-			segs, e := u.store.CheckAssignment(dbtx.With(ctx, u.tx), u.credentials, staff.AssignmentCheck{Period: span, Enterprise: ent.ID, Category: "Employee", Purpose: "transfer", Department: r.Transfer.Department, Job: r.Transfer.Job})
-			if e != nil {
-				return e
-			}
 			next := *r.Transfer
+			if next.Position != "" {
+				allowed, e := u.positionEmploymentScope(ctx, next.Position, span, a.Person, a.Employer, "transfer", "transfer")
+				if e != nil {
+					return e
+				}
+				if !allowed {
+					return f.Fail(403, "TRANSFER_DENIED", "当前权限不允许采用该岗位")
+				}
+			}
+			department, job := next.Department, next.Job
+			if next.Position != "" && len(next.Segments) > 0 {
+				department, job = "", ""
+				for _, v := range next.Segments {
+					if v.Position == "" {
+						department, job = v.DepartmentID, v.JobID
+						break
+					}
+				}
+			}
+			check := staff.AssignmentCheck{Period: span, Enterprise: ent.ID, Category: "Employee", Purpose: "transfer", Department: department, Job: job, Position: next.Position}
+			segs, e := u.checkTransferTarget(ctx, a, check)
+			if e != nil {
+				return e
+			}
+			if next.Position != "" {
+				next.Department, next.Job = segs[0].DepartmentID, segs[0].JobID
+			}
+			for _, seg := range segs {
+				dept := seg.DepartmentID
+				if dept == "" {
+					dept = next.Department
+				}
+				for _, right := range []string{"read", "transfer"} {
+					if e = u.requireEmployment(ctx, right, a.Person, a.Employer, dept); e != nil {
+						return e
+					}
+				}
+			}
 			next.Segments = segs
 			r.Transfer = &next
 		case "DataChange":
@@ -503,7 +538,7 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 				r.Evidence.LocationChange = &evidence
 			} else if r.Transfer != nil {
 				r.Evidence.Transfer = &h.TransferEvidence{After: *r.Transfer, BeforeGrade: change.Before.Grade, AfterGrade: change.After.Grade, BeforeDepartment: change.Before.Department, BeforeJob: change.Before.Job,
-					BeforeDepartmentName: change.Before.Adoption.DepartmentName, BeforeJobName: change.Before.Adoption.JobName}
+					BeforePosition: change.Before.Adoption.Position, BeforePositionName: change.Before.Adoption.PositionName, BeforeDepartmentName: change.Before.Adoption.DepartmentName, BeforeJobName: change.Before.Adoption.JobName}
 			}
 			if !reflect.DeepEqual(recordAdoption(*r), recordAdoption(old)) || r.ID == target {
 				departments := []string{change.Before.Department}
@@ -532,4 +567,16 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 		versions[r.ID] = r.Revision
 	}
 	return previous, nil
+}
+
+func sameTransferTargets(edit recordEdit, old h.JobTransfer) bool {
+	if edit.Position == "" {
+		return edit.Department == old.Department && edit.Job == old.Job
+	}
+	for _, v := range old.Segments {
+		if v.Position == "" {
+			return edit.Department == v.DepartmentID && edit.Job == v.JobID
+		}
+	}
+	return (edit.Department == "" || edit.Department == old.Department) && (edit.Job == "" || edit.Job == old.Job)
 }

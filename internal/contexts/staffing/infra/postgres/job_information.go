@@ -325,7 +325,7 @@ func (u *unit) maintenancePeriod(ctx context.Context, a h.Action, day, kind stri
 	err := u.tx.QueryRow(ctx, `SELECT coalesce(min(r.business_date)::text,'') FROM staffing.assignment_member m
 		JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
 		JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(m.instance_id,m.action_id,m.revision)
-		WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind=$5 AND r.operation<>'Delete' AND r.business_date>$4::date`, u.store.Instance, a.Assignment, a.SourceVersion, day, kind).Scan(&next)
+		WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND (a.kind=$5 OR ($5='Transfer' AND r.adoption ? 'transfer')) AND r.operation NOT IN ('Delete','Withdraw') AND r.business_date>$4::date`, u.store.Instance, a.Assignment, a.SourceVersion, day, kind).Scan(&next)
 	if next != "" {
 		term.Until = next
 	}
@@ -397,8 +397,8 @@ func (st *Store) LocationOptions(ctx context.Context, c f.Credentials, id string
 }
 
 func (st *Store) TransferOptions(ctx context.Context, c f.Credentials, id string, in h.TransferSearch) (items []org.EligibleEntity, err error) {
-	field := map[string]string{"department": "departmentId", "job": "jobId"}[in.Kind]
-	if field == "" || !f.ValidDate(in.BusinessDate) || in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 || (in.Department != "" && !f.ValidID(in.Department)) {
+	field := map[string]string{"department": "departmentId", "job": "jobId", "position": "positionId"}[in.Kind]
+	if field == "" || in.Job != "" && !f.ValidID(in.Job) || !f.ValidDate(in.BusinessDate) || in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 || (in.Department != "" && !f.ValidID(in.Department)) {
 		return nil, f.Fail(400, "TRANSFER_INPUT", "调入目标查询无效")
 	}
 	items = []org.EligibleEntity{}
@@ -419,7 +419,11 @@ func (st *Store) TransferOptions(ctx context.Context, c f.Credentials, id string
 		if e != nil {
 			return e
 		}
-		return u.arrangementTargets(ctx, term, h.TargetSearch{Person: a.Person, Employer: a.Employer, Department: in.Department, Search: in.Search, Page: in.Page}, field, "transfer", &items)
+		query := h.TargetSearch{Person: a.Person, Employer: a.Employer, Department: in.Department, Job: in.Job, Search: in.Search, Page: in.Page}
+		if in.Kind == "position" {
+			return u.positionTargets(ctx, term, query, "transfer", "transfer", &a, &items)
+		}
+		return u.arrangementTargets(ctx, term, query, field, "transfer", &items)
 	})
 	return
 }

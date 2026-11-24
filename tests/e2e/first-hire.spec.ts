@@ -1144,3 +1144,67 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 按岗免占首单与岗位补员 原生200%',async()=>{await native200(positionHireJourney)});
+
+async function positionTransferJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  await hireAtLocation(page,sample);
+  const family = await seed308(page,'jobfamily');
+  const first = await seedPosition(page,'position',family.id);
+  const actual = await seedPosition(page,'position',family.id);
+  const policyPath='/api/v1/assignment-policies';
+  let policy=await request(page,'GET',policyPath);
+  const find=(rows: {id:string;category:string;purpose:string;from:string;mode:string}[]) =>
+    rows.find(r=>r.category==='Employee'&&r.purpose==='transfer'&&r.from==='2027-04-01');
+  if (!find(policy.body.rows)) {
+    const added=await request(page,'POST',policyPath,{expectedVersion:policy.body.version,row:{id:randomUUID(),category:'Employee',purpose:'transfer',from:'2027-04-01',mode:'JobOnly'}},randomUUID());
+    expect(added.status,added.body.message).toBe(200);
+    policy=await request(page,'GET',policyPath);
+  }
+  const row=find(policy.body.rows)!;
+  expect(row.mode).toBe('JobOnly');
+  const published=await request(page,'POST',policyPath,{expectedVersion:policy.body.version,row:{...row,mode:'PositionExempt'}},randomUUID());
+  expect(published.status,published.body.message).toBe(200);
+  try {
+    await openEmployeeAssignment(page,sample);
+    const button=(name:string)=>page.getByRole('button',{name,exact:true});
+    await button('新增记录').click();
+    await page.getByRole('combobox',{name:/办理类型/}).click();
+    await page.getByRole('option',{name:'调动',exact:true}).click();
+    const day=page.getByRole('textbox',{name:/^生效日期/});
+    await day.fill('2027-06-01');await day.press('Tab');
+    const position=page.getByRole('combobox',{name:/调入岗位/});
+    await position.fill(first.name);await page.getByRole('option',{name:first.name,exact:true}).click();
+    await expect(page.getByText(first.department,{exact:true})).toBeVisible();
+    await expect(page.getByText(first.job.name,{exact:true})).toBeVisible();
+    await page.getByLabel(/调动依据/).fill('六月按岗调动通知');
+    await button('保存').focus();await page.keyboard.press('Enter');
+    const action=button('调动 · 2027-06-01');
+    await action.click();await expect(page.getByRole('heading',{name:'调动原件'})).toBeVisible();
+    const arrangement=(p:typeof actual)=>[p.department,p.job.name,p.name,'免占编'].join(' · ');
+    await expect(page.getByText(arrangement(first),{exact:true})).toBeVisible();
+    await button('更正记录').click();await expect(position).toHaveValue(first.name);
+    await position.fill(actual.name);await page.getByRole('option',{name:actual.name,exact:true}).click();
+    await button('保存').click();
+    await expect(page.getByText(actual.name+' · 免占编',{exact:true})).toBeVisible();
+    await action.click();
+    await expect(page.getByText(arrangement(actual),{exact:true})).toBeVisible();
+    const revisions=page.getByRole('button',{name:/查看修订/});
+    await expect(revisions).toHaveCount(2);await revisions.last().click();
+    await expect(page.getByText(arrangement(first),{exact:true})).toBeVisible();
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  } finally {
+    const current=await request(page,'GET',policyPath);
+    if (current.body.version===published.body.version) {
+      const applied=find(current.body.rows)!;
+      const restored=await request(page,'POST',policyPath,{expectedVersion:current.body.version,row:{...applied,mode:row.mode}},randomUUID());
+      expect(restored.status,restored.body.message).toBe(200);
+    }
+  }
+}
+for (const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+  test(`M04 按岗位调入并更正原岗 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);
+    await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});
+    await positionTransferJourney(page,sample);
+  });
+}
+test('M04 按岗位调入并更正原岗 原生200%',async()=>{await native200(positionTransferJourney)});

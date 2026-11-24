@@ -52,57 +52,80 @@ func (st *Store) HireArrangement(ctx context.Context, c f.Credentials, in h.Arra
 				return e
 			}
 		}
-		_, policies, e := u.arrangementRules(ctx)
-		if e != nil {
-			return e
-		}
-		ent := u.enterprise.ID
-		rules := app.QuotaPolicies(ent, policies)
-		var days []string
-		for _, r := range rules {
-			if r.Purpose == "hire" && r.Category == "Employee" {
-				days = append(days, r.From, r.Until)
-			}
-		}
-		for _, p := range term.Split(days) {
-			rule, e := d.ApplicablePolicy(rules, ent, "Employee", "hire", p.From)
-			if e != nil {
-				return e
-			}
-			if rule.Mode == "JobOnly" {
-				out.JobRequired = true
-			} else {
-				out.PositionRequired = true
-			}
-		}
-		if in.Position != "" && !out.JobRequired {
-			if !f.ValidID(in.Position) {
-				return f.Fail(400, "HIRE_INPUT", "岗位无效")
-			}
-			ok, e := u.positionEmploymentScope(ctx, in.Position, term, in.Person, "", hirePermission(in.RehireOf), "hire")
-			if e != nil {
-				return e
-			}
-			if !ok {
-				return f.Fail(403, "HIRE_DENIED", "所选安排超出获权范围")
-			}
-			head, e := u.policyStore().Head(ctx)
-			if e != nil {
-				return e
-			}
-			segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: "hire", Position: in.Position}, head, policies, false)
-			if e != nil {
-				return e
-			}
-			v := segments[0]
-			out.Department = &org.EligibleEntity{ID: v.DepartmentID, Name: v.DepartmentName}
-			out.Job = &org.EligibleEntity{ID: v.JobID, Name: v.JobName}
-		}
-		return nil
+		return u.arrangementMode(ctx, term, in.Person, "", in.Position, hirePermission(in.RehireOf), "hire", nil, &out)
 	})
 	return
 }
-func (u *unit) hirePositionTargets(ctx context.Context, term f.Period, in h.TargetSearch, permission string, out *[]org.EligibleEntity) error {
+func (u *unit) arrangementMode(ctx context.Context, term f.Period, person, employer, position, permission, purpose string, assignment *h.Action, out *h.ArrangementMode) error {
+	head, policies, e := u.arrangementRules(ctx)
+	if e != nil {
+		return e
+	}
+	ent := u.enterprise.ID
+	rules := app.QuotaPolicies(ent, policies)
+	var days []string
+	for _, r := range rules {
+		if r.Purpose == purpose && r.Category == "Employee" {
+			days = append(days, r.From, r.Until)
+		}
+	}
+	for _, p := range term.Split(days) {
+		rule, e := d.ApplicablePolicy(rules, ent, "Employee", purpose, p.From)
+		if e != nil {
+			return e
+		}
+		if rule.Mode == "JobOnly" {
+			out.JobRequired = true
+		} else {
+			out.PositionRequired = true
+		}
+	}
+	if position != "" && !out.JobRequired {
+		if !f.ValidID(position) {
+			return f.Fail(400, "HIRE_INPUT", "岗位无效")
+		}
+		ok, e := u.positionEmploymentScope(ctx, position, term, person, employer, permission, purpose)
+		if e != nil {
+			return e
+		}
+		if !ok {
+			return f.Fail(403, "HIRE_DENIED", "所选安排超出获权范围")
+		}
+		var retained []f.Period
+		if assignment != nil {
+			retained, e = u.retainedPosition(ctx, *assignment, position)
+		}
+		if e != nil {
+			return e
+		}
+		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained)
+		if e != nil {
+			return e
+		}
+		v := segments[0]
+		out.Department = &org.EligibleEntity{ID: v.DepartmentID, Name: v.DepartmentName}
+		out.Job = &org.EligibleEntity{ID: v.JobID, Name: v.JobName}
+	}
+	return nil
+}
+func (st *Store) TransferArrangement(ctx context.Context, c f.Credentials, id string, in h.TransferArrangementQuery) (out h.ArrangementMode, err error) {
+	err = st.within(ctx, c, false, true, func(u *unit) error {
+		a, e := u.assignmentAt(ctx, id, in.BusinessDate, "")
+		if e != nil {
+			return e
+		}
+		if e = u.requireEmployment(ctx, "transfer", a.Person, a.Employer, a.Department); e != nil {
+			return e
+		}
+		term, e := u.maintenancePeriod(ctx, a, in.BusinessDate, "Transfer")
+		if e != nil {
+			return e
+		}
+		return u.arrangementMode(ctx, term, a.Person, a.Employer, in.Position, "transfer", "transfer", &a, &out)
+	})
+	return
+}
+func (u *unit) positionTargets(ctx context.Context, term f.Period, in h.TargetSearch, permission, purpose string, assignment *h.Action, out *[]org.EligibleEntity) error {
 	head, policies, e := u.arrangementRules(ctx)
 	if e != nil {
 		return e
@@ -125,14 +148,21 @@ func (u *unit) hirePositionTargets(ctx context.Context, term f.Period, in h.Targ
 			return e
 		}
 		for _, id := range ids {
-			visible, e := u.positionEmploymentScope(ctx, id, term, in.Person, in.Employer, permission, "hire")
+			visible, e := u.positionEmploymentScope(ctx, id, term, in.Person, in.Employer, permission, purpose)
 			if e != nil {
 				return e
 			}
 			if !visible {
 				continue
 			}
-			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: "hire", Position: id, Job: in.Job, Department: in.Department}, head, policies, false)
+			var retained []f.Period
+			if assignment != nil {
+				retained, e = u.retainedPosition(ctx, *assignment, id)
+				if e != nil {
+					return e
+				}
+			}
+			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained)
 			if e != nil {
 				var fault *f.Fault
 				if errors.As(e, &fault) && fault.Status < 500 {

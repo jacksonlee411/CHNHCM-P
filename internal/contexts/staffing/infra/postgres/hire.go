@@ -431,7 +431,7 @@ func (st *Store) HireTargets(ctx context.Context, c f.Credentials, in h.TargetSe
 			}
 		}
 		if field == "positionId" {
-			return u.hirePositionTargets(ctx, term, in, hirePermission(in.RehireOf), &items)
+			return u.positionTargets(ctx, term, in, hirePermission(in.RehireOf), "hire", nil, &items)
 		}
 		return u.arrangementTargets(ctx, term, in, field, hirePermission(in.RehireOf), &items)
 	})

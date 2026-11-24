@@ -5338,6 +5338,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/transfer-arrangement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assignmentTransferArrangement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/transfer-options": {
         parameters: {
             query?: never;
@@ -5643,6 +5659,8 @@ export interface components {
             department?: string;
             /** Format: uuid */
             job?: string;
+            /** Format: uuid */
+            position?: string;
         };
         EmploymentRecordMaintenance: {
             previous?: components["schemas"]["EmploymentActionRef"];
@@ -5656,6 +5674,8 @@ export interface components {
             department?: string;
             /** Format: uuid */
             job?: string;
+            /** Format: uuid */
+            position?: string;
             notice?: string;
             insert?: boolean;
             requires?: components["schemas"]["EmploymentRequiredFact"];
@@ -5752,11 +5772,19 @@ export interface components {
             legal: components["schemas"]["LegalAdoption"][];
             segments: components["schemas"]["AssignmentSegment"][];
         };
+        TransferArrangementQuery: {
+            /** Format: date */
+            businessDate: string;
+            /** Format: uuid */
+            position?: string;
+        };
         EmploymentTransferSearch: {
             /** @enum {string} */
-            kind: "department" | "job";
+            kind: "department" | "job" | "position";
             /** Format: uuid */
             department?: string;
+            /** Format: uuid */
+            job?: string;
             /** Format: date */
             businessDate: string;
             search?: string;
@@ -5770,10 +5798,15 @@ export interface components {
             beforeDepartmentName?: string;
             /** Format: uuid */
             beforeJob?: string;
+            /** Format: uuid */
+            beforePosition?: string;
+            beforePositionName?: string;
             beforeJobName?: string;
             after: {
                 /** Format: uuid */
                 department?: string;
+                /** Format: uuid */
+                position?: string;
                 /** Format: uuid */
                 job?: string;
                 segments?: components["schemas"]["AssignmentSegment"][];
@@ -24409,6 +24442,43 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentTransferArrangement: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransferArrangementQuery"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireArrangementMode"];
                 };
             };
             /** @description Unavailable */
