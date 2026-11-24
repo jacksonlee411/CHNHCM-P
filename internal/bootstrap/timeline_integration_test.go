@@ -98,7 +98,7 @@ func freshWithSchema(t *testing.T, start string, capturePredecessor bool) *fixtu
 	if capturePredecessor {
 		prefix := fstest.MapFS{}
 		must(t, fs.WalkDir(migrations.Files, ".", func(path string, entry fs.DirEntry, err error) error {
-			if err != nil || entry.IsDir() || path == "00040_access_grant_versions.sql" {
+			if err != nil || entry.IsDir() || path == "00041_access_grant_versions.sql" {
 				return err
 			}
 			b, err := migrations.Files.ReadFile(path)

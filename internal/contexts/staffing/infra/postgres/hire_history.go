@@ -196,7 +196,7 @@ func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, i
 			business.tx = child
 			id, e = work(&business)
 			if e == nil {
-				_, e = child.Exec(ctx, "INSERT INTO staffing.employment_outbox VALUES($1,$2,$3)", st.Instance, f.NewID(), id)
+				_, e = child.Exec(ctx, "INSERT INTO staffing.employment_outbox VALUES($1,$2,$3) ON CONFLICT(instance_id,action_id) DO NOTHING", st.Instance, f.NewID(), id)
 			}
 			if e != nil {
 				if rb := child.Rollback(ctx); rb != nil {
@@ -245,6 +245,17 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id string)
 			return e
 		}
 		e = u.tx.QueryRow(ctx, "SELECT adoption FROM staffing.employment_action WHERE instance_id=$1 AND id=$2", st.Instance, id).Scan(&out)
+		if e == nil && out.Sources != nil && out.Sources.Decision != nil {
+			ref := out.Sources.Decision
+			opt, err := scanDecision(u.tx.QueryRow(ctx, `WITH versions AS (SELECT * FROM staffing.appointment_version WHERE instance_id=$1 AND source=$3 AND version=$4) `+memberSelect, st.Instance, a.Person, ref.Source, ref.Version))
+			if err != nil {
+				return err
+			}
+			if opt.Ref != *ref {
+				return errors.New("adopted appointment row unavailable")
+			}
+			out.Appointment = &opt
+		}
 		a.CanHistory = true
 		out.Action = a
 		return e

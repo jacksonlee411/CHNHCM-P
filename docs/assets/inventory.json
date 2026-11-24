@@ -11178,7 +11178,7 @@
         "private_url": "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/400-hire-readiness/roadmap-scope.txt"
       },
       "target_owner": "M04-staffing",
-      "disposition": "从 f 的 T02 范围提取分模式的验收合同，保存材料、期间、主选择与同日动作反例。共同版本已实测旧库升级、入职所需的两域来源、首个客户规则的作用范围与上游维护菜单。无编号通知的仅按职务首单已从员工菜单验保存、撤销及原号恢复，两种 L3 竞争已以实际办理检验。其他模式及同日多动作另批验证。",
+      "disposition": "从 f 的 T02 范围提取分模式的验收合同，保存材料、期间、主选择与同日动作反例。共同版本已实测旧库升级、入职所需的两域来源、首个客户规则的作用范围与上游维护菜单。无编号通知的仅按职务首单已从员工菜单验保存、撤销及原号恢复，两种 L3 竞争已以实际办理检验。本批将人员行并发、签发修订及跨提交防重接入同一员工入口。其他模式及同日多动作另批验证。",
       "state": {
         "registered": true,
         "extracted": true,
@@ -11194,6 +11194,7 @@
         "docs/specs/m04/401-direct-hire-requirements.md",
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/400-hire-readiness/period_examples.py",
         "internal/bootstrap/first_hire_integration_test.go",
+        "internal/bootstrap/appointment_decision_integration_test.go",
         "tests/e2e/first-hire.spec.ts"
       ]
     }

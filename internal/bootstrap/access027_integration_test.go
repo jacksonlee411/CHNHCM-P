@@ -209,10 +209,17 @@ func waitForStoredGrantExpiry(t *testing.T, f *fixture, blocker pgx.Tx, grantID 
 	}
 }
 
-func TestAccess027Public38Upgrade(t *testing.T) {
+func TestAccess027PublicPrefixUpgrade(t *testing.T) {
+	for _, last := range []string{"00038", "00039"} {
+		t.Run(last, func(t *testing.T) { testPublicGrantUpgrade(t, last) })
+	}
+}
+
+func testPublicGrantUpgrade(t *testing.T, last string) {
+	t.Helper()
 	pool := newStaffingMigrationPool(t)
 	ctx := t.Context()
-	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00038" })))
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= last })))
 	inst, password := foundation.NewID(), foundation.NewID()
 	for _, login := range []string{"reader", "empty", "disabled"} {
 		must(t, bootstrap.Initialize(ctx, pool, bootstrap.InitInput{Instance: inst, EnterpriseCode: "PUBLIC", EnterpriseName: "公共升级验收", Login: login, Password: password}))
@@ -233,7 +240,7 @@ func TestAccess027Public38Upgrade(t *testing.T) {
 	}
 	var intact bool
 	must(t, pool.QueryRow(ctx, `SELECT count(*)=6 AND to_regclass('access.grant_assignment') IS NULL AND
-		NOT EXISTS(SELECT FROM goose_db_version WHERE version_id=40 AND is_applied) FROM access.subject_grant`).Scan(&intact))
+		NOT EXISTS(SELECT FROM goose_db_version WHERE version_id=41 AND is_applied) FROM access.subject_grant`).Scan(&intact))
 	if !intact {
 		t.Fatal("failed conversion changed old permissions or ledger")
 	}

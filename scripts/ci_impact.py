@@ -3,6 +3,8 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 
+from ci_shards import FULL_BROWSER, FULL_INTEGRATION, selected_browser_count, selected_integration_count
+
 SELECTION_KEYS = ('scope', 'reason', 'integration_filter', 'integration_shards',
                   'browser_files', 'browser_shards')
 
@@ -37,8 +39,8 @@ def passive_evidence(path, inputs):
 
 
 def full(reason):
-    return dict(scope='full', reason=reason, integration_filter='^Test', integration_shards=8,
-                browser_files=[], browser_shards=11)
+    return dict(scope='full', reason=reason, integration_filter='^Test', integration_shards=FULL_INTEGRATION,
+                browser_files=[], browser_shards=FULL_BROWSER)
 
 
 def journey_consumers(path, root):
@@ -77,7 +79,7 @@ def journey_consumers(path, root):
 def selected(integration, browser, reasons, policy):
     """None means all, an empty set means not applicable, otherwise a union."""
     if integration is None:
-        pattern, count = '^Test', 8
+        pattern, count = '^Test', FULL_INTEGRATION
     elif not integration:
         pattern, count = '', 0
     else:
@@ -85,16 +87,16 @@ def selected(integration, browser, reasons, policy):
         excluded = [prefix for domain, prefixes in policy['integration_prefixes'].items()
                     if domain not in integration for prefix in prefixes]
         pattern = '^Test' + ('(?!(?:' + '|'.join(sorted(excluded)) + '))' if excluded else '')
-        count = 4 if excluded else 8
+        count = selected_integration_count(pattern) if excluded else FULL_INTEGRATION
     if browser is None:
-        files, shards = [], 11
+        files, shards = [], FULL_BROWSER
     else:
         files = sorted(browser)
-        shards = 0 if not files else 1 if len(files) <= 3 else 2 if len(files) < 18 else 4
+        shards = selected_browser_count(files)
         all_files = {f for spec in policy['domains'].values() for f in spec['browser_files']}
         if files and set(files) == all_files:
-            files, shards = [], 11
-    scope = 'full' if pattern == '^Test' and shards == 11 else 'selected' if count or shards else 'selected' if any(r != 'documentation/passive evidence' for r in reasons) else 'docs'
+            files, shards = [], FULL_BROWSER
+    scope = 'full' if pattern == '^Test' and not files and shards == FULL_BROWSER else 'selected' if count or shards else 'selected' if any(r != 'documentation/passive evidence' for r in reasons) else 'docs'
     return dict(scope=scope, reason='; '.join(sorted(set(reasons))), integration_filter=pattern,
                 integration_shards=count, browser_files=files, browser_shards=shards)
 

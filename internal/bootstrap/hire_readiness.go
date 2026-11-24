@@ -44,6 +44,17 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 		v, e := hires.OriginalAction(r.Context(), credentials(r), r.PathValue("id"))
 		respond(w, 200, v, e)
 	})
+	mux.HandleFunc("POST /api/v1/appointment-decisions", ruleBody(func(r *http.Request, in h.DecisionPublication) (any, error) {
+		return hires.PublishDecision(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("GET /api/v1/persons/{id}/appointment-decisions", func(w http.ResponseWriter, r *http.Request) {
+		if _, e := queryValues(r); e != nil {
+			writeError(w, e)
+			return
+		}
+		result, e := hires.HireDecisions(r.Context(), credentials(r), r.PathValue("id"))
+		respond(w, 200, result, e)
+	})
 	mux.HandleFunc("POST /api/v1/hires/targets", ruleBody(func(r *http.Request, in h.TargetSearch) (any, error) {
 		return hires.HireTargets(r.Context(), credentials(r), in)
 	}))

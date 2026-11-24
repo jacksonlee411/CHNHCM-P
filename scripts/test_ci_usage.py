@@ -61,6 +61,12 @@ class DeliveryUsageTests(unittest.TestCase):
         self.assertFalse(usage.matrix_starts(skipped)[0]['full_start'])
         self.assertTrue(usage.matrix_starts(skipped[:-1] + slots[-1:])[0]['full_start'])
 
+    def test_new_full_matrix_and_failed_only_retry_are_counted_separately(self):
+        slots = [dict(self.job, name=f'{suite} shard {i}/{size}') for suite, size in usage.SUITES.items()
+                 for i in range(1, size + 1)]
+        retry = dict(slots[-1], run_attempt=2)
+        self.assertEqual([row['full_start'] for row in usage.matrix_starts(slots + [retry])], [True, False])
+
     def test_incomplete_membership_attempts_or_candidate_are_rejected(self):
         for delivery in [dict(self.delivery, run_ids=[1]), dict(self.delivery, run_ids=[1, 2, 2])]:
             with self.assertRaises(ValueError):

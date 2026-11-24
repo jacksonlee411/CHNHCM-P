@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 from ci_policy import GitHub, WORKFLOW
+from ci_coverage import SUITES
 
 
 def instant(value):
@@ -89,21 +90,21 @@ def attempt_placements(api, rid, run, pr, jobs):
 
 
 def matrix_starts(jobs):
-    # Count a launch once per attempt when GitHub expanded all 19 named slots
-    # and actually assigned a runner to at least one of them. A failed-only
-    # retry can contain shard 2/11 without ever requesting the full matrix.
-    expected = {f'{suite} shard {i}/{size}' for suite, size in [('browser', 11), ('integration', 8)]
-                for i in range(1, size + 1)}
+    # Keep historical launches measurable after a partition change.
+    matrices = [{f'{suite} shard {i}/{size}' for suite, size in sizes.items()
+                 for i in range(1, size + 1)}
+                for sizes in (SUITES, {'integration': 8, 'browser': 11})]
     result = []
     for attempt in sorted({job['run_attempt'] for job in jobs}):
-        slots = [job for job in jobs if job['run_attempt'] == attempt and job['name'] in expected]
+        rows = [job for job in jobs if job['run_attempt'] == attempt]
+        slots = [job for job in rows if any(job['name'] in matrix for matrix in matrices)]
         starts = [instant(job['started_at']) for job in slots if job.get('runner_id')]
         names = {job['name'] for job in slots}
         if len(names) != len(slots):
             raise ValueError('duplicated matrix slot within the same attempt')
         result.append(dict(attempt=attempt, expanded_slots=len(names), allocated_slots=len(starts),
                            first_allocated_at=min(starts).isoformat() if starts else None,
-                           full_start=names == expected and bool(starts)))
+                           full_start=names in matrices and bool(starts)))
     return result
 
 

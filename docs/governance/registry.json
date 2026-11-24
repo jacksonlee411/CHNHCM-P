@@ -3248,10 +3248,15 @@
             "check": "从员工菜单办理、原人补证后放弃，五种常规视口及原生 200%",
             "result": "passed",
             "evidence": "tests/e2e/first-hire.spec.ts"
+          },
+          {
+            "check": "00038 前向升级、M04 原单与行修订重核、两位经办人竞争、撤销后重送及原采用",
+            "result": "passed",
+            "evidence": "internal/bootstrap/appointment_decision_integration_test.go"
           }
         ],
         "limitations": [
-          "此次首单采用无编号通知的可追溯说明。系统内编号决定、按岗免占／占编及 T04 多动作按相应批次接入。",
+          "第 7 至 12 节的首单采用无编号通知。第 13 节接入 M04 系统内原单、名单行及不可变修订。按岗免占／占编及 T04 多动作仍待接入。",
           "仓内没有独立 Worker 可执行入口。"
         ]
       },

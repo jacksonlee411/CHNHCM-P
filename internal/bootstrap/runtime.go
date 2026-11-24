@@ -416,9 +416,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=(ARRAY(SELECT generate_series(1,38)::bigint) || ARRAY[40::bigint])
+     (SELECT (versions=(ARRAY(SELECT generate_series(1,39)::bigint) || ARRAY[41::bigint])
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 38 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 39 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -437,6 +437,7 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                 AND (32=ANY(versions) OR to_regclass('organization.legal_purpose_source') IS NULL)
                 AND to_regclass('organization.legal_purpose_terminal') IS NULL)
           )))
+          AND (NOT (39=ANY(versions)) OR (to_regclass('staffing.hire_single_decision') IS NOT NULL AND to_regclass('staffing.hire_roster_line') IS NOT NULL AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.appointment_version') AND tgname='immutable_fact' AND tgenabled='O')))
           AND (NOT (37=ANY(versions)) OR (to_regclass('staffing.employment_primary') IS NOT NULL AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.employment_action') AND tgname='immutable_fact' AND tgenabled='O')))
           AND (NOT (35=ANY(versions)) OR (
                EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.hire_rule_source')
@@ -450,7 +451,7 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                NOT EXISTS(SELECT FROM (VALUES ('organization.legal_purpose'),('staffing.assignment_policy')) owner(prefix)
                    CROSS JOIN (VALUES ('_source','immutable_source'),('_member','immutable_member'),('_member','sealed_member'),('_outbox','immutable_event')) guard(suffix,name)
                    WHERE NOT EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass(owner.prefix || guard.suffix) AND tgname=guard.name AND tgenabled='O'))
-               AND (40=ANY(versions) OR EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('access.subject_grant') AND conname='readiness_rule_scope'))))
+               AND (41=ANY(versions) OR EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('access.subject_grant') AND conname='readiness_rule_scope'))))
           AND CASE
              WHEN cardinality(versions)>=28 THEN $2='staffing-unified-quota-1'
              WHEN cardinality(versions) IN (26,27) AND $2='staffing-job-classification-1' THEN
@@ -486,7 +487,7 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
            AND to_regclass('personnel.contact_channel_primary') IS NOT NULL AND to_regclass('access.person_profile_fixture') IS NOT NULL
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.person_grant') AND attname='item_id' AND NOT attisdropped)
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.identity_payload') AND attname='basic' AND NOT attisdropped)))
-       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=40 AND is_applied) OR (
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=41 AND is_applied) OR (
            to_regclass('access.bound_permission') IS NOT NULL AND to_regprocedure('access.valid_permission(uuid,text,uuid,text,text[],text[])') IS NOT NULL
            AND NOT EXISTS(SELECT FROM (VALUES
              ('grant_assignment','immutable_assignment','protect_assignment_terms'),

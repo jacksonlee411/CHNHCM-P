@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 import ci_browser as browser
 
@@ -48,8 +49,18 @@ class BrowserInventoryTests(unittest.TestCase):
             with self.subTest(report=report), self.assertRaises(ValueError):
                 browser.inventory(report)
 
-    def test_files_are_literal_patterns_and_shard_is_bounded(self):
-        args = browser.arguments(['country200.spec.ts'], 1, 4)
-        self.assertEqual(args, ['(?:^|/)country200\\.spec\\.ts$', '--shard=1/4'])
+    def test_weighted_selection_keeps_the_entry_and_the_enterprise_dependency_together(self):
+        dependency = ('enterprise-maintenance', 'enterprise304.spec.ts', 'setup')
+        cases = {dependency: 'enterprise304.spec.ts', ('chromium', 'shared.ts', 'slow'): 'staffing310.spec.ts',
+                 ('chromium', 'shared.ts', 'other'): 'staffing308.spec.ts',
+                 ('chromium', 'small.ts', 'new'): 'new.spec.ts'}
+        weights = {'staffing310.spec.ts': 600, 'staffing308.spec.ts': 550, 'new.spec.ts': 40}
+        with patch.object(browser, 'browser_seconds', side_effect=weights.__getitem__):
+            groups = browser.shard_files(cases, 2, ['enterprise-maintenance'])
+            self.assertEqual(groups, [['staffing310.spec.ts'], ['new.spec.ts', 'staffing308.spec.ts']])
+            self.assertEqual(groups, browser.shard_files(dict(reversed(cases.items())), 2, ['enterprise-maintenance']))
+        self.assertEqual(browser.shard_files({dependency: 'enterprise304.spec.ts'}, 1, ['enterprise-maintenance']),
+                         [['enterprise304.spec.ts']])
+        self.assertEqual(browser.arguments(['entry.with.dot.spec.ts']), [r'(?:^|/)entry\.with\.dot\.spec\.ts$'])
         with self.assertRaises(ValueError):
-            browser.arguments([], 0, 4)
+            browser.shard_files(cases, 4, ['enterprise-maintenance'])

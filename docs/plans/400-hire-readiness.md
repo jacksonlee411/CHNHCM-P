@@ -102,3 +102,7 @@ f 的 `50ae8582` 提供 Personnel／X03 的入职用途核对。e 接入客户�
 CHNHCM-P 公开后自动运行所需的远程浏览器分片。首次全量检查覆盖了首单切换窄屏菜单、业务单元授权夹具及人员资料回归。[公开仓库首轮结果与复验](../verification/400-first-hire-integration.md#public-browser-regressions)
 
 私仓 #32 的首单实现在 CHNHCM-P 的独立根提交 `6f2c0dd` 进入公开主干。交付范围为已有人员凭无编号任用通知办理仅按职务的首次入职。两仓文件核对、实库重验和公开浏览器证据见[原 #32 公开交付记录](../verification/400-first-hire-integration.md#t03-public-delivery)。
+
+### 6.6 T03 从已有任用决定办理仅按职务首单
+
+公共 e 从 `1126c2b6` 接续。直接入职的原任用决定由 M04 签发，单人原单、多人名单的本人行及每次签发修订可持久引用。经办人从员工详情采用原安排，只补原单缺项。00039 给原单和名单行分别建立跨修订防重约束。签发权限、原件更正与撤销、办理去重及历史读取见 [403 第 7 节](../specs/m04/403-hire-technical-contract.md#appointment-original)。按岗免占、按岗占编及 T04 多关系在职变动仍按第 4 节接续。[本批实测](../verification/400-first-hire-integration.md#decision-first-hire)

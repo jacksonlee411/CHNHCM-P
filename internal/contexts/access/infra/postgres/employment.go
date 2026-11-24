@@ -21,5 +21,11 @@ func InitializeEmployment(ctx context.Context, tx pgx.Tx, instance, actor string
 	_, err := tx.Exec(ctx, `WITH first AS (INSERT INTO access.employment_fixture VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING *)
 	INSERT INTO access.employment_grant(instance_id,principal_id,action,fields)
 	SELECT instance_id,principal_id,action,ARRAY['arrangement','basis'] FROM first CROSS JOIN unnest(ARRAY['hire','read','cancel','history']) AS action`, instance, actor)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `WITH granted AS (INSERT INTO access.appointment_issuer_fixture VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING *)
+    INSERT INTO access.employment_grant(instance_id,principal_id,action,fields)
+    SELECT instance_id,principal_id,'appointment.issue',ARRAY['arrangement','basis'] FROM granted`, instance, actor)
 	return err
 }

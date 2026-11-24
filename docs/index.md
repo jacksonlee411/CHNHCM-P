@@ -2,7 +2,7 @@
 
 此索引保留公开项目前身的技术文档和验收导航。历史运行附件由原仓保管，对应链接需要私仓权限。
 
-X03 首批拟交付本地账号管理、部门授权和指定岗位核编授权。管理员授予、经办人办理、按份撤销及重启后持续失权是贯穿验收的业务路径。T01 已明确职责边界。公共 T02 用 00040 迁入存量授权，原办理人通过原会话和提交号查回业务结果，客户管理入口由 T04 接续。Casbin 和 OPA 均暂缓。[027 实施计划](plans/027-x03-local-access-rollout.md) · [028 客户管理员合同](specs/x03/028-local-account-and-authorization.md)
+X03 首批拟交付本地账号管理、部门授权和指定岗位核编授权。管理员授予、经办人办理、按份撤销及重启后持续失权是贯穿验收的业务路径。T01 已明确职责边界。公共 T02 用 00041 迁入存量授权，原办理人通过原会话和提交号查回业务结果，客户管理入口由 T04 接续。Casbin 和 OPA 均暂缓。[027 实施计划](plans/027-x03-local-access-rollout.md) · [028 客户管理员合同](specs/x03/028-local-account-and-authorization.md)
 
 [M01 个人资料扩展](plans/504-personal-profile-extension.md)单列 T01 之后的九栏维护。字段、整页保存及七类弹框布局由[九栏目合同](specs/m01/505-personal-profile-contract.md)规定。[九栏方案评审](verification/504-personal-profile-review.md) · [弹框布局核对](verification/504-personal-profile-dialog-layout.md) · [第一批三栏实测与验收地址](verification/504-personal-profile-first-batch.md) · [第二批地址与家庭联系人实测及验收地址](verification/504-personal-profile-second-batch.md) · [第三批教育经历与专业凭证](verification/504-personal-profile-third-batch.md)
 
