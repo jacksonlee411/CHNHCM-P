@@ -22,7 +22,7 @@ Personnel 牵头登记与名录，Staffing 牵头用工办理。先确定切片�
 | T01 人员名录与登记 | T00。Personnel、Access、体验、验证 | T01 已交付的人员档案名录按人列行。经办人可凭姓名登记尚无工作关系的人，按姓名、现/旧人员编号找回，更正资料、有据改号并查原件。本次修订以主要证号约束重复建档；登记与后续入职仍分别保存。 |
 | T02 入职合同与依赖 | 可与 T00/T01 并行设计。Staffing、人事业务牵头，Organization、Access 参与 | Organization 在 L2 提供本切片所需主体用途、绑定、期间及版本。M03 明确按日期、类别和用途适用的岗位政策。M04 确定关系性质、动作与原因、必要决定及两层主选择。106 第 8 节已在按职务首单范围采纳日级模型，多动作和试用由相应专项接续。[106 首批决定](../adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) |
 | T03 直接入职 | T01 和 T02 中本模式所需的已交付能力。Staffing 主责，Personnel、Organization 提供公开合同 | 在人员详情选择「办理入职」，凭人事依据核对本人、用人单位、到岗日与首任职，一次保存。可从原办理撤销尚未生效且可合法撤销的首次入职。以真实写入完成 L3 采用验证。仅按职务核对有效组织和职务。按岗位另接岗位、补员状态及适用名额，两种模式分别签收。 |
-| T04 在职变动、结束与再聘 | 以 T03 已签收的模式分别推进。Staffing、Personnel、Organization、Access | 从部门树联动的员工列表进入任职，办理资料更改、转正、调动、正式兼岗、实际汇报和终结。从同级「人事事务」跨员工查回和维护原笔。主岗终身为 0，再聘沿原 0 号接入新任期，新增兼岗按人递增且不回收。主兼岗转换后置。交接或两岗对调从原调动办理，涉及既有合同与 T05 联验。[T04 分批交付](#job-information-delivery) |
+| T04 在职变动、结束与再聘 | 以 T03 已签收的模式分别推进。Staffing、Personnel、Organization、Access | 从部门树联动的员工列表进入任职，办理资料更改、转正、晋升、调动、正式兼岗、实际汇报和终结。从同级「人事事务」跨员工查回和维护原笔。主岗终身为 0，再聘沿原 0 号接入新任期，新增兼岗按人递增且不回收。主兼岗转换后置。晋升与调动须共同生效时一次提交。交接或两岗对调从原调动办理，涉及既有合同与 T05 联验。[T04 分批交付](#job-information-delivery) |
 | T05 人员合同 | 已有真实工作关系，可与 T04 分批交付。Staffing 及合同经办人 | 从所属工作关系登记签订日与合同期限，续订保留前后继。核实结束的是合同、任职还是整段关系。已形成其他关系的同一人员，各段合同独立可查。 |
 | T06 招聘录用转入职 | T03 对应模式、M05 真实录用与交接。涉及预留时需 313。Recruiting 与 Staffing | 已接受且资料齐备的录用供人事核实身份和到岗日，一次保存，招聘取得同一任职结果。覆盖预留转占编、换人、撤销未来入职及重送。实际薪酬、计薪、参缴由后续消费者另立切片。 |
 
@@ -107,12 +107,13 @@ Personnel 的 `CheckIdentity` 从当前会话取客户，依本人、入职用�
 <a id="job-information-delivery"></a>
 ### 6.3 从直接入职接入职务信息
 
-截至 2026-11-24，人员九栏和按职务首单已有各自的菜单与实库证据。f 的 `56189a0` 仍从员工详情打开首单办理。e 的 `ec4572a` 已定稿 404《按岗位免占编首次入职实施方案》，该方案交接时按岗产品实现待执行。506、507 规定新的业务和页面目标，验收从下表第一批开始。[人员九栏交接](../verification/504-personal-profile-fourth-batch.md) · [已有首单实测](../verification/400-first-hire-integration.md#decision-first-hire) · [400 分模式准入](400-hire-readiness.md#hire-gates)
+截至 2026-11-24，人员九栏和按职务首单已有各自的菜单与实库证据。f 的 `87c4b07` 仍从员工详情打开首单办理。e 的 `ec4572a` 已定稿 404《按岗位免占编首次入职实施方案》，该方案交接时按岗产品实现待执行。106 第 8 节界定 T03 的首单采纳范围。506、507 将同日办理列为 T04 的设计和签收目标，日内计时、年资指标、调薪与工资采用按各自专项接入。[106 首单决定](../adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) · [人员九栏交接](../verification/504-personal-profile-fourth-batch.md) · [已有首单实测](../verification/400-first-hire-integration.md#decision-first-hire) · [400 分模式准入](400-hire-readiness.md#hire-gates)
 
 | 批次与牵头方 | 前置、交付与正常菜单签收 |
 | --- | --- |
 | T03 首单进页签。f 承接人员详情，e 的 Staffing 承接办理与读取 | 把已交付的按职务首单接到本人 0 号，核对任职行、日期、原件和未来撤销。现有员工详情和任职链接都能定位原办理。另以仅见个人资料、仅有任职读权但无人员日志权的读者核对各自面板。首单既有验收单列，新增页签须从正常菜单重新签收。[页面入口](../specs/m04/507-job-information-tab.md#job-tab-layout) |
-| T04 先交按职务的记录维护。Staffing、体验、Access | 前向升级现有首单模型，先交地点未来变更和原笔纠错，再交历史插入、合法删除、同日多笔与调动。首个可签收结果是前后两日的地点均正确、更正原件保留且只计一次业务变化。用真实 DB/API 验争用、失败回滚、旧回执及同号恢复。[业务样本](../specs/m04/506-job-information-records.md#m04-ac-010) · [存储与读取接续](../specs/m04/403-hire-technical-contract.md#job-information-handoff) |
-| T04 转正、多任职与退出。Staffing 对接人事、Organization 和 Access | 明确适用关系与实际转正依据，按“一主两兼、同日转正和调动”签收。验同部门分行、跨部门受限读取、并发新增兼岗与重送、结束一岗、离职后沿原 0 号再聘及已发正号保留。按岗位的办理按各自 T03 签收结果接入，免占采用真实岗位及补员来源，占编另验逐段用量和最后一编竞争。[同日多岗样本](../specs/m04/506-job-information-records.md#m04-ac-012) · [313 占编规则](../specs/m03/313-position-capacity-contract.md#m03-br-025) |
+| T04 先交按职务的记录维护。Staffing、体验、Access | 前向升级首单模型，先交地点未来变更和原笔纠错，再交历史插入、合法删除、同日多笔与调动。首个样本在省略任用通知的情况下保存新地点，再从原笔只改错字。前后两日地点正确，旧值可查，业务变化只计一次。用真实 DB/API 验争用、失败回滚、旧回执及同号恢复。[业务样本](../specs/m04/506-job-information-records.md#m04-ac-010) · [输入与读取合同](../specs/m04/403-hire-technical-contract.md#job-information-handoff) |
+| T04 转正、多任职与退出。Staffing 对接人事、Organization 和 Access | 按“一主两兼、同日转正和调动”签收。验同部门分行、跨部门受限读取、并发增兼岗与重送、结束一岗、离职后沿原 0 号再聘及正号保留。按岗办理随对应 T03 模式接入。免占采用真实岗位及补员来源，占编另验逐段用量及最后一编竞争。对同一满编岗，从职务信息核对拟调入提示缺额、已履职补录按日显示实际超编，验事实更正权与重送。[同日多岗样本](../specs/m04/506-job-information-records.md#m04-ac-012) · [实际履职样本](../specs/m04/506-job-information-records.md#actual-duty-case) · [313 占编规则](../specs/m03/313-position-capacity-contract.md#m03-br-025) |
+| <a id="t04-same-day-actions"></a>T04 同日晋升与调动。Staffing、人事经办、体验、Access | 接入 M03 职级与任职资格。从菜单办理转正、晋升、调动，验同日补录顺序、关系转正的部门归属、统计未知与影响授权的两种结果。引用原通知或简述误录原因撤销晋升，核对当前、旧来源及后继调动。按职务先核可用职级集合，按岗再核岗位资格与占编。两项共同办理只选一次共用通知，用独立 DB/API 连接验共同提交、并发、回滚、重送及依赖拒绝。[逐步业务结果](../specs/m04/506-job-information-records.md#m04-scn-018) · [共同提交验收](../specs/m04/506-job-information-records.md#m04-ac-019) · [两个菜单与同日顺序](../specs/m04/507-job-information-tab.md#m04-ac-018) |
 | T04 人事事务办理记录。Staffing、人员体验、Access | 接通稳定办理身份及获权的跨人查询后，交付「人员 → 人事事务 → 办理记录」，随已接入的业务类型分批验证。先在职务信息直接保存地点更改，再从事务列表跨员工、跨日期查回同笔并更正，验菜单返回和真实 DB/API。多任职与同日动作接入后，以两人四笔样本验两种部门和日期口径、关系级转正去重、受限计数和原件。当前阶段按授权直接保存，M20 待办独立交付。[办理记录页面](../specs/m04/507-job-information-tab.md#personnel-action-register) · [T04 双入口验收](../specs/m04/507-job-information-tab.md#m04-ac-017) · [查询合同](../specs/m04/403-hire-technical-contract.md#personnel-action-query) |
 | T05 合同、T06 招聘按依赖联验 | 合同订立与实际试用、终结分别持有事实。已接受的真实录用从本人交接复用同一入职办理，需要预留时随该次占编转换。已有合同须变更却缺依据时保留原安排。薪酬、工资另由对应模块消费。[合同样本](#m04-scn-004) · [招聘样本](#m04-scn-005) |

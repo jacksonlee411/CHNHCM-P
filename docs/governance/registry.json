@@ -2715,9 +2715,9 @@
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "核对直接入职、未来撤销、关系内主任职与 506 人层 0 号的适用范围。",
+        "scope": "复核普通更正的原依据、原通知或一条误录原因撤销晋升，以及独立调动、必要依赖和旧来源。",
         "result": "accepted",
-        "evidence": "docs/verification/506-job-information-design-review.md"
+        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2770,14 +2770,14 @@
         "M03",
         "X03"
       ],
-      "scope": "入职来源、分段采用、业务唯一性、主选择、动作修订和恢复，以及存量首单升级与跨人员办理查询。",
+      "scope": "入职来源、分段采用、业务唯一性、主选择、动作修订与恢复、首单升级、跨人员办理查询及同日共同提交。",
       "format": "numbered",
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "复核跨人员集合查询与既有单笔接口、获权后去重分页、原件授权及两处维护的期望修订。",
+        "scope": "复核按事项确定输入、实况与拟议用量、共用通知、误录撤销、真实前序和关系转正核权。",
         "result": "accepted",
-        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2806,9 +2806,9 @@
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "核对 T03 首单现状与 T04 办理记录分批交付、双入口验收及 M20 待办边界。",
+        "scope": "核对 T04 按职务先验普通纠错，按岗再验已履职补录，以及同日共同办理、撤销和归属授权的菜单签收。",
         "result": "accepted",
-        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
       },
       "execution_status": "in_progress",
       "superseded_by": [],
@@ -2962,15 +2962,15 @@
       "owner": null,
       "status": "active",
       "type": "business_spec",
-      "modules": ["M04", "X03"],
-      "scope": "主岗终身 0 号、兼岗递增、再聘任期、记录操作与类型绑定、同日状态及跨人员办理的计数与归属。",
+      "modules": ["M04", "M03", "X03"],
+      "scope": "主兼岗、再聘、记录操作与类型绑定，以及同日晋升、调动、转正的日状态、来源、计数与部门归属。",
       "format": "numbered",
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "复核同一关系多岗的一笔转正、动作发生部门、两种日期、原笔更正和跨员工样本。",
+        "scope": "核对普通更正与人事依据、误录撤销、满编实况、两笔共用通知、独立动作及关系级转正归属。",
         "result": "accepted",
-        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2992,9 +2992,9 @@
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "对照 012 核对员工与事务两个入口、筛选、受限读者、同笔更正、原件往返和菜单验收。",
+        "scope": "复核普通更正、误录撤销、实际履职、共用通知和同日补录从正常菜单直接办理的输入与结果。",
         "result": "accepted",
-        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3014,6 +3014,46 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/506-job-information-direct-entry-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-313", "CHNHCM-401", "CHNHCM-402", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "87c4b07dd26acb9b4f21a0bb441a5a7cc3f1a519",
+        "working_tree": "dirty",
+        "change_description": "在上一轮未提交的 106 方案基础上修订五项直接办理要求。",
+        "environment": "wt-dev-f 本地文档工作区。",
+        "scope": "普通维护、误录撤销、已履职补录、共同通知及同日归属的操作负担与业务边界。",
+        "results": [
+          {"check": "五项修订的业务、页面、技术合同及路线图互查", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "地点更正、门店岗实际用量和 106 的同日状态、顺序与次数复算", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "文档治理与仓库、领域边界、变更链接、锚点及差异空白", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "附加本地分支引用检查，缺少 wt-dev-a 至 wt-dev-d 的本地分支", "result": "failed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "与登记表核对 main 及六个固定分支的 origin 跟踪引用", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "T04 页面、Go、数据库及 API 的产品验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["复核限于设计合同及合成资料，T04 功能按路线图另行签收。"]
+      },
+      {
+        "path": "docs/verification/506-same-day-actions-design-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-310", "CHNHCM-312", "CHNHCM-313", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "87c4b07dd26acb9b4f21a0bb441a5a7cc3f1a519",
+        "working_tree": "dirty",
+        "change_description": "根据 106 评审将五项缺口补入职务信息规则、表单、技术合同和 T04 路线图。",
+        "environment": "wt-dev-f 本地文档工作区。",
+        "scope": "逐项核对晋升、专用共同提交、原笔撤销、业务先后与关系转正发生部门。",
+        "results": [
+          {"check": "106 反例、M03 资格与首单实物对照", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
+          {"check": "五步日状态及次数、顺序互换、岗位职级组合与关系转正部门的独立复算", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
+          {"check": "文档治理回归、仓库资料、领域边界、变更链接与锚点、差异和新文稿空白", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
+          {"check": "T04 同日办理的真实数据库、接口与正常菜单验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["本次复核文档及设计样本。T04 的事务、授权、页面、运行成本和前向升级随产品交付验证。"]
+      },
       {
         "path": "docs/verification/507-personnel-action-register-design-review.md",
         "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-403", "CHNHCM-500", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507"],

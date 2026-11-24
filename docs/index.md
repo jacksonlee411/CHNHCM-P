@@ -226,7 +226,7 @@ python3 scripts/local-bu.py verify
 
 - [126完整历史紧凑存储研究](plans/126-compact-history-storage-research.md)：覆盖现案例历史、审计和索引的隔离模型约191.5 MB；[实测与限制](verification/126-storage-feasibility.md)不等于产品迁移或容量P1关闭。
 
-- M04 的日级模型已用于按职务首次入职。同日多项办理、实际转正和多任职按 T04 专项合同验收。[106 首单采纳决定](adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) · [职务信息业务样本](specs/m04/506-job-information-records.md#m04-ac-012)
+- M04 的日级模型已用于按职务首次入职。T04 已规定从职务信息办理同日转正、晋升和调动，按来源核对当日任职、各笔原件及撤销后的次数。[106 首单采纳决定](adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) · [逐步办理与撤销样本](specs/m04/506-job-information-records.md#m04-scn-018) · [只有共同办理才合法的样本](specs/m04/506-job-information-records.md#m04-scn-019) · [T04 实施与验收](plans/500-personnel-roadmap.md#t04-same-day-actions)
 
 - [不必要限制清理记录](verification/111-defensive-design-cleanup.md)：构建与本地运行解耦、来源核对改显式、开放纯展示列设置及独立录入，保留必要业务保护；按实际检查范围读取。
 
