@@ -1163,6 +1163,8 @@ async function positionTransferJourney(page: Page, sample: Awaited<ReturnType<ty
     await button('更正记录').click();await expect(position).toHaveValue(first.name);
     await position.fill(actual.name);await page.getByRole('option',{name:actual.name,exact:true}).click();
     await button('保存').click();
+    await expect(page.getByText(actual.name+' · 免占编',{exact:true})).toBeVisible();
+    await action.click();
     await expect(page.getByText(arrangement(actual),{exact:true})).toBeVisible();
     const revisions=page.getByRole('button',{name:/查看修订/});
     await expect(revisions).toHaveCount(2);await revisions.last().click();
@@ -1171,7 +1173,8 @@ async function positionTransferJourney(page: Page, sample: Awaited<ReturnType<ty
   } finally {
     const current=await request(page,'GET',policyPath);
     if (current.body.version===published.body.version) {
-      const restored=await request(page,'POST',policyPath,{expectedVersion:current.body.version,row},randomUUID());
+      const applied=find(current.body.rows)!;
+      const restored=await request(page,'POST',policyPath,{expectedVersion:current.body.version,row:{...applied,mode:row.mode}},randomUUID());
       expect(restored.status,restored.body.message).toBe(200);
     }
   }
