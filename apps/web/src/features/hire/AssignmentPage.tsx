@@ -14,7 +14,9 @@ export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
     route = useLocation(),
     [params] = useSearchParams();
   const manual = !!route.state?.hire || params.get('view') === 'history';
-  const overview = person.useRead(manual ? undefined : id, () => employment(id));
+  const overview = person.useRead(manual ? undefined : id + (params.get('businessAt') ?? ''), () =>
+    employment(id, params.get('businessAt') ?? undefined),
+  );
   if (manual) return <HirePage session={session} />;
   if (overview.error)
     return (
@@ -23,7 +25,7 @@ export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
       </Alert>
     );
   if (!overview.data) return null;
-  const terms = overview.data.actions.filter((a) => a.kind === 'Hire' && !a.cancelled);
+  const terms = overview.data.terms;
   if (terms.length === 1)
     return (
       <AssignmentDetail
@@ -40,7 +42,7 @@ export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
         <Typography component="h1">选择任职</Typography>
         {terms.map((a) => (
           <Button
-            key={a.id}
+            key={a.assignment}
             component={Link}
             to={person.path + '/' + id + '/assignments/' + a.assignment + '?' + params}
           >
@@ -80,8 +82,12 @@ function AssignmentDetail({
   const [actionSlot, setActionSlot] = useState<HTMLSpanElement | null>(null);
   const [params] = useSearchParams(),
     [date, setDate] = useState(day);
-  const view = person.useRead(assignment, async () =>
-    unwrap(await api.GET('/api/v1/assignments/{id}', { params: { path: { id: assignment } } })),
+  const view = person.useRead(JSON.stringify([assignment, day]), async () =>
+    unwrap(
+      await api.GET('/api/v1/assignments/{id}', {
+        params: { path: { id: assignment }, query: { businessAt: day || undefined } },
+      }),
+    ),
   );
   const data = view.data?.person === id ? view.data : undefined;
   const profile = person.useRead(data?.primaryJob ? id : undefined, () => person.profile(id));

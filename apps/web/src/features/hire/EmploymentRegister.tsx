@@ -17,8 +17,8 @@ import * as person from '../personnel/api';
 export const registerPath = '/personnel/actions';
 type Row = Models['EmploymentRegisterRow'];
 type Result = Models['EmploymentRegister'];
-const kinds = { Hire: '入职', DataChange: '数据更改' } as const;
-const statuses = { effective: '已生效', future: '尚未生效', cancelled: '已撤销' } as const;
+const kinds = { Hire: '入职', DataChange: '数据更改', Transfer: '调动' } as const;
+const statuses = { effective: '已生效', future: '尚未生效', cancelled: '已撤销', deleted: '已删除' } as const;
 const dates = {
   businessFrom: '生效起日',
   businessTo: '生效止日',
@@ -251,7 +251,7 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
         renderCell: ({ row }) => record(row),
       },
       { field: 'businessDate', headerName: '生效日期', width: 125 },
-      { field: 'departmentName', headerName: '发生部门', minWidth: 110, flex: 1, sortable: false },
+      { field: 'departmentName', headerName: '发生部门', minWidth: 110, flex: 1, sortable: false, renderCell:({row})=>row.kind==='Transfer'?[row.fromDepartmentName && '调出 '+row.fromDepartmentName,row.toDepartmentName && '调入 '+row.toDepartmentName].filter(Boolean).join(' → '):row.departmentName },
       { field: 'operator', headerName: '经办人', minWidth: 100, sortable: false },
       {
         field: 'recordedAt',
