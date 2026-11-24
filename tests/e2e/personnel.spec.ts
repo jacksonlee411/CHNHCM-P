@@ -870,7 +870,10 @@ test('人事试办：同名两人、两人同时登记同一证号、同一张�
     await button(loser, '取消').click();
     await button(loser, '放弃修改').click();
     await expect(loser.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
-    await menu(page);
+    // The losing clerk already returned to the directory when discarding the form.
+    if (winner === page) await menu(page);
+    await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees');
+    await expect(page.locator('a[data-object-link]').first()).toBeVisible();
     await search(page, '张');
     await expect(page.getByRole('link', { name: /^张[敏旻]$/ })).toHaveCount(1);
     console.info('试办二：两位经办人同时保存，一笔成功，一笔被拒', wonNumber);
