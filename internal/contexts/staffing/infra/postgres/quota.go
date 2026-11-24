@@ -214,3 +214,12 @@ func (store *Store) CheckRegularUse(ctx context.Context, request s.RegularUseReq
 	}
 	return segments, nil
 }
+
+func (s *Store) LockUsagePosition(ctx context.Context, position string) error {
+	tx, ok := dbtx.From(ctx)
+	if !ok {
+		return errors.New("position guard requires owning transaction")
+	}
+	u := unit{store: s, tx: tx, lockRemaining: 2 * time.Second}
+	return u.LockQuotaTarget(ctx, position)
+}

@@ -30,7 +30,7 @@ func (u *unit) positionReadable(ctx context.Context, enterprise string) (bool, e
 	return true, nil
 }
 
-func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool, retained []f.Period) ([]s.AssignmentSegment, error) {
+func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool, retained []f.Period, owner, prior string) ([]s.AssignmentSegment, error) {
 	if !f.ValidID(in.Position) || !in.Period.Valid() || in.Category == "" || in.Purpose == "" {
 		return nil, f.Fail(400, "M03_INVALID_INPUT", "请核对岗位、任期、人员类别与用途")
 	}
@@ -41,12 +41,13 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			boundaries = append(boundaries, r.From, r.Until)
 		}
 	}
-	jobRequired, positionRequired := false, false
+	jobRequired, positionRequired, quotaRequired := false, false, false
 	for _, span := range in.Split(boundaries) {
 		rule, e := d.ApplicablePolicy(rules, in.Enterprise, in.Category, in.Purpose, span.From)
 		if e != nil {
 			return nil, e
 		}
+		quotaRequired = quotaRequired || rule.Consumes
 		if rule.Mode == "JobOnly" {
 			jobRequired = true
 		} else if rule.Mode == "PositionManaged" {
@@ -91,15 +92,31 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	if e != nil {
 		return nil, e
 	}
+	if prior != "" {
+		evidence.Uses = slices.DeleteFunc(evidence.Uses, func(v d.PositionUse) bool { return v.Owner == owner && v.Source == prior })
+	}
 	settings, e := u.replenishmentRows(ctx, in.Position)
 	if e != nil {
 		return nil, e
+	}
+	var quota d.StaffingQuota
+	if owner == "M05" && quotaRequired {
+		quota, e = u.LoadPositionQuota(ctx, in.Position, "")
+		if e != nil {
+			return nil, e
+		}
 	}
 	for _, r := range pos.Records {
 		boundaries = append(boundaries, r.Date, r.End)
 	}
 	for _, c := range evidence.Coverage {
 		boundaries = append(boundaries, c.From, c.Until)
+	}
+	for _, q := range quota.Records {
+		boundaries = append(boundaries, q.Date)
+	}
+	for _, use := range evidence.Uses {
+		boundaries = append(boundaries, use.From, use.Until)
 	}
 	for _, r := range retained {
 		boundaries = append(boundaries, r.From, r.Until)
@@ -115,9 +132,10 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		}
 		targets := in
 		targets.Period = p
-		var source, revision, name, coverage, intake string
+		var source, revision, name, coverage, intake, recruiting, quotaRevision string
+		seats := 0
 		if rule.Mode == "PositionManaged" {
-			if rule.Consumes {
+			if rule.Consumes && owner != "M05" {
 				return nil, f.Fail(409, "M03_POSITION_COUNTED_UNAVAILABLE", p.From+" 起需要按岗位占编")
 			}
 			i := d.At(pos, p.From)
@@ -129,13 +147,23 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			if !jobRequired && p.From == in.From && (in.Department != "" && targets.Department != in.Department || in.Job != "" && targets.Job != in.Job) {
 				return nil, f.Fail(409, "POSITION_TARGET_CHANGED", "岗位归属与拟任安排不符")
 			}
-			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: "M04"}
-			if _, e = evidence.PlanUse(intent, rules, d.StaffingQuota{}, d.QuotaEligibility(pos)); e != nil {
+			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: owner}
+			if _, e = evidence.PlanUse(intent, rules, quota, d.QuotaEligibility(pos)); e != nil {
 				return nil, e
 			}
 			for _, c := range evidence.Coverage {
+				if c.Owner == "M05" && c.Contains(p.From) {
+					recruiting = c.Version
+				}
 				if c.Owner == "M04" && c.Contains(p.From) {
 					coverage = c.Version
+				}
+			}
+			if rule.Consumes {
+				seats = 1
+				qi := quota.At(p.From)
+				if qi >= 0 {
+					quotaRevision = quota.Records[qi].Revision
 				}
 			}
 			intake = coverage
@@ -162,6 +190,12 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 				piece.PositionName = name
 				piece.ReplenishmentSource = intake
 				piece.CoverageSource = coverage
+				if rule.Consumes {
+					piece.RecruitingCoverage = recruiting
+					piece.QuotaSource = quota.Source
+					piece.QuotaRevision = quotaRevision
+					piece.Seats = seats
+				}
 			}
 			out = append(out, piece)
 		}

@@ -1208,3 +1208,46 @@ for (const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256
   });
 }
 test('M04 按岗位调入并更正原岗 原生200%',async()=>{await native200(positionTransferJourney)});
+
+async function recruitingJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>) {
+  const path='/api/v1/assignment-policies';
+  const policy=await request(page,'GET',path);
+  const row=policy.body.rows.find((r:{category:string;purpose:string})=>r.category==='Employee'&&r.purpose==='recruit');
+  if (!row) {
+    const added=await request(page,'POST',path,{expectedVersion:policy.body.version,row:{id:randomUUID(),category:'Employee',purpose:'recruit',mode:'PositionCounted',from:'2027-04-01'}},randomUUID());
+    expect(added.status,added.body.message).toBe(200);
+  } else expect(row.mode).toBe('PositionCounted');
+  const family=await seed308(page,'jobfamily');
+  const position=await seedPosition(page,'position',family.id);
+  const quota=await request(page,'POST','/api/v1/staffing-quotas',{positionId:position.id,effectiveDate:'2027-04-01',quota:1,reason:'为本次招聘核定一人'},randomUUID());
+  expect(quota.status,quota.body.message).toBe(200);
+  await openPerson(page,sample.name);
+  await page.getByRole('link',{name:'招聘录用',exact:true}).click();
+  await page.getByRole('link',{name:'发出录用',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'发出录用',exact:true})).toBeVisible();
+  const number='招聘通知'+sample.name;
+  const text=(name:string)=>page.getByRole('textbox',{name:new RegExp('^'+name)});
+  const day=async(name:string,value:string)=>{await text(name).fill(value);await text(name).press('Tab')};
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  const pick=async(label:string,value:string)=>{await page.getByRole('combobox',{name:new RegExp('^'+label)}).fill(value);await page.getByRole('option',{name:value,exact:true}).click()};
+  await text('录用编号').fill(number);await expect(text('录用编号')).toHaveValue(number);
+  await day('约定到岗日','2027-05-01');await day('安排起日','2027-04-01');
+  await pick('用人单位',sample.employer);await pick('岗位',position.name);
+  await expect(page.getByText(position.department,{exact:true})).toBeVisible();
+  await day('业务日期','2027-04-01');await text('办理依据').fill('四月发出一份已签录用通知');
+  await expect(button('保存')).toBeEnabled();await button('保存').focus();await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading',{name:number,exact:true})).toBeVisible();
+  await expect(page.getByText(new RegExp(position.name+' · 预留 1 编'))).toBeVisible();
+  await button('登记接受').click();await day('业务日期','2027-04-03');await text('办理依据').fill('候选人本人已签收接受');
+  await button('保存').click();await expect(page.getByText('已接受',{exact:true})).toBeVisible();
+  await button('2027-04-01 · 发出录用').click();await expect(page.getByText('已发出',{exact:true})).toBeVisible();
+  await button('返回当前录用').click();await expect(page.getByText('已接受',{exact:true})).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+  test(`M05 录用预留与本人接受 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await recruitingJourney(page,sample);
+  });
+}
+test('M05 录用预留与本人接受 原生200%',async()=>{await native200(recruitingJourney)});

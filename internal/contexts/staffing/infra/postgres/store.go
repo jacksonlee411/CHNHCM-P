@@ -28,7 +28,9 @@ import (
 )
 
 type Store struct {
-	HirePeople interface {
+	OfferAllowed   func(context.Context, pgx.Tx, string, string, string, string, string, bool) (bool, error)
+	PositionOpened func(context.Context, string, string, string, string) error
+	HirePeople     interface {
 		hireprep.Personnel
 		RecognizedPeople(context.Context, foundation.Credentials, []string, string) ([]person.Summary, string, error)
 		CheckHirePerson(context.Context, foundation.Credentials, string) error
@@ -724,7 +726,13 @@ func (u *unit) Save(ctx context.Context, p d.Plan, c s.Command, operator access.
 	if e = results.Close(); e != nil {
 		return e
 	}
-	return u.saveMembers(ctx, t, memberCopies)
+	if e = u.saveMembers(ctx, t, memberCopies); e != nil {
+		return e
+	}
+	if t.Kind == d.Position && len(p.Before.Records) == 0 && u.store.PositionOpened != nil {
+		return u.store.PositionOpened(dbtx.With(ctx, u.tx), u.store.Instance, t.ID, t.Source, t.Records[0].Date)
+	}
+	return nil
 }
 func (u *unit) Sources(ctx context.Context, k d.Kind, id string) ([]app.Source, error) {
 	rows, e := u.tx.Query(ctx, "SELECT snapshot,operation,operator,recorded_at FROM "+table(k)+"_source WHERE instance_id=$1 AND object_id=$2 ORDER BY source_no DESC", u.store.Instance, id)

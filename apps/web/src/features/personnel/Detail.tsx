@@ -1,3 +1,4 @@
+import {offerAccess,offerPath} from '../recruiting/Offers';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSearchParams, useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, IconButton, Menu, MenuItem, Tab, Tabs } from '@mui/material';
@@ -87,6 +88,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const record = person.useRead(id ? JSON.stringify([id, version, mode]) : undefined, () =>
     person.profile(id, version, mode === 'correct' && !version ? 'edit' : undefined),
   );
+  const offers=person.useRead(record.data && !creating && !version && !mode ? id:undefined,()=>offerAccess(id));
   const hire=person.useRead(record.data && !creating && !version && !mode ? id:undefined,()=>employment(id));
   const data = record.data,
     nav = person.useRead(data && params.has('from') ? id + JSON.stringify(query) : undefined, () =>
@@ -247,6 +249,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
                 更正资料
               </Button>
             ) : null}
+            {offers.data?.canRead&&<Button component={Link} to={offerPath+'?person='+id}>招聘录用</Button>}
             {hire.data?.rehireFrom && <Button component={Link} to={person.path+'/'+id+'/employment?rehireAction='+hire.data.rehireFrom.action+'&rehireRevision='+hire.data.rehireFrom.revision}>办理再聘</Button>}
             {hire.data && (hire.data.canHire || hire.data.actions.length > 0) && (
               <Button component={Link} to={person.path + '/' + id + '/employment?' + params}

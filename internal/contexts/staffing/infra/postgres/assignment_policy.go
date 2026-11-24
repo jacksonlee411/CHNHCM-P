@@ -110,9 +110,32 @@ func (st *Store) CheckAssignment(ctx context.Context, c f.Credentials, in s.Assi
 	return st.checkAssignment(ctx, c, in, nil)
 }
 func (st *Store) checkAssignment(ctx context.Context, c f.Credentials, in s.AssignmentCheck, retained []f.Period) (out []s.AssignmentSegment, err error) {
+	return st.checkOwnerAssignment(ctx, c, in, retained, "M04", "", nil)
+}
+func (st *Store) CheckOfferArrangement(ctx context.Context, c f.Credentials, in s.AssignmentCheck, prior, person, employer, action string) ([]s.AssignmentSegment, error) {
+	return st.checkOwnerAssignment(ctx, c, in, nil, "M05", prior, func(u *unit) error {
+		if in.Position == "" {
+			return nil
+		}
+		ok, err := u.positionEmploymentScope(ctx, in.Position, in.Period, person, employer, "offer."+action, "recruit")
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return f.Fail(403, "OFFER_DENIED", "所选岗位超出本次录用权限")
+		}
+		return nil
+	})
+}
+func (st *Store) checkOwnerAssignment(ctx context.Context, c f.Credentials, in s.AssignmentCheck, retained []f.Period, owner, prior string, authorize func(*unit) error) (out []s.AssignmentSegment, err error) {
 	err = st.policy(ctx, c, "check", false, func(u *unit, locked bool) error {
 		if in.Enterprise != u.enterprise.ID {
 			return f.Fail(403, "ACCESS_DENIED", "企业不可用")
+		}
+		if authorize != nil {
+			if e := authorize(u); e != nil {
+				return e
+			}
 		}
 		repo := u.policyStore()
 		head, e := repo.Head(ctx)
@@ -127,7 +150,7 @@ func (st *Store) checkAssignment(ctx context.Context, c f.Credentials, in s.Assi
 			return e
 		}
 		if in.Position != "" {
-			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked, retained)
+			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked, retained, owner, prior)
 		} else {
 			out, e = app.CheckJobAssignment(ctx, u, in, head, rows, locked)
 		}

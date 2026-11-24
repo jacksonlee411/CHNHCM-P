@@ -98,7 +98,7 @@ func (u *unit) arrangementMode(ctx context.Context, term f.Period, person, emplo
 		if e != nil {
 			return e
 		}
-		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained)
+		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained, assignmentOwner(purpose), "")
 		if e != nil {
 			return e
 		}
@@ -162,7 +162,7 @@ func (u *unit) positionTargets(ctx context.Context, term f.Period, in h.TargetSe
 					return e
 				}
 			}
-			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained)
+			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained, assignmentOwner(purpose), "")
 			if e != nil {
 				var fault *f.Fault
 				if errors.As(e, &fault) && fault.Status < 500 {
@@ -188,4 +188,61 @@ func (u *unit) positionTargets(ctx context.Context, term f.Period, in h.TargetSe
 			return nil
 		}
 	}
+}
+
+func assignmentOwner(purpose string) string {
+	if purpose == "recruit" {
+		return "M05"
+	}
+	return "M04"
+}
+func (st *Store) OfferTargets(ctx context.Context, c f.Credentials, in h.TargetSearch) (out []org.EligibleEntity, err error) {
+	out = []org.EligibleEntity{}
+	term, e := hireDates(in.Arrival, in.LastDay)
+	if e != nil {
+		return nil, e
+	}
+	if !f.ValidID(in.Person) || in.Page < 1 || in.Page > 1000000 {
+		return nil, f.Fail(400, "OFFER_INPUT", "请核对人员与查询页")
+	}
+	err = st.within(ctx, c, false, true, func(u *unit) error {
+		ok, e := u.employmentAllowed(ctx, "offer.issue", in.Person, in.Employer, in.Department, true)
+		if e != nil {
+			return e
+		}
+		if !ok {
+			return f.Fail(403, "OFFER_DENIED", "没有相应录用权")
+		}
+		switch in.Kind {
+		case "employer":
+			return u.employerTargets(ctx, term, h.EmployerSearch{Person: in.Person, Arrival: in.Arrival, LastDay: in.LastDay, Department: in.Department, Search: in.Search, Page: in.Page}, "offer.issue", &out)
+		case "job", "department":
+			return u.arrangementTargets(ctx, term, in, in.Kind+"Id", "offer.issue", &out)
+		case "position":
+			return u.positionTargets(ctx, term, in, "offer.issue", "recruit", nil, &out)
+		default:
+			return f.Fail(400, "OFFER_INPUT", "录用候选类型无效")
+		}
+	})
+	return
+}
+func (st *Store) OfferArrangement(ctx context.Context, c f.Credentials, in h.ArrangementQuery) (out h.ArrangementMode, err error) {
+	term, e := hireDates(in.Arrival, in.LastDay)
+	if e != nil {
+		return out, e
+	}
+	if !f.ValidID(in.Person) {
+		return out, f.Fail(400, "OFFER_INPUT", "人员无效")
+	}
+	err = st.within(ctx, c, false, true, func(u *unit) error {
+		ok, e := u.employmentAllowed(ctx, "offer.issue", in.Person, "", "", true)
+		if e != nil {
+			return e
+		}
+		if !ok {
+			return f.Fail(403, "OFFER_DENIED", "没有相应录用权")
+		}
+		return u.arrangementMode(ctx, term, in.Person, "", in.Position, "offer.issue", "recruit", nil, &out)
+	})
+	return
 }

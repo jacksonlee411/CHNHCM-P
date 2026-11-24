@@ -12850,6 +12850,129 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/context:
+    get:
+      operationId: recruitingContext
+      security: [{session: []}]
+      parameters:
+      - {in: query, name: person, required: false, schema: {type: string}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/OfferEntry'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/offers:
+    get:
+      operationId: listOffers
+      security: [{session: []}]
+      parameters:
+      - {in: query, name: person, required: false, schema: {type: string}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/OfferDirectory'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    post:
+      operationId: issueOffer
+      security: [{session: []}]
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/OfferChange'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/OfferReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/offers/{id}:
+    get:
+      operationId: getOffer
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string}}
+      - {in: query, name: sourceVersion, required: false, schema: {type: string}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/RecruitingOffer'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/offers/{id}/changes:
+    post:
+      operationId: changeOffer
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/OfferChange'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/OfferReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/submissions/{sub}/resolve:
+    post:
+      operationId: resolveOfferSubmission
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: sub, required: true, schema: {type: string}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {type: object, additionalProperties: false}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/OfferReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/targets:
+    post:
+      operationId: recruitingTargets
+      security: [{session: []}]
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/OfferTargetSearch'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/EligibleEntity'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/arrangement:
+    post:
+      operationId: recruitingArrangement
+      security: [{session: []}]
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/HireArrangementQuery'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireArrangementMode'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
 components:
   securitySchemes:
     session:
@@ -12857,6 +12980,85 @@ components:
       in: cookie
       name: chnhcm_session
   schemas:
+    OfferTerms:
+      type: object
+      required: [number, person, employer, arrival, reserveFrom]
+      properties:
+        number: {type: string}
+        person: {type: string, format: uuid}
+        employer: {type: string, format: uuid}
+        department: {type: string, format: uuid}
+        job: {type: string, format: uuid}
+        position: {type: string, format: uuid}
+        arrival: {type: string, format: date}
+        reserveFrom: {type: string, format: date}
+        lastDay: {type: string, format: date}
+    OfferChange:
+      type: object
+      required: [operation, businessDate, basis]
+      properties:
+        operation: {type: string, enum: [issue, accept, decline, release, reserve]}
+        businessDate: {type: string, format: date}
+        basis: {type: string}
+        expected: {type: string, format: uuid}
+        terms: {$ref: '#/components/schemas/OfferTerms'}
+    OfferRevision:
+      type: object
+      required: [version, operation, status, businessDate, basis, recordedAt]
+      properties:
+        version: {type: string, format: uuid}
+        operation: {type: string}
+        status: {type: string}
+        businessDate: {type: string, format: date}
+        basis: {type: string}
+        recordedAt: {type: string, format: date-time}
+    RecruitingOffer:
+      type: object
+      required: [id, number, person, employer, arrival, reserveFrom, version, operation, status, businessDate, basis, recordedAt]
+      properties:
+        id: {type: string, format: uuid}
+        number: {type: string}
+        person: {type: string, format: uuid}
+        personName: {type: string}
+        employer: {type: string, format: uuid}
+        employerName: {type: string}
+        employerAdoption: {type: array, items: {$ref: '#/components/schemas/LegalAdoption'}}
+        reservationRequired: {type: boolean}
+        department: {type: string, format: uuid}
+        job: {type: string, format: uuid}
+        position: {type: string, format: uuid}
+        arrival: {type: string, format: date}
+        reserveFrom: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        version: {type: string, format: uuid}
+        operation: {type: string}
+        status: {type: string}
+        businessDate: {type: string, format: date}
+        basis: {type: string}
+        recordedAt: {type: string, format: date-time}
+        segments: {type: array, items: {$ref: '#/components/schemas/AssignmentSegment'}}
+        revisions: {type: array, items: {$ref: '#/components/schemas/OfferRevision'}}
+        actions: {type: array, items: {type: string}}
+    OfferReceipt:
+      type: object
+      required: [submissionId, outcome]
+      properties:
+        submissionId: {type: string, format: uuid}
+        outcome: {type: string, enum: [accepted, not_applied]}
+        id: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+    OfferEntry:
+      type: object
+      required: [canRead, canIssue]
+      properties:
+        canRead: {type: boolean}
+        canIssue: {type: boolean}
+    OfferDirectory:
+      type: object
+      required: [canIssue, offers]
+      properties:
+        canIssue: {type: boolean}
+        offers: {type: array, items: {$ref: '#/components/schemas/RecruitingOffer'}}
     EmploymentLocationRef:
       type: object
       additionalProperties: false
@@ -13293,6 +13495,8 @@ components:
       type: object
       required: [covered, canChange, paused, version, records]
       properties:
+        reserved: {type: integer}
+        occupied: {type: integer}
         covered: {type: boolean}
         canChange: {type: boolean}
         paused: {type: boolean}
@@ -13335,6 +13539,21 @@ components:
         arrival: {type: string, format: date}
         lastDay: {type: string, format: date}
         rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
+    OfferTargetSearch:
+      type: object
+      additionalProperties: false
+      required: [person, kind, arrival, page]
+      properties:
+        rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
+        job: {type: string, format: uuid}
+        person: {type: string, format: uuid}
+        kind: {type: string, enum: [employer, department, job, position]}
+        arrival: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        employer: {type: string, format: uuid}
+        department: {type: string, format: uuid}
+        search: {type: string, maxLength: 400}
+        page: {type: integer, minimum: 1, maximum: 1000000}
     HireTargetSearch:
       type: object
       additionalProperties: false
@@ -14405,6 +14624,9 @@ components:
       - position
       - seats
       properties:
+        quotaSource: {type: string, format: uuid}
+        quotaRevision: {type: string, format: uuid}
+        recruitingCoverage: {type: string, format: uuid}
         departmentId: {type: string}
         jobId: {type: string}
         positionName: {type: string}

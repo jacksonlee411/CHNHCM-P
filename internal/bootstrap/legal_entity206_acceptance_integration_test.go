@@ -296,6 +296,13 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 	if f.scalar("SELECT (to_regclass('access.hire_identity_fixture') IS NOT NULL)::int") > 0 {
 		f.exec("DROP TABLE access.hire_identity_fixture; DELETE FROM public.goose_db_version WHERE version_id=36")
 	}
+	if f.scalar("SELECT (to_regclass('recruiting.offer') IS NOT NULL)::int") != 0 &&
+		f.scalar("SELECT (SELECT count(*) FROM recruiting.offer)+(SELECT count(*) FROM recruiting.offer_submission)+(SELECT count(*) FROM recruiting.position_intake)+(SELECT count(*) FROM access.offer_grant)") != 0 {
+		t.Fatal("prefix fixture contains recruiting facts or grants")
+	}
+	if f.scalar("SELECT (to_regclass('recruiting.offer') IS NOT NULL)::int") != 0 {
+		f.exec("DROP SCHEMA recruiting CASCADE; DROP TABLE access.offer_fixture,access.offer_grant; DELETE FROM public.goose_db_version WHERE version_id=50")
+	}
 	if f.scalar("SELECT count(*) FROM pg_namespace WHERE nspname='personnel'") > 0 {
 		if f.scalar("SELECT (SELECT count(*) FROM personnel.person)+(SELECT count(*) FROM personnel.terminal)+(SELECT count(*) FROM access.person_grant)") != 0 {
 			t.Fatal("prefix fixture would remove personnel facts")
@@ -315,7 +322,7 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 				t.Fatal("prefix fixture would remove Staffing facts", table)
 			}
 		}
-		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%' OR action='replenishment.maintain'; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35,41,42,43,44,45,46,47,48,49);`)
+		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%' OR action='replenishment.maintain'; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35,41,42,43,44,45,46,47,48,49,50);`)
 	}
 
 	t.Helper()
