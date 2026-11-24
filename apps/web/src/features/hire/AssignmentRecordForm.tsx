@@ -208,9 +208,10 @@ export function AssignmentRecordForm({
     params: {path: {id: view.assignment}, header: {'X-CSRF-Token': csrf}},
     body: {businessDate: draft.day, position},
   }).then(unwrap);
-  const mode = useRead(transfer && draft.day ? JSON.stringify([view.assignment, draft.day]) : undefined, () => readMode());
+  const promotionMove = (draft.kind === 'Promotion' || draft.kind === 'PromotionTransfer') && draft.mode !== 'withdraw' && view.canTransfer;
+  const mode = useRead((transfer || promotionMove) && draft.day ? JSON.stringify([view.assignment, draft.day]) : undefined, () => readMode());
   const targets = mode.data;
-  const derived = useRead(transfer && targets?.positionRequired && !targets.jobRequired && draft.position ?
+  const derived = useRead((transfer || promotionMove) && targets?.positionRequired && !targets.jobRequired && draft.position ?
     JSON.stringify([view.assignment,draft.day,draft.position.id]) : undefined, () => readMode(draft.position?.id));
   const targetReady = !!targets && (!targets.positionRequired || !!draft.position) &&
     (!targets.jobRequired || !!draft.department && !!draft.job) &&
@@ -219,7 +220,7 @@ export function AssignmentRecordForm({
   const valid =
     !!draft.day &&
     (lifecycle ? (draft.kind === 'SetManager' ? !!draft.manager || !!draft.endReporting : !!draft.notice.trim()) : draft.mode === 'withdraw' ? !!draft.basis || !!draft.withdrawal?.trim() : draft.mode === 'redate' ||
-      ((grade ? !!draft.grade && !!draft.notice.trim() && (draft.kind!=='PromotionTransfer'||!!draft.job&&!!draft.department) : relation
+      ((grade ? !!draft.grade && !!draft.notice.trim() && (draft.kind!=='PromotionTransfer'||targetReady) : relation
         ? !!draft.notice.trim()
         : location
           ? !!draft.value
@@ -238,7 +239,7 @@ export function AssignmentRecordForm({
         position: record.transfer?.after.position,
       };
     }
-    if (transfer && targets) {
+    if ((transfer || promotionMove && (draft.kind==='PromotionTransfer' || draft.position?.id !== view.state?.position)) && targets) {
       save({...draft, requires, position: targets.positionRequired ? draft.position : undefined,
         department: targets.jobRequired ? draft.department : undefined, job: targets.jobRequired ? draft.job : undefined});
     } else save({ ...draft, requires });
@@ -278,7 +279,7 @@ export function AssignmentRecordForm({
           onChange={(e) => update({ ...draft, day: e.target.value })}
         />
         {draft.mode !== 'redate' &&
-          (lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} /> : relation ? (
+          (lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} mode={targets} derived={derived.data} arrangementError={derived.error} /> : relation ? (
             <ProbationFields view={view} draft={draft} csrf={csrf} update={update} />
           ) : location ? (
             <>

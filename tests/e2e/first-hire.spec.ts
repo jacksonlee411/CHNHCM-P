@@ -1236,3 +1236,66 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M05 录用预留与本人接受 原生200%',async()=>{await native200(recruitingJourney)});
+
+async function countedPromotionJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const p5=await seed308(page,'grade',undefined,{name:'P5-'+randomUUID().slice(0,8)});
+  const job=await request(page,'GET','/api/v1/jobs/'+sample.jobId);
+  const old=job.body.selectedRecord;
+  const grades=await request(page,'POST','/api/v1/jobs/'+sample.jobId+'/records/'+old.recordId+'/correct',{
+    expectedSourceVersion:job.body.headSourceVersion,expectedRecordRevision:old.revision,changes:{gradeIds:[p5.id]},
+  },randomUUID());
+  expect(grades.status,grades.body.message).toBe(200);
+  await hireAtLocation(page,sample);
+  const family=await seed308(page,'jobfamily');
+  const target=await seedPosition(page,'position',family.id);
+  const quota=await request(page,'POST','/api/v1/staffing-quotas',{positionId:target.id,effectiveDate:'2027-04-01',quota:1,reason:'按岗晋升核一编'},randomUUID());
+  expect(quota.status,quota.body.message).toBe(200);
+  const policy='/api/v1/assignment-policies';
+  const rules=await request(page,'GET',policy);
+  const oldRule=rules.body.rows.find((r:{category:string;purpose:string;from:string})=>r.category==='Employee'&&r.purpose==='transfer'&&r.from==='2027-04-01');
+  const rule=oldRule??{id:randomUUID(),category:'Employee',purpose:'transfer',from:'2027-04-01'};
+  const next=await request(page,'POST',policy,{expectedVersion:rules.body.version,row:{...rule,mode:'PositionCounted'}},randomUUID());
+  expect(next.status,next.body.message).toBe(200);
+  try {
+    await openEmployeeAssignment(page,sample);
+    const button=(name:string)=>page.getByRole('button',{name,exact:true});
+    const add=async(kind:string,date:string)=>{
+      await button('新增记录').click();
+      await page.getByRole('combobox',{name:/办理类型/}).click();
+      await page.getByRole('option',{name:kind,exact:true}).click();
+      const day=page.getByRole('textbox',{name:/^生效日期/});await day.fill(date);await day.press('Tab');
+    };
+    const pick=async(label:string,name:string)=>{
+      await page.getByRole('combobox',{name:new RegExp('^'+label)}).fill(name);
+      await page.getByRole('option',{name,exact:true}).click();
+    };
+    await add('补录实际职级','2027-04-01');await pick('实际任职级',p5.name);
+    await page.getByLabel(/原职级任用依据/).fill('原岗位个人任用级别');await button('保存').click();
+    await expect(page.getByText(p5.name,{exact:true})).toBeVisible();
+    await add('晋升并调动','2027-07-01');await pick('调入岗位',target.name);
+    await expect(page.getByText(target.department,{exact:true})).toBeVisible();
+    await pick('拟任职级',target.grade.name);
+    await page.getByLabel(/晋升依据/).fill('同一份通知晋升并调入新岗');await button('保存').focus();await page.keyboard.press('Enter');
+    await expect(page.getByText(target.name+' · 占编',{exact:true})).toBeVisible();
+    await expect(page.getByText(target.grade.name,{exact:true})).toBeVisible();
+    await button('调动 · 2027-07-01').click();
+    await expect(page.getByText([target.department,target.job.name,target.name,'占编'].join(' · '),{exact:true})).toBeVisible();
+    const usage=await request(page,'GET','/api/v1/positions/'+target.id+'/replenishment?businessAt=2027-07-01');
+    expect(usage.body.occupied).toBe(1);expect(usage.body.reserved).toBe(0);
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  } finally {
+    const current=await request(page,'GET',policy);
+    if(current.body.version===next.body.version) {
+      const row=current.body.rows.find((r:{id:string})=>r.id===rule.id);
+      const reset=await request(page,'POST',policy,{expectedVersion:current.body.version,row:{...row,mode:oldRule?.mode??'JobOnly'}},randomUUID());
+      expect(reset.status,reset.body.message).toBe(200);
+    }
+  }
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+  test(`M04 占编岗位晋升与调动 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await countedPromotionJourney(page,sample);
+  });
+}
+test('M04 占编岗位晋升与调动 原生200%',async()=>{await native200(countedPromotionJourney)});

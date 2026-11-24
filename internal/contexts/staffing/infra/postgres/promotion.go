@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
+	st "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
 )
 
@@ -56,12 +57,12 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 	withdraw := kind == "withdraw"
 	if !in.Basis.Valid() || !withdraw && in.Basis != nil || !in.Previous.Valid() || !in.Precedes.Valid() || !f.ValidID(in.ExpectedSource) || action != "" && (!f.ValidID(action) || !f.ValidID(in.ExpectedRevision)) ||
 		action == "" && in.ExpectedRevision != "" || !withdraw && (!f.ValidDate(in.BusinessDate) || !f.ValidID(in.Grade)) ||
-		(in.Job != "") != (in.Department != "") || in.Job != "" && (!f.ValidID(in.Job) || !f.ValidID(in.Department)) ||
-		in.TransferNotice != "" && kind != "pair" || kind == "pair" && in.Job == "" ||
-		kind == "grade" && (in.Job != "" || in.Precedes != nil) || utf8.RuneCountInString(notice) > 1000 || utf8.RuneCountInString(reason) > 1000 || utf8.RuneCountInString(in.TransferNotice) > 1000 {
+		in.Position != "" && !f.ValidID(in.Position) || (in.Job != "") != (in.Department != "") || in.Job != "" && (!f.ValidID(in.Job) || !f.ValidID(in.Department)) ||
+		in.TransferNotice != "" && kind != "pair" || kind == "pair" && in.Job == "" && in.Position == "" ||
+		kind == "grade" && (in.Position != "" || in.Job != "" || in.Precedes != nil) || utf8.RuneCountInString(notice) > 1000 || utf8.RuneCountInString(reason) > 1000 || utf8.RuneCountInString(in.TransferNotice) > 1000 {
 		return out, f.Fail(400, "PROMOTION_INPUT", "请核对任期、生效日期、职级与依据")
 	}
-	if withdraw && (action == "" || reason == "" && notice == "" && in.Basis == nil || in.Grade != "" || in.BusinessDate != "" || in.Job != "" || in.Previous != nil || in.Precedes != nil) {
+	if withdraw && (action == "" || reason == "" && notice == "" && in.Basis == nil || in.Grade != "" || in.BusinessDate != "" || in.Position != "" || in.Job != "" || in.Previous != nil || in.Precedes != nil) {
 		return out, f.Fail(400, "PROMOTION_WITHDRAW", "请引用原通知或简述误录原因")
 	}
 	var a h.Action
@@ -239,6 +240,34 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 		target.Operation = "Insert"
 		job = successor.Evidence.Transfer.BeforeJob
 	}
+	if in.Position != "" {
+		span, e := u.maintenancePeriod(ctx, a, day, "Transfer")
+		if e != nil {
+			return out, e
+		}
+		ent, e := u.Enterprise(ctx, true)
+		if e != nil {
+			return out, e
+		}
+		ok, e := u.positionEmploymentScope(ctx, in.Position, span, a.Person, a.Employer, "transfer", "transfer")
+		if e != nil {
+			return out, e
+		}
+		if !ok {
+			return out, f.Fail(403, "TRANSFER_DENIED", "当前权限不允许采用该岗位")
+		}
+		// Lock both original and destination before checking their net usage.
+		targets := append([]savedRecord(nil), rows...)
+		targets = append(targets, savedRecord{HistoryEntry: h.HistoryEntry{Transfer: &h.JobTransfer{Position: in.Position}}})
+		if e = u.lockRecordPositions(ctx, initial, targets); e != nil {
+			return out, e
+		}
+		segs, e := u.checkTransferTarget(ctx, a, st.AssignmentCheck{Period: span, Enterprise: ent.ID, Category: "Employee", Purpose: "transfer", Position: in.Position, Department: in.Department, Job: in.Job})
+		if e != nil {
+			return out, e
+		}
+		in.Job, in.Department = segs[0].JobID, segs[0].DepartmentID
+	}
 	if in.Job != "" {
 		job = in.Job
 	}
@@ -257,9 +286,13 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 				}
 			}
 		}
-		transfer := &h.JobTransfer{Department: in.Department, Job: in.Job}
-		if action == "" && scoped.Department == in.Department && scoped.Job == in.Job {
-			return out, f.Fail(409, "TRANSFER_UNCHANGED", "部门和职务均未改变")
+		transfer := &h.JobTransfer{Department: in.Department, Job: in.Job, Position: in.Position}
+		current, e := u.assignmentPlacement(ctx, a, day)
+		if e != nil {
+			return out, e
+		}
+		if action == "" && current.Adoption.Position == in.Position && scoped.Department == in.Department && scoped.Job == in.Job {
+			return out, f.Fail(409, "TRANSFER_UNCHANGED", "岗位、部门和职务均未改变")
 		}
 		if kind == "pair" {
 			companion := savedRecord{Operation: "Add", Notice: strings.TrimSpace(in.TransferNotice)}

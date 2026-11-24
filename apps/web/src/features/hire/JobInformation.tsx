@@ -270,10 +270,10 @@ export function JobInformation({
     const reference=(a:Action|undefined)=>a?{action:a.id,revision:a.revision}:undefined;
     if(record.kind==='GradeRecord'||record.kind==='Promotion'||record.kind==='PromotionTransfer'){
       const changing=record.kind==='PromotionTransfer'||record.kind==='Promotion' &&
-        (record.job?.id!==initial.current?.job?.id || record.department?.id!==initial.current?.department?.id);
+        (record.position?.id!==initial.current?.position?.id || record.job?.id!==initial.current?.job?.id || record.department?.id!==initial.current?.department?.id);
       void submit.submit({kind:'grade',form:record.kind,action,input:{...input,grade:record.grade?.id,
         reason:record.reason,notice:record.notice,transferNotice:record.transferNotice,
-        department:changing?record.department?.id:undefined,job:changing?record.job?.id:undefined,
+        department:changing?record.department?.id:undefined,job:changing?record.job?.id:undefined,position:changing?record.position?.id:undefined,
         previous:reference(record.predecessor),precedes:reference(record.successor)}});
       return;
     }

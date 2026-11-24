@@ -27,6 +27,7 @@ type PromotionEvidence struct {
 	Withdrawal      string     `json:"withdrawal,omitempty"`
 }
 type GradeSearch struct {
+	Position     string `json:"position,omitempty"`
 	BusinessDate string `json:"businessDate"`
 	Job          string `json:"job,omitempty"`
 	Search       string `json:"search,omitempty"`
@@ -36,6 +37,7 @@ type GradeSearch struct {
 // Precedes permits a later registration to identify an already recorded successor.
 // Previous expresses documented order, independent of legal prerequisites.
 type PromotionCommand struct {
+	Position         string     `json:"position,omitempty"`
 	Basis            *ActionRef `json:"basis,omitempty"`
 	ExpectedSource   string     `json:"expectedSourceVersion"`
 	ExpectedRevision string     `json:"expectedRevision,omitempty"`

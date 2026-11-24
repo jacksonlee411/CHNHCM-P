@@ -75,6 +75,13 @@ func (u *unit) replenishmentView(ctx context.Context, id, day string) (out s.Rep
 		return out, e
 	}
 	if out.Covered && quota.Allowed && slices.Contains(quota.ReadFields, "quota") {
+		limit, err := u.LoadPositionQuota(ctx, id, "")
+		if err != nil {
+			return out, err
+		}
+		if i := limit.At(day); i >= 0 {
+			out.Quota = limit.Records[i].Amount
+		}
 		n := 0
 		for _, v := range evidence.Uses {
 			if v.Owner == "M04" && v.Effect == "exempt" && v.Contains(day) {
@@ -84,6 +91,11 @@ func (u *unit) replenishmentView(ctx context.Context, id, day string) (out s.Rep
 		out.Exempt = &n
 		if use := evidence.At(day); use.Known {
 			out.Reserved, out.Occupied = &use.Reserved, &use.Occupied
+			if out.Quota != nil {
+				available := max(0, *out.Quota-use.Occupied-use.Reserved)
+				excess := max(0, use.Occupied-*out.Quota)
+				out.Available, out.Excess = &available, &excess
+			}
 		}
 	}
 	return out, nil

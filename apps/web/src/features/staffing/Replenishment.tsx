@@ -59,6 +59,9 @@ export function PositionReplenishment({session}:{session:Models['Principal']}) {
         <ObjectForm>
           <ObjectTextField label="业务日期" type="date" value={day} onChange={e=>{setDay(e.target.value);setMessage('')}}/>
           {view.data&&<ObjectDetailField label="当日补员状态">{view.data.paused?'暂停补员':view.data.covered||view.data.records.some(r=>r.date<=day)?'允许补员':'尚未接管'}</ObjectDetailField>}
+          {view.data?.quota!==undefined&&<ObjectDetailField label="核定编制">{view.data.quota}</ObjectDetailField>}
+          {view.data?.available!==undefined&&<ObjectDetailField label="可用编制">{view.data.available}</ObjectDetailField>}
+          {!!view.data?.excess&&<ObjectDetailField label="实占超编">{view.data.excess}</ObjectDetailField>}
           {view.data?.exempt!==undefined&&<ObjectDetailField label="免占编任职">{view.data.exempt}</ObjectDetailField>}
           {view.data?.reserved!==undefined&&<ObjectDetailField label="招聘预留">{view.data.reserved}</ObjectDetailField>}
           {view.data?.occupied!==undefined&&<ObjectDetailField label="常规实占">{view.data.occupied}</ObjectDetailField>}

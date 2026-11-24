@@ -15,7 +15,7 @@ import (
 // Position changes and both sides of a transfer share the department and target locks.
 // Sorting across the whole change also handles two people moving in opposite directions.
 func (u *unit) lockRecordPositions(ctx context.Context, initial []h.Placement, records []savedRecord) error {
-	var positions, departments []string
+	var positions []string
 	for _, r := range initial {
 		if r.Adoption.Position != "" {
 			positions = append(positions, r.Adoption.Position)
@@ -29,6 +29,24 @@ func (u *unit) lockRecordPositions(ctx context.Context, initial []h.Placement, r
 			positions = append(positions, r.Evidence.Transfer.After.Position)
 		}
 	}
+	return u.lockPositions(ctx, positions)
+}
+
+func (u *unit) lockExitingPositions(ctx context.Context, assignments []string, firstInactive string) error {
+	rows, err := u.tx.Query(ctx, `SELECT DISTINCT s.adoption->>'position' FROM staffing.assignment_head h JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
+       WHERE h.instance_id=$1 AND h.assignment_id=ANY($2::uuid[]) AND coalesce(s.adoption->>'position','')<>'' AND s.period && daterange($3::date,NULL,'[)')`, u.store.Instance, assignments, firstInactive)
+	if err != nil {
+		return err
+	}
+	positions, err := pgx.CollectRows(rows, pgx.RowTo[string])
+	if err != nil {
+		return err
+	}
+	return u.lockPositions(ctx, positions)
+}
+
+func (u *unit) lockPositions(ctx context.Context, positions []string) error {
+	var departments []string
 	if len(positions) == 0 {
 		return nil
 	}
@@ -85,7 +103,7 @@ func (u *unit) checkTransferTarget(ctx context.Context, a h.Action, in s.Assignm
 			return nil, e
 		}
 	}
-	return u.store.checkAssignment(dbtx.With(ctx, u.tx), u.credentials, in, retained)
+	return u.store.checkOwnerAssignment(dbtx.With(ctx, u.tx), u.credentials, in, retained, "M04", a.Assignment, nil)
 }
 
 // Moving or deleting the first transfer can restore part of the starting appointment.

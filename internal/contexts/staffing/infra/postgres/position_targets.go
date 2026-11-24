@@ -92,13 +92,15 @@ func (u *unit) arrangementMode(ctx context.Context, term f.Period, person, emplo
 			return f.Fail(403, "HIRE_DENIED", "所选安排超出获权范围")
 		}
 		var retained []f.Period
+		prior := ""
 		if assignment != nil {
+			prior = assignment.Assignment
 			retained, e = u.retainedPosition(ctx, *assignment, position)
 		}
 		if e != nil {
 			return e
 		}
-		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained, assignmentOwner(purpose), "")
+		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained, assignmentOwner(purpose), prior)
 		if e != nil {
 			return e
 		}
@@ -156,19 +158,38 @@ func (u *unit) positionTargets(ctx context.Context, term f.Period, in h.TargetSe
 				continue
 			}
 			var retained []f.Period
+			prior := ""
 			if assignment != nil {
+				prior = assignment.Assignment
 				retained, e = u.retainedPosition(ctx, *assignment, id)
 				if e != nil {
 					return e
 				}
 			}
-			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained, assignmentOwner(purpose), "")
+			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained, assignmentOwner(purpose), prior)
 			if e != nil {
 				var fault *f.Fault
-				if errors.As(e, &fault) && fault.Status < 500 {
+				if !errors.As(e, &fault) || fault.Status >= 500 {
+					return e
+				}
+				if fault.Code != "M03_QUOTA_SHORTAGE" || purpose != "transfer" {
 					continue
 				}
-				return e
+				// Keep an authorized full position selectable. The arrangement
+				// check on selection explains the dated deficit before saving.
+				obj, readErr := u.Load(ctx, d.Position, id, "")
+				if readErr != nil {
+					return readErr
+				}
+				for _, record := range obj.Records {
+					if record.Active() && f.ValidDate(record.Date) && (f.Period{From: record.Date, Until: record.End}).Overlaps(term) && strings.Contains(strings.ToLower(record.Data["name"]), strings.ToLower(in.Search)) {
+						seg = []s.AssignmentSegment{{Position: id, PositionName: record.Data["name"]}}
+						break
+					}
+				}
+				if len(seg) == 0 {
+					continue
+				}
 			}
 			if skip > 0 {
 				skip--

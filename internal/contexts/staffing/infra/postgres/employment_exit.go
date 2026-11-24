@@ -111,6 +111,9 @@ func (st *Store) ExitAssignment(ctx context.Context, c f.Credentials, id, key st
 		if len(closing) == 0 {
 			return "", assignmentConflict()
 		}
+		if e = u.lockExitingPositions(ctx, closing, exit.FirstInactive); e != nil {
+			return "", e
+		}
 		item := employmentEntry{id: f.NewID(), revision: f.NewID(), kind: kind, employment: anchor.Employment, assignment: id, date: in.Date, notice: strings.TrimSpace(in.Notice), adoption: map[string]any{"exit": exit, "department": anchor.Department}}
 		if e = u.newEmploymentAction(ctx, item); e != nil {
 			return "", e

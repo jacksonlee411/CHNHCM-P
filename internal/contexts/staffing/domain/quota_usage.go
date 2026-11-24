@@ -2,6 +2,7 @@ package domain
 
 import (
 	"slices"
+	"strconv"
 
 	"chnhcm.local/chnhcm/internal/foundation"
 )
@@ -21,7 +22,7 @@ type SourceCoverage struct {
 type PositionUse struct {
 	UsageSpan
 	Owner, Source, Policy, Effect string
-	Department, Job               string
+	Department, Job, Assignment   string
 }
 
 // Managed identifies the explicitly taken-over part of this position's timeline.
@@ -215,8 +216,12 @@ func (u QuotaUsage) PlanUse(intent UsageIntent, rules []QuotaPolicy, q StaffingQ
 				if !c.Known {
 					return nil, usageConflict(day, "岗位用量尚未核齐")
 				}
-				if capacity(q, day) <= c.Occupied+c.Reserved {
-					return nil, usageConflict(day, "没有可用的常规名额")
+				limit := capacity(q, day)
+				if limit < 0 {
+					return nil, usageConflict(day, "该岗位尚未核定常规编制")
+				}
+				if shortage := c.Occupied + c.Reserved + 1 - limit; shortage > 0 {
+					return nil, foundation.Fail(409, "M03_QUOTA_SHORTAGE", day+" 起缺 "+strconv.Itoa(shortage)+" 编")
 				}
 				if intent.Owner == "M04" {
 					use.Effect = "occupied"

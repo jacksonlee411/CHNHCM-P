@@ -284,15 +284,22 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 	if e != nil {
 		return out, e
 	}
+	if projection.Segments, e = u.restoredPositions(ctx, a, projection.Segments, records); e != nil {
+		return out, e
+	}
 	for _, seg := range projection.Segments {
+		gradeID := ""
+		if seg.Grade != nil {
+			gradeID = seg.Grade.ID
+		}
+		if e = u.checkPlacementGrade(ctx, seg.Adoption, gradeID); e != nil {
+			return out, e
+		}
 		if seg.Grade != nil {
 			if _, e = u.gradeForJob(ctx, seg.Job, seg.Grade.ID, seg.Period); e != nil {
 				return out, e
 			}
 		}
-	}
-	if projection.Segments, e = u.restoredPositions(ctx, a, projection.Segments, records); e != nil {
-		return out, e
 	}
 	previous, e := u.recordChanges(ctx, a, records, originals, projection, target.ID, permit)
 	if e != nil {

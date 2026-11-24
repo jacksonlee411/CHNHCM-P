@@ -5779,6 +5779,8 @@ export interface components {
             /** Format: date */
             businessDate: string;
             /** Format: uuid */
+            position?: string;
+            /** Format: uuid */
             job?: string;
             search?: string;
             page: number;
@@ -5835,6 +5837,8 @@ export interface components {
             grade?: string;
             /** Format: uuid */
             department?: string;
+            /** Format: uuid */
+            position?: string;
             /** Format: uuid */
             job?: string;
             notice?: string;
@@ -6218,6 +6222,9 @@ export interface components {
             relationshipPrimary: boolean;
         };
         ReplenishmentView: {
+            quota?: number;
+            available?: number;
+            excess?: number;
             reserved?: number;
             occupied?: number;
             covered: boolean;
