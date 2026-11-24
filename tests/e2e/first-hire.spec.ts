@@ -694,3 +694,41 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 历史插入与按职务调动 原生200%',async()=>{await native200(historyJourney)});
+
+async function probationJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
+  await hireAtLocation(page,sample);await openEmployeeAssignment(page,sample);
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  const add=async(kind:string,day:string)=>{
+    await button('新增记录').click();
+    await page.getByRole('combobox',{name:/办理类型/}).click();
+    await page.getByRole('option',{name:kind,exact:true}).click();
+    const date=page.getByRole('textbox',{name:/^生效日期/});await date.fill(day);await date.press('Tab');
+  };
+  await add('试用开始','2027-04-09');
+  await page.getByLabel(/试用依据/).fill('实际试用开始通知');
+  await button('保存').focus();await page.keyboard.press('Enter');
+  await expect(page.getByText('试用中',{exact:true})).toBeVisible();
+  await button('试用开始 · 2027-04-09').click();
+  await expect(page.getByRole('heading',{name:'试用开始原件',exact:true})).toBeVisible();
+  await add('转正','2027-07-01');await expect(page.getByText('2027-04-09',{exact:true}).last()).toBeVisible();
+  await page.getByLabel(/转正依据/).fill('试用转正通知');await button('保存').click();
+  await expect(page.getByText('已转正',{exact:true})).toBeVisible();await button('转正 · 2027-07-01').click();
+  await expect(page.getByRole('heading',{name:'转正原件',exact:true})).toBeVisible();
+  await expect(page.getByText('试用转正通知',{exact:true})).toBeVisible();
+  await openRegister(page);
+  const search=page.getByRole('textbox',{name:'姓名或人员编号'});await search.fill(sample.name);await search.press('Enter');
+  const record=page.locator('a[data-object-link]').filter({hasText:'转正'});
+  await expect(record).toHaveCount(1);await record.focus();await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading',{name:'转正 · 工作关系',exact:true})).toBeVisible();
+  await expect(page.getByText('试用转正通知',{exact:true})).toBeVisible();
+  await page.getByRole('link',{name:'返回办理记录'}).click();
+  await expect(record).toBeFocused();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 真实试用开始与关系转正 ${width}x${height}`,async({page})=>{
+    test.setTimeout(150000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await probationJourney(page,sample);
+  });
+}
+test('M04 真实试用开始与关系转正 原生200%',async()=>{await native200(probationJourney)});

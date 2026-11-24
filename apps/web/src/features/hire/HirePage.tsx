@@ -335,6 +335,12 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                         onChange={(e) => update({ arrival: e.target.value })}
                       />
                     )}
+                    <ObjectTextField
+                      type="date"
+                      label="实际试用开始日"
+                      value={draft.trialStart ?? ''}
+                      onChange={(e) => update({ trialStart: e.target.value || undefined })}
+                    />
                     {basis?.lastDay ? (
                       <ObjectDetailField label="任期至（含当日）">{basis.lastDay}</ObjectDetailField>
                     ) : (

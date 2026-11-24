@@ -3,12 +3,15 @@ import { Autocomplete, Box, Button, MenuItem, Stack, TextField, Typography } fro
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField, ObjectTextField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
+import { ProbationFields } from './ProbationFields';
 import type { Option } from './Target';
 
 type Action = Models['EmploymentAction'];
 export type JobDraft = {
   mode: 'add' | 'insert' | 'correct' | 'redate';
-  kind: 'DataChange' | 'Transfer';
+  kind: 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment';
+  occurrence?: Option;
+  predecessor?: Action;
   action?: Action;
   day: string;
   source: string;
@@ -19,7 +22,23 @@ export type JobDraft = {
   requires?: Models['EmploymentRequiredFact'];
 };
 
-const names = { Hire: '入职', CancelHire: '撤销入职', DataChange: '数据更改', Transfer: '调动' };
+const names = {
+  Hire: '入职',
+  CancelHire: '撤销入职',
+  DataChange: '数据更改',
+  Transfer: '调动',
+  ProbationStart: '试用开始',
+  ConfirmEmployment: '转正',
+};
+export const relationAction = (kind: string) => kind === 'ProbationStart' || kind === 'ConfirmEmployment';
+export function availableRecordTypes(view: Models['AssignmentView']): JobDraft['kind'][] {
+  const result: JobDraft['kind'][] = [];
+  if (view.canChangeLocation) result.push('DataChange');
+  if (view.canTransfer) result.push('Transfer');
+  if (view.canStartProbation) result.push('ProbationStart');
+  if (view.canConfirm) result.push('ConfirmEmployment');
+  return result;
+}
 export const actionLabel = (action: Action) => names[action.kind as keyof typeof names] ?? action.kind;
 const operations = { add: '新增记录', insert: '插入记录', correct: '更正记录', redate: '调整生效日期' };
 
@@ -28,6 +47,8 @@ export function draftChanged(draft: JobDraft, initial: JobDraft) {
     draft.day !== initial.day ||
     draft.kind !== initial.kind ||
     draft.notice !== initial.notice ||
+    draft.occurrence?.id !== initial.occurrence?.id ||
+    draft.predecessor?.id !== initial.predecessor?.id ||
     draft.value?.id !== initial.value?.id ||
     draft.department?.id !== initial.department?.id ||
     draft.job?.id !== initial.job?.id ||
@@ -144,10 +165,16 @@ export function AssignmentRecordForm({
         }),
       ),
   );
+  const relation = relationAction(draft.kind);
+  const options = availableRecordTypes(view);
   const valid =
     !!draft.day &&
     (draft.mode === 'redate' ||
-      ((location ? !!draft.value : !!draft.department && !!draft.job && !!draft.notice.trim()) &&
+      ((relation
+        ? !!draft.notice.trim()
+        : location
+          ? !!draft.value
+          : !!draft.department && !!draft.job && !!draft.notice.trim()) &&
         (!prior || !!basis.data)));
   function submit() {
     if (!valid || !dirty || busy) return;
@@ -175,15 +202,18 @@ export function AssignmentRecordForm({
         <Typography component="h3">
           {operations[draft.mode]} · {names[draft.kind]}
         </Typography>
-        {!draft.action && view.canTransfer && view.canChangeLocation && (
+        {!draft.action && options.length > 1 && (
           <ObjectTextField
             select
             label="办理类型"
             value={draft.kind}
             onChange={(e) => update({ ...draft, kind: e.target.value as JobDraft['kind'] })}
           >
-            <MenuItem value="DataChange">数据更改</MenuItem>
-            <MenuItem value="Transfer">调动</MenuItem>
+            {options.map((kind) => (
+              <MenuItem key={kind} value={kind}>
+                {names[kind]}
+              </MenuItem>
+            ))}
           </ObjectTextField>
         )}
         <ObjectTextField
@@ -195,7 +225,9 @@ export function AssignmentRecordForm({
           onChange={(e) => update({ ...draft, day: e.target.value })}
         />
         {draft.mode !== 'redate' &&
-          (location ? (
+          (relation ? (
+            <ProbationFields view={view} draft={draft} csrf={csrf} update={update} />
+          ) : location ? (
             <>
               <ObjectDetailField label="业务原因">工作地点变更</ObjectDetailField>
               <ObjectDetailField label="工作地点" inputId="assignment-location" required>

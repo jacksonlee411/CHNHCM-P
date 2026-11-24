@@ -17,7 +17,7 @@ import * as person from '../personnel/api';
 export const registerPath = '/personnel/actions';
 type Row = Models['EmploymentRegisterRow'];
 type Result = Models['EmploymentRegister'];
-const kinds = { Hire: '入职', DataChange: '数据更改', Transfer: '调动' } as const;
+const kinds = { Hire: '入职', DataChange: '数据更改', Transfer:'调动',AdditionalAssignment:'新增兼岗', ParallelEmployment:'并行关系聘任',ProbationStart:'试用开始',ConfirmEmployment:'转正' } as const;
 const statuses = { effective: '已生效', future: '尚未生效', cancelled: '已撤销', deleted: '已删除' } as const;
 const dates = {
   businessFrom: '生效起日',
@@ -221,7 +221,7 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
         </Link>
       );
     };
-    const record = (r: Row) => r.recordNumber + ' 号' + (r.recordNumber === 0 ? '主岗' : '兼岗');
+    const record = (r: Row) => r.relation ? [r.relation.employerName,'工作关系',r.relation.from].filter(Boolean).join(' · ') : r.recordNumber + ' 号' + (r.recordNumber === 0 ? '主岗' : '兼岗');
     const columns: GridColDef<Row>[] = [
       {
         field: 'kind',
