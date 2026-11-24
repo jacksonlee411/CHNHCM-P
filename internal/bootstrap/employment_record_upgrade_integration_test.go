@@ -56,7 +56,7 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 		t.Helper()
 		expression := "to_jsonb(t)"
 		if table == "assignment" {
-			expression += " - 'person_id' - 'record_number'"
+			expression += " - 'person_id' - 'record_number' - 'period'"
 		}
 		from := "staffing." + table + " t"
 		if upgraded {
@@ -92,6 +92,11 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	if !covered {
 		t.Fatal("旧采用的部门或职务没有按原任职身份回填")
 	}
+	must(t, pool.QueryRow(ctx, `SELECT bool_and(a.period=e.period) FROM staffing.assignment a JOIN staffing.employment e ON (a.instance_id,a.employment_id)=(e.instance_id,e.id)`).Scan(&covered))
+	if !covered {
+		t.Fatal("旧首任期起止日未按原关系回填")
+	}
+
 	var records, terms int
 	must(t, pool.QueryRow(ctx, `SELECT count(DISTINCT (r.instance_id,r.person_id,r.record_number)),count(*)
 		FROM staffing.employment_record r JOIN staffing.assignment a USING(instance_id,person_id,record_number)

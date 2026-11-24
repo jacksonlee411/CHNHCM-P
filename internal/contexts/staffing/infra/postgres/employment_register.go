@@ -35,7 +35,7 @@ func validRegisterQuery(q h.RegisterQuery) bool {
 		}
 	}
 	return (q.BusinessTo == "" || q.BusinessFrom <= q.BusinessTo) && (q.RecordedTo == "" || q.RecordedFrom <= q.RecordedTo) &&
-		slices.Contains([]string{"", "Hire", "DataChange", "Transfer"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
+		slices.Contains([]string{"", "Hire", "DataChange", "Transfer", "AdditionalAssignment", "ParallelEmployment"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
 		slices.Contains([]string{"", "recordedAt", "-recordedAt", "businessDate", "-businessDate"}, q.Sort) &&
 		q.Page >= 1 && q.Page <= 1000000 && slices.Contains([]int{20, 50, 100}, q.PageSize)
 }

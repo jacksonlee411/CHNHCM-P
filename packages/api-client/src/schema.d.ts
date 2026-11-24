@@ -5114,6 +5114,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/additional-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assignmentSecondaryOptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/additional-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addSecondaryAssignment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/transfer-options": {
         parameters: {
             query?: never;
@@ -5284,6 +5316,50 @@ export interface components {
             insert?: boolean;
             requires?: components["schemas"]["EmploymentRequiredFact"];
         };
+        AdditionalAssignmentInput: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            lastDay?: string;
+            parallel: boolean;
+            /** Format: uuid */
+            employer?: string;
+            /** Format: uuid */
+            department: string;
+            /** Format: uuid */
+            job: string;
+            /** Format: uuid */
+            bu?: string;
+            /** Format: uuid */
+            location?: string;
+            notice: string;
+            /** Format: uuid */
+            expectedSourceVersion: string;
+        };
+        AdditionalAssignmentOptions: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            lastDay?: string;
+            parallel: boolean;
+            /** Format: uuid */
+            employer?: string;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            bu?: string;
+            /** Format: uuid */
+            location?: string;
+            /** @enum {string} */
+            kind: "department" | "job" | "employer" | "bu" | "location";
+            page: number;
+            search?: string;
+        };
+        SecondaryAssignmentEvidence: {
+            relationshipPrimary: boolean;
+            legal: components["schemas"]["LegalAdoption"][];
+            segments: components["schemas"]["AssignmentSegment"][];
+        };
         EmploymentTransferSearch: {
             /** @enum {string} */
             kind: "department" | "job";
@@ -5357,7 +5433,7 @@ export interface components {
             name: string;
             number: string;
             /** @enum {string} */
-            kind: "Hire" | "DataChange" | "Transfer";
+            kind: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment";
             /** @enum {string} */
             status: "effective" | "future" | "cancelled" | "deleted";
             /** Format: date */
@@ -5487,6 +5563,9 @@ export interface components {
             actions: components["schemas"]["EmploymentAction"][];
             canChangeLocation: boolean;
             canTransfer: boolean;
+            canAddSecondary: boolean;
+            canAddParallel: boolean;
+            relationshipPrimary: boolean;
         };
         HireTargetSearch: {
             /** Format: uuid */
@@ -5522,6 +5601,7 @@ export interface components {
         };
         HireOriginal: {
             departmentName?: string;
+            secondary?: components["schemas"]["SecondaryAssignmentEvidence"];
             transfer?: components["schemas"]["EmploymentTransferEvidence"];
             requires?: components["schemas"]["EmploymentRequiredFact"];
             locationChange?: components["schemas"]["EmploymentLocationEvidence"];
@@ -23014,7 +23094,7 @@ export interface operations {
                 businessTo?: string;
                 recordedFrom?: string;
                 recordedTo?: string;
-                kind?: "Hire" | "DataChange" | "Transfer";
+                kind?: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment";
                 status?: "effective" | "future" | "cancelled" | "deleted";
                 sort?: "recordedAt" | "-recordedAt" | "businessDate" | "-businessDate";
                 page?: number;
@@ -23301,6 +23381,81 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["EmploymentLocationChange"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentSecondaryOptions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdditionalAssignmentOptions"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    addSecondaryAssignment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdditionalAssignmentInput"];
             };
         };
         responses: {

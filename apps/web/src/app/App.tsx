@@ -1,5 +1,6 @@
 import { AssignmentPolicyPage, PurposePage, policyPath } from '../features/readiness/RulesPages';
 import { PersonList } from "../features/personnel/List";
+import { SecondaryAssignmentPage } from '../features/hire/SecondaryAssignmentPage';
 import { EmploymentEntry, AssignmentPage } from '../features/hire/AssignmentPage';
 import {EmploymentRegister,registerPath} from '../features/hire/EmploymentRegister';
 import {RegisterActionPage} from '../features/hire/RegisterActionPage';
@@ -245,6 +246,7 @@ export function App() {
             <Route path={registerPath+'/:actionId'} element={<RegisterActionPage key={location.pathname} session={session}/>}/>
             <Route path={registerPath+'/:actionId/cancel'} element={<RegisterActionPage key={location.pathname} session={session} cancel/>}/>
             <Route path={employees} element={<EmployeeDirectory session={session}/>}/>
+            <Route path={person.path+"/:id/assignments/:assignment/additional"} element={<SecondaryAssignmentPage key={location.pathname} session={session}/>}/>
             <Route path={person.path+"/:id/assignments/:assignment"} element={<AssignmentPage session={session}/>}/>
             <Route path={person.path} element={<PersonList session={session} />}/>
             <Route path={person.path+"/new"} element={<PersonDetail session={session} creating />}/>

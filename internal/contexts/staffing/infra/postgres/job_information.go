@@ -22,7 +22,7 @@ func (u *unit) assignmentIdentity(ctx context.Context, id string) (h.Action, err
 	if !f.ValidID(id) {
 		return h.Action{}, unknownAssignment()
 	}
-	a, err := scanHireAction(u.tx.QueryRow(ctx, hireActionSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind='Hire'", u.store.Instance, id))
+	a, err := scanHireAction(u.tx.QueryRow(ctx, hireActionSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment')", u.store.Instance, id))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return a, unknownAssignment()
 	}
@@ -113,7 +113,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		}
 		out.Name, out.Number = recognized[0].Name, recognized[0].Number
 		out.Period = a.Period
-		e = u.tx.QueryRow(ctx, `SELECT e.relationship,coalesce((SELECT elem->>'entityName' FROM jsonb_array_elements(r.adoption->'sources'->'legal') elem WHERE (elem->>'from')<=$3 AND (coalesce(elem->>'until','')='' OR (elem->>'until')>$3) LIMIT 1),r.adoption#>>'{sources,legal,0,entityName}','') FROM staffing.employment e JOIN staffing.employment_action a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id) JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision) WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind='Hire'`, st.Instance, id, day).Scan(&out.Relationship, &out.EmployerName)
+		e = u.tx.QueryRow(ctx, `SELECT e.relationship,coalesce((SELECT elem->>'entityName' FROM jsonb_array_elements(coalesce(r.adoption#>'{sources,legal}',r.adoption#>'{secondary,legal}')) elem WHERE (elem->>'from')<=$3 AND (coalesce(elem->>'until','')='' OR (elem->>'until')>$3) LIMIT 1),r.adoption#>>'{sources,legal,0,entityName}',r.adoption#>>'{secondary,legal,0,entityName}','') FROM staffing.employment e JOIN staffing.employment_action a ON (a.instance_id,a.employment_id)=(e.instance_id,e.id) JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision) WHERE a.instance_id=$1 AND a.assignment_id=$2 AND a.kind IN ('Hire','AdditionalAssignment','ParallelEmployment')`, st.Instance, id, day).Scan(&out.Relationship, &out.EmployerName)
 		if e != nil {
 			return e
 		}
@@ -138,7 +138,19 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		} else if !errors.Is(e, pgx.ErrNoRows) {
 			return e
 		}
+		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment_primary WHERE instance_id=$1 AND layer='assignment' AND owner_id=$2 AND target_id=$3 AND period @> $4::date)`, st.Instance, a.Employment, id, day).Scan(&out.RelationshipPrimary)
+		if e != nil {
+			return e
+		}
 		if !a.Cancelled && version == a.SourceVersion {
+			if out.State != nil {
+				if out.CanAddSecondary, e = u.employmentAllowed(ctx, "assignment.add", a.Person, a.Employer, a.Department, false); e != nil {
+					return e
+				}
+				if out.CanAddParallel, e = u.employmentAllowed(ctx, "employment.parallel", a.Person, a.Employer, a.Department, false); e != nil {
+					return e
+				}
+			}
 			out.CanTransfer, e = u.employmentAllowed(ctx, "transfer", a.Person, a.Employer, a.Department, false)
 			if e != nil {
 				return e
@@ -169,7 +181,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 				return e
 			}
 			item.CanHistory = history.from || history.to
-			mutable := item.Kind != "Hire" && item.Kind != "CancelHire" && item.Operation != "Delete" && !a.Cancelled && version == a.SourceVersion && item.CanHistory
+			mutable := !h.StartsAssignment(item.Kind) && item.Kind != "CancelHire" && item.Operation != "Delete" && !a.Cancelled && version == a.SourceVersion && item.CanHistory
 			if item.Kind == "Transfer" {
 				mutable = mutable && history.from && history.to
 				if !read.to {

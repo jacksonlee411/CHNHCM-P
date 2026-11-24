@@ -19,7 +19,7 @@ export type JobDraft = {
   requires?: Models['EmploymentRequiredFact'];
 };
 
-const names = { Hire: '入职', CancelHire: '撤销入职', DataChange: '数据更改', Transfer: '调动' };
+const names = { Hire: '入职', CancelHire: '撤销入职', DataChange: '数据更改', Transfer: '调动', AdditionalAssignment:'新增兼岗', ParallelEmployment:'并行关系聘任' };
 export const actionLabel = (action: Action) => names[action.kind as keyof typeof names] ?? action.kind;
 const operations = { add: '新增记录', insert: '插入记录', correct: '更正记录', redate: '调整生效日期' };
 
