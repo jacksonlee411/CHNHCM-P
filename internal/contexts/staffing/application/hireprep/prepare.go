@@ -32,12 +32,17 @@ func DirectEmployeeSample() Rule {
 }
 
 // DecisionRef identifies the existing decision, optionally its original roster line.
-type DecisionRef struct{ Source, Version, Line string }
+type DecisionRef struct {
+	Source       string `json:"source"`
+	Version      string `json:"version"`
+	Line         string `json:"line,omitempty"`
+	LineRevision string `json:"lineRevision,omitempty"`
+}
 
 // Decisions checks the original decision under current authority. A different
 // person, appointment, obsolete revision or inaccessible line is rejected.
 type Appointment struct {
-	Person, Employer, Department, Job string
+	Person, Employer, Department, Job, BU, Location string
 	f.Period
 }
 type Decisions interface {

@@ -27,7 +27,10 @@ import (
 )
 
 type Store struct {
-	HirePeople        hireprep.Personnel
+	HirePeople interface {
+		hireprep.Personnel
+		CheckHirePerson(context.Context, foundation.Credentials, string) error
+	}
 	HirePurposes      org.LegalPurposes
 	EmploymentAllowed func(context.Context, pgx.Tx, string, string, string, string, string, bool) (bool, error)
 	QuotaPolicies     func(context.Context, d.UsageIntent) ([]d.QuotaPolicy, error)

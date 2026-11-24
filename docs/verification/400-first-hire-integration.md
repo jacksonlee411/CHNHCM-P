@@ -166,3 +166,12 @@ make smoke SMOKE_ARGS="tests/e2e/correction-coverage.spec.ts tests/e2e/lifecycle
 2026-11-24 在公开提交 `b60d0ce` 的独立检出中以 `go test -tags=integration -count=1` 实际运行两个 PostgreSQL/API 测试根。人员原档及用途权限测试通过，耗时 11.67 秒。首单测试通过，耗时 22.19 秒，含保存前换证与撤权、成功回执故障回滚、重复办理与原号查回、2027-04-01 生效前后的零占编人数及未来撤销。两个实际数据库连接分别按先收窄资格和先提交入职的顺序竞争，断言覆盖最终资格、关系与原采用。[原人及权限测试](../../tests/integration/personnel_hire_test.go) · [首单及双连接测试](../../internal/bootstrap/first_hire_integration_test.go)
 
 公开 PR #1 的第 4 个浏览器分片实际运行了九项 T03 菜单场景，全部通过，覆盖只读、补证放弃、原号查回、五种视口和原生 200% 下的首单保存及未来撤销。该 PR 的完整十一片结果见第 11 节。[首单分片原始运行](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45315256108/job/138181294165) · [浏览器场景](../../tests/e2e/first-hire.spec.ts)
+
+<a id="decision-first-hire"></a>
+## 13 公共 e 从已有任用决定办理首单
+
+基线为公共 `1126c2b6`，迁移账本为 00038。Go 消费合同已有 DecisionRef，原保存事务只接受无编号通知。本批在 M04 接入实际签发、不可变原单与稳定名单行。首单继续使用原人员、主体与职务端口。签发、员工办理与采用历史均走已认证的 HTTP 接口。[签发合同](../specs/m04/403-hire-technical-contract.md#appointment-original) · [员工详情办理](../../apps/web/src/features/hire/HirePage.tsx)
+
+合成样本到岗日为 2027-04-01。两位经办人使用不同会话及提交号，测试在首次关系插入前暂挂第一笔，实际观察到两个 PostgreSQL 后端的等待关系后释放。两人都定位到同一办理，库中只有一笔关系、任职、办理、采用和发布，两层主选择各一项。另一行可独立完成。对方的提交号查回为未执行，自己的成功回执按当前读权返回。名单换版、原行换人或范围撤回均使旧预览失效。回执落库故障时整笔回滚。未来入职撤销后，同号重送及换版换号均不能恢复效果，历史读回实际采用的原单修订及本人行。[数据库与 API 测试](../../internal/bootstrap/appointment_decision_integration_test.go)
+
+首轮新增测试在建立用人资格时漏传 `expectedVersion`，严格协议返回 400，尚未执行任用流程。补齐夹具后重新执行通过。原无编号路径的换证、回执故障与 L3 两种提交顺序在本批实库复跑。00038 旧库经前向升级、重复升级后通过 00039 运行准入。[原首单回归](../../internal/bootstrap/first_hire_integration_test.go)

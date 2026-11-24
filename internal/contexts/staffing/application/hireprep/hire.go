@@ -8,22 +8,24 @@ import (
 )
 
 type Adoption struct {
+	Decision *DecisionRef              `json:"decision,omitempty"`
 	Identity IdentitySource            `json:"identity"`
 	Rule     string                    `json:"rule"`
 	Legal    []org.LegalAdoption       `json:"legal"`
 	Segments []staff.AssignmentSegment `json:"segments"`
 }
 type Hire struct {
-	Person     string    `json:"person"`
-	Employer   string    `json:"employer"`
-	Department string    `json:"department"`
-	Job        string    `json:"job"`
-	BU         string    `json:"bu,omitempty"`
-	Location   string    `json:"location,omitempty"`
-	Arrival    string    `json:"arrival"`
-	LastDay    string    `json:"lastDay,omitempty"`
-	Notice     string    `json:"notice"`
-	Expected   *Adoption `json:"expected,omitempty"`
+	Person     string       `json:"person"`
+	Employer   string       `json:"employer"`
+	Department string       `json:"department"`
+	Job        string       `json:"job"`
+	BU         string       `json:"bu,omitempty"`
+	Location   string       `json:"location,omitempty"`
+	Arrival    string       `json:"arrival"`
+	LastDay    string       `json:"lastDay,omitempty"`
+	Decision   *DecisionRef `json:"decision,omitempty"`
+	Notice     string       `json:"notice,omitempty"`
+	Expected   *Adoption    `json:"expected,omitempty"`
 }
 type Preview struct {
 	Adoption *Adoption `json:"adoption,omitempty"`
@@ -66,14 +68,15 @@ type Cancel struct {
 	Reason   string `json:"reason"`
 }
 type Original struct {
-	Action            Action    `json:"action"`
-	Sources           *Adoption `json:"sources,omitempty"`
-	Reason            string    `json:"reason,omitempty"`
-	State             string    `json:"state,omitempty"`
-	PrimaryPurpose    string    `json:"primaryPurpose,omitempty"`
-	PrimaryEmployment string    `json:"primaryEmployment,omitempty"`
-	PrimaryAssignment string    `json:"primaryAssignment,omitempty"`
-	OriginalRevision  string    `json:"originalRevision,omitempty"`
+	Appointment       *DecisionOption `json:"appointment,omitempty"`
+	Action            Action          `json:"action"`
+	Sources           *Adoption       `json:"sources,omitempty"`
+	Reason            string          `json:"reason,omitempty"`
+	State             string          `json:"state,omitempty"`
+	PrimaryPurpose    string          `json:"primaryPurpose,omitempty"`
+	PrimaryEmployment string          `json:"primaryEmployment,omitempty"`
+	PrimaryAssignment string          `json:"primaryAssignment,omitempty"`
+	OriginalRevision  string          `json:"originalRevision,omitempty"`
 }
 type EmployerSearch struct {
 	Person     string `json:"person"`
@@ -96,6 +99,8 @@ type TargetSearch struct {
 	Page       int    `json:"page"`
 }
 type Hires interface {
+	PublishDecision(context.Context, f.Credentials, string, DecisionPublication) (DecisionEdition, error)
+	HireDecisions(context.Context, f.Credentials, string) ([]DecisionOption, error)
 	HireTargets(context.Context, f.Credentials, TargetSearch) ([]org.EligibleEntity, error)
 	HireEmployers(context.Context, f.Credentials, EmployerSearch) ([]org.EligibleEntity, error)
 	OriginalAction(context.Context, f.Credentials, string) (Original, error)

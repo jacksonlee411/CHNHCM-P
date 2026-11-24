@@ -4858,6 +4858,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/appointment-decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["publishAppointmentDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/persons/{id}/appointment-decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPersonAppointmentDecisions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hires/preview": {
         parameters: {
             query?: never;
@@ -5023,6 +5055,7 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            appointment?: components["schemas"]["DecisionOption"];
             action: components["schemas"]["EmploymentAction"];
             sources?: components["schemas"]["HireAdoption"];
             reason?: string;
@@ -5047,13 +5080,60 @@ export interface components {
             /** Format: uuid */
             inspectionRevision?: string;
         };
+        DecisionRef: {
+            /** Format: uuid */
+            source: string;
+            /** Format: uuid */
+            version: string;
+            /** Format: uuid */
+            line?: string;
+            /** Format: uuid */
+            lineRevision?: string;
+        };
+        DecisionEdition: {
+            /** Format: uuid */
+            source: string;
+            /** Format: uuid */
+            version: string;
+        };
+        DecisionRow: {
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            line?: string;
+            employer?: components["schemas"]["EligibleEntity"];
+            department?: components["schemas"]["EligibleEntity"];
+            job?: components["schemas"]["EligibleEntity"];
+            bu?: components["schemas"]["EligibleEntity"];
+            location?: components["schemas"]["EligibleEntity"];
+            /** Format: date */
+            arrival?: string;
+            /** Format: date */
+            lastDay?: string;
+        };
+        DecisionOption: components["schemas"]["DecisionRow"] & {
+            ref: components["schemas"]["DecisionRef"];
+            number: string;
+        };
+        DecisionPublication: {
+            /** Format: uuid */
+            source: string;
+            /** Format: uuid */
+            expected?: string;
+            number: string;
+            roster: boolean;
+            withdrawn?: boolean;
+            rows: components["schemas"]["DecisionRow"][];
+        };
         HireAdoption: {
+            decision?: components["schemas"]["DecisionRef"];
             identity: components["schemas"]["HireIdentity"];
             rule: string;
             legal: components["schemas"]["LegalAdoption"][];
             segments: components["schemas"]["AssignmentSegment"][];
         };
         HireInput: {
+            decision?: components["schemas"]["DecisionRef"];
             /** Format: uuid */
             person: string;
             /** Format: uuid */
@@ -5070,7 +5150,7 @@ export interface components {
             arrival: string;
             /** Format: date */
             lastDay?: string;
-            notice: string;
+            notice?: string;
             expected?: components["schemas"]["HireAdoption"];
         };
         HirePreview: {
@@ -22168,6 +22248,73 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    publishAppointmentDecision: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionPublication"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionEdition"];
+                };
+            };
+            /** @description Rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listPersonAppointmentDecisions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Applicable originals for this person under current authority */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionOption"][];
                 };
             };
             /** @description Rejected or unavailable */
