@@ -1,8 +1,10 @@
 package postgres
 
 import (
+	staff "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	"context"
 	"errors"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -455,20 +457,20 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if e != nil {
 			return e
 		}
-		if out.Sources != nil {
-			segs := out.Sources.Segments[:0]
-			for _, seg := range out.Sources.Segments {
+		visibleSegments := func(all []staff.AssignmentSegment) ([]staff.AssignmentSegment, error) {
+			segs := all[:0]
+			for _, seg := range all {
 				if seg.DepartmentID != "" {
 					ok, err := u.employmentAllowed(ctx, "history", a.Person, a.Employer, seg.DepartmentID, false)
 					if err != nil {
-						return err
+						return nil, err
 					}
 					if !ok {
 						continue
 					}
 					ok, err = u.employmentAllowed(ctx, "read", a.Person, a.Employer, seg.DepartmentID, false)
 					if err != nil {
-						return err
+						return nil, err
 					}
 					if !ok {
 						continue
@@ -476,7 +478,12 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 				}
 				segs = append(segs, seg)
 			}
-			out.Sources.Segments = segs
+			return segs, nil
+		}
+		if out.Sources != nil {
+			if out.Sources.Segments, e = visibleSegments(out.Sources.Segments); e != nil {
+				return e
+			}
 		}
 		e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT adoption->>'departmentName' FROM staffing.assignment_segment
             WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date),'')`, st.Instance, a.Assignment, version, a.BusinessDate).Scan(&out.DepartmentName)
@@ -511,7 +518,17 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 					out.Promotion.After.JobSource = ""
 				}
 			}
+			if disclosure.to {
+				transfer.After.Segments, e = visibleSegments(transfer.After.Segments)
+				if e != nil {
+					return e
+				}
+				if !slices.ContainsFunc(transfer.After.Segments, func(v staff.AssignmentSegment) bool { return v.Position != "" }) {
+					transfer.After.Position = ""
+				}
+			}
 			if !disclosure.from {
+				transfer.BeforePosition, transfer.BeforePositionName = "", ""
 				transfer.BeforeGrade = nil
 				transfer.BeforeDepartment, transfer.BeforeJob, transfer.BeforeDepartmentName, transfer.BeforeJobName = "", "", "", ""
 			}

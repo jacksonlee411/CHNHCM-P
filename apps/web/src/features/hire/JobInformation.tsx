@@ -217,6 +217,8 @@ export function JobInformation({
     const state = data.state;
     const department = after?.department ?? state?.departmentId;
     const job = after?.job ?? state?.jobId;
+    const adoptedPosition = after?.segments?.find(segment => segment.position);
+    const position = after ? after.position : state?.position;
     const next: JobDraft = {
       mode,
       kind: successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
@@ -231,6 +233,7 @@ export function JobInformation({
       department: department
         ? { id: department, name: after?.segments?.[0]?.departmentName ?? state?.department ?? '' }
         : undefined,
+      position: position ? {id: position, name: adoptedPosition?.positionName ?? state?.positionName ?? position} : undefined,
       job: job ? { id: job, name: after?.segments?.[0]?.jobName ?? state?.job ?? '' } : undefined,
       notice: evidence?.action.notice ?? '',
       requires: evidence?.requires,
@@ -300,7 +303,7 @@ export function JobInformation({
       void submit.submit({
         kind: 'transfer',
         action,
-        input: { ...changes, department: record.department?.id, job: record.job?.id, notice: record.notice,previous:reference(record.predecessor) },
+        input: { ...changes, position:record.position?.id, department: record.department?.id, job: record.job?.id, notice: record.notice,previous:reference(record.predecessor) },
       });
   }
   function remove(a: Action) {
@@ -573,14 +576,14 @@ export function OriginalEvidence({
       </>}
       {original.transfer?.beforeDepartmentName && (
         <ObjectDetailField label="调出安排">
-          {[original.transfer.beforeDepartmentName, original.transfer.beforeJobName]
+          {[original.transfer.beforeDepartmentName, original.transfer.beforeJobName, original.transfer.beforePositionName]
             .filter(Boolean)
             .join(' · ')}
         </ObjectDetailField>
       )}
       {original.transfer?.after.segments?.[0] && (
         <ObjectDetailField label="调入安排">
-          {[original.transfer.after.segments[0].departmentName, original.transfer.after.segments[0].jobName]
+          {[original.transfer.after.segments[0].departmentName, original.transfer.after.segments[0].jobName,original.transfer.after.segments[0].positionName, original.transfer.after.segments[0].position ? (original.transfer.after.segments[0].seats ? '占编' : '免占编') : undefined]
             .filter(Boolean)
             .join(' · ')}
         </ObjectDetailField>

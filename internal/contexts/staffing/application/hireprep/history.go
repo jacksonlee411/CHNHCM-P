@@ -10,6 +10,7 @@ import (
 // A transfer defines the two target identifiers and adopts the applicable M03
 // segments. A separate location action changes only location.
 type JobTransfer struct {
+	Position   string                    `json:"position,omitempty"`
 	Department string                    `json:"department,omitempty"`
 	Job        string                    `json:"job,omitempty"`
 	Segments   []staff.AssignmentSegment `json:"segments,omitempty"`
@@ -23,6 +24,7 @@ type Placement struct {
 	Grade      *GradeRef
 }
 type RequiredFact struct {
+	Position   string `json:"position,omitempty"`
 	Action     string `json:"action"`
 	Revision   string `json:"revision"`
 	Location   string `json:"location,omitempty"`
@@ -135,7 +137,7 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 			if req := r.Requires; req != nil {
 				pred, ok := entries[req.Action]
 				if !ok || pred.Day >= day || (req.Location != "" && (before.Location == nil || before.Location.ID != req.Location)) ||
-					(req.Department != "" && before.Department != req.Department) || (req.Job != "" && before.Job != req.Job) {
+					(req.Department != "" && before.Department != req.Department) || (req.Job != "" && before.Job != req.Job) || (req.Position != "" && before.Adoption.Position != req.Position) {
 					return result, historyConflict("后续办理所依赖的原事实无法保留")
 				}
 				change.RequiredRevision = pred.Revision
@@ -227,6 +229,9 @@ func applyTransfer(state *Placement, transfer *JobTransfer, day string) error {
 	for _, s := range transfer.Segments {
 		if s.Includes(day) {
 			state.Department, state.Job, state.Adoption = transfer.Department, transfer.Job, s
+			if s.DepartmentID != "" && s.JobID != "" {
+				state.Department, state.Job = s.DepartmentID, s.JobID
+			}
 			return nil
 		}
 	}
@@ -236,6 +241,7 @@ func applyTransfer(state *Placement, transfer *JobTransfer, day string) error {
 // RecordMaintenance applies an operation to the original business identity.
 // Requires identifies a fact explicitly cited by the decision.
 type RecordMaintenance struct {
+	Position         string        `json:"position,omitempty"`
 	ExpectedSource   string        `json:"expectedSourceVersion"`
 	ExpectedRevision string        `json:"expectedRevision,omitempty"`
 	BusinessDate     string        `json:"businessDate,omitempty"`
@@ -247,6 +253,8 @@ type RecordMaintenance struct {
 	Previous         *ActionRef    `json:"previous,omitempty"`
 }
 type TransferEvidence struct {
+	BeforePosition       string      `json:"beforePosition,omitempty"`
+	BeforePositionName   string      `json:"beforePositionName,omitempty"`
 	BeforeGrade          *GradeRef   `json:"beforeGrade,omitempty"`
 	AfterGrade           *GradeRef   `json:"afterGrade,omitempty"`
 	BeforeDepartment     string      `json:"beforeDepartment,omitempty"`

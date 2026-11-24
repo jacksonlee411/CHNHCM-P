@@ -107,6 +107,9 @@ func (st *Store) ResolvePolicy(ctx context.Context, c f.Credentials, submission 
 }
 
 func (st *Store) CheckAssignment(ctx context.Context, c f.Credentials, in s.AssignmentCheck) (out []s.AssignmentSegment, err error) {
+	return st.checkAssignment(ctx, c, in, nil)
+}
+func (st *Store) checkAssignment(ctx context.Context, c f.Credentials, in s.AssignmentCheck, retained []f.Period) (out []s.AssignmentSegment, err error) {
 	err = st.policy(ctx, c, "check", false, func(u *unit, locked bool) error {
 		if in.Enterprise != u.enterprise.ID {
 			return f.Fail(403, "ACCESS_DENIED", "企业不可用")
@@ -124,7 +127,7 @@ func (st *Store) CheckAssignment(ctx context.Context, c f.Credentials, in s.Assi
 			return e
 		}
 		if in.Position != "" {
-			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked)
+			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked, retained)
 		} else {
 			out, e = app.CheckJobAssignment(ctx, u, in, head, rows, locked)
 		}

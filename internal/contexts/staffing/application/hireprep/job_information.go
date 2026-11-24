@@ -133,7 +133,12 @@ type EmployeeDirectory struct {
 	BusinessAt  string               `json:"businessAt"`
 	Keyword     string               `json:"keyword"`
 }
+type TransferArrangementQuery struct {
+	BusinessDate string `json:"businessDate"`
+	Position     string `json:"position,omitempty"`
+}
 type TransferSearch struct {
+	Job          string `json:"job,omitempty"`
 	BusinessDate string `json:"businessDate"`
 	Page         int    `json:"page"`
 	Search       string `json:"search,omitempty"`
@@ -141,6 +146,7 @@ type TransferSearch struct {
 	Department   string `json:"department,omitempty"`
 }
 type JobInformation interface {
+	TransferArrangement(context.Context, f.Credentials, string, TransferArrangementQuery) (ArrangementMode, error)
 	ExitAssignment(context.Context, f.Credentials, string, string, bool, ExitCommand) (Receipt, error)
 	SetManager(context.Context, f.Credentials, string, string, ManagerCommand) (Receipt, error)
 	RecordPromotion(context.Context, f.Credentials, string, string, string, string, PromotionCommand) (Receipt, error)
