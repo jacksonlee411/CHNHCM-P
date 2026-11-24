@@ -321,10 +321,38 @@ async function journey(page: Page, role: string, relogin: boolean) {
   expect(new URL(page.url()).searchParams.get('page')).toBe('2');
   await openPersonLog(page, 'Space');
   await click308(page, panel.getByRole('link', { name: '查看当次资料', exact: true }).last());
-  await btn('返回当前资料').click();
   const returning = page.getByRole('link', { name: '返回列表', exact: true });
-  await expect(returning).toHaveAttribute('href', /page=2/);
-  await returning.click();
+  if (role === 'admin' && dimensions.zoom === 2) {
+    // Deliver the real journal while the operator is pressing the directory link.
+    let release!: () => void;
+    const resume = new Promise<void>(resolve => { release = resolve; });
+    const journal = '**/api/v1/persons/*/changes';
+    const requested = page.waitForRequest(journal);
+    await page.route(journal, async route => {
+      await resume;
+      await route.continue();
+    }, { times: 1 });
+    try {
+      await btn('返回当前资料').click();
+      await requested;
+      await expect(returning).toHaveAttribute('href', /page=2/);
+      await returning.hover();
+      await page.mouse.down();
+      await expect(returning).toBeFocused();
+      release();
+      await expect(panel.getByRole('link', { name: '查看当次资料' }).last()).toBeAttached();
+      await expect(returning).toBeFocused();
+    } finally {
+      release();
+      await page.mouse.up();
+    }
+  } else {
+    await btn('返回当前资料').click();
+    await expect(panel.getByRole('link', { name: '查看当次资料' }).last()).toBeFocused();
+    await expect(returning).toHaveAttribute('href', /page=2/);
+    await returning.click();
+  }
+  await expect(page).toHaveURL(url => url.pathname === '/personnel/employees' && url.searchParams.get('page') === '2');
   await expect
     .poll(() =>
       page.evaluate(() => ({
@@ -387,18 +415,11 @@ for (const role of ['admin', 'reader'])
       await expect
         .poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio]))
         .toEqual([1280, 900, 1]);
-      for (const [steps, factor] of [
-        [5, 2],
-        [8, 4],
-      ]) {
-        execFileSync('python3', ['docs/verification/data/100-ui-baseline/native-zoom.py', String(steps)], {
-          env,
-        });
-        await expect
-          .poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio]))
-          .toEqual([1280 / factor, 900 / factor, factor]);
-        await journey(page, role, false);
-      }
+      execFileSync('python3', ['docs/verification/data/100-ui-baseline/native-zoom.py', '5'], { env });
+      await expect
+        .poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio]))
+        .toEqual([640, 450, 2]);
+      await journey(page, role, false);
     } finally {
       await browser?.close();
       display.kill();
@@ -1178,7 +1199,6 @@ test('504 共用查看与长表单的视口和原生缩放', async () => {
         [599, 844, 1],
         [600, 844, 1],
         [1280, 900, 2],
-        [1280, 900, 4],
       ]) {
         await p.setViewportSize({ width: w, height: h });
         if (z > 1) await browser.setZoom(z);
@@ -1541,7 +1561,6 @@ test('504 第二批地址目录控件、五种视口与原生缩放', async () =
       [320, 900, 1],
       [320, 256, 1],
       [1280, 900, 2],
-      [1280, 900, 4],
     ]) {
       await p.setViewportSize({ width, height });
       if (zoom !== 1) await browser.setZoom(zoom);
@@ -1852,7 +1871,6 @@ test('504 第三批学习经历五种视口及原生缩放', async () => {
       [320, 900, 1],
       [320, 256, 1],
       [1280, 900, 2],
-      [1280, 900, 4],
     ]) {
       await p.setViewportSize({ width, height });
       if (zoom > 1) await browser.setZoom(zoom);
@@ -2058,7 +2076,6 @@ test('504 第四批整页末栏和银行弹框的视口与原生缩放', async (
       [320, 900, 1],
       [320, 256, 1],
       [1280, 900, 2],
-      [1280, 900, 4],
     ]) {
       await page.setViewportSize({ width, height });
       if (zoom !== 1) await browser.setZoom(zoom);

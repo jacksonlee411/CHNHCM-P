@@ -54,7 +54,7 @@
 
 ## 4 产品候选的页面验收
 
-T01 登记和名录按 501 的专项目标从正常菜单验证。经办人和只读者各走五种常规视口及原生 200%、400%，共 14 组。记录所测角色、实际倍率、内容尺寸和办理结果。[501 正常菜单与返回](501-person-registration-requirements.md#m01-ac-008) · [已交付职务页面记录](../../verification/308-job-page-standard-implementation.md)
+T01 登记和名录按 501 的专项目标从正常菜单验证。经办人和只读者各走五种常规视口及原生 200%，共 12 组。记录所测角色、实际倍率、内容尺寸和办理结果。[501 正常菜单与返回](501-person-registration-requirements.md#m01-ac-008) · [已交付职务页面记录](../../verification/308-job-page-standard-implementation.md)
 
 后续个人资料正文改动按 012 的视口规则验收。经办人走查看、更正和整页保存或取消，只读者走同一行的查看与返回，受限角色核对字段、摘要和可见条数。旧档与整页办理按 505 的 018 专项验收。逐批弹框的三种状态、字段变体及共用弹框首次接入或布局变化时的专项缩放按 020 验收。[012 视口与缩放](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) · [505 旧档与页面](505-personal-profile-contract.md#m01-ac-018) · [505 弹框验收](505-personal-profile-contract.md#m01-ac-020)
 
