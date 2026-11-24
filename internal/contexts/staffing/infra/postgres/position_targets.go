@@ -79,7 +79,7 @@ func (st *Store) HireArrangement(ctx context.Context, c f.Credentials, in h.Arra
 			if !f.ValidID(in.Position) {
 				return f.Fail(400, "HIRE_INPUT", "岗位无效")
 			}
-			ok, e := u.positionEmploymentScope(ctx, in.Position, term, in.Person, "", hirePermission(in.RehireOf))
+			ok, e := u.positionEmploymentScope(ctx, in.Position, term, in.Person, "", hirePermission(in.RehireOf), "hire")
 			if e != nil {
 				return e
 			}
@@ -125,7 +125,7 @@ func (u *unit) hirePositionTargets(ctx context.Context, term f.Period, in h.Targ
 			return e
 		}
 		for _, id := range ids {
-			visible, e := u.positionEmploymentScope(ctx, id, term, in.Person, in.Employer, permission)
+			visible, e := u.positionEmploymentScope(ctx, id, term, in.Person, in.Employer, permission, "hire")
 			if e != nil {
 				return e
 			}

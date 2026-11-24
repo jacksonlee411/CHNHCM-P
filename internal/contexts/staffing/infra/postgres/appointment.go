@@ -166,7 +166,7 @@ func (st *Store) HireDecisions(ctx context.Context, c f.Credentials, person stri
 					if e != nil {
 						return e
 					}
-					ok, e = u.positionEmploymentScope(ctx, opt.Position.ID, term, person, targetID(opt.Employer), permission)
+					ok, e = u.positionEmploymentScope(ctx, opt.Position.ID, term, person, targetID(opt.Employer), permission, "hire")
 					if e != nil {
 						return e
 					}

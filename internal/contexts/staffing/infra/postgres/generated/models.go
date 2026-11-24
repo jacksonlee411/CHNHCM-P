@@ -1898,6 +1898,13 @@ type StaffingPositionReplenishment struct {
 	RecordedAt   pgtype.Timestamptz
 }
 
+type StaffingPositionReplenishmentClosed struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	RecordedAt   pgtype.Timestamptz
+}
+
 type StaffingPositionRevision struct {
 	InstanceID string
 	ObjectID   string

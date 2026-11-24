@@ -80,6 +80,16 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			boundaries = append(boundaries, r.From, r.Until)
 		}
 	}
+	jobRequired := false
+	for _, span := range in.Split(boundaries) {
+		rule, e := d.ApplicablePolicy(rules, in.Enterprise, in.Category, in.Purpose, span.From)
+		if e != nil {
+			return nil, e
+		}
+		if rule.Mode == "JobOnly" {
+			jobRequired = true
+		}
+	}
 	for _, r := range pos.Records {
 		boundaries = append(boundaries, r.Date, r.End)
 	}
@@ -109,7 +119,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			}
 			record := pos.Records[i]
 			targets.Department, targets.Job = record.Data["departmentId"], record.Data["jobId"]
-			if p.From == in.From && (in.Department != "" && targets.Department != in.Department || in.Job != "" && targets.Job != in.Job) {
+			if !jobRequired && p.From == in.From && (in.Department != "" && targets.Department != in.Department || in.Job != "" && targets.Job != in.Job) {
 				return nil, f.Fail(409, "POSITION_TARGET_CHANGED", "岗位归属与拟任安排不符")
 			}
 			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: "M04"}
@@ -172,16 +182,35 @@ func replenishmentAt(rows []s.ReplenishmentRecord, day string) *s.ReplenishmentR
 	return nil
 }
 
-func (u *unit) positionEmploymentScope(ctx context.Context, id string, term f.Period, person, employer, permission string) (bool, error) {
+func (u *unit) positionEmploymentScope(ctx context.Context, id string, term f.Period, person, employer, permission, purpose string) (bool, error) {
 	pos, e := u.Load(ctx, d.Position, id, "")
 	if e != nil {
 		return false, e
 	}
+	_, policies, e := u.arrangementRules(ctx)
+	if e != nil {
+		return false, e
+	}
+	rules := app.QuotaPolicies(u.enterprise.ID, policies)
+	var days []string
+	for _, r := range rules {
+		if r.Category == "Employee" && r.Purpose == purpose {
+			days = append(days, r.From, r.Until)
+		}
+	}
 	for _, r := range pos.Records {
-		if !r.Active() || !term.Overlaps(f.Period{From: r.Date, Until: r.End}) {
+		days = append(days, r.Date, r.End)
+	}
+	for _, span := range term.Split(days) {
+		rule, ruleErr := d.ApplicablePolicy(rules, u.enterprise.ID, "Employee", purpose, span.From)
+		if ruleErr == nil && rule.Mode == "JobOnly" {
 			continue
 		}
-		ok, e := u.employmentAllowed(ctx, permission, person, employer, r.Data["departmentId"], employer == "")
+		i := d.At(pos, span.From)
+		if i < 0 || !pos.Records[i].Active() {
+			continue
+		}
+		ok, e := u.employmentAllowed(ctx, permission, person, employer, pos.Records[i].Data["departmentId"], employer == "")
 		if e != nil || !ok {
 			return false, e
 		}

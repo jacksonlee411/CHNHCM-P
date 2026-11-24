@@ -16,7 +16,13 @@ CREATE TABLE staffing.position_replenishment (
     FOREIGN KEY(instance_id,position_id) REFERENCES staffing.position(instance_id,id)
 );
 CREATE TRIGGER immutable_fact BEFORE UPDATE OR DELETE ON staffing.position_replenishment FOR EACH ROW EXECUTE FUNCTION staffing.immutable_fact();
-GRANT SELECT,INSERT ON staffing.position_intake,staffing.position_replenishment TO chnhcm_app;
+CREATE TABLE staffing.position_replenishment_closed (
+    instance_id uuid NOT NULL, actor uuid NOT NULL, submission_id uuid NOT NULL,
+    recorded_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+    PRIMARY KEY(instance_id,actor,submission_id)
+);
+CREATE TRIGGER immutable_fact BEFORE UPDATE OR DELETE ON staffing.position_replenishment_closed FOR EACH ROW EXECUTE FUNCTION staffing.immutable_fact();
+GRANT SELECT,INSERT ON staffing.position_intake,staffing.position_replenishment,staffing.position_replenishment_closed TO chnhcm_app;
 CREATE INDEX assignment_segment_position_use ON staffing.assignment_segment(instance_id,(adoption->>'position')) WHERE coalesce(adoption->>'position','')<>'';
 
 -- +goose StatementBegin

@@ -418,7 +418,7 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                 AND (32=ANY(versions) OR to_regclass('organization.legal_purpose_source') IS NULL)
                 AND to_regclass('organization.legal_purpose_terminal') IS NULL)
           )))
-          AND (NOT (49=ANY(versions)) OR (to_regclass('staffing.position_intake') IS NOT NULL AND to_regclass('staffing.position_replenishment') IS NOT NULL))
+          AND (NOT (49=ANY(versions)) OR (to_regclass('staffing.position_intake') IS NOT NULL AND to_regclass('staffing.position_replenishment') IS NOT NULL AND to_regclass('staffing.position_replenishment_closed') IS NOT NULL))
           AND (NOT (48=ANY(versions)) OR (to_regclass('staffing.manager_agreement') IS NOT NULL AND to_regclass('staffing.employment_exit') IS NOT NULL AND to_regclass('staffing.assignment_exit') IS NOT NULL AND to_regclass('access.employment_lifecycle_fixture') IS NOT NULL))
           AND (NOT (47=ANY(versions)) OR (to_regclass('staffing.promotion_transfer') IS NOT NULL AND to_regclass('access.employment_promotion_fixture') IS NOT NULL))
           AND (NOT (46=ANY(versions)) OR (to_regclass('staffing.relationship_probation_fact') IS NOT NULL

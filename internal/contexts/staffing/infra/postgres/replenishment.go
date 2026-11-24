@@ -120,6 +120,13 @@ func (st *Store) ChangeReplenishment(ctx context.Context, c f.Credentials, id, k
 		if e != pgx.ErrNoRows {
 			return e
 		}
+		var closed bool
+		if e = u.tx.QueryRow(ctx, "SELECT EXISTS(SELECT FROM staffing.position_replenishment_closed WHERE instance_id=$1 AND actor=$2 AND submission_id=$3)", st.Instance, u.guard.Principal().ID, key).Scan(&closed); e != nil {
+			return e
+		}
+		if closed {
+			return f.Fail(409, "REPLENISHMENT_CLOSED", "该提交已查回为未办理，请重新发起")
+		}
 		if v.Version != in.Expected {
 			return f.Fail(409, "M03_SOURCE_CHANGED", "补员安排已变化，请重新核对")
 		}
@@ -157,16 +164,21 @@ func (st *Store) ResolveReplenishment(ctx context.Context, c f.Credentials, id, 
 		if e := lock(ctx, u.tx, false, "staffing.replenishment", st.Instance, u.guard.Principal().ID, key); e != nil {
 			return e
 		}
-		var accepted bool
-		if e := u.tx.QueryRow(ctx, "SELECT EXISTS(SELECT FROM staffing.position_replenishment WHERE instance_id=$1 AND position_id=$2 AND actor=$3 AND revision=$4)", st.Instance, id, u.guard.Principal().ID, key).Scan(&accepted); e != nil {
+		var position string
+		e := u.tx.QueryRow(ctx, "SELECT position_id FROM staffing.position_replenishment WHERE instance_id=$1 AND actor=$2 AND revision=$3", st.Instance, u.guard.Principal().ID, key).Scan(&position)
+		if e == nil {
+			if position != id {
+				return f.Fail(409, "REPLENISHMENT_KEY", "该提交已用于另一岗位")
+			}
+			out = f.RuleReceipt{SubmissionID: key, Outcome: "accepted", Version: key}
+			return nil
+		}
+		if e != pgx.ErrNoRows {
 			return e
 		}
+		_, e = u.tx.Exec(ctx, "INSERT INTO staffing.position_replenishment_closed(instance_id,actor,submission_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", st.Instance, u.guard.Principal().ID, key)
 		out = f.RuleReceipt{SubmissionID: key, Outcome: "not_applied"}
-		if accepted {
-			out.Outcome = "accepted"
-			out.Version = key
-		}
-		return nil
+		return e
 	})
 	return
 }

@@ -115,7 +115,7 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	ctx = dbtx.With(ctx, u.tx)
 	var positionSegments []staff.AssignmentSegment
 	if in.Position != "" {
-		ok, e := u.positionEmploymentScope(ctx, in.Position, term, in.Person, in.Employer, hirePermission(in.RehireOf))
+		ok, e := u.positionEmploymentScope(ctx, in.Position, term, in.Person, in.Employer, hirePermission(in.RehireOf), "hire")
 		if e != nil {
 			return plan, e
 		}
