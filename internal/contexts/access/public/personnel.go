@@ -48,6 +48,8 @@ type PersonAccess struct {
 
 func PersonPurpose(action string) string {
 	switch action {
+	case "qualification.read", "qualification.correct":
+		return "education-credentials"
 	case "hire.check":
 		return "hire"
 	case "family.read", "family.correct":

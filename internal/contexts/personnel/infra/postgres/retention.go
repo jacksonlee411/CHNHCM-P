@@ -21,7 +21,13 @@ func DisposeDue(ctx context.Context, pool *pgxpool.Pool) error {
 		return e
 	}
 	for _, rule := range []struct{ category, relation, expires, item string }{
-		{"addresses", "profile_item_payload", "v.evidence_until", "v.item_id::text"}, {"family", "profile_item_payload", "v.evidence_until", "v.item_id::text"}, {"identity", "identity_payload", "p.evidence_until", "''"}, {"evidence", "evidence_payload", "p.material_evidence_until", "''"}, {"contacts", "contact_payload", "v.evidence_until", "v.item_id::text"}} {
+		{"education", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
+		{"credentials", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
+		{"addresses", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
+		{"family", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
+		{"identity", "identity_payload", "p.evidence_until", "''"},
+		{"evidence", "evidence_payload", "p.material_evidence_until", "''"},
+		{"contacts", "contact_payload", "v.evidence_until", "v.item_id::text"}} {
 		categoryExpr := "$1::text"
 		if rule.category == "contacts" {
 			categoryExpr = "'contact.'||v.kind"

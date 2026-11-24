@@ -64,21 +64,91 @@ export const familyLabels = {
   familyEmail: '电子邮箱',
   emergency: '紧急联系人',
 };
-export const groups = ['documents', 'addresses', 'contacts', 'family'] as const;
+export const educationLabels = {
+  educationType: '教育记录类型',
+  school: '学校/授予院校',
+  major: '所学专业',
+  educationLevel: '学历',
+  degree: '学位',
+  studyMode: '学习形式',
+  educationPath: '教育途径',
+  startMonth: '入学年月',
+  endMonth: '毕业/结束年月',
+  completion: '教育完成状态',
+  awardDate: '学位授予日期',
+  highestEducation: '最高学历',
+  highestDegree: '最高学位',
+};
+export const credentialLabels = {
+  credentialKind: '凭证类别',
+  credentialName: '职称/资格名称',
+  credentialLevel: '等级',
+  specialty: '专业方向',
+  certificateNumber: '证书编号',
+  awardingBody: '颁发机构',
+  issuedOn: '签发日期',
+  validFrom: '有效起始日期',
+  validUntil: '有效截止日期',
+  indefinite: '长期有效',
+};
+const educationLayout: Record<string, string[]> = {
+  学习经历: [
+    'educationType',
+    'school',
+    'major',
+    'educationLevel',
+    'degree',
+    'studyMode',
+    'educationPath',
+    'startMonth',
+    'endMonth',
+    'completion',
+    'highestEducation',
+    'highestDegree',
+  ],
+  已取得学历: [
+    'educationType',
+    'school',
+    'major',
+    'educationLevel',
+    'studyMode',
+    'educationPath',
+    'endMonth',
+    'highestEducation',
+  ],
+  学位授予: ['educationType', 'school', 'major', 'degree', 'awardDate', 'highestDegree'],
+};
+export function rowFields(group: Group, fields: Fields): string[] {
+  if (group === 'education') return educationLayout[fields.educationType] || Object.keys(educationLabels);
+  return Object.keys(labelsByGroup[group]).filter(
+    (k) => !((k === 'expiryDate' && fields.longTerm) || (k === 'validUntil' && fields.indefinite)),
+  );
+}
+export function isProfileItem(group?: Group) {
+  return group !== undefined && group !== 'documents' && group !== 'contacts';
+}
+export const groups = ['documents', 'addresses', 'contacts', 'family', 'education', 'credentials'] as const;
 export type Group = (typeof groups)[number];
 export const labelsByGroup: Record<Group, Record<string, string>> = {
   documents: documentLabels,
   contacts: contactLabels,
   addresses: addressLabels,
   family: familyLabels,
+  education: educationLabels,
+  credentials: credentialLabels,
 };
 export const requiredByGroup: Record<Group, string[]> = {
   documents: ['documentKind', 'documentNumber'],
   contacts: ['kind', 'value'],
   addresses: ['addressType', 'addressCountry', 'street'],
   family: ['familyName', 'relationship'],
+  education: ['school', 'educationType'],
+  credentials: ['credentialName', 'credentialKind'],
 };
 export const itemOptions: Record<string, string[]> = {
+  educationType: Object.keys(educationLayout),
+  credentialKind: ['职称', '职业资格', '职业技能等级', '执业许可', '专业认证'],
+  completion: ['在读', '已毕业', '结业', '肄业'],
   addressType: ['居住地址', '户籍地址', '通讯地址', '其他地址'],
   relationship: [
     '配偶',
@@ -95,13 +165,17 @@ export const itemOptions: Record<string, string[]> = {
     '其他',
   ],
 };
-export type Places = Record<string, Models['PersonPlaceChoice'] | Models['PersonCountryAdoption'] | undefined>;
+export type Places = Record<
+  string,
+  Models['PersonPlaceChoice'] | Models['PersonCountryAdoption'] | undefined
+>;
 export type Fields = Record<string, string>;
 export type Row = {
   key: string;
   revision?: string;
   locked?: string[];
   hidden?: string[];
+  masked?: string[];
   canRemove?: boolean;
   places?: Places;
   country?: Choice;
@@ -115,6 +189,8 @@ export type Draft = {
   contacts: Row[];
   addresses: Row[];
   family: Row[];
+  education: Row[];
+  credentials: Row[];
 };
 export function fromProfile(p?: Profile): Draft {
   return {
@@ -122,6 +198,8 @@ export function fromProfile(p?: Profile): Draft {
     nationality: p?.nationalityAdoption,
     addresses: (p?.addresses || []).map(fromItem),
     family: (p?.family || []).map(fromItem),
+    education: (p?.education || []).map(fromItem),
+    credentials: (p?.credentials || []).map(fromItem),
     documents: (p?.documents || []).map((x) => ({
       key: x.itemId,
       revision: x.revision,
@@ -148,6 +226,7 @@ function fromItem(x: Models['PersonProfileItem']): Row {
     revision: x.revision,
     locked: x.locked,
     hidden: x.hidden,
+    masked: x.masked,
     canRemove: x.canRemove,
     fields: { ...x.fields },
     places: x.adoptions,
@@ -243,22 +322,33 @@ export function command(p: Profile | undefined, draft: Draft) {
     contacts,
     addresses: itemCommand(draft.addresses, base.addresses),
     family: itemCommand(draft.family, base.family),
+    education: itemCommand(draft.education, base.education),
+    credentials: itemCommand(draft.credentials, base.credentials),
     nationalityChoice: changedChoice(base.nationality, draft.nationality),
   };
 }
 export function applyRow(draft: Draft, group: Group, row: Row): Draft {
-  const flag =
-    group === 'documents' ? 'documentPrimary' : group === 'addresses' ? 'addressPrimary' : 'contactPrimary';
-  const rows = draft[group].filter((x) => x.key !== row.key || !row.removed || x.revision);
-  if (row.removed && !row.revision) return { ...draft, [group]: rows };
-  // Replacing a primary affects only the current group. The server rechecks both rows.
-  const next = rows.map((x) =>
-    x.key === row.key
-      ? row
-      : row.fields[flag] && !row.removed && (group !== 'contacts' || row.fields.kind === x.fields.kind)
-        ? { ...x, fields: { ...x.fields, [flag]: '' } }
-        : x,
-  );
+  const flags =
+    group === 'education'
+      ? ['highestEducation', 'highestDegree']
+      : group === 'addresses'
+        ? ['addressPrimary']
+        : group === 'documents'
+          ? ['documentPrimary']
+          : group === 'contacts'
+            ? ['contactPrimary']
+            : [];
+  const next = draft[group]
+    .filter((x) => x.key !== row.key || !row.removed || x.revision)
+    .map((x) => {
+      if (x.key === row.key) return row;
+      if (row.removed || (group === 'contacts' && row.fields.kind !== x.fields.kind)) return x;
+      const cleared = flags.filter((k) => row.fields[k] && x.fields[k] && !x.locked?.includes(k));
+      return cleared.length
+        ? { ...x, fields: { ...x.fields, ...Object.fromEntries(cleared.map((k) => [k, ''])) } }
+        : x;
+    });
+  if (row.removed && !row.revision) return { ...draft, [group]: next };
   if (!next.some((x) => x.key === row.key)) next.push(row);
   return { ...draft, [group]: next };
 }

@@ -390,18 +390,21 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,37)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,38)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 36 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 37 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
                 AND (person_prefix>=29 OR to_regclass('personnel.person') IS NULL)
                 AND (person_prefix>=30 OR to_regclass('personnel.current_document_number') IS NULL)
                 AND to_regclass('personnel.document_payload') IS NULL)
-            -- f shipped 36 on 31+34. Permit retries after installation of 32 and 33.
-            OR (last_version=36 AND versions IN (ARRAY(SELECT generate_series(1,31)::bigint) || ARRAY[34::bigint,36::bigint], ARRAY(SELECT generate_series(1,32)::bigint) || ARRAY[34::bigint,36::bigint], ARRAY(SELECT generate_series(1,34)::bigint) || ARRAY[36::bigint])
-                AND to_regclass('staffing.hire_rule_source') IS NULL)
+            -- f applied 36, then 38, on 31+34. Allow only known backfill and retry steps.
+            OR (last_version IN (36,38) AND array_remove(versions,38::bigint) IN (ARRAY(SELECT generate_series(1,31)::bigint) || ARRAY[34::bigint,36::bigint], ARRAY(SELECT generate_series(1,32)::bigint) || ARRAY[34::bigint,36::bigint], ARRAY(SELECT generate_series(1,34)::bigint) || ARRAY[36::bigint])
+                AND to_regclass('staffing.hire_rule_source') IS NULL
+                AND (last_version=36 OR to_regclass('staffing.employment_primary') IS NULL))
+            OR (last_version=38 AND versions=ARRAY(SELECT generate_series(1,36)::bigint) || ARRAY[38::bigint]
+                AND to_regclass('staffing.employment_primary') IS NULL)
             -- f shipped 34 on 31. A retry may already have installed 32.
             OR (last_version=34 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions)-1)::bigint) || ARRAY[34::bigint]
                 AND cardinality(versions) IN (32,33)
@@ -446,6 +449,8 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
            to_regprocedure('access.person_policy_for_use(uuid)') IS NOT NULL AND
            NOT EXISTS(SELECT FROM unnest(ARRAY['person','number','source','counter','terminal','identity_payload','evidence_payload','contact_payload','material','outbox','query','hold','disposition']) name WHERE to_regclass('personnel.'||name) IS NULL)))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=30 AND is_applied) OR to_regclass('personnel.current_document_number') IS NOT NULL OR to_regclass('personnel.document_occupied') IS NOT NULL)
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=38 AND is_applied) OR
+           (to_regclass('personnel.person_highest_degree') IS NOT NULL AND to_regclass('personnel.person_highest_education') IS NOT NULL AND to_regclass('access.person_qualification_fixture') IS NOT NULL))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=36 AND is_applied) OR
            (to_regclass('access.hire_identity_fixture') IS NOT NULL AND EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('access.person_grant') AND conname='person_grant_hire_action' AND convalidated)))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=34 AND is_applied) OR

@@ -984,7 +984,13 @@ async function check504(page: Page, section: string, variant: string, mode: stri
   await expect(dlg.getByRole('heading')).toHaveText(section + ' · ' + reference.modes[mode].title_suffix);
   await expect(dlg.locator('.MuiDialogActions-root button')).toHaveText(reference.modes[mode].footer_right);
   const fields = dlg.locator('.profile-grid .object-detail-field');
-  const required = section==='地址'?['地址类型','国家/地区','详细地址']:section==='家庭成员与紧急联系人'?['联系人姓名','与员工关系']:['证件类型', '证件号码', '联系渠道', '电子邮箱', '电话'];
+  const requiredFields: Record<string, string[]> = {
+    地址: ['地址类型', '国家/地区', '详细地址'],
+    家庭成员与紧急联系人: ['联系人姓名', '与员工关系'],
+    教育经历: ['教育记录类型', '学校/授予院校', ...(variant === '已取得学历' ? ['学历'] : variant === '学位授予' ? ['学位'] : [])],
+    '专业技术职称、职业资格与技能等级证书': ['凭证类别', '职称/资格名称'],
+  };
+  const required = requiredFields[section] || ['证件类型', '证件号码', '联系渠道', '电子邮箱', '电话'];
   const labels = src.desktop_rows
     .flat()
     .map((label: string) => (mode !== '查看' && required.includes(label) ? label + '*' : label));
@@ -1699,4 +1705,181 @@ test('504 复核按服务业务日选择同省同名区县', async ({ page }) =>
   const address = (await request(page, 'GET', path)).body.addresses[1];
   expect(address.adoptions.area.id).toBe(leshan.id);
   expect(address.adoptions.area.date).toBe(day);
+});
+
+const credentialSection = '专业技术职称、职业资格与技能等级证书';
+const thirdBatchRecords = [
+  { section: '教育经历', variant: '学习经历', name: '在读合成院校' },
+  { section: '教育经历', variant: '已取得学历', name: '学历合成院校' },
+  { section: '教育经历', variant: '学位授予', name: '学位合成院校' },
+  { section: credentialSection, variant: '长期有效', name: '长期合成职称' },
+  { section: credentialSection, variant: '有期限', name: '有期合成资格' },
+];
+
+for (const [width, height] of [
+  [1440, 900],
+  [390, 844],
+]) {
+  test('504 第三批教育凭证录入、弹框与取消 ' + width, async ({ page }) => {
+    test.setTimeout(180000);
+    await page.setViewportSize({ width, height });
+    const { path } = await openFamilySample(page);
+    const button = (name: string) => page.getByRole('button', { name, exact: true });
+    const dlg = page.getByRole('dialog');
+    await button('更正资料').click();
+    for (const { section, variant, name } of thirdBatchRecords) {
+      await page
+        .getByRole('group', { name: section, exact: true })
+        .getByRole('button', { name: '添加一行' })
+        .click();
+      if (section === '教育经历') {
+        if (variant !== '学习经历') await select(page, '教育记录类型', variant);
+        await dlg.locator('#row-school').fill(name);
+        if (variant === '学习经历') {
+          await select(page, '教育完成状态', '在读');
+          await dlg.locator('#row-startMonth').fill('2025-09');
+        } else if (variant === '已取得学历') {
+          await dlg.locator('#row-educationLevel').fill('本科');
+          await dlg.getByLabel('最高学历').check();
+        } else {
+          await dlg.locator('#row-degree').fill('学士');
+          await dlg.locator('#row-awardDate').fill('2023-06-30');
+          await dlg.getByLabel('最高学位').check();
+        }
+      } else {
+        await select(page, '凭证类别', variant === '长期有效' ? '职称' : '职业资格');
+        await dlg.locator('#row-credentialName').fill(name);
+        await dlg.locator('#row-issuedOn').fill('2023-01-01');
+        if (variant === '长期有效') await dlg.getByLabel('长期有效').check();
+        else {
+          await dlg.locator('#row-certificateNumber').fill('SYNTH-CERT-504');
+          await dlg.locator('#row-validFrom').fill('2023-01-01');
+          await dlg.locator('#row-validUntil').fill('2022-12-31');
+        }
+      }
+      await check504(page, section, variant, '新增');
+      await dlg.getByRole('button', { name: '应用' }).click();
+    }
+    await page.getByLabel('曾用名', { exact: true }).fill('教育跨栏同存');
+    await button('保存').click();
+    await expect(dlg.getByText(/截止日期须不早于/)).toBeVisible();
+    await dlg.locator('#row-validUntil').fill('2027-12-31');
+    await dlg.getByRole('button', { name: '应用' }).click();
+    await button('保存').click();
+    await expect(button('更正资料')).toBeVisible();
+    const saved = (await request(page, 'GET', path)).body;
+    expect(saved.education).toHaveLength(3);
+    expect(saved.credentials).toHaveLength(2);
+    expect(saved.basic.formerName).toBe('教育跨栏同存');
+    expect(
+      saved.education
+        .filter((x: { fields: Record<string, string> }) => x.fields.highestEducation)
+        .map((x: { fields: Record<string, string> }) => x.fields.school),
+    ).toEqual(['学历合成院校']);
+    expect(
+      saved.education
+        .filter((x: { fields: Record<string, string> }) => x.fields.highestDegree)
+        .map((x: { fields: Record<string, string> }) => x.fields.school),
+    ).toEqual(['学位合成院校']);
+    for (const mode of ['查看', '编辑']) {
+      if (mode === '编辑') await button('更正资料').click();
+      for (const { section, variant, name } of thirdBatchRecords) {
+        const opener = button(mode + ' · ' + name);
+        await opener.focus();
+        await opener.press('Enter');
+        await check504(page, section, variant, mode);
+        if (mode === '查看' && variant === '长期有效') {
+          await expect(dlg.getByRole('button', {name: '查看完整号码'})).toHaveCount(0);
+        }
+        if (mode === '查看' && variant === '有期限') {
+          await expect(dlg).toContainText('********');
+          await dlg.getByRole('button', { name: '查看完整号码' }).click();
+          await expect(dlg).toContainText('SYNTH-CERT-504');
+          await dlg.getByRole('button', { name: '隐藏号码' }).click();
+          await expect(dlg).not.toContainText('SYNTH-CERT-504');
+        }
+        if (mode === '编辑' && variant === '学习经历') {
+          await select(page, '教育记录类型', '学位授予');
+          await expect(dlg.getByRole('status')).toContainText('入学年月');
+          await dlg.locator('#row-degree').fill('硕士');
+          await dlg.getByRole('button', { name: '应用' }).click();
+        } else await page.keyboard.press('Escape');
+        await expect(opener).toBeFocused();
+      }
+    }
+    await page
+      .getByRole('group', { name: credentialSection })
+      .getByRole('button', { name: '移除' })
+      .last()
+      .click();
+    await button('取消').click();
+    await button('放弃修改').click();
+    expect((await request(page, 'GET', path)).body.sourceVersion).toBe(saved.sourceVersion);
+    await button('退出').click();
+    await expect(page.getByLabel('密码')).toBeVisible();
+    await login(page, 'reader');
+    await menu(page);
+    await search(page, saved.name);
+    await page.getByRole('link', { name: saved.name, exact: true }).click();
+    const readOnly = button('查看 · 有期合成资格');
+    await readOnly.press('Enter');
+    await expect(dlg).toContainText('********');
+    await expect(dlg.getByRole('button', { name: '查看完整号码' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(readOnly).toBeFocused();
+    await expect(button('更正资料')).toHaveCount(0);
+  });
+}
+
+test('504 第三批学习经历五种视口及原生缩放', async () => {
+  test.setTimeout(135000);
+  const browser = await nativeZoomBrowser(),
+    p = browser.page;
+  try {
+    await openFamilySample(p);
+    await p.getByRole('button', { name: '更正资料', exact: true }).click();
+    const opener = p
+      .getByRole('group', { name: '教育经历', exact: true })
+      .getByRole('button', { name: '添加一行' });
+    for (const [width, height, zoom] of [
+      [1440, 900, 1],
+      [1440, 540, 1],
+      [390, 844, 1],
+      [320, 900, 1],
+      [320, 256, 1],
+      [1280, 900, 2],
+      [1280, 900, 4],
+    ]) {
+      await p.setViewportSize({ width, height });
+      if (zoom > 1) await browser.setZoom(zoom);
+      await opener.focus();
+      await opener.press('Enter');
+      await check504(p, '教育经历', '学习经历', '新增');
+      const dlg = p.getByRole('dialog'),
+        body = dlg.locator('.MuiDialogContent-root');
+      const header = dlg.locator('.MuiDialogTitle-root'),
+        footer = dlg.locator('.MuiDialogActions-root');
+      const top = await header.boundingBox(),
+        bottom = await footer.boundingBox();
+      await body.hover();
+      await expect.poll(async () => {
+        await p.mouse.wheel(0, 800);
+        return body.evaluate((node) => {
+          const row = node.querySelector('.object-detail-field:last-child')!;
+          return Math.round(row.getBoundingClientRect().bottom - node.getBoundingClientRect().bottom);
+        });
+      }, { message: '滚轮到达末字段 ' + [width, height, zoom].join('/') }).toBeLessThanOrEqual(1);
+      expect(await header.boundingBox()).toEqual(top);
+      expect(await footer.boundingBox()).toEqual(bottom);
+      await dlg.getByLabel('最高学位').focus();
+      await p.keyboard.press('Tab');
+      await expect(dlg.getByRole('button', { name: '取消' })).toBeFocused();
+      await p.keyboard.press('Tab');
+      await expect(dlg.getByRole('button', { name: '应用' })).toBeFocused();
+      await p.keyboard.press('Escape');
+      await expect(opener).toBeFocused();
+    }
+  } finally {
+    await browser.close();
+  }
 });

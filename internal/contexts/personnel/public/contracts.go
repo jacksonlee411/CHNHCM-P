@@ -57,7 +57,7 @@ type DocumentEdit struct {
 	Remove           bool              `json:"remove,omitempty"`
 }
 
-// ProfileItem carries only the currently authorized fields of one address or family member.
+// ProfileItem carries only the currently authorized fields of one personal profile item.
 type ProfileItem struct {
 	Masked    []string                   `json:"masked,omitempty"`
 	Hidden    []string                   `json:"hidden,omitempty"`
@@ -92,6 +92,8 @@ type EditItem struct {
 type Correct struct {
 	Addresses            []ProfileItemEdit `json:"addresses,omitempty"`
 	Family               []ProfileItemEdit `json:"family,omitempty"`
+	Education            []ProfileItemEdit `json:"education,omitempty"`
+	Credentials          []ProfileItemEdit `json:"credentials,omitempty"`
 	Nationality          *CountryChoice    `json:"nationalityChoice,omitempty"`
 	Basic                map[string]string `json:"basic,omitempty"`
 	Documents            []DocumentEdit    `json:"documents,omitempty"`
@@ -228,6 +230,8 @@ type Contact struct {
 type Detail struct {
 	Addresses       []ProfileItem     `json:"addresses,omitempty"`
 	Family          []ProfileItem     `json:"family,omitempty"`
+	Education       []ProfileItem     `json:"education,omitempty"`
+	Credentials     []ProfileItem     `json:"credentials,omitempty"`
 	Nationality     *CountryAdoption  `json:"nationalityAdoption,omitempty"`
 	Basic           map[string]string `json:"basic,omitempty"`
 	Documents       []DocumentRow     `json:"documents,omitempty"`
