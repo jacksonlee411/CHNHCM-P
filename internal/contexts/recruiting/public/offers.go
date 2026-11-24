@@ -59,12 +59,19 @@ type PublishedTerms struct {
 	EmployerAdoption    []LegalAdoption `json:"employerAdoption"`
 }
 
+type RevisedDates struct {
+	Arrival     string `json:"arrival"`
+	ReserveFrom string `json:"reserveFrom"`
+	LastDay     string `json:"lastDay,omitempty"`
+}
+
 type Change struct {
-	Operation    string `json:"operation"`
-	Expected     string `json:"expected,omitempty"`
-	BusinessDate string `json:"businessDate"`
-	Basis        string `json:"basis"`
-	Terms        *Terms `json:"terms,omitempty"`
+	Dates        *RevisedDates `json:"dates,omitempty"`
+	Operation    string        `json:"operation"`
+	Expected     string        `json:"expected,omitempty"`
+	BusinessDate string        `json:"businessDate"`
+	Basis        string        `json:"basis"`
+	Terms        *Terms        `json:"terms,omitempty"`
 }
 type Revision struct {
 	Version      string `json:"version"`
@@ -75,7 +82,10 @@ type Revision struct {
 	RecordedAt   string `json:"recordedAt"`
 }
 type Offer struct {
-	ID string `json:"id"`
+	RevisedTerms    bool   `json:"-"`
+	Current         bool   `json:"-"`
+	AcceptedVersion string `json:"-"`
+	ID              string `json:"id"`
 	PublishedTerms
 	Revision
 	Segments  []AssignmentSegment `json:"segments"`

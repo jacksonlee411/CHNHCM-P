@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import {Link} from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { Alert, Box, Button, Stack, Typography } from '@mui/material';
 import { api, ApiError, unwrap, type Models } from '@chnhcm/api-client';
@@ -586,6 +587,7 @@ export function OriginalEvidence({
           )}
         </>
       )}
+      {original.sources?.offer && <ObjectDetailField label="采用的招聘录用"><Link to={'/recruiting/offers/'+original.sources.offer.offer+'?sourceVersion='+original.sources.offer.version}>{original.sources.offer.number}</Link></ObjectDetailField>}
       {original.sources?.grade && <ObjectDetailField label="首任职级">{original.sources.grade.name}</ObjectDetailField>}
       {original.trialStart && (
         <ObjectDetailField label="实际试用开始日">{original.trialStart}</ObjectDetailField>

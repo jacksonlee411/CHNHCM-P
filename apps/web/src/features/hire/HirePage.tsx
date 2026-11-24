@@ -58,6 +58,12 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   const details = person.useRead(id, () => person.profile(id));
   const overview = person.useRead(JSON.stringify([id, day]), () => employment(id, day));
   const eligibleHire=draft.rehireOf ? !!overview.data?.actions.some(a=>a.canRehire&&a.id===draft.rehireOf?.action&&a.revision===draft.rehireOf.revision) : !!overview.data?.canHire;
+  const acceptedOffers=person.useRead(overview.data?.canHire && !cancellation && !draft.rehireOf ? id:undefined,async()=>{
+    const access=unwrap(await api.GET('/api/v1/recruiting/context',{params:{query:{person:id}}}));
+    if(!access.canRead)return [];
+    const results=unwrap(await api.GET('/api/v1/recruiting/offers',{params:{query:{person:id}}}));
+    return results.offers.filter(v=>v.status==='accepted');
+  });
   const hireTitle=draft.rehireOf ? '办理再聘' : '办理入职';
   const arrangementQuery = { person: id, arrival: draft.arrival, lastDay: draft.lastDay || undefined, rehireOf: draft.rehireOf, position: undefined };
   const arrangement = person.useRead(mode === 'hire' && eligibleHire && draft.arrival ? JSON.stringify(arrangementQuery) : undefined, async () =>
@@ -295,6 +301,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
           <Typography variant="h5" component="h1">
             {mode === 'hire' ? hireTitle : mode === 'cancel' ? '撤销未来入职' : '工作关系与任职'}
           </Typography>
+          {mode !== 'cancel' && acceptedOffers.data?.map(offer=><Button component={Link} key={offer.id} to={'/recruiting/offers/'+offer.id+'?person='+id}>已接受录用 {offer.number} · {offer.arrival}</Button>)}
           {details.data && (
             <Typography>
               {details.data.name} · {details.data.number}

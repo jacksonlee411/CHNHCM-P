@@ -138,10 +138,39 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	must(t, err)
 	_, err = pool.Exec(ctx, `INSERT INTO staffing.duty_observation_head VALUES($1,$2,$3)`, instance, dutyPaper, paperVersion)
 	must(t, err)
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00054" })))
+	contract, renewed, firstVersion, nextVersion, contractSubmission := f.NewID(), f.NewID(), f.NewID(), f.NewID(), f.NewID()
+	var owner, term string
+	must(t, pool.QueryRow(ctx, "SELECT employment_id,id FROM staffing.assignment WHERE instance_id=$1 LIMIT 1", instance).Scan(&owner, &term))
+	tx54, e := pool.Begin(ctx)
+	must(t, e)
+	_, e = tx54.Exec(ctx, `INSERT INTO staffing.employment_contract VALUES
+      ($1,$2,$3,'原合同','2027-03-22',daterange('2027-04-01','2027-07-01','[)'),NULL),
+      ($1,$4,$3,'原续订','2027-06-15',daterange('2027-07-01',NULL,'[)'),$2)`, instance, contract, owner, renewed)
+	must(t, e)
+	_, e = tx54.Exec(ctx, `INSERT INTO staffing.contract_process(instance_id,contract_id,version,operation,business_date,actor,operator_name,basis)
+      VALUES ($1,$2,$3,'sign','2027-03-22',$6,'旧经办','原合同'),($1,$4,$5,'renew','2027-06-15',$6,'旧经办','原续订')`, instance, contract, firstVersion, renewed, nextVersion, actor)
+	must(t, e)
+	_, e = tx54.Exec(ctx, "INSERT INTO staffing.contract_submission VALUES($1,$2,$3,'原续订回执',$4,$5,$6)", instance, actor, contractSubmission, term, renewed, nextVersion)
+	must(t, e)
+	_, e = tx54.Exec(ctx, "INSERT INTO staffing.contract_outbox VALUES($1,$2,$3),($1,$4,$5)", instance, contract, firstVersion, renewed, nextVersion)
+	must(t, e)
+	must(t, tx54.Commit(ctx))
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+	var retainedContract bool
+	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment_contract a
+      JOIN staffing.employment_contract b ON b.predecessor=a.id AND b.instance_id=a.instance_id AND b.employment_id=a.employment_id
+      JOIN staffing.contract_process p ON p.instance_id=b.instance_id AND p.contract_id=b.id AND p.operation='renew'
+      JOIN staffing.contract_submission sub ON (sub.instance_id,sub.contract_id,sub.version)=(p.instance_id,p.contract_id,p.version)
+      JOIN staffing.contract_outbox out ON (out.instance_id,out.contract_id,out.version)=(p.instance_id,p.contract_id,p.version)
+      WHERE a.instance_id=$1 AND a.id=$2 AND a.signed='2027-03-22' AND upper(a.period)='2027-07-01' AND b.signed='2027-06-15'
+      AND lower(b.period)='2027-07-01' AND upper_inf(b.period) AND p.version=$3 AND sub.submission_id=$4 AND sub.digest='原续订回执')`, instance, contract, nextVersion, contractSubmission).Scan(&retainedContract))
+	if !retainedContract {
+		t.Fatal("录用交接升级改变既有合同、前后继或回执")
+	}
 	var retainedPaper bool
 	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.duty_observation_head h JOIN staffing.duty_observation_revision r USING(instance_id,observation_id,version) WHERE h.instance_id=$1 AND h.observation_id=$2 AND h.version=$3 AND r.dispatch_version=$4 AND r.fact->>'number'='原出勤')`, instance, dutyPaper, paperVersion, version).Scan(&retainedPaper))
 	if !retainedPaper {
