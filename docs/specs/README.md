@@ -1,5 +1,9 @@
 # 业务与功能规格
 
+「人员 → 员工」按部门筛选各份任职，点行直达职务信息。0 号主岗及各正号兼岗分别列行，再聘在原 0 号追加新任期。「人员 → 人事事务 → 办理记录」按笔跨员工查询，两个入口都能定位同一原办理。[506 主兼任职与记录操作](m04/506-job-information-records.md) · [507 职务信息](m04/507-job-information-tab.md#job-tab-layout) · [507 办理记录列表与筛选](m04/507-job-information-tab.md#personnel-action-register)
+
+普通地点更改从任职直接保存，已履职的派岗可从原任职补录。同日转正、晋升、调动分别保留原件，任职按业务日展示一份适用状态。[地点更正](m04/506-job-information-records.md#m04-ac-010) · [实况补录](m04/507-job-information-tab.md#actual-duty-entry) · [晋升、调动与撤销表单](m04/507-job-information-tab.md#same-day-job-form) · [403 事务与历史](m04/403-hire-technical-contract.md#same-day-action-write)
+
 直接入职由人事从已登记的原人办理。组织用途与岗位政策先按期间准备，实际入职按模式签收。[401 业务规则与验收](m04/401-direct-hire-requirements.md) · [402 页面合同](m04/402-hire-interactions.md) · [403 技术合同](m04/403-hire-technical-contract.md) · [400 实施方案](../plans/400-hire-readiness.md)
 
 [310职级／阶梯对象接入](m03/310-grade-ladder-contract.md)：同企业Job可用职级与Ladder顺序、完整日期引用、页面继承及18项新验收；[309方案](../plans/309-m03-grade-ladder.md)分G1／G2，产品未开始。
