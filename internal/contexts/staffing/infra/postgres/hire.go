@@ -208,8 +208,8 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 			return "", err
 		}
 		for _, segment := range p.Adoption.Segments {
-			_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref)
-                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8)`, instance, p.assignment, version, segment.From, segment.Until, in.Location, segment, p.location)
+			_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref,department_id,job_id)
+                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8,$9,$10)`, instance, p.assignment, version, segment.From, segment.Until, in.Location, segment, p.location, in.Department, in.Job)
 			if err != nil {
 				return "", err
 			}
@@ -326,52 +326,62 @@ func (st *Store) HireTargets(ctx context.Context, c f.Credentials, in h.TargetSe
 		if !allowed {
 			return f.Fail(403, "HIRE_DENIED", "没有本次办理权限")
 		}
-		needle := strings.ToLower(strings.TrimSpace(in.Search))
-		skip := (in.Page - 1) * 20
-		const batch = 64
-		for offset := 0; ; offset += batch {
-			ids, err := u.PositionCandidateIDs(ctx, field, term.From, needle, nil, offset, batch)
-			if err != nil {
-				return err
-			}
-			sources, err := u.PositionSources(ctx, field, ids, false)
-			if err != nil {
-				return err
-			}
-			byID := make(map[string]app.PositionSource, len(sources))
-			for _, source := range sources {
-				byID[source.ID] = source
-			}
-			for _, id := range ids {
-				if field == "departmentId" {
-					ok, e := u.employmentAllowed(ctx, "hire", in.Person, in.Employer, id, true)
-					if e != nil {
-						return e
-					}
-					if !ok {
-						continue
-					}
-				}
-				label, e := app.HireTargetLabel(ctx, u, field, byID[id], term)
+		return u.arrangementTargets(ctx, term, in, field, "hire", &items)
+	})
+	return items, err
+}
+
+func (u *unit) arrangementTargets(ctx context.Context, term f.Period, in h.TargetSearch, field, permission string, items *[]org.EligibleEntity) error {
+	needle := strings.ToLower(strings.TrimSpace(in.Search))
+	skip := (in.Page - 1) * 20
+	const batch = 64
+	for offset := 0; ; offset += batch {
+		ids, err := u.PositionCandidateIDs(ctx, field, term.From, needle, nil, offset, batch)
+		if err != nil {
+			return err
+		}
+		sources, err := u.PositionSources(ctx, field, ids, false)
+		if err != nil {
+			return err
+		}
+		byID := make(map[string]app.PositionSource, len(sources))
+		for _, source := range sources {
+			byID[source.ID] = source
+		}
+		for _, id := range ids {
+			if field == "departmentId" {
+				ok, e := u.employmentAllowed(ctx, permission, in.Person, in.Employer, id, true)
 				if e != nil {
 					return e
 				}
-				if label == "" || !strings.Contains(strings.ToLower(label), needle) {
-					continue
+				if ok && permission == "transfer" {
+					ok, e = u.employmentAllowed(ctx, "read", in.Person, in.Employer, id, false)
+					if e != nil {
+						return e
+					}
 				}
-				if skip > 0 {
-					skip--
+				if !ok {
 					continue
-				}
-				items = append(items, org.EligibleEntity{ID: id, Name: label})
-				if len(items) == 20 {
-					return nil
 				}
 			}
-			if len(ids) < batch {
+			label, e := app.HireTargetLabel(ctx, u, field, byID[id], term)
+			if e != nil {
+				return e
+			}
+			if label == "" || !strings.Contains(strings.ToLower(label), needle) {
+				continue
+			}
+			if skip > 0 {
+				skip--
+				continue
+			}
+			*items = append(*items, org.EligibleEntity{ID: id, Name: label})
+			if len(*items) == 20 {
 				return nil
 			}
 		}
-	})
-	return items, err
+		if len(ids) < batch {
+			return nil
+		}
+	}
 }

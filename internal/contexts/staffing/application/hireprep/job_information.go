@@ -15,10 +15,12 @@ type LocationRef struct {
 }
 
 type LocationChange struct {
-	BusinessDate     string `json:"businessDate"`
-	Location         string `json:"location"`
-	ExpectedSource   string `json:"expectedSourceVersion"`
-	ExpectedRevision string `json:"expectedRevision,omitempty"`
+	BusinessDate     string        `json:"businessDate"`
+	Location         string        `json:"location"`
+	ExpectedSource   string        `json:"expectedSourceVersion"`
+	ExpectedRevision string        `json:"expectedRevision,omitempty"`
+	Insert           bool          `json:"insert,omitempty"`
+	Requires         *RequiredFact `json:"requires,omitempty"`
 }
 
 type LocationEvidence struct {
@@ -37,6 +39,8 @@ type Revision struct {
 }
 
 type State struct {
+	DepartmentID string `json:"departmentId"`
+	JobID        string `json:"jobId"`
 	f.Period
 	Department string       `json:"department"`
 	Job        string       `json:"job"`
@@ -59,6 +63,7 @@ type AssignmentView struct {
 	BusinessAt        string   `json:"businessAt"`
 	State             *State   `json:"state,omitempty"`
 	Actions           []Action `json:"actions"`
+	CanTransfer       bool     `json:"canTransfer"`
 	CanChangeLocation bool     `json:"canChangeLocation"`
 }
 type LocationSearch struct {
@@ -112,7 +117,16 @@ type EmployeeDirectory struct {
 	BusinessAt  string               `json:"businessAt"`
 	Keyword     string               `json:"keyword"`
 }
+type TransferSearch struct {
+	BusinessDate string `json:"businessDate"`
+	Page         int    `json:"page"`
+	Search       string `json:"search,omitempty"`
+	Kind         string `json:"kind"`
+	Department   string `json:"department,omitempty"`
+}
 type JobInformation interface {
+	TransferOptions(context.Context, f.Credentials, string, TransferSearch) ([]org.EligibleEntity, error)
+	MaintainRecord(context.Context, f.Credentials, string, string, string, string, RecordMaintenance) (Receipt, error)
 	CanListRegister(context.Context, f.Credentials) (bool, error)
 	ListRegister(context.Context, f.Credentials, RegisterQuery) (RegisterResult, error)
 	CanListAssignments(context.Context, f.Credentials) (bool, error)

@@ -36,8 +36,17 @@ func ruleGet(run func(*http.Request, string) (any, error)) http.HandlerFunc {
 }
 func (a *API) readinessRoutes(mux *http.ServeMux) {
 	hires := a.Runtime.Hires
-	mux.HandleFunc("GET /api/v1/assignments/context",func(w http.ResponseWriter,r *http.Request){if _,e:=queryValues(r);e!=nil{writeError(w,e);return};allowed,e:=hires.CanListAssignments(r.Context(),credentials(r));respond(w,200,map[string]bool{"canList":allowed},e)})
-	mux.HandleFunc("POST /api/v1/assignments/query",ruleBody(func(r *http.Request,in h.AssignmentQuery)(any,error){return hires.ListAssignments(r.Context(),credentials(r),in)}))
+	mux.HandleFunc("GET /api/v1/assignments/context", func(w http.ResponseWriter, r *http.Request) {
+		if _, e := queryValues(r); e != nil {
+			writeError(w, e)
+			return
+		}
+		allowed, e := hires.CanListAssignments(r.Context(), credentials(r))
+		respond(w, 200, map[string]bool{"canList": allowed}, e)
+	})
+	mux.HandleFunc("POST /api/v1/assignments/query", ruleBody(func(r *http.Request, in h.AssignmentQuery) (any, error) {
+		return hires.ListAssignments(r.Context(), credentials(r), in)
+	}))
 	mux.HandleFunc("GET /api/v1/employment-actions", a.listEmploymentRegister)
 	mux.HandleFunc("GET /api/v1/employment-actions/context", a.employmentRegisterContext)
 	mux.HandleFunc("GET /api/v1/employment-actions/{id}", func(w http.ResponseWriter, r *http.Request) {
@@ -61,11 +70,24 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/location-options", ruleBody(func(r *http.Request, in h.LocationSearch) (any, error) {
 		return hires.LocationOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/transfer-options", ruleBody(func(r *http.Request, in h.TransferSearch) (any, error) {
+		return hires.TransferOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
 	changeLocation := ruleBody(func(r *http.Request, in h.LocationChange) (any, error) {
 		return hires.ChangeLocation(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), r.PathValue("id"), r.PathValue("action"), in)
 	})
 	mux.HandleFunc("POST /api/v1/assignments/{id}/location-changes", changeLocation)
 	mux.HandleFunc("POST /api/v1/assignments/{id}/location-changes/{action}/correct", changeLocation)
+	for _, item := range []struct{ route, command string }{
+		{"POST /api/v1/assignments/{id}/transfers", "transfer"},
+		{"POST /api/v1/assignments/{id}/transfers/{action}/correct", "transfer"},
+		{"POST /api/v1/assignments/{id}/actions/{action}/redate", "redate"},
+		{"POST /api/v1/assignments/{id}/actions/{action}/delete", "delete"},
+	} {
+		mux.HandleFunc(item.route, ruleBody(func(r *http.Request, in h.RecordMaintenance) (any, error) {
+			return hires.MaintainRecord(r.Context(), credentials(r), r.PathValue("id"), r.PathValue("action"), item.command, r.Header.Get("Idempotency-Key"), in)
+		}))
+	}
 	mux.HandleFunc("POST /api/v1/appointment-decisions", ruleBody(func(r *http.Request, in h.DecisionPublication) (any, error) {
 		return hires.PublishDecision(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), in)
 	}))

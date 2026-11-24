@@ -502,7 +502,7 @@ func TestPublic39UpgradeToBankHealth(t *testing.T) {
 	}
 	var preserved bool
 	must(t, pool.QueryRow(ctx, `select exists(select from staffing.appointment_version v join staffing.appointment_outbox o using(instance_id,source,version) where v.version=$1 and number='合成决定39')
-	 and (select array_agg(version_id order by version_id)=array(select generate_series(1,43)::bigint) from goose_db_version where is_applied and version_id>0)`, decision).Scan(&preserved))
+	 and (select array_agg(version_id order by version_id)=array(select generate_series(1,44)::bigint) from goose_db_version where is_applied and version_id>0)`, decision).Scan(&preserved))
 	if !preserved {
 		t.Fatal("prior decision, event or continuous ledger changed")
 	}

@@ -35,31 +35,31 @@ func validRegisterQuery(q h.RegisterQuery) bool {
 		}
 	}
 	return (q.BusinessTo == "" || q.BusinessFrom <= q.BusinessTo) && (q.RecordedTo == "" || q.RecordedFrom <= q.RecordedTo) &&
-		slices.Contains([]string{"", "Hire", "DataChange"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled"}, q.Status) &&
+		slices.Contains([]string{"", "Hire", "DataChange", "Transfer"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
 		slices.Contains([]string{"", "recordedAt", "-recordedAt", "businessDate", "-businessDate"}, q.Sort) &&
 		q.Page >= 1 && q.Page <= 1000000 && slices.Contains([]int{20, 50, 100}, q.PageSize)
 }
 
 type registerCandidate struct {
 	h.RegisterRow
-	actor, employer string
-	recorded        time.Time
-	cancelled       bool
+	actor, employer    string
+	recorded           time.Time
+	cancelled, removed bool
 }
 
 // The current source selects the adopted revision. The source which published that
 // revision supplies the department as recorded then, even if the hire was cancelled later.
-const registerSQL = `SELECT a.id,r.revision,src.version,a.kind,r.business_date::text,a.recorded_at,
-    e.id,t.id,t.record_number,e.person_id,e.employer_id,t.department_id,
-    coalesce(seg.adoption->>'departmentName',''),a.actor,
+const registerSQL = `SELECT a.id,r.revision,issued.version,a.kind,r.business_date::text,a.recorded_at,
+    e.id,t.id,t.record_number,e.person_id,e.employer_id,coalesce(origin.department_id,t.department_id),
+    coalesce(origin.adoption->>'departmentName',''),a.actor,
     coalesce(nullif(first.operator_snapshot->>'displayName',''),nullif(first.operator_snapshot->>'login',''),a.actor::text),
-    EXISTS (SELECT FROM staffing.employment_action cancelled WHERE cancelled.instance_id=a.instance_id AND cancelled.original_id=a.id AND cancelled.kind='CancelHire')
+    EXISTS (SELECT FROM staffing.employment_action cancelled WHERE cancelled.instance_id=a.instance_id AND cancelled.original_id=a.id AND cancelled.kind='CancelHire'),
+    r.operation='Delete',coalesce(r.adoption#>>'{transfer,beforeDepartment}',''),coalesce(r.adoption#>>'{transfer,beforeDepartmentName}',''),
+    coalesce(r.adoption#>>'{transfer,after,department}',''),coalesce(r.adoption#>>'{transfer,after,segments,0,departmentName}','')
     FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
     JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
     JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(a.instance_id,a.assignment_id) ` + assignmentRevisionJoin + `
     JOIN staffing.employment_action_revision first ON (first.instance_id,first.action_id,first.revision)=(a.instance_id,a.id,a.revision)
-    JOIN staffing.assignment_source src ON (src.instance_id,src.action_id,src.revision)=(r.instance_id,r.action_id,r.revision)
-    LEFT JOIN staffing.assignment_segment seg ON (seg.instance_id,seg.assignment_id,seg.version)=(src.instance_id,src.assignment_id,src.version) AND seg.period @> r.business_date
     WHERE a.instance_id=$1 AND a.kind<>'CancelHire'
     AND (NULLIF($2,'')::date IS NULL OR r.business_date>=NULLIF($2,'')::date) AND (NULLIF($3,'')::date IS NULL OR r.business_date<=NULLIF($3,'')::date)
     AND (NULLIF($4,'')::date IS NULL OR a.recorded_at >= (NULLIF($4,'')::date::timestamp AT TIME ZONE 'Asia/Shanghai'))
@@ -84,7 +84,7 @@ func (s *Store) ListRegister(ctx context.Context, c f.Credentials, q h.RegisterQ
 			return e
 		}
 		candidates, e := pgx.CollectRows(rows, func(row pgx.CollectableRow) (r registerCandidate, e error) {
-			e = row.Scan(&r.ID, &r.Revision, &r.Source, &r.Kind, &r.BusinessDate, &r.recorded, &r.Employment, &r.Assignment, &r.RecordNumber, &r.Person, &r.employer, &r.Department, &r.DepartmentName, &r.actor, &r.Operator, &r.cancelled)
+			e = row.Scan(&r.ID, &r.Revision, &r.Source, &r.Kind, &r.BusinessDate, &r.recorded, &r.Employment, &r.Assignment, &r.RecordNumber, &r.Person, &r.employer, &r.Department, &r.DepartmentName, &r.actor, &r.Operator, &r.cancelled, &r.removed, &r.FromDepartment, &r.FromDepartmentName, &r.ToDepartment, &r.ToDepartmentName)
 			return
 		})
 		if e != nil {
@@ -94,40 +94,70 @@ func (s *Store) ListRegister(ctx context.Context, c f.Credentials, q h.RegisterQ
 		var ids []string
 		today := u.now.In(f.Shanghai).Format(time.DateOnly)
 		for _, r := range candidates {
-			visible := func(action string, fields ...string) (bool, error) {
-				return u.employmentAllowed(ctx, action, r.Person, r.employer, r.Department, false, fields...)
+			type side struct {
+				id, name  string
+				direction string
 			}
-			entry, e := visible("register.read")
-			if e != nil {
-				return e
+			sides := []side{{r.Department, r.DepartmentName, ""}}
+			if r.Kind == "Transfer" {
+				sides = []side{{r.FromDepartment, r.FromDepartmentName, "from"}, {r.ToDepartment, r.ToDepartmentName, "to"}}
 			}
-			read, e := visible("read")
-			if e != nil {
-				return e
+			r.Department, r.DepartmentName, r.FromDepartment, r.FromDepartmentName, r.ToDepartment, r.ToDepartmentName = "", "", "", "", "", ""
+			granted, showOperator := false, false
+			for _, side := range sides {
+				if side.id == "" {
+					continue
+				}
+				visible := func(action string, fields ...string) (bool, error) {
+					return u.employmentAllowed(ctx, action, r.Person, r.employer, side.id, false, fields...)
+				}
+				entry, e := visible("register.read")
+				if e != nil {
+					return e
+				}
+				read, e := visible("read")
+				if e != nil {
+					return e
+				}
+				if !entry || !read {
+					continue
+				}
+				granted = true
+				history, e := visible("history")
+				if e != nil {
+					return e
+				}
+				r.CanHistory = r.CanHistory || history
+				operator, e := visible("register.read", "operator")
+				if e != nil {
+					return e
+				}
+				showOperator = showOperator || operator
+				dept, e := visible("register.read", "department")
+				if e != nil {
+					return e
+				}
+				if !dept {
+					continue
+				}
+				r.Department, r.DepartmentName = side.id, side.name
+				switch side.direction {
+				case "from":
+					r.FromDepartment, r.FromDepartmentName = side.id, side.name
+				case "to":
+					r.ToDepartment, r.ToDepartmentName = side.id, side.name
+				}
 			}
-			if !entry || !read {
+			if !granted {
 				continue
-			}
-			r.CanHistory, e = visible("history")
-			if e != nil {
-				return e
-			}
-			showOperator, e := visible("register.read", "operator")
-			if e != nil {
-				return e
-			}
-			showDept, e := visible("register.read", "department")
-			if e != nil {
-				return e
-			}
-			if !showDept {
-				r.Department, r.DepartmentName = "", ""
 			}
 			if !showOperator {
 				r.Operator, r.actor = "", ""
 			}
 			r.Status = "effective"
-			if r.cancelled {
+			if r.removed {
+				r.Status = "deleted"
+			} else if r.cancelled {
 				r.Status = "cancelled"
 			} else if r.BusinessDate > today {
 				r.Status = "future"
@@ -146,6 +176,7 @@ func (s *Store) ListRegister(ctx context.Context, c f.Credentials, q h.RegisterQ
 			names[p.ID] = p
 		}
 		departments := map[string]string{}
+		fromDepts, toDepts := map[string]string{}, map[string]string{}
 		operators := map[string]string{}
 		var matched []h.RegisterRow
 		for _, r := range allowed {
@@ -157,24 +188,36 @@ func (s *Store) ListRegister(ctx context.Context, c f.Credentials, q h.RegisterQ
 			if r.Department != "" {
 				departments[r.Department] = r.DepartmentName
 			}
+			if r.FromDepartment != "" {
+				fromDepts[r.FromDepartment] = r.FromDepartmentName
+				departments[r.FromDepartment] = r.FromDepartmentName
+			}
+			if r.ToDepartment != "" {
+				toDepts[r.ToDepartment] = r.ToDepartmentName
+				departments[r.ToDepartment] = r.ToDepartmentName
+			}
 			if r.actor != "" {
 				operators[r.actor] = r.Operator
 			}
-			if (q.Department != "" && r.Department != q.Department) || (q.Operator != "" && r.actor != q.Operator) || (q.Status != "" && r.Status != q.Status) {
+			if (q.Department != "" && r.Department != q.Department && r.FromDepartment != q.Department && r.ToDepartment != q.Department) || (q.Operator != "" && r.actor != q.Operator) || (q.Status != "" && r.Status != q.Status) {
 				continue
 			}
-			// Hire and location changes have no transfer sides.
-			if q.FromDepartment != "" || q.ToDepartment != "" {
+			if (q.FromDepartment != "" && r.FromDepartment != q.FromDepartment) || (q.ToDepartment != "" && r.ToDepartment != q.ToDepartment) {
 				continue
 			}
 			matched = append(matched, r.RegisterRow)
 		}
-		for id, name := range departments {
-			out.Departments = append(out.Departments, h.EmployeeDepartment{ID: id, Name: name})
+		choices := func(names map[string]string) []h.EmployeeDepartment {
+			result := make([]h.EmployeeDepartment, 0, len(names))
+			for id, name := range names {
+				result = append(result, h.EmployeeDepartment{ID: id, Name: name})
+			}
+			slices.SortFunc(result, func(a, b h.EmployeeDepartment) int {
+				return cmp.Or(cmp.Compare(a.Name, b.Name), cmp.Compare(a.ID, b.ID))
+			})
+			return result
 		}
-		slices.SortFunc(out.Departments, func(a, b h.EmployeeDepartment) int {
-			return cmp.Or(cmp.Compare(a.Name, b.Name), cmp.Compare(a.ID, b.ID))
-		})
+		out.Departments, out.FromDepartments, out.ToDepartments = choices(departments), choices(fromDepts), choices(toDepts)
 		for id, name := range operators {
 			out.Operators = append(out.Operators, h.RegisterOperator{ID: id, Name: name})
 		}

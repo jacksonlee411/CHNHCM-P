@@ -7,8 +7,8 @@ import (
 )
 
 type employmentEntry struct {
-	id, revision, employment, assignment, kind, original, date, notice string
-	adoption                                                           any
+	id, revision, employment, assignment, kind, original, date, notice, operation string
+	adoption                                                                      any
 }
 
 func (u *unit) newEmploymentAction(ctx context.Context, e employmentEntry) error {
@@ -19,9 +19,9 @@ func (u *unit) newEmploymentAction(ctx context.Context, e employmentEntry) error
 	_, err = u.tx.Exec(ctx, `WITH new_action AS (
 		INSERT INTO staffing.employment_action(instance_id,id,revision,kind,employment_id,assignment_id,original_id,actor)
 		VALUES($1,$2,$3,$4,$5,$6,NULLIF($7,'')::uuid,$8) RETURNING *)
-		INSERT INTO staffing.employment_action_revision(instance_id,assignment_id,action_id,revision,business_date,notice,actor,recorded_at,adoption,operator_snapshot)
-		SELECT instance_id,assignment_id,id,revision,$9::date,$10,actor,recorded_at,$11,$12 FROM new_action`,
-		u.store.Instance, e.id, e.revision, e.kind, e.employment, e.assignment, e.original, u.guard.Principal().ID, e.date, e.notice, e.adoption, operator)
+		INSERT INTO staffing.employment_action_revision(instance_id,assignment_id,action_id,revision,business_date,notice,actor,recorded_at,adoption,operator_snapshot,operation)
+		SELECT instance_id,assignment_id,id,revision,$9::date,$10,actor,recorded_at,$11,$12,coalesce(nullif($13,''),'Add') FROM new_action`,
+		u.store.Instance, e.id, e.revision, e.kind, e.employment, e.assignment, e.original, u.guard.Principal().ID, e.date, e.notice, e.adoption, operator, e.operation)
 	return err
 }
 
