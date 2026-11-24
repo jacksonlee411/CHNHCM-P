@@ -46,6 +46,11 @@ type AccessEmploymentLocationFixture struct {
 	PrincipalID string
 }
 
+type AccessEmploymentRegisterFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessHireIdentityFixture struct {
 	InstanceID  string
 	PrincipalID string
