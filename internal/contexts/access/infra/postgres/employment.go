@@ -72,5 +72,25 @@ func InitializeEmployment(ctx context.Context, tx pgx.Tx, instance, actor string
       INSERT INTO access.employment_grant(instance_id,principal_id,action,fields)
       SELECT instance_id,principal_id,action,ARRAY['arrangement','basis'] FROM first CROSS JOIN unnest(ARRAY['manager.change','assignment.end','employment.leave','employment.rehire']) action`, instance, actor)
 
+	if err != nil {
+		return err
+	}
+	var ready bool
+	if err = tx.QueryRow(ctx, "SELECT to_regclass('access.offer_fixture') IS NOT NULL").Scan(&ready); err != nil || !ready {
+		return err
+	}
+	_, err = tx.Exec(ctx, `WITH seeded AS (INSERT INTO access.offer_fixture VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING *)
+        INSERT INTO access.offer_grant(instance_id,principal_id,action)
+        SELECT instance_id,principal_id,x FROM seeded CROSS JOIN unnest(ARRAY['read','issue','accept','reserve','release']) x`, instance, actor)
 	return err
+}
+
+func (s *Store) OfferAllowed(ctx context.Context, tx pgx.Tx, actor, action, person, employer, department string, candidate bool) (bool, error) {
+	var ok bool
+	e := tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM access.offer_grant WHERE instance_id=$1 AND principal_id=$2 AND action=$3
+        AND (($7 AND $4='') OR person_id IS NULL OR person_id=nullif($4,'')::uuid)
+        AND (($7 AND $5='') OR employer_id IS NULL OR employer_id=nullif($5,'')::uuid)
+        AND (($7 AND $6='') OR department_id IS NULL OR department_id=nullif($6,'')::uuid)
+        AND (expires_at IS NULL OR expires_at>clock_timestamp()))`, s.Instance, actor, action, person, employer, department, candidate).Scan(&ok)
+	return ok, e
 }

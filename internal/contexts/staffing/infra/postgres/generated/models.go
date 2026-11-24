@@ -81,6 +81,22 @@ type AccessHireIdentityFixture struct {
 	PrincipalID string
 }
 
+type AccessOfferFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessOfferGrant struct {
+	InstanceID   string
+	PrincipalID  string
+	GrantID      string
+	Action       string
+	PersonID     pgtype.UUID
+	EmployerID   pgtype.UUID
+	DepartmentID pgtype.UUID
+	ExpiresAt    pgtype.Timestamptz
+}
+
 type AccessPersonAddressFamilyFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1121,6 +1137,75 @@ type PersonnelTerminal struct {
 	PersonID     pgtype.UUID
 	Version      pgtype.UUID
 	Fault        []byte
+}
+
+type RecruitingOffer struct {
+	InstanceID   string
+	ID           string
+	Number       string
+	PersonID     string
+	EmployerID   string
+	DepartmentID string
+	JobID        string
+	PositionID   pgtype.UUID
+	Arrival      pgtype.Date
+	ReserveFrom  pgtype.Date
+	UntilDate    pgtype.Date
+	Terms        []byte
+}
+
+type RecruitingOfferHead struct {
+	InstanceID string
+	OfferID    string
+	Version    string
+}
+
+type RecruitingOfferRevision struct {
+	InstanceID   string
+	OfferID      string
+	Version      string
+	Previous     pgtype.UUID
+	Operation    string
+	Status       string
+	BusinessDate pgtype.Date
+	Basis        string
+	Actor        string
+	RecordedAt   pgtype.Timestamptz
+}
+
+type RecruitingOfferSegment struct {
+	InstanceID string
+	OfferID    string
+	Version    string
+	Period     pgtype.Range[pgtype.Date]
+	PositionID pgtype.UUID
+	Effect     string
+	Adoption   []byte
+}
+
+type RecruitingOfferSubmission struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	Digest       pgtype.Text
+	OfferID      pgtype.UUID
+	Version      pgtype.UUID
+}
+
+type RecruitingOutbox struct {
+	InstanceID string
+	EventID    string
+	OfferID    string
+	Version    string
+}
+
+type RecruitingPositionIntake struct {
+	InstanceID     string
+	PositionID     string
+	CreationSource string
+	Version        string
+	Since          pgtype.Date
+	RecordedAt     pgtype.Timestamptz
 }
 
 type StaffingAppointmentOutbox struct {

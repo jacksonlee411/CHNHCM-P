@@ -5516,10 +5516,217 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/recruiting/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["recruitingContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recruiting/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listOffers"];
+        put?: never;
+        post: operations["issueOffer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recruiting/offers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getOffer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recruiting/offers/{id}/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["changeOffer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recruiting/submissions/{sub}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolveOfferSubmission"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recruiting/targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recruitingTargets"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recruiting/arrangement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recruitingArrangement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        OfferTerms: {
+            number: string;
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            employer: string;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            job?: string;
+            /** Format: uuid */
+            position?: string;
+            /** Format: date */
+            arrival: string;
+            /** Format: date */
+            reserveFrom: string;
+            /** Format: date */
+            lastDay?: string;
+        };
+        OfferChange: {
+            /** @enum {string} */
+            operation: "issue" | "accept" | "decline" | "release" | "reserve";
+            /** Format: date */
+            businessDate: string;
+            basis: string;
+            /** Format: uuid */
+            expected?: string;
+            terms?: components["schemas"]["OfferTerms"];
+        };
+        OfferRevision: {
+            /** Format: uuid */
+            version: string;
+            operation: string;
+            status: string;
+            /** Format: date */
+            businessDate: string;
+            basis: string;
+            /** Format: date-time */
+            recordedAt: string;
+        };
+        RecruitingOffer: {
+            /** Format: uuid */
+            id: string;
+            number: string;
+            /** Format: uuid */
+            person: string;
+            personName?: string;
+            /** Format: uuid */
+            employer: string;
+            employerName?: string;
+            employerAdoption?: components["schemas"]["LegalAdoption"][];
+            reservationRequired?: boolean;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            job?: string;
+            /** Format: uuid */
+            position?: string;
+            /** Format: date */
+            arrival: string;
+            /** Format: date */
+            reserveFrom: string;
+            /** Format: date */
+            lastDay?: string;
+            /** Format: uuid */
+            version: string;
+            operation: string;
+            status: string;
+            /** Format: date */
+            businessDate: string;
+            basis: string;
+            /** Format: date-time */
+            recordedAt: string;
+            segments?: components["schemas"]["AssignmentSegment"][];
+            revisions?: components["schemas"]["OfferRevision"][];
+            actions?: string[];
+        };
+        OfferReceipt: {
+            /** Format: uuid */
+            submissionId: string;
+            /** @enum {string} */
+            outcome: "accepted" | "not_applied";
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            version?: string;
+        };
+        OfferEntry: {
+            canRead: boolean;
+            canIssue: boolean;
+        };
+        OfferDirectory: {
+            canIssue: boolean;
+            offers: components["schemas"]["RecruitingOffer"][];
+        };
         EmploymentLocationRef: {
             /** Format: uuid */
             id: string;
@@ -6011,6 +6218,8 @@ export interface components {
             relationshipPrimary: boolean;
         };
         ReplenishmentView: {
+            reserved?: number;
+            occupied?: number;
             covered: boolean;
             canChange: boolean;
             paused: boolean;
@@ -6050,6 +6259,25 @@ export interface components {
             /** Format: date */
             lastDay?: string;
             rehireOf?: components["schemas"]["EmploymentActionRef"];
+        };
+        OfferTargetSearch: {
+            rehireOf?: components["schemas"]["EmploymentActionRef"];
+            /** Format: uuid */
+            job?: string;
+            /** Format: uuid */
+            person: string;
+            /** @enum {string} */
+            kind: "employer" | "department" | "job" | "position";
+            /** Format: date */
+            arrival: string;
+            /** Format: date */
+            lastDay?: string;
+            /** Format: uuid */
+            employer?: string;
+            /** Format: uuid */
+            department?: string;
+            search?: string;
+            page: number;
         };
         HireTargetSearch: {
             rehireOf?: components["schemas"]["EmploymentActionRef"];
@@ -6672,6 +6900,12 @@ export interface components {
             until?: string;
         };
         AssignmentSegment: {
+            /** Format: uuid */
+            quotaSource?: string;
+            /** Format: uuid */
+            quotaRevision?: string;
+            /** Format: uuid */
+            recruitingCoverage?: string;
             departmentId?: string;
             jobId?: string;
             positionName?: string;
@@ -24885,6 +25119,282 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    recruitingContext: {
+        parameters: {
+            query?: {
+                person?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferEntry"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listOffers: {
+        parameters: {
+            query?: {
+                person?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferDirectory"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    issueOffer: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferChange"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getOffer: {
+        parameters: {
+            query?: {
+                sourceVersion?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecruitingOffer"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    changeOffer: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferChange"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    resolveOfferSubmission: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                sub: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    recruitingTargets: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferTargetSearch"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    recruitingArrangement: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HireArrangementQuery"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireArrangementMode"];
                 };
             };
             /** @description Unavailable */

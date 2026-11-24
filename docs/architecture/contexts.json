@@ -227,7 +227,14 @@
         "M05"
       ],
       "code_path": "internal/contexts/recruiting",
-      "state": "planned"
+      "state": "partially_implemented",
+      "slices": [{
+        "module": "M05", "capability": "招聘录用与岗位预留", "state": "verified_slice",
+        "scope": "向已有人员发出录用，绑定本人、到岗日和逐段岗位预留；登记接受、放弃、释放及重新预留，按授权查历次原件。",
+        "entry": "/recruiting/offers", "entry_source": "apps/web/src/features/recruiting/Offers.tsx",
+        "source": "internal/contexts/recruiting/infra/postgres/store.go",
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
+      }]
     },
     {
       "name": "worktime",

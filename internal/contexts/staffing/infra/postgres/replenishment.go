@@ -82,6 +82,9 @@ func (u *unit) replenishmentView(ctx context.Context, id, day string) (out s.Rep
 			}
 		}
 		out.Exempt = &n
+		if use := evidence.At(day); use.Known {
+			out.Reserved, out.Occupied = &use.Reserved, &use.Occupied
+		}
 	}
 	return out, nil
 }

@@ -60,6 +60,8 @@ export function PositionReplenishment({session}:{session:Models['Principal']}) {
           <ObjectTextField label="业务日期" type="date" value={day} onChange={e=>{setDay(e.target.value);setMessage('')}}/>
           {view.data&&<ObjectDetailField label="当日补员状态">{view.data.paused?'暂停补员':view.data.covered||view.data.records.some(r=>r.date<=day)?'允许补员':'尚未接管'}</ObjectDetailField>}
           {view.data?.exempt!==undefined&&<ObjectDetailField label="免占编任职">{view.data.exempt}</ObjectDetailField>}
+          {view.data?.reserved!==undefined&&<ObjectDetailField label="招聘预留">{view.data.reserved}</ObjectDetailField>}
+          {view.data?.occupied!==undefined&&<ObjectDetailField label="常规实占">{view.data.occupied}</ObjectDetailField>}
           {view.data?.canChange&&(editing?<><ObjectTextField autoFocus required label="补员原因" value={reason} onChange={e=>setReason(e.target.value)}/>
             <Stack direction="row" gap={1}><Button variant="contained" disabled={send.busy||!day||!reason.trim()} onClick={()=>void send.submit({date:day,reason,paused:!view.data!.paused,expected:view.data!.version})}>保存</Button><Button onClick={()=>leave.request(close)}>取消</Button></Stack></>
             :<Button ref={trigger} onClick={()=>{saved.current=false;setEditing(true);setError('');setMessage('');send.start()}}>{action}</Button>)}

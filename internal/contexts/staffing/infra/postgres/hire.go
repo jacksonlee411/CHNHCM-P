@@ -22,6 +22,9 @@ import (
 )
 
 func (u *unit) employmentAllowed(ctx context.Context, action, person, employer, department string, anyTarget bool, fields ...string) (bool, error) {
+	if right, ok := strings.CutPrefix(action, "offer."); ok {
+		return u.store.OfferAllowed(ctx, u.tx, u.guard.Principal().ID, right, person, employer, department, anyTarget)
+	}
 	return u.store.EmploymentAllowed(ctx, u.tx, u.guard.Principal().ID, action, person, employer, department, anyTarget, fields...)
 }
 func (u *unit) requireEmployment(ctx context.Context, action, person, employer, department string) error {

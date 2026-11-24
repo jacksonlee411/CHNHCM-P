@@ -303,6 +303,10 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 		f.exec("DROP SCHEMA personnel CASCADE; DROP TABLE access.person_sensitive_fixture,access.person_data_purpose,access.person_qualification_fixture,access.person_address_family_fixture,access.person_profile_fixture,access.person_fixture,access.person_grant,access.person_policy CASCADE; DROP FUNCTION access.person_grant_guard(); DELETE FROM public.goose_db_version WHERE version_id IN (29,30,31,34,38,40)")
 	}
 
+	if f.scalar("SELECT (to_regclass('recruiting.offer') IS NOT NULL)::int") != 0 &&
+		f.scalar("SELECT (SELECT count(*) FROM recruiting.offer)+(SELECT count(*) FROM recruiting.offer_submission)+(SELECT count(*) FROM recruiting.position_intake)+(SELECT count(*) FROM access.offer_grant)") != 0 {
+		t.Fatal("prefix fixture contains recruiting facts or grants")
+	}
 	if f.scalar(`SELECT count(*) FROM pg_namespace WHERE nspname='staffing'`) > 0 {
 		if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('staffing.quota_terminal')") > 0 && f.scalar("SELECT (SELECT count(*) FROM staffing.quota_source)+(SELECT count(*) FROM staffing.quota_terminal)+(SELECT count(*) FROM staffing.quota_control)") > 0 {
 			t.Fatal("prefix fixture contains quota facts")
@@ -315,7 +319,7 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 				t.Fatal("prefix fixture would remove Staffing facts", table)
 			}
 		}
-		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%' OR action='replenishment.maintain'; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35,41,42,43,44,45,46,47,48,49);`)
+		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%' OR action='replenishment.maintain'; DROP SCHEMA IF EXISTS recruiting CASCADE; DROP TABLE IF EXISTS access.offer_fixture,access.offer_grant; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35,41,42,43,44,45,46,47,48,49,50);`)
 	}
 
 	t.Helper()

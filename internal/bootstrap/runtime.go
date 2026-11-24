@@ -15,8 +15,11 @@ import (
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	persondb "chnhcm.local/chnhcm/internal/contexts/personnel/infra/postgres"
 	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
+	recruitdb "chnhcm.local/chnhcm/internal/contexts/recruiting/infra/postgres"
+	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	staffingapp "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	"chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
+	sd "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
 	staffingdb "chnhcm.local/chnhcm/internal/contexts/staffing/infra/postgres"
 	staffing "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	"chnhcm.local/chnhcm/internal/foundation"
@@ -35,6 +38,9 @@ import (
 )
 
 type Runtime struct {
+	Offers             recruit.Offers
+	OfferTargets       func(context.Context, foundation.Credentials, hireprep.TargetSearch) ([]org.EligibleEntity, error)
+	OfferArrangement   func(context.Context, foundation.Credentials, hireprep.ArrangementQuery) (hireprep.ArrangementMode, error)
 	Hires              hireprep.Hires
 	FirstHireRules     hireprep.Rules
 	LegalPurposes      org.LegalPurposes
@@ -97,7 +103,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	o := &orgdb.Store{Pool: p, Instance: instance, Guard: a.Guard}
 	st := &staffingdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Organization: o, PositionDirectory: o}
 	st.QuotaPolicies = st.PublishedQuotaPolicies
-	st.Usage = st.AssignmentPositionUsage
+
 	o.Staffing = st
 	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AdoptArea: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]person.CountryAdoption, string, error) {
 		nodes, err := o.AdoptProfileArea(ctx, tx, g, id, date)
@@ -116,6 +122,37 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 		}
 		return &person.CountryAdoption{ID: value.ID, SourceVersion: value.SourceVersion, RecordID: value.RecordID, Revision: value.Revision, Date: value.Date}, value.Name, nil
 	}}
+	recruitment := &recruitdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Allowed: a.OfferAllowed, Enterprise: o, Employers: o, Person: func(ctx context.Context, c foundation.Credentials, id string) (string, error) {
+		found, _, e := people.RecognizedPeople(ctx, c, []string{id}, "")
+		if e != nil {
+			return "", e
+		}
+		if len(found) != 1 {
+			return "", foundation.Fail(404, "OFFER_PERSON", "人员不可用")
+		}
+		return found[0].Name, nil
+	}, Arrangement: st.CheckOfferArrangement, LockPosition: st.LockUsagePosition}
+	st.OfferAllowed = a.OfferAllowed
+	st.PositionOpened = recruitment.PositionOpened
+	st.Usage = func(ctx context.Context, inst, position string) (sd.QuotaUsage, error) {
+		used, e := st.AssignmentPositionUsage(ctx, inst, position)
+		if e != nil {
+			return used, e
+		}
+		reservations, e := recruitment.Usage(ctx, inst, position)
+		if e != nil {
+			return used, e
+		}
+		if reservations.Coverage != "" {
+			used.Coverage = append(used.Coverage, sd.SourceCoverage{Owner: "M05", Version: reservations.Coverage, UsageSpan: sd.UsageSpan{From: reservations.From}})
+		}
+		for _, seg := range reservations.Segments {
+			span := sd.UsageSpan{From: seg.From, Until: seg.Until}
+			used.Managed = append(used.Managed, span)
+			used.Uses = append(used.Uses, sd.PositionUse{Owner: "M05", UsageSpan: span, Source: seg.Source, Policy: seg.Policy, Effect: seg.Effect, Department: seg.Department, Job: seg.Job})
+		}
+		return used, nil
+	}
 	st.HirePeople = people
 	st.HirePurposes = o
 	st.EmploymentAllowed = a.EmploymentAllowed
@@ -131,7 +168,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 			slog.Warn("revoked staffing selection cleanup failed")
 		}
 	}
-	runtime := &Runtime{Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
+	runtime := &Runtime{Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
 	if e = runtime.Ready(ctx); e != nil {
 		p.Close()
 		return nil, e
@@ -397,9 +434,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,49)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,50)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 48 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 49 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -418,6 +455,7 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                 AND (32=ANY(versions) OR to_regclass('organization.legal_purpose_source') IS NULL)
                 AND to_regclass('organization.legal_purpose_terminal') IS NULL)
           )))
+          AND (NOT (50=ANY(versions)) OR (to_regclass('recruiting.offer_segment') IS NOT NULL AND to_regclass('recruiting.position_intake') IS NOT NULL AND to_regclass('access.offer_grant') IS NOT NULL))
           AND (NOT (49=ANY(versions)) OR (to_regclass('staffing.position_intake') IS NOT NULL AND to_regclass('staffing.position_replenishment') IS NOT NULL AND to_regclass('staffing.position_replenishment_closed') IS NOT NULL))
           AND (NOT (48=ANY(versions)) OR (to_regclass('staffing.manager_agreement') IS NOT NULL AND to_regclass('staffing.employment_exit') IS NOT NULL AND to_regclass('staffing.assignment_exit') IS NOT NULL AND to_regclass('access.employment_lifecycle_fixture') IS NOT NULL))
           AND (NOT (47=ANY(versions)) OR (to_regclass('staffing.promotion_transfer') IS NOT NULL AND to_regclass('access.employment_promotion_fixture') IS NOT NULL))

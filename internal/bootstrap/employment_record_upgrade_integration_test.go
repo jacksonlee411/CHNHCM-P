@@ -90,10 +90,31 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 		return data
 	}
 	originalSources := publications()
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00049" })))
+	// A 00049 position already taken over by M04 has no attestation from recruiting.
+	previousPosition, source49, enterprise := f.NewID(), f.NewID(), f.NewID()
+	old, err := pool.Begin(ctx)
+	must(t, err)
+	defer old.Rollback(ctx)
+	_, err = old.Exec(ctx, `INSERT INTO staffing.position(instance_id,enterprise_id,id,code,source_id,source_no,first_date,head)
+      VALUES($1,$2,$3,'OLD49',$4,1,'2027-04-01','{}')`, instance, enterprise, previousPosition, source49)
+	must(t, err)
+	_, err = old.Exec(ctx, `INSERT INTO staffing.position_source(instance_id,object_id,source_id,source_no,subject_id,submission_id,digest,snapshot,operation,operator)
+      VALUES($1,$2,$3,1,$4,$5,decode(repeat('02',32),'hex'),'{}','{"type":"CREATE"}','{}')`, instance, previousPosition, source49, actor, f.NewID())
+	must(t, err)
+	_, err = old.Exec(ctx, `INSERT INTO staffing.position_intake VALUES($1,$2,$3,daterange('2027-04-01',NULL,'[)'))`, instance, previousPosition, source49)
+	must(t, err)
+	must(t, old.Commit(ctx))
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+	var sameIntake, hasOfferingSource bool
+	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.position_intake WHERE instance_id=$1 AND position_id=$2 AND source_id=$3),
+      EXISTS(SELECT FROM recruiting.position_intake WHERE instance_id=$1 AND position_id=$2)`, instance, previousPosition, source49).Scan(&sameIntake, &hasOfferingSource))
+	if !sameIntake || hasOfferingSource {
+		t.Fatal("旧岗位接管被更改或被错误判定为招聘已核实")
+	}
 	if publications() != originalSources {
 		t.Fatal("升级改变了旧任期的已发布来源")
 	}

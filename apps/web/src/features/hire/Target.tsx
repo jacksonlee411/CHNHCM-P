@@ -21,9 +21,10 @@ export function Target({
   choice,
   onChange,
   draft,
-  session,
+  session, recruiting,
 }: {
   kind: TargetKind;
+  recruiting?: boolean;
   choice?: Option;
   onChange: (value?: Option) => void;
   draft: Models['HireInput'];
@@ -52,6 +53,9 @@ export function Target({
       search,
       page: 1,
     };
+    if (recruiting && (kind === 'position' || kind === 'job' || kind === 'department' || kind === 'employer')) {
+      return unwrap(await api.POST('/api/v1/recruiting/targets', {params,body:{...query, kind, employer:draft.employer || undefined,job:kind==='position'?draft.job:undefined}}));
+    }
     if (kind === 'employer') {
       return unwrap(
         await api.POST('/api/v1/hires/employers', {
