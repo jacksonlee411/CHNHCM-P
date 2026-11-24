@@ -149,3 +149,20 @@ make smoke SMOKE_ARGS="tests/e2e/correction-coverage.spec.ts tests/e2e/lifecycle
 候选 `f19bf9b` 在本地通过 `make check` 和 `make ci-ready`。预检核对了 664 个浏览器用例，实际运行六项前置回归和五项企业依赖，十一项均通过。另行复验了上述三个权限更正子例、启停配对、两个 320 像素宽度的首单，以及人员变更日志、家庭撤权和已打开明细的权限刷新。一次单跑启停配对时，企业前置在页面导航处超时，目标用例未执行；在独立的固定构建和临时库中重跑，五项企业前置及启停配对全部通过。本地可丢弃环境已回收。[变更日志复验](500-personnel-change-log.md#6-公开仓库开发构建复验) · [家庭撤权复验](504-personal-profile-second-batch.md#6-家庭职务写权撤回复验)
 
 公开 PR 的 11 个浏览器分片全部实际运行。按各片完成日志统计，共 714 次通过，包含各片重复执行的五项企业前置。第 6 片 83 项全过。此次候选只改前端、测试和文档，未派发新的 DB/API 分片；公开基线的八片结果见本节首段。PR 的 quality、integration、browser 三项均通过后，合入 `main` 的 `73529dc`。[公开修复 PR](https://github.com/jacksonlee411/CHNHCM-P/pull/1) · [十一片运行](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45315256108) · [人员资料分片](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45315256108/job/138181294206)
+
+<a id="t03-public-delivery"></a>
+## 12 原私仓 #32 的公开交付
+
+私仓 #32 从 `68639e02` 至 `061d2810`，GitHub 所列的 228 个变更路径与本地两提交差异逐项相符。CHNHCM-P 以独立根提交 `6f2c0dd` 收入首单实现，公开 PR #1 修复了人员资料页面和浏览器用例，PR #2 登记复验结果。以下以公开主干 `b60d0ce` 为核对点。[私仓原 PR](https://github.com/jacksonlee411/CHNHCM/pull/32) · [公开根提交](https://github.com/jacksonlee411/CHNHCM-P/commit/6f2c0ddb87646207363a6f48ba040870377f7afe) · [公开修复](https://github.com/jacksonlee411/CHNHCM-P/pull/1) · [复验记录](https://github.com/jacksonlee411/CHNHCM-P/pull/2)
+
+| #32 的变更路径在公开主干的去向 | 数量 | 核对结果 |
+| --- | ---: | --- |
+| 原路径内容及 Git 文件模式一致 | 145 | 逐路径核对两个提交的 Git 树条目。 |
+| 公开版本另有修改 | 37 | 28 项文档、1 项 AGENTS 入口、4 项 CI 配置及脚本，另有 PR #1 修改的 2 项 Personnel 页面和 2 项浏览器测试。 |
+| 原件保存在私仓 | 46 | 45 项历史验证附件及 1 个受再分发限制的上游参考包。公开仓保留文档中的来源说明。 |
+
+另对两个仓库完整目录核对，`internal/`、`cmd/`、`db/`、`api/` 和 `tests/integration/` 下的 766 个文件内容及文件模式全部相同。公开端使用原 Go 办理逻辑、数据库迁移和 API 合同。普通首单用无编号通知的一条可追溯说明，已有编号决定的直接引用、按岗免占和占编仍按 400 后续范围接入。[入职迁移](../../db/migrations/00037_employee_hire.sql) · [首单范围](../plans/400-hire-readiness.md#65-t03-仅按职务首单交付)
+
+2026-11-24 在公开提交 `b60d0ce` 的独立检出中以 `go test -tags=integration -count=1` 实际运行两个 PostgreSQL/API 测试根。人员原档及用途权限测试通过，耗时 11.67 秒。首单测试通过，耗时 22.19 秒，含保存前换证与撤权、成功回执故障回滚、重复办理与原号查回、2027-04-01 生效前后的零占编人数及未来撤销。两个实际数据库连接分别按先收窄资格和先提交入职的顺序竞争，断言覆盖最终资格、关系与原采用。[原人及权限测试](../../tests/integration/personnel_hire_test.go) · [首单及双连接测试](../../internal/bootstrap/first_hire_integration_test.go)
+
+公开 PR #1 的第 4 个浏览器分片实际运行了九项 T03 菜单场景，全部通过，覆盖只读、补证放弃、原号查回、五种视口和原生 200% 下的首单保存及未来撤销。该 PR 的完整十一片结果见第 11 节。[首单分片原始运行](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45315256108/job/138181294165) · [浏览器场景](../../tests/e2e/first-hire.spec.ts)
