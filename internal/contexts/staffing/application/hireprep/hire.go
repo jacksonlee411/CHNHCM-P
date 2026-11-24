@@ -8,6 +8,7 @@ import (
 )
 
 type Adoption struct {
+	Grade    *GradeRef                 `json:"grade,omitempty"`
 	Decision *DecisionRef              `json:"decision,omitempty"`
 	Identity IdentitySource            `json:"identity"`
 	Rule     string                    `json:"rule"`
@@ -15,6 +16,7 @@ type Adoption struct {
 	Segments []staff.AssignmentSegment `json:"segments"`
 }
 type Hire struct {
+	Grade      string       `json:"grade,omitempty"`
 	TrialStart string       `json:"trialStart,omitempty"`
 	Person     string       `json:"person"`
 	Employer   string       `json:"employer"`
@@ -86,10 +88,11 @@ type Overview struct {
 	Seats       int        `json:"seats"`
 }
 type Cancel struct {
-	ExpectedSource string `json:"expectedSourceVersion,omitempty"`
-	Notice         string `json:"notice,omitempty"`
-	Revision       string `json:"revision"`
-	Reason         string `json:"reason,omitempty"`
+	Basis          *ActionRef `json:"basis,omitempty"`
+	ExpectedSource string     `json:"expectedSourceVersion,omitempty"`
+	Notice         string     `json:"notice,omitempty"`
+	Revision       string     `json:"revision"`
+	Reason         string     `json:"reason,omitempty"`
 }
 type RelationSummary struct {
 	f.Period
@@ -100,6 +103,7 @@ type Original struct {
 	Manager           *ManagerFact       `json:"manager,omitempty"`
 	Exit              *ExitEvidence      `json:"exit,omitempty"`
 	RehireOf          *ActionRef         `json:"rehireOf,omitempty"`
+	NoticeRef         *ActionRef         `json:"noticeRef,omitempty"`
 	Promotion         *PromotionEvidence `json:"promotion,omitempty"`
 	Previous          *ActionRef         `json:"previous,omitempty"`
 	Relation          *RelationSummary   `json:"relation,omitempty"`
@@ -132,6 +136,7 @@ type EmployerSearch struct {
 	Page       int    `json:"page"`
 }
 type TargetSearch struct {
+	Job        string `json:"job,omitempty"`
 	Person     string `json:"person"`
 	Kind       string `json:"kind"`
 	Arrival    string `json:"arrival"`

@@ -452,7 +452,8 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
     await page.getByRole('menuitem', { name: '人员', exact: true }).click();
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
+    const personnel = page.getByRole('button', { name: '人员', exact: true });
+    if ((await personnel.getAttribute('aria-expanded')) !== 'true') await personnel.click();
     await page.getByRole('button', { name: '员工列表', exact: true }).click();
   }
   await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
@@ -468,10 +469,11 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
   await row.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('tab', { name: '职务信息' })).toHaveAttribute('aria-selected', 'true');
+  return { row, search };
 }
 async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   const { locations } = await hireAtLocation(page, sample);
-  await openEmployeeAssignment(page,sample);
+  const { row, search } = await openEmployeeAssignment(page,sample);
   await expect(page.getByText(new RegExp(locations[0].name))).toBeVisible();
   await page.getByRole('button', { name: '新增记录', exact: true }).click();
   const effective = page.getByRole('textbox', { name: /^生效日期/ });
@@ -498,6 +500,7 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
     .toBe(true);
   await page.getByRole('link', { name: '返回列表', exact: true }).click();
+  await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible({timeout:15000});
   await expect(row).toBeFocused();
   await expect(search).toHaveValue(sample.name);
 }
@@ -893,3 +896,124 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 真实试用开始与关系转正 原生200%',async()=>{await native200(probationJourney)});
+
+async function promotionJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>, mode: 'forward' | 'reverse' | 'pair' = 'forward') {
+  const suffix = randomUUID().slice(0, 5);
+  const p5 = await seed308(page, 'grade', undefined, {name:'P5-' + suffix});
+  const p6 = await seed308(page, 'grade', undefined, {name:'P6-' + suffix});
+  const detail = await request(page,'GET','/api/v1/jobs/'+sample.jobId);
+  const record = detail.body.selectedRecord;
+  const accepted = await request(page,'POST','/api/v1/jobs/'+sample.jobId+'/records/'+record.recordId+'/correct',{
+    expectedSourceVersion:detail.body.headSourceVersion,expectedRecordRevision:record.revision,changes:{gradeIds:mode === 'pair' ? [p5.id] : [p5.id,p6.id]},
+  },randomUUID());
+  expect(accepted.status,accepted.body.message).toBe(200);
+  await hireAtLocation(page,sample);
+  const dest = '产品部' + suffix;
+  await apiDepartment(page,sample.buId,{name:dest});
+  const policy=await request(page,'GET','/api/v1/assignment-policies');
+  if (!policy.body.rows.some((r:{category:string;purpose:string})=>r.category==='Employee' && r.purpose==='transfer')) {
+    const result=await request(page,'POST','/api/v1/assignment-policies',{expectedVersion:policy.body.version,
+      row:{id:randomUUID(),category:'Employee',purpose:'transfer',mode:'JobOnly',from:'2027-04-01'}},randomUUID());
+    expect(result.status,result.body.message).toBe(200);
+  }
+  await openEmployeeAssignment(page,sample);
+  const date='2027-07-01';
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  const choose=async(label:string,value:string)=>{
+    await page.getByRole('combobox',{name:new RegExp('^'+label)}).fill(value);
+    await page.getByRole('option',{name:value,exact:true}).click();
+  };
+  const add=async(kind:string,day:string)=>{
+    await button('新增记录').click();
+    await page.getByRole('combobox',{name:/办理类型/}).click();
+    await page.getByRole('option',{name:kind,exact:true}).click();
+    const field=page.getByRole('textbox',{name:/^生效日期/});await field.fill(day);await field.press('Tab');
+  };
+  const prior=async(label:string)=>{
+    await page.getByRole('combobox',{name:/通知载明的前序办理/}).click();
+    await page.getByRole('option',{name:label,exact:true}).click();
+  };
+  await add('补录实际职级','2027-04-01');
+  await choose('实际任职级',p5.name);await page.getByLabel(/原职级任用依据/).fill('原任期职级聘书');
+  await button('保存').click();await expect(page.getByText(p5.name,{exact:true})).toBeVisible();
+  await add('试用开始','2027-04-02');
+  await page.getByLabel(/试用依据/).fill('试用通知');await button('保存').click();
+  await expect(page.getByText('试用中',{exact:true})).toBeVisible();
+  await add('转正',date);await page.getByLabel(/转正依据/).fill('本关系转正通知');
+  await button('保存').click();await expect(page.getByText('已转正',{exact:true})).toBeVisible();
+  if (mode !== 'forward') {
+    const family = await seed308(page,'jobfamily');
+    const job = await seed308(page,'job',family.id,{name:'产品专员' + suffix,gradeIds:mode === 'pair' ? [p6.id] : [p5.id,p6.id]});
+    const pair = mode === 'pair';
+    await add(pair ? '晋升并调动' : '调动',date);
+    await choose('调入部门',dest);
+    await choose('拟任职务',job.name);
+    await page.getByLabel(pair ? /晋升依据/ : /调动依据/).fill(pair ? '晋升及调动共同通知' : '独立调动通知');
+    await prior('转正 · 本关系转正通知');
+    if (pair) await choose('拟任职级',p6.name);
+    await button('保存').click();
+    await button('调动 · '+date).click();
+    if (pair) {
+      await button('查看通知来源').click();
+      await expect(page.getByText('晋升 · '+date+' · 晋升及调动共同通知',{exact:true})).toBeVisible();
+      await button('晋升 · '+date).click();
+      await button('撤销晋升').click();
+      await page.getByLabel(/撤销依据/).fill('核对原通知');
+      await button('保存').click();
+      await expect(page.getByRole('alert').filter({hasText:'职级在拟定职务或期间内不可用'})).toBeVisible();
+    } else {
+      await button('在本次调动前补录晋升').click();
+      await choose('拟任职级',p6.name);
+      await page.getByLabel(/晋升依据/).fill('研发晋升通知');
+      await button('保存').click();
+      await button('晋升 · '+date).click();
+      await expect(page.getByText(sample.department,{exact:true}).first()).toBeVisible();
+      await button('撤销晋升').click();
+      await page.getByRole('combobox',{name:'引用通知'}).click();
+      await page.getByRole('option',{name:'调动 · 独立调动通知',exact:true}).click();
+      await button('保存').click();
+      await button('晋升 · '+date).click();
+      await button('查看撤销依据来源').click();
+      await expect(page.getByText('调动 · '+date+' · 独立调动通知',{exact:true})).toBeVisible();
+      await expect(page.getByText(p5.name,{exact:true})).toBeVisible();
+    }
+    return;
+  }
+  await add('晋升',date);await choose('拟任职级',p6.name);
+  await page.getByLabel(/晋升依据/).fill('研发晋升通知');await prior('转正 · 本关系转正通知');
+  await button('保存').focus();await page.keyboard.press('Enter');
+  await expect(page.getByText(p6.name,{exact:true})).toBeVisible();
+  await add('调动',date);await choose('调入部门',dest);await page.getByLabel(/调动依据/).fill('独立调动通知');
+  await prior('晋升 · 研发晋升通知');await button('保存').click();
+  await expect(button('调动 · '+date)).toBeVisible();
+  await button('晋升 · '+date).click();await expect(page.getByText(p5.name+' → '+p6.name,{exact:true})).toBeVisible();
+  await button('更正记录').click();await page.getByLabel('晋升原因',{exact:true}).fill('专业职级晋升');
+  await button('保存').click();await button('晋升 · '+date).click();
+  await expect(page.getByText('专业职级晋升',{exact:true})).toBeVisible();
+  await openRegister(page);
+  const name=page.getByRole('textbox',{name:'姓名或人员编号'});await name.fill(sample.name);await name.press('Enter');
+  const promotion=page.locator('a[data-object-link]').filter({hasText:'晋升'});
+  await expect(promotion).toHaveCount(1);await promotion.focus();await page.keyboard.press('Enter');
+  await button('撤销晋升').click();await page.getByLabel(/撤销依据/).fill('核对原件，通知仅载调动');
+  await button('保存').click();await expect(page.getByText('已撤销',{exact:true}).first()).toBeVisible();
+  await button('查看撤销前来源').click();
+  await expect(page.getByText(p6.name,{exact:true}).first()).toBeVisible();
+  await button('返回当前职务信息').click();
+  await page.getByRole('link',{name:'返回办理记录'}).click();await expect(promotion).toBeFocused();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+  test(`M04 同日转正晋升调动、从登记撤销 ${width}x${height}`,async({page})=>{
+    test.setTimeout(210000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await promotionJourney(page,sample);
+  });
+}
+test('M04 同日转正晋升调动、从登记撤销 原生200%',async()=>{await native200(promotionJourney)});
+
+for (const mode of ['pair','reverse'] as const) {
+  test('M04 晋升共同办理与反序补录 '+mode,async({ page })=>{
+    test.setTimeout(210000);
+    await signIn(page);
+    await promotionJourney(page,await seed(page),mode);
+  });
+}

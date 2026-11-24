@@ -50,7 +50,7 @@ type registerCandidate struct {
 // The current source selects the adopted revision. The source which published that
 // revision supplies the department as recorded then, even if the hire was cancelled later.
 const registerSQL = `SELECT a.id,r.revision,issued.version,a.kind,r.business_date::text,a.recorded_at,
-    e.id,t.id,t.record_number,e.person_id,e.employer_id,coalesce(nullif(r.adoption#>>'{promotion,department}','')::uuid,origin.department_id,t.department_id),
+    e.id,t.id,t.record_number,e.person_id,e.employer_id,coalesce(r.adoption#>>'{promotion,department}',origin.department_id::text,t.department_id::text),
     coalesce(r.adoption#>>'{promotion,departmentName}',origin.adoption->>'departmentName',''),a.actor,
     coalesce(nullif(first.operator_snapshot->>'displayName',''),nullif(first.operator_snapshot->>'login',''),a.actor::text),
     EXISTS (SELECT FROM staffing.employment_action cancelled WHERE cancelled.instance_id=a.instance_id AND cancelled.original_id=a.id AND cancelled.kind='CancelHire') OR r.operation='Withdraw',
@@ -155,7 +155,7 @@ func (s *Store) ListRegister(ctx context.Context, c f.Credentials, q h.RegisterQ
 				r.Department, r.DepartmentName, r.FromDepartment, r.FromDepartmentName, r.ToDepartment, r.ToDepartmentName = "", "", "", "", "", ""
 				granted, showOperator := false, false
 				for _, side := range sides {
-					if side.id == "" {
+					if side.id == "" && r.Kind != "Promotion" {
 						continue
 					}
 					visible := func(action string, fields ...string) (bool, error) {

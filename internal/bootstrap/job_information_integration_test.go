@@ -21,27 +21,31 @@ type assignmentFixture struct {
 }
 
 func setupAssignment(t *testing.T) assignmentFixture {
+	return setupDatedAssignment(t, "2027-04-01", "工作地点试办陈禾")
+}
+
+func setupDatedAssignment(t *testing.T, entry, name string) assignmentFixture {
 	t.Helper()
 	type M = map[string]any
 	h := legalSetup206(t)
 	b := h.b
-	init := bootstrap.InitInput{Instance: h.f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Login: "admin", Password: h.f.password, PersonnelProfile: "registrar", PersonalProfileFixture: true, HireIdentityFixture: true, EmploymentFixture: true, FirstHireRule: &bootstrap.FirstHireRuleInput{Version: "T02-employee-1", From: "2027-04-01"}}
+	init := bootstrap.InitInput{Instance: h.f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Login: "admin", Password: h.f.password, PersonnelProfile: "registrar", PersonalProfileFixture: true, HireIdentityFixture: true, EmploymentFixture: true, FirstHireRule: &bootstrap.FirstHireRuleInput{Version: "T02-employee-1", From: entry}}
 	must(t, bootstrap.Initialize(h.f.ctx, h.f.admin, init))
 	entity := h.create("LOC42", "CN", "legal_person")["id"].(string)
-	b.call("POST", "/api/v1/legal-entities/"+entity+"/purposes", M{"expectedVersion": "", "row": M{"id": f.NewID(), "role": "employer", "kind": "declaration", "basis": "工作地点试办用人资格", "from": "2027-04-01"}}, f.NewID(), 200)
+	b.call("POST", "/api/v1/legal-entities/"+entity+"/purposes", M{"expectedVersion": "", "row": M{"id": f.NewID(), "role": "employer", "kind": "declaration", "basis": "工作地点试办用人资格", "from": entry}}, f.NewID(), 200)
 	bu := b.call("POST", "/api/v1/business-units", createBody("BU42", "2026-01-01"), f.NewID(), 201)["buId"].(string)
 	dep := b.call("POST", "/api/v1/departments", departmentCreateBody("D42", bu), f.NewID(), 201)["departmentId"].(string)
 	staff := staffing307{t, h.f, b}
 	family := staff.create("jobfamily", "F42", "")["id"].(string)
 	job := staff.create("job", "J42", family)["id"].(string)
-	b.call("POST", "/api/v1/assignment-policies", M{"expectedVersion": "", "row": M{"id": f.NewID(), "category": "Employee", "purpose": "hire", "mode": "JobOnly", "from": "2027-04-01"}}, f.NewID(), 200)
-	person := b.call("POST", "/api/v1/persons", M{"submissionId": f.NewID(), "name": "工作地点试办陈禾", "primaryDocument": M{"kind": "passport", "number": "TEST-LOC42"}}, "", 200)["id"].(string)
+	b.call("POST", "/api/v1/assignment-policies", M{"expectedVersion": "", "row": M{"id": f.NewID(), "category": "Employee", "purpose": "hire", "mode": "JobOnly", "from": entry}}, f.NewID(), 200)
+	person := b.call("POST", "/api/v1/persons", M{"submissionId": f.NewID(), "name": name, "primaryDocument": M{"kind": "passport", "number": "TEST-LOC42"}}, "", 200)["id"].(string)
 	loc := &location204{t, h.f, b, h.countries}
 	var locations []string
 	for _, code := range []string{"A42", "B42", "C42", "D42"} {
 		locations = append(locations, loc.create(code, "MO", "", "2026-01-01")["id"].(string))
 	}
-	hire := b.call("POST", "/api/v1/hires", M{"person": person, "employer": entity, "department": dep, "job": job, "arrival": "2027-04-01", "location": locations[0], "notice": "合成首任通知"}, f.NewID(), 200)
+	hire := b.call("POST", "/api/v1/hires", M{"person": person, "employer": entity, "department": dep, "job": job, "arrival": entry, "location": locations[0], "notice": "合成首任通知"}, f.NewID(), 200)
 	return assignmentFixture{h, init, entity, bu, dep, job, person, locations, hire}
 }
 

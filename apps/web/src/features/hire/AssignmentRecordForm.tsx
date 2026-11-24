@@ -3,13 +3,21 @@ import { Autocomplete, Box, Button, MenuItem, Stack, TextField, Typography } fro
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField, ObjectTextField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
+import { EarlierAction, PromotionFields } from './PromotionFields';
 import { ProbationFields } from './ProbationFields';
 import type { Option } from './Target';
 
 type Action = Models['EmploymentAction'];
 export type JobDraft = {
-  mode: 'add' | 'insert' | 'correct' | 'redate';
-  kind: 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment';
+  mode: 'add' | 'insert' | 'correct' | 'redate' | 'withdraw';
+  kind: 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment' | 'GradeRecord' | 'Promotion' | 'PromotionTransfer';
+  grade?: Models['AssignmentGrade'];
+  originalGrade?: Models['AssignmentGrade'];
+  successor?: Action;
+  reason?: string;
+  withdrawal?: string;
+  basis?: Action;
+  transferNotice?: string;
   occurrence?: Option;
   predecessor?: Action;
   action?: Action;
@@ -24,6 +32,9 @@ export type JobDraft = {
 
 const names = {
   Hire: '入职',
+  Promotion: '晋升',
+  PromotionTransfer: '晋升并调动',
+  GradeRecord: '补录实际职级',
   CancelHire: '撤销入职',
   DataChange: '数据更改',
   Transfer: '调动',
@@ -39,15 +50,22 @@ export function availableRecordTypes(view: Models['AssignmentView']): JobDraft['
   if (view.canTransfer) result.push('Transfer');
   if (view.canStartProbation) result.push('ProbationStart');
   if (view.canConfirm) result.push('ConfirmEmployment');
+  if (view.canRecordGrade) result.push('GradeRecord');
+  if (view.canPromote) result.push('Promotion');
+  if (view.canPromote && view.canTransfer) result.push('PromotionTransfer');
   return result;
 }
 export const actionLabel = (action: Action) => names[action.kind as keyof typeof names] ?? action.kind;
-const operations = { add: '新增记录', insert: '插入记录', correct: '更正记录', redate: '调整生效日期' };
+const operations = { add: '新增记录', insert: '插入记录', correct: '更正记录', redate: '调整生效日期', withdraw:'撤销晋升' };
 
 export function draftChanged(draft: JobDraft, initial: JobDraft) {
   return (
     draft.day !== initial.day ||
     draft.kind !== initial.kind ||
+    draft.grade?.id !== initial.grade?.id ||
+    draft.reason !== initial.reason ||
+    draft.withdrawal !== initial.withdrawal || draft.basis?.id!==initial.basis?.id ||
+    draft.transferNotice !== initial.transferNotice ||
     draft.notice !== initial.notice ||
     draft.occurrence?.id !== initial.occurrence?.id ||
     draft.predecessor?.id !== initial.predecessor?.id ||
@@ -58,7 +76,7 @@ export function draftChanged(draft: JobDraft, initial: JobDraft) {
   );
 }
 
-function TransferTarget({
+export function TransferTarget({
   kind,
   draft,
   assignment,
@@ -168,11 +186,12 @@ export function AssignmentRecordForm({
       ),
   );
   const relation = relationAction(draft.kind);
+  const grade = ['GradeRecord','Promotion','PromotionTransfer'].includes(draft.kind);
   const options = availableRecordTypes(view);
   const valid =
     !!draft.day &&
-    (draft.mode === 'redate' ||
-      ((relation
+    (draft.mode === 'withdraw' ? !!draft.basis || !!draft.withdrawal?.trim() : draft.mode === 'redate' ||
+      ((grade ? !!draft.grade && !!draft.notice.trim() && (draft.kind!=='PromotionTransfer'||!!draft.job&&!!draft.department) : relation
         ? !!draft.notice.trim()
         : location
           ? !!draft.value
@@ -204,7 +223,7 @@ export function AssignmentRecordForm({
         <Typography component="h3">
           {operations[draft.mode]} · {names[draft.kind]}
         </Typography>
-        {!draft.action && options.length > 1 && (
+        {!draft.action && !draft.successor && options.length > 1 && (
           <ObjectTextField
             select
             label="办理类型"
@@ -223,11 +242,11 @@ export function AssignmentRecordForm({
           label="生效日期"
           value={draft.day}
           required
-          disabled={draft.mode === 'correct'}
+          disabled={draft.mode === 'correct' || draft.mode==='withdraw' || !!draft.successor}
           onChange={(e) => update({ ...draft, day: e.target.value })}
         />
         {draft.mode !== 'redate' &&
-          (relation ? (
+          (grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} /> : relation ? (
             <ProbationFields view={view} draft={draft} csrf={csrf} update={update} />
           ) : location ? (
             <>
@@ -286,6 +305,7 @@ export function AssignmentRecordForm({
                 required
                 onChange={(e) => update({ ...draft, notice: e.target.value })}
               />
+              <EarlierAction draft={draft} view={view} update={update}/>
               {(candidates.length > 0 || prior) && (
                 <ObjectTextField
                   select

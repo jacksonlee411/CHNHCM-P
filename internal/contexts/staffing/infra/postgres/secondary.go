@@ -125,7 +125,7 @@ func (st *Store) AddSecondary(ctx context.Context, c f.Credentials, id, key stri
 		item := employmentEntry{id: f.NewID(), revision: f.NewID(), kind: kind, employment: employment, assignment: f.NewID(), date: term.From, notice: strings.TrimSpace(in.Notice),
 			adoption: map[string]any{"secondary": h.SecondaryEvidence{RelationshipPrimary: in.Parallel, Legal: legal, Segments: segments}}}
 		input := h.Hire{Person: a.Person, Department: in.Department, Job: in.Job, BU: in.BU, Location: in.Location}
-		if e = u.openAssignment(ctx, item, input, number, term, segments, adoptedLocation); e != nil {
+		if e = u.openAssignment(ctx, item, input, number, term, segments, adoptedLocation, nil); e != nil {
 			return "", e
 		}
 		if in.Parallel {

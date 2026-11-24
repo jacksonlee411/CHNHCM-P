@@ -17,12 +17,14 @@ type ActionRef struct {
 	Revision string `json:"revision"`
 }
 type PromotionEvidence struct {
-	Before         *GradeRef `json:"before,omitempty"`
-	After          GradeRef  `json:"after"`
-	Department     string    `json:"department"`
-	DepartmentName string    `json:"departmentName"`
-	Reason         string    `json:"reason"`
-	Withdrawal     string    `json:"withdrawal,omitempty"`
+	PriorSource     string     `json:"priorSource,omitempty"`
+	WithdrawalBasis *ActionRef `json:"withdrawalBasis,omitempty"`
+	Before          *GradeRef  `json:"before,omitempty"`
+	After           GradeRef   `json:"after"`
+	Department      string     `json:"department"`
+	DepartmentName  string     `json:"departmentName"`
+	Reason          string     `json:"reason"`
+	Withdrawal      string     `json:"withdrawal,omitempty"`
 }
 type GradeSearch struct {
 	BusinessDate string `json:"businessDate"`
@@ -34,6 +36,7 @@ type GradeSearch struct {
 // Precedes permits a later registration to identify an already recorded successor.
 // Previous expresses documented order, independent of legal prerequisites.
 type PromotionCommand struct {
+	Basis            *ActionRef `json:"basis,omitempty"`
 	ExpectedSource   string     `json:"expectedSourceVersion"`
 	ExpectedRevision string     `json:"expectedRevision,omitempty"`
 	BusinessDate     string     `json:"businessDate,omitempty"`
