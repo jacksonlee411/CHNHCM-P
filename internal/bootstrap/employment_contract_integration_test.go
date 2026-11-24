@@ -26,7 +26,6 @@ func TestRelationshipContractsRenewAndCloseOnlyTheSelectedRelationship(t *testin
 	b.call("POST", "/api/v1/assignment-policies", M{"expectedVersion": policy["version"], "row": M{"id": f.NewID(), "category": "Employee", "purpose": "secondary", "mode": "JobOnly", "from": "2027-04-01"}}, f.NewID(), 200)
 	employer := x.h.create("LAW54", "CN", "legal_person")["id"].(string)
 	b.call("POST", "/api/v1/legal-entities/"+employer+"/purposes", M{"expectedVersion": "", "row": M{"id": f.NewID(), "role": "employer", "kind": "declaration", "basis": "第二关系用工", "from": "2027-04-01"}}, f.NewID(), 200)
-	parallel := b.call("POST", path(primary)+"/additional-assignments", M{"expectedSourceVersion": head(primary), "parallel": true, "employer": employer, "job": x.job, "department": x.dep, "from": browse, "notice": "独立工作关系"}, f.NewID(), 200)["assignment"].(string)
 	originalSource := head(primary)
 	cmd := func(id, num string) M {
 		return M{"operation": "sign", "number": num, "signed": "2027-04-12", "from": "2027-05-01", "lastDay": "2027-06-30", "expectedSourceVersion": head(id)}
@@ -44,6 +43,11 @@ func TestRelationshipContractsRenewAndCloseOnlyTheSelectedRelationship(t *testin
 		t.Fatal("重送改变办理", again, a)
 	}
 	ref := func(v M) M { return M{"id": v["id"], "version": v["version"]} }
+	refusal := b.call("POST", "/api/v1/employment-actions/"+x.hire["action"].(string)+"/cancel", M{"revision": x.hire["revision"], "reason": "核对未来入职"}, f.NewID(), 409)
+	if refusal["code"] != "HIRE_DEPENDENCIES" || len(contracts(primary)) != 1 {
+		t.Fatal("未来入职撤销未保留已签合同", refusal)
+	}
+	parallel := b.call("POST", path(primary)+"/additional-assignments", M{"expectedSourceVersion": head(primary), "parallel": true, "employer": employer, "job": x.job, "department": x.dep, "from": browse, "notice": "独立工作关系"}, f.NewID(), 200)["assignment"].(string)
 	parallelSign := cmd(parallel, "B-1")
 	delete(parallelSign, "lastDay")
 	z := b.call("POST", path(parallel)+"/contracts", parallelSign, f.NewID(), 200)
