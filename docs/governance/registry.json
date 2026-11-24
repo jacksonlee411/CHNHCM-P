@@ -3008,6 +3008,83 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/027-public-grant-cutover.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-013",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "dc554f39f488f285f1757c68a0816d2b5dd616c8",
+        "working_tree": "clean",
+        "change_description": "公共 00040 逐份授予、同事务判权、存量切换与重启验收。",
+        "environment": "本地独立 PostgreSQL 18.6、公共旧版与候选 Go 服务、Chromium。",
+        "scope": "T02 公共库与入职、人员、部门、岗位共用授权核心。",
+        "results": [
+          {
+            "check": "272 份双向对账、原会话回执、按份撤销和重启",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "旧 00028 升级测试误查已退役授权表",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "首单保存点中用途授权到期后首次仍提交",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "修正后两类旧前缀、首单事务回滚、旧库重试及人员资料",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "生成一致性、质量、构建及两项 DB 与十一项 Chromium 前置",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "已有 reader 未开通过人员资料时，旧候选常规重启增加授予",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "最终候选从旧公共库重启，未开通人员资料的 reader 仍无此权",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "早期 Chromium 专项三次在登录页超时",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "全量 DB/API 393 根有 373 通过、20 按环境条件跳过",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "Chromium 首次分片超时、企业前置阻塞 80 项",
+            "result": "failed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          },
+          {
+            "check": "第 6 片原范围重跑 85 通过；补验后 667 个唯一浏览器用例均有通过记录",
+            "result": "passed",
+            "evidence": "docs/verification/027-public-grant-cutover.md"
+          }
+        ],
+        "limitations": [
+          "T03、T04、T05 与正式发布独立跟踪。"
+        ]
+      },
+      {
         "path": "docs/verification/504-personal-profile-third-batch.md",
         "related_documents": [
           "CHNHCM-003",

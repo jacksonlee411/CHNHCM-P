@@ -347,7 +347,7 @@
           "scope": "隔离升级的存量授权对账与回执查回，真实 BU 保存与撤权、共享版本停用及到期的同事务顺序",
           "entry": "POST /api/v1/business-units",
           "source": "internal/contexts/access/infra/postgres/assignment.go",
-          "evidence": "docs/verification/027-x03-grant-cutover.md",
+          "evidence": "docs/verification/027-public-grant-cutover.md",
           "entry_source": "internal/bootstrap/api.go"
         }
       ]
