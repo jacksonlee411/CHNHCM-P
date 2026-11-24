@@ -70,25 +70,43 @@ async function login(page: Page, role: string) {
   await expect(page.getByRole('button', { name: '退出', exact: true })).toBeVisible();
 }
 async function menu(page: Page) {
+  const archivePath = '/personnel/employees';
+  const directoryPath = '/personnel/assignments';
+  const heading = page.getByRole('heading', { name: '人员档案', exact: true });
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   const mobile = page.getByRole('button', { name: '打开导航', exact: true });
   await expect(desktop.or(mobile).first()).toBeVisible();
+  const current = new URL(page.url());
+  if (current.pathname === archivePath && !current.search) {
+    await expect(heading).toBeVisible();
+    return;
+  }
   if (await desktop.isVisible()) {
-    await desktop.click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+    const section = page.getByRole('button', { name: '员工', exact: true });
+    if (current.pathname.startsWith('/personnel/') && await section.isVisible()) {
+      await section.click();
+      await page.getByRole('menuitem', { name: '人员档案', exact: true }).click();
+    } else {
+      await desktop.click();
+      await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+      await expect(page).toHaveURL(url => !url.search && [archivePath, directoryPath].includes(url.pathname));
+      if (new URL(page.url()).pathname === directoryPath) {
+        await page.getByRole('link', { name: '人员档案', exact: true }).click();
+      }
+    }
   } else {
     await mobile.click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
-    const archive=page.getByRole('button',{name:'人员档案',exact:true});
-    const heading=page.getByRole('heading',{name:'人员档案',exact:true});
-    await expect(archive.or(heading).first()).toBeVisible();
-    if(await archive.isVisible())await archive.click();
+    const app = page.getByRole('button', { name: '人员', exact: true });
+    const expanded = await app.getAttribute('aria-expanded');
+    if (expanded !== 'true') await app.click();
+    if (expanded !== null) {
+      const section = page.getByRole('button', { name: '员工', exact: true });
+      if (await section.getAttribute('aria-expanded') === 'false') await section.click();
+      await page.getByRole('button', { name: '人员档案', exact: true }).click();
+    }
   }
-  const archive=page.getByRole('link',{name:'人员档案',exact:true});
-  const heading=page.getByRole('heading',{name:'人员档案',exact:true});
-  await expect(archive.or(heading).first()).toBeVisible();
-  if(await archive.isVisible())await archive.click();
-  await expect(page.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
+  await expect(page).toHaveURL(url => url.pathname === archivePath && !url.search);
+  await expect(heading).toBeVisible();
 }
 async function select(page: Page, label: string, choice: string) {
   await page.getByRole('combobox', { name: label, exact: true }).click();
