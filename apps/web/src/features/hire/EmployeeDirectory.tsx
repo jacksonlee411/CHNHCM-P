@@ -38,7 +38,8 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   const [dateInput, setDateInput] = useState<string>();
   useEffect(() => setDateInput(undefined), [query.businessAt]);
   const readyRef = useRef<string | undefined>(undefined),
-    request = useRef(0);
+    request = useRef(0),
+    edit = useRef(0);
   useEffect(() => {
     if (data && readyRef.current !== (query.ref ?? '')) {
       setDraft(data.keyword);
@@ -79,12 +80,14 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   }
   async function search() {
     const token = ++request.current,
+      revision = edit.current,
       current = sessionGuard();
     setSearching(true);
     try {
       const { ref } = await person.queryRef(session, draft);
       if (token === request.current && current()) {
         setError('');
+        if (revision !== edit.current) readyRef.current = ref;
         update({ ref, page: '1' });
       }
     } catch (e) {
@@ -226,7 +229,16 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
             }
             pager={<ListPager />}
             search={
-              <SearchControl value={draft} onChange={setDraft} onSearch={search} label="姓名或人员编号" />
+              <SearchControl
+                value={draft}
+                onChange={(value) => {
+                  edit.current++;
+                  readyRef.current = query.ref ?? '';
+                  setDraft(value);
+                }}
+                onSearch={search}
+                label="姓名或人员编号"
+              />
             }
           >
             <Stack direction="row" flexWrap="wrap" gap={2} alignItems="center">
