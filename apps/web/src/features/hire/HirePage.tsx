@@ -434,6 +434,9 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                       {a.kind === 'CancelHire' ? '撤销入职' : a.cancelled ? '入职（已撤销）' : '入职'} ·{' '}
                       {a.notice || '任用决定'}
                     </Typography>
+                    <Typography variant="body2">
+                      雇用记录 {a.recordNumber} 号 · {a.primaryJob ? '主岗' : '兼岗'}
+                    </Typography>
                     <Typography variant="body2">{recordedTime(a.recordedAt)}</Typography>
                     {a.canHistory && (
                       <Button onClick={() => setOriginal(original === a.id ? '' : a.id)}>查看原办理</Button>

@@ -5168,6 +5168,7 @@ export interface components {
             employment?: string;
             /** Format: uuid */
             assignment?: string;
+            recordNumber?: number;
         };
         HireCancel: {
             /** Format: uuid */
@@ -5184,6 +5185,8 @@ export interface components {
             employment: string;
             /** Format: uuid */
             assignment: string;
+            recordNumber: number;
+            primaryJob: boolean;
             /** Format: uuid */
             person: string;
             /** Format: uuid */

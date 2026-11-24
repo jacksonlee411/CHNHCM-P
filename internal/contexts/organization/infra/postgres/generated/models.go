@@ -1116,6 +1116,8 @@ type StaffingAssignment struct {
 	JobID        string
 	BuID         *string
 	LocationID   *string
+	PersonID     string
+	RecordNumber int32
 }
 
 type StaffingAssignmentPolicyMember struct {
@@ -1205,6 +1207,12 @@ type StaffingEmploymentPrimary struct {
 	TargetID   string
 	Purpose    string
 	Period     pgtype.Range[pgtype.Date]
+}
+
+type StaffingEmploymentRecord struct {
+	InstanceID   string
+	PersonID     string
+	RecordNumber int32
 }
 
 type StaffingGrade struct {

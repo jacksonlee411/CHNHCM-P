@@ -182,7 +182,13 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		if err != nil {
 			return "", err
 		}
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid,NULLIF($7,'')::uuid)`, instance, p.assignment, p.employment, in.Department, in.Job, in.BU, in.Location)
+		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_record(instance_id,person_id,record_number) VALUES($1,$2,0)
+            ON CONFLICT(instance_id,person_id,record_number) DO NOTHING`, instance, in.Person)
+		if err != nil {
+			return "", err
+		}
+		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment(instance_id,id,employment_id,department_id,job_id,bu_id,location_id,person_id,record_number)
+            VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid,NULLIF($7,'')::uuid,$8,0)`, instance, p.assignment, p.employment, in.Department, in.Job, in.BU, in.Location, in.Person)
 		if err != nil {
 			return "", err
 		}

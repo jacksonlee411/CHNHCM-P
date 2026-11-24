@@ -11,14 +11,15 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-const hireActionSQL = `SELECT a.id,a.revision,a.kind,e.id AS employment,t.id AS assignment,e.person_id AS person,e.employer_id AS employer,t.department_id AS department,t.job_id AS job,
+const hireActionSQL = `SELECT a.id,a.revision,a.kind,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,t.department_id AS department,t.job_id AS job,
 a.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
 lower(e.period)::text,coalesce(upper(e.period)::text,''),EXISTS(SELECT FROM staffing.employment_action c WHERE c.instance_id=e.instance_id AND c.employment_id=e.id AND c.kind='CancelHire')
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
 JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id) `
 
 func scanHireAction(row pgx.Row) (a h.Action, err error) {
-	err = row.Scan(&a.ID, &a.Revision, &a.Kind, &a.Employment, &a.Assignment, &a.Person, &a.Employer, &a.Department, &a.Job, &a.Notice, &a.RecordedAt, &a.Original, &a.From, &a.Until, &a.Cancelled)
+	err = row.Scan(&a.ID, &a.Revision, &a.Kind, &a.Employment, &a.Assignment, &a.RecordNumber, &a.Person, &a.Employer, &a.Department, &a.Job, &a.Notice, &a.RecordedAt, &a.Original, &a.From, &a.Until, &a.Cancelled)
+	a.PrimaryJob = a.RecordNumber == 0
 	return
 }
 func (u *unit) action(ctx context.Context, id string) (h.Action, error) {
@@ -149,6 +150,7 @@ func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, 
 	ok, err := u.employmentAllowed(ctx, "read", a.Person, a.Employer, a.Department, false)
 	if ok {
 		r.Action, r.Employment, r.Assignment = id, a.Employment, a.Assignment
+		r.RecordNumber = &a.RecordNumber
 	}
 	return r, digest, err
 }

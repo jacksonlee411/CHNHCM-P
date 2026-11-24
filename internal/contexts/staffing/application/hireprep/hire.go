@@ -32,25 +32,28 @@ type Preview struct {
 	Missing  []string  `json:"missing,omitempty"`
 }
 type Receipt struct {
-	Submission string `json:"submissionId"`
-	Outcome    string `json:"outcome"`
-	Action     string `json:"action,omitempty"`
-	Employment string `json:"employment,omitempty"`
-	Assignment string `json:"assignment,omitempty"`
+	Submission   string `json:"submissionId"`
+	Outcome      string `json:"outcome"`
+	Action       string `json:"action,omitempty"`
+	Employment   string `json:"employment,omitempty"`
+	Assignment   string `json:"assignment,omitempty"`
+	RecordNumber *int   `json:"recordNumber,omitempty"`
 }
 type Action struct {
-	ID         string `json:"id"`
-	Revision   string `json:"revision"`
-	Kind       string `json:"kind"`
-	Employment string `json:"employment"`
-	Assignment string `json:"assignment"`
-	Person     string `json:"person"`
-	Employer   string `json:"employer"`
-	Department string `json:"department"`
-	Job        string `json:"job"`
-	Notice     string `json:"notice"`
-	RecordedAt string `json:"recordedAt"`
-	Original   string `json:"original,omitempty"`
+	ID           string `json:"id"`
+	Revision     string `json:"revision"`
+	Kind         string `json:"kind"`
+	Employment   string `json:"employment"`
+	Assignment   string `json:"assignment"`
+	RecordNumber int    `json:"recordNumber"`
+	PrimaryJob   bool   `json:"primaryJob"`
+	Person       string `json:"person"`
+	Employer     string `json:"employer"`
+	Department   string `json:"department"`
+	Job          string `json:"job"`
+	Notice       string `json:"notice"`
+	RecordedAt   string `json:"recordedAt"`
+	Original     string `json:"original,omitempty"`
 	f.Period
 	Cancelled  bool `json:"cancelled"`
 	CanCancel  bool `json:"canCancel"`

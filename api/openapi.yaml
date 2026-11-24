@@ -12495,6 +12495,9 @@ components:
         assignment:
           type: string
           format: uuid
+        recordNumber:
+          type: integer
+          minimum: 0
     HireCancel:
       type: object
       additionalProperties: false
@@ -12516,6 +12519,8 @@ components:
       - kind
       - employment
       - assignment
+      - recordNumber
+      - primaryJob
       - person
       - employer
       - department
@@ -12541,6 +12546,11 @@ components:
         assignment:
           type: string
           format: uuid
+        recordNumber:
+          type: integer
+          minimum: 0
+        primaryJob:
+          type: boolean
         person:
           type: string
           format: uuid

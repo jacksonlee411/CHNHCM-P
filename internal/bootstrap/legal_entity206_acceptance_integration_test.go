@@ -315,7 +315,7 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 				t.Fatal("prefix fixture would remove Staffing facts", table)
 			}
 		}
-		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%'; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35);`)
+		f.exec(`ALTER TABLE access.subject_grant DROP CONSTRAINT IF EXISTS quota_catalog_scope; DELETE FROM access.subject_grant WHERE action LIKE 'jobfunction.%' OR action LIKE 'jobfamily.%' OR action LIKE 'job.%' OR action LIKE 'grade.%' OR action LIKE 'gradeladder.%' OR action LIKE 'position.%' OR action LIKE 'positionhierarchy.%' OR action LIKE 'quota.%' OR action LIKE 'staffingquota.%'; DROP SCHEMA staffing CASCADE; DELETE FROM public.goose_db_version WHERE version_id IN (17,18,19,20,21,22,24,25,26,27,28,35,41);`)
 	}
 
 	t.Helper()
