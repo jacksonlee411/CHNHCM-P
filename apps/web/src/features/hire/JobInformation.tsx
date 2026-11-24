@@ -478,6 +478,10 @@ export function OriginalEvidence({
       {original.action.operation === 'Delete' && (
         <ObjectDetailField label="办理状态">已删除</ObjectDetailField>
       )}
+      {original.secondary && <>
+        <ObjectDetailField label="任职安排">{[original.secondary.segments[0]?.departmentName,original.secondary.segments[0]?.jobName].filter(Boolean).join(' · ')}</ObjectDetailField>
+        <ObjectDetailField label="所属工作关系">{original.secondary.legal[0]?.entityName}{original.secondary.relationshipPrimary?' · 关系主任职':''}</ObjectDetailField>
+      </>}
       {original.transfer?.beforeDepartmentName && (
         <ObjectDetailField label="调出安排">
           {[original.transfer.beforeDepartmentName, original.transfer.beforeJobName]

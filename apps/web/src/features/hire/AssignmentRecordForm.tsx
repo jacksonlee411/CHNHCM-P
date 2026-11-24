@@ -27,6 +27,8 @@ const names = {
   CancelHire: '撤销入职',
   DataChange: '数据更改',
   Transfer: '调动',
+  AdditionalAssignment: '新增兼岗',
+  ParallelEmployment: '并行关系聘任',
   ProbationStart: '试用开始',
   ConfirmEmployment: '转正',
 };
