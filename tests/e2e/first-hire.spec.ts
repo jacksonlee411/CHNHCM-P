@@ -527,10 +527,17 @@ test('M04 职务信息地点更改与原笔纠错 原生200%', async () => {
 async function openRegister(page: Page) {
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   if (await desktop.isVisible()) {
-    await desktop.click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-    await page.getByRole('button', { name: '人事事务', exact: true }).click();
-    await page.getByRole('menuitem', { name: '办理记录', exact: true }).click();
+    const transactions = page.getByRole('button', { name: '人事事务', exact: true });
+    if (!(await transactions.isVisible())) {
+      await desktop.click();
+      await page.getByRole('menuitem', { name: '人员', exact: true }).click();
+      await expect(page.getByRole('heading', { name: /^(员工|办理记录|人员档案)$/ }).first()).toBeVisible();
+    }
+    await transactions.focus();
+    await page.keyboard.press('Enter');
+    const register = page.getByRole('menuitem', { name: '办理记录', exact: true });
+    await register.focus();
+    await page.keyboard.press('Enter');
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
     const personnel = page.getByRole('button', { name: '人员', exact: true });
@@ -1163,6 +1170,8 @@ async function positionTransferJourney(page: Page, sample: Awaited<ReturnType<ty
     await button('更正记录').click();await expect(position).toHaveValue(first.name);
     await position.fill(actual.name);await page.getByRole('option',{name:actual.name,exact:true}).click();
     await button('保存').click();
+    await expect(page.getByText(actual.name+' · 免占编',{exact:true})).toBeVisible();
+    await action.click();
     await expect(page.getByText(arrangement(actual),{exact:true})).toBeVisible();
     const revisions=page.getByRole('button',{name:/查看修订/});
     await expect(revisions).toHaveCount(2);await revisions.last().click();
@@ -1171,7 +1180,8 @@ async function positionTransferJourney(page: Page, sample: Awaited<ReturnType<ty
   } finally {
     const current=await request(page,'GET',policyPath);
     if (current.body.version===published.body.version) {
-      const restored=await request(page,'POST',policyPath,{expectedVersion:current.body.version,row},randomUUID());
+      const applied=find(current.body.rows)!;
+      const restored=await request(page,'POST',policyPath,{expectedVersion:current.body.version,row:{...applied,mode:row.mode}},randomUUID());
       expect(restored.status,restored.body.message).toBe(200);
     }
   }
