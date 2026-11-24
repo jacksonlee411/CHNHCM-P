@@ -6,6 +6,7 @@ import (
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"errors"
 	"fmt"
+	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -34,12 +35,12 @@ func (r *request) removable(s d.ItemSection, id string, row profileItem) bool {
 	return true
 }
 func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
-	for _, s := range []d.ItemSection{d.Addresses, d.Family} {
+	for _, s := range d.ItemSections {
 		if !r.itemRead(s, v.ID, "", s.Required[0]) {
 			continue
 		}
 		for _, k := range s.Fields {
-			if r.itemRead(s, v.ID, "", k) || familyChannel(k) != "" && r.itemRead(s, v.ID, "", k+".masked") {
+			if r.itemRead(s, v.ID, "", k) || itemMaskable(k) && r.itemRead(s, v.ID, "", k+".masked") {
 				out.Readable = append(out.Readable, k)
 			}
 		}
@@ -53,15 +54,22 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 				if full {
 					if val, ok := row.Fields[k]; ok {
 						x.Fields[k] = val
+						if k == "certificateNumber" && view != "credential-"+row.ItemID && !(view == "edit" && r.itemWrite(s, v.ID, row.ItemID, k)) {
+							x.Fields[k] = "********"
+						}
 					}
 					if a, ok := row.Adoptions[k]; ok {
 						a.Parents = nil
 						x.Adoptions[k] = a
 					}
-				} else if kind := familyChannel(k); kind != "" && r.itemRead(s, v.ID, row.ItemID, k+".masked") {
+				} else if itemMaskable(k) && r.itemRead(s, v.ID, row.ItemID, k+".masked") {
 					x.Masked = append(x.Masked, k)
 					if val := row.Fields[k]; val != "" {
-						x.Fields[k] = d.Mask(kind, val)
+						if k == "certificateNumber" {
+							x.Fields[k] = "********"
+						} else {
+							x.Fields[k] = d.Mask(familyChannel(k), val)
+						}
 					}
 				} else if slices.Contains(out.Readable, k) {
 					x.Hidden = append(x.Hidden, k)
@@ -71,14 +79,21 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 				}
 			}
 			x.CanRemove = view == "edit" && r.removable(s, v.ID, row)
-			if s.Name == "addresses" {
+			switch s.Name {
+			case "education":
+				out.Education = append(out.Education, x)
+			case "credentials":
+				out.Credentials = append(out.Credentials, x)
+			case "addresses":
 				out.Addresses = append(out.Addresses, x)
-			} else {
+			case "family":
 				out.Family = append(out.Family, x)
 			}
 		}
 	}
 }
+func itemMaskable(key string) bool { return key == "certificateNumber" || familyChannel(key) != "" }
+
 func familyChannel(k string) string {
 	switch k {
 	case "familyPhone":
@@ -93,10 +108,18 @@ func familyChannel(k string) string {
 // actor can still see that row and perform the affected edits.
 func (r *request) checkItemFault(id string, in p.Correct, field string) error {
 	group, rest, rowField := strings.Cut(field, ".")
-	section, edits := d.Addresses, in.Addresses
-	if group == d.Family.Name {
+	var section d.ItemSection
+	var edits []p.ProfileItemEdit
+	switch group {
+	case "addresses":
+		section, edits = d.Addresses, in.Addresses
+	case "family":
 		section, edits = d.Family, in.Family
-	} else if group != d.Addresses.Name {
+	case "education":
+		section, edits = d.Education, in.Education
+	case "credentials":
+		section, edits = d.Credentials, in.Credentials
+	default:
 		return nil
 	}
 	if !rowField {
@@ -148,8 +171,11 @@ func (r *request) checkItemFault(id string, in p.Correct, field string) error {
 }
 
 func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItemEdit) error {
+	if len(edits) == 0 {
+		return nil
+	}
 	seen := map[string]bool{}
-	primary := ""
+	selected := map[string]string{}
 	for n, edit := range edits {
 		idx := slices.IndexFunc(v.profileItems, func(x profileItem) bool { return x.Section == s.Name && x.ItemID == edit.ItemID })
 		if edit.ItemID == "" {
@@ -195,26 +221,45 @@ func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItem
 		if err := r.editItemFields(s, v.ID, n, row, edit); err != nil {
 			return err
 		}
-		if edit.Fields["addressPrimary"] == "yes" {
-			if primary != "" {
-				return rowInputError(s.Name, n, "addressPrimary", d.Invalid("addressPrimary", "只可指定一条主要地址"))
+		for _, flag := range []string{"addressPrimary", "highestEducation", "highestDegree"} {
+			if edit.Fields[flag] != "yes" {
+				continue
 			}
-			primary = row.ItemID
+			if selected[flag] != "" {
+				return rowInputError(s.Name, n, flag, d.Invalid(flag, "同一标记只能指定一条记录"))
+			}
+			selected[flag] = row.ItemID
 		}
 		if before != hash(row.ProfileItem) {
 			row.Revision = f.NewID()
 		}
 	}
-	if primary != "" {
+	for flag, primary := range selected {
 		for i := range v.profileItems {
 			x := &v.profileItems[i]
-			if x.Section == s.Name && x.ItemID != primary && x.Fields["addressPrimary"] == "yes" {
-				if !r.itemRead(s, v.ID, x.ItemID, s.Required[0]) || !r.itemWrite(s, v.ID, x.ItemID, "addressPrimary") {
+			if x.Section == s.Name && x.ItemID != primary && x.Fields[flag] == "yes" {
+				if !r.itemRead(s, v.ID, x.ItemID, s.Required[0]) || !r.itemWrite(s, v.ID, x.ItemID, flag) {
 					return d.Denied()
 				}
-				delete(x.Fields, "addressPrimary")
+				delete(x.Fields, flag)
 				x.Revision = f.NewID()
 			}
+		}
+	}
+	if s.Name == d.Education.Name {
+		facts := map[string]bool{}
+		for _, row := range v.profileItems {
+			if row.Section != s.Name {
+				continue
+			}
+			fields := maps.Clone(row.Fields)
+			delete(fields, "highestEducation")
+			delete(fields, "highestDegree")
+			key := hash(fields)
+			if facts[key] {
+				return d.Conflict()
+			}
+			facts[key] = true
 		}
 	}
 	return nil
@@ -278,7 +323,7 @@ func (r *request) editItemFields(s d.ItemSection, id string, n int, row *profile
 		if err != nil {
 			return rowInputError(s.Name, n, k, err)
 		}
-		if (k == "emergency" || k == "addressPrimary") && val != "" && val != "yes" {
+		if slices.Contains([]string{"emergency", "addressPrimary", "highestEducation", "highestDegree", "indefinite"}, k) && val != "" && val != "yes" {
 			return rowInputError(s.Name, n, k, d.Invalid(k, "请选择有效标记"))
 		}
 		delete(row.Adoptions, k)
@@ -320,6 +365,22 @@ func (r *request) editItemFields(s d.ItemSection, id string, n int, row *profile
 				return placeError(n, parent, placeChanged())
 			}
 		}
+	}
+	// A change of type or duration can clear stored fields. Authorize those
+	// changes even when the client did not receive the old values.
+	for k := range row.Fields {
+		obsolete := s.Name == d.Education.Name && !d.EducationFieldApplies(row.Fields["educationType"], k) ||
+			s.Name == d.Credentials.Name && k == "validUntil" && row.Fields["indefinite"] == "yes" && edit.Fields["indefinite"] == "yes"
+		if !obsolete {
+			continue
+		}
+		if !r.itemWrite(s, id, row.ItemID, k) {
+			return d.Denied()
+		}
+		if edit.Fields[k] != "" {
+			return rowInputError(s.Name, n, k, d.Invalid(k, "该字段不适用于当前记录"))
+		}
+		delete(row.Fields, k)
 	}
 	if err := s.Validate(row.Fields); err != nil {
 		var fault *f.Fault

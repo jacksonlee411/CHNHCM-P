@@ -8821,6 +8821,21 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/504-personal-profile-second-batch.md",
           "verification_limit": "本批两栏六个组合已在两种宽度逐窗验收。其余栏目按第三、四批办理。"
+        },
+        {
+          "document": "CHNHCM-504",
+          "scope": "教育经历与专业凭证三态弹框，三种教育类型、两类期限与独立最高标记。",
+          "target_files": [
+            "apps/web/src/features/personnel/ProfileSections.tsx",
+            "apps/web/src/features/personnel/profileDraft.ts",
+            "internal/contexts/personnel/domain/education.go",
+            "tests/e2e/personnel.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/504-personal-profile-third-batch.md",
+          "verification_limit": "第三批六个组合及五种字段变体已验证。七类记录累计完成 18/21 个组合，银行账户随第四批。"
         }
       ]
     }

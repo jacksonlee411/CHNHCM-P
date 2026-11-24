@@ -1,6 +1,14 @@
 import { Button } from '@mui/material';
 import { ObjectDetailSection } from '@chnhcm/ui';
-import { labelsByGroup, requiredByGroup, kinds, type Fields, type Group, type Row } from './profileDraft';
+import {
+  isProfileItem,
+  labelsByGroup,
+  requiredByGroup,
+  kinds,
+  type Fields,
+  type Group,
+  type Row,
+} from './profileDraft';
 
 type Props = {
   group: Group;
@@ -22,17 +30,32 @@ function summaryColumns(group: Group, read: string[]) {
     columns.push({ key: 'kind', label: '联系渠道', value: (f) => kinds[f.kind] });
     if (read.includes('contactPurpose'))
       columns.push({ key: 'contactPurpose', label: '联系用途', value: (f) => f.contactPurpose });
-  } else if (group === 'addresses' || group === 'family') {
-    const keys =
-      group === 'addresses'
-        ? ['street', 'addressCountry', 'province', 'area', 'postalCode']
-        : ['relationship', 'familyPhone', 'familyEmail', 'emergency', 'employer', 'familyJob'];
+  } else if (isProfileItem(group)) {
+    const summaryKeys: Partial<Record<Group, string[]>> = {
+      addresses: ['street', 'addressCountry', 'province', 'area', 'postalCode'],
+      family: ['relationship', 'familyPhone', 'familyEmail', 'emergency', 'employer', 'familyJob'],
+      education: ['educationType', 'major', 'educationLevel', 'highestEducation', 'degree', 'highestDegree'],
+      credentials: [
+        'credentialKind',
+        'credentialLevel',
+        'awardingBody',
+        'validFrom',
+        'validUntil',
+        'indefinite',
+      ],
+    };
+    const keys = summaryKeys[group] || [];
     for (const key of keys)
       if (read.includes(key))
         columns.push({
           key,
           label: labelsByGroup[group][key],
-          value: (f) => (key === 'emergency' ? (f[key] ? '是' : '否') : f[key]),
+          value: (f) =>
+            ['emergency', 'highestEducation', 'highestDegree', 'indefinite'].includes(key)
+              ? f[key]
+                ? '是'
+                : '否'
+              : f[key],
         });
   } else {
     if (read.includes('documentNumber') || read.includes('documentNumber.masked')) {
@@ -66,7 +89,7 @@ export function ProfileCollection({
   apply,
 }: Props) {
   const doc = group === 'documents';
-  const item = group === 'addresses' || group === 'family';
+  const item = isProfileItem(group);
   const flag = doc ? 'documentPrimary' : group === 'addresses' ? 'addressPrimary' : 'contactPrimary';
   const columns = summaryColumns(group, read).filter(
     (column) => !rows.length || rows.some((row) => !row.hidden?.includes(column.key)),
@@ -210,11 +233,14 @@ export function ProfileCollection({
               open(
                 {
                   key: crypto.randomUUID(),
-                  fields: item
-                    ? {}
-                    : doc
-                      ? { documentKind: '', documentNumber: '' }
-                      : { kind: write.includes('phone') ? 'phone' : 'email', value: '' },
+                  fields:
+                    group === 'education'
+                      ? { educationType: '学习经历' }
+                      : item
+                        ? {}
+                        : doc
+                          ? { documentKind: '', documentNumber: '' }
+                          : { kind: write.includes('phone') ? 'phone' : 'email', value: '' },
                 },
                 '新增记录',
               )

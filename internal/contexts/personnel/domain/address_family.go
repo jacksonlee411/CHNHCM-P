@@ -19,7 +19,12 @@ func (s ItemSection) Validate(fields map[string]string) error {
 			return Invalid(key, "请填写必填业务字段")
 		}
 	}
-	if s.Name == Addresses.Name {
+	switch s.Name {
+	case Education.Name:
+		return validateEducation(fields)
+	case Credentials.Name:
+		return validateCredential(fields)
+	case Addresses.Name:
 		if !slices.Contains([]string{"居住地址", "户籍地址", "通讯地址", "其他地址"}, fields["addressType"]) {
 			return Invalid("addressType", "请选择有效的地址类型")
 		}

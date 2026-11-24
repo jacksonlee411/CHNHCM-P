@@ -484,29 +484,45 @@ func hireMigrationSet(t *testing.T, include func(string) bool) fstest.MapFS {
 	return files
 }
 
+func TestPublic37UpgradeToEducationCredentials(t *testing.T) {
+	pool := newStaffingMigrationPool(t)
+	ctx := t.Context()
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00037" })))
+	if bootstrap.CheckCurrentStorage(ctx, pool) == nil {
+		t.Fatal("runtime admitted the public ledger before migration 38")
+	}
+	for range 2 {
+		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
+	}
+	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+}
+
 func TestHire400UpgradeFromPersonnel34(t *testing.T) {
-	for _, version := range []string{"00034", "00036"} {
+	for _, version := range []string{"00034", "00036", "00038"} {
 		t.Run(version, func(t *testing.T) { checkPersonnelUpgrade(t, version) })
 	}
 }
 func checkPersonnelUpgrade(t *testing.T, version string) {
 	pool := newStaffingMigrationPool(t)
 	ctx := t.Context()
-	prior := hireMigrationSet(t, func(v string) bool { return v <= "00031" || v == "00034" || version == "00036" && v == "00036" })
+	prior := hireMigrationSet(t, func(v string) bool {
+		return v <= "00031" || v <= version && (v == "00034" || v == "00036" || v == "00038")
+	})
 	must(t, bootstrap.Migrate(ctx, pool, prior))
 	if bootstrap.CheckCurrentStorage(ctx, pool) == nil {
 		t.Fatal("runtime admitted f ledger without readiness rules")
 	}
 	// A fault in 33 must keep the original 34 row and the newly committed 32.
-	var ledgerID int64
-	must(t, pool.QueryRow(ctx, "SELECT id FROM goose_db_version WHERE version_id=34").Scan(&ledgerID))
+	var ledgerIDs []int64
+	const originalRows = " FROM goose_db_version WHERE version_id IN (34,36,38) AND version_id <= $1::text::bigint"
+	must(t, pool.QueryRow(ctx, "SELECT array_agg(id ORDER BY version_id)"+originalRows, version).Scan(&ledgerIDs))
 	_, err := pool.Exec(ctx, "CREATE TABLE staffing.assignment_policy_terminal (fixture boolean)")
 	must(t, err)
 	if bootstrap.Migrate(ctx, pool, migrations.Files) == nil {
 		t.Fatal("expected receipt migration conflict")
 	}
 	var intact bool
-	must(t, pool.QueryRow(ctx, `SELECT array_agg(version_id ORDER BY version_id)=ARRAY(SELECT generate_series(1,32)::bigint)||ARRAY[34::bigint]||CASE WHEN $1::text='00036' THEN ARRAY[36::bigint] ELSE ARRAY[]::bigint[] END
+	must(t, pool.QueryRow(ctx, `SELECT array_agg(version_id ORDER BY version_id)=ARRAY(SELECT generate_series(1,32)::bigint)||ARRAY(SELECT v::bigint FROM unnest(ARRAY[34,36,38]) v WHERE v <= $1::text::bigint)
 		AND to_regclass('organization.legal_purpose_terminal') IS NULL FROM goose_db_version WHERE version_id>0 AND is_applied`, version).Scan(&intact))
 	if !intact || bootstrap.CheckCurrentStorage(ctx, pool) == nil {
 		t.Fatal("partial f convergence admitted or wrong retry prefix")
@@ -517,9 +533,9 @@ func checkPersonnelUpgrade(t *testing.T, version string) {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
-	must(t, pool.QueryRow(ctx, "SELECT count(*)=1 AND min(id)=$1 FROM goose_db_version WHERE version_id=34", ledgerID).Scan(&intact))
+	must(t, pool.QueryRow(ctx, "SELECT array_agg(id ORDER BY version_id)=$2"+originalRows, version, ledgerIDs).Scan(&intact))
 	if !intact {
-		t.Fatal("existing address/family ledger row replaced")
+		t.Fatal("an original personnel migration ledger row was replaced")
 	}
 }
 

@@ -4,7 +4,7 @@
 
 X03 首批拟交付本地账号管理、部门授权和指定岗位核编授权。管理员授予、经办人办理、按份撤销及重启后持续失权是贯穿验收的业务路径。两份文档待评审，产品实施尚未开始，Casbin 和 OPA 均暂缓。[027 实施计划](plans/027-x03-local-access-rollout.md) · [028 客户管理员合同](specs/x03/028-local-account-and-authorization.md)
 
-[M01 个人资料扩展](plans/504-personal-profile-extension.md)单列 T01 之后的九栏维护。字段、整页保存及七类弹框布局由[九栏目合同](specs/m01/505-personal-profile-contract.md)规定。[九栏方案评审](verification/504-personal-profile-review.md) · [弹框布局核对](verification/504-personal-profile-dialog-layout.md) · [第一批三栏实测与验收地址](verification/504-personal-profile-first-batch.md) · [第二批地址与家庭联系人实测及验收地址](verification/504-personal-profile-second-batch.md)
+[M01 个人资料扩展](plans/504-personal-profile-extension.md)单列 T01 之后的九栏维护。字段、整页保存及七类弹框布局由[九栏目合同](specs/m01/505-personal-profile-contract.md)规定。[九栏方案评审](verification/504-personal-profile-review.md) · [弹框布局核对](verification/504-personal-profile-dialog-layout.md) · [第一批三栏实测与验收地址](verification/504-personal-profile-first-batch.md) · [第二批地址与家庭联系人实测及验收地址](verification/504-personal-profile-second-batch.md) · [第三批教育经历与专业凭证](verification/504-personal-profile-third-batch.md)
 
 人员登记已按主要证件号码判断重复，同名可直接建档。旧档案升级核对和人事试办记录见[本次实施与试办](verification/500-personnel-registration-trial.md)。[三种登记情况](specs/m01/501-person-registration-requirements.md#m01-registration-examples) · [人员详情与变更日志](verification/500-personnel-change-log.md) · [4380 手工验收环境](verification/500-personnel-change-log.md#personnel-log-4380)
 

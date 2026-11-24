@@ -108,6 +108,9 @@ func InitializePersonalProfileFixture(ctx context.Context, tx pgx.Tx, instance, 
 			}
 		}
 	}
+	if err := initializeQualifications(ctx, tx, instance, subject, profile); err != nil {
+		return err
+	}
 	tag, err = tx.Exec(ctx, "insert into access.person_address_family_fixture values($1,$2) on conflict do nothing", instance, subject)
 	if err != nil || tag.RowsAffected() == 0 {
 		return err
@@ -135,6 +138,22 @@ func InitializePersonalProfileFixture(ctx context.Context, tx pgx.Tx, instance, 
 		}
 	}
 	return nil
+}
+
+func initializeQualifications(ctx context.Context, tx pgx.Tx, instance, subject, profile string) error {
+	fields := []string{"educationType", "school", "major", "educationLevel", "degree", "studyMode", "educationPath", "startMonth", "endMonth", "completion", "awardDate", "highestEducation", "highestDegree", "credentialKind", "credentialName", "credentialLevel", "specialty", "awardingBody", "issuedOn", "validFrom", "validUntil", "indefinite"}
+	actions := []string{"qualification.read"}
+	if profile == "registrar" {
+		fields = append(fields, "certificateNumber")
+		actions = append(actions, "qualification.correct")
+	} else {
+		fields = append(fields, "certificateNumber.masked")
+	}
+	_, err := tx.Exec(ctx, `WITH enabled AS (
+ INSERT INTO access.person_qualification_fixture VALUES ($1,$2) ON CONFLICT DO NOTHING RETURNING instance_id,principal_id
+ ) INSERT INTO access.person_grant(instance_id,principal_id,action,purpose,fields)
+ SELECT instance_id,principal_id,action,$3,$4 FROM enabled CROSS JOIN unnest($5::text[]) AS action`, instance, subject, access.PersonPurpose("qualification.read"), fields, actions)
+	return err
 }
 
 // InitializeHireIdentity explicitly enables purpose-bound identity use for the local actor.
