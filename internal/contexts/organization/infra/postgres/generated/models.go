@@ -46,6 +46,11 @@ type AccessEmploymentHistoryFixture struct {
 	PrincipalID string
 }
 
+type AccessEmploymentLifecycleFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessEmploymentLocationFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1151,6 +1156,14 @@ type StaffingAssignment struct {
 	Period       pgtype.Range[pgtype.Date]
 }
 
+type StaffingAssignmentExit struct {
+	InstanceID    string
+	AssignmentID  string
+	ActionID      string
+	Revision      string
+	FirstInactive pgtype.Date
+}
+
 type StaffingAssignmentHead struct {
 	InstanceID   string
 	AssignmentID string
@@ -1269,6 +1282,14 @@ type StaffingEmploymentActionRevision struct {
 	RecordedAt       pgtype.Timestamptz
 	Adoption         []byte
 	Operation        string
+}
+
+type StaffingEmploymentExit struct {
+	InstanceID    string
+	EmploymentID  string
+	ActionID      string
+	Revision      string
+	FirstInactive pgtype.Date
 }
 
 type StaffingEmploymentOutbox struct {
@@ -1766,6 +1787,16 @@ type StaffingJobTerminal struct {
 	Digest       []byte
 	Result       []byte
 	ClosedAt     pgtype.Timestamptz
+}
+
+type StaffingManagerAgreement struct {
+	InstanceID        string
+	AssignmentID      string
+	ActionID          string
+	Revision          string
+	ManagerAssignment *string
+	Purpose           string
+	Period            pgtype.Range[pgtype.Date]
 }
 
 type StaffingPosition struct {
