@@ -1,0 +1,47 @@
+---
+title: M13 企业福利 · 目标设计
+---
+flowchart TB
+  subgraph domain["M13 企业福利"]
+    direction TB
+    L["福利计划与选项"]:::own
+    E["生活事件及资格判断"]:::process
+    N["福利登记与期间"]:::own
+    C["费用 账单与承担"]:::own
+    CLAIM["BenefitClaim 待遇申请与决定"]:::own
+    AP["BenefitSupplierPayable 供应商保费应付"]:::own
+    SI["SupplierSettlementInstruction 核准及排他执行"]:::own
+    CASH["SupplierMovement 唯一资金事实与分配"]:::own
+  end
+  P["M01 M04 人员与家属资格"]:::external
+  Y["M10 工资用途"]:::external
+  T["M11 税务处理"]:::external
+  A["X05 供应商及财务执行渠道"]:::external
+  FIN["M15 单位成本"]:::external
+  EXT["X05 保险商理赔观察与结算引用"]:::external
+  PAYER["M14 PayerAccount 执行准入守卫"]:::external
+  P -->|必要资料| E
+  L -->|资格规则| E
+  E -->|登记变更| N
+  N -->|期间费用| C
+  C -->|税务来源| T
+  N -->|受控登记| A
+  A -->|账单回执| C
+  C -->|单位承担的唯一成本来源| FIN
+  N -->|采用登记及计划版本| CLAIM
+  E -->|资格和证据待核验| CLAIM
+  CLAIM -->|企业承担报销的唯一确认来源| C
+  CLAIM -->|保险商直接理赔 受控交换| EXT
+  EXT -->|外部证据不等于本域自动核准| CLAIM
+  C -->|个人扣款 待遇或企业报销| Y
+  C -->|仅确认供应商保费 来源唯一| AP
+  AP -->|可付分配 占用及版本守卫| SI
+  SI -->|直接或财务委托执行意图| A
+  A -->|原请求资金观察 经本域核对| CASH
+  CASH -->|逐项核销及退回| AP
+  CASH -->|现金核对 不再次确认成本| FIN
+  PAYER -->|C同事务限制及领取登记| SI
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

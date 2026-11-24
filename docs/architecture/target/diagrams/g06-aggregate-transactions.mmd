@@ -1,0 +1,85 @@
+---
+title: G06 关键聚合与本地事务 · 公开写端口协调
+---
+flowchart TB
+  P["M01 Person独立登记事务"]
+  subgraph HR["T1 Staffing短事务 · 固定锁序 + expectedRevision"]
+    H["Staffing协调器<br/>入职 调动 终结 撤销及更正"]
+    Q["M03 StaffingQuota根
+核定编制 预留 占编"]
+    E["M04 Employment / Assignment根<br/>含经理关系的期间守卫"]
+    S["M04 PrimarySelection根"]
+    O["各自业务Outbox"]
+    H --> Q
+    H --> E
+    H --> S
+    H --> O
+  end
+  subgraph MEMBERS["T0 计薪归属短事务 · 全部受影响日期段"]
+    MC["M10 AssignPayroll协调器"]
+    MS["PayrollAllocationSet根<br/>任职及用途唯一的权威成员登记"]
+    MM["全部受影响PayrollMembership根<br/>跨上下文及定义校验分配总量"]
+    MO["集合修订及业务Outbox"]
+    MC --> MS
+    MC --> MM
+    MC --> MO
+  end
+  subgraph PAY["T2 封存短事务 · 任一失败全部回滚"]
+    C["M10 SealCoordinator"]
+    R["M10 PayrollResult及采用
+PayableSourceHead"]
+    RH["M10 ResultSeriesHead<br/>当前完整基准及后继差额CAS"]
+    T["M11 TaxLedger根
+CAS未决Commitment"]
+    D["M12 ObligationAccount根
+消费代扣占用"]
+    REC["M14 RecoveryAccount及原PayableAccount根
+可选扣回占用消费与唯一结算分录"]
+    B["各自Outbox与来源唯一键"]
+    C --> R
+    C --> RH
+    C --> T
+    C --> D
+    C --> REC
+    C --> B
+  end
+  subgraph CASH["T3 领取与取消共同短事务 · M11和M14公开端口"]
+    I["PaymentInstruction不可变payload"]
+    A["PayableAccount根
+净结算 付款占用 回收分录"]
+    U["Authorization根
+hash 范围 撤销状态"]
+    V["M10 来源head锁及采用水位"]
+    K["M11 TaxLedger共享守卫
+按用途的证据及DispatchPermit"]
+    G["ClaimDispatch
+AcquirePermit与CAS原子提交"]
+    I --> G
+    A --> G
+    U --> G
+    K --> G
+    V --> G
+  end
+  PAYER["M14 PayerAccount根<br/>PayerExecutionHold及活动ClaimRef<br/>涉及者先取同一付款账户锁"]
+  subgraph INSTITUTION["T4 机构领取及未知资金阻塞 · 共同短事务"]
+    IA["M11税款 M12参缴 M13保费<br/>各自责任账户及来源head"]
+    II["本域精确指令 分配与核准"]
+    IG["ClaimInstitutionSettlement<br/>付款账户准入与本域占用原子提交"]
+    IH["PlacePayerHold / ReleasePayerHold<br/>未知责任出款登记或证据定位<br/>已领取保留占用 不自动释放"]
+    IA --> IG
+    II --> IG
+    IH -->|"定位后同事务移交限制"| IA
+  end
+  PAYER -->|"工资领取与取消同守卫"| G
+  PAYER -->|"机构领取同守卫"| IG
+  PAYER -->|"同一根revision及渠道范围"| IH
+  J["X04 / X05 事务提交后执行
+不持DB事务等待外部"]
+  P -->|"稳定personId"| H
+  E -->|"E事实；下游明确采用"| C
+  E -->|"任职及责任范围"| MC
+  MM -->|"明确采用有效归属版本"| C
+  R -->|"E唯一应付来源"| A
+  T -->|"同一TaxLedger根及依赖栅栏"| K
+  G -->|"持久意图"| J
+  IG -->|"直接或排他财务委托意图"| J

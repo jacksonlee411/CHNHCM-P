@@ -1,0 +1,45 @@
+---
+title: F05 历史更正、跨期税费及已支付保护 · 目标流程
+config:
+  sequence:
+    mirrorActors: false
+    diagramMarginX: 50
+    diagramMarginY: 20
+---
+sequenceDiagram
+  actor H as 责任专员
+  participant S as 原事实所有域
+  participant X as X04 持久投递
+  participant Y as M10 工资
+  participant R as M10 结果系列
+  participant T as M11 税务
+  participant C as M12 参缴
+  participant P as M14/M15 结算
+  H->>S: 更正原事实，说明业务日期与依据
+  S->>S: 按来源域粒度更正，保留原事实与修订
+  S->>S: 同事务写源域Outbox及连续revision
+  S-->>X: E新旧版本与影响期间
+  X-->>Y: E至少一次投递 缺号按水位补拉
+  Y->>Y: Inbox去重并查自身采用与影响
+  Y->>Y: 按PayrollImpactPolicy版本确定项目/期间影响
+  Y->>R: 读取当前完整基准与系列revision
+  Y->>Y: 创建追溯案，固定原始及当前基准和新依据
+  Y->>T: 识别所得所属期、支付日、税年和原申报
+  Y->>C: 核对原参缴义务及原实缴
+  alt 政策适用或历史来源未知
+    T-->>H: 待人工核对，不套当前规则覆盖历史
+    C-->>H: 保留原结果及未解决差异
+  else 可确认差额
+    T-->>Y: 更正评估及申报处理路径
+    C-->>Y: 补退义务及个人承担变化
+    Y->>R: C同T2事务CAS当前完整版本并求后继差额
+    alt 系列或税费依赖版本已变化
+      R-->>Y: 回滚并重评，不新增应付
+    else 共同守卫通过
+      Y->>Y: 同事务封存、累计、税承诺、实扣及来源head
+      Note over Y,R: 100到120再到130，依次只追加20和10
+      Y-->>P: E唯一后继差额及前后完整版本引用
+      P->>P: 按原付款与关账状态办理后继
+    end
+  end
+  Note over S,P: 重复处理同一更正与目标不能重复扣款、付款、缴费或过账

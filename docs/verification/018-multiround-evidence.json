@@ -1,0 +1,887 @@
+{
+  "schema_version": 1,
+  "status": "final",
+  "date": "2026-10-31",
+  "report": "docs/verification/018-multiround-review.md",
+  "scope": "Current BU creation/query slice; no later record writers, approval, workbench, adoption consumer or production recovery.",
+  "baseline": {
+    "snapshot_sha256": "a8cf0d600591c5024fe9389c8d4ae3ddab06fd3cde687dc236fcd4da981e7ae1",
+    "captured_at": "2026-10-31T13:31:21.123425+00:00",
+    "repositories": [
+      {
+        "repository": "CHNHCM",
+        "cwd": "/home/vivobook/projects/CHNHCM-wt-dev-a",
+        "head": "b4abd4d2892db35b9dddd9fe3fedf338bf11da1b",
+        "branch": "wt-dev-a"
+      },
+      {
+        "repository": "oracle-fscr",
+        "cwd": "/home/vivobook/projects/oracle-fscr",
+        "head": "e4267c97f632fe2e4d596d31c1e5628a923ad10b",
+        "branch": "hcm/docs/architecture-design-review"
+      }
+    ],
+    "initial_diffs": [
+      {
+        "repository": "CHNHCM",
+        "file": ".local/multiround-018/CHNHCM-initial.diff",
+        "sha256": "d50bf3659a9332dd2573af7706a90a1f827ea6f794559e32431ba6823ff9707c"
+      },
+      {
+        "repository": "oracle-fscr",
+        "file": ".local/multiround-018/oracle-fscr-initial.diff",
+        "sha256": "d00dee92d1e4ac9b99ef1a9d55194adac7715779fcadd2bcbfc009c60b82b6c3"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "R1-01",
+      "priority": "P2",
+      "trigger": "有效会话遇数据库锁等待失败被误报401，前端因临时故障退出",
+      "fix_and_validation": "仅无行识别为身份缺失，其他存储错误交给既有503映射；真实数据库锁夹具复验读取/退出503，解除后原会话200，正常退出后401",
+      "status": "fixed"
+    },
+    {
+      "id": "R1-02",
+      "priority": "P3",
+      "trigger": "合法200字中文名称可保存，但整名搜索超过400字节被拒400",
+      "fix_and_validation": "查询按Unicode码点与API的400长度一致；真实DB验证200字整名命中、400允许、401拒绝；未改查询SQL",
+      "status": "fixed"
+    },
+    {
+      "id": "R1-03",
+      "priority": "P2",
+      "trigger": "查回not_applied先终结，迟到重试409再次锁住表单且引用已消失",
+      "fix_and_validation": "按既有提交ID忽略已终结的旧回调，终态解除busy；真实查回及迟到409后可保存新请求",
+      "status": "fixed"
+    },
+    {
+      "id": "R1-04",
+      "priority": "P2",
+      "trigger": "退出已撤销旧会话，迟到204的清Cookie头却清掉随后登录的新会话",
+      "fix_and_validation": "退出只撤销服务端会话，不以迟到响应清Cookie；浏览器真退出/重登后释放204仍可认证，正常退出的服务端撤销继续有效",
+      "status": "fixed"
+    },
+    {
+      "id": "R1-05",
+      "priority": "P3",
+      "trigger": "页面丢弃adoptedRef参数，返回当前资料冒充请求的采用资料",
+      "fix_and_validation": "转发既有参数，服务端明确501；仅主动“返回当前资料”才移除条件；未实现采用能力",
+      "status": "fixed"
+    },
+    {
+      "id": "R1-06",
+      "priority": "P2",
+      "trigger": "010/012仍把已实现的创建/查询说成未采纳或未接通",
+      "fix_and_validation": "更新当前阶段、证据入口及分项边界；010仍in_progress，后续记录维护仍未实施",
+      "status": "fixed"
+    },
+    {
+      "id": "R2-01",
+      "priority": "P2",
+      "trigger": "字段拒绝或未知提交后重载context得到403，受限正文和内存重试包仍保留",
+      "fix_and_validation": "明确传递403状态，清理正文/重试包；保留待确认引用，清理不自动重载；两种前态均复现后修复，恢复读取后英文输入也为空",
+      "status": "fixed"
+    },
+    {
+      "id": "R2-02",
+      "priority": "P2",
+      "trigger": "保存成功并进入详情后，迟到resolve的202恢复“仍在确认”，却无可查回引用",
+      "fix_and_validation": "回调还核验现有待确认引用；已终结的结果/错误不再写页面；真实201及受控202时序复验",
+      "status": "fixed"
+    },
+    {
+      "id": "R2-03",
+      "priority": "P3",
+      "trigger": "012仍写当前没有浏览器证据，与同文验收表冲突",
+      "fix_and_validation": "改为按已验证范围说明，未覆盖布局和后续维护另验，不改历史报告",
+      "status": "fixed"
+    },
+    {
+      "id": "R3-01",
+      "priority": "P2",
+      "trigger": "默认列表查回未来首条时，缺省查看日被原记录生效日替代，未来资料显示已启用",
+      "fix_and_validation": "只透传显式日期，缺省继续由服务器D解析；正常设置菜单回默认列表再查回的失败用例已复现",
+      "status": "fixed"
+    },
+    {
+      "id": "R3-02",
+      "priority": "P3",
+      "trigger": "变更日志一次失败后重新展开已成功，却仍显示旧错误",
+      "fix_and_validation": "新日志请求清除原错误；原正常菜单用例增加一次503及随后真实重读，已复现旧提示残留；修复后与日期用例2/2通过，12.2秒",
+      "status": "fixed"
+    },
+    {
+      "id": "R3-03",
+      "priority": "P3",
+      "trigger": "API仅写登录名/密码码点上限，未说明服务端既有UTF-8字节边界",
+      "fix_and_validation": "补字段说明并再生成类型注释，登录规则不变；使用既有账号边界回归，不另造校验器",
+      "status": "fixed"
+    },
+    {
+      "id": "R4-01",
+      "priority": "P3",
+      "trigger": "有效会话刷新遇503或网络失败，却只显示登录表单，没有重试入口",
+      "fix_and_validation": "用现有会话查询明确提示临时失败并原地重试，保留401及会话代次语义；失败路径已复现，修复后会话及原菜单3/3通过，不增加认证框架",
+      "status": "fixed"
+    },
+    {
+      "id": "R5-01",
+      "priority": "P2",
+      "trigger": "本地开发模式两次启动查询一成一败，迟到失败卸载已填写的新建页",
+      "fix_and_validation": "成功恢复时完成loading并切换既有会话代次；不增加序号或新状态机；先200后503的正文丢失已复现，修复后相关3/3通过，10.3秒",
+      "status": "fixed"
+    },
+    {
+      "id": "R6-01",
+      "priority": "P3",
+      "trigger": "查回临时失败后原内容重试已保存，详情仍残留旧查回错误",
+      "fix_and_validation": "成功读取待确认集合为空时清理旧错误；真实存储读取失败仍明确提示；真实保存与重放路径已复现，修复后恢复交错3/3通过，12.3秒",
+      "status": "fixed"
+    },
+    {
+      "id": "R7-01",
+      "priority": "P3",
+      "trigger": "滚动列表后进入新建再取消/放弃，返回时回到顶部或上次详情位置",
+      "fix_and_validation": "新建与详情入口共用既有scrollKey/sessionStorage保存滚动位置；真实滚轮的取消/放弃回归修复前失败，修复后通过，6.0秒；不新增导航机制",
+      "status": "fixed"
+    }
+  ],
+  "finding_counts": {
+    "total": 16,
+    "P2": 8,
+    "P3": 8
+  },
+  "verification": {
+    "database": {
+      "exit_code": 0,
+      "unchanged_during_run": true,
+      "inputs": {
+        "internal/foundation/values.go": "fe3cd870db4cdebfff049e7434c1fcae1e560212c66a8462832092e06c5aba5d",
+        "internal/bootstrap/http_test.go": "d2b63cd5850753978acff9d862a07399c2ac231e7f60e7799166b7897deca288",
+        "internal/bootstrap/api.go": "a937ad84d23183ff159b483650e3144bb8300afe330e47e8311aece13ecee9f8",
+        "internal/bootstrap/runtime.go": "e1547426e064a7ab4e76b684743b5fc3debf7d70844bafdfcfe96263c3db52b5",
+        "internal/bootstrap/http.go": "d35bc364ecc53d659161eee2a956f2aacb7dfe7320376e4c856bb015c52aed1f",
+        "internal/contexts/organization/domain/business_unit_test.go": "9378364557e0be90a1d3d4cbafc5d98284e97c1dacec018e321339ae2f8f3942",
+        "internal/contexts/organization/domain/business_unit.go": "17b232fb8d2fde4592a0ef2974c26d0307e9beac7e00e1db6243875ecfb10abc",
+        "internal/contexts/organization/public/contracts.go": "37bfe842d82b20a376693864250353c25d127465c99fc6562aec979dab938560",
+        "internal/contexts/organization/application/service.go": "b6a4a6c5574f20f8d998274d0c502e5b907f0c67c2270e55b185156312bda43f",
+        "internal/contexts/organization/infra/postgres/store.go": "7e29d75aca772e2edcbf318a43c4cc721300d13c53f2424cf84e9dd1742fb7a0",
+        "internal/contexts/organization/infra/postgres/queries.go": "7243facd3220b1ce3babde52b54ea56b02be4c901880198a383eaf57c0cfd315",
+        "internal/contexts/organization/infra/postgres/generated/queries.sql.go": "94fe8d3d8430b92182e6190b4ef145de61e7a747f613aa5766689e3d9297029a",
+        "internal/contexts/organization/infra/postgres/generated/db.go": "39aa06028414ed8f2694efca65a4e002d7e6f56bd510d26873320aa75a612a2c",
+        "internal/contexts/organization/infra/postgres/generated/models.go": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8",
+        "internal/contexts/access/domain/policy.go": "363bf6c9aead8de9ca6ac6080b677ffdd861a2d0238e87a5501631e32dc76daa",
+        "internal/contexts/access/public/contracts.go": "a2d3f560b531258c9ac433d1621d04dcfd19157b9e428d13001094d82f9b1ac8",
+        "internal/contexts/access/application/service.go": "859f19f613d3d91c874e1fd5e577efa59eee7d4f56a86b7fe97b69eb142fcac4",
+        "internal/contexts/access/infra/postgres/access.go": "4d058f148577f7aa6f15ad2808ef563dc33322d6fd8d49e2c98819699578ce11",
+        "internal/contexts/access/infra/postgres/generated/queries.sql.go": "08fba703d5c93c873a3f54da58ca520a2eaa42f71e5681eacd0bc88f085cc42e",
+        "internal/contexts/access/infra/postgres/generated/db.go": "39aa06028414ed8f2694efca65a4e002d7e6f56bd510d26873320aa75a612a2c",
+        "internal/contexts/access/infra/postgres/generated/models.go": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8",
+        "tests/integration/source_history_test.go": "0d925e50e23e12b0451efd32db8086a16a16467c7135f36fd1b7fba8dc29de98",
+        "tests/integration/review_regressions_test.go": "0be52e2f7e516d1de171fe48dbe2311428de93d479230ec7b0ba0eff69e63fe0",
+        "tests/integration/bu_test.go": "4ea0c92ccab96ef3c7604464614dd1232f5f45726402dee40f2526327dbb6e46",
+        "db/migrations/00004_retire_commit_capture.sql": "b52de7c2cfa24eb5da233b8ecb2b1699188bc796780670c22a54ba31a2f8f93f",
+        "db/migrations/00001_access.sql": "5bccf0f106085fe95341e001d9467bcb79dab7688cfb853c9920cf07d275fdb9",
+        "db/migrations/00002_organization.sql": "fe60522cf550636f25282e9a8b56ce87bc44074a62c5122fbcd012906bbc449c",
+        "db/migrations/00003_commit_evidence.sql": "032ed9131bb4d1b750f0d00a529aef38f82801cf6902ff2e6d56e5d078c6a77b",
+        "go.mod": "964030dad88b27daba3431d7b972a0490ee126587cdbd885b559216afb5ccf47",
+        "go.sum": "8c3530919663bd5e8d47a19aebc7fbd033de988c70b8d429d5c8008b06a064fa"
+      },
+      "inputs_still_current": true,
+      "passed": 11,
+      "failed": 0,
+      "load": "not rerun; default suite skipped TestBUSliceLoad"
+    },
+    "final_browser": {
+      "command": "make smoke",
+      "exit_code": 0,
+      "elapsed_seconds": 107.996,
+      "unchanged_during_run": true,
+      "inputs": {
+        "apps/web/src/app/App.tsx": "c66cedf3966a67ae0866fb687e814ccca67ed8cba343a14de07aed88ad5203ea",
+        "apps/web/src/features/organization/BusinessUnits.tsx": "9e2ce7c8a964e08463e30e0d65fbeccf96540c9cf4f6a8b6d89688e2170064c8",
+        "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+        "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+        "packages/api-client/src/schema.d.ts": "8c1943bfcc747d713c35ccca24be8dccd5758d26eac8dc5e41a9e9b31f7bc009",
+        "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+        "packages/ui/src/index.ts": "e78813c78a0f554b7288ac003bca4b32ebff8400f7b40c91f797f4b901e47a6c",
+        "packages/ui/src/theme.ts": "9dea89c02cfe83966b2db1c60be1f0ea01b751d5845516423c071f7179c9c6b2",
+        "tests/e2e/bu.spec.ts": "473404709702c76e9dcbfca7a178b10fb3984e86ab20565db83828aea17f4c22",
+        "tests/e2e/playwright.config.ts": "6708430aede2fbdcf52dae142a823760895442eb76465a657a5ebe4c83b11146"
+      },
+      "passed": 23,
+      "failed": 0,
+      "retries": 0,
+      "inputs_still_current": true
+    },
+    "static": {
+      "result": "passed",
+      "checks": [
+        "make check: 46 Python tests, repository governance, Go boundaries/unit/vet, TypeScript, diff check",
+        "make build: Go server/upgrader and Vite build",
+        "make generate: sqlc unchanged; OpenAPI types add only UTF-8 length descriptions"
+      ],
+      "warnings": "Existing MUI directive and bundle-size warnings remain non-fatal."
+    },
+    "fscr": {
+      "status": "passed",
+      "checks": 54,
+      "counts": {
+        "business_modules": 20,
+        "crosscutting_modules": 6,
+        "diagrams": 53,
+        "concepts": 131,
+        "concepts_by_reference_section": {
+          "1": 11,
+          "2": 17,
+          "3": 33,
+          "4": 21,
+          "5": 28,
+          "6": 12,
+          "7": 9
+        },
+        "target_object_groups": 154,
+        "terminology_terms": 437,
+        "terminology_domains": 26,
+        "terminology_object_groups": 154,
+        "terminology_reference_concepts": 131,
+        "generated_files_checked": 57,
+        "archive": {
+          "packages": 2,
+          "original_files_in_packages": 379,
+          "preserved_standalone_records": 29,
+          "historical_modules": 26,
+          "historical_source_files": 75,
+          "initial_review_missing_originals": 22,
+          "r08_exact_inputs": 150,
+          "r13_exact_inputs": 163
+        },
+        "markdown_files_checked": 69,
+        "local_links_checked": 2916,
+        "historical_sibling_workspace_links": 68,
+        "historical_targets_checked": 0,
+        "command_contract_entries": 10,
+        "svg_text_nodes_checked": 2296,
+        "text_files_checked": 352
+      },
+      "failures": [],
+      "writes": false
+    },
+    "post_registration_docs": {
+      "result": "passed",
+      "python_tests": 46,
+      "repository_check": {
+        "status": "passed",
+        "read_only": true,
+        "markdown_files": 124,
+        "local_links": 2904,
+        "target_diagrams": 53,
+        "preserved_assets": 197,
+        "fixed_branch_ranges": 6,
+        "git_refs_checked": false,
+        "limits": "No external URL, full heading slug, domain semantics, database or product acceptance validation"
+      },
+      "log_sha256": "aad76dfcdfe781cb45d8a55fd68b3901fa8612c9aa6a5ca6532dd1b234705721"
+    },
+    "earlier_full_browser_runs": [
+      {
+        "record": "smoke-inputs.json",
+        "exit_code": 2,
+        "unchanged_during_run": true,
+        "inputs": {
+          "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+          "apps/web/src/app/App.tsx": "47c3cbb607bc1a74d9f183155483fe9e0d034f6a94aa41c4dc685b56ab5b4486",
+          "apps/web/src/features/organization/BusinessUnits.tsx": "b737009663bf1c9be198ca88995e2cb5cd43f7665373f810db89b70469fbea0a",
+          "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+          "packages/api-client/src/schema.d.ts": "82f18d715d5e9feb19af078880c2ea58eada87ffc56a6f15bfb627eb6eeea0a4",
+          "packages/ui/src/index.ts": "e78813c78a0f554b7288ac003bca4b32ebff8400f7b40c91f797f4b901e47a6c",
+          "packages/ui/src/theme.ts": "9dea89c02cfe83966b2db1c60be1f0ea01b751d5845516423c071f7179c9c6b2",
+          "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+          "tests/e2e/bu.spec.ts": "23fd5ad27daec841ac0a038529c869ff7e15a3a4cba6e5d8fa4b0851f4ae91de",
+          "tests/e2e/playwright.config.ts": "e7f00528696a2399daf8d450cf728ad3e4edc2226eb2878a530aad457f9d6681"
+        }
+      },
+      {
+        "record": "smoke-round2-inputs.json",
+        "command": "make smoke",
+        "exit_code": 0,
+        "elapsed_seconds": 88.079,
+        "unchanged_during_run": true,
+        "inputs": {
+          "apps/web/src/app/App.tsx": "47c3cbb607bc1a74d9f183155483fe9e0d034f6a94aa41c4dc685b56ab5b4486",
+          "apps/web/src/features/organization/BusinessUnits.tsx": "8e68c07ba7b86aba31f0f6aafc7e8fb7f37bee24914767b2e56649fa857e6f5e",
+          "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+          "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+          "packages/api-client/src/schema.d.ts": "82f18d715d5e9feb19af078880c2ea58eada87ffc56a6f15bfb627eb6eeea0a4",
+          "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+          "packages/ui/src/index.ts": "e78813c78a0f554b7288ac003bca4b32ebff8400f7b40c91f797f4b901e47a6c",
+          "packages/ui/src/theme.ts": "9dea89c02cfe83966b2db1c60be1f0ea01b751d5845516423c071f7179c9c6b2",
+          "tests/e2e/bu.spec.ts": "83af4d62d94b78e550495469d21466b64d2946f041dd10108d329746fc614bc2",
+          "tests/e2e/playwright.config.ts": "6708430aede2fbdcf52dae142a823760895442eb76465a657a5ebe4c83b11146"
+        }
+      },
+      {
+        "record": "smoke-round3-inputs.json",
+        "command": "make smoke",
+        "exit_code": 2,
+        "elapsed_seconds": 100.27,
+        "unchanged_during_run": true,
+        "inputs": {
+          "apps/web/src/app/App.tsx": "47c3cbb607bc1a74d9f183155483fe9e0d034f6a94aa41c4dc685b56ab5b4486",
+          "apps/web/src/features/organization/BusinessUnits.tsx": "99fcd17d5c5971b9376e255cfc7a296e3a1e95c9f1197cab8b8b9c9c59afaf42",
+          "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+          "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+          "packages/api-client/src/schema.d.ts": "8c1943bfcc747d713c35ccca24be8dccd5758d26eac8dc5e41a9e9b31f7bc009",
+          "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+          "packages/ui/src/index.ts": "e78813c78a0f554b7288ac003bca4b32ebff8400f7b40c91f797f4b901e47a6c",
+          "packages/ui/src/theme.ts": "9dea89c02cfe83966b2db1c60be1f0ea01b751d5845516423c071f7179c9c6b2",
+          "tests/e2e/bu.spec.ts": "c31025d301fe46faf7a58b0fef2491c9a35079d6e8b7f5983d9d12b4b4a54633",
+          "tests/e2e/playwright.config.ts": "6708430aede2fbdcf52dae142a823760895442eb76465a657a5ebe4c83b11146"
+        }
+      },
+      {
+        "record": "smoke-round4-inputs.json",
+        "command": "make smoke",
+        "exit_code": 0,
+        "elapsed_seconds": 97.897,
+        "unchanged_during_run": true,
+        "inputs": {
+          "apps/web/src/app/App.tsx": "83501e792776a641f6311459fe40dc499aacbdd0a9c5f4d3b48431cb7d4be4ab",
+          "apps/web/src/features/organization/BusinessUnits.tsx": "99fcd17d5c5971b9376e255cfc7a296e3a1e95c9f1197cab8b8b9c9c59afaf42",
+          "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+          "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+          "packages/api-client/src/schema.d.ts": "8c1943bfcc747d713c35ccca24be8dccd5758d26eac8dc5e41a9e9b31f7bc009",
+          "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+          "packages/ui/src/index.ts": "e78813c78a0f554b7288ac003bca4b32ebff8400f7b40c91f797f4b901e47a6c",
+          "packages/ui/src/theme.ts": "9dea89c02cfe83966b2db1c60be1f0ea01b751d5845516423c071f7179c9c6b2",
+          "tests/e2e/bu.spec.ts": "b997dde63f606f56e54af1b6aff8ceee7c0c0fdbcb1bb1d6b1026bdc35b8c2d3",
+          "tests/e2e/playwright.config.ts": "6708430aede2fbdcf52dae142a823760895442eb76465a657a5ebe4c83b11146"
+        }
+      },
+      {
+        "record": "smoke-round5-inputs.json",
+        "command": "make smoke",
+        "exit_code": 0,
+        "elapsed_seconds": 97.575,
+        "unchanged_during_run": true,
+        "inputs": {
+          "apps/web/src/app/App.tsx": "c66cedf3966a67ae0866fb687e814ccca67ed8cba343a14de07aed88ad5203ea",
+          "apps/web/src/features/organization/BusinessUnits.tsx": "99fcd17d5c5971b9376e255cfc7a296e3a1e95c9f1197cab8b8b9c9c59afaf42",
+          "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+          "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+          "packages/api-client/src/schema.d.ts": "8c1943bfcc747d713c35ccca24be8dccd5758d26eac8dc5e41a9e9b31f7bc009",
+          "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+          "packages/ui/src/index.ts": "e78813c78a0f554b7288ac003bca4b32ebff8400f7b40c91f797f4b901e47a6c",
+          "packages/ui/src/theme.ts": "9dea89c02cfe83966b2db1c60be1f0ea01b751d5845516423c071f7179c9c6b2",
+          "tests/e2e/bu.spec.ts": "558dc243fcf4988bb3d10852618baec6dd0fbab6c965344ced71d7b4deb081e9",
+          "tests/e2e/playwright.config.ts": "6708430aede2fbdcf52dae142a823760895442eb76465a657a5ebe4c83b11146"
+        }
+      },
+      {
+        "record": "smoke-round6-inputs.json",
+        "command": "make smoke",
+        "exit_code": 0,
+        "elapsed_seconds": 104.461,
+        "unchanged_during_run": true,
+        "inputs": {
+          "apps/web/src/app/App.tsx": "c66cedf3966a67ae0866fb687e814ccca67ed8cba343a14de07aed88ad5203ea",
+          "apps/web/src/features/organization/BusinessUnits.tsx": "c91b188e34fc17341cedfb532615b239efaa49d65d37e90d0628476cbf9a9f30",
+          "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+          "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+          "packages/api-client/src/schema.d.ts": "8c1943bfcc747d713c35ccca24be8dccd5758d26eac8dc5e41a9e9b31f7bc009",
+          "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+          "packages/ui/src/index.ts": "e78813c78a0f554b7288ac003bca4b32ebff8400f7b40c91f797f4b901e47a6c",
+          "packages/ui/src/theme.ts": "9dea89c02cfe83966b2db1c60be1f0ea01b751d5845516423c071f7179c9c6b2",
+          "tests/e2e/bu.spec.ts": "e9f59ad68b1cfac0657bab631bf8650f65165e72200383fcde3f9cb10b6acc23",
+          "tests/e2e/playwright.config.ts": "6708430aede2fbdcf52dae142a823760895442eb76465a657a5ebe4c83b11146"
+        }
+      }
+    ]
+  },
+  "history_protection": [
+    {
+      "repository": "CHNHCM",
+      "checked_files": 238,
+      "changed_files": [],
+      "unchanged": true,
+      "initial_hash_manifest_sha256": "bf3b2b3c99c34fe3f658d9ff84c642205e04a1bd5ec9dfc3dcf9c24ea5d60423"
+    },
+    {
+      "repository": "oracle-fscr",
+      "checked_files": 6455,
+      "changed_files": [],
+      "unchanged": true,
+      "initial_hash_manifest_sha256": "63fc2580e95d31a812f4a990ef60c798cba13b9ea04b352d467999327c4229d7"
+    }
+  ],
+  "verification_record_protection": {
+    "existing_verification_records": 25,
+    "unchanged": true,
+    "initial_registry_sha256": "70ff2924c10dabf890371c6081dfaa93b5f92e166fa5afacf6114131cdb86b25"
+  },
+  "artifact_redaction": {
+    "files_checked": 74,
+    "known_credential_values_found": 0,
+    "playwright_text_context_disabled": true
+  },
+  "review_rounds": [
+    {
+      "round": 1,
+      "reviewers": [
+        "/root/m02_round1_backend",
+        "/root/m02_round1_ui",
+        "/root/m02_round1_contracts"
+      ],
+      "new_findings": 6
+    },
+    {
+      "round": 2,
+      "reviewers": [
+        "/root/m02_round2_runtime",
+        "/root/m02_r02_ui_flows",
+        "/root/m02_r02_contract_scope"
+      ],
+      "new_findings": 3
+    },
+    {
+      "round": 3,
+      "reviewers": [
+        "/root/m02_018_round3_runtime",
+        "/root/m02_018_round3_ui",
+        "/root/m02_018_round3_contracts"
+      ],
+      "new_findings": 3
+    },
+    {
+      "round": 4,
+      "reviewers": [
+        "/root/m02_018_round4_runtime",
+        "/root/m02_018_round4_ui",
+        "/root/m02_018_round4_contracts"
+      ],
+      "new_findings": 1
+    },
+    {
+      "round": 5,
+      "reviewers": [
+        "/root/m02_018_round5_ui",
+        "/root/m02_018_round4_contracts"
+      ],
+      "new_findings": 1
+    },
+    {
+      "round": 6,
+      "reviewers": [
+        "/root/m02_018_round6_ui",
+        "/root/m02_018_round4_contracts"
+      ],
+      "new_findings": 1
+    },
+    {
+      "round": 7,
+      "reviewers": [
+        "/root/m02_018_round7_ui"
+      ],
+      "new_findings": 1
+    },
+    {
+      "round": 8,
+      "reviewers": [
+        "/root/m02_018_round7_ui"
+      ],
+      "new_findings": 0,
+      "scope": "Independent repair review; unchanged backend reuses round 4 and unchanged contract/FSCR reuses round 6."
+    }
+  ],
+  "review_method": "Reviewers read only; root implemented and executed tests. No review is a human approval or whole-product acceptance.",
+  "excluded_candidates": [
+    {
+      "candidate": "Rejected retry converted to accepted HTTP response",
+      "decision": "withdrawn",
+      "reason": "Existing API already maps rejected result back to 400/409; no code change."
+    },
+    {
+      "candidate": "Isolated operation-reasons 403 bypasses input cleanup",
+      "decision": "not_confirmed_no_change",
+      "reason": "Uses the same Context permission guard; first load keeps fields disabled and reload also reloads context. Stable revocation is already covered. No independent trigger without extra timing assumptions was confirmed."
+    }
+  ],
+  "logs": [
+    {
+      "path": ".local/multiround-018/build-closure.log",
+      "sha256": "11949688df158b6846aa19698c3fd0aead283c294cab4a60e818998ecb925203",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/multiround-018/build-completion.log",
+      "sha256": "2412931cb9d18203b75ae2bad51b6464ba4de035c57e97ecd4b167ca154a8262",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/multiround-018/build-delivery.log",
+      "sha256": "ef24dd42565510068f83bbc0e07626cc9206265fb0d178f63be930b87e5c4a43",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/multiround-018/build-final-scope.log",
+      "sha256": "0253760b87fce9e828e775b3f31c124900513f9863c87264c5b5ad65dd7560e9",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/multiround-018/build-final.log",
+      "sha256": "9b489cf7e8c81de02001d5936e917b67ffc4b8c55b6495fa16f9faf9ef1f3179",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/multiround-018/build.log",
+      "sha256": "66d009fb8bba288bf6254bdce4c37a7a0b11a1d620d1252d2e4de86cb033ca6c",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/multiround-018/check-closure.log",
+      "sha256": "14d2d172490cd5bfc95f5034c223a95747b6c68a1fe27a031eb06caf6e30e5b8",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/multiround-018/check-completion.log",
+      "sha256": "b2be2c9ef08b6fb6b1a9788984585b3d1ffcbd7e87ccc2c5f731825994609988",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/multiround-018/check-delivery.log",
+      "sha256": "8e581fd84f4d878ad90e296054ee867cf5277eab65a8acc96c49f919495d3eb2",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/multiround-018/check-final-scope.log",
+      "sha256": "521924c432fcdb6fac484cfd1ec5ffcdd9cfd6220e62d1b1e852d11889b59133",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/multiround-018/check-final.log",
+      "sha256": "0ceda0333ced9bba74111f3f5775ca5db795f057b13e9f018b76d2658c41a277",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/multiround-018/check.log",
+      "sha256": "a9e9d9f845e5f2f52308d12b5155fb6edf60283faff487a61df0550287bbe5d0",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/multiround-018/fscr-validation.log",
+      "sha256": "5ad01eefcce7d145e7746edd01239ea4ee2204e57355a4f146df1eb19c45f859",
+      "bytes": 918
+    },
+    {
+      "path": ".local/multiround-018/generate-final.log",
+      "sha256": "2fd9d0fd77e29570d39ce7b72ce8491bd19a2d7c2bb32cf41843cf03b88c025d",
+      "bytes": 333
+    },
+    {
+      "path": ".local/multiround-018/generate.log",
+      "sha256": "8ac76bd3fe60ba381201e78590292575291917b8d4499b77662c92bfb608d6ed",
+      "bytes": 333
+    },
+    {
+      "path": ".local/multiround-018/integration-full.log",
+      "sha256": "3ff21d78714cb71e58fc669538287aeaa0f367c3cfb52a48e22ecaf5acb64728",
+      "bytes": 12747
+    },
+    {
+      "path": ".local/multiround-018/round1-adopted-after.log",
+      "sha256": "c33318572f8d72fd4c8d411dcc58bcc8922dbb9f8c3798f3d3a1249b38f89efe",
+      "bytes": 643
+    },
+    {
+      "path": ".local/multiround-018/round1-backend-after.log",
+      "sha256": "88bfbf5d983da34b0a80e487777134bba7e945080ce42cb890fe42fdb3917921",
+      "bytes": 3017
+    },
+    {
+      "path": ".local/multiround-018/round1-backend-before-confirmed.log",
+      "sha256": "00eeb240877933cac5a9930ab2910ca1b163c8ce707b4997bd413095484e2d1a",
+      "bytes": 2162
+    },
+    {
+      "path": ".local/multiround-018/round1-backend-before.log",
+      "sha256": "52164f5d8c30e47b8e16b0ff298ad9d0baae9f03c0683d0c28a1f1983852c00f",
+      "bytes": 3360
+    },
+    {
+      "path": ".local/multiround-018/round1-cookie-before-confirmed.log",
+      "sha256": "d09bd98fa16d76d251c5e22e96d488952912174c257bb5a5df0c531d60500715",
+      "bytes": 2383
+    },
+    {
+      "path": ".local/multiround-018/round1-ui-after.log",
+      "sha256": "cb3f5dee629f1eb61557c077b3a7e2af386a955f181e418461cfaf78362d9ded",
+      "bytes": 2960
+    },
+    {
+      "path": ".local/multiround-018/round1-ui-before.log",
+      "sha256": "eb33cf1091888960547b0bee3368df27b49d268a654036ab4e3c95ab73e1d964",
+      "bytes": 7550
+    },
+    {
+      "path": ".local/multiround-018/round2-ui-after.log",
+      "sha256": "45542b420345c35de921147351aaa36e1cd76b3219d7206da1724371e665587b",
+      "bytes": 898
+    },
+    {
+      "path": ".local/multiround-018/round2-ui-before.log",
+      "sha256": "599999195a731c1c1e92b85dfb3e5a7226040313ed259a521a26d960c6704ab5",
+      "bytes": 8854
+    },
+    {
+      "path": ".local/multiround-018/round3-log-before.log",
+      "sha256": "6e2c5c6783d32f9eb9e8a3f49ee3272d3be33a1e8892e7d0aedf38b7bd0eb65f",
+      "bytes": 2922
+    },
+    {
+      "path": ".local/multiround-018/round3-ui-after.log",
+      "sha256": "c60b6f3f6652887256c2a07695a5bbb942729fed14f0ebbd1781ad2d3df6c3ae",
+      "bytes": 829
+    },
+    {
+      "path": ".local/multiround-018/round3-ui-before.log",
+      "sha256": "88c6e78a305061ac0e4f07aa14801333c533526032492788d5cf0baf3442e8dd",
+      "bytes": 3142
+    },
+    {
+      "path": ".local/multiround-018/round4-first-flow-repeat.log",
+      "sha256": "a1e33284d78889281fc219b481da546535bd10178ba0f0eaf6e78b65cbafc3a4",
+      "bytes": 1635
+    },
+    {
+      "path": ".local/multiround-018/round4-ui-after-confirmed.log",
+      "sha256": "ca413a5c712d9b6a108fe55c53f8b4fe78524aa05ab9976ebc89ff4094fc8ad6",
+      "bytes": 956
+    },
+    {
+      "path": ".local/multiround-018/round4-ui-after.log",
+      "sha256": "fa2eec1e00ae0db32e94ffec81c7aad39cc6d29c1218464dffdf451151856a95",
+      "bytes": 3013
+    },
+    {
+      "path": ".local/multiround-018/round4-ui-before.log",
+      "sha256": "1298af14f9940da9d32d5f9688ebb898a10125e430e13aa7573882f43edf0179",
+      "bytes": 2720
+    },
+    {
+      "path": ".local/multiround-018/round5-ui-after.log",
+      "sha256": "8e0afe11b4d8c4af00ddde81c1a437da457e6678b98872824e6dc0e8fc1cac6c",
+      "bytes": 918
+    },
+    {
+      "path": ".local/multiround-018/round5-ui-before.log",
+      "sha256": "a744b6859216c3e1353698100699bdac15337942d75251441cb90bf21f01b56c",
+      "bytes": 2916
+    },
+    {
+      "path": ".local/multiround-018/round6-ui-after.log",
+      "sha256": "8f78ae9940c5c6c71920e45fc5181d1035d7da51b345129ca0cadb5592a0d053",
+      "bytes": 940
+    },
+    {
+      "path": ".local/multiround-018/round6-ui-before.log",
+      "sha256": "ad0e7f63fdb19133a7008da6470fffa84d14f95497c2dd793a577a99661bfb33",
+      "bytes": 2935
+    },
+    {
+      "path": ".local/multiround-018/round7-ui-after.log",
+      "sha256": "4a65e872e34cd17f70c38e94480b640d04edcff40e5157d2c562c077b383d887",
+      "bytes": 669
+    },
+    {
+      "path": ".local/multiround-018/round7-ui-before.log",
+      "sha256": "d67b161afa95303735766ac0e163f70a01886a6c21ae5942a28d174272d2d68f",
+      "bytes": 2573
+    },
+    {
+      "path": ".local/multiround-018/runtime-closure-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/multiround-018/runtime-completion-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/multiround-018/runtime-delivery-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/multiround-018/runtime-final-scope-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/multiround-018/runtime-final-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/multiround-018/runtime-last-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/multiround-018/runtime-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/multiround-018/smoke-final.log",
+      "sha256": "c25092b453f56904b3f0e0cb13f324b1e37cb8d85953fcab687aba3e3719e919",
+      "bytes": 3220
+    },
+    {
+      "path": ".local/multiround-018/smoke-full.log",
+      "sha256": "40028770032a79cbe76bab45e3739cf5a95b6a5e10e6933f1d95e5a97dbfd50a",
+      "bytes": 4695
+    },
+    {
+      "path": ".local/multiround-018/smoke-round2-full.log",
+      "sha256": "a7da7c15d30aba6923a26b25f3c483cee7862d22cac346f7c75d927a1ea2df6f",
+      "bytes": 2762
+    },
+    {
+      "path": ".local/multiround-018/smoke-round3-full.log",
+      "sha256": "f0d3df2c79a5d396c28349d676e1530f41c6f67a782f2e8e45944164d3594915",
+      "bytes": 5657
+    },
+    {
+      "path": ".local/multiround-018/smoke-round4-full.log",
+      "sha256": "f8e9074dc800ae8c4f08896153ebe414a2fe3234d293c0d6ab3874673e065d0b",
+      "bytes": 2997
+    },
+    {
+      "path": ".local/multiround-018/smoke-round5-full.log",
+      "sha256": "7e700a2c58709ff195985dd7f8efa00ffa86b629ee771cabe93fd26d2e33152e",
+      "bytes": 3104
+    },
+    {
+      "path": ".local/multiround-018/smoke-round6-full.log",
+      "sha256": "acbdb893fe9db8eab4a07cc7fd1c1d3ce0a969f91a16436b427b86c735adc43e",
+      "bytes": 3220
+    },
+    {
+      "path": ".local/multiround-018/docs-post-registration.log",
+      "sha256": "aad76dfcdfe781cb45d8a55fd68b3901fa8612c9aa6a5ca6532dd1b234705721",
+      "bytes": 536
+    }
+  ],
+  "turn_changes": [
+    {
+      "path": "AGENTS.md",
+      "before": "863592f5afff52050d000e3e1a8724d8ef360893e1cfd9f6a3d6726ff6ce2d57",
+      "after": "1fd3fe162111c02e67f3f92f4d9aed8c485413559f7a08766eb8ce5b0647d6f4"
+    },
+    {
+      "path": "api/openapi.yaml",
+      "before": "89600b7def742863d00ee856eec9d1a58431154c9cea8c099f05048a96ebe7a6",
+      "after": "15b4d623adeebc04f8ddcf52ffc97a1a5a5f8b68d49385904f3d9f31088c1705"
+    },
+    {
+      "path": "apps/web/src/app/App.tsx",
+      "before": "47c3cbb607bc1a74d9f183155483fe9e0d034f6a94aa41c4dc685b56ab5b4486",
+      "after": "c66cedf3966a67ae0866fb687e814ccca67ed8cba343a14de07aed88ad5203ea"
+    },
+    {
+      "path": "apps/web/src/features/organization/BusinessUnits.tsx",
+      "before": "ffabd8b2d2e301b443e1400945609fca784f77cf0b79195d41239e89e8e7a0bd",
+      "after": "9e2ce7c8a964e08463e30e0d65fbeccf96540c9cf4f6a8b6d89688e2170064c8"
+    },
+    {
+      "path": "docs/README.md",
+      "before": "769a0b2228b9166bba97403e9acbba6f4dd0d53897bbcd53d6b1d27f85aa4336",
+      "after": "04c610508979a828cc10c00cf3354a10c90fda0ceff5907afffb5ab728c02666"
+    },
+    {
+      "path": "docs/governance/registry.json",
+      "before": "70ff2924c10dabf890371c6081dfaa93b5f92e166fa5afacf6114131cdb86b25",
+      "after": "16c849767d8584f191d57971c2c2a75c941795d4d2e680458dcd2af6866b8afb"
+    },
+    {
+      "path": "docs/guides/017-local-bu-development.md",
+      "before": "40b52eea2555f6a4022dbb3a4a04ed89dbb201ea1271ef8857739a647d93b4be",
+      "after": "84da7057806b8084f6b09933e6a343e467fcdda7d53b81b823890504a90d1113"
+    },
+    {
+      "path": "docs/plans/010-m02-scope-and-plan.md",
+      "before": "1a761e13aa6e071d72917c20cb2b7168e22838defbfbd4058a282206b89ad2e2",
+      "after": "aa7caa3f7be6baa65413fc0b7fe58d9d1ebe5384200223d77aada08d18b04673"
+    },
+    {
+      "path": "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "before": "931cf074ce16fe842f26c6e47e7a173d9ac1753c8b6050cf54236457a0d919f3",
+      "after": "1b80afa29a1e401579522f40fc47f0b9e8ab9091be71ff2cd6f90ffa6100c990"
+    },
+    {
+      "path": "docs/specs/m02/013-m02-technical-design.md",
+      "before": "55cfc1269a559610d0669a2a79ee7ac51cda0d783a6d2a36eee103614532ac51",
+      "after": "1d2ae15ca51f625dfca073238dada04e583b1fe072a9202c47ba0457e367cabf"
+    },
+    {
+      "path": "docs/verification/018-multiround-review.md",
+      "before": null,
+      "after": "df84fda8ba6cddb5d9c1c21a2cd9cc222ac0d49a6764420466374d867f9a5756"
+    },
+    {
+      "path": "docs/verification/README.md",
+      "before": "ce7f77a2cbf622318d32f7bd0f0c8a90a7b571d2bca271ece926a26bb0df6c36",
+      "after": "769d2115baf1cc0a4d218c47f0d5e495779e2e1faf572da0dab394dabd0567da"
+    },
+    {
+      "path": "internal/bootstrap/api.go",
+      "before": "59217fe8526d4b563dbe5b45e40dbf732c660faa0a6af30b43fd988bc8501cc2",
+      "after": "a937ad84d23183ff159b483650e3144bb8300afe330e47e8311aece13ecee9f8"
+    },
+    {
+      "path": "internal/contexts/access/infra/postgres/access.go",
+      "before": "157fb7a854f43837ea8459a0869db2f60dd6d83b8c270cdd7ea5aefa7ebe8c4c",
+      "after": "4d058f148577f7aa6f15ad2808ef563dc33322d6fd8d49e2c98819699578ce11"
+    },
+    {
+      "path": "internal/contexts/organization/application/service.go",
+      "before": "f21d32c1547bb6e38cfb7781e5f8a62348b766443a875c057f5af98d39a6c8bf",
+      "after": "b6a4a6c5574f20f8d998274d0c502e5b907f0c67c2270e55b185156312bda43f"
+    },
+    {
+      "path": "packages/api-client/src/schema.d.ts",
+      "before": "82f18d715d5e9feb19af078880c2ea58eada87ffc56a6f15bfb627eb6eeea0a4",
+      "after": "8c1943bfcc747d713c35ccca24be8dccd5758d26eac8dc5e41a9e9b31f7bc009"
+    },
+    {
+      "path": "tests/e2e/bu.spec.ts",
+      "before": "2df3b9055135dd98335f98e73d50656cc1206f1db776b922d92e79d4ff297acc",
+      "after": "473404709702c76e9dcbfca7a178b10fb3984e86ab20565db83828aea17f4c22"
+    },
+    {
+      "path": "tests/e2e/playwright.config.ts",
+      "before": "e7f00528696a2399daf8d450cf728ad3e4edc2226eb2878a530aad457f9d6681",
+      "after": "6708430aede2fbdcf52dae142a823760895442eb76465a657a5ebe4c83b11146"
+    },
+    {
+      "path": "tests/integration/review_regressions_test.go",
+      "before": "fdb627971a0c2ec6b953aae0bfd968d030e27ac757424c1dc4019d676821c998",
+      "after": "0be52e2f7e516d1de171fe48dbe2311428de93d479230ec7b0ba0eff69e63fe0"
+    }
+  ],
+  "evidence_self_hash": "Omitted to avoid a self-referential hash. Report, registry and affected source inputs have independent hashes.",
+  "current_contracts": {
+    "AGENTS.md": "1fd3fe162111c02e67f3f92f4d9aed8c485413559f7a08766eb8ce5b0647d6f4",
+    "api/openapi.yaml": "15b4d623adeebc04f8ddcf52ffc97a1a5a5f8b68d49385904f3d9f31088c1705",
+    "docs/README.md": "04c610508979a828cc10c00cf3354a10c90fda0ceff5907afffb5ab728c02666",
+    "docs/governance/registry.json": "16c849767d8584f191d57971c2c2a75c941795d4d2e680458dcd2af6866b8afb",
+    "docs/plans/010-m02-scope-and-plan.md": "aa7caa3f7be6baa65413fc0b7fe58d9d1ebe5384200223d77aada08d18b04673",
+    "docs/specs/m02/012-m02-functional-and-interaction-design.md": "1b80afa29a1e401579522f40fc47f0b9e8ab9091be71ff2cd6f90ffa6100c990",
+    "docs/specs/m02/013-m02-technical-design.md": "1d2ae15ca51f625dfca073238dada04e583b1fe072a9202c47ba0457e367cabf",
+    "docs/guides/017-local-bu-development.md": "84da7057806b8084f6b09933e6a343e467fcdda7d53b81b823890504a90d1113",
+    "docs/verification/018-multiround-review.md": "df84fda8ba6cddb5d9c1c21a2cd9cc222ac0d49a6764420466374d867f9a5756"
+  }
+}

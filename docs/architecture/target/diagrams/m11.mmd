@@ -1,0 +1,56 @@
+---
+title: M11 个人所得税扣缴与申报 · 目标设计
+---
+flowchart TB
+  subgraph domain["M11 个人所得税扣缴与申报"]
+    direction TB
+    REG["WithholdingRegistration 扣缴登记"]:::own
+    ID["TaxIdentity / Deduction 税务身份与扣除"]:::own
+    POL["TaxPolicy 所得规则及有效版本"]:::own
+    INC["IncomeEvidence 所得来源及性质"]:::own
+    L["TaxLedger 独立累计范围与流水"]:::own
+    A["TaxAssessment 不可变评估"]:::own
+    K["TaxCommitment 有序所得成员"]:::own
+    F["TaxFiling / Correction 申报更正"]:::own
+    CASH["TaxMovement 唯一资金事实与分配"]:::own
+    PER["PaymentTreatmentDecision / DispatchPermit 用途与许可"]:::own
+    AP["TaxRemittanceAccount 税债及机构应付"]:::own
+    SI["TaxRemittanceInstruction 核准与排他执行"]:::own
+  end
+  S["M01 M04 M10 M13 身份及所得来源"]:::external
+  Y["M10 结果封存"]:::external
+  P["M14 支付证据及领取守卫"]:::external
+  X["X05 申报及资金观察"]:::shared
+  XP["X02 政策证据及适用元数据"]:::shared
+  PAYER["M14 PayerAccount 执行准入守卫"]:::external
+  S -->|身份及扣除依据| ID
+  S -->|来源唯一所得事实| INC
+  REG -->|扣缴范围| L
+  ID -->|身份及扣除| A
+  INC -->|所得分类及期间| A
+  XP -->|引用证据及适用条件| POL
+  POL -->|领域规则版本| A
+  L -->|累计基准| A
+  A -->|Q返回评估| Y
+  Y -->|C同事务封存承诺| K
+  K -->|政策证据确认或冲销| L
+  L -->|确认所得的申报版本| F
+  F -->|申报意图| X
+  X -->|逐项回执| F
+  X -->|缴退资金观察| CASH
+  CASH -->|对账引用 不用申报成功代替资金| F
+  K -->|未决所得及前驱依据| PER
+  L -->|确认冲销状态及结算分类| PER
+  POL -->|政策版本约束| PER
+  P -->|C回收证据 分类及领取请求| PER
+  PER -->|C同事务许可及来源守卫| P
+  F -->|确认税债来源 申报回执非资金| AP
+  AP -->|来源head与可付占用守卫| SI
+  SI -->|直接或委托意图 只能一种| X
+  CASH -->|逐项核销 退款另核义务| AP
+  SI -->|原指令 分配及核查证据| CASH
+  PAYER -->|C同事务限制及领取登记| SI
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

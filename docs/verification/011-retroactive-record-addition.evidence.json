@@ -1,0 +1,171 @@
+{
+  "base_commit": "889bcd91ebd8c187bf278de6daa06a9bf8f17fec",
+  "date": "2026-11-01",
+  "scope": "文档范围调整与静态核对，非业务运行",
+  "inputs": {
+    "docs/README.md": {
+      "before_sha256": "ffb4360c9d270164ea01662abb3005eb83979e4da3131c179c00c802607fc22e",
+      "after_sha256": "6deb098669d2eaa3393d074d77286dcb92eb0a66e6a1ddc3f6aa70492ea7532a"
+    },
+    "docs/governance/registry.json": {
+      "before_sha256": "d44b6c31761b43ba117c5a76b0ff3ee836e647ae9d383fc6ec687f390acda7d1",
+      "after_sha256": "357d7b58890c38278060296b33ad3d8f58f58800a811da0aeb3308bd6219dcc5"
+    },
+    "docs/plans/010-m02-scope-and-plan.md": {
+      "before_sha256": "aa7caa3f7be6baa65413fc0b7fe58d9d1ebe5384200223d77aada08d18b04673",
+      "after_sha256": "77bbec9d934a8d366444479797576f88e6e9223020599124639c17e696afb9df"
+    },
+    "docs/specs/README.md": {
+      "before_sha256": "51666ed549b06b595314a74655c7b61888f78ebba7591eff0d43a92602bd908e",
+      "after_sha256": "80346cd493ae4c0399e5af03f07064be22e061bc2c01eb2b7d35847a5660304d"
+    },
+    "docs/specs/m02/011-m02-business-requirements.md": {
+      "before_sha256": "d192100657ea6a89deb207c11e88a0a05f2e40e5c08dd69527fcd4aa0e1efce8",
+      "after_sha256": "83541ffac15b2238c9a21abaec2663c95ae09f58b5b7444b3dafd807db23b3e0"
+    },
+    "docs/specs/m02/012-m02-functional-and-interaction-design.md": {
+      "before_sha256": "bb22e3bed87221553d3b37df778b7e0af4d31c8aa1ada97e199427f90bbdd1ae",
+      "after_sha256": "c96a4723cd2b4876406dd1f4398a8b4a71bacaf8bfb5bbd2a13cc9b1b8717fe0"
+    },
+    "docs/specs/m02/013-m02-technical-design.md": {
+      "before_sha256": "1d2ae15ca51f625dfca073238dada04e583b1fe072a9202c47ba0457e367cabf",
+      "after_sha256": "41d2174c6fddd14ab35de8ac974fabeb289deea16b3d25d28605386ed7939477"
+    },
+    "docs/verification/README.md": {
+      "before_sha256": "2574c976b11403081527be7bfae22f15763d7613174734f1f516725d12a3cda0",
+      "after_sha256": "65d5186925c0352b68986d1e6ea985658440e4af2ac81ea65076ec4c1411e2cf"
+    },
+    "docs/verification/011-retroactive-record-addition.md": {
+      "before_sha256": null,
+      "after_sha256": "28ea845c07bb69f64396a05a3cd65e005e85442e29f4afb1be944058ecdcb6c8"
+    }
+  },
+  "previous_reviews": {
+    "CHNHCM-010": {
+      "date": "2026-10-31",
+      "reviewer": "/root修复与运行；/root/m02_018_round4_runtime后端、/root/m02_018_round4_contracts合同及多轮UI代理独立只读复核，最后为/root/m02_018_round7_ui第八轮复核",
+      "scope": "当前BU创建/查询的会话、提交交错、权限清理、搜索与来源链接、正常菜单返回及现行规格；后端和合同未变部分复用对应轮次证据。后续记录维护、审批、工作台和消费者不在范围。",
+      "result": "accepted",
+      "evidence": "docs/verification/018-multiround-review.md"
+    },
+    "CHNHCM-011": {
+      "date": "2026-10-31",
+      "reviewer": "用户明确采纳及实施指令；/root/retire_knownat_runtime_review、/root/retire_knownat_docs_review独立只读复核；/root修订与验证",
+      "scope": "仅018来源历史简化及当前创建/查询切片；保留期间、来源、权限和幂等，停止截点与采集，旧记录保持。独立评审及验证边界详见报告，不计后续动作或全部源增量验收。",
+      "result": "accepted",
+      "evidence": "docs/verification/018-source-history-simplification.md"
+    },
+    "CHNHCM-012": {
+      "date": "2026-11-01",
+      "reviewer": "实施代理 /root 自检；非独立人工批准",
+      "scope": "新增2.4共享体验及与既有返回、表单、来源/历史合同的一致性；原业务动作边界不变，前次多轮评审报告保留。",
+      "result": "accepted",
+      "evidence": "docs/verification/019-cubebox-experience-migration.md"
+    },
+    "CHNHCM-013": {
+      "date": "2026-10-31",
+      "reviewer": "/root修复与运行；/root/m02_018_round4_runtime后端、/root/m02_018_round4_contracts合同及多轮UI代理独立只读复核，最后为/root/m02_018_round7_ui第八轮复核",
+      "scope": "当前BU创建/查询的会话、提交交错、权限清理、搜索与来源链接、正常菜单返回及现行规格；后端和合同未变部分复用对应轮次证据。后续记录维护、审批、工作台和消费者不在范围。",
+      "result": "accepted",
+      "evidence": "docs/verification/018-multiround-review.md"
+    }
+  },
+  "protection": {
+    "changed_tracked_files": [
+      "docs/README.md",
+      "docs/governance/registry.json",
+      "docs/plans/010-m02-scope-and-plan.md",
+      "docs/specs/README.md",
+      "docs/specs/m02/011-m02-business-requirements.md",
+      "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "docs/specs/m02/013-m02-technical-design.md",
+      "docs/verification/README.md"
+    ],
+    "existing_verification_records_unchanged": 28,
+    "existing_verification_files_no_git_difference": 112,
+    "stable_business_anchors_unchanged": 41,
+    "prior_plan_history_preserved": true,
+    "other_document_metadata_unchanged": true,
+    "code_api_db_tests_sources_assets_glossary_unchanged": true
+  },
+  "checks": [
+    {
+      "command": [
+        "make",
+        "docs"
+      ],
+      "exit_code": 0,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.647s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 128, \"local_links\": 2982, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n",
+      "stage": "before_final_review"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/check-repository.py",
+        "--check-refs"
+      ],
+      "exit_code": 0,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 128, \"local_links\": 2982, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n",
+      "stage": "before_final_review"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "",
+      "stage": "before_final_review"
+    },
+    {
+      "stage": "final",
+      "command": [
+        "make",
+        "docs"
+      ],
+      "exit_code": 0,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.637s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 128, \"local_links\": 2982, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "stage": "final",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/check-repository.py",
+        "--check-refs"
+      ],
+      "exit_code": 0,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 128, \"local_links\": 2982, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "stage": "final",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "semantic_review": {
+    "reviewer": "/root实施代理自检，非独立评审",
+    "result": "passed",
+    "scope": [
+      "正常菜单与角色",
+      "未来和过去新增均允许，当天仍暂缓",
+      "前序基准与后继期间",
+      "已结束区间和已停用对象补登记",
+      "旧来源、原采用及真实登记时间",
+      "删除、改日和停用边界",
+      "当前授权及全期间引用",
+      "跨午夜与精确重试",
+      "实现及业务验收仍未运行"
+    ]
+  },
+  "final_input_hashes_rechecked": true,
+  "head_branch_stash_unchanged": true,
+  "check_input_scope": "inputs为最终受测输入；before_final_review保留早期检查原输出，不作为最终输入通过依据；final检查完成后逐项复核摘要一致。"
+}

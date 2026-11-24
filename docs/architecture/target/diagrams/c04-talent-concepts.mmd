@@ -1,0 +1,64 @@
+---
+title: C04 China HCM 人才概念 · 定义 个人记录 评价与发展
+---
+flowchart TB
+  PERSON["Person / Assignment · M01 M04"]
+  JOB["Job / Position · M03"]
+  RC["Candidate · M05<br/>外部候选身份"]
+  subgraph profile["能力语言与资格 · M16"]
+    CONTENT["ContentType / Item / RatingModel<br/>技能 资格 评分语义"]
+    TYPE["ProfileType / SectionDefinition<br/>可复用类型及章节定义"]
+    JP["RequirementProfile<br/>职务或职位要求档案"]
+    PP["PersonProfile / Qualification<br/>个人能力档案及资格结论"]
+    EVID["Assessment / Evidence<br/>证书 评价 问卷回答引用"]
+    MATCH["岗位匹配与能力差距<br/>明确尺度及采用版本"]
+    CONTENT -->|内容及尺度引用| TYPE
+    TYPE -->|采用类型及章节版本| JP
+    TYPE -->|采用类型及章节版本| PP
+    EVID -->|核验后确认资格| PP
+    JP --> MATCH
+    PP --> MATCH
+  end
+  subgraph performance["目标与绩效 · M17"]
+    GL["GoalDefinition / GoalPlan<br/>可复用目标与计划配置"]
+    GA["GoalAssignment / GoalInstance<br/>个人目标 权重与进度"]
+    CFG["ReviewPeriod / Template / Process<br/>周期 章节 流程 文档类型及参与规则"]
+    PERF["PerformanceDocument<br/>评价阶段实例及发布版本"]
+    GL -->|显式分配采用| GA
+    GA -->|固定个人目标版本| PERF
+    CFG -->|采用配置并守卫阶段| PERF
+  end
+  subgraph evaluate["盘点与继任 · M19"]
+    RTC["TalentReviewTemplate / Dimension<br/>盘点维度及尺度引用"]
+    REVIEW["TalentReview / TalentPool<br/>盘点结论及独立成员历史"]
+    SUC["SuccessionPlan / Readiness<br/>Job Position Incumbent主题及候选"]
+    RTC -->|固定模板版本| REVIEW
+    REVIEW -->|可选候选来源| SUC
+  end
+  subgraph develop["学习与发展 · M18"]
+    DG["DevelopmentGoalDefinition<br/>可复用发展目标"]
+    DP["DevelopmentPlan / Goal / Action<br/>个人发展目标 学习 辅导与实践"]
+    COURSE["Course / Offering<br/>课程版本 开班容量 座位及候补"]
+    PATH["LearningPath / Audience<br/>学习路径 前置及适用受众"]
+    LA["LearningAssignment<br/>学习要求 截止及重修周期"]
+    EN["LearningEnrollment / Record<br/>具体开班报名及独立完成证据"]
+    DG -->|采用或自建| DP
+    DP -->|仅需学习的行动| LA
+    LA -->|选择开班| EN
+    COURSE -->|容量与报名共同守卫| EN
+    PATH -->|前置及适用校验| EN
+  end
+  HIRE["任命与任职办理 · M04<br/>按岗位模式独立核准及资源守卫"]
+  PERSON -->|人员引用| PP
+  PERSON -->|对象及责任分段| PERF
+  PERSON -->|Incumbent主题| SUC
+  JOB -->|要求对象| JP
+  JOB -->|Job或Position主题| SUC
+  RC -->|外部候选引用| SUC
+  MATCH -->|能力依据| REVIEW
+  MATCH -->|发展需求| DP
+  PERF -->|显式采用发布版本| REVIEW
+  PERF -->|发展依据| DP
+  SUC -->|稳定ID的发展行动| DP
+  EN -->|学习证据及更正待核| EVID
+  SUC -->|候选建议 不占资源| HIRE

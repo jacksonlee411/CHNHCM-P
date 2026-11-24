@@ -1,0 +1,35 @@
+---
+title: M18 学习与发展 · 目标设计
+---
+flowchart TB
+  subgraph domain["M18 学习与发展"]
+    direction TB
+    C["课程目录与版本"]:::own
+    O["LearningOffering 容量 座位与候补"]:::own
+    E["LearningEnrollment 报名与座位"]:::own
+    R["学习完成与证据"]:::own
+    P["DevelopmentPlan 个人发展目标与行动"]:::own
+    PATH["LearningPath 路径与前置条件"]:::own
+    AUD["Audience 适用受众"]:::own
+    LA["LearningAssignment 学习要求与周期"]:::own
+    DG["DevelopmentGoalDefinition 可复用发展目标"]:::own
+  end
+  N["M16 M17 M19 发展需求"]:::external
+  S["X05 学习平台"]:::external
+  Q["M16 资格证据确认"]:::external
+  N -->|发展目标| P
+  C -->|课程版本| O
+  E -->|学习过程| R
+  S -->|外部证据| R
+  R -->|待确认资格| Q
+  R -->|完成反馈| P
+  PATH -->|行动及前置校验| E
+  AUD -->|适用范围另校验权限| E
+  DG -->|显式采用或自建目标| P
+  P -->|需要学习的行动| LA
+  LA -->|选择具体开班| E
+  O -->|同事务守卫座位及报名| E
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

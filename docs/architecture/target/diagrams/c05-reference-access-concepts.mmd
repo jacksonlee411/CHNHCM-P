@@ -1,0 +1,48 @@
+---
+title: C05 China HCM 引用 适用 权限与业务决定 · 各条件独立负责
+---
+flowchart TB
+  OBJ["共享业务对象 · 所属域<br/>Job Grade Location 规则 日历"]
+  CTX["业务上下文<br/>BU 法人 地点 日期 用途 对象类型"]
+  subgraph reference["Configuration X02 · 共享引用及政策"]
+    REF["SharedReference / ReferenceHandle<br/>所属域 类型 ID 版本"]
+    APP["ApplicabilityPolicy / PolicyVersion<br/>允许与排除条件 来源及有效期"]
+    RESOLVE["ApplicabilityDecision<br/>允许集合 采用模式及版本依据"]
+    DR["DefaultRule<br/>可复用默认规则及版本"]
+    DEFAULT["DefaultProposal<br/>允许范围内的建议及期限"]
+    REF -->|被评估对象| RESOLVE
+    APP -->|固定规则版本| RESOLVE
+    RESOLVE -->|只在允许集合内| DEFAULT
+    DR -->|规则版本及优先级| DEFAULT
+  end
+  subgraph access["Access X03 · 完整授权单元"]
+    USER["Principal<br/>账号 服务主体及身份来源"]
+    ROLE["RoleDefinition / CapabilityRef<br/>职责定义引用领域动作"]
+    SCOPE["DataScope / FieldPolicy / Purpose<br/>人员 关系 任职 敏感结果及字段"]
+    GRANT["RoleGrant<br/>角色 范围 字段 用途及期限成组绑定"]
+    ALLOW["AccessDecision 请求内结果<br/>逐份完整匹配 当前授权及最少可见事实"]
+    USER -->|授予对象| GRANT
+    ROLE -->|采用职责版本| GRANT
+    SCOPE -->|绑定范围及字段版本| GRANT
+    GRANT -->|完整许可合并 拒绝优先| ALLOW
+  end
+  PERSON["Person · M01<br/>账号关联不等同人员身份"]
+  TARGET["目标领域对象及版本<br/>任职 工资 休假 录用 资格等"]
+  REQ["DecisionRequirement / Record · 目标域<br/>所需证据 核准人 结果 有效期及撤销"]
+  CMD["目标域业务命令<br/>重核权限 适用 版本 状态及必要决定"]
+  ADOPT["目标域采用与结果<br/>保存业务来源 适用策略及核准决定引用"]
+  TASK["M20 待办与清单实例 / X04 分派提醒<br/>固定清单定义 完成证据来自目标域"]
+  PERSON -.->|按需关联 身份用途独立| USER
+  OBJ -->|维护权留在所属域| REF
+  CTX -->|日期与上下文| RESOLVE
+  TARGET -->|具体对象及动作| ALLOW
+  TARGET -->|按业务政策决定是否核准| REQ
+  REQ -->|待办及证据请求| TASK
+  TASK -->|提交领域决定命令| REQ
+  RESOLVE -->|适用结果及依赖版本| CMD
+  DEFAULT -->|显式接受 变化则重算| CMD
+  ALLOW -->|当前执行再次守卫授权版本| CMD
+  REQ -->|与确切版本绑定的有效决定| CMD
+  CMD --> ADOPT
+  N["未知或冲突阻断采用<br/>授权不得跨 Grant 拼接<br/>历史日期不恢复旧权限<br/>核准不代替领域生效"]
+  ADOPT --> N

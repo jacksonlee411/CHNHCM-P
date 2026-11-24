@@ -1,0 +1,49 @@
+---
+title: F04 绩效、薪酬、税款、支付与成本 · 目标流程
+config:
+  sequence:
+    mirrorActors: false
+---
+sequenceDiagram
+  actor H as 业务专员
+  participant F as M17 绩效
+  participant C as M09 薪酬
+  participant Y as M10 工资
+  participant T as M11 个税
+  participant P as M14 支付
+  participant A as M15 财务
+  F-->>C: E持久发布通知；M09明确读取采用
+  H->>C: 明确授予奖金或调薪
+  C-->>Y: 唯一授予用途、金额频率与有效期
+  H->>Y: 冻结本批输入并计算
+  Y->>T: 拟支付所得、身份扣除及已确认累计依据
+  T-->>Y: 有版本的税额评估或待核原因
+  alt 关键政策/来源缺失
+    Y-->>H: 不确认结果，展示缺项
+  else 核对通过
+    H->>Y: C封存协调器
+    Y->>T: C同事务CAS累计版本及唯一未决承诺
+    Y->>Y: 与税承诺及M12代扣消费同时封存
+    Y-->>P: E唯一应付变动及承诺引用
+    alt 政策要求支付前确认所得
+      H->>T: C逐项确认所得及政策证据
+    end
+    T-->>P: 实际确认锚点或合法pending用途依据
+    P->>P: C账户余额守卫 冻结payload及占用
+    H->>P: C按不可变payloadHash授权
+    Note over T,P: 未确认所得检查前驱；已确认结算检查原锚点
+    P->>T: C按实际锚点领取成员执行占用
+    P->>P: 同事务CAS领取 提交后发送
+    P->>T: C回执核销与执行占用同步更新
+    P-->>A: 实付/退回资金事实
+    Y-->>A: 已确认工资成本
+    A->>A: 按完整分摊集合守卫总量，冻结来源和映射版本
+    A->>A: 与关账共用期间守卫，领取后由X05提交
+    alt 首次所得且需支付后确认且证据齐备
+      H->>T: C逐项确认所得及政策证据
+    else 资金未知且仍未确认所得
+      Note over T,P: 保留未决余项；全成员终结才释放
+    end
+    H->>T: C独立办理申报
+  end
+  Note over Y,T: 候选计算不更新正式累计；累计入账触发按指标合同定义

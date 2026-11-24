@@ -1,0 +1,33 @@
+---
+title: X03 身份权限与隐私 · 目标设计
+---
+flowchart TB
+  subgraph domain["X03 身份权限与隐私"]
+    direction TB
+    P["Principal 主体与身份来源"]:::own
+    S["数据范围与字段策略"]:::own
+    U["目的 保留及处理依据"]:::own
+    D["服务端授权决定"]:::process
+    A["必要安全与导出事件"]:::own
+    ROLE["RoleDefinition 可复用职责及动作"]:::own
+    G["RoleGrant 完整绑定角色 范围 字段 用途及有效期"]:::own
+  end
+  I["身份提供方与登录"]:::external
+  M["各业务域读写与导出"]:::external
+  PER["M01 Person 可关联账号"]:::external
+  TGT["Person Employment Assignment 薪资及绩效结果"]:::external
+  I -->|认证身份| P
+  U -->|用途限制| D
+  D -->|最少必要访问| M
+  M -->|实际敏感操作最小事实| A
+  PER -->|人员身份与认证主体独立| P
+  TGT -->|按对象层次 字段及用途授权| S
+  P -->|授予对象| G
+  ROLE -->|采用职责版本| G
+  S -->|绑定范围及字段版本| G
+  G -->|逐份完整匹配 再合并许可| D
+  P -->|认证及安全配置变更| A
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

@@ -1,0 +1,40 @@
+---
+title: M06 排班与工时制度 · 目标设计
+---
+flowchart TB
+  subgraph domain["M06 排班与工时制度"]
+    direction TB
+    P["工作模式与班次"]:::own
+    W["工时制度适用"]:::own
+    S["排班与发布版本"]:::own
+    C["换班及影响识别"]:::process
+    GEN["GenerationProfile 排班生成约束"]:::own
+    CAL["WorkingCalendar 工作日历与版本"]:::own
+    BOOK["ScheduleBook 任职唯一发布登记"]:::own
+    CAN["ScheduleCandidate 未发布方案"]:::process
+    ATTR["TimeAttributionPolicy 实际时段与两类归属日"]:::own
+  end
+  H["M04 任职有效段"]:::external
+  T["M07 实际工时"]:::external
+  A["M08 缺勤权益"]:::external
+  K["X02 政策证据与适用元数据"]:::shared
+  H -->|排班对象| S
+  P -->|班段| S
+  K -->|适用依据| W
+  W -->|制度约束| S
+  S -->|发布后变更| C
+  C -->|后继版本| S
+  S -->|预期工时| T
+  S -->|应工作时间| A
+  K -->|政策来源引用| CAL
+  CAL -->|明确采用日历版本| S
+  GEN -->|采用生成规则版本| CAN
+  CAN -->|共同守卫后明确发布| S
+  BOOK -->|全部实际时段兼容性及版本守卫| S
+  C -->|同事务替换登记及Outbox| BOOK
+  W -->|根内版本配置| ATTR
+  ATTR -->|覆盖与班次归属分别校验| S
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

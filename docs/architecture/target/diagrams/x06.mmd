@@ -1,0 +1,25 @@
+---
+title: X06 报表、指标与事实追溯 · 目标设计
+---
+flowchart TB
+  subgraph domain["X06 报表、指标与事实追溯"]
+    direction TB
+    M["指标口径与版本"]:::own
+    P["授权分析投影"]:::own
+    R["报告快照与发布"]:::own
+    L["来源下钻与差异"]:::process
+  end
+  D["各域事实与确认结果"]:::external
+  S["X03 数据及字段权限"]:::shared
+  U["用户或受控导出"]:::external
+  D -->|来源版本| P
+  M -->|粒度和去重| P
+  S -->|当前授权| P
+  P -->|可解释汇总| R
+  R -->|来源清单| L
+  L -->|受控下钻| D
+  R -->|展示或导出| U
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

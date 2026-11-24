@@ -1,0 +1,35 @@
+---
+title: M20 员工经理服务与HR任务 · 目标设计
+---
+flowchart TB
+  subgraph domain["M20 员工经理服务与HR任务"]
+    direction TB
+    T["授权任务投影"]:::own
+    S["员工 经理 HR 入口"]:::process
+    R["服务请求与办理记录"]:::own
+    J["JourneyInstance 清单实例及步骤证据"]:::own
+    C["沟通内容与送达投影"]:::own
+    JT["JourneyTemplate 可复用清单及步骤定义"]:::own
+    DONE["晋升调薪完成证据 任职 授予 工资影响"]:::process
+  end
+  D["M01至M19 领域事实"]:::external
+  X["X03 授权及目的"]:::shared
+  W["X04 编排与通知"]:::shared
+  P["M10 工资单发布读取守卫"]:::external
+  D -->|状态和任务范围| T
+  X -->|过滤及动作权限| T
+  T -->|可办理事项| S
+  S -->|所属域命令| D
+  S -->|服务请求| R
+  W -->|调度及技术证据| J
+  J -->|Q核对源域完成证据| D
+  W -->|消息派发| C
+  P -->|Q发布状态及当前权限| S
+  JT -->|固定模板版本 创建实例| J
+  J -->|提交步骤运行意图| W
+  J -->|模板明确每步完成口径| DONE
+  D -->|Q有效版本及闭环依据| DONE
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

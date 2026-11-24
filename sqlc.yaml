@@ -1,0 +1,62 @@
+version: '2'
+sql:
+  - engine: postgresql
+    schema: db/migrations
+    queries: db/queries/organization
+    gen:
+      go:
+        package: generated
+        out: internal/contexts/organization/infra/postgres/generated
+        sql_package: pgx/v5
+        emit_pointers_for_null_types: true
+        emit_empty_slices: true
+        overrides:
+          - db_type: uuid
+            go_type: string
+          - db_type: uuid
+            nullable: true
+            go_type:
+              type: string
+              pointer: true
+  - engine: postgresql
+    schema: db/migrations
+    queries: db/queries/access/queries.sql
+    gen:
+      go:
+        package: generated
+        out: internal/contexts/access/infra/postgres/generated
+        sql_package: pgx/v5
+        emit_pointers_for_null_types: true
+        emit_empty_slices: true
+        overrides:
+          - db_type: uuid
+            go_type: string
+          - db_type: uuid
+            nullable: true
+            go_type:
+              type: string
+              pointer: true
+  - engine: postgresql
+    schema: db/migrations
+    queries: db/queries/staffing
+    gen:
+      go:
+        package: generated
+        out: internal/contexts/staffing/infra/postgres/generated
+        sql_package: pgx/v5
+        emit_empty_slices: true
+        overrides:
+          - db_type: uuid
+            go_type: string
+  - engine: postgresql
+    schema: db/migrations
+    queries: db/queries/personnel
+    gen:
+      go:
+        package: generated
+        out: internal/contexts/personnel/infra/postgres/generated
+        sql_package: pgx/v5
+        omit_unused_structs: true
+        overrides:
+          - db_type: uuid
+            go_type: string

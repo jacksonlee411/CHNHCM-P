@@ -1,0 +1,646 @@
+{
+  "date": "2026-10-31",
+  "recordedAt": "2026-10-31T13:27:53.151288+00:00",
+  "base_commit": "b4abd4d2892db35b9dddd9fe3fedf338bf11da1b",
+  "branch": "wt-dev-a",
+  "working_tree": "dirty",
+  "scope": "BU创建/查询切片的会话、历史参数、查回恢复、初始化、叠加授权及两仓文档证据修复。",
+  "original_review": {
+    "repositories": [
+      {
+        "repository": "CHNHCM",
+        "commit": "b4abd4d2892db35b9dddd9fe3fedf338bf11da1b"
+      },
+      {
+        "repository": "oracle-fscr",
+        "commit": "e4267c97f632fe2e4d596d31c1e5628a923ad10b"
+      }
+    ],
+    "scope": "Committed current M02 creation/query slice; Go, access, migrations, APIs, UI recovery, current specifications, architecture and evidence. No edits to reviewed sources.",
+    "independent_reviewers": [
+      "full_review_m02_domain",
+      "full_review_m02_ui",
+      "full_review_m02_contracts"
+    ],
+    "findings": [
+      {
+        "priority": "P2",
+        "origin": "baseline",
+        "location": "packages/api-client/src/index.ts:24",
+        "issue": "迟到旧会话401清空新会话，丢失未保存表单",
+        "proof": "ui-probes-followup.log: late401 form remaining 0; SPA重登录后释放旧401",
+        "id": "REVIEW-FIX-01",
+        "fix": "会话代次约束旧401，并保护初始读取、查回、保存及退出回调",
+        "regression": "SPA重登后释放旧响应；当前401仍需登录",
+        "result": "closed"
+      },
+      {
+        "priority": "P2",
+        "origin": "baseline",
+        "location": "internal/bootstrap/api.go:232",
+        "issue": "空或解析失败的历史条件静默读取当前来源；页面还可能标为历史",
+        "proof": "api-probes.log: sourceVersion=、sourceVersion=%ZZ、knownAt=old;ignored=x均HTTP200；ui-probes-followup.log空来源页面发无参数GET",
+        "id": "REVIEW-FIX-02",
+        "fix": "严格解析查询；空来源和记录ID不退回当前；错误提供明确返回入口",
+        "regression": "真实DB空/畸形/重复条件400，浏览器空来源和重复记录条件恢复",
+        "result": "closed"
+      },
+      {
+        "priority": "P2",
+        "origin": "baseline",
+        "location": "apps/web/src/features/organization/BusinessUnits.tsx:214",
+        "issue": "提交结果查回403没有清除受限表单和原请求正文",
+        "proof": "ui-probes.log: resolve403后编码仍REVIEW_PENDING",
+        "id": "REVIEW-FIX-03",
+        "fix": "拒绝清空正文和内存重试包、保留引用，刷新后绑定终态",
+        "regression": "浏览器403/404及刷新后路径，真实not_applied解锁",
+        "result": "closed"
+      },
+      {
+        "priority": "P2",
+        "origin": "new",
+        "repository": "oracle-fscr",
+        "location": "docs/china-hcm/scripts/validate_docs.py:227",
+        "issue": "E04/X01变更没有同步当前CI使用的渲染及几何证据",
+        "proof": "validate_docs.py --dry-run exit1；54项中render_source_and_svg_hashes和geometry_current_artifacts_and_canvas_bounds失败",
+        "id": "REVIEW-FIX-04",
+        "fix": "局部渲染与几何检查合并正式证据",
+        "regression": "FSCR54项通过，E04/X01实际浏览器几何检查",
+        "result": "closed"
+      },
+      {
+        "priority": "P2",
+        "origin": "new_contract_inconsistency",
+        "location": "docs/specs/m02/013-m02-technical-design.md:304",
+        "issue": "现行故障表仍要求WAL槽和时间证据采集恢复，与018退役决定矛盾",
+        "proof": "304-305两行当前规范；00004已删除采集结构",
+        "id": "REVIEW-FIX-05",
+        "fix": "删除现行故障合同中的退役采集器恢复要求",
+        "regression": "013与018独立语义复核",
+        "result": "closed"
+      },
+      {
+        "priority": "P2",
+        "origin": "baseline",
+        "location": "apps/web/src/features/organization/BusinessUnits.tsx:243",
+        "issue": "结果查回链接丢失原列表返回上下文",
+        "proof": "ui-probes.log: before back含q/status/sort/page，after为null",
+        "id": "REVIEW-FIX-06",
+        "fix": "查回链接携带列表back和对象选中身份",
+        "regression": "真实提交响应丢失/刷新/查回/返回，列表条件及焦点保持",
+        "result": "closed"
+      },
+      {
+        "priority": "P2",
+        "origin": "baseline",
+        "location": "internal/contexts/access/infra/postgres/access.go:327",
+        "issue": "初始化允许登录端点拒绝的超长登录名",
+        "proof": "api-probes.log: 101字节登录名Initialize成功而login401",
+        "id": "REVIEW-FIX-07",
+        "fix": "初始化与登录共用1–100字节校验",
+        "regression": "边界英文和中文账号可登录，无效初始化不留部分身份",
+        "result": "closed"
+      },
+      {
+        "priority": "P3",
+        "origin": "baseline",
+        "location": "internal/contexts/organization/infra/postgres/queries.go:20",
+        "issue": "增加较窄BU授权错误取消已有企业级名称排序能力",
+        "proof": "api-probes.log:已有完整企业授权，再加BU code-only授权，sort=name由200变403",
+        "id": "REVIEW-FIX-08",
+        "fix": "逐可见对象合并读权后判断名称排序",
+        "regression": "较窄叠加授权正例及真实名称不可读反例",
+        "result": "closed"
+      }
+    ],
+    "rejected_candidate": "LIKE escaping is correct; original raw literal byte lengths1/2/2/2, real DB literals R_A_B/Percent%Name/Back\\slash each match once.",
+    "validation_limits": [
+      "Fresh disposable Testcontainers database used for new API probes; no developer business data writes.",
+      "Browser tests use real local login with isolated contexts, intercept POST and error responses; no business facts created, no production outage claimed.",
+      "Initial late401 harness navigated the whole page and did not reproduce; corrected to SPA reauthentication and independently reproduced.",
+      "Previous normal7-DB/6-browser/build/generation results reused only after exact subject file hash comparison.",
+      "No complete M02 or production recovery/consumer acceptance."
+    ],
+    "logs": [
+      {
+        "path": "api-probes.log",
+        "sha256": "e291eb6cddd8d363f89b28c6a6190e7e952d82c1a63745a5674a71381f8a780f"
+      },
+      {
+        "path": "ui-probes.log",
+        "sha256": "cd16053cd5c1b5b8ce5692364f100b0fcb2ba1bb9952fccc7f92bbe2eaa3818a"
+      },
+      {
+        "path": "ui-probes-followup.log",
+        "sha256": "4fd468f01f99cba01720f3921e74ca903377031b2628dcdb4cadfea1b2ae541a"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "command": "go test -tags=integration ./tests/integration -v -count=1",
+      "result": "passed",
+      "tests_passed": 9,
+      "load_skipped_then_run_separately": true,
+      "seconds": 37.573
+    },
+    {
+      "command": "make smoke",
+      "result": "passed",
+      "tests_passed": 13,
+      "seconds": 48.8,
+      "log": ".local/fixes-b4abd4d/smoke-final.log"
+    },
+    {
+      "command": "make load",
+      "result": "passed",
+      "BUs": 2000,
+      "sessions": 20,
+      "write_seconds": 4.477,
+      "list_ms_p50_p95_p99": [
+        82,
+        132,
+        134
+      ]
+    },
+    {
+      "command": "make generate",
+      "result": "passed",
+      "generated_bytes_unchanged": true
+    },
+    {
+      "command": "make build",
+      "result": "passed",
+      "final_repeat": "passed"
+    },
+    {
+      "command": "make check",
+      "result": "passed",
+      "final_repeat": "passed"
+    },
+    {
+      "command": "FSCR validate_docs.py --dry-run",
+      "result": "passed",
+      "checks": 54,
+      "generated_files": 57
+    },
+    {
+      "command": "python3 -B scripts/check-repository.py --check-refs",
+      "result": "passed"
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "/root/full_review_m02_domain",
+      "round": 1,
+      "scope": "Go/API/query/authorization/login and DB regression tests",
+      "result": "no new confirmed finding"
+    },
+    {
+      "reviewer": "/root/full_review_m02_ui",
+      "round": 1,
+      "result": "initial-session catch, refresh-denial mapping, record-error recovery, late save callbacks identified and fixed"
+    },
+    {
+      "reviewer": "/root/full_review_m02_ui",
+      "round": 2,
+      "result": "no new P1/P2; old logout transport error P3 identified and fixed"
+    },
+    {
+      "reviewer": "/root/full_review_m02_ui",
+      "round": 3,
+      "result": "no new finding in final frontend fixes and regression scenarios"
+    },
+    {
+      "reviewer": "/root/full_review_m02_contracts",
+      "round": 1,
+      "result": "canonical evidence and 013 collector recovery findings closed"
+    },
+    {
+      "reviewer": "/root/full_review_m02_contracts",
+      "round": 2,
+      "result": "no new semantic finding in 012/013 and both repositories current verification scope"
+    }
+  ],
+  "review_mode": "All independent reviewers read-only; execution and fixes by root. Reviewers did not rerun browser/database tests.",
+  "browser_run_inputs": {
+    "exit_code": 0,
+    "unchanged_during_run": true,
+    "before": {
+      "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+      "apps/web/src/app/App.tsx": "47c3cbb607bc1a74d9f183155483fe9e0d034f6a94aa41c4dc685b56ab5b4486",
+      "apps/web/src/features/organization/BusinessUnits.tsx": "ffabd8b2d2e301b443e1400945609fca784f77cf0b79195d41239e89e8e7a0bd",
+      "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+      "packages/api-client/src/schema.d.ts": "82f18d715d5e9feb19af078880c2ea58eada87ffc56a6f15bfb627eb6eeea0a4",
+      "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+      "tests/e2e/bu.spec.ts": "2df3b9055135dd98335f98e73d50656cc1206f1db776b922d92e79d4ff297acc",
+      "tests/e2e/playwright.config.ts": "e7f00528696a2399daf8d450cf728ad3e4edc2226eb2878a530aad457f9d6681"
+    },
+    "after": {
+      "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+      "apps/web/src/app/App.tsx": "47c3cbb607bc1a74d9f183155483fe9e0d034f6a94aa41c4dc685b56ab5b4486",
+      "apps/web/src/features/organization/BusinessUnits.tsx": "ffabd8b2d2e301b443e1400945609fca784f77cf0b79195d41239e89e8e7a0bd",
+      "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+      "packages/api-client/src/schema.d.ts": "82f18d715d5e9feb19af078880c2ea58eada87ffc56a6f15bfb627eb6eeea0a4",
+      "packages/ui/src/AppShell.tsx": "efeef225c2271cd4636931d0dd40df8302ddb311aa60502eef36fde667629623",
+      "tests/e2e/bu.spec.ts": "2df3b9055135dd98335f98e73d50656cc1206f1db776b922d92e79d4ff297acc",
+      "tests/e2e/playwright.config.ts": "e7f00528696a2399daf8d450cf728ad3e4edc2226eb2878a530aad457f9d6681"
+    }
+  },
+  "go_and_migration_inputs": {
+    "db/migrations/00001_access.sql": "5bccf0f106085fe95341e001d9467bcb79dab7688cfb853c9920cf07d275fdb9",
+    "db/migrations/00002_organization.sql": "fe60522cf550636f25282e9a8b56ce87bc44074a62c5122fbcd012906bbc449c",
+    "db/migrations/00003_commit_evidence.sql": "032ed9131bb4d1b750f0d00a529aef38f82801cf6902ff2e6d56e5d078c6a77b",
+    "db/migrations/00004_retire_commit_capture.sql": "b52de7c2cfa24eb5da233b8ecb2b1699188bc796780670c22a54ba31a2f8f93f",
+    "internal/bootstrap/api.go": "59217fe8526d4b563dbe5b45e40dbf732c660faa0a6af30b43fd988bc8501cc2",
+    "internal/bootstrap/http.go": "d35bc364ecc53d659161eee2a956f2aacb7dfe7320376e4c856bb015c52aed1f",
+    "internal/bootstrap/http_test.go": "d2b63cd5850753978acff9d862a07399c2ac231e7f60e7799166b7897deca288",
+    "internal/bootstrap/runtime.go": "e1547426e064a7ab4e76b684743b5fc3debf7d70844bafdfcfe96263c3db52b5",
+    "internal/contexts/access/application/service.go": "859f19f613d3d91c874e1fd5e577efa59eee7d4f56a86b7fe97b69eb142fcac4",
+    "internal/contexts/access/domain/policy.go": "363bf6c9aead8de9ca6ac6080b677ffdd861a2d0238e87a5501631e32dc76daa",
+    "internal/contexts/access/infra/postgres/access.go": "157fb7a854f43837ea8459a0869db2f60dd6d83b8c270cdd7ea5aefa7ebe8c4c",
+    "internal/contexts/access/infra/postgres/generated/db.go": "39aa06028414ed8f2694efca65a4e002d7e6f56bd510d26873320aa75a612a2c",
+    "internal/contexts/access/infra/postgres/generated/models.go": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8",
+    "internal/contexts/access/infra/postgres/generated/queries.sql.go": "08fba703d5c93c873a3f54da58ca520a2eaa42f71e5681eacd0bc88f085cc42e",
+    "internal/contexts/access/public/contracts.go": "a2d3f560b531258c9ac433d1621d04dcfd19157b9e428d13001094d82f9b1ac8",
+    "internal/contexts/organization/application/service.go": "f21d32c1547bb6e38cfb7781e5f8a62348b766443a875c057f5af98d39a6c8bf",
+    "internal/contexts/organization/domain/business_unit.go": "17b232fb8d2fde4592a0ef2974c26d0307e9beac7e00e1db6243875ecfb10abc",
+    "internal/contexts/organization/domain/business_unit_test.go": "9378364557e0be90a1d3d4cbafc5d98284e97c1dacec018e321339ae2f8f3942",
+    "internal/contexts/organization/infra/postgres/generated/db.go": "39aa06028414ed8f2694efca65a4e002d7e6f56bd510d26873320aa75a612a2c",
+    "internal/contexts/organization/infra/postgres/generated/models.go": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8",
+    "internal/contexts/organization/infra/postgres/generated/queries.sql.go": "94fe8d3d8430b92182e6190b4ef145de61e7a747f613aa5766689e3d9297029a",
+    "internal/contexts/organization/infra/postgres/queries.go": "7243facd3220b1ce3babde52b54ea56b02be4c901880198a383eaf57c0cfd315",
+    "internal/contexts/organization/infra/postgres/store.go": "7e29d75aca772e2edcbf318a43c4cc721300d13c53f2424cf84e9dd1742fb7a0",
+    "internal/contexts/organization/public/contracts.go": "37bfe842d82b20a376693864250353c25d127465c99fc6562aec979dab938560",
+    "internal/foundation/values.go": "fe3cd870db4cdebfff049e7434c1fcae1e560212c66a8462832092e06c5aba5d",
+    "tests/integration/bu_test.go": "4ea0c92ccab96ef3c7604464614dd1232f5f45726402dee40f2526327dbb6e46",
+    "tests/integration/review_regressions_test.go": "fdb627971a0c2ec6b953aae0bfd968d030e27ac757424c1dc4019d676821c998",
+    "tests/integration/source_history_test.go": "0d925e50e23e12b0451efd32db8086a16a16467c7135f36fd1b7fba8dc29de98"
+  },
+  "preserved_existing_files": [
+    "db/migrations/00001_access.sql",
+    "db/migrations/00002_organization.sql",
+    "db/migrations/00003_commit_evidence.sql",
+    "db/migrations/00004_retire_commit_capture.sql",
+    "db/migrations/README.md",
+    "db/migrations/embed.go",
+    "docs/reference/README.md",
+    "docs/reference/baselines.json",
+    "docs/reference/document-tooling.json",
+    "docs/reference/licenses/fscr-LICENSE.txt",
+    "docs/reference/local-revisions.json",
+    "docs/reference/m02-terminology-sources.json",
+    "docs/reference/not-imported.md",
+    "docs/reference/sources/china-hcm-d88c993.zip",
+    "docs/reference/sources/cubebox-m02-2deaf927.zip",
+    "docs/verification/009-m02-terminology.md",
+    "docs/verification/010-backoffice-scope-revision.md",
+    "docs/verification/010-current-date-terminology.md",
+    "docs/verification/010-first-vertical-slice.md",
+    "docs/verification/010-review-fixes.md",
+    "docs/verification/010-scope-draft.md",
+    "docs/verification/011-business-requirements-draft.md",
+    "docs/verification/011-delete-record-terminology.md",
+    "docs/verification/011-effective-date-terminology.md",
+    "docs/verification/011-operation-classification.md",
+    "docs/verification/011-record-classification-simplification.md",
+    "docs/verification/011-terminology-registration.md",
+    "docs/verification/013-multiround-review.md",
+    "docs/verification/013-series-review-fixes.md",
+    "docs/verification/013-table-design-review-fixes.md",
+    "docs/verification/013-technical-design.md",
+    "docs/verification/014-document-management-review-fixes.md",
+    "docs/verification/014-document-management.md",
+    "docs/verification/014-numbered-format-migration.md",
+    "docs/verification/014-repository-document-revisions.md",
+    "docs/verification/015-terminology-naming.md",
+    "docs/verification/016-history-decision-and-012.md",
+    "docs/verification/018-source-history-evidence.json",
+    "docs/verification/018-source-history-simplification.md",
+    "docs/verification/bootstrap.md",
+    "docs/verification/data/010-backoffice-scope-inputs.json",
+    "docs/verification/data/010-before-current-date.zip",
+    "docs/verification/data/010-before-review-fixes.zip",
+    "docs/verification/data/010-current-date-inputs.json",
+    "docs/verification/data/010-first-vertical-slice-inputs.json",
+    "docs/verification/data/010-review-fixes-inputs.json",
+    "docs/verification/data/010-scope-before-backoffice.zip",
+    "docs/verification/data/010-scope-draft-inputs.json",
+    "docs/verification/data/011-before-classification-simplification.zip",
+    "docs/verification/data/011-before-delete-terminology.zip",
+    "docs/verification/data/011-before-draft.zip",
+    "docs/verification/data/011-before-effective-date.zip",
+    "docs/verification/data/011-before-operation-terms.zip",
+    "docs/verification/data/011-before-terminology.zip",
+    "docs/verification/data/011-business-requirements-inputs.json",
+    "docs/verification/data/011-delete-record-terminology-inputs.json",
+    "docs/verification/data/011-effective-date-inputs.json",
+    "docs/verification/data/011-operation-classification-inputs.json",
+    "docs/verification/data/011-record-classification-simplification-inputs.json",
+    "docs/verification/data/011-terminology-inputs.json",
+    "docs/verification/data/013-before-series-review.zip",
+    "docs/verification/data/013-before-table-review.zip",
+    "docs/verification/data/013-multiround-review-inputs.json",
+    "docs/verification/data/013-series-review-inputs.json",
+    "docs/verification/data/013-table-design-review-inputs.json",
+    "docs/verification/data/013-technical-design-inputs.json",
+    "docs/verification/data/014-document-inputs.json",
+    "docs/verification/data/014-numbered-format-inputs.json",
+    "docs/verification/data/014-repository-document-dispositions.json",
+    "docs/verification/data/014-repository-document-inputs.json",
+    "docs/verification/data/014-review-fixes-inputs.json",
+    "docs/verification/data/015-before-naming-principle.zip",
+    "docs/verification/data/015-terminology-naming-inputs.json",
+    "docs/verification/data/016-before-history-decision.zip",
+    "docs/verification/data/016-history-decision-and-012-inputs.json"
+  ],
+  "intermediate_failures": [
+    {
+      "log": ".local/fixes-b4abd4d/type-initial.log",
+      "reason": "Nonexistent sessionId type reference corrected"
+    },
+    {
+      "log": ".local/fixes-b4abd4d/smoke.log",
+      "passed": 7,
+      "failed": 2,
+      "reason": "Duplicate sibling React keys; current-401 test intercepted automatic list load before explicit search. Both corrected."
+    }
+  ],
+  "logs": [
+    {
+      "path": ".local/fixes-b4abd4d/build-final.log",
+      "sha256": "d1d8147008e3604f18e6993adc6a816eeed78ae932f86d84eedf8b51bb812ab4",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/fixes-b4abd4d/build.log",
+      "sha256": "7aea447f933ae0ebe1baa0b53375c456eee5f4f6c281779c8f80a1a55d80d3ab",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/fixes-b4abd4d/check-final.log",
+      "sha256": "e1d272b2dff359af6d8cd804cee1aa3244bebddb022074c5627f78767ef3aa0e",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/fixes-b4abd4d/check-refs-final.log",
+      "sha256": "da0e1eb25a056401d931ab7f8105ac6f1f63c8fd60506e6e157d68dc18bbfb7c",
+      "bytes": 293
+    },
+    {
+      "path": ".local/fixes-b4abd4d/check.log",
+      "sha256": "3f19e70743af4cf3d8085d3e2f588038d0f039757cb8408f908bf61991a0c18e",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/fixes-b4abd4d/fscr/generate.log",
+      "sha256": "e9e7e6e8a801535bdcba5d08d5df240c587941ebc82fe9c05464c6df7943b554",
+      "bytes": 74
+    },
+    {
+      "path": ".local/fixes-b4abd4d/fscr/render-inspect.log",
+      "sha256": "3c539097f8080d6b7d8f5255717f85fdc09f1b6aca387d3d915dd889ae52ac11",
+      "bytes": 155
+    },
+    {
+      "path": ".local/fixes-b4abd4d/fscr/validate-final.log",
+      "sha256": "5ad01eefcce7d145e7746edd01239ea4ee2204e57355a4f146df1eb19c45f859",
+      "bytes": 918
+    },
+    {
+      "path": ".local/fixes-b4abd4d/fscr/validate.log",
+      "sha256": "5f790a8c6228d619dadc1dae9b233fa45d9d25baae3ac0dd494011ae0d87da49",
+      "bytes": 918
+    },
+    {
+      "path": ".local/fixes-b4abd4d/generate.log",
+      "sha256": "8c6bda9d1a498b59b9e3f1c5108ffefe5b3e3e242cfae2afe86e4ed6cd69d0fa",
+      "bytes": 371
+    },
+    {
+      "path": ".local/fixes-b4abd4d/go-initial.log",
+      "sha256": "0d080f76ad5ba335e39236d55dc6731fac663e56d228b4d84101ff25a5071157",
+      "bytes": 1147
+    },
+    {
+      "path": ".local/fixes-b4abd4d/integration-full.log",
+      "sha256": "6c008b5eae1e53fe202f0f242924d66de3cb18727cd93dc327c8a45ebe1ca06a",
+      "bytes": 10265
+    },
+    {
+      "path": ".local/fixes-b4abd4d/integration-targeted.log",
+      "sha256": "8069d83a31c908b7b77902a3d7239cd5685700f1e3ea127f267cfdf26405ed17",
+      "bytes": 3723
+    },
+    {
+      "path": ".local/fixes-b4abd4d/load.log",
+      "sha256": "228bfc5872a54028ee252072ec1ebfc0a4414499a1a12ba65639f996d16171f3",
+      "bytes": 2093
+    },
+    {
+      "path": ".local/fixes-b4abd4d/local-up.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/fixes-b4abd4d/recovery-back.log",
+      "sha256": "e5e8da75228f8f918e72bcde65b133604074134109b032641401cbaff030a90b",
+      "bytes": 3545
+    },
+    {
+      "path": ".local/fixes-b4abd4d/recovery-debug.log",
+      "sha256": "bf9a7f1a86b4b75db1e3540ed0f46875614017b69320bc18b7c16a796d13bdf2",
+      "bytes": 4055
+    },
+    {
+      "path": ".local/fixes-b4abd4d/smoke-final.log",
+      "sha256": "32732804e71d959c2b7b9aed1672e7b8c726609b361b0ab7d68ef75e467685a5",
+      "bytes": 2091
+    },
+    {
+      "path": ".local/fixes-b4abd4d/smoke-full-2.log",
+      "sha256": "b11096a1e39ab08bcac79b3fc3975c3c3b20291e5af52c6ff55c5579cd4b29d7",
+      "bytes": 1988
+    },
+    {
+      "path": ".local/fixes-b4abd4d/smoke-targeted-2.log",
+      "sha256": "5139cf776aa77fe956a94a6a91d2d14a63d44c78bcd83c6dd9433f1ff4af0e3e",
+      "bytes": 1032
+    },
+    {
+      "path": ".local/fixes-b4abd4d/smoke.log",
+      "sha256": "ee5a100f92d1f31e3158c565507423ab6b42ef13e499657761f19fe505ab5a81",
+      "bytes": 7557
+    },
+    {
+      "path": ".local/fixes-b4abd4d/type-initial.log",
+      "sha256": "e9192837b2577b61446451cd09aa2f449f4d215b9435ca86d2c4e75ad24889dc",
+      "bytes": 724
+    },
+    {
+      "path": ".local/fixes-b4abd4d/typecheck-2.log",
+      "sha256": "06c34d4a091a8306c24245a45555a33028c35b03477f4d94f913caab39c37556",
+      "bytes": 210
+    },
+    {
+      "path": ".local/fixes-b4abd4d/typecheck.log",
+      "sha256": "06c34d4a091a8306c24245a45555a33028c35b03477f4d94f913caab39c37556",
+      "bytes": 210
+    }
+  ],
+  "limitations": [
+    "非完整M02；新增记录、更正、删除、停用及审批/工作台未实施。",
+    "浏览器限本地Chromium；错误注入不是生产故障或真实撤权演练。",
+    "容量为单来源样本；无真实采用消费者、事件投递、生产恢复或外部HCM验收。",
+    "R25、命名增量和197项资产状态不提升；不修改系统校时。"
+  ],
+  "final_document_gate": "passed; final make check and explicit --check-refs both exit 0",
+  "finalizedAt": "2026-10-31T13:29:15.474702+00:00",
+  "fscr_canonical_validation": {
+    "status": "passed",
+    "checks": 54,
+    "counts": {
+      "business_modules": 20,
+      "crosscutting_modules": 6,
+      "diagrams": 53,
+      "concepts": 131,
+      "concepts_by_reference_section": {
+        "1": 11,
+        "2": 17,
+        "3": 33,
+        "4": 21,
+        "5": 28,
+        "6": 12,
+        "7": 9
+      },
+      "target_object_groups": 154,
+      "terminology_terms": 437,
+      "terminology_domains": 26,
+      "terminology_object_groups": 154,
+      "terminology_reference_concepts": 131,
+      "generated_files_checked": 57,
+      "archive": {
+        "packages": 2,
+        "original_files_in_packages": 379,
+        "preserved_standalone_records": 29,
+        "historical_modules": 26,
+        "historical_source_files": 75,
+        "initial_review_missing_originals": 22,
+        "r08_exact_inputs": 150,
+        "r13_exact_inputs": 163
+      },
+      "markdown_files_checked": 69,
+      "local_links_checked": 2916,
+      "historical_sibling_workspace_links": 68,
+      "historical_targets_checked": 0,
+      "command_contract_entries": 10,
+      "svg_text_nodes_checked": 2296,
+      "text_files_checked": 352
+    },
+    "failures": [],
+    "writes": false
+  },
+  "changed_inputs": [
+    {
+      "path": "AGENTS.md",
+      "before": "de63938cde826fe202779b9367480cd9686532de9ecb2ba545b226ba3685b701",
+      "after": "863592f5afff52050d000e3e1a8724d8ef360893e1cfd9f6a3d6726ff6ce2d57"
+    },
+    {
+      "path": "apps/web/src/app/App.tsx",
+      "before": "450c137c15d8302b331d8393855b7fdcdffe51eed967a92e4f87d48dc0b3b76f",
+      "after": "47c3cbb607bc1a74d9f183155483fe9e0d034f6a94aa41c4dc685b56ab5b4486"
+    },
+    {
+      "path": "apps/web/src/features/organization/BusinessUnits.tsx",
+      "before": "db3038dff7d5570028d4797722ac85be8844d3b0d56119b13732f89e7bd1a1ab",
+      "after": "ffabd8b2d2e301b443e1400945609fca784f77cf0b79195d41239e89e8e7a0bd"
+    },
+    {
+      "path": "docs/README.md",
+      "before": "bb3fecab815d2fc8aeaf0e2186e0dff2de589faa38c41807efd0647546b99849",
+      "after": "769a0b2228b9166bba97403e9acbba6f4dd0d53897bbcd53d6b1d27f85aa4336"
+    },
+    {
+      "path": "docs/governance/registry.json",
+      "before": "64a415b306b14d722ee4846765699c421d312a2c06c3a5fdb324bf5a6b27012c",
+      "after": "70ff2924c10dabf890371c6081dfaa93b5f92e166fa5afacf6114131cdb86b25"
+    },
+    {
+      "path": "docs/guides/017-local-bu-development.md",
+      "before": "220aac434b604ca137bce2e01eed649e7f5a8844d21dec8c9b196298cbf74c17",
+      "after": "40b52eea2555f6a4022dbb3a4a04ed89dbb201ea1271ef8857739a647d93b4be"
+    },
+    {
+      "path": "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "before": "670e9e414f2f5aedcf6a03e2d5ca5df28ae2c38a5d7af032b5b257a85774fd14",
+      "after": "931cf074ce16fe842f26c6e47e7a173d9ac1753c8b6050cf54236457a0d919f3"
+    },
+    {
+      "path": "docs/specs/m02/013-m02-technical-design.md",
+      "before": "3d54f14f36fb1976ae15959a9ae8f85d77c99c12f8c7a94496a706e107b55e16",
+      "after": "55cfc1269a559610d0669a2a79ee7ac51cda0d783a6d2a36eee103614532ac51"
+    },
+    {
+      "path": "docs/verification/018-comprehensive-review-fixes.md",
+      "before": null,
+      "after": "0a8cb8a0da5894897b2615dcdf86112bed9dac58995fd1dd4e0fc1d262da8442"
+    },
+    {
+      "path": "docs/verification/README.md",
+      "before": "ebfe74ad40819b5da39ef2ecfcfbc337266ae189669c79dc7498d9c788cc3bad",
+      "after": "ce7f77a2cbf622318d32f7bd0f0c8a90a7b571d2bca271ece926a26bb0df6c36"
+    },
+    {
+      "path": "internal/bootstrap/api.go",
+      "before": "8fd0d7014f027e20870b376899aa0bbd6fd2af961f81e244474a6e8f461e9eba",
+      "after": "59217fe8526d4b563dbe5b45e40dbf732c660faa0a6af30b43fd988bc8501cc2"
+    },
+    {
+      "path": "internal/contexts/access/application/service.go",
+      "before": "903336588fd17aeeb57a1e00430bfb83a4b7405549cdb0094698ecf9eead1bbf",
+      "after": "859f19f613d3d91c874e1fd5e577efa59eee7d4f56a86b7fe97b69eb142fcac4"
+    },
+    {
+      "path": "internal/contexts/access/domain/policy.go",
+      "before": "676f078b86660a22920951a2647e96e255252e49531f5b79d94153d6f1697a87",
+      "after": "363bf6c9aead8de9ca6ac6080b677ffdd861a2d0238e87a5501631e32dc76daa"
+    },
+    {
+      "path": "internal/contexts/access/infra/postgres/access.go",
+      "before": "eaa2e6496c9b187f4b3a0fe65c808371c4663135102ad6eb7801eb8d60875e81",
+      "after": "157fb7a854f43837ea8459a0869db2f60dd6d83b8c270cdd7ea5aefa7ebe8c4c"
+    },
+    {
+      "path": "internal/contexts/organization/infra/postgres/queries.go",
+      "before": "998eee0eb1ae73ece91f7ac356a1c221876aea1a550144d23e5ba55c90b69e1f",
+      "after": "7243facd3220b1ce3babde52b54ea56b02be4c901880198a383eaf57c0cfd315"
+    },
+    {
+      "path": "packages/api-client/src/index.ts",
+      "before": "f007f6d0d7519d32611e126b5cc94d59d113420abedc0e98f7d4b2cf8d826077",
+      "after": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899"
+    },
+    {
+      "path": "tests/e2e/bu.spec.ts",
+      "before": "8c1b8dc90cba174b042e26f97657243770420fdc397f423fef4ade0736b73f29",
+      "after": "2df3b9055135dd98335f98e73d50656cc1206f1db776b922d92e79d4ff297acc"
+    },
+    {
+      "path": "tests/integration/README.md",
+      "before": "79f389d8afad25abd329863659c5715734f5eb92eec78b39392040a71a59de18",
+      "after": "009c11e21ea4a916cc06ce2a9584f7f29d6c7d248b57892e1f35ca856d24f3b0"
+    },
+    {
+      "path": "tests/integration/bu_test.go",
+      "before": "2d8649f1355cdc44c37694fb9d48a1e9748e50199de89219ff1d92b49bf8e2c7",
+      "after": "4ea0c92ccab96ef3c7604464614dd1232f5f45726402dee40f2526327dbb6e46"
+    },
+    {
+      "path": "tests/integration/review_regressions_test.go",
+      "before": null,
+      "after": "fdb627971a0c2ec6b953aae0bfd968d030e27ac757424c1dc4019d676821c998"
+    }
+  ],
+  "hash_exclusion": "This evidence file is excluded from its own input hash list."
+}

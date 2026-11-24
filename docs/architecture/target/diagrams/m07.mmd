@@ -1,0 +1,41 @@
+---
+title: M07 考勤与实际工时 · 目标设计
+---
+flowchart TB
+  subgraph domain["M07 考勤与实际工时"]
+    direction TB
+    P["原始打卡与时间事件"]:::own
+    D["逐日异常核对"]:::process
+    T["实际工时与分类"]:::own
+    C["月结清单及来源版本"]:::own
+    R["发布引用与投递记录"]:::process
+    PROF["TimePolicy Profile Rule Layout 版本化配置"]:::own
+    CAT["TimeCategory 可复用分类条件"]:::own
+    CONS["TimeConsumerSet 消费者与释放规则"]:::own
+    SPAN["任职边界分段 无覆盖片段待核"]:::process
+  end
+  S["M06 发布班表"]:::external
+  A["M08 缺勤事实"]:::external
+  Y["M10 工资准备"]:::external
+  EMP["M04 任职有效段及更正"]:::external
+  S -->|预期时间| D
+  P -->|原始事件| D
+  A -->|请假覆盖| D
+  D -->|确认工时| T
+  T -->|期间核对| C
+  A -->|缺勤核对| C
+  C -->|源版本| R
+  R -->|E发布通知；M10 C采用| Y
+  PROF -->|校验依据| D
+  PROF -->|分类转换规则| T
+  PROF -->|本域定义及版本| CAT
+  PROF -->|本域定义及版本| CONS
+  CAT -->|按采用版本分类| T
+  CONS -->|明确选择范围 核准和分发条件| R
+  T -->|原始来源唯一的工时输入| Y
+  EMP -->|按时区及日界核对| SPAN
+  SPAN -->|明确覆盖才可确认释放| T
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

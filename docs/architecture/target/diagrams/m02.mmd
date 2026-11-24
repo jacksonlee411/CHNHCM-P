@@ -1,0 +1,33 @@
+---
+title: M02 企业、组织与地点 · 目标设计
+---
+flowchart TB
+  subgraph domain["M02 企业、组织与地点"]
+    direction TB
+    E["Enterprise 企业上下文"]:::own
+    BU["BusinessUnit 业务单元"]:::own
+    D["Department 部门"]:::own
+    LOC["Location 地点"]:::own
+    L["LegalEntity / Use 法律实体及用途<br/>含符合条件分支；用人/用工分别核定"]:::own
+    T["OrganizationHierarchy / Version 按用途的组织树"]:::own
+    B["ContextBinding 上下文用途绑定"]:::own
+  end
+  H["M03 M04 工作关系及任职<br/>关联单位不自动代表用人单位"]:::external
+  F["M10 M11 M12 M14 M15 责任消费者"]:::external
+  X["X02 对象类型及适用政策"]:::shared
+  E -->|企业内业务单元| BU
+  E -->|企业内管理组织| D
+  E -->|企业内法律实体| L
+  T -->|按用途引用节点| D
+  BU -->|业务上下文| B
+  LOC -->|地点上下文| B
+  L -->|允许用途及主体| B
+  X -->|日期及引用范围| B
+  BU -->|引用| H
+  D -->|引用| H
+  LOC -->|引用| H
+  B -->|按用途解析 不等同一棵树| F
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

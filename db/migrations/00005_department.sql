@@ -1,0 +1,11 @@
+-- +goose Up
+ALTER TABLE access.subject_grant DROP CONSTRAINT subject_grant_scope_kind_check, DROP CONSTRAINT subject_grant_action_check, DROP CONSTRAINT subject_grant_read_fields_check, DROP CONSTRAINT subject_grant_write_fields_check;
+
+ALTER TABLE access.subject_grant ADD CHECK(scope_kind IN ('enterprise','bu','department')), ADD CHECK(action IN ('bu.read','bu.history.read','bu.export','bu.create','bu.record.add','bu.record.correct','bu.record.delete','bu.deactivation.delete','bu.reactivation.delete','bu.record.redate','bu.first.redate','bu.deactivation.redate','bu.reactivation.redate','bu.deactivate','bu.reactivate','bu.timeline.revise','bu.first.reclassify','bu.record.reclassify','bu.deactivation.reclassify','bu.reactivation.reclassify','department.read','department.history.read','department.export','department.create','department.record.add','department.record.correct','department.record.delete','department.deactivation.delete','department.reactivation.delete','department.record.redate','department.first.redate','department.deactivation.redate','department.reactivation.redate','department.deactivate','department.reactivate','department.first.reclassify','department.record.reclassify','department.deactivation.reclassify','department.reactivation.reclassify','department.reassign','department.reference.read','bu.reference.read')), ADD CHECK(scope_kind<>'department' OR action LIKE 'department.%');
+
+ALTER TABLE access.subject_grant ADD CHECK((action LIKE 'bu.%' AND read_fields <@ ARRAY['code','name','nameEn','effectiveDate','operationType','operationReason']::text[] AND write_fields <@ ARRAY['code','name','nameEn','effectiveDate','operationType','operationReason']::text[]) OR (action LIKE 'department.%' AND read_fields <@ ARRAY['code','name','shortName','managementBuId','parentDepartmentId','departmentPath','status','effectiveDate','operationType','operationReason']::text[] AND write_fields <@ ARRAY['code','name','shortName','managementBuId','parentDepartmentId','effectiveDate','operationType','operationReason']::text[]));
+
+-- +goose Down
+-- +goose StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'department authorization cannot be automatically removed'; END $$;
+-- +goose StatementEnd

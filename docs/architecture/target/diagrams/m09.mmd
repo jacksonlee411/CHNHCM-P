@@ -1,0 +1,31 @@
+---
+title: M09 薪酬体系、定薪与激励 · 目标设计
+---
+flowchart TB
+  subgraph domain["M09 薪酬体系、定薪与激励"]
+    direction TB
+    P["CompensationPlan 薪酬计划"]:::own
+    R["GradeRate 费率及区间"]:::own
+    A["CompensationAward 个人授予"]:::own
+    D["AwardDelivery 下发记录"]:::own
+    BASIS["DeliveryBasis 约定金额 单位 频率"]:::own
+  end
+  G["M03 Grade / Ladder 级别结构"]:::external
+  S["M01 Person / M04 Assignment 授予对象"]:::external
+  F["M17 发布绩效 / M05 Offer 依据"]:::external
+  Y["M10 条款及输入采用"]:::external
+  B["M03 预算"]:::external
+  G -->|级别身份| R
+  P -->|计划金额规则| R
+  R -->|金额 币种 频率版本| A
+  S -->|明确人员或任职用途| A
+  F -->|来源与差异核准| A
+  A -->|确认版本及唯一用途| D
+  D -->|明确采用 不重复输入| Y
+  R -->|报价供预算参考| B
+  D -->|不可变载荷| BASIS
+  BASIS -->|一次转换及分摊 逐步留证| Y
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

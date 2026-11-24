@@ -1,0 +1,60 @@
+---
+title: M10 工资核算、累计与追溯 · 目标设计
+---
+flowchart TB
+  subgraph domain["M10 工资核算、累计与追溯"]
+    direction TB
+    CTX["PayrollContext 人员及薪资责任上下文"]:::own
+    A["PayrollMembership 计薪归属"]:::own
+    E["PayrollInput / ElementEntry 采用与输入"]:::own
+    R["PayrollResult 不可变结果及封存"]:::own
+    B["PayrollBalance 工资累计"]:::own
+    P["PayslipPublication 工资单发布"]:::own
+    D["RetroCase 追溯与后继差额"]:::own
+    FLOW["PayrollFlowInstance 本次业务运行"]:::own
+    BD["BalanceDefinition / Dimension 累计定义及维度"]:::own
+    SET["PayrollAllocationSet 任职及用途的共同分配守卫"]:::own
+    DEF["PayrollDefinition / Calendar 周期与运行类型"]:::own
+    RULE["Element / CalculationRule 项目 参数 查表与规则"]:::own
+    FLOWDEF["PayrollFlowDefinition 版本化步骤定义"]:::own
+    IMPACT["PayrollImpactPolicy 变更选择与影响规则"]:::own
+    HEAD["ResultSeriesHead 当前完整结果基准"]:::own
+    CONV["ConversionProrationPolicy 口径与单次运算"]:::own
+    DEPS["DependencyManifest 来源 规则 日历 舍入"]:::own
+  end
+  I["M01 M02 M04 身份及责任用途"]:::external
+  SRC["M07 M08 M09 M13 来源版本"]:::external
+  T["M11 税评估与承诺"]:::external
+  C["M12 代扣义务与消费"]:::external
+  O["M14 应付 / M15 成本"]:::external
+  S["M20 受控工资单视图"]:::external
+  I -->|按用途建立| CTX
+  CTX -->|计薪成员| A
+  E -->|Q税评估| T
+  T -->|C同事务承诺| R
+  C -->|C同事务扣收| R
+  E -->|C封存结果单元| R
+  R -->|工资指标确认| B
+  R -->|E唯一差额来源| O
+  R -->|C独立发布| P
+  P -->|Q状态与当前权限| S
+  R -->|C更正案| D
+  D -->|后继准备| E
+  FLOW -->|步骤引用及完成证据 不代写结果| R
+  BD -->|冻结定义版本及计量口径| B
+  SET -->|C所有成员及日期段同事务校验| A
+  SRC -->|Q来源 C明确采用| E
+  A -->|责任范围与有效归属| E
+  DEF -->|期间及配置版本| E
+  RULE -->|输入规范及计算版本| E
+  FLOWDEF -->|启动时采用定义版本| FLOW
+  IMPACT -->|选择来源变化形成影响案| D
+  R -->|封存同事务CAS推进完整基准| HEAD
+  HEAD -->|基于当前全量求后继差额| D
+  RULE -->|根内规则版本| CONV
+  CONV -->|分段 换算 分摊 舍入| R
+  R -->|封存精确依赖及轨迹| DEPS
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

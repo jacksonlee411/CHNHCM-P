@@ -1,0 +1,244 @@
+{
+  "base_commit": "889bcd91ebd8c187bf278de6daa06a9bf8f17fec",
+  "preexisting_dirty": true,
+  "snapshot": "docs/verification/data/020-before-record-maintenance.zip",
+  "snapshot_sha256": "42874dade17a5041d389e423227cc9aa760a1969e585823a11a04769192dbc3b",
+  "before_files": {
+    "docs/governance/registry.json": "357d7b58890c38278060296b33ad3d8f58f58800a811da0aeb3308bd6219dcc5",
+    "docs/plans/010-m02-scope-and-plan.md": "77bbec9d934a8d366444479797576f88e6e9223020599124639c17e696afb9df",
+    "docs/specs/m02/011-m02-business-requirements.md": "83541ffac15b2238c9a21abaec2663c95ae09f58b5b7444b3dafd807db23b3e0",
+    "docs/specs/m02/012-m02-functional-and-interaction-design.md": "c96a4723cd2b4876406dd1f4398a8b4a71bacaf8bfb5bbd2a13cc9b1b8717fe0",
+    "docs/specs/m02/013-m02-technical-design.md": "41d2174c6fddd14ab35de8ac974fabeb289deea16b3d25d28605386ed7939477",
+    "docs/adr/018-effective-records-and-source-history.md": "0c2baa712154ba1b321c5075612bd0b0ccd36ed7295ac40028716cb057287c0c",
+    "docs/README.md": "6deb098669d2eaa3393d074d77286dcb92eb0a66e6a1ddc3f6aa70492ea7532a",
+    "docs/specs/README.md": "80346cd493ae4c0399e5af03f07064be22e061bc2c01eb2b7d35847a5660304d",
+    "docs/verification/README.md": "65d5186925c0352b68986d1e6ea985658440e4af2ac81ea65076ec4c1411e2cf",
+    "docs/reference/local-revisions.json": "49bb58ffd9de9aa97519d9c7418ef91e8cda3dda81f17e08809260b455ac7a56",
+    "docs/architecture/target/data/terminology-glossary.json": "eb79c6b8592ec46b8ee444bb7bc54758d2f65716a56bdfc6912362898c9eb1a1",
+    "docs/architecture/target/17-terminology-glossary.md": "c05431511c491a90afd569ca14a1fac7045a356db7acb17a45a52e747e481cff",
+    "docs/verification/011-retroactive-record-addition.md": "28ea845c07bb69f64396a05a3cd65e005e85442e29f4afb1be944058ecdcb6c8",
+    "docs/verification/011-retroactive-record-addition.evidence.json": "f06a1ea221fc0b08ed326fcb4876bd3acc51ffe3c4320b5a24bfd83cadca63da"
+  },
+  "old_verification_count": 29,
+  "date": "2026-11-01",
+  "scope": "仅文档合同调整与静态核对，非业务实现",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/architecture/target/scripts/build_modules.py",
+        "--dry-run"
+      ],
+      "stage": "generation",
+      "exit_code": 0,
+      "output": "{\"files\": 57, \"modules\": 26, \"writes\": false}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/architecture/target/scripts/build_modules.py"
+      ],
+      "stage": "generation",
+      "exit_code": 0,
+      "output": "{\"files\": 57, \"modules\": 26, \"writes\": true}\n"
+    },
+    {
+      "command": [
+        "make",
+        "docs"
+      ],
+      "stage": "before_final_review",
+      "exit_code": 0,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.694s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 130, \"local_links\": 3048, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/check-repository.py",
+        "--check-refs"
+      ],
+      "stage": "before_final_review",
+      "exit_code": 0,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 130, \"local_links\": 3048, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "stage": "before_final_review",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "make",
+        "docs"
+      ],
+      "stage": "final",
+      "exit_code": 0,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.652s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 130, \"local_links\": 3048, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/check-repository.py",
+        "--check-refs"
+      ],
+      "stage": "final",
+      "exit_code": 0,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 130, \"local_links\": 3048, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "stage": "final",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "previous_reviews": {
+    "CHNHCM-010": {
+      "date": "2026-11-01",
+      "reviewer": "用户明确要求允许追溯新增；/root修订与静态自检，非独立评审或业务验收",
+      "scope": "仅将已有BU补登记过去生效的普通资料变更纳入010及011—013，覆盖期间、当前授权、历史与原采用、页面及验收；当天新增等其余边界保持，未实施运行。原审阅记录及证据保留。",
+      "result": "accepted",
+      "evidence": "docs/verification/011-retroactive-record-addition.md"
+    },
+    "CHNHCM-011": {
+      "date": "2026-11-01",
+      "reviewer": "用户明确要求允许追溯新增；/root修订与静态自检，非独立评审或业务验收",
+      "scope": "仅将已有BU补登记过去生效的普通资料变更纳入010及011—013，覆盖期间、当前授权、历史与原采用、页面及验收；当天新增等其余边界保持，未实施运行。原审阅记录及证据保留。",
+      "result": "accepted",
+      "evidence": "docs/verification/011-retroactive-record-addition.md"
+    },
+    "CHNHCM-012": {
+      "date": "2026-11-01",
+      "reviewer": "用户明确要求允许追溯新增；/root修订与静态自检，非独立评审或业务验收",
+      "scope": "仅将已有BU补登记过去生效的普通资料变更纳入010及011—013，覆盖期间、当前授权、历史与原采用、页面及验收；当天新增等其余边界保持，未实施运行。原审阅记录及证据保留。",
+      "result": "accepted",
+      "evidence": "docs/verification/011-retroactive-record-addition.md"
+    },
+    "CHNHCM-013": {
+      "date": "2026-11-01",
+      "reviewer": "用户明确要求允许追溯新增；/root修订与静态自检，非独立评审或业务验收",
+      "scope": "仅将已有BU补登记过去生效的普通资料变更纳入010及011—013，覆盖期间、当前授权、历史与原采用、页面及验收；当天新增等其余边界保持，未实施运行。原审阅记录及证据保留。",
+      "result": "accepted",
+      "evidence": "docs/verification/011-retroactive-record-addition.md"
+    },
+    "CHNHCM-018": {
+      "date": "2026-10-31",
+      "reviewer": "用户明确采纳及实施指令；/root/retire_knownat_runtime_review、/root/retire_knownat_docs_review独立只读复核；/root修订与验证",
+      "scope": "仅018来源历史简化及当前创建/查询切片；保留期间、来源、权限和幂等，停止截点与采集，旧记录保持。独立评审及验证边界详见报告，不计后续动作或全部源增量验收。",
+      "result": "accepted",
+      "evidence": "docs/verification/018-source-history-simplification.md"
+    }
+  },
+  "protection": {
+    "existing_verification_records_unchanged": 29,
+    "existing_tracked_verification_files_unchanged": 112,
+    "previous_uncommitted_report_and_evidence_unchanged": true,
+    "snapshot_files_hash_checked": 14,
+    "original_business_anchors_preserved": 41,
+    "new_business_anchors": [
+      "m02-ac-014",
+      "m02-br-017",
+      "m02-scn-013"
+    ],
+    "current_business_anchors": 44,
+    "glossary_stable_ids_preserved": 448,
+    "glossary_bindings_and_old_reviews_unchanged": true,
+    "old_local_revision_chain_unchanged": true,
+    "prior_plan_and_business_history_preserved": true,
+    "unrelated_document_metadata_unchanged": true,
+    "runtime_api_migrations_tests_assets_source_packages_unchanged": true,
+    "head_branch_stash_unchanged": true
+  },
+  "semantic_review": {
+    "reviewer": "/root实施代理静态自检，非独立评审或业务验收",
+    "result": "passed",
+    "scope": [
+      "已生效普通/停用删除与首条拒绝",
+      "首条改日仍最早及NO_FACT",
+      "普通记录重排和停用最后",
+      "原分类及日期修订、全影响期间",
+      "分动作权限、准确版本、无变化和精确重试",
+      "旧来源及消费者原采用保持",
+      "新迁移合同及旧迁移/来源封口保护",
+      "实现与验收未运行"
+    ]
+  },
+  "inputs": {
+    "docs/README.md": {
+      "before_sha256": "6deb098669d2eaa3393d074d77286dcb92eb0a66e6a1ddc3f6aa70492ea7532a",
+      "after_sha256": "0435f6ec4965ada53dfa2885c5bb4971ada752628170fd0aa839884b86ef0919"
+    },
+    "docs/adr/018-effective-records-and-source-history.md": {
+      "before_sha256": "0c2baa712154ba1b321c5075612bd0b0ccd36ed7295ac40028716cb057287c0c",
+      "after_sha256": "4a0b3f98549e6b0b5214645743cc97ffbd0fcea244a51a5d81be68177cb39eea"
+    },
+    "docs/architecture/target/07-concept-mapping.md": {
+      "before_sha256": "7bbebaf5351fa96a6c101255b81b732e8414fe875ddcd19b1bab2bfbfafee13b",
+      "after_sha256": "aa1ce0ad47c8619c94152087f96ebc7da60343969802d8aff97f84fc0f07b9e0"
+    },
+    "docs/architecture/target/17-terminology-glossary.md": {
+      "before_sha256": "c05431511c491a90afd569ca14a1fac7045a356db7acb17a45a52e747e481cff",
+      "after_sha256": "3837c1bca380f60dea17b68b4d3e5256c4f773eefeda2a7501d13cb69ef616da"
+    },
+    "docs/architecture/target/data/terminology-glossary.json": {
+      "before_sha256": "eb79c6b8592ec46b8ee444bb7bc54758d2f65716a56bdfc6912362898c9eb1a1",
+      "after_sha256": "d5c570647f52d0fce809b2a8f27f15609497d1c12d9e8b3ee21b623cc2299d6b"
+    },
+    "docs/governance/registry.json": {
+      "before_sha256": "357d7b58890c38278060296b33ad3d8f58f58800a811da0aeb3308bd6219dcc5",
+      "after_sha256": "74d1626eb5f66f1559dfcd5fa1f3a24e2c3d7c0c85c54246f0fe5dc21b3de29b"
+    },
+    "docs/plans/010-m02-scope-and-plan.md": {
+      "before_sha256": "77bbec9d934a8d366444479797576f88e6e9223020599124639c17e696afb9df",
+      "after_sha256": "9e5e4cd6c33232cfa5f401089b0e4e40f88039f6eabafc641e9c90f962e07a18"
+    },
+    "docs/reference/local-revisions.json": {
+      "before_sha256": "49bb58ffd9de9aa97519d9c7418ef91e8cda3dda81f17e08809260b455ac7a56",
+      "after_sha256": "a9e025b59db2e660312514181a8128ddb12870cfc8bbcf172d01425783eb63ff"
+    },
+    "docs/specs/README.md": {
+      "before_sha256": "80346cd493ae4c0399e5af03f07064be22e061bc2c01eb2b7d35847a5660304d",
+      "after_sha256": "22ed091e1788780e34f7180718ab4f59ec74565840dd1b263c07b79a910eb909"
+    },
+    "docs/specs/m02/011-m02-business-requirements.md": {
+      "before_sha256": "83541ffac15b2238c9a21abaec2663c95ae09f58b5b7444b3dafd807db23b3e0",
+      "after_sha256": "89ff6935de2f9b80b18604f297b872f32436bd5dd6d3d5fd753e705c23e34505"
+    },
+    "docs/specs/m02/012-m02-functional-and-interaction-design.md": {
+      "before_sha256": "c96a4723cd2b4876406dd1f4398a8b4a71bacaf8bfb5bbd2a13cc9b1b8717fe0",
+      "after_sha256": "31321e24614292192f75d89fb86c2f633b2ff9e9bfa52508fd112cb8b216ccee"
+    },
+    "docs/specs/m02/013-m02-technical-design.md": {
+      "before_sha256": "41d2174c6fddd14ab35de8ac974fabeb289deea16b3d25d28605386ed7939477",
+      "after_sha256": "4ceab223399cfd5858f492e0b81131d44991b214d5306ff8eda686f71791beee"
+    },
+    "docs/verification/README.md": {
+      "before_sha256": "65d5186925c0352b68986d1e6ea985658440e4af2ac81ea65076ec4c1411e2cf",
+      "after_sha256": "5d58864f6f31e30fb5e4d2d6064ad3979ea22a83440fd211822cbbce78b1e857"
+    },
+    "docs/adr/020-effective-record-delete-and-redate.md": {
+      "before_sha256": null,
+      "after_sha256": "d3dd056194a738609dd5eb21e7735def60ad84fa785cb52b4ea64e6c1f3aa816"
+    },
+    "docs/verification/020-effective-record-delete-and-redate.md": {
+      "before_sha256": null,
+      "after_sha256": "c519b28215ab33a99a3c6d3d79e0172a9054a55689bd8318859608e7e86bed1d"
+    }
+  },
+  "input_scope": "输入摘要以本轮前的脏工作区为比较基准；07生成映射此前干净，before取基线HEAD。快照含前轮未提交合同与报告；证据清单自身不做递归摘要。before_final_review输出仅对应当时输入，最终复验单独保存。",
+  "final_input_hashes_rechecked": true,
+  "head_branch_stash_unchanged": true
+}

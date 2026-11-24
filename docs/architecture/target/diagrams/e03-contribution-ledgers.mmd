@@ -1,0 +1,55 @@
+---
+title: E03 稳定义务账户、全量重述与差额分账 · 目标ER
+---
+erDiagram
+  ENROLLMENT ||--o{ OBLIGATION_ACCOUNT : "参缴上下文及所属期"
+  OBLIGATION_ACCOUNT ||--|{ OBLIGATION_VERSION : "完整重述历史"
+  OBLIGATION_ACCOUNT ||--|{ OBLIGATION_DELTA : "仅差额入账"
+  OBLIGATION_VERSION ||--|| OBLIGATION_DELTA : "相对前版本"
+  OBLIGATION_VERSION ||--o{ FILING_LINE : "申报当时版本"
+  FILING_LINE ||--o{ LINE_RECEIPT : "回执不计资金"
+  OBLIGATION_ACCOUNT ||--o{ DEDUCTION_RESERVATION : "工资可扣占用"
+  OBLIGATION_ACCOUNT ||--o{ COLLECTION_ALLOCATION : "员工子账核销"
+  COLLECTION_MOVEMENT ||--o{ COLLECTION_ALLOCATION : "来源金额守卫"
+  OBLIGATION_ACCOUNT ||--o{ AGENCY_ALLOCATION : "机构应付子账核销"
+  AGENCY_MOVEMENT ||--o{ AGENCY_ALLOCATION : "实缴或退款"
+  OBLIGATION_ACCOUNT {
+    string obligationId PK
+    string periodCurrencyScope UK
+    int revision
+    decimal employeeBalance
+    decimal agencyPayableBalance
+  }
+  OBLIGATION_VERSION {
+    string versionId PK
+    string obligationId FK
+    string predecessorVersionId
+    decimal employeeFullAmount
+    decimal employerFullAmount
+  }
+  OBLIGATION_DELTA {
+    string correctionBusinessId PK
+    string fromVersion
+    string toVersion FK
+    decimal employeeDelta
+    decimal agencyDelta
+  }
+  COLLECTION_ALLOCATION {
+    string allocationId PK
+    string obligationId FK
+    string originalVersionRef
+    string collectionMovementId FK
+    decimal signedAmount
+  }
+  COLLECTION_MOVEMENT {
+    string movementId PK
+    string sourceBusinessKey UK
+    string kind "工资扣收或其他收款或原收款退款"
+  }
+  AGENCY_ALLOCATION {
+    string allocationId PK
+    string obligationId FK
+    string originalVersionRef
+    string movementId FK
+    decimal signedAmount
+  }

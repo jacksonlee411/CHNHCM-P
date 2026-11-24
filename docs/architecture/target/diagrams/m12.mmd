@@ -1,0 +1,39 @@
+---
+title: M12 社会保险与住房公积金 · 目标设计
+---
+flowchart TB
+  subgraph domain["M12 社会保险与住房公积金"]
+    direction TB
+    P["参缴资格与经办账户"]:::own
+    O["稳定ObligationAccount"]:::own
+    V["全量版本与有符号差额"]:::own
+    F["申报行与原版本回执"]:::own
+    E["员工应收 占用 扣收"]:::own
+    S["机构应付 执行意图 实缴与退款"]:::own
+    BASE["基数证据 领域规则与险种"]:::own
+  end
+  H["M04 关系及人员"]:::external
+  Y["M10 原子代扣消费"]:::external
+  C["M15 单位成本差额"]:::external
+  X["X05 经办与资金渠道"]:::external
+  POL["X02 政策证据 地区与有效期"]:::shared
+  PAYER["M14 PayerAccount 执行准入守卫"]:::external
+  H -->|Q有效关系| P
+  P -->|C期间义务| O
+  O -->|C期望版本更正| V
+  V -->|明确全量或差额payload| F
+  V -->|员工承担delta| E
+  V -->|应付delta| S
+  E -->|C占用和消费| Y
+  F -->|C已提交申报意图| X
+  S -->|C冻结授权及资金意图| X
+  X -->|C逐项回执| F
+  X -->|C资金核销| S
+  V -->|E单位承担delta| C
+  POL -->|适用依据| BASE
+  BASE -->|资格与基数核验| P
+  PAYER -->|C同事务限制及领取登记| S
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

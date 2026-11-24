@@ -1,0 +1,88 @@
+---
+title: C02 China HCM 薪资领域概念 · 法定上下文 配置 运行与结果
+---
+flowchart TB
+  subgraph boundary["法定与人员上下文"]
+    LAW["法规 地区 币种 政策版本 · X02"]
+    LEG["法律实体及薪资责任用途 · M02"]
+    PERSON["Person · M01"]
+    ASG["Employment / Assignment · M04"]
+    CTX["PayrollContext · M10<br/>人员与薪资责任主体的计薪上下文"]
+    MEM["PayrollMembership / Allocation · M10<br/>任职计薪归属及分配"]
+    SET["PayrollAllocationSet · M10<br/>任职及用途的分配集合"]
+    SET -->|跨上下文及工资定义的总量守卫| MEM
+    PERSON -->|人员身份| CTX
+    LEG -->|薪资责任引用| CTX
+    ASG -->|按日期明确归属| MEM
+    CTX -->|归集计薪成员| MEM
+  end
+  subgraph config["薪资配置 · Payroll M10"]
+    DEF["PayrollDefinition / Calendar<br/>工资定义 周期 期间 计薪与支付日<br/>运行类型及报告归并范围"]
+    EL["Element / Classification<br/>收入扣款项目及分类"]
+    RULE["Rate / CalculationValue / Rule<br/>计算参数 规则 查表及M09费率引用"]
+    CONV["ConversionProrationPolicy<br/>频率换算 期间分摊 舍入"]
+    BD["BalanceDefinition / Dimension<br/>工资累计口径与维度"]
+    EVT["PayrollImpactPolicy<br/>分段与追溯影响规则版本"]
+    FD["PayrollFlowDefinition<br/>步骤 参数及核验定义"]
+  end
+  subgraph execution["运行与不可变结果 · Payroll M10"]
+    INPUT["ElementEntry / Adoption<br/>明确采用的来源和版本"]
+    RUN["PayrollRun / Result<br/>候选 校验 按结果单元封存"]
+    BAL["PayrollBalance<br/>工资累计及确认流水"]
+    RETRO["RetroCase<br/>原结果 更正来源 后继差额"]
+    HEAD["ResultSeriesHead<br/>当前完整结果基准及版本"]
+    FLOW["PayrollFlowInstance<br/>一次业务运行及完成证据"]
+    INPUT -->|冻结计算输入| RUN
+    RUN -->|按定义确认工资累计| BAL
+    RUN -->|保留原结果引用| RETRO
+    RUN -->|封存时共同推进| HEAD
+    HEAD -->|相对当前完整版本求差| RETRO
+    RETRO -->|后继准备 不覆盖原结果| INPUT
+  end
+  SOURCE["薪酬授予M09 工时M07 缺勤M08<br/>授予明确约定金额 单位及频率"]
+  BENEFIT["BenefitCost 保费或待遇费用确认 · M13"]
+  LEGCFG["法定计算配置 · M11 / M12<br/>登记 本域政策 扣除及基数规则"]
+  TAX["TaxAssessment / TaxLedger · M11<br/>扣缴登记 所得认定 独立税务累计"]
+  SI["ContributionObligation · M12<br/>独立参缴义务及代扣"]
+  SLIP["PayslipPublication · M10<br/>发布 撤回 替代"]
+  PAYMENT["Payable / Payment · M14<br/>员工工资应付 授权 资金及追收"]
+  PAYER["PayerAccount / PayerExecutionHold · M14<br/>付款身份与共同执行准入 非机构资金余额"]
+  COST["CostFact / Accounting · M15<br/>分摊 凭证及财务回执"]
+  INST["机构应付与资金 · M11 / M12 / M13<br/>税款 参缴 福利供应商各自维护"]
+  CHANNEL["X05 直接执行或外部财务委托<br/>业务域核准与核销 同账户排他"]
+  LAW -->|按对象适用| config
+  DEF -->|运行类型与期间| RUN
+  EL -->|输入输出语义| INPUT
+  RULE -->|计算依赖与规则| RUN
+  RULE -->|本域规则配置| CONV
+  CONV -->|按授予口径执行并留依赖轨迹| RUN
+  BD -->|工资累计定义| BAL
+  EVT -->|选择变更及影响范围| RETRO
+  FD -->|启动时明确采用版本| FLOW
+  FLOW -->|步骤与结果引用 不代写结果| RUN
+  LAW -->|证据与适用元数据| LEGCFG
+  LEGCFG -->|本域采用并评估| TAX
+  LEGCFG -->|本域采用并评估| SI
+  MEM -->|对象与责任范围| INPUT
+  MEM -->|采用工资定义及周期| DEF
+  SOURCE -->|来源唯一 明确采用| INPUT
+  BENEFIT -->|个人扣款 非现金待遇或企业报销| INPUT
+  BENEFIT -->|单位承担的唯一成本来源| COST
+  SI -->|代扣义务及消费守卫| RUN
+  RUN -->|提供所得候选| TAX
+  TAX -->|评估与封存承诺 认定依政策| RUN
+  RUN -->|封存结果供独立发布| SLIP
+  RUN -->|唯一应付差额来源| PAYMENT
+  RUN -->|工资成本来源| COST
+  SI -->|单位承担成本| COST
+  PAYMENT -->|现金及非现金结算核对引用| COST
+  PAYER -->|工资领取共同守卫| PAYMENT
+  PAYER -->|机构领取共同守卫| INST
+  TAX -->|M11确认税债及缴退责任| INST
+  SI -->|M12机构应付 与代扣分开| INST
+  BENEFIT -->|M13仅供应商保费应付| INST
+  INST -->|各域持久执行意图| CHANNEL
+  CHANNEL -->|原身份资金观察 经所属域核对| INST
+  INST -->|现金核对 不重复成本| COST
+  N["计薪上下文 工作关系 工资定义 税务累计各有身份；封存 发布 付款 申报分别成立；详细守卫见DDD合同"]
+  CTX -.-> N

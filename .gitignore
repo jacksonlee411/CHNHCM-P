@@ -1,0 +1,28 @@
+node_modules/
+.local/
+dist/
+coverage/
+test-results/
+playwright-report/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+*.log
+
+# Preserve reviewed command outputs referenced by the immutable 104 report.
+!docs/verification/data/104-unified-record-correction/*.log
+!docs/verification/data/111-community-t01-t02/*.log
+!docs/verification/data/116-r1/*.log
+
+# Preserve R4 implementation review evidence referenced by the registered report.
+!docs/verification/data/116-r4-implementation-review-fixes/*.log
+
+# Customer organization sources stay outside the public repository.
+/tests/fixtures/vanke/
+orgunit-import-*-from-source.xlsx
+/docs/verification/data/127-vanke-history/
+/docs/verification/data/203-vanke-fixed-runtime/
+/docs/verification/data/**/*vanke*.json*
+/docs/verification/data/**/*vanke*.log*

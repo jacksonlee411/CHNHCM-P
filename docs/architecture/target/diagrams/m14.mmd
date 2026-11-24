@@ -1,0 +1,48 @@
+---
+title: M14 工资支付与银行用途 · 目标设计
+---
+flowchart TB
+  subgraph domain["M14 工资支付与银行用途"]
+    direction TB
+    U["付款运营用途与分配"]:::own
+    Q["PayableAccount 唯一净结算与付款占用"]:::own
+    I["不可变payload及hash"]:::own
+    A["精确授权与撤销"]:::own
+    S["领取守卫及已提交意图"]:::own
+    C["业务资金流水与核销"]:::own
+    PA["PayerAccount 机构付款账户"]:::own
+    REC["RecoveryAccount 追收决定 占用及分配"]:::own
+    PH["PayerExecutionHold 渠道限制及ClaimRef"]:::own
+  end
+  B["M01 个人收款账户 / M02 允许主体"]:::external
+  R["M10 唯一应付变动"]:::external
+  T["M11 税务用途分类及执行许可"]:::external
+  X["X05 银行发送和查询"]:::external
+  F["M15 现金及非现金扣回事实"]:::external
+  EMP["员工归还 / M10 核准扣回"]:::external
+  INST["M11 M12 M13 机构付款责任域"]:::external
+  B -->|Q身份和允许用途| U
+  R -->|C来源唯一入账| Q
+  U -->|冻结全部支付字段| I
+  Q -->|C同事务守卫及占用| I
+  I -->|C按hash授权| A
+  A -->|C领取或撤销CAS| S
+  T -->|C同事务执行占用守卫| S
+  S -->|发送冻结payload| X
+  X -->|C应用去重回执| C
+  C -->|原子占用转实付或释放| Q
+  C -->|E资金变动| F
+  PA -->|付款主体及运营账户| U
+  Q -->|负差额识别追收范围| REC
+  EMP -->|核准及来源唯一分配| REC
+  C -->|银行退回事实核对| REC
+  REC -->|回收现金或扣回事实| F
+  REC -->|同事务唯一结算分录 无第二可退余额| Q
+  PA -->|根内限制及共同revision| PH
+  PH -->|C同事务领取准入| S
+  INST -->|C领取及核查 公开端口| PH
+  PH -->|限制及活动领取引用 非资金余额| INST
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

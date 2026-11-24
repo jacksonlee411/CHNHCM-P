@@ -1,0 +1,16 @@
+CHNHCM country/region catalog: chnhcm-geography-g0-v1 (251 entries).
+
+countries.json is the version-controlled, offline runtime input. Changes to its
+codes, names, English names, phone codes or initial dates must be reviewed with
+the application change. Build and initialization do not contact Odoo/CubeBox.
+
+The Odoo-derived data was preserved from CubeBox commit
+2deaf9276086f68e07aaa0c2cf7f35025046a9ee. Original data, attribution and the
+Odoo LGPL-3.0 license are preserved in the repository archive
+docs/reference/sources/cubebox-geography-2deaf927.zip, including
+apps/prototype/src/data/geography/NOTICE.txt and ODOO-LICENSE.txt.
+Source editions and file digests: docs/reference/200-geography-sources.json.
+
+Provider metadata belongs to these versioned files and initialization evidence;
+it is not a country resource field or a country detail page section. Business
+revisions, historical values and submission recovery remain independent.

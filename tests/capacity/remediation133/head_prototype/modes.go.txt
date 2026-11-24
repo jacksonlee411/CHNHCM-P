@@ -1,0 +1,209 @@
+// PRIVATE EXPERIMENT ONLY.
+package storagecase130
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
+	"chnhcm.local/chnhcm/internal/contexts/organization/infra/history"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+func init() {
+	extraModes["headproof-page"] = proof133Page
+	extraModes["headproof-init"] = proof133Init
+	extraModes["headproof-check"] = proof133Check
+}
+func proof133Init(ctx context.Context, db database, pool *pgxpool.Pool) (any, error) {
+	raw, err := os.ReadFile(filepath.Join(os.Getenv("CHNHCM_HEADPROOF_TEMPLATES"), "schema.sql"))
+	if err != nil {
+		return nil, err
+	}
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	if _, err = tx.Exec(ctx, string(raw)); err != nil {
+		return nil, err
+	}
+	var guard string
+	if err = tx.QueryRow(ctx, `SELECT pg_get_functiondef('organization.bu_head_guard()'::regprocedure)`).Scan(&guard); err != nil {
+		return nil, err
+	}
+	guard = strings.ReplaceAll(guard, "ARRAY['head_source_id'", "ARRAY['proof133_root','proof133_count','head_source_id'")
+	if _, err = tx.Exec(ctx, guard); err != nil {
+		return nil, err
+	}
+	rows, err := tx.Query(ctx, `SELECT object_id::text,chunk_no FROM organization.bu_history ORDER BY object_id,chunk_no`)
+	if err != nil {
+		return nil, err
+	}
+	type entry struct {
+		object string
+		chunk  int32
+	}
+	var chunks []entry
+	for rows.Next() {
+		var e entry
+		if err = rows.Scan(&e.object, &e.chunk); err != nil {
+			rows.Close()
+			return nil, err
+		}
+		chunks = append(chunks, e)
+	}
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
+		return nil, err
+	}
+	count := 0
+	for _, e := range chunks {
+		c, e2 := history.LoadChunk(ctx, tx, history.BusinessUnit, db.Instance, e.object, e.chunk)
+		if e2 != nil {
+			return nil, e2
+		}
+		var current string
+		if err = tx.QueryRow(ctx, `SELECT head_source_id::text FROM organization.business_unit WHERE instance_id=$1 AND bu_id=$2`, db.Instance, e.object).Scan(&current); err != nil {
+			return nil, err
+		}
+		for i, ref := range c.Sources {
+			source := c.Values.IDs[ref-1]
+			raw, e3 := history.LoadShape(ctx, tx, history.BusinessUnit, c.Instance, c.Enterprise, c.States[i])
+			if e3 != nil {
+				return nil, e3
+			}
+			if err = history.SaveProof133(ctx, tx, c, source, c.Values, raw, source == current); err != nil {
+				return nil, err
+			}
+			count++
+		}
+	}
+	// Removing the old derivative is part of the isolated format, never product.
+	if _, err = tx.Exec(ctx, `DELETE FROM organization.bu_read_segment;
+ CREATE FUNCTION organization.proof133_head_guard() RETURNS trigger LANGUAGE plpgsql AS $$
+ DECLARE b organization.business_unit;
+ BEGIN
+  SELECT * INTO STRICT b FROM organization.business_unit WHERE instance_id=NEW.instance_id AND bu_id=NEW.bu_id;
+  IF b.proof133_root IS NULL OR b.proof133_count IS NULL OR NOT EXISTS(SELECT FROM organization.proof133_source s WHERE(s.instance_id,s.object_id,s.source_id,s.root,s.members)=(b.instance_id,b.bu_id,b.head_source_id,b.proof133_root,b.proof133_count))
+   THEN RAISE EXCEPTION 'head proof missing or foreign' USING ERRCODE='23514';END IF;
+  IF TG_OP='UPDATE' AND (NEW.proof133_root,NEW.proof133_count) IS DISTINCT FROM (OLD.proof133_root,OLD.proof133_count) AND b.head_xid<>pg_current_xact_id()
+   THEN RAISE EXCEPTION 'head proof needs real new source' USING ERRCODE='23514';END IF;
+  RETURN NEW;
+ END $$;
+ CREATE CONSTRAINT TRIGGER proof133_head_guard AFTER INSERT OR UPDATE ON organization.business_unit DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION organization.proof133_head_guard()`); err != nil {
+		return nil, err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+	return map[string]any{"prototypeOnly": true, "originalRealSourcesBound": count, "productAdopted": false}, nil
+}
+func proof133Check(ctx context.Context, db database, pool *pgxpool.Pool) (any, error) {
+	tx, err := pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	rows, err := tx.Query(ctx, `SELECT bu_id::text,head_source_id::text,head_chunk FROM organization.business_unit WHERE instance_id=$1`, db.Instance)
+	if err != nil {
+		return nil, err
+	}
+	type head struct {
+		object, source string
+		chunk          int32
+	}
+	var heads []head
+	for rows.Next() {
+		var h head
+		if err = rows.Scan(&h.object, &h.source, &h.chunk); err != nil {
+			rows.Close()
+			return nil, err
+		}
+		heads = append(heads, h)
+	}
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
+		return nil, err
+	}
+	auditRows, e := tx.Query(ctx, `SELECT object_id::text,chunk_no FROM organization.bu_history ORDER BY object_id,chunk_no`)
+	if e != nil {
+		return nil, e
+	}
+	type chunkKey struct {
+		object string
+		number int32
+	}
+	var keys []chunkKey
+	for auditRows.Next() {
+		var k chunkKey
+		if e = auditRows.Scan(&k.object, &k.number); e != nil {
+			auditRows.Close()
+			return nil, e
+		}
+		keys = append(keys, k)
+	}
+	e = auditRows.Err()
+	auditRows.Close()
+	if e != nil {
+		return nil, e
+	}
+	total := 0
+	for _, k := range keys {
+		c, e := history.LoadChunk(ctx, tx, history.BusinessUnit, db.Instance, k.object, k.number)
+		if e != nil {
+			return nil, e
+		}
+		n, e := history.AuditProof133(ctx, tx, c)
+		if e != nil {
+			return nil, e
+		}
+		total += n
+	}
+	var results []any
+	for _, h := range heads {
+		c, e := history.LoadChunk(ctx, tx, history.BusinessUnit, db.Instance, h.object, h.chunk)
+		if e != nil {
+			return nil, e
+		}
+		v, e := history.VerifyProof133(ctx, tx, c, h.source)
+		if e != nil {
+			return nil, e
+		}
+		results = append(results, v)
+	}
+	// The original history slot/native root guard is checked again; no invented
+	// source IDs or independent publish pointer enter this proof.
+	var invalid int
+	if err = tx.QueryRow(ctx, `SELECT count(*) FROM organization.proof133_source s JOIN organization.bu_history h USING(instance_id,object_id,chunk_no) WHERE h.ids[h.source_refs[(s.source_no-h.first_no+1)::integer]]<>s.source_id OR h.states[(s.source_no-h.first_no+1)::integer]<>s.state_shape`).Scan(&invalid); err != nil || invalid != 0 {
+		return nil, fmt.Errorf("source annex mismatch: %d %v", invalid, err)
+	}
+	return map[string]any{"prototypeOnly": true, "objects": results, "sourceBindingsValid": true, "fullHistoricalRootsChecked": total}, nil
+}
+
+func proof133Page(ctx context.Context, db database, pool *pgxpool.Pool) (any, error) {
+	started := time.Now()
+	tx, e := pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+	if e != nil {
+		return nil, e
+	}
+	defer tx.Rollback(ctx)
+	var object string
+	if e = tx.QueryRow(ctx, `SELECT bu_id::text FROM organization.business_unit WHERE instance_id=$1`, db.Instance).Scan(&object); e != nil {
+		return nil, e
+	}
+	page, e := history.ReadProof133(ctx, tx, db.Instance, object, 5000, 50, "")
+	if e != nil {
+		return nil, e
+	}
+	if e = tx.Rollback(ctx); e != nil {
+		return nil, e
+	}
+	return map[string]any{"source": page.Source, "first": page.First, "members": page.Members, "returned": len(page.Records), "nodeReads": page.NodeReads, "readTransactionMS": float64(time.Since(started)) / 1e6, "noFullUUIDDirectoryRead": true}, nil
+}

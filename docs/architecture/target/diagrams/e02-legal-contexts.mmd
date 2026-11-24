@@ -1,0 +1,52 @@
+---
+title: E02 法律实体及不同用途 · 目标概念ER
+---
+erDiagram
+  LEGAL_ENTITY ||--o{ LEGAL_USE_DECLARATION : "M02允许用途"
+  LEGAL_ENTITY ||--o{ EMPLOYER_USE : "用人单位允许用途"
+  LEGAL_ENTITY ||--o{ LABOR_HOST_USE : "派遣接收用工允许用途"
+  LEGAL_ENTITY ||--o{ PAYING_USE : "M14付款运营配置"
+  LEGAL_ENTITY ||--o{ TAX_REGISTRATION : "扣缴登记"
+  LEGAL_ENTITY ||--o{ AGENCY_ACCOUNT : "参缴账户"
+  LEGAL_ENTITY ||--o{ COST_RESPONSIBILITY : "成本承担"
+  BUSINESS_UNIT |o--o{ CONTEXT_BINDING : "业务上下文"
+  LEGAL_ENTITY ||--o{ CONTEXT_BINDING : "允许主体"
+  LOCATION |o--o{ CONTEXT_BINDING : "地点上下文"
+  LEGAL_ENTITY {
+    string entityId PK
+    string legalIdentity "不一概限定为独立法人"
+    string qualificationEvidence "分支登记及用途资格等依据"
+  }
+  EMPLOYER_USE {
+    string purpose "LegalEntityUse用途视图 非新聚合"
+    string relationBoundary "具体劳动关系归M04核对"
+  }
+  LABOR_HOST_USE {
+    string purpose "LegalEntityUse用途视图 非新聚合"
+    string relationBoundary "具体派遣接收事实归M04"
+  }
+  TAX_REGISTRATION {
+    string registrationId PK "M11维护"
+    string entityId FK
+    string taxAuthority
+    date effectiveFrom
+  }
+  AGENCY_ACCOUNT {
+    string accountId PK "M12维护"
+    string entityId FK
+    string kind "social或housing"
+    string jurisdiction
+    date effectiveFrom
+  }
+  PAYING_USE {
+    string useId PK "M14运营配置"
+    string entityId FK
+    string settlementAccountRef
+    string payerBoundary "资金付款主体与受托经办方分开"
+  }
+  CONTEXT_BINDING {
+    string bindingId PK
+    string purpose
+    date effectiveFrom
+    date through
+  }

@@ -1,0 +1,33 @@
+.effective-dates { display: flex; align-items: center; gap: 16px; min-width: 0; margin: 8px 0 14px; }
+.effective-dates h2 { flex-shrink: 0; }
+.effective-date-slot { display: flex; justify-content: flex-end; position: relative; flex: 1; min-width: 0; }
+.effective-date-measure { position: absolute; visibility: hidden; pointer-events: none; height: 0; overflow: hidden; width: 0; }
+.effective-date-measure span { display: inline-block; white-space: nowrap; font: 500 14px/21px Arial, "CHNHCM CJK", sans-serif; }
+.effective-date-strip { display: inline-flex; flex-wrap: nowrap; padding: 2px; border: 1px solid #dee2e6; border-radius: 6px; background: white; max-width: 100%; }
+.effective-date-piece.MuiButtonBase-root {
+  --left-top: 2px 0;
+  --left-mid: 12px 50%;
+  --left-bottom: 2px 100%;
+  --right-top: calc(100% - 12px) 0;
+  --right-mid: calc(100% - 2px) 50%;
+  --right-bottom: calc(100% - 12px) 100%;
+  --date-border-width: 1px;
+  /* Inset the 10px by 13.5px arrow diagonals as well as the straight edges. */
+  --inner-left: calc(2px + var(--date-border-width) * 2);
+  --inner-notch: calc(12px + var(--date-border-width) * 1.25);
+  --inner-shoulder: calc(100% - 12px - var(--date-border-width) * .5);
+  --inner-tip: calc(100% - 2px - var(--date-border-width) * 1.25);
+  flex: 0 0 auto; position: relative; min-height: 27px; margin-left: -10px; padding: 3px 17px; border: 0; border-radius: 0; background: #d1d5db; color: #212529; white-space: nowrap; font: 500 14px/21px Arial, "CHNHCM CJK", sans-serif; clip-path: polygon(var(--left-top),var(--right-top),var(--right-mid),var(--right-bottom),var(--left-bottom),var(--left-mid));
+}
+.effective-date-piece.MuiButtonBase-root:first-child { --left-top: 0 0; --left-mid: 0 50%; --left-bottom: 0 100%; --inner-left: var(--date-border-width); --inner-notch: var(--date-border-width); margin-left: 0; padding-left: 12px; border-radius: 4px 0 0 4px; }
+.effective-date-piece.MuiButtonBase-root:last-child { --right-top: 100% 0; --right-mid: 100% 50%; --right-bottom: 100% 100%; --inner-shoulder: calc(100% - var(--date-border-width)); --inner-tip: calc(100% - var(--date-border-width)); padding-right: 12px; border-radius: 0 4px 4px 0; }
+.effective-date-piece.MuiButtonBase-root:only-child { border-radius: 4px; }
+.effective-date-piece:not(.selected)::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: white; clip-path: polygon(var(--inner-left) var(--date-border-width),var(--inner-shoulder) var(--date-border-width),var(--inner-tip) 50%,var(--inner-shoulder) calc(100% - var(--date-border-width)),var(--inner-left) calc(100% - var(--date-border-width)),var(--inner-notch) 50%); }
+.effective-date-piece:not(.selected):hover::before { background: #e9ecef; }
+.effective-date-piece.MuiButtonBase-root.selected { isolation: isolate; z-index: 1; clip-path: none; background: transparent; color: var(--chnhcm-on-primary); filter: drop-shadow(0 1px 1px #04555261); }
+.effective-date-piece.selected::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: #087f7b; box-shadow: inset 0 1px 0 #ffffff80, inset 0 -2px 0 #046e6b66; clip-path: polygon(var(--left-top),var(--right-top),var(--right-mid),var(--right-bottom),var(--left-bottom),var(--left-mid)); }
+.effective-date-piece.MuiButtonBase-root:focus-visible { outline: none; box-shadow: inset 0 0 0 2px #075f5c; }
+.effective-date-piece.MuiButtonBase-root:not(.selected):focus-visible { --date-border-width: 2px; background: #075f5c; box-shadow: none; }
+.effective-date-piece.selected:focus-visible::before { box-shadow: inset 0 0 0 2px #075f5c, inset 0 1px 0 #ffffff80; }
+.effective-date-compact.MuiButtonBase-root { gap: 6px; min-height: 34px; padding: 5px 10px; border: 1px solid #087f7b; border-radius: 4px; background: #087f7b; color: var(--chnhcm-on-primary); box-shadow: inset 0 1px 0 #ffffff80, inset 0 -1px 0 #046e6b66, 0 1px 2px #04555240; font: 500 14px/21px Arial, "CHNHCM CJK", sans-serif; white-space: nowrap; }
+.effective-date-compact:focus-visible { outline: 2px solid #075f5c; outline-offset: 2px; }

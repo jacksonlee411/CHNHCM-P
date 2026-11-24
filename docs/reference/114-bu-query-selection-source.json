@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-03",
+  "target_base_commit": "0e3a0920875741263e7ae8f085e50deca82b5ceb",
+  "source_repository": "CubeBox",
+  "source_commit": "074fe044ab41c80abbab41a74aadd2a97b66efcf",
+  "scope": "静态源文件核对与用户已明确采纳的对标建议；本轮不重跑源浏览器。",
+  "files": [
+    {
+      "path": "apps/prototype/src/ui.tsx",
+      "sha256": "37720d149274ddb2ce851fa24b53f0443909e7a014181458b1368738683da96a"
+    },
+    {
+      "path": "apps/prototype/src/operations/departments-list.tsx",
+      "sha256": "98706174c8b5a2dbb6913c25046d69fe14c65ca14d1bcbbab9866e44ca7ef5ce"
+    },
+    {
+      "path": "apps/prototype/src/operations/search/use-search-selection.ts",
+      "sha256": "d74c06ec3f34e9785b581c7d6fefdbd0ef8d837a98cfd3b03af285c9883960ad"
+    }
+  ],
+  "adopted": [
+    "勾选与返回定位分开",
+    "数量、取消与所选导出工具条",
+    "Community原生行勾选及响应式经验"
+  ],
+  "not_adopted": [
+    "源原型本页全选",
+    "源原型翻页清空",
+    "useDemo、客户端全量切页与部门领域"
+  ],
+  "project_specific": "全选当前条件和当前读权下的完整BU查询结果，覆盖所有分页；Go同源查询、集合版本、跨页排除与导出重验。",
+  "product_implemented": false,
+  "product_verified": false
+}

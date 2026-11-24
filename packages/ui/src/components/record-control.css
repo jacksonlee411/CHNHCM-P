@@ -1,0 +1,35 @@
+.record-control.record-control { display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-height: 64px; flex-shrink: 0; box-sizing: border-box; padding: 12px 20px; background: #fff; border-bottom: 1px solid #dde3e5; }
+.record-control-main { display: flex; align-items: center; gap: 16px; min-height: 39px; }
+.record-control-identity { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 45%; }
+.record-control-identity > .MuiButton-root, .record-control-identity > .MuiIconButton-root { flex-shrink: 0; }
+.record-control-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.record-control-identity .MuiChip-root { flex-shrink: 0; }
+.record-control-actions { display: flex; align-items: center; min-width: 0; }
+.record-control-actions .MuiButton-root { white-space: nowrap; }
+.record-control-navigation { flex-shrink: 0; margin-left: auto; }
+.record-pager { display: flex; align-items: center; gap: 8px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.record-pager-counter { display: flex; align-items: center; white-space: nowrap; }
+.record-pager-position.MuiButtonBase-root { min-width: 22px; padding: 4px 2px; font: inherit; border-bottom: 1px solid transparent; }
+.record-pager-position.MuiButtonBase-root:hover { border-bottom-color: #667580; }
+.record-pager-position.Mui-focusVisible { outline: 2px solid #09a7a3; outline-offset: 2px; }
+.record-pager-input.MuiInputBase-root { width: 44px; font: inherit; }
+.record-pager-input input { padding: 4px 2px; text-align: right; border-bottom: 1px solid #09a7a3; }
+.record-pager-buttons { display: flex; }
+.record-pager-buttons .MuiIconButton-root { width: 38px; height: 34px; border: 1px solid #d1d9de; border-radius: 0; color: #33454e; }
+.record-pager-buttons > span:first-child .MuiIconButton-root { border-radius: 4px 0 0 4px; }
+.record-pager-buttons > span:last-child .MuiIconButton-root { border-radius: 0 4px 4px 0; border-left: 0; }
+.record-pager-buttons .MuiIconButton-root.Mui-disabled { color: #b4bdc3; }
+.record-pager-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 767px) {
+  .record-control.record-control { height: auto; min-height: 92px; padding: 8px 12px; }
+  .record-control-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 32px minmax(34px, auto); gap: 8px; }
+  .record-control-identity { max-width: 100%; grid-column: 1; grid-row: 1; gap: 4px; }
+  .record-control-identity .MuiChip-root { flex-shrink: 0; }
+  .record-control-identity .MuiChip-label { padding: 0 5px; }
+  .record-control-identity .record-control-name { flex-shrink: 1; max-width: 100px; }
+  .record-control-actions { grid-row: 2; grid-column: 1 / -1; flex-wrap: wrap; gap: 4px; }
+  .record-control-actions .MuiButton-root { flex-shrink: 0; max-width: 100%; white-space: normal; }
+  .record-control-navigation { grid-row: 1; grid-column: 2; }
+  .record-pager { gap: 4px; font-size: 12px; }
+}
+@media (max-width: 899px) { .record-control-identity > .record-control-separator { display: none; } }

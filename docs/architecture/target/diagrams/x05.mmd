@@ -1,0 +1,26 @@
+---
+title: X05 导入导出与外部集成 · 目标设计
+---
+flowchart TB
+  subgraph domain["X05 导入导出与外部集成"]
+    direction TB
+    M["映射 目录与权限预检"]:::own
+    A["适配器与尝试"]:::process
+    R["回执 去重与对账"]:::own
+    I["导入观察与校验"]:::own
+  end
+  D["业务域确认请求"]:::external
+  O["已提交的源域意图引用"]:::external
+  S["外部税社保 银行 ERP等"]:::external
+  D -->|目标与payload| M
+  M -->|返回预检；源域事务记意图| O
+  O -->|已提交意图| A
+  A -->|发送或查询| S
+  S -->|逐项回执| R
+  R -->|领域确认命令| D
+  S -->|文件或数据来源| I
+  I -->|校验与身份映射| M
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

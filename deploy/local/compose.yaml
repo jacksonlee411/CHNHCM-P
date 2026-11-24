@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: ${CHNHCM_POSTGRES_IMAGE:?locked image required}
+    shm_size: ${CHNHCM_POSTGRES_SHM_SIZE:-64m}
+    labels:
+      io.chnhcm.profile: ${CHNHCM_LOCAL_PROFILE:-default}
+      io.chnhcm.temporary: ${CHNHCM_TEMPORARY:-false}
+    environment:
+      POSTGRES_DB: chnhcm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${CHNHCM_POSTGRES_PASSWORD:?external secret required}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C
+    ports:
+      - "127.0.0.1:${CHNHCM_POSTGRES_PORT:-54370}:5432"
+    command:
+      - postgres
+      - -c
+      - synchronous_commit=on
+      - -c
+      - timezone=UTC
+    volumes:
+      - database:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U postgres -d chnhcm"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+volumes:
+  database:

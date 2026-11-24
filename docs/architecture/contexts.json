@@ -1,0 +1,360 @@
+{
+  "schema_version": 1,
+  "style": "modular-monolith",
+  "authoritative_language": "Go",
+  "first_slice": "M02",
+  "contexts": [
+    {
+      "name": "personnel",
+      "modules": [
+        "M01"
+      ],
+      "code_path": "internal/contexts/personnel",
+      "state": "partially_implemented",
+      "slices": [{
+        "module": "M01", "capability": "person-registration", "state": "verified_slice",
+        "scope": "按人员范围与字段授权登记、查找和更正人员，核对主要证件，按来源查回办理。",
+        "source": "internal/contexts/personnel/infra/postgres/write.go",
+        "entry": "/personnel/employees", "entry_source": "apps/web/src/features/personnel/api.ts",
+        "evidence": "docs/verification/500-personnel-registration-trial.md"
+      }, {
+        "module": "M01", "capability": "personal-profile", "state": "verified_slice",
+        "scope": "同一人员的基本信息、身份证件、联系方式，按字段授权查看并一次更正保存。",
+        "source": "internal/contexts/personnel/infra/postgres/personal_profile.go",
+        "entry": "/personnel/employees", "entry_source": "apps/web/src/features/personnel/api.ts",
+        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+      }]
+    },
+    {
+      "name": "organization",
+      "modules": [
+        "M02"
+      ],
+      "code_path": "internal/contexts/organization",
+      "state": "partially_implemented",
+      "reference_objects": [
+        "CountryRegion",
+        "GeoArea"
+      ],
+      "reference_scope": "CHNHCM-200 G0 当时完成来源准入。国家、行政区划与企业内地点的后续交付范围见切片证据。",
+      "slices": [
+        {
+          "module": "M02",
+          "capability": "业务单元",
+          "state": "verified_slice",
+          "scope": "T07 按日维护、删除与历史查回",
+          "entry": "/settings/organization/business-units",
+          "source": "internal/contexts/organization/application/commands.go",
+          "evidence": "docs/verification/010-t07-acceptance.md",
+          "entry_source": "apps/web/src/features/organization/businessUnitAdapter.ts"
+        },
+        {
+          "module": "M02",
+          "capability": "部门",
+          "state": "verified_slice",
+          "scope": "R5 按日维护、管理业务单元与层级，容量按 R6 等专项另验",
+          "entry": "/settings/organization/departments",
+          "source": "internal/contexts/organization/application/department/reads.go",
+          "evidence": "docs/verification/116-r5-department-pages-and-acceptance.md",
+          "entry_source": "apps/web/src/features/organization/departmentAdapter.ts"
+        },
+        {
+          "module": "M02",
+          "capability": "企业",
+          "state": "verified_slice",
+          "scope": "304 单实例企业按日维护与下游日期边界",
+          "entry": "/settings/organization/enterprise",
+          "source": "internal/contexts/organization/application/enterprise/reads.go",
+          "evidence": "docs/verification/304-enterprise-maintenance.md",
+          "entry_source": "apps/web/src/features/organization/enterpriseAdapter.tsx"
+        },
+        {
+          "module": "M02",
+          "capability": "国家/地区",
+          "state": "verified_slice",
+          "scope": "G2 目录装载与按日维护",
+          "entry": "/settings/basic-data/country-regions",
+          "source": "internal/contexts/organization/application/country/reads.go",
+          "evidence": "docs/verification/200-g2-country-catalog.md",
+          "entry_source": "apps/web/src/features/organization/countryAdapter.tsx"
+        },
+        {
+          "module": "M02",
+          "capability": "行政区划",
+          "state": "verified_slice",
+          "scope": "G3 区划、路径、候选及准确引用",
+          "entry": "/settings/basic-data/geo-areas",
+          "source": "internal/contexts/organization/application/geoarea/candidates.go",
+          "evidence": "docs/verification/203-g3-implementation.md",
+          "entry_source": "apps/web/src/features/organization/geoAreaAdapter.tsx"
+        },
+        {
+          "module": "M02",
+          "capability": "地点",
+          "state": "verified_slice",
+          "scope": "G4/G5 四地地址、目录采用与历史查回",
+          "entry": "/settings/organization/locations",
+          "source": "internal/contexts/organization/application/location/reads.go",
+          "evidence": "docs/verification/205-g5-implementation.md",
+          "entry_source": "apps/web/src/features/organization/locationAdapter.ts"
+        },
+        {
+          "module": "M02",
+          "capability": "法律实体",
+          "state": "verified_slice",
+          "scope": "L1 基础维护，直接入职所需 L2 另见用途与绑定。L3 人事采用归 T03。",
+          "entry": "/settings/organization/legal-entities",
+          "source": "internal/contexts/organization/application/legalentity/reads.go",
+          "evidence": "docs/verification/206-legal-entity-implementation.md",
+          "entry_source": "apps/web/src/features/organization/legalEntityAdapter.ts"
+        },
+        {
+          "module": "M02",
+          "capability": "法律实体用途与绑定",
+          "state": "verified_slice",
+          "scope": "直接入职所需 L2 的主体资格、期间、必要 BU／地点绑定、候选及同事务来源重核。",
+          "entry": "/settings/organization/legal-entities",
+          "entry_source": "apps/web/src/features/organization/legalEntityAdapter.ts",
+          "source": "internal/contexts/organization/application/legalentity/purpose.go",
+          "evidence": "docs/verification/400-hire-simplification.md"
+        }
+      ]
+    },
+    {
+      "name": "staffing",
+      "modules": [
+        "M03",
+        "M04"
+      ],
+      "code_path": "internal/contexts/staffing",
+      "state": "partially_implemented",
+      "slices": [
+        {
+          "module": "M03",
+          "capability": "职类",
+          "state": "verified_slice",
+          "scope": "314 职类目录及职务双维分类；AC090 的 308 独立场景通过",
+          "entry": "/settings/staffing/job-functions",
+          "source": "internal/contexts/staffing/application/function.go",
+          "evidence": "docs/verification/314-job-function-t05-acceptance.md",
+          "entry_source": "apps/web/src/features/staffing/api.ts"
+        },
+        {
+          "module": "M03",
+          "capability": "职务系列",
+          "state": "verified_slice",
+          "scope": "307/308 系列维护与职务引用",
+          "entry": "/settings/staffing/job-families",
+          "source": "internal/contexts/staffing/application/commands.go",
+          "evidence": "docs/verification/308-job-page-standard-implementation.md",
+          "entry_source": "apps/web/src/features/staffing/api.ts"
+        },
+        {
+          "module": "M03",
+          "capability": "职务",
+          "state": "verified_slice",
+          "scope": "系列与职类双维、旧职务更正和查询导出",
+          "entry": "/settings/staffing/jobs",
+          "source": "internal/contexts/staffing/application/commands.go",
+          "evidence": "docs/verification/314-job-function-t05-acceptance.md",
+          "entry_source": "apps/web/src/features/staffing/api.ts"
+        },
+        {
+          "module": "M03",
+          "capability": "职级",
+          "state": "verified_slice",
+          "scope": "309 G1 职级维护",
+          "entry": "/settings/staffing/grades",
+          "source": "internal/contexts/staffing/application/commands.go",
+          "evidence": "docs/verification/309-grade-g1-implementation.md",
+          "entry_source": "apps/web/src/features/staffing/api.ts"
+        },
+        {
+          "module": "M03",
+          "capability": "职级阶梯",
+          "state": "verified_slice",
+          "scope": "309 G2 阶梯成员与职务可用职级",
+          "entry": "/settings/staffing/grade-ladders",
+          "source": "internal/contexts/staffing/application/members.go",
+          "evidence": "docs/verification/309-grade-g2-implementation.md",
+          "entry_source": "apps/web/src/features/staffing/api.ts"
+        },
+        {
+          "module": "M03",
+          "capability": "岗位",
+          "state": "verified_slice",
+          "scope": "岗位维护、部门工作台、管理上级与发布历史",
+          "entry": "/settings/staffing/positions",
+          "source": "internal/contexts/staffing/application/position.go",
+          "evidence": "docs/verification/139-position-workspace-implementation.md",
+          "entry_source": "apps/web/src/features/staffing/api.ts"
+        },
+        {
+          "module": "M03",
+          "capability": "岗位核编",
+          "state": "verified_slice",
+          "scope": "岗位按日核编、部门额度与调剂、历史和准确来源。招聘预留与任职占编随 M05、M04 接管。",
+          "entry": "/settings/staffing/quotas",
+          "entry_source": "apps/web/src/features/staffing/quotaApi.ts",
+          "source": "internal/contexts/staffing/application/quota_commands.go",
+          "evidence": "docs/verification/315-department-quota-allocation.md"
+        },
+        {
+          "module": "M03",
+          "capability": "任职与占编规则",
+          "state": "verified_slice",
+          "scope": "企业分段政策维护及历史。仅按职务的部门、职务全期及零占编已验。按岗位办理待补员与使用来源。",
+          "entry": "/settings/staffing/assignment-policies",
+          "entry_source": "apps/web/src/features/readiness/RulesPages.tsx",
+          "source": "internal/contexts/staffing/application/assignment_policy.go",
+          "evidence": "docs/verification/400-hire-simplification.md"
+        },
+        {
+          "module": "M04",
+          "capability": "人事动作与任职",
+          "state": "verified_slice",
+          "scope": "普通劳动关系凭无编号任用通知仅按职务办理首单。人员、主体及职务采用、两层主选择、按日任职、未来撤销、原号恢复与 L3 引用并发已验。",
+          "entry": "/api/v1/hires",
+          "entry_source": "internal/bootstrap/hire_readiness.go",
+          "source": "internal/contexts/staffing/infra/postgres/hire.go",
+          "evidence": "docs/verification/400-first-hire-integration.md"
+        }
+      ]
+    },
+    {
+      "name": "recruiting",
+      "modules": [
+        "M05"
+      ],
+      "code_path": "internal/contexts/recruiting",
+      "state": "planned"
+    },
+    {
+      "name": "worktime",
+      "modules": [
+        "M06",
+        "M07",
+        "M08"
+      ],
+      "code_path": "internal/contexts/worktime",
+      "state": "planned"
+    },
+    {
+      "name": "compensation",
+      "modules": [
+        "M09"
+      ],
+      "code_path": "internal/contexts/compensation",
+      "state": "planned"
+    },
+    {
+      "name": "payroll",
+      "modules": [
+        "M10"
+      ],
+      "code_path": "internal/contexts/payroll",
+      "state": "planned"
+    },
+    {
+      "name": "tax",
+      "modules": [
+        "M11"
+      ],
+      "code_path": "internal/contexts/tax",
+      "state": "planned"
+    },
+    {
+      "name": "contribution",
+      "modules": [
+        "M12"
+      ],
+      "code_path": "internal/contexts/contribution",
+      "state": "planned"
+    },
+    {
+      "name": "benefits",
+      "modules": [
+        "M13"
+      ],
+      "code_path": "internal/contexts/benefits",
+      "state": "planned"
+    },
+    {
+      "name": "payment",
+      "modules": [
+        "M14"
+      ],
+      "code_path": "internal/contexts/payment",
+      "state": "planned"
+    },
+    {
+      "name": "cost",
+      "modules": [
+        "M15"
+      ],
+      "code_path": "internal/contexts/cost",
+      "state": "planned"
+    },
+    {
+      "name": "talent",
+      "modules": [
+        "M16",
+        "M17",
+        "M18",
+        "M19"
+      ],
+      "code_path": "internal/contexts/talent",
+      "state": "planned"
+    },
+    {
+      "name": "service",
+      "modules": [
+        "M20"
+      ],
+      "code_path": "internal/contexts/service",
+      "state": "planned"
+    },
+    {
+      "name": "configuration",
+      "modules": [
+        "X02"
+      ],
+      "code_path": "internal/contexts/configuration",
+      "state": "planned"
+    },
+    {
+      "name": "access",
+      "modules": [
+        "X03"
+      ],
+      "code_path": "internal/contexts/access",
+      "state": "partially_implemented",
+      "slices": [
+        {
+          "module": "X03",
+          "capability": "本地身份、会话与授权",
+          "state": "verified_slice",
+          "scope": "本地管理员和查询者的登录、会话及业务请求内按操作、字段与数据范围判权",
+          "entry": "/api/v1/session",
+          "source": "internal/contexts/access/infra/postgres/access.go",
+          "evidence": "docs/verification/116-r5-department-pages-and-acceptance.md",
+          "entry_source": "internal/bootstrap/api.go"
+        }
+      ]
+    },
+    {
+      "name": "analytics",
+      "modules": [
+        "X06"
+      ],
+      "code_path": "internal/contexts/analytics",
+      "state": "planned"
+    }
+  ],
+  "infrastructure": {
+    "X01": "internal/foundation",
+    "X04": "internal/platform",
+    "X05": "internal/platform"
+  },
+  "source": "docs/architecture/target/10-ddd-and-state-contracts.md"
+}

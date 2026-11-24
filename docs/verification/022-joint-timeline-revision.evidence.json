@@ -1,0 +1,190 @@
+{
+  "document": "CHNHCM-022",
+  "status": "final",
+  "date": "2026-11-01",
+  "base_commit": "889bcd91ebd8c187bf278de6daa06a9bf8f17fec",
+  "working_tree": "dirty",
+  "snapshot": {
+    "path": "docs/verification/data/022-before-joint-timeline-revision.zip",
+    "sha256": "841082e40e01a65331af91e99613d2ec20127e4c1e0edfa19a97a9b4c446da44",
+    "files": {
+      "docs/README.md": "5eaa712df5a4f5e6aab3513015c182e11612c86eb95231e58e7623b27446b012",
+      "docs/plans/010-m02-scope-and-plan.md": "2cc522c3eec05d55ae1f68f03c5e4504cb92417708936380bc68f08d4871fa78",
+      "docs/specs/README.md": "05baf7ebfc66db4367249826faeeba4f270940ed8c0b415ab88f9a8055674a37",
+      "docs/specs/m02/012-m02-functional-and-interaction-design.md": "918a0d0207b549ce2cc4ad4fa54b0db6ce617136b01a088122050a304050f3a7",
+      "docs/specs/m02/011-m02-business-requirements.md": "7435b1c11b0dd6df5750a8b6de293388392b9506e4469c34b7b8ebec95759c7b",
+      "docs/specs/m02/013-m02-technical-design.md": "ccb842b5c1c29bdee9fb24a551631e933eda26bb94a4779404b3f1e94cf71881",
+      "docs/governance/registry.json": "bacf205ab4ea1f064614442dea7f21405e7132961efc54f14bc0d1d38d1b8a2c",
+      "docs/reference/local-revisions.json": "cadb7f8b82799f415437cd5097efca58cc4e279bbb8b041b8e0e6889946f44f4",
+      "docs/adr/018-effective-records-and-source-history.md": "4a0b3f98549e6b0b5214645743cc97ffbd0fcea244a51a5d81be68177cb39eea",
+      "docs/adr/020-effective-record-delete-and-redate.md": "f252d6a39976dcbdb1946e6760d2ccccc655ba4bac8a03184a2f363d646b3c7b",
+      "docs/adr/021-bu-lifecycle-and-record-maintenance.md": "a9cb090649201e3df7075b01a25dd8a81e09aa74cefb1be98290e7ff977abc4c",
+      "docs/architecture/target/data/terminology-glossary.json": "f9596e0f3ec2e356c6d1e9455640e34384c9095aa1ef6208c0c256e88e29b190",
+      "docs/architecture/target/17-terminology-glossary.md": "56e33b280433a4f395038f32a3c2069579e7eabbc9b3a7cd103f8f562ce48186",
+      "docs/architecture/target/07-concept-mapping.md": "aa1ce0ad47c8619c94152087f96ebc7da60343969802d8aff97f84fc0f07b9e0",
+      "docs/verification/README.md": "21bcddc35d8c3a315d90935617ca472ead3b62195951d0e34bb9b85c1b2fea4f",
+      "docs/verification/011-retroactive-record-addition.md": "28ea845c07bb69f64396a05a3cd65e005e85442e29f4afb1be944058ecdcb6c8",
+      "docs/verification/011-retroactive-record-addition.evidence.json": "f06a1ea221fc0b08ed326fcb4876bd3acc51ffe3c4320b5a24bfd83cadca63da",
+      "docs/verification/020-effective-record-delete-and-redate.md": "c519b28215ab33a99a3c6d3d79e0172a9054a55689bd8318859608e7e86bed1d",
+      "docs/verification/020-effective-record-delete-and-redate.evidence.json": "b42458727bf76eb7ce28f87261f7aa882686ba4c0ce96b29bac445923edc0e18",
+      "docs/verification/021-bu-lifecycle-and-record-maintenance.md": "8a48c6a6e85cb68c9cdd251e877945fdcd86d450db277140dad79cfed9d5592a",
+      "docs/verification/021-bu-lifecycle-and-record-maintenance.evidence.json": "c874e8b8b898f640129f85e2c94ce6eba8a948cec962d708d6f4525ddf3c5b89"
+    }
+  },
+  "checks": [],
+  "environment": {
+    "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "git": "git version 2.43.0"
+  },
+  "checks_round_1": [
+    {
+      "name": "docs",
+      "command": "make docs",
+      "chunk_id": "b621a9",
+      "wall_time_seconds": 7.7488846890000005,
+      "exit_code": 0,
+      "original_token_count": 134,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.688s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 134, \"local_links\": 3201, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "name": "refs",
+      "command": "python3 -B scripts/check-repository.py --check-refs",
+      "chunk_id": "9dc11d",
+      "wall_time_seconds": 7.122712521,
+      "exit_code": 0,
+      "original_token_count": 74,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 134, \"local_links\": 3201, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "name": "diff",
+      "command": "git diff --check",
+      "chunk_id": "95350f",
+      "wall_time_seconds": 1.3697e-05,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  ],
+  "protection": {
+    "changed_existing_files": [
+      "docs/README.md",
+      "docs/adr/018-effective-records-and-source-history.md",
+      "docs/adr/020-effective-record-delete-and-redate.md",
+      "docs/adr/021-bu-lifecycle-and-record-maintenance.md",
+      "docs/architecture/target/17-terminology-glossary.md",
+      "docs/architecture/target/data/terminology-glossary.json",
+      "docs/governance/registry.json",
+      "docs/plans/010-m02-scope-and-plan.md",
+      "docs/reference/local-revisions.json",
+      "docs/specs/README.md",
+      "docs/specs/m02/011-m02-business-requirements.md",
+      "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "docs/specs/m02/013-m02-technical-design.md",
+      "docs/verification/README.md"
+    ],
+    "unchanged_protected_files": 442,
+    "old_verification_records_preserved": 31,
+    "historical_verification_files_preserved": 120,
+    "stable_business_anchors_preserved": 47,
+    "new_business_anchors": [
+      "m02-ac-016",
+      "m02-ac-017",
+      "m02-ac-018",
+      "m02-ac-019",
+      "m02-br-019",
+      "m02-br-020",
+      "m02-br-021",
+      "m02-scn-015",
+      "m02-scn-016",
+      "m02-scn-017"
+    ],
+    "old_term_ids_preserved": 449,
+    "new_term_ids": [
+      "m02-timeline-revision"
+    ],
+    "old_revision_entries_preserved": 13,
+    "progress_sections_preserved": 4,
+    "snapshot_files_verified": 21,
+    "branch": "wt-dev-a",
+    "head_unchanged": true,
+    "stash_empty": true,
+    "code_and_runtime_files_unchanged": true
+  },
+  "generation": {
+    "dry_run": {
+      "files": 57,
+      "modules": 26,
+      "writes": false
+    },
+    "write": {
+      "files": 57,
+      "modules": 26,
+      "writes": true
+    },
+    "exit_code": 0
+  },
+  "runtime_checks": "not_run",
+  "limitations": [
+    "本轮仅文档；维护Go/迁移/DB/API/页面及性能未实施/未运行。",
+    "真实消费者未接入，不宣称跨域或业务验收。",
+    "静态自检不是独立评审；旧报告不重写，未提交/推送/发布。"
+  ],
+  "checks_final": [
+    {
+      "name": "docs",
+      "command": "make docs",
+      "chunk_id": "711684",
+      "wall_time_seconds": 8.850306531,
+      "exit_code": 0,
+      "original_token_count": 134,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.670s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 134, \"local_links\": 3201, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "name": "refs",
+      "command": "python3 -B scripts/check-repository.py --check-refs",
+      "chunk_id": "2ea1aa",
+      "wall_time_seconds": 7.447139876,
+      "exit_code": 0,
+      "original_token_count": 74,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 134, \"local_links\": 3201, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "name": "diff",
+      "command": "git diff --check",
+      "chunk_id": "fc90f5",
+      "wall_time_seconds": 2.7609e-05,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "name": "protection",
+      "command": "python3 /tmp/chnhcm022_protect.py",
+      "chunk_id": "f39ca8",
+      "wall_time_seconds": 1.6979e-05,
+      "exit_code": 0,
+      "original_token_count": 319,
+      "output": "{\"changed_existing_files\": [\"docs/README.md\", \"docs/adr/018-effective-records-and-source-history.md\", \"docs/adr/020-effective-record-delete-and-redate.md\", \"docs/adr/021-bu-lifecycle-and-record-maintenance.md\", \"docs/architecture/target/17-terminology-glossary.md\", \"docs/architecture/target/data/terminology-glossary.json\", \"docs/governance/registry.json\", \"docs/plans/010-m02-scope-and-plan.md\", \"docs/reference/local-revisions.json\", \"docs/specs/README.md\", \"docs/specs/m02/011-m02-business-requirements.md\", \"docs/specs/m02/012-m02-functional-and-interaction-design.md\", \"docs/specs/m02/013-m02-technical-design.md\", \"docs/verification/README.md\"], \"unchanged_protected_files\": 442, \"old_verification_records_preserved\": 31, \"historical_verification_files_preserved\": 120, \"stable_business_anchors_preserved\": 47, \"new_business_anchors\": [\"m02-ac-016\", \"m02-ac-017\", \"m02-ac-018\", \"m02-ac-019\", \"m02-br-019\", \"m02-br-020\", \"m02-br-021\", \"m02-scn-015\", \"m02-scn-016\", \"m02-scn-017\"], \"old_term_ids_preserved\": 449, \"new_term_ids\": [\"m02-timeline-revision\"], \"old_revision_entries_preserved\": 13, \"progress_sections_preserved\": 4, \"snapshot_files_verified\": 21, \"branch\": \"wt-dev-a\", \"head_unchanged\": true, \"stash_empty\": true, \"code_and_runtime_files_unchanged\": true}\n"
+    }
+  ],
+  "initial_status": " M docs/README.md\n M docs/adr/018-effective-records-and-source-history.md\n M docs/architecture/target/07-concept-mapping.md\n M docs/architecture/target/17-terminology-glossary.md\n M docs/architecture/target/data/terminology-glossary.json\n M docs/governance/registry.json\n M docs/plans/010-m02-scope-and-plan.md\n M docs/reference/local-revisions.json\n M docs/specs/README.md\n M docs/specs/m02/011-m02-business-requirements.md\n M docs/specs/m02/012-m02-functional-and-interaction-design.md\n M docs/specs/m02/013-m02-technical-design.md\n M docs/verification/README.md\n?? docs/adr/020-effective-record-delete-and-redate.md\n?? docs/adr/021-bu-lifecycle-and-record-maintenance.md\n?? docs/verification/011-retroactive-record-addition.evidence.json\n?? docs/verification/011-retroactive-record-addition.md\n?? docs/verification/020-effective-record-delete-and-redate.evidence.json\n?? docs/verification/020-effective-record-delete-and-redate.md\n?? docs/verification/021-bu-lifecycle-and-record-maintenance.evidence.json\n?? docs/verification/021-bu-lifecycle-and-record-maintenance.md\n?? docs/verification/data/020-before-record-maintenance.zip\n?? docs/verification/data/021-before-bu-lifecycle.zip\n",
+  "input_sha256": {
+    "docs/README.md": "a6d7f35be3e9123067a0ec2f6393c4d84acc7dc062cbad718601ed93357de247",
+    "docs/adr/018-effective-records-and-source-history.md": "855733d60a5ead154f96fbacc00c0972eea76e3f2639020694ad07b823f09787",
+    "docs/adr/020-effective-record-delete-and-redate.md": "a988df366767df54485889d3acf91f546360c66f712ad6755e7270e319f32801",
+    "docs/adr/021-bu-lifecycle-and-record-maintenance.md": "81c62e2ef46d639ccb00ad020a23256aab0d9c6cdc89d6c465939ccd93724a0e",
+    "docs/adr/022-joint-timeline-revision.md": "23d55f9743f22fac9a107b62d4be6de44c0bd0f2eddd52a5c80fc3923e4f0ed3",
+    "docs/architecture/target/17-terminology-glossary.md": "75710ca0922c806d4459ff95845bf860d999daba558a03f28b9195c07121c934",
+    "docs/architecture/target/data/terminology-glossary.json": "7757db35732d90fb7dc3182a6b990907e37add11b1678d98532f26ba3cb549ed",
+    "docs/governance/registry.json": "c4baae068286dc58fb16c49ed12449a2fcbb05df0258194a1315e4345f3141fe",
+    "docs/plans/010-m02-scope-and-plan.md": "2242fe45881da72380ae4ce110ddbdc6f52d0d04eb276cf6062f4503028f6715",
+    "docs/reference/local-revisions.json": "f173fc42336f7175ecfb191cf57729f43cb0d075fba432efc447b910c79c1b59",
+    "docs/specs/README.md": "e17f7d57e756d8536e11e84523a6103a40c020dae6b16432665b7c039d906a32",
+    "docs/specs/m02/011-m02-business-requirements.md": "d003764b624dec8ec7386020113c5c785f17d11f22e132a2db28ecea17b58a33",
+    "docs/specs/m02/012-m02-functional-and-interaction-design.md": "a296b9d34e9c5dc553323addd028f1e5ebce679278f4e23f97b94233c1f384f2",
+    "docs/specs/m02/013-m02-technical-design.md": "66bf2cf5aa3d603894532688edeb380cdc3a4ab8c109985755b9ca69b2e063e8",
+    "docs/verification/022-joint-timeline-revision.md": "367bb0a7b0a44d54af71d85761cbb05c9b048528ebf87b753fb59d5ca5d30f92",
+    "docs/verification/README.md": "fc80d8d9bce37e398b6f8a745b2e1a22b9c34e9d2498139fc72797d1b2383478"
+  }
+}

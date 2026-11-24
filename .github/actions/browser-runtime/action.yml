@@ -1,0 +1,57 @@
+name: Browser validation in a disposable runtime
+description: Run the planned browser shard or the full candidate's early regression cases.
+inputs:
+  shard:
+    description: Shard number, or preflight for the early browser checks.
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+      if: inputs.shard != 'preflight'
+      with:
+        go-version-file: go.mod
+    - name: Use Docker Hub for the locked PostgreSQL image
+      if: inputs.shard != 'preflight'
+      shell: bash
+      run: sed -i 's#^docker.m.daocloud.io/#docker.io/#' deploy/local/postgres-image.txt
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+      with:
+        node-version-file: package.json
+        package-manager-cache: false
+    - name: Install locked dependencies and Chromium
+      shell: bash
+      run: |
+        npm install --global corepack@0.35.0
+        corepack enable
+        make install
+        corepack pnpm exec playwright install --with-deps chromium
+    - name: Install and verify native zoom display dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends --yes xvfb x11-utils libxtst6
+        python3 scripts/check-x11.py
+    - name: Chromium preflight
+      if: inputs.shard == 'preflight'
+      shell: bash
+      run: python3 scripts/ci_browser.py preflight
+    - name: Chromium business flows in a disposable runtime
+      if: inputs.shard != 'preflight'
+      shell: bash
+      env:
+        CI_SHARD: ${{ inputs.shard }}
+      run: python3 scripts/ci_browser.py run --shard "$CI_SHARD"
+    - name: Upload masked failure screenshots
+      if: ${{ failure() || cancelled() }}
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+      with:
+        name: chromium-failure-screenshots-${{ inputs.shard }}-attempt-${{ github.run_attempt }}
+        path: .local/playwright-results/**/*.png
+        include-hidden-files: true
+        if-no-files-found: ignore
+        retention-days: 7
+    - name: Reclaim owned temporary runtime
+      if: always()
+      shell: bash
+      run: CHNHCM_LOCAL_PROFILE=ci-browser python3 scripts/local-bu.py destroy

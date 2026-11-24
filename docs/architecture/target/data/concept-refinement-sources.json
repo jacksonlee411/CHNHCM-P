@@ -1,0 +1,246 @@
+{
+  "scope": "Public Oracle current guide and release lookup for sequential conceptual review; not a tenant or current-law validation",
+  "sources": [
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/readiness/hcm.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/readiness/hcm.html",
+      "checkedAt": "2026-10-30T01:35:02.182876+00:00",
+      "http_status": 200,
+      "title": "Cloud Applications Readiness - Human Capital Management",
+      "release_metadata": null,
+      "document_number": "en/cloud/saas/readiness",
+      "html_sha256": "4ec7e86a5d61d0f25eb404e0edc45d7589ea0ce6e0e4d9ea5ba4d554d0f36b09",
+      "readiness_versions": [
+        "26B",
+        "26C",
+        "26D"
+      ]
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/books.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/books.html",
+      "checkedAt": "2026-10-30T01:35:02.642309+00:00",
+      "http_status": 200,
+      "title": "Oracle Human Resources - All Books",
+      "release_metadata": "FA Latest",
+      "document_number": "en/cloud/saas/human-resources",
+      "html_sha256": "d1ed4de3d418b1e09f28371880ccc99f3f578183e0007ae7d7862c97c0aeaa06",
+      "readiness_versions": []
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/action-reason.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/action-reason.html",
+      "checkedAt": "2026-10-30T01:35:01.819398+00:00",
+      "http_status": 200,
+      "title": "Action Reason",
+      "release_metadata": "FA Latest",
+      "document_number": "G34712-11",
+      "html_sha256": "6a9fc7ce405cf8f960ad0f29f63821e567e079657f918dfbb69b60e099205441",
+      "readiness_versions": []
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/assignment-status.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/assignment-status.html",
+      "checkedAt": "2026-10-30T01:35:01.544045+00:00",
+      "http_status": 200,
+      "title": "Assignment Status",
+      "release_metadata": "FA Latest",
+      "document_number": "G34712-11",
+      "html_sha256": "6dd4e028f23abc94b32a3c6892c28c2638d831727525a2a0c34eb748bcaf3707",
+      "readiness_versions": []
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/ochus/guidelines-for-securing-positions.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/ochus/guidelines-for-securing-positions.html",
+      "checkedAt": "2026-10-30T01:35:02.162625+00:00",
+      "http_status": 200,
+      "title": "Guidelines for Securing Positions",
+      "release_metadata": "FA Latest",
+      "document_number": "G34732-10",
+      "html_sha256": "13315ffb6a2966dcc82b390d68df9530635941484647d62e8bc46b3f9b09a267",
+      "readiness_versions": []
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigp/setup-tasks-for-implementing-global-payroll.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigp/setup-tasks-for-implementing-global-payroll.html",
+      "checkedAt": "2026-10-30T01:35:04.214402+00:00",
+      "http_status": 200,
+      "title": "Setup Tasks for Implementing Global Payroll",
+      "release_metadata": "FA Latest",
+      "document_number": "G34713-09",
+      "html_sha256": "cc99154ae9f99ddbae6ce15d9d6d585960a521660a57b6dee4f6ad4685e2218e",
+      "readiness_versions": []
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faagp/overview-of-administering-payroll-relationships.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faagp/overview-of-administering-payroll-relationships.html",
+      "checkedAt": "2026-10-30T01:35:06.769343+00:00",
+      "http_status": 200,
+      "title": "Overview of Administering Payroll Relationships",
+      "release_metadata": "FA Latest",
+      "document_number": "G34674-06",
+      "html_sha256": "1fc3ebad37d79b9ff60edfcd4eda19920f469f6d002ccae0a25cc73645b29763",
+      "readiness_versions": []
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faupf/payroll-flow-patterns.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faupf/payroll-flow-patterns.html",
+      "checkedAt": "2026-10-30T01:35:15.491786+00:00",
+      "http_status": 200,
+      "title": "Introduction to Payroll Flow Patterns",
+      "release_metadata": "FA Latest",
+      "document_number": "G34675-01",
+      "html_sha256": "1512447f44e5cc1056311c58a5c4437671f9270568fcc519d8ac69d894560285",
+      "readiness_versions": []
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigp/overview-of-payroll-event-groups.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigp/overview-of-payroll-event-groups.html",
+      "checkedAt": "2026-10-30T01:36:45.307657+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34713-09",
+      "html_sha256": "64c189b641c6c806f5f0f12717c1671104ac01190e18d48b69834e65b670f0d9"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faitl/how-time-processing-profile-components-work-together.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faitl/how-time-processing-profile-components-work-together.html",
+      "title": "How Time Processing Profile Components Work Together",
+      "checkedAt": "2026-10-30T01:49:09.042959+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34726-01",
+      "html_sha256": "e887cd2a5cbc0b87f3ab7a836dddee940f447131b74593f10c6ecd222a24f706"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faitl/how-many-time-categories-and-consumer-sets-to-create.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faitl/how-many-time-categories-and-consumer-sets-to-create.html",
+      "title": "How Many Time Categories and Consumer Sets to Create",
+      "checkedAt": "2026-10-30T01:49:08.924771+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34726-01",
+      "html_sha256": "601de793b2eba9148d0ffc6b9c46f7f41aca502556ebc26904fedcef3f2db96b"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/types-of-absence-plans.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/types-of-absence-plans.html",
+      "title": "Types of Absence Plans",
+      "checkedAt": "2026-10-30T01:49:09.024647+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34709-01",
+      "html_sha256": "f3ae0f95edddc17c0ff732ac5573301fae29205d14fbedd752fc13c717a4dbd5"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/absence-approval-and-processing-rules.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/absence-approval-and-processing-rules.html",
+      "title": "Absence Approval and Processing Rules",
+      "checkedAt": "2026-10-30T01:49:08.900710+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34709-01",
+      "html_sha256": "2594e99a8fa28b8ccaafa2439396e4db4f9f3fb38260ff99b694f0300e9d0610"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/how-absence-components-work-together.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/how-absence-components-work-together.html",
+      "title": "How Absence Components Work Together",
+      "checkedAt": "2026-10-30T01:57:22.219184+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34709-01",
+      "html_sha256": "5b8e3d2647c58aac2d0074afa2ff6e055d86c38545b908e339fe7fadbe40b687"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/examples-of-prioritizing-absence-plans-for-an-absence-type.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiam/examples-of-prioritizing-absence-plans-for-an-absence-type.html",
+      "title": "Examples of Prioritizing Absence Plans for an Absence Type",
+      "checkedAt": "2026-10-30T01:57:22.105495+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34709-01",
+      "html_sha256": "be515cafb6c77ceb6700b381e71d67192adc884a3a575bf400ff4eb8232ffd44"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/faipm/guide-structure.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/faipm/guide-structure.html",
+      "title": "Guide Structure",
+      "checkedAt": "2026-10-30T02:12:41.758510+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34430-04",
+      "html_sha256": "04df80ec672a9f40a49912bff06983dd32e5ca101e793cfbf65e351f3b7b8478"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/faugm/goal-plans.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/faugm/goal-plans.html",
+      "title": "Goal Plans",
+      "checkedAt": "2026-10-30T02:12:31.851933+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34437-02",
+      "html_sha256": "750907755a7b5ff9346b574f395b19914ee27b189c82771155f05b5565a25e99"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/faucd/development-goal-library.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/faucd/development-goal-library.html",
+      "title": "Development Goal Library",
+      "checkedAt": "2026-10-30T02:12:29.786910+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34434-01",
+      "html_sha256": "1012d3c831de0610ff4faeb8de75d28a9da4db6d420260344ca7408710b7a07c"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/fatul/how-capacity-rules-and-waitlist-work-for-oracle-learning-course-offerings.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/fatul/how-capacity-rules-and-waitlist-work-for-oracle-learning-course-offerings.html",
+      "title": "How Capacity Rules and Waitlist Work for Oracle Learning Course Offerings",
+      "checkedAt": "2026-10-30T02:12:29.860734+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34438-02",
+      "html_sha256": "80f76ff846cb0095dcef2e8e26b80acdd8b992c95fdea01e776ed49fc36b778e"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/fatrs/succession-planning.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/fatrs/succession-planning.html",
+      "title": "Succession Planning",
+      "checkedAt": "2026-10-30T02:12:31.074983+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34433-01",
+      "html_sha256": "77131b3a4a1eda456861bfa4478e7d13e23b455a0aaa5c66f68231f1b8443f1a"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/ochus/hcm-data-roles.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/ochus/hcm-data-roles.html",
+      "title": "HCM Data Roles",
+      "checkedAt": "2026-10-30T02:22:05.496967+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34732-10",
+      "html_sha256": "7e575f183f1bbc796743ce92431ebb200944dd5518ff3628d08145a726051884"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/how-business-units-work-with-reference-data-sets.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/how-business-units-work-with-reference-data-sets.html",
+      "title": "How Business Units Work with Reference Data Sets",
+      "checkedAt": "2026-10-30T02:22:05.031637+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34712-11",
+      "html_sha256": "27f3586a0545d9e4c2e5e73a99491fdab2d2d445f4322eebbf02b7876e34be55"
+    },
+    {
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faijh/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faijh/index.html",
+      "title": "Implementing and Using Journeys",
+      "checkedAt": "2026-10-30T02:33:35.008715+00:00",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34729-11",
+      "html_sha256": "42cbb2eccada761b04e5453736cf1e21788e4495ffe7f7345da7b2677a6c2255"
+    }
+  ]
+}

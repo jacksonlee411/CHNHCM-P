@@ -1,0 +1,2723 @@
+{
+  "schema_version": 1,
+  "captured_on": "2026-10-30",
+  "adoption_decision": "User approved latest naming increments as initialization input; keep integration verification pending",
+  "architecture": {
+    "repository": "oracle-fscr",
+    "branch": "hcm/docs/architecture-design-review",
+    "commit": "d88c993d13d325b18943549f120c5f03e7864205",
+    "source_worktree_clean": true,
+    "reviewed_snapshot": {
+      "round": 25,
+      "digest": "ceff0834ac7bb7ead53b3b4b7171aa4a2c0cf953c6810353955d71e0ba87743e",
+      "status": "passed-for-frozen-scope",
+      "scope": "terminology and adjacent contracts; unchanged R24 diagrams reused"
+    },
+    "current_integration_status": "pending",
+    "source_completion_status": "in_progress",
+    "current_matches_reviewed_snapshot": false,
+    "changed_review_inputs": [
+      {
+        "file": "06-evidence-and-validation.md",
+        "reviewed_sha256": "8a85cd69caf2fd8ae4a35fc55130668ae64ed886444c64fb257f1e984d2bc923",
+        "adopted_source_sha256": "7dea57a5034c56e58dc2a1d070795b94db5f973160fa4e49478948271e733b86"
+      },
+      {
+        "file": "07-concept-mapping.md",
+        "reviewed_sha256": "bd40ed929fd28c707c4f2c605a5d60e90c56d1ca36ba7f6c985c5dfacd700e57",
+        "adopted_source_sha256": "b22c1f10bcb33ddb455d22959f44d112fbb66cb95326903f20e91e5991cafee3"
+      },
+      {
+        "file": "14-aggregate-catalog.md",
+        "reviewed_sha256": "70f0e8ac57a673e7d87ed3d08de66938e7faed9709cf1bbd2b8293a0df2ce819",
+        "adopted_source_sha256": "3c5af0ccee96c87158fb70ad8f381477f07f65cff7ab810ba6cbe6a836594cc7"
+      },
+      {
+        "file": "16-command-acceptance-index.md",
+        "reviewed_sha256": "9b1e8a1a02339d787b72b0044d1fef86fc16cf22ea442b33f269216943e073c3",
+        "adopted_source_sha256": "f0b7d2fedbdfd8045c464147e7ff8088ffe34ffc452ef01f8078d3671daf88c4"
+      },
+      {
+        "file": "17-terminology-glossary.md",
+        "reviewed_sha256": "353ae223b277f6d86732e11ecc87f03bbfdb5418de79508c765715155bf8b2c5",
+        "adopted_source_sha256": "7fe6dd960b9c4cf8286000f2d174c080f2594a5ce23cf7dff8cb4e525ccf2c1b"
+      },
+      {
+        "file": "data/terminology-glossary.json",
+        "reviewed_sha256": "4d5a5ffdc3c4a56ca0318b6bcc117ef7d7920b27c044ee177945fe9e59e6e5a7",
+        "adopted_source_sha256": "ad6290e7f060888efb28a137789c25178eb9604364c8550ea28542c112332a89"
+      },
+      {
+        "file": "modules/m01.md",
+        "reviewed_sha256": "f65efd0503dc7338044ac91988a46357d359b893ba93acf8895296b1fb73986a",
+        "adopted_source_sha256": "9fa01d59b90e32d9f820e22172f883107f4f719457af9efe7f91c01558f87ea4"
+      },
+      {
+        "file": "modules/m02.md",
+        "reviewed_sha256": "aa3e7d63dda47cd97cb97700575cc04a2a06fcf662f2556f82ae11fa992af001",
+        "adopted_source_sha256": "f8518ba511b396e1a5c024b53f051de0b2b72b31afdb54a615746174b9223f4f"
+      },
+      {
+        "file": "modules/m03.md",
+        "reviewed_sha256": "28d5c88956b7565e09cdeb5f3b253d199cb558b462e7ab2f292b02e475ecc082",
+        "adopted_source_sha256": "1f38235585c786e6c3045702ae447c9c3bfd27f7e81b5e8fe8c6451590b3c82c"
+      },
+      {
+        "file": "modules/m04.md",
+        "reviewed_sha256": "820374d6e32cca5572ad8ba137ff4a2dedd644021b1670cb45ad5173b5256db0",
+        "adopted_source_sha256": "f170300c9d94feb2000674a7d0347f5cddc6d4e8746e7bfda207961f0e886cee"
+      },
+      {
+        "file": "modules/m05.md",
+        "reviewed_sha256": "374d238962125e187a3aa090377767560b8c884d78a21d8505bfef8b884fc442",
+        "adopted_source_sha256": "087c8cdc98ea9f5b5bc64e2d874eaaa2f2fbddc0ff90d987e6de397c80b113ee"
+      },
+      {
+        "file": "modules/m06.md",
+        "reviewed_sha256": "6caea877c50d613014de0021e0c326c460977527024849e197c8406a3d27e544",
+        "adopted_source_sha256": "47a122822c98957d056661311f27acf0585436a897197cdfe80fea7cc33139ed"
+      },
+      {
+        "file": "modules/m07.md",
+        "reviewed_sha256": "ef41d1b1beb264caaf10d81525b3f4778eb3985b80f21bb24cea9b23d9cf4214",
+        "adopted_source_sha256": "e900f306c7c16b78043611fe348f5b99dd57ce710edefc9a77a20e529290183d"
+      },
+      {
+        "file": "modules/m08.md",
+        "reviewed_sha256": "fe3d01f2f35aa000d8561cabbc30ad4c493e823452c7654061415406f7f842e8",
+        "adopted_source_sha256": "197c3e39c5fdd4427b0d379b97008e4ced21dc1f6ff29bb1309ab7ec03e51e18"
+      },
+      {
+        "file": "modules/m10.md",
+        "reviewed_sha256": "cbdf9a0571b5496b8e9e6b30a054fde826f68038593ceb4fe3a060d903fe3a29",
+        "adopted_source_sha256": "078cd69786c0529304a6b0daee23651a790d9647b3e45b12ed12f34809e934a4"
+      },
+      {
+        "file": "modules/m11.md",
+        "reviewed_sha256": "9935673803fb1e68de25fe191ad586988e4384ea315c9d2e18bef5642a0066b2",
+        "adopted_source_sha256": "5f0b9cdb31119c7d9ad6e016ed0647346f638a256b8633ce3220727fcc263243"
+      },
+      {
+        "file": "modules/m12.md",
+        "reviewed_sha256": "436484ac57dbf1a3002b12b8628e23259c8f131b5183d2b59a9b2b0683cbc74c",
+        "adopted_source_sha256": "88f35e120304431e484198b2dd568ab9a9726ada61a0fa5e7edcd48e6f820fd0"
+      },
+      {
+        "file": "modules/m13.md",
+        "reviewed_sha256": "d98be4ed7fb0214dc1e1dabdf8dc03f78e2718cea1c3766d9ccb21e3a24cf71c",
+        "adopted_source_sha256": "6b87ffe4a4d2cdf735f29d0f45b92c44ffe3894fe9cdef33f05aade9cf32ac29"
+      },
+      {
+        "file": "modules/m14.md",
+        "reviewed_sha256": "641b334c66f29d91ee44093e950891e8d71a61974b9062a5e8898b52f48b134f",
+        "adopted_source_sha256": "fbeb73fe42b90355b81979f3a6612f17d81875969c8e4325f0bc85fcafa1a0c9"
+      },
+      {
+        "file": "modules/m16.md",
+        "reviewed_sha256": "28282c0a6bece42c471a040d150145f53badad95549612bc558f869c0b463b5b",
+        "adopted_source_sha256": "b559cd05958bbdf4e929f830e92c64cadac7ec50ea5e76a393587dbc31cd2e73"
+      },
+      {
+        "file": "modules/m17.md",
+        "reviewed_sha256": "0b04aee059889c08edfc5269eb06e9791bbb7683899bae88a835a9f34ffd1ea3",
+        "adopted_source_sha256": "3da4af97a3985b02ec6d6728c3d6032d61de88445011044386f75674ad154252"
+      },
+      {
+        "file": "modules/m18.md",
+        "reviewed_sha256": "19330563f9e336008430ca2633b77444c4681fbd732405066d9e1654c0f5d671",
+        "adopted_source_sha256": "693982f59675ca489025ded6ef5e68d2c804c42e4255684be1feeb2a4e1256d8"
+      },
+      {
+        "file": "modules/x01.md",
+        "reviewed_sha256": "cd0f425160cae95e46145d39d8d7fd5ce97f022531f85b8a541e79820e997538",
+        "adopted_source_sha256": "6fa043a206744d325b1782323d69361f6046aa498d3752e410b6bc17714f446d"
+      },
+      {
+        "file": "modules/x02.md",
+        "reviewed_sha256": "62b2d9fb1c72923750afc9427b11887de8ff653bdbcdce2b23a3cf6d6236f371",
+        "adopted_source_sha256": "350cc3dbc5aa4627ffca2c31b15415ea17a42c947592fe8bc62e727fc3cf9f7c"
+      },
+      {
+        "file": "modules/x03.md",
+        "reviewed_sha256": "c7642e868d58a8bf8fc7dbfc7dfad2ce6bc9ce30d04035cebca1431760197048",
+        "adopted_source_sha256": "daac11f5a8970a7dc53d45e20a8bbad738bf12a0ca942e59ad0820ded9d147a8"
+      },
+      {
+        "file": "scripts/build_modules.py",
+        "reviewed_sha256": "d0aa9bc9ac81988a4d7ce036e1796d1122cf576ea0b477c5beb750aae7a34526",
+        "adopted_source_sha256": "a0a3635d12fe1532b2f88332ffe2408b4d4e564b3e321b8cd6b7c630d46b7f04"
+      }
+    ],
+    "counts": {
+      "business_modules": 20,
+      "crosscutting_capabilities": 6,
+      "bounded_contexts": 17,
+      "target_diagrams": 53,
+      "historical_diagrams_in_active_gallery": 0,
+      "reference_concepts": 131,
+      "generated_files": 57,
+      "target_object_groups": 154,
+      "terminology_terms": 405,
+      "terminology_domains": 26,
+      "terminology_object_groups": 154,
+      "terminology_reference_concepts": 131
+    },
+    "archive": "docs/reference/sources/china-hcm-d88c993.zip",
+    "archive_sha256": "b2559c26e17b53a8a757aa8f26c73d3c184a468c8b26a03062c5943cc22b665e",
+    "archive_members": [
+      {
+        "path": "LICENSE.txt",
+        "sha256": "c3c9a15c5de5bb7aee20e4eaeb59e427e7f89e96efef2cbafdfe748177d9546e"
+      },
+      {
+        "path": "docs/china-hcm/02-target-architecture.md",
+        "sha256": "3ec13c25b3d39290ebcf3b843b3dac83284e0d74bdfd078741ffd01b35afd2c8"
+      },
+      {
+        "path": "docs/china-hcm/03-consistency-contracts.md",
+        "sha256": "edb0b2457d11dc374b3bc1b5ca3074865733ecd45e275a75b2b25cb1c84a141e"
+      },
+      {
+        "path": "docs/china-hcm/04-china-localization.md",
+        "sha256": "fef56fddf6c3b5dc0ddbb78a785665534e4827a0e27f2f004b6727f6fbb8585d"
+      },
+      {
+        "path": "docs/china-hcm/07-concept-mapping.md",
+        "sha256": "b22c1f10bcb33ddb455d22959f44d112fbb66cb95326903f20e91e5991cafee3"
+      },
+      {
+        "path": "docs/china-hcm/08-cross-module-flows.md",
+        "sha256": "73652e06fee2edfb379042e0c4f66ba9497516325b49321da2dfd5b0efb818b1"
+      },
+      {
+        "path": "docs/china-hcm/10-ddd-and-state-contracts.md",
+        "sha256": "f9eb6807299a51780546772d61887999f423c5474921a596fc8df94f7c66a602"
+      },
+      {
+        "path": "docs/china-hcm/12-concept-architecture.md",
+        "sha256": "0f42b31d825bd64c40b86f33bb3bb6b1a1ea2853cf85abfdacc644eeb417984b"
+      },
+      {
+        "path": "docs/china-hcm/14-aggregate-catalog.md",
+        "sha256": "3c5af0ccee96c87158fb70ad8f381477f07f65cff7ab810ba6cbe6a836594cc7"
+      },
+      {
+        "path": "docs/china-hcm/16-command-acceptance-index.md",
+        "sha256": "f0b7d2fedbdfd8045c464147e7ff8088ffe34ffc452ef01f8078d3671daf88c4"
+      },
+      {
+        "path": "docs/china-hcm/17-terminology-glossary.md",
+        "sha256": "7fe6dd960b9c4cf8286000f2d174c080f2594a5ce23cf7dff8cb4e525ccf2c1b"
+      },
+      {
+        "path": "docs/china-hcm/README.md",
+        "sha256": "48095bfcb2fa7240bc3e37ab6ab14a832159fc798ef20457f00632fe24fc9093"
+      },
+      {
+        "path": "docs/china-hcm/data/business-modules.json",
+        "sha256": "bcbe9654f98f92ebfbfd039a4e3d8133e71dccb42f67ba6ade9c58be42f6bc91"
+      },
+      {
+        "path": "docs/china-hcm/data/command-contract-index.json",
+        "sha256": "5b5859337796a801a2febb6afabd9845efe75b817a3ab61da212d87487bba3ef"
+      },
+      {
+        "path": "docs/china-hcm/data/concept-mapping.csv",
+        "sha256": "f01a61e03d6cf90e6d050e6837617baf039912e312a89dbebe4c98a6388cb519"
+      },
+      {
+        "path": "docs/china-hcm/data/concept-mapping.json",
+        "sha256": "a61d8acb7c3c2a0ec7d401b51dc86716878045917047a3479945bdfb868a4f77"
+      },
+      {
+        "path": "docs/china-hcm/data/concept-refinement-sources.json",
+        "sha256": "0a0dcd8ee3ffb845f11a8f78521dcc389f376f5eaf981df6e49066054cbd0b43"
+      },
+      {
+        "path": "docs/china-hcm/data/crosscutting-modules.json",
+        "sha256": "0fb8f6e265e9b507e593b7fd34acac90861e341617eb9cdbb1baf79dfb183c59"
+      },
+      {
+        "path": "docs/china-hcm/data/oracle-release-check.json",
+        "sha256": "584112f8d4e397a67b3626b3f042e474e5d38895ecfab08bf718428eb7b11af2"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r24-report.json",
+        "sha256": "1bffd9d5b90d4d28579277a74f3c5db87b4aad77756584e55934e7d130d7facc"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-ci-final.json",
+        "sha256": "2a7d8780e871becbd2e9a10e846688486db5055df51b898cb2bbe43dda6ac906"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-core-final.json",
+        "sha256": "dd3c03f554cf50bebf1a0decba2205d8c12cdf83501eba246169452d19654355"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-handoff-scope.json",
+        "sha256": "98d5b7cdcd7bdb7f394e81526497fa2a032be196f1ca2a961cf40566cbbb0161"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-inputs.zip",
+        "sha256": "37917b054de75ba226ac7427a0741b2ce0e1885e3d91ad3403b5d8f1294ff876"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-money-final.json",
+        "sha256": "596693fd1bfd2dd8e40e6ff008208de71fb1bf13edad8018d6e78825a66152bb"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-report.json",
+        "sha256": "aea43307faa6bf0352d825f74fede63f2c7659465b763b9ac17c15593cecaf76"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-snapshot.json",
+        "sha256": "e96c36aa8ff9256dc7a6e97b25974e961f9431f4a1c640470712ded57170bb7f"
+      },
+      {
+        "path": "docs/china-hcm/data/reviews/r25-tooling-validation.json",
+        "sha256": "f386c2343efa7ec9e6c17d4673927ea1f0c0d049be42a3d1188bd948dabc82ba"
+      },
+      {
+        "path": "docs/china-hcm/data/target-design-completion.json",
+        "sha256": "aed67d68fc424647970cfb21adef766d7e1f18afa73ff67ece9725e1d9dcf6eb"
+      },
+      {
+        "path": "docs/china-hcm/data/terminology-glossary.json",
+        "sha256": "ad6290e7f060888efb28a137789c25178eb9604364c8550ea28542c112332a89"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/README.md",
+        "sha256": "62a743cd02808565b608621a1722204df22afc988fd566cd43d4298c8853c49b"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c01-core-hcm-concepts.mmd",
+        "sha256": "446ea5a19ea269d28eaa0ea5e2a008ea9e6361ffaab6315420fb489c54664624"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c01-core-hcm-concepts.svg",
+        "sha256": "3498783fec84d83eb2ceda1439e713474a5bd4f2dce2ffdc52ca59e168e185d6"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c02-payroll-concepts.mmd",
+        "sha256": "0bcae594eaad281e4ccb92332bec8922fcbdf1c46872be8a9fe88b24869795b8"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c02-payroll-concepts.svg",
+        "sha256": "7d9039b760d287125c1ad3ec70d3b46d74404a051d10dba5bdc6abd793b85dce"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c03-time-absence-concepts.mmd",
+        "sha256": "940167b4d79f14d8091d375300345980a7343d47886f23ef19db314fb226d328"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c03-time-absence-concepts.svg",
+        "sha256": "67bca7e3a391bbdae1839149f6032310de5ef906226b554e2798f0f0e066de93"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c04-talent-concepts.mmd",
+        "sha256": "9df02620ddf49c17f451e32e39b205bc36fae608df6b36c2d81ec433f07e352d"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c04-talent-concepts.svg",
+        "sha256": "d902eb9cbdb9621ac41c983a637f28034a6ba870338269c327248056766ee971"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c05-reference-access-concepts.mmd",
+        "sha256": "f59ad45ce853c9ce23dc0aa856082447ca95719e2ff099ed263958dc6d8a1e04"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/c05-reference-access-concepts.svg",
+        "sha256": "cf1f808f689c94c5f6dc68c7f23411a577006e84619ad0d4dd2cc8835c9c3c0a"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e01-person-employment.mmd",
+        "sha256": "8eb3159a7328ea91701a03c38f6c5dd7cc5a75d3b7bab045484f938bab5fe4d2"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e01-person-employment.svg",
+        "sha256": "8a717ec3333d277a9ce0502b85f2412c7a2934c0ee3a9c24df00d1db7500401f"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e02-legal-contexts.mmd",
+        "sha256": "7058d262aed60c2e69caa7ba3d7ef071527eacf637d882b89b48a52bf2efac8a"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e02-legal-contexts.svg",
+        "sha256": "3ee6f5e05a662303b97da7d84720b8a51bd59fab8a831a40b2731d51fee93b51"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e03-contribution-ledgers.mmd",
+        "sha256": "05bf7eec8ccf579017a6b3d8c09034eec4518f6fe694d872be2089b7b99cb1e0"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e03-contribution-ledgers.svg",
+        "sha256": "eba90b52f4fc1e3a9c3874c8895e4751b98357c1612cb17b841e79eb672f4d40"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e04-effective-adoption.mmd",
+        "sha256": "4569eacb9d35338208bee8f904f897e1f9ede0cdda9cfd9b24ad0db50d549a61"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e04-effective-adoption.svg",
+        "sha256": "6ab47bc8e4552e9d53eb33b2796e4a387fe13480e887251a7f2e069337ecfeb5"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e05-bank-payment-identity.mmd",
+        "sha256": "db4b75561995de35e120a23f8dc95bb39bfcee236ff7e20ae42c3919c145a9d7"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e05-bank-payment-identity.svg",
+        "sha256": "e658022ee98dfb9164360b676bc62a58ad3d741f30dbafe027b1b7452b2d86ea"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e06-external-state.mmd",
+        "sha256": "9002fe5de9848f80c92537c1af7ade36892acd9bd64a47be3fb5866152fb0f48"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e06-external-state.svg",
+        "sha256": "444294805807ee6048364a442d39fa9dd0fe911cfc53e4341f81fe45e80b8b61"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e07-tax-commitment.mmd",
+        "sha256": "18cd00e21e66729bc948ed3196d6bc82078722b6002185934a032b96177ebde7"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e07-tax-commitment.svg",
+        "sha256": "f98720c5383fab6cb83daec370e91b0ee9ac825c595e998c08d9115a60e660d5"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e08-payslip-publication.mmd",
+        "sha256": "a1f27d5c873ae5d493a0e015b01cf40e19cc35a43cca1793471102c06127238e"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/e08-payslip-publication.svg",
+        "sha256": "bfd7697e7892a216610b31206ae94d1c8921a0910a2f5a37b02b0a13f62602d0"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f01-hire-first-pay.mmd",
+        "sha256": "321d60b6cd9117d9258ffdd3ad715dcb581ebcbc39bcdd76aeb3d7550fb73d0a"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f01-hire-first-pay.svg",
+        "sha256": "bfc5b35378fa059970a67755a5b0a11b2a434b4e5e8ea72a5c3fb780e1999065"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f02-transfer.mmd",
+        "sha256": "351a784ab9bc605ed1b26c03bd14db943befc81a278c16c3df5657a1c7acf0cd"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f02-transfer.svg",
+        "sha256": "8ce26d7c5e3d470a2b0e564d77584c39d21d5e493e75e7479e79f5e84cc9d575"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f03-time-payroll.mmd",
+        "sha256": "33c3d93ba1aeeafcc24a0ae5e69a9c444b6ed1415027462c375f0ee1e413a4a2"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f03-time-payroll.svg",
+        "sha256": "391dc1c5d2bcbe6457402749361e59f93fdf5f4429032d688b2ff4006d9ff2f3"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f04-performance-to-finance.mmd",
+        "sha256": "8c774e2802a6816afe75cef9f26e78d2ef3f6f9a7a964ca6edc355f619820d11"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f04-performance-to-finance.svg",
+        "sha256": "27bf609a44d9ab4eab123e9aff190bce0e5d72e45380a08356c14b56b2ef0a7f"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f05-retro-correction.mmd",
+        "sha256": "65bb1194f0b21f484985395b020feba9da249080e1e32398b006146b09caf24f"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f05-retro-correction.svg",
+        "sha256": "2cfc8c9c7b18664df0b3da91781fba194ac8547d9feeedfa3309d2a8e72c308d"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f06-contribution.mmd",
+        "sha256": "5aba8db274fe6be7dd2eb42f10faa98293b4854032df14a30e87cadb26049ae5"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f06-contribution.svg",
+        "sha256": "c2ff12cb859a338cd2ae9df82b2513646cfcbfb14c25dddcf3e4471df8cdcc06"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f07-exit-rehire.mmd",
+        "sha256": "62073817dbd3e4db96048b0ff72537f3684d8153872dafd2ca0af6028ff9146b"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f07-exit-rehire.svg",
+        "sha256": "ac1180aca3665f5483a42e25cf6b949e7d4db3dc3fd76f43c3625c577b474548"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f08-talent-development.mmd",
+        "sha256": "23b8762320e91db1be18d5987acb792aab55965a4d8b2c42ec19f7896ce3e6a8"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f08-talent-development.svg",
+        "sha256": "5c2927a26bd8b1486b1dccb1683b286fc7f71c0d5ffd7730e0a951adb5ce22aa"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f09-reliable-delivery.mmd",
+        "sha256": "bdaee196003386b8ba3d037dbf8f46d0c026438e1f0f91aed7d8bcf30ee63260"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/f09-reliable-delivery.svg",
+        "sha256": "0619eb2d7f4179919c27ad7c42c56708ed74b0504c0700fd625f11c4631d7dab"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g02-target-domain-map.mmd",
+        "sha256": "654dc342c343611f1c2332a7204a73da9432f28ef903d5e5107c0c5292e7d29a"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g02-target-domain-map.svg",
+        "sha256": "f1a3a785695dd136a4d4f3488b08b8c1eb492cb7f49fe63f5ab32e452542180c"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g03-fact-ownership.mmd",
+        "sha256": "9dc3d5c2e38ab2ff23d6eacc8566f87c768fa3d9bffa410723b7ff52373c6417"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g03-fact-ownership.svg",
+        "sha256": "9c806a4fd8a31a93b678dea000c183f794b77c6d282f8e76f60bd13b68c7792b"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g04-formal-deployment.mmd",
+        "sha256": "66e0548baf04f233699a86987d5e5fc76fc1cb7812f9291e6b1d6b13e7bec148"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g04-formal-deployment.svg",
+        "sha256": "08ffed2c7d0d417df3408626dfb5e3e8e2e197048ab329d55979351117f230ff"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g05-context-map.mmd",
+        "sha256": "a15ea096932a180385ec9a48b0abb82981ebb20d1eb385583b614e48b68e3196"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g05-context-map.svg",
+        "sha256": "68d673b33a7d12f6ad861a4ce49cd0cb1d5ab62e73b4add7b613feec9e5842a1"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g06-aggregate-transactions.mmd",
+        "sha256": "5a83ca75253f88b8406cbe4366bbfe0afb78844d3cd2c48bc51bda22351a9762"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/g06-aggregate-transactions.svg",
+        "sha256": "7d791d0a23d3a1a9880295491b721f9b3efcf8d2649aef1ec9a5d50af934857d"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m01.mmd",
+        "sha256": "cce4886b12039cf93579c81cb6f1bd2d66b6bfe988a237cb19da7e2439460c68"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m01.svg",
+        "sha256": "0202dacd584121a5b2f791a827ac98bda0c66b68da6dc5c223de912a85e1a83e"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m02.mmd",
+        "sha256": "c7c6c3c7362496be0a0eb22977170d37f1970e469b9f05d907129c230e98dede"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m02.svg",
+        "sha256": "c2271cc69a4dd18b333368025fa5f36e310b0e9254aba8f0f9bbc1982152a284"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m03.mmd",
+        "sha256": "e17f6bd337fe44e976c1fcbd56a900c3a1db841f754526ba193daeb16efa6569"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m03.svg",
+        "sha256": "5e6caae8603fd55011e29d73de224d67b2b31294a21b91e7ebeac8b2a26832ce"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m04.mmd",
+        "sha256": "da27111de82ac8400e6213ba011f8500cb3eb6f1d4c69596a657b14f8f7325d3"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m04.svg",
+        "sha256": "266d1f92ae7015f6858d49ee23143ceb5a0683792aa97429458f25f9ce0e5bc2"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m05.mmd",
+        "sha256": "6218af84cc597d29e72dbe72717143f6c5f6fd1dc07aa313b6382dc11857576a"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m05.svg",
+        "sha256": "a125038bccf96ea436a55ca8a0289bc16e35d17e224926c61412502bb717d194"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m06.mmd",
+        "sha256": "7bcc87d8b78130967713244ab07f9b2b44ee77ab89ce370661a4dcb59f274ee3"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m06.svg",
+        "sha256": "b90cd3dbc552dbda6697328035167a8d910b34ab22970957cb53ecfd7556936c"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m07.mmd",
+        "sha256": "4bfdaad7ea848764b9b22154b4a922d4393e8bb5a2a538d86e4aa0bfeaf8b9ca"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m07.svg",
+        "sha256": "bd9f8024d2e62965a8871c0c32622b373c965edbd4081aa2d19f71adeaf07bc1"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m08.mmd",
+        "sha256": "1c442ed6dca571939669b5d700f8056e65f162beecf844d17b5eee2f2b719312"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m08.svg",
+        "sha256": "442c02b1b1c4043f13b91033edc519254a8744bea553d5c91dd5967fcc3829b2"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m09.mmd",
+        "sha256": "0139fdeb60374990497e1e07228c77ebb7f068ac0e618fd0f39c2dafce561581"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m09.svg",
+        "sha256": "c3d3d59fd08b0331f78c86cdc1981a0c217700939f7c33aac1ef9d8d484cd9e3"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m10.mmd",
+        "sha256": "07074d49cbbfe1cba7c1a09c2f774d6cb121da7dea77ce80e14416f84671eca8"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m10.svg",
+        "sha256": "4f3ee2078e612ec2b0f2798430968adab8ca35163b269c6c6478ee5c235915c2"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m11.mmd",
+        "sha256": "96c95b0c4d4ab7bdf3b531a2e95aab36759dfd9e8c9b0552db19f4c1243fe4a3"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m11.svg",
+        "sha256": "72081681b14291130c63382c38e3b74ad204af63795fbc6b2bde5d2e9c055602"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m12.mmd",
+        "sha256": "44fe5061fc15997b098d76bcad88cd2dd342b830ff2d437d5d7da520e5458645"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m12.svg",
+        "sha256": "8ca98639d55a438329cc8d9d03d61709a92aa9143938c96e0355f16f1f57f7ac"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m13.mmd",
+        "sha256": "0721628ba7ff191bb638cfc2fcfd9f3c9173bc247e1bf5794434ceb9a60c75bf"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m13.svg",
+        "sha256": "f144524d40ba8ee57702ae5982f0abdb6ab079c6b7a81119be074b82f4ed87a6"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m14.mmd",
+        "sha256": "1b0d60e3d8b92aeff5cf1e0d8c2712c3ab52ddcbf358e2127087c92794d8274b"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m14.svg",
+        "sha256": "f3c41ecae669390b4c4660713ae44d251f7c6e121b515da7fd124c447284d6d8"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m15.mmd",
+        "sha256": "9fa2307bbf3850f50e4ba87b478c34c208d6423bd4809b51bea43b5533b2c6b3"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m15.svg",
+        "sha256": "44c96c159810cdcad9e85868e045c5b0dc64e2558a7c4a57c60b6f0d99725389"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m16.mmd",
+        "sha256": "5dd0a558a78a9fd5d46cd99f6e6e48f399c55a8ce68c6dcf92775c9f2f0cfaef"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m16.svg",
+        "sha256": "45208c1ddf353e5aceeddfe1157d641210f733f6d1aeb9b37222e1d40eed7206"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m17.mmd",
+        "sha256": "b8d7e7c7e64c44958273b0ad45a3b5bc1d90ac676984e7314d1f63c930284952"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m17.svg",
+        "sha256": "542cf0fd3bdef4b789bafb247230f4bf02c4ae92783db60b381b015813deb928"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m18.mmd",
+        "sha256": "54296386af731bcfa37d1888d4ecfd39f155a37f3b9498742eacc5b0578a1a5e"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m18.svg",
+        "sha256": "51bda950f22e3d0b45a960c279efc093c6a3befa32e41e76fa2dd2e389a80e9d"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m19.mmd",
+        "sha256": "bb773da961a06022f169aa606a7a5b0b54778458f320958158104acf9670620f"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m19.svg",
+        "sha256": "6613500b3fdd5a5e4bb15dfcb39a4a5e24ef0d81fb80effa97226d836d458feb"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m20.mmd",
+        "sha256": "9219834632846b5153f188835cc9b3f90d6037ca7b3b728035320bb1145024cd"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/m20.svg",
+        "sha256": "8a01dd4e57e138e9be31bfe73b24da606b75a6a851c87514e2e6524be43c7cb2"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/mermaid-config.json",
+        "sha256": "4a953f91ce09b7081ecc3b99a110de3abfc768541cadd22f9e42d618fac63810"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x01.mmd",
+        "sha256": "cab1c3da001a0a5f8e8758dcf38a0142f22ff92c90ffd3143c22a78fda0ff52d"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x01.svg",
+        "sha256": "6bcf26b9873633d1a3fcd6be953edeedf83179dfa00fd08692cd51b37dfcc073"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x02.mmd",
+        "sha256": "48ce544a2032b09883ac6a03fb5a22081a5c23e41b64538ee58c79f458cf365b"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x02.svg",
+        "sha256": "ae1959ec3d98f5fab2a671a6562598c6e3426bcd1cb9e08f9af158a624105d08"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x03.mmd",
+        "sha256": "91f4f14eea8eb16fe7044f281cc87e2b72ca36be7c87b06bd514ff91f0215521"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x03.svg",
+        "sha256": "2f7ef40cc4aa4980f95aacd923399f1d99ea90a55d6239445ccfbd931bde42d0"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x04.mmd",
+        "sha256": "11e8fbb80e75774ed7185ed76db4fcf2f9603f92c89d0e356e31c72038fdb37e"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x04.svg",
+        "sha256": "a672b1be34469d25f6e47f0f209a3e20c49a76ae1de9a0174431261613bf9504"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x05.mmd",
+        "sha256": "e6011b919b01a088292471bdedc4bd875d4f3182e0db7f27fa0b66fce04f0ed8"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x05.svg",
+        "sha256": "c9d2de33e4378ef16930a54d8f83824694b63a2a77214f786bd1858e978336fc"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x06.mmd",
+        "sha256": "b33a845e68b2cbcbdd3003cf358f44e742701c92cf563efbd857381e56990711"
+      },
+      {
+        "path": "docs/china-hcm/diagrams/x06.svg",
+        "sha256": "86cd1f3fd7c6cd8b880f31052300cffc1b1a2d3c61cc399b1a4d4ca09515ae41"
+      },
+      {
+        "path": "docs/china-hcm/modules/m01.md",
+        "sha256": "9fa01d59b90e32d9f820e22172f883107f4f719457af9efe7f91c01558f87ea4"
+      },
+      {
+        "path": "docs/china-hcm/modules/m02.md",
+        "sha256": "f8518ba511b396e1a5c024b53f051de0b2b72b31afdb54a615746174b9223f4f"
+      },
+      {
+        "path": "docs/china-hcm/modules/m03.md",
+        "sha256": "1f38235585c786e6c3045702ae447c9c3bfd27f7e81b5e8fe8c6451590b3c82c"
+      },
+      {
+        "path": "docs/china-hcm/modules/m04.md",
+        "sha256": "f170300c9d94feb2000674a7d0347f5cddc6d4e8746e7bfda207961f0e886cee"
+      },
+      {
+        "path": "docs/china-hcm/modules/m05.md",
+        "sha256": "087c8cdc98ea9f5b5bc64e2d874eaaa2f2fbddc0ff90d987e6de397c80b113ee"
+      },
+      {
+        "path": "docs/china-hcm/modules/m06.md",
+        "sha256": "47a122822c98957d056661311f27acf0585436a897197cdfe80fea7cc33139ed"
+      },
+      {
+        "path": "docs/china-hcm/modules/m07.md",
+        "sha256": "e900f306c7c16b78043611fe348f5b99dd57ce710edefc9a77a20e529290183d"
+      },
+      {
+        "path": "docs/china-hcm/modules/m08.md",
+        "sha256": "197c3e39c5fdd4427b0d379b97008e4ced21dc1f6ff29bb1309ab7ec03e51e18"
+      },
+      {
+        "path": "docs/china-hcm/modules/m09.md",
+        "sha256": "a6f5b06febcf815fe4c486582260f37b12d05b88be20e3861c0ce3b075b78786"
+      },
+      {
+        "path": "docs/china-hcm/modules/m10.md",
+        "sha256": "078cd69786c0529304a6b0daee23651a790d9647b3e45b12ed12f34809e934a4"
+      },
+      {
+        "path": "docs/china-hcm/modules/m11.md",
+        "sha256": "5f0b9cdb31119c7d9ad6e016ed0647346f638a256b8633ce3220727fcc263243"
+      },
+      {
+        "path": "docs/china-hcm/modules/m12.md",
+        "sha256": "88f35e120304431e484198b2dd568ab9a9726ada61a0fa5e7edcd48e6f820fd0"
+      },
+      {
+        "path": "docs/china-hcm/modules/m13.md",
+        "sha256": "6b87ffe4a4d2cdf735f29d0f45b92c44ffe3894fe9cdef33f05aade9cf32ac29"
+      },
+      {
+        "path": "docs/china-hcm/modules/m14.md",
+        "sha256": "fbeb73fe42b90355b81979f3a6612f17d81875969c8e4325f0bc85fcafa1a0c9"
+      },
+      {
+        "path": "docs/china-hcm/modules/m15.md",
+        "sha256": "7d834a7532fe6463a380c22145c74f6c837afb9d9247eada8c76f2b90f47e4c3"
+      },
+      {
+        "path": "docs/china-hcm/modules/m16.md",
+        "sha256": "b559cd05958bbdf4e929f830e92c64cadac7ec50ea5e76a393587dbc31cd2e73"
+      },
+      {
+        "path": "docs/china-hcm/modules/m17.md",
+        "sha256": "3da4af97a3985b02ec6d6728c3d6032d61de88445011044386f75674ad154252"
+      },
+      {
+        "path": "docs/china-hcm/modules/m18.md",
+        "sha256": "693982f59675ca489025ded6ef5e68d2c804c42e4255684be1feeb2a4e1256d8"
+      },
+      {
+        "path": "docs/china-hcm/modules/m19.md",
+        "sha256": "83ff5ea2df9e79e3d9bd81499ec8b643826f21b93f506cef1d166bfeb6eb1c06"
+      },
+      {
+        "path": "docs/china-hcm/modules/m20.md",
+        "sha256": "08a81b9938b3c2aefd01ec67cd2ef36066f5fc4d4c6afdb63c5f541d60f556f5"
+      },
+      {
+        "path": "docs/china-hcm/modules/x01.md",
+        "sha256": "6fa043a206744d325b1782323d69361f6046aa498d3752e410b6bc17714f446d"
+      },
+      {
+        "path": "docs/china-hcm/modules/x02.md",
+        "sha256": "350cc3dbc5aa4627ffca2c31b15415ea17a42c947592fe8bc62e727fc3cf9f7c"
+      },
+      {
+        "path": "docs/china-hcm/modules/x03.md",
+        "sha256": "daac11f5a8970a7dc53d45e20a8bbad738bf12a0ca942e59ad0820ded9d147a8"
+      },
+      {
+        "path": "docs/china-hcm/modules/x04.md",
+        "sha256": "89036cc3f6470c5adae3111668132268296cb0b738df00e2a8749fbee8619676"
+      },
+      {
+        "path": "docs/china-hcm/modules/x05.md",
+        "sha256": "12535d12f78ce159343d2968b9e997dc09057dd73606cc0ffad81de0eecc6ea8"
+      },
+      {
+        "path": "docs/china-hcm/modules/x06.md",
+        "sha256": "85ffebd25f6ab5126c0fc3e7176abbc814ea6abd3fda67822d5843ed93df333b"
+      }
+    ],
+    "adopted_files": [
+      {
+        "source_path": "docs/china-hcm/02-target-architecture.md",
+        "source_sha256": "3ec13c25b3d39290ebcf3b843b3dac83284e0d74bdfd078741ffd01b35afd2c8",
+        "target_path": "docs/architecture/target/02-target-architecture.md",
+        "adopted_sha256": "3ec13c25b3d39290ebcf3b843b3dac83284e0d74bdfd078741ffd01b35afd2c8",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/03-consistency-contracts.md",
+        "source_sha256": "edb0b2457d11dc374b3bc1b5ca3074865733ecd45e275a75b2b25cb1c84a141e",
+        "target_path": "docs/architecture/target/03-consistency-contracts.md",
+        "adopted_sha256": "edb0b2457d11dc374b3bc1b5ca3074865733ecd45e275a75b2b25cb1c84a141e",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/04-china-localization.md",
+        "source_sha256": "fef56fddf6c3b5dc0ddbb78a785665534e4827a0e27f2f004b6727f6fbb8585d",
+        "target_path": "docs/architecture/target/04-china-localization.md",
+        "adopted_sha256": "fef56fddf6c3b5dc0ddbb78a785665534e4827a0e27f2f004b6727f6fbb8585d",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/07-concept-mapping.md",
+        "source_sha256": "b22c1f10bcb33ddb455d22959f44d112fbb66cb95326903f20e91e5991cafee3",
+        "target_path": "docs/architecture/target/07-concept-mapping.md",
+        "adopted_sha256": "7a3958724e93713d25eeeec0a2b07860a5f6be77957e3addfc396441298ba5eb",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/08-cross-module-flows.md",
+        "source_sha256": "73652e06fee2edfb379042e0c4f66ba9497516325b49321da2dfd5b0efb818b1",
+        "target_path": "docs/architecture/target/08-cross-module-flows.md",
+        "adopted_sha256": "73652e06fee2edfb379042e0c4f66ba9497516325b49321da2dfd5b0efb818b1",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/10-ddd-and-state-contracts.md",
+        "source_sha256": "f9eb6807299a51780546772d61887999f423c5474921a596fc8df94f7c66a602",
+        "target_path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+        "adopted_sha256": "2863f34e4ad7c4d7f240d0ea9ff4c8271589955806ccf2728c5c42744f22d829",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/12-concept-architecture.md",
+        "source_sha256": "0f42b31d825bd64c40b86f33bb3bb6b1a1ea2853cf85abfdacc644eeb417984b",
+        "target_path": "docs/architecture/target/12-concept-architecture.md",
+        "adopted_sha256": "4601ddcc8a7fd0a3b1e8f2899b8bdd895faefa65cd7c1ed1ae2567b8a7461ae0",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/14-aggregate-catalog.md",
+        "source_sha256": "3c5af0ccee96c87158fb70ad8f381477f07f65cff7ab810ba6cbe6a836594cc7",
+        "target_path": "docs/architecture/target/14-aggregate-catalog.md",
+        "adopted_sha256": "3c5af0ccee96c87158fb70ad8f381477f07f65cff7ab810ba6cbe6a836594cc7",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/16-command-acceptance-index.md",
+        "source_sha256": "f0b7d2fedbdfd8045c464147e7ff8088ffe34ffc452ef01f8078d3671daf88c4",
+        "target_path": "docs/architecture/target/16-command-acceptance-index.md",
+        "adopted_sha256": "f0b7d2fedbdfd8045c464147e7ff8088ffe34ffc452ef01f8078d3671daf88c4",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/17-terminology-glossary.md",
+        "source_sha256": "7fe6dd960b9c4cf8286000f2d174c080f2594a5ce23cf7dff8cb4e525ccf2c1b",
+        "target_path": "docs/architecture/target/17-terminology-glossary.md",
+        "adopted_sha256": "b284fed1b1583c11b78174890b280b5dd5d666f3322caaae690fbc35890e1ee5",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/data/business-modules.json",
+        "source_sha256": "bcbe9654f98f92ebfbfd039a4e3d8133e71dccb42f67ba6ade9c58be42f6bc91",
+        "target_path": "docs/architecture/target/data/business-modules.json",
+        "adopted_sha256": "bcbe9654f98f92ebfbfd039a4e3d8133e71dccb42f67ba6ade9c58be42f6bc91",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/data/command-contract-index.json",
+        "source_sha256": "5b5859337796a801a2febb6afabd9845efe75b817a3ab61da212d87487bba3ef",
+        "target_path": "docs/architecture/target/data/command-contract-index.json",
+        "adopted_sha256": "5b5859337796a801a2febb6afabd9845efe75b817a3ab61da212d87487bba3ef",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/data/concept-mapping.csv",
+        "source_sha256": "f01a61e03d6cf90e6d050e6837617baf039912e312a89dbebe4c98a6388cb519",
+        "target_path": "docs/architecture/target/data/concept-mapping.csv",
+        "adopted_sha256": "f01a61e03d6cf90e6d050e6837617baf039912e312a89dbebe4c98a6388cb519",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/data/concept-mapping.json",
+        "source_sha256": "a61d8acb7c3c2a0ec7d401b51dc86716878045917047a3479945bdfb868a4f77",
+        "target_path": "docs/architecture/target/data/concept-mapping.json",
+        "adopted_sha256": "a61d8acb7c3c2a0ec7d401b51dc86716878045917047a3479945bdfb868a4f77",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/data/concept-refinement-sources.json",
+        "source_sha256": "0a0dcd8ee3ffb845f11a8f78521dcc389f376f5eaf981df6e49066054cbd0b43",
+        "target_path": "docs/architecture/target/data/concept-refinement-sources.json",
+        "adopted_sha256": "0a0dcd8ee3ffb845f11a8f78521dcc389f376f5eaf981df6e49066054cbd0b43",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/data/crosscutting-modules.json",
+        "source_sha256": "0fb8f6e265e9b507e593b7fd34acac90861e341617eb9cdbb1baf79dfb183c59",
+        "target_path": "docs/architecture/target/data/crosscutting-modules.json",
+        "adopted_sha256": "0fb8f6e265e9b507e593b7fd34acac90861e341617eb9cdbb1baf79dfb183c59",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/data/oracle-release-check.json",
+        "source_sha256": "584112f8d4e397a67b3626b3f042e474e5d38895ecfab08bf718428eb7b11af2",
+        "target_path": "docs/architecture/target/data/oracle-release-check.json",
+        "adopted_sha256": "584112f8d4e397a67b3626b3f042e474e5d38895ecfab08bf718428eb7b11af2",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/data/terminology-glossary.json",
+        "source_sha256": "ad6290e7f060888efb28a137789c25178eb9604364c8550ea28542c112332a89",
+        "target_path": "docs/architecture/target/data/terminology-glossary.json",
+        "adopted_sha256": "ad6290e7f060888efb28a137789c25178eb9604364c8550ea28542c112332a89",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/README.md",
+        "source_sha256": "62a743cd02808565b608621a1722204df22afc988fd566cd43d4298c8853c49b",
+        "target_path": "docs/architecture/target/diagrams/README.md",
+        "adopted_sha256": "39ceb12a342e7dab5a3ad392a4239ecd0f391fcf7b1717d2eb23b4527da0da3b",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c01-core-hcm-concepts.mmd",
+        "source_sha256": "446ea5a19ea269d28eaa0ea5e2a008ea9e6361ffaab6315420fb489c54664624",
+        "target_path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.mmd",
+        "adopted_sha256": "446ea5a19ea269d28eaa0ea5e2a008ea9e6361ffaab6315420fb489c54664624",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c01-core-hcm-concepts.svg",
+        "source_sha256": "3498783fec84d83eb2ceda1439e713474a5bd4f2dce2ffdc52ca59e168e185d6",
+        "target_path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.svg",
+        "adopted_sha256": "3498783fec84d83eb2ceda1439e713474a5bd4f2dce2ffdc52ca59e168e185d6",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c02-payroll-concepts.mmd",
+        "source_sha256": "0bcae594eaad281e4ccb92332bec8922fcbdf1c46872be8a9fe88b24869795b8",
+        "target_path": "docs/architecture/target/diagrams/c02-payroll-concepts.mmd",
+        "adopted_sha256": "0bcae594eaad281e4ccb92332bec8922fcbdf1c46872be8a9fe88b24869795b8",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c02-payroll-concepts.svg",
+        "source_sha256": "7d9039b760d287125c1ad3ec70d3b46d74404a051d10dba5bdc6abd793b85dce",
+        "target_path": "docs/architecture/target/diagrams/c02-payroll-concepts.svg",
+        "adopted_sha256": "7d9039b760d287125c1ad3ec70d3b46d74404a051d10dba5bdc6abd793b85dce",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c03-time-absence-concepts.mmd",
+        "source_sha256": "940167b4d79f14d8091d375300345980a7343d47886f23ef19db314fb226d328",
+        "target_path": "docs/architecture/target/diagrams/c03-time-absence-concepts.mmd",
+        "adopted_sha256": "940167b4d79f14d8091d375300345980a7343d47886f23ef19db314fb226d328",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c03-time-absence-concepts.svg",
+        "source_sha256": "67bca7e3a391bbdae1839149f6032310de5ef906226b554e2798f0f0e066de93",
+        "target_path": "docs/architecture/target/diagrams/c03-time-absence-concepts.svg",
+        "adopted_sha256": "67bca7e3a391bbdae1839149f6032310de5ef906226b554e2798f0f0e066de93",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c04-talent-concepts.mmd",
+        "source_sha256": "9df02620ddf49c17f451e32e39b205bc36fae608df6b36c2d81ec433f07e352d",
+        "target_path": "docs/architecture/target/diagrams/c04-talent-concepts.mmd",
+        "adopted_sha256": "9df02620ddf49c17f451e32e39b205bc36fae608df6b36c2d81ec433f07e352d",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c04-talent-concepts.svg",
+        "source_sha256": "d902eb9cbdb9621ac41c983a637f28034a6ba870338269c327248056766ee971",
+        "target_path": "docs/architecture/target/diagrams/c04-talent-concepts.svg",
+        "adopted_sha256": "d902eb9cbdb9621ac41c983a637f28034a6ba870338269c327248056766ee971",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c05-reference-access-concepts.mmd",
+        "source_sha256": "f59ad45ce853c9ce23dc0aa856082447ca95719e2ff099ed263958dc6d8a1e04",
+        "target_path": "docs/architecture/target/diagrams/c05-reference-access-concepts.mmd",
+        "adopted_sha256": "f59ad45ce853c9ce23dc0aa856082447ca95719e2ff099ed263958dc6d8a1e04",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/c05-reference-access-concepts.svg",
+        "source_sha256": "cf1f808f689c94c5f6dc68c7f23411a577006e84619ad0d4dd2cc8835c9c3c0a",
+        "target_path": "docs/architecture/target/diagrams/c05-reference-access-concepts.svg",
+        "adopted_sha256": "cf1f808f689c94c5f6dc68c7f23411a577006e84619ad0d4dd2cc8835c9c3c0a",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e01-person-employment.mmd",
+        "source_sha256": "8eb3159a7328ea91701a03c38f6c5dd7cc5a75d3b7bab045484f938bab5fe4d2",
+        "target_path": "docs/architecture/target/diagrams/e01-person-employment.mmd",
+        "adopted_sha256": "8eb3159a7328ea91701a03c38f6c5dd7cc5a75d3b7bab045484f938bab5fe4d2",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e01-person-employment.svg",
+        "source_sha256": "8a717ec3333d277a9ce0502b85f2412c7a2934c0ee3a9c24df00d1db7500401f",
+        "target_path": "docs/architecture/target/diagrams/e01-person-employment.svg",
+        "adopted_sha256": "8a717ec3333d277a9ce0502b85f2412c7a2934c0ee3a9c24df00d1db7500401f",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e02-legal-contexts.mmd",
+        "source_sha256": "7058d262aed60c2e69caa7ba3d7ef071527eacf637d882b89b48a52bf2efac8a",
+        "target_path": "docs/architecture/target/diagrams/e02-legal-contexts.mmd",
+        "adopted_sha256": "7058d262aed60c2e69caa7ba3d7ef071527eacf637d882b89b48a52bf2efac8a",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e02-legal-contexts.svg",
+        "source_sha256": "3ee6f5e05a662303b97da7d84720b8a51bd59fab8a831a40b2731d51fee93b51",
+        "target_path": "docs/architecture/target/diagrams/e02-legal-contexts.svg",
+        "adopted_sha256": "3ee6f5e05a662303b97da7d84720b8a51bd59fab8a831a40b2731d51fee93b51",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e03-contribution-ledgers.mmd",
+        "source_sha256": "05bf7eec8ccf579017a6b3d8c09034eec4518f6fe694d872be2089b7b99cb1e0",
+        "target_path": "docs/architecture/target/diagrams/e03-contribution-ledgers.mmd",
+        "adopted_sha256": "05bf7eec8ccf579017a6b3d8c09034eec4518f6fe694d872be2089b7b99cb1e0",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e03-contribution-ledgers.svg",
+        "source_sha256": "eba90b52f4fc1e3a9c3874c8895e4751b98357c1612cb17b841e79eb672f4d40",
+        "target_path": "docs/architecture/target/diagrams/e03-contribution-ledgers.svg",
+        "adopted_sha256": "eba90b52f4fc1e3a9c3874c8895e4751b98357c1612cb17b841e79eb672f4d40",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e04-effective-adoption.mmd",
+        "source_sha256": "4569eacb9d35338208bee8f904f897e1f9ede0cdda9cfd9b24ad0db50d549a61",
+        "target_path": "docs/architecture/target/diagrams/e04-effective-adoption.mmd",
+        "adopted_sha256": "4569eacb9d35338208bee8f904f897e1f9ede0cdda9cfd9b24ad0db50d549a61",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e04-effective-adoption.svg",
+        "source_sha256": "6ab47bc8e4552e9d53eb33b2796e4a387fe13480e887251a7f2e069337ecfeb5",
+        "target_path": "docs/architecture/target/diagrams/e04-effective-adoption.svg",
+        "adopted_sha256": "6ab47bc8e4552e9d53eb33b2796e4a387fe13480e887251a7f2e069337ecfeb5",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e05-bank-payment-identity.mmd",
+        "source_sha256": "db4b75561995de35e120a23f8dc95bb39bfcee236ff7e20ae42c3919c145a9d7",
+        "target_path": "docs/architecture/target/diagrams/e05-bank-payment-identity.mmd",
+        "adopted_sha256": "db4b75561995de35e120a23f8dc95bb39bfcee236ff7e20ae42c3919c145a9d7",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e05-bank-payment-identity.svg",
+        "source_sha256": "e658022ee98dfb9164360b676bc62a58ad3d741f30dbafe027b1b7452b2d86ea",
+        "target_path": "docs/architecture/target/diagrams/e05-bank-payment-identity.svg",
+        "adopted_sha256": "e658022ee98dfb9164360b676bc62a58ad3d741f30dbafe027b1b7452b2d86ea",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e06-external-state.mmd",
+        "source_sha256": "9002fe5de9848f80c92537c1af7ade36892acd9bd64a47be3fb5866152fb0f48",
+        "target_path": "docs/architecture/target/diagrams/e06-external-state.mmd",
+        "adopted_sha256": "9002fe5de9848f80c92537c1af7ade36892acd9bd64a47be3fb5866152fb0f48",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e06-external-state.svg",
+        "source_sha256": "444294805807ee6048364a442d39fa9dd0fe911cfc53e4341f81fe45e80b8b61",
+        "target_path": "docs/architecture/target/diagrams/e06-external-state.svg",
+        "adopted_sha256": "444294805807ee6048364a442d39fa9dd0fe911cfc53e4341f81fe45e80b8b61",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e07-tax-commitment.mmd",
+        "source_sha256": "18cd00e21e66729bc948ed3196d6bc82078722b6002185934a032b96177ebde7",
+        "target_path": "docs/architecture/target/diagrams/e07-tax-commitment.mmd",
+        "adopted_sha256": "18cd00e21e66729bc948ed3196d6bc82078722b6002185934a032b96177ebde7",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e07-tax-commitment.svg",
+        "source_sha256": "f98720c5383fab6cb83daec370e91b0ee9ac825c595e998c08d9115a60e660d5",
+        "target_path": "docs/architecture/target/diagrams/e07-tax-commitment.svg",
+        "adopted_sha256": "f98720c5383fab6cb83daec370e91b0ee9ac825c595e998c08d9115a60e660d5",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e08-payslip-publication.mmd",
+        "source_sha256": "a1f27d5c873ae5d493a0e015b01cf40e19cc35a43cca1793471102c06127238e",
+        "target_path": "docs/architecture/target/diagrams/e08-payslip-publication.mmd",
+        "adopted_sha256": "a1f27d5c873ae5d493a0e015b01cf40e19cc35a43cca1793471102c06127238e",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/e08-payslip-publication.svg",
+        "source_sha256": "bfd7697e7892a216610b31206ae94d1c8921a0910a2f5a37b02b0a13f62602d0",
+        "target_path": "docs/architecture/target/diagrams/e08-payslip-publication.svg",
+        "adopted_sha256": "bfd7697e7892a216610b31206ae94d1c8921a0910a2f5a37b02b0a13f62602d0",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f01-hire-first-pay.mmd",
+        "source_sha256": "321d60b6cd9117d9258ffdd3ad715dcb581ebcbc39bcdd76aeb3d7550fb73d0a",
+        "target_path": "docs/architecture/target/diagrams/f01-hire-first-pay.mmd",
+        "adopted_sha256": "321d60b6cd9117d9258ffdd3ad715dcb581ebcbc39bcdd76aeb3d7550fb73d0a",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f01-hire-first-pay.svg",
+        "source_sha256": "bfc5b35378fa059970a67755a5b0a11b2a434b4e5e8ea72a5c3fb780e1999065",
+        "target_path": "docs/architecture/target/diagrams/f01-hire-first-pay.svg",
+        "adopted_sha256": "bfc5b35378fa059970a67755a5b0a11b2a434b4e5e8ea72a5c3fb780e1999065",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f02-transfer.mmd",
+        "source_sha256": "351a784ab9bc605ed1b26c03bd14db943befc81a278c16c3df5657a1c7acf0cd",
+        "target_path": "docs/architecture/target/diagrams/f02-transfer.mmd",
+        "adopted_sha256": "351a784ab9bc605ed1b26c03bd14db943befc81a278c16c3df5657a1c7acf0cd",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f02-transfer.svg",
+        "source_sha256": "8ce26d7c5e3d470a2b0e564d77584c39d21d5e493e75e7479e79f5e84cc9d575",
+        "target_path": "docs/architecture/target/diagrams/f02-transfer.svg",
+        "adopted_sha256": "8ce26d7c5e3d470a2b0e564d77584c39d21d5e493e75e7479e79f5e84cc9d575",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f03-time-payroll.mmd",
+        "source_sha256": "33c3d93ba1aeeafcc24a0ae5e69a9c444b6ed1415027462c375f0ee1e413a4a2",
+        "target_path": "docs/architecture/target/diagrams/f03-time-payroll.mmd",
+        "adopted_sha256": "33c3d93ba1aeeafcc24a0ae5e69a9c444b6ed1415027462c375f0ee1e413a4a2",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f03-time-payroll.svg",
+        "source_sha256": "391dc1c5d2bcbe6457402749361e59f93fdf5f4429032d688b2ff4006d9ff2f3",
+        "target_path": "docs/architecture/target/diagrams/f03-time-payroll.svg",
+        "adopted_sha256": "391dc1c5d2bcbe6457402749361e59f93fdf5f4429032d688b2ff4006d9ff2f3",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f04-performance-to-finance.mmd",
+        "source_sha256": "8c774e2802a6816afe75cef9f26e78d2ef3f6f9a7a964ca6edc355f619820d11",
+        "target_path": "docs/architecture/target/diagrams/f04-performance-to-finance.mmd",
+        "adopted_sha256": "8c774e2802a6816afe75cef9f26e78d2ef3f6f9a7a964ca6edc355f619820d11",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f04-performance-to-finance.svg",
+        "source_sha256": "27bf609a44d9ab4eab123e9aff190bce0e5d72e45380a08356c14b56b2ef0a7f",
+        "target_path": "docs/architecture/target/diagrams/f04-performance-to-finance.svg",
+        "adopted_sha256": "27bf609a44d9ab4eab123e9aff190bce0e5d72e45380a08356c14b56b2ef0a7f",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f05-retro-correction.mmd",
+        "source_sha256": "65bb1194f0b21f484985395b020feba9da249080e1e32398b006146b09caf24f",
+        "target_path": "docs/architecture/target/diagrams/f05-retro-correction.mmd",
+        "adopted_sha256": "65bb1194f0b21f484985395b020feba9da249080e1e32398b006146b09caf24f",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f05-retro-correction.svg",
+        "source_sha256": "2cfc8c9c7b18664df0b3da91781fba194ac8547d9feeedfa3309d2a8e72c308d",
+        "target_path": "docs/architecture/target/diagrams/f05-retro-correction.svg",
+        "adopted_sha256": "2cfc8c9c7b18664df0b3da91781fba194ac8547d9feeedfa3309d2a8e72c308d",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f06-contribution.mmd",
+        "source_sha256": "5aba8db274fe6be7dd2eb42f10faa98293b4854032df14a30e87cadb26049ae5",
+        "target_path": "docs/architecture/target/diagrams/f06-contribution.mmd",
+        "adopted_sha256": "5aba8db274fe6be7dd2eb42f10faa98293b4854032df14a30e87cadb26049ae5",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f06-contribution.svg",
+        "source_sha256": "c2ff12cb859a338cd2ae9df82b2513646cfcbfb14c25dddcf3e4471df8cdcc06",
+        "target_path": "docs/architecture/target/diagrams/f06-contribution.svg",
+        "adopted_sha256": "c2ff12cb859a338cd2ae9df82b2513646cfcbfb14c25dddcf3e4471df8cdcc06",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f07-exit-rehire.mmd",
+        "source_sha256": "62073817dbd3e4db96048b0ff72537f3684d8153872dafd2ca0af6028ff9146b",
+        "target_path": "docs/architecture/target/diagrams/f07-exit-rehire.mmd",
+        "adopted_sha256": "62073817dbd3e4db96048b0ff72537f3684d8153872dafd2ca0af6028ff9146b",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f07-exit-rehire.svg",
+        "source_sha256": "ac1180aca3665f5483a42e25cf6b949e7d4db3dc3fd76f43c3625c577b474548",
+        "target_path": "docs/architecture/target/diagrams/f07-exit-rehire.svg",
+        "adopted_sha256": "ac1180aca3665f5483a42e25cf6b949e7d4db3dc3fd76f43c3625c577b474548",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f08-talent-development.mmd",
+        "source_sha256": "23b8762320e91db1be18d5987acb792aab55965a4d8b2c42ec19f7896ce3e6a8",
+        "target_path": "docs/architecture/target/diagrams/f08-talent-development.mmd",
+        "adopted_sha256": "23b8762320e91db1be18d5987acb792aab55965a4d8b2c42ec19f7896ce3e6a8",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f08-talent-development.svg",
+        "source_sha256": "5c2927a26bd8b1486b1dccb1683b286fc7f71c0d5ffd7730e0a951adb5ce22aa",
+        "target_path": "docs/architecture/target/diagrams/f08-talent-development.svg",
+        "adopted_sha256": "5c2927a26bd8b1486b1dccb1683b286fc7f71c0d5ffd7730e0a951adb5ce22aa",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f09-reliable-delivery.mmd",
+        "source_sha256": "bdaee196003386b8ba3d037dbf8f46d0c026438e1f0f91aed7d8bcf30ee63260",
+        "target_path": "docs/architecture/target/diagrams/f09-reliable-delivery.mmd",
+        "adopted_sha256": "bdaee196003386b8ba3d037dbf8f46d0c026438e1f0f91aed7d8bcf30ee63260",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/f09-reliable-delivery.svg",
+        "source_sha256": "0619eb2d7f4179919c27ad7c42c56708ed74b0504c0700fd625f11c4631d7dab",
+        "target_path": "docs/architecture/target/diagrams/f09-reliable-delivery.svg",
+        "adopted_sha256": "0619eb2d7f4179919c27ad7c42c56708ed74b0504c0700fd625f11c4631d7dab",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g02-target-domain-map.mmd",
+        "source_sha256": "654dc342c343611f1c2332a7204a73da9432f28ef903d5e5107c0c5292e7d29a",
+        "target_path": "docs/architecture/target/diagrams/g02-target-domain-map.mmd",
+        "adopted_sha256": "654dc342c343611f1c2332a7204a73da9432f28ef903d5e5107c0c5292e7d29a",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g02-target-domain-map.svg",
+        "source_sha256": "f1a3a785695dd136a4d4f3488b08b8c1eb492cb7f49fe63f5ab32e452542180c",
+        "target_path": "docs/architecture/target/diagrams/g02-target-domain-map.svg",
+        "adopted_sha256": "f1a3a785695dd136a4d4f3488b08b8c1eb492cb7f49fe63f5ab32e452542180c",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g03-fact-ownership.mmd",
+        "source_sha256": "9dc3d5c2e38ab2ff23d6eacc8566f87c768fa3d9bffa410723b7ff52373c6417",
+        "target_path": "docs/architecture/target/diagrams/g03-fact-ownership.mmd",
+        "adopted_sha256": "9dc3d5c2e38ab2ff23d6eacc8566f87c768fa3d9bffa410723b7ff52373c6417",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g03-fact-ownership.svg",
+        "source_sha256": "9c806a4fd8a31a93b678dea000c183f794b77c6d282f8e76f60bd13b68c7792b",
+        "target_path": "docs/architecture/target/diagrams/g03-fact-ownership.svg",
+        "adopted_sha256": "9c806a4fd8a31a93b678dea000c183f794b77c6d282f8e76f60bd13b68c7792b",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g04-formal-deployment.mmd",
+        "source_sha256": "66e0548baf04f233699a86987d5e5fc76fc1cb7812f9291e6b1d6b13e7bec148",
+        "target_path": "docs/architecture/target/diagrams/g04-formal-deployment.mmd",
+        "adopted_sha256": "66e0548baf04f233699a86987d5e5fc76fc1cb7812f9291e6b1d6b13e7bec148",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g04-formal-deployment.svg",
+        "source_sha256": "08ffed2c7d0d417df3408626dfb5e3e8e2e197048ab329d55979351117f230ff",
+        "target_path": "docs/architecture/target/diagrams/g04-formal-deployment.svg",
+        "adopted_sha256": "08ffed2c7d0d417df3408626dfb5e3e8e2e197048ab329d55979351117f230ff",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g05-context-map.mmd",
+        "source_sha256": "a15ea096932a180385ec9a48b0abb82981ebb20d1eb385583b614e48b68e3196",
+        "target_path": "docs/architecture/target/diagrams/g05-context-map.mmd",
+        "adopted_sha256": "a15ea096932a180385ec9a48b0abb82981ebb20d1eb385583b614e48b68e3196",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g05-context-map.svg",
+        "source_sha256": "68d673b33a7d12f6ad861a4ce49cd0cb1d5ab62e73b4add7b613feec9e5842a1",
+        "target_path": "docs/architecture/target/diagrams/g05-context-map.svg",
+        "adopted_sha256": "68d673b33a7d12f6ad861a4ce49cd0cb1d5ab62e73b4add7b613feec9e5842a1",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g06-aggregate-transactions.mmd",
+        "source_sha256": "5a83ca75253f88b8406cbe4366bbfe0afb78844d3cd2c48bc51bda22351a9762",
+        "target_path": "docs/architecture/target/diagrams/g06-aggregate-transactions.mmd",
+        "adopted_sha256": "5a83ca75253f88b8406cbe4366bbfe0afb78844d3cd2c48bc51bda22351a9762",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/g06-aggregate-transactions.svg",
+        "source_sha256": "7d791d0a23d3a1a9880295491b721f9b3efcf8d2649aef1ec9a5d50af934857d",
+        "target_path": "docs/architecture/target/diagrams/g06-aggregate-transactions.svg",
+        "adopted_sha256": "7d791d0a23d3a1a9880295491b721f9b3efcf8d2649aef1ec9a5d50af934857d",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m01.mmd",
+        "source_sha256": "cce4886b12039cf93579c81cb6f1bd2d66b6bfe988a237cb19da7e2439460c68",
+        "target_path": "docs/architecture/target/diagrams/m01.mmd",
+        "adopted_sha256": "cce4886b12039cf93579c81cb6f1bd2d66b6bfe988a237cb19da7e2439460c68",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m01.svg",
+        "source_sha256": "0202dacd584121a5b2f791a827ac98bda0c66b68da6dc5c223de912a85e1a83e",
+        "target_path": "docs/architecture/target/diagrams/m01.svg",
+        "adopted_sha256": "0202dacd584121a5b2f791a827ac98bda0c66b68da6dc5c223de912a85e1a83e",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m02.mmd",
+        "source_sha256": "c7c6c3c7362496be0a0eb22977170d37f1970e469b9f05d907129c230e98dede",
+        "target_path": "docs/architecture/target/diagrams/m02.mmd",
+        "adopted_sha256": "c7c6c3c7362496be0a0eb22977170d37f1970e469b9f05d907129c230e98dede",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m02.svg",
+        "source_sha256": "c2271cc69a4dd18b333368025fa5f36e310b0e9254aba8f0f9bbc1982152a284",
+        "target_path": "docs/architecture/target/diagrams/m02.svg",
+        "adopted_sha256": "c2271cc69a4dd18b333368025fa5f36e310b0e9254aba8f0f9bbc1982152a284",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m03.mmd",
+        "source_sha256": "e17f6bd337fe44e976c1fcbd56a900c3a1db841f754526ba193daeb16efa6569",
+        "target_path": "docs/architecture/target/diagrams/m03.mmd",
+        "adopted_sha256": "e17f6bd337fe44e976c1fcbd56a900c3a1db841f754526ba193daeb16efa6569",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m03.svg",
+        "source_sha256": "5e6caae8603fd55011e29d73de224d67b2b31294a21b91e7ebeac8b2a26832ce",
+        "target_path": "docs/architecture/target/diagrams/m03.svg",
+        "adopted_sha256": "5e6caae8603fd55011e29d73de224d67b2b31294a21b91e7ebeac8b2a26832ce",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m04.mmd",
+        "source_sha256": "da27111de82ac8400e6213ba011f8500cb3eb6f1d4c69596a657b14f8f7325d3",
+        "target_path": "docs/architecture/target/diagrams/m04.mmd",
+        "adopted_sha256": "da27111de82ac8400e6213ba011f8500cb3eb6f1d4c69596a657b14f8f7325d3",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m04.svg",
+        "source_sha256": "266d1f92ae7015f6858d49ee23143ceb5a0683792aa97429458f25f9ce0e5bc2",
+        "target_path": "docs/architecture/target/diagrams/m04.svg",
+        "adopted_sha256": "266d1f92ae7015f6858d49ee23143ceb5a0683792aa97429458f25f9ce0e5bc2",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m05.mmd",
+        "source_sha256": "6218af84cc597d29e72dbe72717143f6c5f6fd1dc07aa313b6382dc11857576a",
+        "target_path": "docs/architecture/target/diagrams/m05.mmd",
+        "adopted_sha256": "6218af84cc597d29e72dbe72717143f6c5f6fd1dc07aa313b6382dc11857576a",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m05.svg",
+        "source_sha256": "a125038bccf96ea436a55ca8a0289bc16e35d17e224926c61412502bb717d194",
+        "target_path": "docs/architecture/target/diagrams/m05.svg",
+        "adopted_sha256": "a125038bccf96ea436a55ca8a0289bc16e35d17e224926c61412502bb717d194",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m06.mmd",
+        "source_sha256": "7bcc87d8b78130967713244ab07f9b2b44ee77ab89ce370661a4dcb59f274ee3",
+        "target_path": "docs/architecture/target/diagrams/m06.mmd",
+        "adopted_sha256": "7bcc87d8b78130967713244ab07f9b2b44ee77ab89ce370661a4dcb59f274ee3",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m06.svg",
+        "source_sha256": "b90cd3dbc552dbda6697328035167a8d910b34ab22970957cb53ecfd7556936c",
+        "target_path": "docs/architecture/target/diagrams/m06.svg",
+        "adopted_sha256": "b90cd3dbc552dbda6697328035167a8d910b34ab22970957cb53ecfd7556936c",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m07.mmd",
+        "source_sha256": "4bfdaad7ea848764b9b22154b4a922d4393e8bb5a2a538d86e4aa0bfeaf8b9ca",
+        "target_path": "docs/architecture/target/diagrams/m07.mmd",
+        "adopted_sha256": "4bfdaad7ea848764b9b22154b4a922d4393e8bb5a2a538d86e4aa0bfeaf8b9ca",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m07.svg",
+        "source_sha256": "bd9f8024d2e62965a8871c0c32622b373c965edbd4081aa2d19f71adeaf07bc1",
+        "target_path": "docs/architecture/target/diagrams/m07.svg",
+        "adopted_sha256": "bd9f8024d2e62965a8871c0c32622b373c965edbd4081aa2d19f71adeaf07bc1",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m08.mmd",
+        "source_sha256": "1c442ed6dca571939669b5d700f8056e65f162beecf844d17b5eee2f2b719312",
+        "target_path": "docs/architecture/target/diagrams/m08.mmd",
+        "adopted_sha256": "1c442ed6dca571939669b5d700f8056e65f162beecf844d17b5eee2f2b719312",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m08.svg",
+        "source_sha256": "442c02b1b1c4043f13b91033edc519254a8744bea553d5c91dd5967fcc3829b2",
+        "target_path": "docs/architecture/target/diagrams/m08.svg",
+        "adopted_sha256": "442c02b1b1c4043f13b91033edc519254a8744bea553d5c91dd5967fcc3829b2",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m09.mmd",
+        "source_sha256": "0139fdeb60374990497e1e07228c77ebb7f068ac0e618fd0f39c2dafce561581",
+        "target_path": "docs/architecture/target/diagrams/m09.mmd",
+        "adopted_sha256": "0139fdeb60374990497e1e07228c77ebb7f068ac0e618fd0f39c2dafce561581",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m09.svg",
+        "source_sha256": "c3d3d59fd08b0331f78c86cdc1981a0c217700939f7c33aac1ef9d8d484cd9e3",
+        "target_path": "docs/architecture/target/diagrams/m09.svg",
+        "adopted_sha256": "c3d3d59fd08b0331f78c86cdc1981a0c217700939f7c33aac1ef9d8d484cd9e3",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m10.mmd",
+        "source_sha256": "07074d49cbbfe1cba7c1a09c2f774d6cb121da7dea77ce80e14416f84671eca8",
+        "target_path": "docs/architecture/target/diagrams/m10.mmd",
+        "adopted_sha256": "07074d49cbbfe1cba7c1a09c2f774d6cb121da7dea77ce80e14416f84671eca8",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m10.svg",
+        "source_sha256": "4f3ee2078e612ec2b0f2798430968adab8ca35163b269c6c6478ee5c235915c2",
+        "target_path": "docs/architecture/target/diagrams/m10.svg",
+        "adopted_sha256": "4f3ee2078e612ec2b0f2798430968adab8ca35163b269c6c6478ee5c235915c2",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m11.mmd",
+        "source_sha256": "96c95b0c4d4ab7bdf3b531a2e95aab36759dfd9e8c9b0552db19f4c1243fe4a3",
+        "target_path": "docs/architecture/target/diagrams/m11.mmd",
+        "adopted_sha256": "96c95b0c4d4ab7bdf3b531a2e95aab36759dfd9e8c9b0552db19f4c1243fe4a3",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m11.svg",
+        "source_sha256": "72081681b14291130c63382c38e3b74ad204af63795fbc6b2bde5d2e9c055602",
+        "target_path": "docs/architecture/target/diagrams/m11.svg",
+        "adopted_sha256": "72081681b14291130c63382c38e3b74ad204af63795fbc6b2bde5d2e9c055602",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m12.mmd",
+        "source_sha256": "44fe5061fc15997b098d76bcad88cd2dd342b830ff2d437d5d7da520e5458645",
+        "target_path": "docs/architecture/target/diagrams/m12.mmd",
+        "adopted_sha256": "44fe5061fc15997b098d76bcad88cd2dd342b830ff2d437d5d7da520e5458645",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m12.svg",
+        "source_sha256": "8ca98639d55a438329cc8d9d03d61709a92aa9143938c96e0355f16f1f57f7ac",
+        "target_path": "docs/architecture/target/diagrams/m12.svg",
+        "adopted_sha256": "8ca98639d55a438329cc8d9d03d61709a92aa9143938c96e0355f16f1f57f7ac",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m13.mmd",
+        "source_sha256": "0721628ba7ff191bb638cfc2fcfd9f3c9173bc247e1bf5794434ceb9a60c75bf",
+        "target_path": "docs/architecture/target/diagrams/m13.mmd",
+        "adopted_sha256": "0721628ba7ff191bb638cfc2fcfd9f3c9173bc247e1bf5794434ceb9a60c75bf",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m13.svg",
+        "source_sha256": "f144524d40ba8ee57702ae5982f0abdb6ab079c6b7a81119be074b82f4ed87a6",
+        "target_path": "docs/architecture/target/diagrams/m13.svg",
+        "adopted_sha256": "f144524d40ba8ee57702ae5982f0abdb6ab079c6b7a81119be074b82f4ed87a6",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m14.mmd",
+        "source_sha256": "1b0d60e3d8b92aeff5cf1e0d8c2712c3ab52ddcbf358e2127087c92794d8274b",
+        "target_path": "docs/architecture/target/diagrams/m14.mmd",
+        "adopted_sha256": "1b0d60e3d8b92aeff5cf1e0d8c2712c3ab52ddcbf358e2127087c92794d8274b",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m14.svg",
+        "source_sha256": "f3c41ecae669390b4c4660713ae44d251f7c6e121b515da7fd124c447284d6d8",
+        "target_path": "docs/architecture/target/diagrams/m14.svg",
+        "adopted_sha256": "f3c41ecae669390b4c4660713ae44d251f7c6e121b515da7fd124c447284d6d8",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m15.mmd",
+        "source_sha256": "9fa2307bbf3850f50e4ba87b478c34c208d6423bd4809b51bea43b5533b2c6b3",
+        "target_path": "docs/architecture/target/diagrams/m15.mmd",
+        "adopted_sha256": "9fa2307bbf3850f50e4ba87b478c34c208d6423bd4809b51bea43b5533b2c6b3",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m15.svg",
+        "source_sha256": "44c96c159810cdcad9e85868e045c5b0dc64e2558a7c4a57c60b6f0d99725389",
+        "target_path": "docs/architecture/target/diagrams/m15.svg",
+        "adopted_sha256": "44c96c159810cdcad9e85868e045c5b0dc64e2558a7c4a57c60b6f0d99725389",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m16.mmd",
+        "source_sha256": "5dd0a558a78a9fd5d46cd99f6e6e48f399c55a8ce68c6dcf92775c9f2f0cfaef",
+        "target_path": "docs/architecture/target/diagrams/m16.mmd",
+        "adopted_sha256": "5dd0a558a78a9fd5d46cd99f6e6e48f399c55a8ce68c6dcf92775c9f2f0cfaef",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m16.svg",
+        "source_sha256": "45208c1ddf353e5aceeddfe1157d641210f733f6d1aeb9b37222e1d40eed7206",
+        "target_path": "docs/architecture/target/diagrams/m16.svg",
+        "adopted_sha256": "45208c1ddf353e5aceeddfe1157d641210f733f6d1aeb9b37222e1d40eed7206",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m17.mmd",
+        "source_sha256": "b8d7e7c7e64c44958273b0ad45a3b5bc1d90ac676984e7314d1f63c930284952",
+        "target_path": "docs/architecture/target/diagrams/m17.mmd",
+        "adopted_sha256": "b8d7e7c7e64c44958273b0ad45a3b5bc1d90ac676984e7314d1f63c930284952",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m17.svg",
+        "source_sha256": "542cf0fd3bdef4b789bafb247230f4bf02c4ae92783db60b381b015813deb928",
+        "target_path": "docs/architecture/target/diagrams/m17.svg",
+        "adopted_sha256": "542cf0fd3bdef4b789bafb247230f4bf02c4ae92783db60b381b015813deb928",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m18.mmd",
+        "source_sha256": "54296386af731bcfa37d1888d4ecfd39f155a37f3b9498742eacc5b0578a1a5e",
+        "target_path": "docs/architecture/target/diagrams/m18.mmd",
+        "adopted_sha256": "54296386af731bcfa37d1888d4ecfd39f155a37f3b9498742eacc5b0578a1a5e",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m18.svg",
+        "source_sha256": "51bda950f22e3d0b45a960c279efc093c6a3befa32e41e76fa2dd2e389a80e9d",
+        "target_path": "docs/architecture/target/diagrams/m18.svg",
+        "adopted_sha256": "51bda950f22e3d0b45a960c279efc093c6a3befa32e41e76fa2dd2e389a80e9d",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m19.mmd",
+        "source_sha256": "bb773da961a06022f169aa606a7a5b0b54778458f320958158104acf9670620f",
+        "target_path": "docs/architecture/target/diagrams/m19.mmd",
+        "adopted_sha256": "bb773da961a06022f169aa606a7a5b0b54778458f320958158104acf9670620f",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m19.svg",
+        "source_sha256": "6613500b3fdd5a5e4bb15dfcb39a4a5e24ef0d81fb80effa97226d836d458feb",
+        "target_path": "docs/architecture/target/diagrams/m19.svg",
+        "adopted_sha256": "6613500b3fdd5a5e4bb15dfcb39a4a5e24ef0d81fb80effa97226d836d458feb",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m20.mmd",
+        "source_sha256": "9219834632846b5153f188835cc9b3f90d6037ca7b3b728035320bb1145024cd",
+        "target_path": "docs/architecture/target/diagrams/m20.mmd",
+        "adopted_sha256": "9219834632846b5153f188835cc9b3f90d6037ca7b3b728035320bb1145024cd",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/m20.svg",
+        "source_sha256": "8a01dd4e57e138e9be31bfe73b24da606b75a6a851c87514e2e6524be43c7cb2",
+        "target_path": "docs/architecture/target/diagrams/m20.svg",
+        "adopted_sha256": "8a01dd4e57e138e9be31bfe73b24da606b75a6a851c87514e2e6524be43c7cb2",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/mermaid-config.json",
+        "source_sha256": "4a953f91ce09b7081ecc3b99a110de3abfc768541cadd22f9e42d618fac63810",
+        "target_path": "docs/architecture/target/diagrams/mermaid-config.json",
+        "adopted_sha256": "4a953f91ce09b7081ecc3b99a110de3abfc768541cadd22f9e42d618fac63810",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x01.mmd",
+        "source_sha256": "cab1c3da001a0a5f8e8758dcf38a0142f22ff92c90ffd3143c22a78fda0ff52d",
+        "target_path": "docs/architecture/target/diagrams/x01.mmd",
+        "adopted_sha256": "cab1c3da001a0a5f8e8758dcf38a0142f22ff92c90ffd3143c22a78fda0ff52d",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x01.svg",
+        "source_sha256": "6bcf26b9873633d1a3fcd6be953edeedf83179dfa00fd08692cd51b37dfcc073",
+        "target_path": "docs/architecture/target/diagrams/x01.svg",
+        "adopted_sha256": "6bcf26b9873633d1a3fcd6be953edeedf83179dfa00fd08692cd51b37dfcc073",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x02.mmd",
+        "source_sha256": "48ce544a2032b09883ac6a03fb5a22081a5c23e41b64538ee58c79f458cf365b",
+        "target_path": "docs/architecture/target/diagrams/x02.mmd",
+        "adopted_sha256": "48ce544a2032b09883ac6a03fb5a22081a5c23e41b64538ee58c79f458cf365b",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x02.svg",
+        "source_sha256": "ae1959ec3d98f5fab2a671a6562598c6e3426bcd1cb9e08f9af158a624105d08",
+        "target_path": "docs/architecture/target/diagrams/x02.svg",
+        "adopted_sha256": "ae1959ec3d98f5fab2a671a6562598c6e3426bcd1cb9e08f9af158a624105d08",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x03.mmd",
+        "source_sha256": "91f4f14eea8eb16fe7044f281cc87e2b72ca36be7c87b06bd514ff91f0215521",
+        "target_path": "docs/architecture/target/diagrams/x03.mmd",
+        "adopted_sha256": "91f4f14eea8eb16fe7044f281cc87e2b72ca36be7c87b06bd514ff91f0215521",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x03.svg",
+        "source_sha256": "2f7ef40cc4aa4980f95aacd923399f1d99ea90a55d6239445ccfbd931bde42d0",
+        "target_path": "docs/architecture/target/diagrams/x03.svg",
+        "adopted_sha256": "2f7ef40cc4aa4980f95aacd923399f1d99ea90a55d6239445ccfbd931bde42d0",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x04.mmd",
+        "source_sha256": "11e8fbb80e75774ed7185ed76db4fcf2f9603f92c89d0e356e31c72038fdb37e",
+        "target_path": "docs/architecture/target/diagrams/x04.mmd",
+        "adopted_sha256": "11e8fbb80e75774ed7185ed76db4fcf2f9603f92c89d0e356e31c72038fdb37e",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x04.svg",
+        "source_sha256": "a672b1be34469d25f6e47f0f209a3e20c49a76ae1de9a0174431261613bf9504",
+        "target_path": "docs/architecture/target/diagrams/x04.svg",
+        "adopted_sha256": "a672b1be34469d25f6e47f0f209a3e20c49a76ae1de9a0174431261613bf9504",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x05.mmd",
+        "source_sha256": "e6011b919b01a088292471bdedc4bd875d4f3182e0db7f27fa0b66fce04f0ed8",
+        "target_path": "docs/architecture/target/diagrams/x05.mmd",
+        "adopted_sha256": "e6011b919b01a088292471bdedc4bd875d4f3182e0db7f27fa0b66fce04f0ed8",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x05.svg",
+        "source_sha256": "c9d2de33e4378ef16930a54d8f83824694b63a2a77214f786bd1858e978336fc",
+        "target_path": "docs/architecture/target/diagrams/x05.svg",
+        "adopted_sha256": "c9d2de33e4378ef16930a54d8f83824694b63a2a77214f786bd1858e978336fc",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x06.mmd",
+        "source_sha256": "b33a845e68b2cbcbdd3003cf358f44e742701c92cf563efbd857381e56990711",
+        "target_path": "docs/architecture/target/diagrams/x06.mmd",
+        "adopted_sha256": "b33a845e68b2cbcbdd3003cf358f44e742701c92cf563efbd857381e56990711",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/diagrams/x06.svg",
+        "source_sha256": "86cd1f3fd7c6cd8b880f31052300cffc1b1a2d3c61cc399b1a4d4ca09515ae41",
+        "target_path": "docs/architecture/target/diagrams/x06.svg",
+        "adopted_sha256": "86cd1f3fd7c6cd8b880f31052300cffc1b1a2d3c61cc399b1a4d4ca09515ae41",
+        "adaptation": "none"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m01.md",
+        "source_sha256": "9fa01d59b90e32d9f820e22172f883107f4f719457af9efe7f91c01558f87ea4",
+        "target_path": "docs/architecture/target/modules/m01.md",
+        "adopted_sha256": "635e868c28dc131fbed5c153f8897c222ac4e941d396edc458c95779b12e7a02",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m02.md",
+        "source_sha256": "f8518ba511b396e1a5c024b53f051de0b2b72b31afdb54a615746174b9223f4f",
+        "target_path": "docs/architecture/target/modules/m02.md",
+        "adopted_sha256": "8b4455e4b450408d76659581d377b86eb5673ea57fe2fa706f677421c027e098",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m03.md",
+        "source_sha256": "1f38235585c786e6c3045702ae447c9c3bfd27f7e81b5e8fe8c6451590b3c82c",
+        "target_path": "docs/architecture/target/modules/m03.md",
+        "adopted_sha256": "b7980b52f45862df2b63f0a3f51f0dd0bb518959c3c56c3a4d3073fd48582ce3",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m04.md",
+        "source_sha256": "f170300c9d94feb2000674a7d0347f5cddc6d4e8746e7bfda207961f0e886cee",
+        "target_path": "docs/architecture/target/modules/m04.md",
+        "adopted_sha256": "63718e8c7a24fa35e9c81ed78f7024bdc74bf1dda27857bb58e5bec60222f66b",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m05.md",
+        "source_sha256": "087c8cdc98ea9f5b5bc64e2d874eaaa2f2fbddc0ff90d987e6de397c80b113ee",
+        "target_path": "docs/architecture/target/modules/m05.md",
+        "adopted_sha256": "8faf27027501e7ea95df2ced33faedc6d1469d0e99aba14fc413654b46896b26",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m06.md",
+        "source_sha256": "47a122822c98957d056661311f27acf0585436a897197cdfe80fea7cc33139ed",
+        "target_path": "docs/architecture/target/modules/m06.md",
+        "adopted_sha256": "72f6a90cbd6588bcbc65afd590c88a4fdedfa70786b97721778748d9ea43ec55",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m07.md",
+        "source_sha256": "e900f306c7c16b78043611fe348f5b99dd57ce710edefc9a77a20e529290183d",
+        "target_path": "docs/architecture/target/modules/m07.md",
+        "adopted_sha256": "e958eaf816581c2ba7d464d19c9c6f01f1a0d2494b772b4986a6493ea050d746",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m08.md",
+        "source_sha256": "197c3e39c5fdd4427b0d379b97008e4ced21dc1f6ff29bb1309ab7ec03e51e18",
+        "target_path": "docs/architecture/target/modules/m08.md",
+        "adopted_sha256": "8645f115c840107cefcd55fe238c55c9b4318e223d57bdd54b9a065a65a5b986",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m09.md",
+        "source_sha256": "a6f5b06febcf815fe4c486582260f37b12d05b88be20e3861c0ce3b075b78786",
+        "target_path": "docs/architecture/target/modules/m09.md",
+        "adopted_sha256": "dfafc0615a9365d63057091ae994b48acf75bd3870058bdc5588e5d9223a88d8",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m10.md",
+        "source_sha256": "078cd69786c0529304a6b0daee23651a790d9647b3e45b12ed12f34809e934a4",
+        "target_path": "docs/architecture/target/modules/m10.md",
+        "adopted_sha256": "8cccb1a8d4c40b4359fd1fb572561ad9e4250b42a0947a01e3d27f1f38b3531d",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m11.md",
+        "source_sha256": "5f0b9cdb31119c7d9ad6e016ed0647346f638a256b8633ce3220727fcc263243",
+        "target_path": "docs/architecture/target/modules/m11.md",
+        "adopted_sha256": "8ab7b97e609a1dd2cd3cf8c7d5726fb2820f7ac42ce8b45874fef72eace06bf0",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m12.md",
+        "source_sha256": "88f35e120304431e484198b2dd568ab9a9726ada61a0fa5e7edcd48e6f820fd0",
+        "target_path": "docs/architecture/target/modules/m12.md",
+        "adopted_sha256": "18954dd8007e94a53ec735d71b69c0bdda301794025fc5506d1baa8d2a9648f6",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m13.md",
+        "source_sha256": "6b87ffe4a4d2cdf735f29d0f45b92c44ffe3894fe9cdef33f05aade9cf32ac29",
+        "target_path": "docs/architecture/target/modules/m13.md",
+        "adopted_sha256": "41640a15ec56e2d587489981e71be6b4cac304bf4e244a6684336b1040038218",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m14.md",
+        "source_sha256": "fbeb73fe42b90355b81979f3a6612f17d81875969c8e4325f0bc85fcafa1a0c9",
+        "target_path": "docs/architecture/target/modules/m14.md",
+        "adopted_sha256": "06e7fa6c177015e1952c265cbe7f4912335917379438db506eddc39ba2dd0df5",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m15.md",
+        "source_sha256": "7d834a7532fe6463a380c22145c74f6c837afb9d9247eada8c76f2b90f47e4c3",
+        "target_path": "docs/architecture/target/modules/m15.md",
+        "adopted_sha256": "9668eae3f6fdbd1e2e36361a680886317587239f2eefff1d6ce9c7199ac17f1b",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m16.md",
+        "source_sha256": "b559cd05958bbdf4e929f830e92c64cadac7ec50ea5e76a393587dbc31cd2e73",
+        "target_path": "docs/architecture/target/modules/m16.md",
+        "adopted_sha256": "b37705a620b7de75994b3dbc7b8cc383df8172f7a1f5507d5cbfd0a18e7fed6c",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m17.md",
+        "source_sha256": "3da4af97a3985b02ec6d6728c3d6032d61de88445011044386f75674ad154252",
+        "target_path": "docs/architecture/target/modules/m17.md",
+        "adopted_sha256": "328fb67ac96e7691765d87057f79d8f26c1f43975c0f0e63892109997917122c",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m18.md",
+        "source_sha256": "693982f59675ca489025ded6ef5e68d2c804c42e4255684be1feeb2a4e1256d8",
+        "target_path": "docs/architecture/target/modules/m18.md",
+        "adopted_sha256": "7f0e3d11a0b0b2c04ddbd75cc25040f26c5457d6fc5de553e604c52865114903",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m19.md",
+        "source_sha256": "83ff5ea2df9e79e3d9bd81499ec8b643826f21b93f506cef1d166bfeb6eb1c06",
+        "target_path": "docs/architecture/target/modules/m19.md",
+        "adopted_sha256": "e4923de6976211be12a24e678e8f884d20888693a8412a319fcc8b2bd4ee944f",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/m20.md",
+        "source_sha256": "08a81b9938b3c2aefd01ec67cd2ef36066f5fc4d4c6afdb63c5f541d60f556f5",
+        "target_path": "docs/architecture/target/modules/m20.md",
+        "adopted_sha256": "19e30e6a5ec80b3b76d8c2877918b2db02d225b18d92622439f1213b9cfcc69c",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/x01.md",
+        "source_sha256": "6fa043a206744d325b1782323d69361f6046aa498d3752e410b6bc17714f446d",
+        "target_path": "docs/architecture/target/modules/x01.md",
+        "adopted_sha256": "0d91b9b65cbb8edc0e6e4820f82d9283490c97b1751308084f91887d1f7ea883",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/x02.md",
+        "source_sha256": "350cc3dbc5aa4627ffca2c31b15415ea17a42c947592fe8bc62e727fc3cf9f7c",
+        "target_path": "docs/architecture/target/modules/x02.md",
+        "adopted_sha256": "38c410aaa64161d1d8ff9263a0b9ef6a3ed546a627fe5cf6aa5c1644becc4b5f",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/x03.md",
+        "source_sha256": "daac11f5a8970a7dc53d45e20a8bbad738bf12a0ca942e59ad0820ded9d147a8",
+        "target_path": "docs/architecture/target/modules/x03.md",
+        "adopted_sha256": "ac83a87feef8e04bdca629d6bed7609696864ed960e6beea2e5a024a0fe536ca",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/x04.md",
+        "source_sha256": "89036cc3f6470c5adae3111668132268296cb0b738df00e2a8749fbee8619676",
+        "target_path": "docs/architecture/target/modules/x04.md",
+        "adopted_sha256": "96bbf82babd23bfdd0ed13ee3a8eaebc30b5d6b90af3180750a49c2b607405ec",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/x05.md",
+        "source_sha256": "12535d12f78ce159343d2968b9e997dc09057dd73606cc0ffad81de0eecc6ea8",
+        "target_path": "docs/architecture/target/modules/x05.md",
+        "adopted_sha256": "cbccc4b97ef718dc6012ab710ab2ddfc072cb1ddbae7ff129b08404f7e2f4cda",
+        "adaptation": "local-link-routing-only"
+      },
+      {
+        "source_path": "docs/china-hcm/modules/x06.md",
+        "source_sha256": "85ffebd25f6ab5126c0fc3e7176abbc814ea6abd3fda67822d5843ed93df333b",
+        "target_path": "docs/architecture/target/modules/x06.md",
+        "adopted_sha256": "9ae9e96644677bf398c3c26607712db2bc4b211f46689965ee152fa4cb422117",
+        "adaptation": "local-link-routing-only"
+      }
+    ],
+    "counts_provenance": "Preserved source completion report counts; terminology count reflects R25 frozen inputs, not d88 latest glossary.",
+    "observed_terminology_counts": {
+      "checked_on": "2026-10-30",
+      "decision": "CHNHCM-009",
+      "r25_frozen_entries": 405,
+      "adopted_source_entries": 437,
+      "source_path": "docs/china-hcm/data/terminology-glossary.json",
+      "method": "Count entries in the preserved d88 archive and its nested r25-inputs.zip; source bytes and adopted hashes unchanged."
+    }
+  },
+  "cubebox": {
+    "repository": "CubeBox",
+    "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+    "origin_main_verified": true,
+    "fixed_worktree_head_observed": "074fe044ab41c80abbab41a74aadd2a97b66efcf",
+    "archive": "docs/reference/sources/cubebox-m02-2deaf927.zip",
+    "archive_sha256": "35df71913e276cfe270e9360e7282a83c485fa3a44906f428fda9c71d71528ad",
+    "archive_members": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "d02e362c4f76b42929daf0c316e0c5dbf25022c418e854996e534510dbede7a4"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-navigation.mjs",
+        "sha256": "c57a55673049bd52c1c52f97d1ec4e66c4ed2a109ac6d4a6a9496fa305e825ce"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-configuration.mjs",
+        "sha256": "7b826fa5d977bc7607a42bea32bdd23d54fcd1378f2417f5fc4b40a4c449545f"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-contracts.mjs",
+        "sha256": "805535859c685062e579fe204ed16295682488a8f0856088823078bdfc6720c7"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-e2.mjs",
+        "sha256": "aa1d7cc4f4890fc4e647339b6964c0da8355cffec21e915a2a5bbacc214d64d0"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p1.mjs",
+        "sha256": "2feef8555a1da417b5d79ea133414b49a87a27c15ccea38cb4effc5bd563c9c2"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p2-maintenance.mjs",
+        "sha256": "ef50c4f3c4918eb5e06cb20468fda91b0a45658751bc891fced2925b8c95e397"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p2.mjs",
+        "sha256": "a7f37ffc8c4b67cf8c64223e7a328d8cbcddabbf7cf13e986bf16ba47858eee3"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p3-relationships.mjs",
+        "sha256": "cae06eec708a4a102a14067a6b82fbc7fdb53034c646eec84d3b4dbdd31ae693"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p3.mjs",
+        "sha256": "238c3b8f84a11107a4ddcec4ff69856f2b7a2101abc1d9e795ac8728ed10386e"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p4-budget-privacy.mjs",
+        "sha256": "1aab603450a85c415708d43d1ae76e5ebb1024ed330296445006997c0fd2f9aa"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p4-placement.mjs",
+        "sha256": "7c08a163830903818616f244fe40b71ff03814665dd92700328ebec487088fed"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p4-restricted.mjs",
+        "sha256": "bb467838a80f8f31076f15a214ab0244d770abbdd4f5d6d9c8f6b1b808cc12dd"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p4-split.mjs",
+        "sha256": "e83cd182319e5f2ee590e59c05023a4af1040100660139a0bef55a05ea679989"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p4.mjs",
+        "sha256": "d8d015e682bf6dec507fb714fe90ea4ad43e715738f30539ee389dad404788c8"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-budget.mjs",
+        "sha256": "7d96ccfddd0ae0f636a600cea1807bdcf03b2bd941c21af0b2d382994e25b572"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-federal.mjs",
+        "sha256": "38179d40f0906a5f60b0e8ce2c6bcb3f78de8aebaeb1a514cea8e09748c5da25"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-finance.mjs",
+        "sha256": "861335ef71e40a070b6963edb95e642fb17f081f291c02268f4a036964b9b6b0"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-regional-boundaries.mjs",
+        "sha256": "b2ffd005ced52e1496477b088edb1e8e56f42deda3f54dd87a55ec5498f4e26c"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-regional-countries.mjs",
+        "sha256": "6402158f97ca51f875e5d1c15aa073da1d51d09eb40f860fcd1ecadb9800c36d"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-regional.mjs",
+        "sha256": "33904d781451e6937f82fec7974160d18524b06297c2a1df24977c63395408f3"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-scope.mjs",
+        "sha256": "73688288674443ed9e0da27f5d60e7bc8085263c630903b120e9c30fa130cd5b"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p5-summary-revision.mjs",
+        "sha256": "700673a2c8e41b131870c11bfc0081c5b76d75aee244d931ea04fe07799e48d8"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-build-tools.mjs",
+        "sha256": "b8e714997d48ed2b1b8afb45fbeb2e1c8a03599f5a930623557fdaa3365b82fa"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-department-conflict.mjs",
+        "sha256": "04e86f495f3f4ff9adeafc7c8055630b7c6ec4fa7a78c0908c45477f15d7d6b2"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-department-exchange.mjs",
+        "sha256": "5306d8d1a983fa3b3f83a0174798c1c73252a6931ea4d5a82103bbf0b0f469c9"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-department-reports.mjs",
+        "sha256": "f8862c96fe8c60f13f341c87f99146e59d58c51f1b1de9fa97440b5e28545d29"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-directory-channel.mjs",
+        "sha256": "1278bd9beb5c7ed798d20f0f90889c179798dd2df5942199990d125af2f29bc2"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-history.mjs",
+        "sha256": "3779e1e03e37eb98cc4aefe0edc52352599fb2aa295623f66be3879880d636d9"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-leases.mjs",
+        "sha256": "4370c329002b45565eb94a2a9decb351f8b8626b609b2b69a728cf884d7bfe2b"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-outbound.mjs",
+        "sha256": "d7c3b09a9ca7a42149584f1ca7285f42a27db06c99fe6da9e1c491be5443366f"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-presentation.mjs",
+        "sha256": "1f2dcf9392c8ee9d6050efbabf4a000d81a2e3d58835239624e7e7d3573aa19b"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-scope-refresh.mjs",
+        "sha256": "bcfc904883e8acbdf7bd3d4e4ab6a89803fcbe540a9e345de6c8a97b94fc2def"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-organization-p6-tree-files.mjs",
+        "sha256": "480f5372e758ea84e84da27c23726f40ad45ec8936c58035b6ee423ef0714147"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-standard-detail-samples-responsive.mjs",
+        "sha256": "15f4c787a9c11a4ab0b7473329e4b4eb533524080cb65973cc80018254ba6a71"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-standard-detail-samples.mjs",
+        "sha256": "1ab6ce2f8295f9e9bd5bae17398a54ede93ac3e4fc9e5937c6206970802c7aee"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-standard-detail-scroll.mjs",
+        "sha256": "4113ddffd4128cd477044f70ed8f43d7e656c7fba48b4e2c901eb7876bb7b260"
+      },
+      {
+        "path": "apps/prototype/scripts/organization-company-name-browser-helpers.mjs",
+        "sha256": "d672909ffe0b3ff77c67b56cb7d10e03fecf612aee58530d58a527d255af91e0"
+      },
+      {
+        "path": "apps/prototype/src/App.tsx",
+        "sha256": "b71b64cbdf0d7a85ab9f0d34eb3be728ae7925c875d21094db23270dcc5998d3"
+      },
+      {
+        "path": "apps/prototype/src/domain/business-dates.ts",
+        "sha256": "ff90730f03493925e432766e386d1098b93f55ddac7345d6226c77b3ece30a00"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-budget-page.ts",
+        "sha256": "c0115688e740d561841ad03d5f5a851182edf409f3bfc45204d631aca471057b"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-budget-rollup.ts",
+        "sha256": "5a5f547e34426928724387da4c06754aa52fb6b1c0025baa6f6dd889a3f6c3ca"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-budget-scope.test.ts",
+        "sha256": "2fe93bc49105fbe871bb6672aabac77ce9c0951a20ffadb9fafbf2099879cda4"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-budget-types.ts",
+        "sha256": "8aea9336dfb88dc17fc17dd5bcac0b62458e7d854271936a37b919287968b1c7"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-budgets.test.ts",
+        "sha256": "0dca97e2c7accab0ebd5de6c9967c89c05736076254feb94d902ac8da1c818b4"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-budgets.ts",
+        "sha256": "6470c9684827b40c3400dea36268743de79ae0ca5279d6875754b1c7d8818f96"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-finance-page.ts",
+        "sha256": "fb89f9513b731e921f7bd1099e38ec360065e8dc7a7ade4160d5d35bc2a0862a"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-finance-types.ts",
+        "sha256": "b153cadad7634dcbac61ff8247379d26ed19c10b9adc05bfc19bc4c032786344"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-finance.test.ts",
+        "sha256": "3fed9112564c822ea3d02c59cc9c917ee51c69f26f339d4350833d41f31d41cc"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-finance.ts",
+        "sha256": "9efd49d5c4d32c339dc50cd12292efe2fd46e8f7e08500801ef0b87d56073ca0"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-identity.ts",
+        "sha256": "adde7450f070604e7ebd018fc92dcae3177fecf7989963f1452152054d130139"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-mutations.test.ts",
+        "sha256": "c03c8697cd411856ce5884f290facbd18a816e647b38db4955c84104b115a8c5"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-mutations.ts",
+        "sha256": "3f8ae9bc6497a0770de5d2b8b8228d156170b1dc237fa57aef2838be23c0a804"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-operations.ts",
+        "sha256": "0d941fcb9681c5019275210df8c4f67635bf751d6e6aa6e68500436e2a6f03f0"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-records.test.ts",
+        "sha256": "2fa821d3baf09f23513ec1a2d7fbd2ca7f3a8a7ee5393ba3613829f611bca988"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-records.ts",
+        "sha256": "1927c89ad245aae76d7076e89efac61cf6d8182cfa5a5b75baeed02c40078c77"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-regional-catalog.ts",
+        "sha256": "3ad4b1ed7a324c187eb7439201985fe5317835bade95cbb74fa28b03cc596d31"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-regional-context.ts",
+        "sha256": "e9ff5bfe148f67e4e39e6a7011658b2d4a2dae971708c8d4290dac93a4505495"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-regional-integration.test.ts",
+        "sha256": "344adc85aeb980d5186558c5ce55207fb1142ce9fe716821afc351b8786ae272"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-regional-types.ts",
+        "sha256": "9145078fc4e5c587815e3910f9706505a18bbaf5b28349f35d61233744ace2f2"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-regional.test.ts",
+        "sha256": "2c6d05d7cc2b8d6e71ae628454d1fcba8950febf4871ff5aa8b971385ebff403"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-regional.ts",
+        "sha256": "bb9488893855b9e4b9a88cd170a7cfe3cde9e9ef140c20b6254394f7945fcf99"
+      },
+      {
+        "path": "apps/prototype/src/domain/department-seed.ts",
+        "sha256": "4a4971f1634c5692a20e05449fac30ab260f08e2a0929b741f60edbf6dd72efd"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-access-diagnostic.test.ts",
+        "sha256": "4612ca02af680aa4980e35d87d75e22b943a90f775f020e1cc42fa978414c778"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-access-diagnostic.ts",
+        "sha256": "5fe1e81be4e783f2abb21f186054ca1e6bc45ba5d6255389a9042191e9e16dea"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-adjustment-budget.test.ts",
+        "sha256": "48180c44d2eb47412982680a2efa89ba4e813fdf48cd2ea01be782da6dda3d24"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-adjustment-budget.ts",
+        "sha256": "dfaa579f059f6c13f47be011ce083df3a93a37a85ab2eeeb21ffe016c91bd2ca"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-adjustment-types.ts",
+        "sha256": "3e1a39266fd4c15f3a694d3284a5a393e27d668859c182f02299889bcccb12da"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-adjustments.test.ts",
+        "sha256": "a47d1b402924bb060a0282e35481fb4ccfbc8ac2ab2720a10a79215c916cb599"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-adjustments.ts",
+        "sha256": "f3e247c47df383f958c7019ae499779c754ddb4fbb2c7dc46b781c5f69382bb3"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-adoption.ts",
+        "sha256": "ff96481583ea76ff535dcbee2646791438e50e9b63b4a3b6623dff1175c9260a"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-build-jobs.test.ts",
+        "sha256": "15fcb127594998407a874eb7ac6d6a21be46c87570d21f3be29c2f907dd019ae"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-build-jobs.ts",
+        "sha256": "94e3171ddf7262ea0b71541d85a2cae8203053dc072f3d88bc661de649e28bda"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-change-log.ts",
+        "sha256": "c298838719e88ad22050e08aff35e7c3e6a9eb71ab43bae24905ea710ea8aab5"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-department-files.test.ts",
+        "sha256": "ccb9e0ebdc8b51daa25296e4905a8436f1842dffbf437c737d5d8e95e88cadda"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-department-files.ts",
+        "sha256": "98c2ae4d8ba238d4a4759f2cda5086a7375d43c3bdc62deb0d56813e376d445f"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-directory-channel.test.ts",
+        "sha256": "d043109883fe2aed6e9f73b66817b8f412d78b591b8375f9cdee26a27060d54c"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-directory-channel.ts",
+        "sha256": "815d334ab42f43a93bcb43a300ec069e922fc62afc5ae120c342e511182a4ee8"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-federal-types.ts",
+        "sha256": "9dc04d047ecd093eb3f686f762280a8083739e1f1e273797f37a45a24cd2e84a"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-federal.test.ts",
+        "sha256": "5a5e50f9a89977469896f8e41f1ba65834862476ac8f990e38332d547f8f09e6"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-federal.ts",
+        "sha256": "7b43cf67f1fcbb241c19c8d2fa3c5dfaa88eb1c66bb750afbd475c07304579fc"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-foundation.test.ts",
+        "sha256": "5d888568561dfa4b91ea26048684a266c0b512b2fb0865d1ad0fc38337d7e9ec"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-foundation.ts",
+        "sha256": "8f2cb1d1d43785c279e0067ac3e17f346986a50c2f89201fc48490067f4ba985"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-history-fixture.ts",
+        "sha256": "f0576c6d361f174b28e3e7956ef1cec9675072eae14c8c75532339c256ef1b32"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-history-scope.test.ts",
+        "sha256": "3021582ca7afc55b565c47d20dd47ae2ef766bdb23e169aafefe1ac72ed005e5"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-operation-progress.test.ts",
+        "sha256": "9cc74f38de8613f99b63d863238b8e3454308c8458244a20545138b459f48dfa"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-operation-progress.ts",
+        "sha256": "6a4f743f4b5a8efe52ad3716e6ce17cd286d4d3a7fef46631f7ef235e41b7492"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-operations-page.ts",
+        "sha256": "33a91a9439d71114b5ad15591fffa4044cf357b9e93dd9d8d0bfe3ed5be5a420"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-operations.test.ts",
+        "sha256": "5a186080fd6411a02b93a9560aceb638b7b7e0639ef26a07fa90f9751592f35e"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-operations.ts",
+        "sha256": "1b5354da1c77567d2c314fbf3fb3886ee04aebe1efd7033bb7edb7d1f2717146"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-outbound.test.ts",
+        "sha256": "145fdb9f435bbf6563613ec3fa4ce3f1c59d5155cb44a1859142a2118afc4289"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-outbound.ts",
+        "sha256": "d4320c433a7a181ef25df0a5e207365fcaf9877a514c49ade768dfa9df320e7e"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-people-seed.ts",
+        "sha256": "4408ba6c8f5f7ea2a331c29d23e4348f47bd22e824154474f3ce1705b821f33f"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-people-types.ts",
+        "sha256": "87292ebbe39492c8d64bd64852064f678cde60db808b03d71d8fa63d5c32f674"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-people.test.ts",
+        "sha256": "468fa37a7a75a5ece831f29f6da87cbef8acd68561ebb9bfcfc75afee5269755"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-people.ts",
+        "sha256": "16ebebeccc4f9f87a1dd221aa2790e20a4f61f4e2c47362c2423d0024aaecbf9"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-plan-page.ts",
+        "sha256": "c1ee3b5b66dbaaa0fda29ab7377ea7a12b83c6fe1cf65f1e57cc9317f79dafc9"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-plan-types.ts",
+        "sha256": "e849427b5758bbd011e71bc9c25c3aacbd68f9508def5593790dc21201aa28bc"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-plans.test.ts",
+        "sha256": "245b90056b21a4ee3553421b7b95465d6bd8ed6585855f68b50a63b8063eed67"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-plans.ts",
+        "sha256": "744ec5e25ff021a29b4f7e7798788908eecb5d7f9432660eb73d0632540c3b07"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-presentation-exports.test.ts",
+        "sha256": "417baadd9e1a1558c1b2c56989d1f3e022939ae22f47fbc9b1714481f8defec8"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-presentation-exports.ts",
+        "sha256": "ce24960cfe0d43ebf7d81c71503721b33201c3c1a8149524c4e19d51f3941887"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-scope-refresh.test.ts",
+        "sha256": "cfa35ac9fde9e510d873e9ee6c15e93206debb4da2d70a8433bef9e38c39ef11"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-scope-refresh.ts",
+        "sha256": "87e15c82924bf7b41f4131db3cdb6e7e99da93011183cda5ec1f407c0c204876"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-scope.ts",
+        "sha256": "95523437a3cb94582bb44356c0ecaecc87e2348e84f2ca64c2c3ced1f2010abe"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-search.ts",
+        "sha256": "971262733500e54d735ca4b4b480d4b8030039b44b1ebbb5df30bbeda10e108f"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-seed.ts",
+        "sha256": "a761a0b03cf613aeea8b5a6790067f0a5682343b2cf86d709c3c540cccc8f29a"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-structure-seed.ts",
+        "sha256": "e9bad0671139be1484a92b99cf3532a9dfc94811e858dbc54fd7d06b45fe0793"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-structure-types.ts",
+        "sha256": "27bf9f0c3c28c9c4e2f7df1823eec500369baac7d818afdd14039ae3b6b38a76"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-structures.test.ts",
+        "sha256": "f9293eacd7ecaf5c78c98229ef64f560a22069037bdacc3d7123a0a86fb76d91"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-structures.ts",
+        "sha256": "ef7c906eccd5535ec6c28f866fa4c11294340cf64cd9d8e23b62704cd4c36a4f"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-tree-files.test.ts",
+        "sha256": "30989250d5418c07066dd7a1f1df1286ffc865bd8e3336bd7084ca2227d8714c"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-tree-files.ts",
+        "sha256": "5a875f21fdd8c5e66ebb6f55788d006e2a64d40b9a270e4c2b798378f21751f7"
+      },
+      {
+        "path": "apps/prototype/src/domain/organization-types.ts",
+        "sha256": "8caf53cd754aceff4c6f6d9876559817239232f415a2325765d7c8e4f6b9eb49"
+      },
+      {
+        "path": "apps/prototype/src/domain/staffing-structure.test.ts",
+        "sha256": "c29dc297c5aea935450d1432607600272adfb50ba4f3ac78d7aa5191702d1117"
+      },
+      {
+        "path": "apps/prototype/src/domain/staffing-structure.ts",
+        "sha256": "55fa69713873fd0bc06e05ca603823fa787ca14642e47c5fc716098fdd2863e0"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-budgets.tsx",
+        "sha256": "05adb4a45fd0bf3092f757862d9fd032c4b0dba1f5e28a960416320ab662c2f0"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-child-preview.tsx",
+        "sha256": "bdbccea210c588decc5e089a9ecebd09912b50545f45accbf35c90cd32b76ce4"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-detail.tsx",
+        "sha256": "74ca62d7e5a9e6a85659b0c80ab9263340addf6a269b227220df8d943928eacc"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-finance-page.tsx",
+        "sha256": "07ea84ac862c97821f77f79214acd8aff9d9df4d92ec657b62d719415d980800"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-messages.ts",
+        "sha256": "a004f59a6ef6e32f91428e4b253c9f0d1f99527dbceb04af6ebd291ea6b4841b"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-object-views.tsx",
+        "sha256": "ab618887ec732db121095cc92c3a7460c5a40b43a19f363d0d959a7bf6609b8e"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-operation-fields.tsx",
+        "sha256": "6a3acdd9b81b8d63c01f1eba51e0d00fcb6bc075732cb690a7ae9330b090f2db"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-organization.tsx",
+        "sha256": "a07b2980e01d8b45b59e10cd5a343be80611084df6699f7603f2c58ca610bcfd"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-panel-icon.tsx",
+        "sha256": "d60760f6a662aacd345c16317a7da7c11f668b831ba8a6a4380abbe716c7921a"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-regional.tsx",
+        "sha256": "6c653627e5e6be537b5c145760746a0628733aa3441ebfa0636eaff43518e79d"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-tree.tsx",
+        "sha256": "0c71d424ad2e3630679161491f3abb262bd28914678d4c5619685c6ee1149bc4"
+      },
+      {
+        "path": "apps/prototype/src/operations/department-usage.tsx",
+        "sha256": "db68d13c3f5d6c4466f2bcce38c5d1aaa8740ecd487e2ec52b8515eec9a9a8dc"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-access-diagnostic.tsx",
+        "sha256": "85c8d42a67cc18987fac1159c084967fe87beeab5f27df5d3982a2d49aaf5e11"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-access-page.tsx",
+        "sha256": "9fe85276364243c1f155da0330b2762ae3330e86d3e07b17d4791961e38b4a87"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-adjustments-page.tsx",
+        "sha256": "3762cee2b9c3b996930cc470f5ebaee95d7cbd78d504aa1121c7ccf2c5512d93"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-build-panel.tsx",
+        "sha256": "c9becb8672e59549b3966c0166a52771a4212e6ef32b02f4b77ce6b951e3bfef"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-change-log.tsx",
+        "sha256": "6507035af293139260f946dc6736166979482058b0154f94e46993be04a17956"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-configuration-page.tsx",
+        "sha256": "65a50ad3abaa699583fe68994ed4b70eec49dfcac2bd210cf20f0c5b292ea94e"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-directory-channel-panel.tsx",
+        "sha256": "90d8d9aef84754a92f1e44a9fcf8c0d0eb3c34d2cd6ff5593b5f56148db3b37b"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-federal.tsx",
+        "sha256": "cad35cf1df9cb37a3123c286efc89e55a1b832137bbcb230d63a2641a5639c16"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-fields.tsx",
+        "sha256": "e4fbfc2a5a5eceb086241d3397bfc91d76aa99e24c8eef385dd558a7b16a4eb6"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-messages.ts",
+        "sha256": "90a5d11cf3c8e5ca6f004cc8c0f3a75f05682b6d380d62cfd7fc80c0a2428f8c"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-operations-page.tsx",
+        "sha256": "36c1e054b0fe7fdb76fee831801f81e88cdcd21c985f7c61783aab0e37bd94fe"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-outbound-panel.tsx",
+        "sha256": "3ad3988991b95c6bab14acdfcf5729be092e168b517161d4324a152bae1f9836"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-people-log.tsx",
+        "sha256": "e1b243ade6995a89eea1eec0a3238f243d5664b49d0c6afd1c275fa50d4e2236"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-people-page.tsx",
+        "sha256": "e9c7a5e3b828e3650edc910ea6715e8b03b6cdd7d2fb4b7455e29c2f2f178afb"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-people.css",
+        "sha256": "820e660784e3d8de2244d78e664f65939d20398ed5b80bbabd3b2cac38cda157"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-plan-page.tsx",
+        "sha256": "ea42adfd6f1d6d1602529739e447c609572ac18791574e963bd2db7527f6d93f"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-prototype-tools.tsx",
+        "sha256": "cbd4a4714ee2a3acf8d0b454300bfa0d5b7c072acd8fb7cc2019346e5aa65c3e"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-relationships-page.tsx",
+        "sha256": "bda7855c7444be724afbb4bec1eb361c79c574ada2b65271c53404882faaa826"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-scope-refresh-panel.tsx",
+        "sha256": "867c89b3c8f879b52940233621985d58efbde4dfb58e6c67da76682f36c75a6b"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-structure-log.tsx",
+        "sha256": "e18fc0691cf1722a66e0d274ee06ee6e62e4784cefceebaa993804ecdb36a355"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-structures-page.tsx",
+        "sha256": "4dc2b4a26b109d9b84b6ea059dde9bf71fc4e674208d47d9335669ee6e7c9e6c"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-structures.css",
+        "sha256": "611ff9918b1b6b417affc5c661fd5965c4f4c4661d65ef5ecf96fc71b11d5807"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-tree-file-panel.tsx",
+        "sha256": "f26bcc06aace65d17aa458a1a49a84bd19426fe895aab9dabd7ea4855966f89c"
+      },
+      {
+        "path": "apps/prototype/src/operations/organization-tree-lease-panel.tsx",
+        "sha256": "95c551560fd34b99882c216d11d677b9545d51396fcae4756d4806a2f719f10f"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/DataGridPage.tsx",
+        "sha256": "25c55a9723696fa5e09008fb14f925bf46e07503ef6c94e5479a5a7c9132c546"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/FilterBar.tsx",
+        "sha256": "b9a4daafaef2ddb1fbe7c3bb2d38e75f1d1a134b45aab0d0c5bf6fe3d724634d"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/ObjectDetail.tsx",
+        "sha256": "961beb662827b8064285b322c3afd89cda81538b2e176f50c0c638aca7afb87e"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/ObjectForm.tsx",
+        "sha256": "0e948a33ee28306a77aeb6d1bb303b5b93c532fa672104945bcb4fdb0a2e622e"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/PageHeader.tsx",
+        "sha256": "beae25a0e7d0b4fef5b81209814a2cd20924b35058035d6e2436b8785e077207"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/RecordBackButton.tsx",
+        "sha256": "8a22fd1c61bc8255ebe5a3b4d4c118fc097cf7cfedb7904759c3a3e0d00b3df6"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/RecordControl.tsx",
+        "sha256": "0723a8aeb397cf05dd2f4f5ae7fe3080b9d416a5c698d19b885114286d66d995"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/RecordPager.tsx",
+        "sha256": "b09f949c92ac46346a4b23b4fab1d2f86634df376294e30077ca4dad14429f60"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/StatusChip.tsx",
+        "sha256": "09aa6aeeaeb54b1ef5718eeb3f9c6a5c9093a26bc6b3c288f0e83da9a4b45562"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/UnsavedChangesDialog.tsx",
+        "sha256": "d910dddc6853530cfb72b6602db472b611c350d575b452f714e1ec78f855e676"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/object-detail.css",
+        "sha256": "e29533bd3c80879e599a9945df7c72b083c61b499da3a0e13eb90790f3b20175"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/object-form.css",
+        "sha256": "66a8d2d82ad6a9933cadc651327976e39c837be56c24119ea2a90965a7f1365e"
+      },
+      {
+        "path": "apps/prototype/src/shared/components/record-control.css",
+        "sha256": "0f0072819c26400fdf93467a8d52b16599c76d1c1bb2e95dfd5efb3c2b861452"
+      },
+      {
+        "path": "apps/prototype/src/shared/recordNavigation.ts",
+        "sha256": "33b8c95ede1395d019937fc4a91cf0b6d4d73d9e16feac23bed802e7525051fc"
+      },
+      {
+        "path": "apps/prototype/src/shared/savedListQueries.ts",
+        "sha256": "b40dd5decf02a3dec6e72576069d83159054a33a218f3099ae2a7ca7132a26d5"
+      },
+      {
+        "path": "apps/prototype/src/shared/theme/theme.ts",
+        "sha256": "198d99fca00ece042d07e5bebfa9bce7fe990d0bde2ee17aa0a3f58184144f3f"
+      },
+      {
+        "path": "apps/prototype/src/shared/useListReturnFocus.ts",
+        "sha256": "13feb58be6852c407b58d9f8df1a7b2b6e9d235a5b92733265d8b2d91ffdb23f"
+      },
+      {
+        "path": "apps/prototype/src/shared/useNavigationSave.ts",
+        "sha256": "b5078decf6bafce3699ee5cafba66905eb52711700aa7da9267dbed1b279b4b2"
+      },
+      {
+        "path": "apps/prototype/src/shared/useObjectRecordNavigation.tsx",
+        "sha256": "9156705ca17ac8ed235d456232a5155e9cdbc7cc805e531ecbf694304d7954cd"
+      },
+      {
+        "path": "apps/prototype/src/shared/useObjectTabs.tsx",
+        "sha256": "8c4275d7e5cc3e76d81b7d535956c5dc3978e61490e9df794714e7aa8dd5d9c7"
+      },
+      {
+        "path": "apps/prototype/src/shared/usePageScrollRestoration.ts",
+        "sha256": "0fc338ab4fd3916e0a0331f3b75cac9bed79c6c1c392a35b6e0d190e1bb76a19"
+      },
+      {
+        "path": "apps/prototype/src/theme.ts",
+        "sha256": "5183100ba4f4de45ddaa619d95eba010b144ec3eca216fc309d3b1ead9368716"
+      },
+      {
+        "path": "docs/dev-plans/tooling/216-database-technology-selection.md",
+        "sha256": "86ee09eab2e45d772ed9f92382a2983b9c6028554f80fbc1c6eaa2f22e1afacf"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/001-prototype-initialization.md",
+        "sha256": "5dff48a8e006a180b75029577f77a81a77116d24df201e584c35e1925929486c"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/015-prototype-page-contracts-and-regression.md",
+        "sha256": "94f0e41c012e79043d3c6e3c531d5631667068b1a353a80e1e6d7b59541087f9"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/112-unified-demo-data-management.md",
+        "sha256": "aec4e4f7a9d11b63d1aec2f34110b321c5ffd93d7a8385951bed9bab982f1376"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/117-organization-position-shared-capabilities.md",
+        "sha256": "a539aebd44aa58971a85fec936c9eae614ca0a70e23b4df2db599f2d5c2cf28a"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/400-organization-p1-prototype-implementation.md",
+        "sha256": "8cf35a34d06b2082070fca23f361c167ecc03b7174bfe0157d084e7dc43e86ad"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/401-organization-p2-prototype-implementation.md",
+        "sha256": "5801ff0acb2c7424830c15f70e58c99bddf55262547ea29bc3e5fda1d7d74ef1"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/402-organization-p3-prototype-implementation.md",
+        "sha256": "c63ff0e0a35c5aa72eb217ab38476f5be4f42db6e0dbb7605eeb3061fc6cfc25"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/403-organization-p4-prototype-implementation.md",
+        "sha256": "c67c6de9f9645749f2fc79fd36e0da2d5ce393b3c514b2e8e4bc47a58a40d04a"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/404-organization-p5-prototype-implementation.md",
+        "sha256": "b76d12379000e6e3dace071d3544385325f7a26bec2973b3bb53ea67f931c592"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/405-organization-p6-prototype-implementation.md",
+        "sha256": "06a6e5afc77d29e92ae9f0db8c7db002454a769263690594c683130daa2f4882"
+      },
+      {
+        "path": "docs/reference/organization-company-name-400-cases.json",
+        "sha256": "1191b7774888338fad429b971bd4563f3409f97d68acd64d6b1fcf752e6fd049"
+      },
+      {
+        "path": "docs/reference/organization-e1-400-acceptance.json",
+        "sha256": "f21196143226183225fef6721f100a0be72c0e63ba9525204e63be4069ad428f"
+      },
+      {
+        "path": "docs/reference/organization-e2-400-acceptance.json",
+        "sha256": "9b09a16022b60653b2ac6ca8fb4fa5fca2e70e8a585b2a16fdcae357d9b66b39"
+      },
+      {
+        "path": "docs/reference/organization-e2-400-cases.json",
+        "sha256": "ad79620df65273e036cec09530a0b3077035970663aeb47ef795e026837c8df1"
+      },
+      {
+        "path": "docs/reference/organization-p1-400-acceptance.json",
+        "sha256": "b3367d55954791c989cfbdd018c18ef39aa90c155293c92d1adfbfebd38af459"
+      },
+      {
+        "path": "docs/reference/organization-p2-401-acceptance.json",
+        "sha256": "18daaadbc3f6322230b50805109d80101f43d2afe8af6ee16919992089a9c6d0"
+      },
+      {
+        "path": "docs/reference/organization-p3-402-acceptance.json",
+        "sha256": "6ac7737afb250a9815c229b6e236c5d0ddea06805ebb9f3b7d196f2b39b49121"
+      },
+      {
+        "path": "docs/reference/organization-p3-402-source-comparison.json",
+        "sha256": "046d92058b808d53236fdab25604b45d88f8ff182cd02009969ebf55d0cf9617"
+      },
+      {
+        "path": "docs/reference/organization-p4-403-acceptance.json",
+        "sha256": "19cab1fa43f87b5786c356038de4d55c136355bf1fc627acaf903f856c9fbba1"
+      },
+      {
+        "path": "docs/reference/organization-p5-404-acceptance.json",
+        "sha256": "6c951d83edb25b8f66981ec417c9cbee97dccc3528528ebce63e8bf525833b64"
+      },
+      {
+        "path": "docs/reference/organization-p6-405-acceptance.json",
+        "sha256": "1d9052124d177d375a185fc4db88cfc19f854f521697c1461c2c29d6be93aab1"
+      },
+      {
+        "path": "docs/reference/organization-position-117-dependencies.json",
+        "sha256": "a5aa558fc62046bb6d715c18640c3ee0dc44e19a1ef868c13a6bae470493f93a"
+      },
+      {
+        "path": "docs/reference/organization-position-117-review.json",
+        "sha256": "24fa2653a7821eda84bd7b8c42f74dc88949dbf5f5ed8ed2234b8ca67ca4044d"
+      },
+      {
+        "path": "docs/reference/prototype-navigation-015-acceptance.json",
+        "sha256": "4b8e8a8bf4f039dd58ae292268a83397ad08d99529fd521e187a34496c4e8d6a"
+      },
+      {
+        "path": "package.json",
+        "sha256": "6c7700d1eee4d25317ec30213978ec85a9e924e1b349badbef3f8ad313872c55"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "sha256": "1ecd5c831a5c4f11cafc51cd0fbdc2e59ab6d160808262a9a028e3d72135fdfa"
+      }
+    ],
+    "license_status": "No repository-wide license found; local use, no new distribution grant",
+    "private_url": "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-m02-2deaf927.zip"
+  },
+  "constraints": [
+    "No source repository runtime/build dependency",
+    "No old test pass is CHNHCM acceptance",
+    "Copied local architecture is not a claim of Oracle product behavior",
+    "Imported naming increments pending integrated verification"
+  ]
+}

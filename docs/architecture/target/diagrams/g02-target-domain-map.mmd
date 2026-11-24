@@ -1,0 +1,83 @@
+---
+title: G02 中国大陆 HCM 整体业务架构 · C01—C05概念展开
+---
+flowchart TB
+  SELF["员工 · 经理 · HR服务请求人<br/>自助与服务入口"]
+  PRO["HR · 薪酬 · 财务专业人员<br/>专业业务办理入口"]
+  VIEWER["管理者及授权分析用户"]
+  subgraph BUSINESS["业务能力 · 各域维护自己的事实<br/>区域用于阅读分组；限界上下文见G05"]
+    direction TB
+    M20["M20 员工经理服务与HR任务<br/>服务请求 · Journey · 沟通 · 授权工作台"]
+  subgraph CORE["基础与人员生命周期<br/>C01 核心人事概念 · M01—M04"]
+    direction LR
+    M01["M01 人员身份与资料"]
+    M02["M02 企业组织与地点"]
+    M03["M03 职务职级职位与编制"]
+    M04["M04 用工任职与合同"]
+    M05["M05 招聘录用与入职协同<br/>招聘详见M05；交接流程见F01"]
+  end
+  subgraph TIME["计划时间、实际时间与权益<br/>C03 时间、缺勤与权益概念"]
+    direction LR
+    M06["M06 排班与工时制度"]
+    M07["M07 考勤与实际工时"]
+    M08["M08 休假缺勤与权益"]
+  end
+  subgraph PAY["薪酬、法定义务、资金与成本<br/>C02 薪资领域概念"]
+    direction LR
+    M09["M09 薪酬与激励"]
+    M10["M10 工资核算累计追溯"]
+    M11["M11 个税扣缴与申报"]
+    M12["M12 社保与公积金"]
+    M13["M13 企业福利"]
+    M14["M14 工资支付与银行用途"]
+    M15["M15 成本与财务衔接"]
+  end
+  subgraph TALENT["人才评价与发展<br/>C04 人才概念"]
+    direction LR
+    M16["M16 人才档案技能资格"]
+    M17["M17 目标与绩效"]
+    M18["M18 学习与发展"]
+    M19["M19 盘点人才池与继任"]
+  end
+  end
+  subgraph GOVERNANCE["配置与权限支持<br/>C05 引用、适用、权限与各域核准"]
+    direction LR
+    X02["X02 配置适用与政策版本"]
+    X03["X03 权限与隐私"]
+  end
+  subgraph FACILITIES["共享协议与技术设施 · 完整职责见X系列"]
+    direction LR
+    X01["X01 身份日期修订与采用<br/>共享协议库"]
+    X04["X04 任务作业与核对<br/>运行设施"]
+    X05["X05 导入导出与集成<br/>入站出站适配与防腐层"]
+  end
+  X06["X06 报表口径与追溯<br/>指标定义与授权投影；只读消费业务事实"]
+  SELF -.->|"服务请求与自助办理"| M20
+  PRO -.->|"直接进入所属域；按权限办理"| BUSINESS
+  M20 -.->|"领域命令与授权查询"| CORE
+  M20 -.->|"领域命令与授权查询"| TIME
+  M20 -.->|"领域命令与授权查询"| PAY
+  M20 -.->|"领域命令与授权查询"| TALENT
+  CORE -->|"按日期提供人员与组织事实"| TIME
+  CORE -->|"人员关系及责任主体"| PAY
+  CORE -->|"人员与职位身份"| TALENT
+  TIME -->|"确认工时和权益影响"| PAY
+  TALENT -->|"明确采用的绩效及激励依据"| PAY
+  M19 -->|"候选建议；M04独立核准任命"| M04
+  GOVERNANCE -.->|"引用适用与权限守卫；业务核准归各域"| BUSINESS
+  FACILITIES -.->|"协议、调度与适配支撑"| BUSINESS
+  BUSINESS -->|"各域公开事实与确认结果；含M20服务事实"| X06
+  X06 -->|"授权报表与来源追溯"| VIEWER
+  BUSINESS -->|"有外联职责的域：提交业务执行意图"| X05
+  X05 -->|"来源观察及回执：返回所属域命令核验确认"| BUSINESS
+  E["外部机构与业务平台<br/>税务 / 社保 / 公积金 / 银行 / ERP / 招聘 / 考勤 / 学习 / 通知"]
+  X05 <-->|"协议交换与渠道回执"| E
+  LEGEND["实线：事实 / 建议 / 外部交换<br/>虚线：办理访问 / 支撑；以标签为准<br/>核准、写入与业务确认归所属域<br/>办理、分析与下钻均经X03授权<br/>阅读：G02 → C → M/X → E / G06<br/>招聘M05、服务M20另见模块/F系列"]
+  classDef entry fill:#f6f8fb,stroke:#7e8996,color:#354150;
+  classDef support fill:#e7f5ed,stroke:#478565,color:#214d34;
+  classDef analysis fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef note fill:#ffffff,stroke:#8796a5,color:#263442;
+  class SELF,PRO,VIEWER,E entry;
+  class X01,X02,X03,X04,X05 support;
+  class X06 analysis;
+  class LEGEND note;

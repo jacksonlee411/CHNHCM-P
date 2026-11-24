@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-11-03",
+  "base_commit": "19f182cc482bdffa36d827d399f62781e68529f5",
+  "component": {
+    "package": "@mui/x-data-grid",
+    "version": "8.29.3",
+    "pinned_commit": "109f5a0c73075355f755352ad2849d52a01197b5"
+  },
+  "official_sources": [
+    {
+      "title": "Filtering",
+      "url": "https://v8.mui.com/x/react-data-grid/filtering/",
+      "observed_display_version": "8.29.5",
+      "purpose": "单条件和公开filterModel边界；滚动文档不证明8.29.3运行"
+    },
+    {
+      "title": "Server-side filtering",
+      "url": "https://v8.mui.com/x/react-data-grid/filtering/server-side/",
+      "observed_display_version": "8.29.5",
+      "purpose": "filterMode=server与应用处理器负责服务端接线"
+    },
+    {
+      "title": "Filter customization",
+      "url": "https://v8.mui.com/x/react-data-grid/filtering/customization/",
+      "observed_display_version": "8.29.5",
+      "purpose": "公开输入/操作符/组件定制"
+    },
+    {
+      "title": "Header filters",
+      "url": "https://v8.mui.com/x/react-data-grid/filtering/header-filters/",
+      "observed_display_version": "8.29.5",
+      "purpose": "官方headerFilters示例使用DataGridPro"
+    }
+  ],
+  "source_files_sha256": {
+    "packages/mui-x-data-grid/src/DataGrid/useDataGridProps.ts": "dce3b7eaf0f06cf3e0e8b088747916a9fc17462121b8e491d98d29949669ba70",
+    "packages/mui-x-data-grid/src/hooks/features/filter/gridFilterUtils.ts": "d6d3408606a457d7e328ba09cd8265d515aab32de8bbdeb964932f4a746275f4",
+    "packages/mui-x-data-grid/src/hooks/features/filter/gridFilterState.ts": "e095b12f91b07b0855dfa43f1bcd1af53ae57dfa4a8d916496b484048e629752",
+    "packages/mui-x-data-grid/src/hooks/features/filter/useGridFilter.tsx": "fe3cb29523aec1f80f2f7362a3588005f9030a717582c624da1ad9fd7b7bbc97",
+    "packages/mui-x-data-grid/src/components/panel/filterPanel/GridFilterPanel.tsx": "1618fe06b91f49576eb5e4e3a364486fe18f871f97c6b6a3e6b3c5bbef91ae84",
+    "packages/mui-x-data-grid/src/components/panel/filterPanel/GridFilterForm.tsx": "cc04b7e5aab8bc2b40b6e4d1227cba7be29c5fc6db567a72cb3fd270bb1b1557",
+    "packages/mui-x-data-grid/src/components/panel/filterPanel/GridFilterInputValue.tsx": "9fccc79b897e9b56a907e445b391b551275cd8914b82987c7d04439d61bbf874",
+    "packages/mui-x-data-grid/src/colDef/gridSingleSelectOperators.ts": "6da97a737b8010fec37c754847461850f1f66fdf61ed8cd8f1c1e9725fcc3568",
+    "packages/mui-x-data-grid/src/colDef/gridStringOperators.ts": "e35d6b7db2421ee0b86f58213f204d2b0631b4efab6b6f7dc2713bca72d69e8c",
+    "packages/mui-x-data-grid/src/colDef/gridDateOperators.ts": "37d69bdc234206396af57741a712e78d8bf5bf41e8dd834571ccef6cf6ccd69b",
+    "internal/bootstrap/api.go": "ca2c3e769e3e85792339cd4c6977db979693e7834a5546b313b72d5e2cb512e4",
+    "internal/contexts/organization/application/service.go": "e4b07eee787ab319e86430e090a539911c2a66d4a0f55ac5439529bfc704d835",
+    "internal/contexts/organization/infra/postgres/queries.go": "24161482fa6bce1a6d61ab327e988c88a2d5a27cfb7d29c27386f98b8e0081fc",
+    "api/openapi.yaml": "11acb80cdca402e456321fac5614b1ca594d26627e69ce70b2de645024cc9537",
+    "packages/ui/src/components/Lists.tsx": "7ac8f76d0afca3017985f1c47727f7b63a0673d920e9056ae327849ab9902363",
+    "apps/web/src/features/organization/BusinessUnitListControls.tsx": "003a19320a3d07d4c4d3d0de794bb21b8294aabf9f62617b70d284f17e009d6e"
+  },
+  "fixed_version_facts": [
+    "Community强制disableMultipleColumnsFiltering=true，模型多items会截为首项。",
+    "singleSelect isAnyOf可在一个item的value数组中接收多个值，不等于多个字段条件。",
+    "原生输入按filterDebounceMs变更模型，原生面板没有项目应用/取消事务。",
+    "filterMode=server不在客户端计算筛选结果，也不会自动实现Go业务查询。",
+    "GridFilterForm公开回调支持由应用持有item草稿；主网格filterModel可以保持A。"
+  ],
+  "api_contract": {
+    "list_parameters": [
+      "businessAt",
+      "q",
+      "status",
+      "sort",
+      "page",
+      "pageSize"
+    ],
+    "status_values": [
+      "all",
+      "active",
+      "inactive",
+      "not_effective"
+    ],
+    "q_scope": "获权编码或名称的字面包含；不是独立字段条件",
+    "unsupported": [
+      "独立code/name条件与操作符",
+      "status多值集合",
+      "独立effectiveDate范围或空值谓词",
+      "通用conditions/filterModel",
+      "Excel distinct候选/数量/联动服务"
+    ]
+  },
+  "outcome": {
+    "t04": "assessment_completed",
+    "current_product": "保留现行查询/日期/单状态面板；列筛选不接线。",
+    "future_candidate": "如另行采纳单条件，优先复用GridFilterForm及官方输入器，应用提供按需模态框/草稿/应用取消和Go合同适配。",
+    "deferred": [
+      "跨列组合",
+      "完整Excel候选",
+      "高级查询/收藏分享/分组/导出"
+    ],
+    "boundaries": "评估及组件实验不证明新增API或业务查询能力；T05未关闭。",
+    "not_adopted": [
+      "原生即时应用直接作为业务查询",
+      "当前页过滤/候选冒充全授权结果",
+      "GridFilterModel直接公开为业务协议",
+      "Pro headerFilters或复制/修改商业功能路线"
+    ]
+  },
+  "probe_evidence": "docs/verification/data/111-column-filter-evaluation/results.json",
+  "documentation_discrepancy": {
+    "topic": "默认组合逻辑",
+    "rolling_documentation": "Or",
+    "pinned_8_29_3_source": "GridLogicOperator.And",
+    "handling": "精确版本以固定源码为准；业务条件组合必须单独定义，不能继承任一组件默认。"
+  }
+}

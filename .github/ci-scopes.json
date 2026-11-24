@@ -1,0 +1,350 @@
+{
+  "geography": {
+    "integration_filter": "^Test(Country|GeoArea|Location|Geography|LegalEntity|Enterprise|Navigation302|T07)",
+    "browser_files": [
+      "country200.spec.ts",
+      "geoarea203.spec.ts",
+      "geoarea203-layout.spec.ts",
+      "location204.spec.ts",
+      "location204-layout.spec.ts",
+      "location205-navigation.spec.ts",
+      "geography205-joint.spec.ts",
+      "navigation302.spec.ts",
+      "department-journeys.spec.ts",
+      "dated-workflow.spec.ts",
+      "dated-assistance-focus.spec.ts",
+      "default-date202.spec.ts"
+    ],
+    "extensions": {
+      "apps/web/src/features/organization/Enterprise.tsx": [
+        "enterprise304.spec.ts",
+        "enterprise304-zoom.spec.ts",
+        "primary303.spec.ts",
+        "primary303-zoom.spec.ts"
+      ],
+      "apps/web/src/features/organization/LegalEntities.tsx": [
+        "hire400.spec.ts",
+        "first-hire.spec.ts",
+        "legal-entity206.spec.ts",
+        "legal-entity206-layout.spec.ts"
+      ]
+    }
+  },
+  "dependency_projects": [
+    "enterprise-maintenance"
+  ],
+  "domains": {
+    "personnel": {
+      "frontend": ["apps/web/src/features/personnel/Detail.tsx", "apps/web/src/features/personnel/Editor.tsx", "apps/web/src/features/personnel/List.tsx", "apps/web/src/features/personnel/Submission.tsx", "apps/web/src/features/personnel/api.ts", "apps/web/src/features/hire/HirePage.tsx", "apps/web/src/features/hire/Target.tsx"],
+      "browser_files": ["personnel.spec.ts", "first-hire.spec.ts"],
+      "backend_prefixes": ["internal/contexts/personnel/"],
+      "backend_consumers": ["personnel"]
+    },
+    "businessunit": {
+      "frontend": [
+        "apps/web/src/features/organization/BusinessUnits.tsx",
+        "apps/web/src/features/organization/businessUnitAdapter.ts",
+        "apps/web/src/features/organization/businessUnitProjection.ts",
+        "apps/web/src/features/organization/ManagementBUSummary.tsx"
+      ],
+      "browser_files": [
+        "bu-coverage133.spec.ts",
+        "bu.spec.ts",
+        "column-filter.spec.ts",
+        "community-list.spec.ts",
+        "correction-coverage.spec.ts",
+        "current-maintenance.spec.ts",
+        "date-format.spec.ts",
+        "dated-assistance-focus.spec.ts",
+        "dated-workflow.spec.ts",
+        "default-date202.spec.ts",
+        "delete.spec.ts",
+        "detail-actions.spec.ts",
+        "direct-save.spec.ts",
+        "experience.spec.ts",
+        "first-record-maintenance.spec.ts",
+        "lifecycle-pair.spec.ts",
+        "lifecycle.spec.ts",
+        "list-return-notice.spec.ts",
+        "navigation302.spec.ts",
+        "operation-permissions.spec.ts",
+        "operation-review-fixes.spec.ts",
+        "operation-summary.spec.ts",
+        "positioned-addition.spec.ts",
+        "query-selection.spec.ts",
+        "redate.spec.ts",
+        "t07-journeys.spec.ts",
+        "t07-query.spec.ts",
+        "timeline.spec.ts",
+        "ui-improvements.spec.ts",
+        "unified-correction.spec.ts"
+      ],
+      "backend_prefixes": [],
+      "backend_consumers": [
+        "businessunit",
+        "department",
+        "enterprise",
+        "country",
+        "geoarea",
+        "location",
+        "legalentity"
+      ]
+    },
+    "department": {
+      "frontend": [
+        "apps/web/src/features/organization/Departments.tsx",
+        "apps/web/src/features/organization/DepartmentColumns.tsx",
+        "apps/web/src/features/organization/DepartmentRelations.tsx",
+        "apps/web/src/features/organization/DepartmentTree.tsx",
+        "apps/web/src/features/organization/DepartmentTreePanel.tsx",
+        "apps/web/src/features/organization/departmentAdapter.ts"
+      ],
+      "browser_files": [
+        "bu-coverage133.spec.ts",
+        "dated-assistance-focus.spec.ts",
+        "default-date202.spec.ts",
+        "department-acceptance.spec.ts",
+        "department-authorization-followup.spec.ts",
+        "department-journeys.spec.ts",
+        "department-layout.spec.ts",
+        "department-path133.spec.ts",
+        "department-reference-projection.spec.ts",
+        "department-review-fixes.spec.ts",
+        "department-selection-menu.spec.ts",
+        "department-selection-races.spec.ts",
+        "department-selection.spec.ts",
+        "department-tree300.spec.ts",
+        "feedback301.spec.ts",
+        "list-return-notice.spec.ts",
+        "navigation302.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/organization/application/department/",
+        "internal/contexts/organization/domain/department/"
+      ],
+      "backend_consumers": [
+        "department",
+        "businessunit",
+        "enterprise"
+      ],
+      "backend_browser_domains": [
+        "department",
+        "enterprise"
+      ],
+      "backend_extra_browser_files": [
+        "bu-coverage133.spec.ts"
+      ]
+    },
+    "enterprise": {
+      "backend_extra_browser_files": ["personnel.spec.ts"],
+      "frontend": [
+        "apps/web/src/features/organization/Enterprise.tsx",
+        "apps/web/src/features/organization/enterpriseAdapter.tsx"
+      ],
+      "browser_files": [
+        "default-date202.spec.ts",
+        "enterprise304-zoom.spec.ts",
+        "enterprise304.spec.ts",
+        "navigation302.spec.ts",
+        "primary303-zoom.spec.ts",
+        "primary303.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/organization/application/enterprise/",
+        "internal/contexts/organization/domain/enterprise/"
+      ],
+      "backend_consumers": [
+        "businessunit",
+        "department",
+        "enterprise",
+        "country",
+        "geoarea",
+        "location",
+        "legalentity",
+        "staffing"
+      ]
+    },
+    "country": {
+      "frontend": [
+        "apps/web/src/features/organization/Countries.tsx",
+        "apps/web/src/features/organization/countryAdapter.tsx"
+      ],
+      "browser_files": [
+        "country200.spec.ts",
+        "default-date202.spec.ts",
+        "geography205-joint.spec.ts",
+        "navigation302.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/organization/application/country/",
+        "internal/contexts/organization/domain/country/"
+      ],
+      "backend_consumers": [
+        "country",
+        "geoarea",
+        "location",
+        "legalentity",
+        "enterprise"
+      ]
+    },
+    "geoarea": {
+      "frontend": [
+        "apps/web/src/features/organization/GeoAreas.tsx",
+        "apps/web/src/features/organization/GeoAreaFilters.tsx",
+        "apps/web/src/features/organization/geoAreaAdapter.tsx"
+      ],
+      "browser_files": [
+        "default-date202.spec.ts",
+        "geoarea203-layout.spec.ts",
+        "geoarea203.spec.ts",
+        "geography205-joint.spec.ts",
+        "navigation302.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/organization/application/geoarea/",
+        "internal/contexts/organization/domain/geoarea/"
+      ],
+      "backend_consumers": [
+        "geoarea",
+        "location",
+        "enterprise"
+      ]
+    },
+    "location": {
+      "frontend": [
+        "apps/web/src/features/organization/Locations.tsx",
+        "apps/web/src/features/organization/locationAdapter.ts",
+        "apps/web/src/features/organization/LocationAddress.tsx",
+        "apps/web/src/features/organization/LocationRegionPicker.tsx"
+      ],
+      "browser_files": [
+        "default-date202.spec.ts",
+        "geography205-joint.spec.ts",
+        "location204-layout.spec.ts",
+        "location204.spec.ts",
+        "location205-navigation.spec.ts",
+        "navigation302.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/organization/application/location/",
+        "internal/contexts/organization/domain/location/"
+      ],
+      "backend_consumers": [
+        "location",
+        "enterprise"
+      ]
+    },
+    "legalentity": {
+      "frontend": [
+        "apps/web/src/features/organization/LegalEntities.tsx",
+        "apps/web/src/features/organization/LegalEntityFields.tsx",
+        "apps/web/src/features/organization/legalEntityAdapter.ts"
+      ],
+      "browser_files": [
+        "default-date202.spec.ts",
+        "geography205-joint.spec.ts",
+        "legal-entity206-layout.spec.ts",
+        "legal-entity206.spec.ts",
+        "navigation302.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/organization/application/legalentity/",
+        "internal/contexts/organization/domain/legalentity/"
+      ],
+      "backend_consumers": [
+        "legalentity",
+        "enterprise"
+      ]
+    },
+    "staffing": {
+      "frontend": [
+        "apps/web/src/features/staffing/List.tsx",
+        "apps/web/src/features/staffing/Detail.tsx",
+        "apps/web/src/features/staffing/Editor.tsx",
+        "apps/web/src/features/staffing/api.ts",
+        "apps/web/src/features/staffing/useSubmission.tsx",
+        "apps/web/src/features/staffing/ChangeLog.tsx",
+        "apps/web/src/features/staffing/GradeMembers.tsx",
+        "apps/web/src/features/staffing/Hierarchy.tsx",
+        "apps/web/src/features/staffing/PositionReference.tsx",
+        "apps/web/src/features/staffing/QuotaList.tsx",
+        "apps/web/src/features/staffing/QuotaDepartment.tsx",
+        "apps/web/src/features/staffing/AllocationEditor.tsx",
+        "apps/web/src/features/staffing/QuotaDetail.tsx",
+        "apps/web/src/features/staffing/QuotaEditor.tsx",
+        "apps/web/src/features/staffing/QuotaRecovery.tsx",
+        "apps/web/src/features/staffing/quotaApi.ts"
+      ],
+      "browser_files": [
+        "hire400.spec.ts",
+        "first-hire.spec.ts",
+        "staffing307.spec.ts",
+        "staffing308.spec.ts",
+        "staffing308-zoom.spec.ts",
+        "staffing309.spec.ts",
+        "staffing309-zoom.spec.ts",
+        "staffing310.spec.ts",
+        "staffing310-zoom.spec.ts",
+        "staffing310-permissions.spec.ts",
+        "staffing312-hierarchy.spec.ts",
+        "staffing312.spec.ts",
+        "staffing312-zoom.spec.ts",
+        "staffing315.spec.ts",
+        "staffing315-allocation.spec.ts",
+        "staffing313.spec.ts",
+        "staffing314.spec.ts",
+        "staffing314-zoom.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/staffing/"
+      ],
+      "backend_consumers": [
+        "staffing",
+        "enterprise"
+      ]
+    }
+  },
+  "integration_prefixes": {
+    "personnel": ["Personnel"],
+    "businessunit": [
+      "BU",
+      "BusinessUnit"
+    ],
+    "department": [
+      "Department"
+    ],
+    "enterprise": [
+      "Enterprise"
+    ],
+    "country": [
+      "Country"
+    ],
+    "geoarea": [
+      "GeoArea"
+    ],
+    "location": [
+      "Location"
+    ],
+    "legalentity": [
+      "LegalEntity"
+    ],
+    "staffing": [
+      "Staffing307",
+      "Staffing308",
+      "Staffing309",
+      "Staffing310",
+      "Staffing312",
+      "Staffing314"
+    ]
+  },
+  "shared_browser_files": [
+    "primary303.spec.ts",
+    "navigation302.spec.ts",
+    "default-date202.spec.ts"
+  ],
+  "business_tools": {
+    "scripts/department306-history/": "department",
+    "scripts/department306-maintain/": "department",
+    "tests/scenarios/department306-": "department"
+  }
+}

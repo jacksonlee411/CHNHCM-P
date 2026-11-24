@@ -1,0 +1,40 @@
+---
+title: G04 正式阶段应用与部署方向 · 尚未实施的目标
+---
+flowchart TB
+  U["浏览器：React / TypeScript / MUI"]
+  IDP["客户身份来源与认证服务"]
+  subgraph CUSTOMER["一个客户的独立实例 · 托管 / 客户环境 / 离线"]
+    WEB["静态页面与HTTP入口"]
+    subgraph GO["Go 模块化单体 · 同代码库"]
+      API["应用接口与服务端授权"]
+      MOD["17限界上下文承载20模块及支持能力"]
+      JOB["X04 持久投递与作业恢复"]
+      ADP["X05 ACL与外部渠道适配"]
+    end
+    DB["PostgreSQL：各域事实 / Outbox / Inbox / 采用 / 审计"]
+    FILE["受控附件 / 导入导出 / 备份"]
+    UPG["本地升级程序：校验、备份、迁移、检查"]
+    COMPOSE["Docker Compose 管理实例进程"]
+  end
+  EXT["银行 / 税社保 / 公积金 / ERP 等"]
+  VENDOR["轻量厂商后台：版本发布与升级登记"]
+  OFF["签发离线升级包与离线结果"]
+  U --> WEB
+  WEB --> API
+  IDP -->|"认证身份"| API
+  API --> MOD
+  MOD -->|"pgx/v5 + sqlc；责任根与显式协调事务"| DB
+  MOD --> FILE
+  DB -->|"事务提交后的执行意图"| JOB
+  JOB --> MOD
+  JOB --> ADP
+  ADP -->|"按授权及适配协议"| EXT
+  EXT -->|"回执经领域命令应用"| ADP
+  COMPOSE -.-> WEB
+  COMPOSE -.-> GO
+  COMPOSE -.-> DB
+  VENDOR -->|"在线签发版本"| UPG
+  OFF -->|"人工导入；不依赖实时联网"| UPG
+  UPG -->|"goose 迁移及升级检查"| DB
+  UPG --> COMPOSE

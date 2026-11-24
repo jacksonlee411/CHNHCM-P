@@ -1,0 +1,2266 @@
+{
+  "version": "chnhcm-geography-g0-v1",
+  "packageDigest": "dc7eac11535bb2da2f3f72431d0767dc510c250a3e11596ffd76428e3fafc123",
+  "archiveDigest": "8ffa0c5f633d6f5706dcff2bef7d86bf3af44cdbb7bcd76e638e5a2733553ad7",
+  "countries": [
+    {
+      "code": "AD",
+      "effectiveDate": "1900-01-01",
+      "name": "安道尔",
+      "nameEn": "Andorra",
+      "phoneCode": 376,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ad"
+    },
+    {
+      "code": "AE",
+      "effectiveDate": "1900-01-01",
+      "name": "阿拉伯联合酋长国",
+      "nameEn": "United Arab Emirates",
+      "phoneCode": 971,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ae"
+    },
+    {
+      "code": "AF",
+      "effectiveDate": "1900-01-01",
+      "name": "阿富汗",
+      "nameEn": "Afghanistan",
+      "phoneCode": 93,
+      "scheme": "odoo-country",
+      "sourceKey": "base.af"
+    },
+    {
+      "code": "AG",
+      "effectiveDate": "1900-01-01",
+      "name": "安提瓜和巴布达",
+      "nameEn": "Antigua and Barbuda",
+      "phoneCode": 1268,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ag"
+    },
+    {
+      "code": "AI",
+      "effectiveDate": "1900-01-01",
+      "name": "安圭拉",
+      "nameEn": "Anguilla",
+      "phoneCode": 1264,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ai"
+    },
+    {
+      "code": "AL",
+      "effectiveDate": "1900-01-01",
+      "name": "阿尔巴尼亚",
+      "nameEn": "Albania",
+      "phoneCode": 355,
+      "scheme": "odoo-country",
+      "sourceKey": "base.al"
+    },
+    {
+      "code": "AM",
+      "effectiveDate": "1900-01-01",
+      "name": "亚美尼亚",
+      "nameEn": "Armenia",
+      "phoneCode": 374,
+      "scheme": "odoo-country",
+      "sourceKey": "base.am"
+    },
+    {
+      "code": "AO",
+      "effectiveDate": "1900-01-01",
+      "name": "安哥拉",
+      "nameEn": "Angola",
+      "phoneCode": 244,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ao"
+    },
+    {
+      "code": "AQ",
+      "effectiveDate": "1900-01-01",
+      "name": "南极洲",
+      "nameEn": "Antarctica",
+      "phoneCode": 672,
+      "scheme": "odoo-country",
+      "sourceKey": "base.aq"
+    },
+    {
+      "code": "AR",
+      "effectiveDate": "1900-01-01",
+      "name": "阿根廷",
+      "nameEn": "Argentina",
+      "phoneCode": 54,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ar"
+    },
+    {
+      "code": "AS",
+      "effectiveDate": "1900-01-01",
+      "name": "美属萨摩亚",
+      "nameEn": "American Samoa",
+      "phoneCode": 1684,
+      "scheme": "odoo-country",
+      "sourceKey": "base.as"
+    },
+    {
+      "code": "AT",
+      "effectiveDate": "1900-01-01",
+      "name": "奥地利",
+      "nameEn": "Austria",
+      "phoneCode": 43,
+      "scheme": "odoo-country",
+      "sourceKey": "base.at"
+    },
+    {
+      "code": "AU",
+      "effectiveDate": "1900-01-01",
+      "name": "澳大利亚",
+      "nameEn": "Australia",
+      "phoneCode": 61,
+      "scheme": "odoo-country",
+      "sourceKey": "base.au"
+    },
+    {
+      "code": "AW",
+      "effectiveDate": "1900-01-01",
+      "name": "阿鲁巴",
+      "nameEn": "Aruba",
+      "phoneCode": 297,
+      "scheme": "odoo-country",
+      "sourceKey": "base.aw"
+    },
+    {
+      "code": "AX",
+      "effectiveDate": "1900-01-01",
+      "name": "奥兰群岛",
+      "nameEn": "Åland Islands",
+      "phoneCode": 358,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ax"
+    },
+    {
+      "code": "AZ",
+      "effectiveDate": "1900-01-01",
+      "name": "阿塞拜疆",
+      "nameEn": "Azerbaijan",
+      "phoneCode": 994,
+      "scheme": "odoo-country",
+      "sourceKey": "base.az"
+    },
+    {
+      "code": "BA",
+      "effectiveDate": "1900-01-01",
+      "name": "波斯尼亚和黑塞哥维那",
+      "nameEn": "Bosnia and Herzegovina",
+      "phoneCode": 387,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ba"
+    },
+    {
+      "code": "BB",
+      "effectiveDate": "1900-01-01",
+      "name": "巴巴多斯",
+      "nameEn": "Barbados",
+      "phoneCode": 1246,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bb"
+    },
+    {
+      "code": "BD",
+      "effectiveDate": "1900-01-01",
+      "name": "孟加拉国",
+      "nameEn": "Bangladesh",
+      "phoneCode": 880,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bd"
+    },
+    {
+      "code": "BE",
+      "effectiveDate": "1900-01-01",
+      "name": "比利时",
+      "nameEn": "Belgium",
+      "phoneCode": 32,
+      "scheme": "odoo-country",
+      "sourceKey": "base.be"
+    },
+    {
+      "code": "BF",
+      "effectiveDate": "1900-01-01",
+      "name": "布基纳法索",
+      "nameEn": "Burkina Faso",
+      "phoneCode": 226,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bf"
+    },
+    {
+      "code": "BG",
+      "effectiveDate": "1900-01-01",
+      "name": "保加利亚",
+      "nameEn": "Bulgaria",
+      "phoneCode": 359,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bg"
+    },
+    {
+      "code": "BH",
+      "effectiveDate": "1900-01-01",
+      "name": "巴林",
+      "nameEn": "Bahrain",
+      "phoneCode": 973,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bh"
+    },
+    {
+      "code": "BI",
+      "effectiveDate": "1900-01-01",
+      "name": "布隆迪",
+      "nameEn": "Burundi",
+      "phoneCode": 257,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bi"
+    },
+    {
+      "code": "BJ",
+      "effectiveDate": "1900-01-01",
+      "name": "贝宁",
+      "nameEn": "Benin",
+      "phoneCode": 229,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bj"
+    },
+    {
+      "code": "BL",
+      "effectiveDate": "1900-01-01",
+      "name": "圣巴泰勒米",
+      "nameEn": "Saint Barthélémy",
+      "phoneCode": 590,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bl"
+    },
+    {
+      "code": "BM",
+      "effectiveDate": "1900-01-01",
+      "name": "百慕大",
+      "nameEn": "Bermuda",
+      "phoneCode": 1441,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bm"
+    },
+    {
+      "code": "BN",
+      "effectiveDate": "1900-01-01",
+      "name": "文莱达鲁萨兰国",
+      "nameEn": "Brunei Darussalam",
+      "phoneCode": 673,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bn"
+    },
+    {
+      "code": "BO",
+      "effectiveDate": "1900-01-01",
+      "name": "玻利维亚",
+      "nameEn": "Bolivia",
+      "phoneCode": 591,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bo"
+    },
+    {
+      "code": "BQ",
+      "effectiveDate": "1900-01-01",
+      "name": "博内尔岛，圣尤斯特歇斯和萨巴",
+      "nameEn": "Bonaire, Sint Eustatius and Saba",
+      "phoneCode": 599,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bq"
+    },
+    {
+      "code": "BR",
+      "effectiveDate": "1900-01-01",
+      "name": "巴西",
+      "nameEn": "Brazil",
+      "phoneCode": 55,
+      "scheme": "odoo-country",
+      "sourceKey": "base.br"
+    },
+    {
+      "code": "BS",
+      "effectiveDate": "1900-01-01",
+      "name": "巴哈马",
+      "nameEn": "Bahamas",
+      "phoneCode": 1242,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bs"
+    },
+    {
+      "code": "BT",
+      "effectiveDate": "1900-01-01",
+      "name": "不丹",
+      "nameEn": "Bhutan",
+      "phoneCode": 975,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bt"
+    },
+    {
+      "code": "BV",
+      "effectiveDate": "1900-01-01",
+      "name": "布维岛",
+      "nameEn": "Bouvet Island",
+      "phoneCode": 55,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bv"
+    },
+    {
+      "code": "BW",
+      "effectiveDate": "1900-01-01",
+      "name": "博茨瓦纳",
+      "nameEn": "Botswana",
+      "phoneCode": 267,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bw"
+    },
+    {
+      "code": "BY",
+      "effectiveDate": "1900-01-01",
+      "name": "白俄罗斯",
+      "nameEn": "Belarus",
+      "phoneCode": 375,
+      "scheme": "odoo-country",
+      "sourceKey": "base.by"
+    },
+    {
+      "code": "BZ",
+      "effectiveDate": "1900-01-01",
+      "name": "伯利兹",
+      "nameEn": "Belize",
+      "phoneCode": 501,
+      "scheme": "odoo-country",
+      "sourceKey": "base.bz"
+    },
+    {
+      "code": "CA",
+      "effectiveDate": "1900-01-01",
+      "name": "加拿大",
+      "nameEn": "Canada",
+      "phoneCode": 1,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ca"
+    },
+    {
+      "code": "CC",
+      "effectiveDate": "1900-01-01",
+      "name": "科科斯（基林）群岛",
+      "nameEn": "Cocos (Keeling) Islands",
+      "phoneCode": 61,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cc"
+    },
+    {
+      "code": "CD",
+      "effectiveDate": "1900-01-01",
+      "name": "刚果民主共和国（DRC）",
+      "nameEn": "Congo (DRC)",
+      "phoneCode": 243,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cd"
+    },
+    {
+      "code": "CF",
+      "effectiveDate": "1900-01-01",
+      "name": "中非共和国",
+      "nameEn": "Central African Republic",
+      "phoneCode": 236,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cf"
+    },
+    {
+      "code": "CG",
+      "effectiveDate": "1900-01-01",
+      "name": "刚果共和国（Republic）",
+      "nameEn": "Congo (Republic)",
+      "phoneCode": 242,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cg"
+    },
+    {
+      "code": "CH",
+      "effectiveDate": "1900-01-01",
+      "name": "瑞士",
+      "nameEn": "Switzerland",
+      "phoneCode": 41,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ch"
+    },
+    {
+      "code": "CI",
+      "effectiveDate": "1900-01-01",
+      "name": "科特迪瓦",
+      "nameEn": "Côte d'Ivoire",
+      "phoneCode": 225,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ci"
+    },
+    {
+      "code": "CK",
+      "effectiveDate": "1900-01-01",
+      "name": "库克群岛",
+      "nameEn": "Cook Islands",
+      "phoneCode": 682,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ck"
+    },
+    {
+      "code": "CL",
+      "effectiveDate": "1900-01-01",
+      "name": "智利",
+      "nameEn": "Chile",
+      "phoneCode": 56,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cl"
+    },
+    {
+      "code": "CM",
+      "effectiveDate": "1900-01-01",
+      "name": "喀麦隆",
+      "nameEn": "Cameroon",
+      "phoneCode": 237,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cm"
+    },
+    {
+      "code": "CN",
+      "effectiveDate": "1900-01-01",
+      "name": "中国",
+      "nameEn": "China",
+      "phoneCode": 86,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cn"
+    },
+    {
+      "code": "CO",
+      "effectiveDate": "1900-01-01",
+      "name": "哥伦比亚",
+      "nameEn": "Colombia",
+      "phoneCode": 57,
+      "scheme": "odoo-country",
+      "sourceKey": "base.co"
+    },
+    {
+      "code": "CR",
+      "effectiveDate": "1900-01-01",
+      "name": "哥斯达黎加",
+      "nameEn": "Costa Rica",
+      "phoneCode": 506,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cr"
+    },
+    {
+      "code": "CU",
+      "effectiveDate": "1900-01-01",
+      "name": "古巴",
+      "nameEn": "Cuba",
+      "phoneCode": 53,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cu"
+    },
+    {
+      "code": "CV",
+      "effectiveDate": "1900-01-01",
+      "name": "佛得角",
+      "nameEn": "Cape Verde",
+      "phoneCode": 238,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cv"
+    },
+    {
+      "code": "CW",
+      "effectiveDate": "1900-01-01",
+      "name": "库拉索",
+      "nameEn": "Curaçao",
+      "phoneCode": 599,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cw"
+    },
+    {
+      "code": "CX",
+      "effectiveDate": "1900-01-01",
+      "name": "圣诞岛",
+      "nameEn": "Christmas Island",
+      "phoneCode": 61,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cx"
+    },
+    {
+      "code": "CY",
+      "effectiveDate": "1900-01-01",
+      "name": "塞浦路斯",
+      "nameEn": "Cyprus",
+      "phoneCode": 357,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cy"
+    },
+    {
+      "code": "CZ",
+      "effectiveDate": "1900-01-01",
+      "name": "捷克共和国",
+      "nameEn": "Czech Republic",
+      "phoneCode": 420,
+      "scheme": "odoo-country",
+      "sourceKey": "base.cz"
+    },
+    {
+      "code": "DE",
+      "effectiveDate": "1900-01-01",
+      "name": "德国",
+      "nameEn": "Germany",
+      "phoneCode": 49,
+      "scheme": "odoo-country",
+      "sourceKey": "base.de"
+    },
+    {
+      "code": "DJ",
+      "effectiveDate": "1900-01-01",
+      "name": "吉布提",
+      "nameEn": "Djibouti",
+      "phoneCode": 253,
+      "scheme": "odoo-country",
+      "sourceKey": "base.dj"
+    },
+    {
+      "code": "DK",
+      "effectiveDate": "1900-01-01",
+      "name": "丹麦",
+      "nameEn": "Denmark",
+      "phoneCode": 45,
+      "scheme": "odoo-country",
+      "sourceKey": "base.dk"
+    },
+    {
+      "code": "DM",
+      "effectiveDate": "1900-01-01",
+      "name": "多米尼加",
+      "nameEn": "Dominica",
+      "phoneCode": 1767,
+      "scheme": "odoo-country",
+      "sourceKey": "base.dm"
+    },
+    {
+      "code": "DO",
+      "effectiveDate": "1900-01-01",
+      "name": "多明尼加共和国",
+      "nameEn": "Dominican Republic",
+      "phoneCode": 1849,
+      "scheme": "odoo-country",
+      "sourceKey": "base.do"
+    },
+    {
+      "code": "DZ",
+      "effectiveDate": "1900-01-01",
+      "name": "阿尔及利亚",
+      "nameEn": "Algeria",
+      "phoneCode": 213,
+      "scheme": "odoo-country",
+      "sourceKey": "base.dz"
+    },
+    {
+      "code": "EC",
+      "effectiveDate": "1900-01-01",
+      "name": "厄瓜多尔",
+      "nameEn": "Ecuador",
+      "phoneCode": 593,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ec"
+    },
+    {
+      "code": "EE",
+      "effectiveDate": "1900-01-01",
+      "name": "爱沙尼亚",
+      "nameEn": "Estonia",
+      "phoneCode": 372,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ee"
+    },
+    {
+      "code": "EG",
+      "effectiveDate": "1900-01-01",
+      "name": "埃及",
+      "nameEn": "Egypt",
+      "phoneCode": 20,
+      "scheme": "odoo-country",
+      "sourceKey": "base.eg"
+    },
+    {
+      "code": "EH",
+      "effectiveDate": "1900-01-01",
+      "name": "西撒哈拉",
+      "nameEn": "Western Sahara",
+      "phoneCode": 212,
+      "scheme": "odoo-country",
+      "sourceKey": "base.eh"
+    },
+    {
+      "code": "ER",
+      "effectiveDate": "1900-01-01",
+      "name": "厄立特里亚",
+      "nameEn": "Eritrea",
+      "phoneCode": 291,
+      "scheme": "odoo-country",
+      "sourceKey": "base.er"
+    },
+    {
+      "code": "ES",
+      "effectiveDate": "1900-01-01",
+      "name": "西班牙",
+      "nameEn": "Spain",
+      "phoneCode": 34,
+      "scheme": "odoo-country",
+      "sourceKey": "base.es"
+    },
+    {
+      "code": "ET",
+      "effectiveDate": "1900-01-01",
+      "name": "埃塞俄比亚",
+      "nameEn": "Ethiopia",
+      "phoneCode": 251,
+      "scheme": "odoo-country",
+      "sourceKey": "base.et"
+    },
+    {
+      "code": "FI",
+      "effectiveDate": "1900-01-01",
+      "name": "芬兰",
+      "nameEn": "Finland",
+      "phoneCode": 358,
+      "scheme": "odoo-country",
+      "sourceKey": "base.fi"
+    },
+    {
+      "code": "FJ",
+      "effectiveDate": "1900-01-01",
+      "name": "斐济",
+      "nameEn": "Fiji",
+      "phoneCode": 679,
+      "scheme": "odoo-country",
+      "sourceKey": "base.fj"
+    },
+    {
+      "code": "FK",
+      "effectiveDate": "1900-01-01",
+      "name": "福克兰群岛",
+      "nameEn": "Falkland Islands",
+      "phoneCode": 500,
+      "scheme": "odoo-country",
+      "sourceKey": "base.fk"
+    },
+    {
+      "code": "FM",
+      "effectiveDate": "1900-01-01",
+      "name": "密克罗尼西亚",
+      "nameEn": "Micronesia",
+      "phoneCode": 691,
+      "scheme": "odoo-country",
+      "sourceKey": "base.fm"
+    },
+    {
+      "code": "FO",
+      "effectiveDate": "1900-01-01",
+      "name": "法罗群岛",
+      "nameEn": "Faroe Islands",
+      "phoneCode": 298,
+      "scheme": "odoo-country",
+      "sourceKey": "base.fo"
+    },
+    {
+      "code": "FR",
+      "effectiveDate": "1900-01-01",
+      "name": "法国",
+      "nameEn": "France",
+      "phoneCode": 33,
+      "scheme": "odoo-country",
+      "sourceKey": "base.fr"
+    },
+    {
+      "code": "GA",
+      "effectiveDate": "1900-01-01",
+      "name": "加蓬",
+      "nameEn": "Gabon",
+      "phoneCode": 241,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ga"
+    },
+    {
+      "code": "GD",
+      "effectiveDate": "1900-01-01",
+      "name": "格林纳达",
+      "nameEn": "Grenada",
+      "phoneCode": 1473,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gd"
+    },
+    {
+      "code": "GE",
+      "effectiveDate": "1900-01-01",
+      "name": "格鲁吉亚",
+      "nameEn": "Georgia",
+      "phoneCode": 995,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ge"
+    },
+    {
+      "code": "GF",
+      "effectiveDate": "1900-01-01",
+      "name": "法属圭亚那",
+      "nameEn": "French Guiana",
+      "phoneCode": 594,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gf"
+    },
+    {
+      "code": "GG",
+      "effectiveDate": "1900-01-01",
+      "name": "根西岛",
+      "nameEn": "Guernsey",
+      "phoneCode": 44,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gg"
+    },
+    {
+      "code": "GH",
+      "effectiveDate": "1900-01-01",
+      "name": "加纳",
+      "nameEn": "Ghana",
+      "phoneCode": 233,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gh"
+    },
+    {
+      "code": "GI",
+      "effectiveDate": "1900-01-01",
+      "name": "直布罗陀",
+      "nameEn": "Gibraltar",
+      "phoneCode": 350,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gi"
+    },
+    {
+      "code": "GL",
+      "effectiveDate": "1900-01-01",
+      "name": "格陵兰",
+      "nameEn": "Greenland",
+      "phoneCode": 299,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gl"
+    },
+    {
+      "code": "GM",
+      "effectiveDate": "1900-01-01",
+      "name": "冈比亚",
+      "nameEn": "Gambia",
+      "phoneCode": 220,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gm"
+    },
+    {
+      "code": "GN",
+      "effectiveDate": "1900-01-01",
+      "name": "几内亚",
+      "nameEn": "Guinea",
+      "phoneCode": 224,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gn"
+    },
+    {
+      "code": "GP",
+      "effectiveDate": "1900-01-01",
+      "name": "瓜德罗普岛",
+      "nameEn": "Guadeloupe",
+      "phoneCode": 590,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gp"
+    },
+    {
+      "code": "GQ",
+      "effectiveDate": "1900-01-01",
+      "name": "赤道几内亚",
+      "nameEn": "Equatorial Guinea",
+      "phoneCode": 240,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gq"
+    },
+    {
+      "code": "GR",
+      "effectiveDate": "1900-01-01",
+      "name": "希腊",
+      "nameEn": "Greece",
+      "phoneCode": 30,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gr"
+    },
+    {
+      "code": "GS",
+      "effectiveDate": "1900-01-01",
+      "name": "南乔治亚和南桑威奇群岛",
+      "nameEn": "South Georgia and the South Sandwich Islands",
+      "phoneCode": 500,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gs"
+    },
+    {
+      "code": "GT",
+      "effectiveDate": "1900-01-01",
+      "name": "危地马拉",
+      "nameEn": "Guatemala",
+      "phoneCode": 502,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gt"
+    },
+    {
+      "code": "GU",
+      "effectiveDate": "1900-01-01",
+      "name": "关岛",
+      "nameEn": "Guam",
+      "phoneCode": 1671,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gu"
+    },
+    {
+      "code": "GW",
+      "effectiveDate": "1900-01-01",
+      "name": "几内亚比绍",
+      "nameEn": "Guinea-Bissau",
+      "phoneCode": 245,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gw"
+    },
+    {
+      "code": "GY",
+      "effectiveDate": "1900-01-01",
+      "name": "圭亚那",
+      "nameEn": "Guyana",
+      "phoneCode": 592,
+      "scheme": "odoo-country",
+      "sourceKey": "base.gy"
+    },
+    {
+      "code": "HK",
+      "effectiveDate": "1900-01-01",
+      "name": "香港",
+      "nameEn": "Hong Kong",
+      "phoneCode": 852,
+      "scheme": "odoo-country",
+      "sourceKey": "base.hk"
+    },
+    {
+      "code": "HM",
+      "effectiveDate": "1900-01-01",
+      "name": "赫德岛和麦克唐纳群岛",
+      "nameEn": "Heard Island and McDonald Islands",
+      "phoneCode": 672,
+      "scheme": "odoo-country",
+      "sourceKey": "base.hm"
+    },
+    {
+      "code": "HN",
+      "effectiveDate": "1900-01-01",
+      "name": "洪都拉斯",
+      "nameEn": "Honduras",
+      "phoneCode": 504,
+      "scheme": "odoo-country",
+      "sourceKey": "base.hn"
+    },
+    {
+      "code": "HR",
+      "effectiveDate": "1900-01-01",
+      "name": "克罗地亚",
+      "nameEn": "Croatia",
+      "phoneCode": 385,
+      "scheme": "odoo-country",
+      "sourceKey": "base.hr"
+    },
+    {
+      "code": "HT",
+      "effectiveDate": "1900-01-01",
+      "name": "海地",
+      "nameEn": "Haiti",
+      "phoneCode": 509,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ht"
+    },
+    {
+      "code": "HU",
+      "effectiveDate": "1900-01-01",
+      "name": "匈牙利",
+      "nameEn": "Hungary",
+      "phoneCode": 36,
+      "scheme": "odoo-country",
+      "sourceKey": "base.hu"
+    },
+    {
+      "code": "ID",
+      "effectiveDate": "1900-01-01",
+      "name": "印度尼西亚",
+      "nameEn": "Indonesia",
+      "phoneCode": 62,
+      "scheme": "odoo-country",
+      "sourceKey": "base.id"
+    },
+    {
+      "code": "IE",
+      "effectiveDate": "1900-01-01",
+      "name": "爱尔兰",
+      "nameEn": "Ireland",
+      "phoneCode": 353,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ie"
+    },
+    {
+      "code": "IL",
+      "effectiveDate": "1900-01-01",
+      "name": "以色列",
+      "nameEn": "Israel",
+      "phoneCode": 972,
+      "scheme": "odoo-country",
+      "sourceKey": "base.il"
+    },
+    {
+      "code": "IM",
+      "effectiveDate": "1900-01-01",
+      "name": "马恩岛",
+      "nameEn": "Isle of Man",
+      "phoneCode": 44,
+      "scheme": "odoo-country",
+      "sourceKey": "base.im"
+    },
+    {
+      "code": "IN",
+      "effectiveDate": "1900-01-01",
+      "name": "印度",
+      "nameEn": "India",
+      "phoneCode": 91,
+      "scheme": "odoo-country",
+      "sourceKey": "base.in"
+    },
+    {
+      "code": "IO",
+      "effectiveDate": "1900-01-01",
+      "name": "英属印度洋领地",
+      "nameEn": "British Indian Ocean Territory",
+      "phoneCode": 246,
+      "scheme": "odoo-country",
+      "sourceKey": "base.io"
+    },
+    {
+      "code": "IQ",
+      "effectiveDate": "1900-01-01",
+      "name": "伊拉克",
+      "nameEn": "Iraq",
+      "phoneCode": 964,
+      "scheme": "odoo-country",
+      "sourceKey": "base.iq"
+    },
+    {
+      "code": "IR",
+      "effectiveDate": "1900-01-01",
+      "name": "伊朗",
+      "nameEn": "Iran",
+      "phoneCode": 98,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ir"
+    },
+    {
+      "code": "IS",
+      "effectiveDate": "1900-01-01",
+      "name": "冰岛",
+      "nameEn": "Iceland",
+      "phoneCode": 354,
+      "scheme": "odoo-country",
+      "sourceKey": "base.is"
+    },
+    {
+      "code": "IT",
+      "effectiveDate": "1900-01-01",
+      "name": "意大利",
+      "nameEn": "Italy",
+      "phoneCode": 39,
+      "scheme": "odoo-country",
+      "sourceKey": "base.it"
+    },
+    {
+      "code": "JE",
+      "effectiveDate": "1900-01-01",
+      "name": "泽西",
+      "nameEn": "Jersey",
+      "phoneCode": 44,
+      "scheme": "odoo-country",
+      "sourceKey": "base.je"
+    },
+    {
+      "code": "JM",
+      "effectiveDate": "1900-01-01",
+      "name": "牙买加",
+      "nameEn": "Jamaica",
+      "phoneCode": 1876,
+      "scheme": "odoo-country",
+      "sourceKey": "base.jm"
+    },
+    {
+      "code": "JO",
+      "effectiveDate": "1900-01-01",
+      "name": "约旦",
+      "nameEn": "Jordan",
+      "phoneCode": 962,
+      "scheme": "odoo-country",
+      "sourceKey": "base.jo"
+    },
+    {
+      "code": "JP",
+      "effectiveDate": "1900-01-01",
+      "name": "日本",
+      "nameEn": "Japan",
+      "phoneCode": 81,
+      "scheme": "odoo-country",
+      "sourceKey": "base.jp"
+    },
+    {
+      "code": "KE",
+      "effectiveDate": "1900-01-01",
+      "name": "肯尼亚",
+      "nameEn": "Kenya",
+      "phoneCode": 254,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ke"
+    },
+    {
+      "code": "KG",
+      "effectiveDate": "1900-01-01",
+      "name": "吉尔吉斯斯坦",
+      "nameEn": "Kyrgyzstan",
+      "phoneCode": 996,
+      "scheme": "odoo-country",
+      "sourceKey": "base.kg"
+    },
+    {
+      "code": "KH",
+      "effectiveDate": "1900-01-01",
+      "name": "柬埔寨",
+      "nameEn": "Cambodia",
+      "phoneCode": 855,
+      "scheme": "odoo-country",
+      "sourceKey": "base.kh"
+    },
+    {
+      "code": "KI",
+      "effectiveDate": "1900-01-01",
+      "name": "基里巴斯",
+      "nameEn": "Kiribati",
+      "phoneCode": 686,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ki"
+    },
+    {
+      "code": "KM",
+      "effectiveDate": "1900-01-01",
+      "name": "科摩罗",
+      "nameEn": "Comoros",
+      "phoneCode": 269,
+      "scheme": "odoo-country",
+      "sourceKey": "base.km"
+    },
+    {
+      "code": "KN",
+      "effectiveDate": "1900-01-01",
+      "name": "圣基茨和尼维斯",
+      "nameEn": "Saint Kitts and Nevis",
+      "phoneCode": 1869,
+      "scheme": "odoo-country",
+      "sourceKey": "base.kn"
+    },
+    {
+      "code": "KP",
+      "effectiveDate": "1900-01-01",
+      "name": "朝鲜",
+      "nameEn": "North Korea",
+      "phoneCode": 850,
+      "scheme": "odoo-country",
+      "sourceKey": "base.kp"
+    },
+    {
+      "code": "KR",
+      "effectiveDate": "1900-01-01",
+      "name": "韩国",
+      "nameEn": "South Korea",
+      "phoneCode": 82,
+      "scheme": "odoo-country",
+      "sourceKey": "base.kr"
+    },
+    {
+      "code": "KW",
+      "effectiveDate": "1900-01-01",
+      "name": "科威特",
+      "nameEn": "Kuwait",
+      "phoneCode": 965,
+      "scheme": "odoo-country",
+      "sourceKey": "base.kw"
+    },
+    {
+      "code": "KY",
+      "effectiveDate": "1900-01-01",
+      "name": "开曼群岛",
+      "nameEn": "Cayman Islands",
+      "phoneCode": 1345,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ky"
+    },
+    {
+      "code": "KZ",
+      "effectiveDate": "1900-01-01",
+      "name": "哈萨克斯坦",
+      "nameEn": "Kazakhstan",
+      "phoneCode": 7,
+      "scheme": "odoo-country",
+      "sourceKey": "base.kz"
+    },
+    {
+      "code": "LA",
+      "effectiveDate": "1900-01-01",
+      "name": "老挝",
+      "nameEn": "Laos",
+      "phoneCode": 856,
+      "scheme": "odoo-country",
+      "sourceKey": "base.la"
+    },
+    {
+      "code": "LB",
+      "effectiveDate": "1900-01-01",
+      "name": "黎巴嫩",
+      "nameEn": "Lebanon",
+      "phoneCode": 961,
+      "scheme": "odoo-country",
+      "sourceKey": "base.lb"
+    },
+    {
+      "code": "LC",
+      "effectiveDate": "1900-01-01",
+      "name": "圣卢西亚",
+      "nameEn": "Saint Lucia",
+      "phoneCode": 1758,
+      "scheme": "odoo-country",
+      "sourceKey": "base.lc"
+    },
+    {
+      "code": "LI",
+      "effectiveDate": "1900-01-01",
+      "name": "列支敦士登",
+      "nameEn": "Liechtenstein",
+      "phoneCode": 423,
+      "scheme": "odoo-country",
+      "sourceKey": "base.li"
+    },
+    {
+      "code": "LK",
+      "effectiveDate": "1900-01-01",
+      "name": "斯里兰卡",
+      "nameEn": "Sri Lanka",
+      "phoneCode": 94,
+      "scheme": "odoo-country",
+      "sourceKey": "base.lk"
+    },
+    {
+      "code": "LR",
+      "effectiveDate": "1900-01-01",
+      "name": "利比里亚",
+      "nameEn": "Liberia",
+      "phoneCode": 231,
+      "scheme": "odoo-country",
+      "sourceKey": "base.lr"
+    },
+    {
+      "code": "LS",
+      "effectiveDate": "1900-01-01",
+      "name": "莱索托",
+      "nameEn": "Lesotho",
+      "phoneCode": 266,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ls"
+    },
+    {
+      "code": "LT",
+      "effectiveDate": "1900-01-01",
+      "name": "立陶宛",
+      "nameEn": "Lithuania",
+      "phoneCode": 370,
+      "scheme": "odoo-country",
+      "sourceKey": "base.lt"
+    },
+    {
+      "code": "LU",
+      "effectiveDate": "1900-01-01",
+      "name": "卢森堡",
+      "nameEn": "Luxembourg",
+      "phoneCode": 352,
+      "scheme": "odoo-country",
+      "sourceKey": "base.lu"
+    },
+    {
+      "code": "LV",
+      "effectiveDate": "1900-01-01",
+      "name": "拉脱维亚",
+      "nameEn": "Latvia",
+      "phoneCode": 371,
+      "scheme": "odoo-country",
+      "sourceKey": "base.lv"
+    },
+    {
+      "code": "LY",
+      "effectiveDate": "1900-01-01",
+      "name": "利比亚",
+      "nameEn": "Libya",
+      "phoneCode": 218,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ly"
+    },
+    {
+      "code": "MA",
+      "effectiveDate": "1900-01-01",
+      "name": "摩洛哥",
+      "nameEn": "Morocco",
+      "phoneCode": 212,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ma"
+    },
+    {
+      "code": "MC",
+      "effectiveDate": "1900-01-01",
+      "name": "摩纳哥",
+      "nameEn": "Monaco",
+      "phoneCode": 377,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mc"
+    },
+    {
+      "code": "MD",
+      "effectiveDate": "1900-01-01",
+      "name": "摩尔多瓦",
+      "nameEn": "Moldova",
+      "phoneCode": 373,
+      "scheme": "odoo-country",
+      "sourceKey": "base.md"
+    },
+    {
+      "code": "ME",
+      "effectiveDate": "1900-01-01",
+      "name": "黑山",
+      "nameEn": "Montenegro",
+      "phoneCode": 382,
+      "scheme": "odoo-country",
+      "sourceKey": "base.me"
+    },
+    {
+      "code": "MF",
+      "effectiveDate": "1900-01-01",
+      "name": "圣马丁（法语部分）",
+      "nameEn": "Saint Martin (French part)",
+      "phoneCode": 590,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mf"
+    },
+    {
+      "code": "MG",
+      "effectiveDate": "1900-01-01",
+      "name": "马达加斯加",
+      "nameEn": "Madagascar",
+      "phoneCode": 261,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mg"
+    },
+    {
+      "code": "MH",
+      "effectiveDate": "1900-01-01",
+      "name": "马绍尔群岛",
+      "nameEn": "Marshall Islands",
+      "phoneCode": 692,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mh"
+    },
+    {
+      "code": "MK",
+      "effectiveDate": "1900-01-01",
+      "name": "北马其顿",
+      "nameEn": "North Macedonia",
+      "phoneCode": 389,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mk"
+    },
+    {
+      "code": "ML",
+      "effectiveDate": "1900-01-01",
+      "name": "马里",
+      "nameEn": "Mali",
+      "phoneCode": 223,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ml"
+    },
+    {
+      "code": "MM",
+      "effectiveDate": "1900-01-01",
+      "name": "缅甸",
+      "nameEn": "Myanmar",
+      "phoneCode": 95,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mm"
+    },
+    {
+      "code": "MN",
+      "effectiveDate": "1900-01-01",
+      "name": "蒙古",
+      "nameEn": "Mongolia",
+      "phoneCode": 976,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mn"
+    },
+    {
+      "code": "MO",
+      "effectiveDate": "1900-01-01",
+      "name": "澳门",
+      "nameEn": "Macau",
+      "phoneCode": 853,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mo"
+    },
+    {
+      "code": "MP",
+      "effectiveDate": "1900-01-01",
+      "name": "北马里亚纳群岛",
+      "nameEn": "Northern Mariana Islands",
+      "phoneCode": 1670,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mp"
+    },
+    {
+      "code": "MQ",
+      "effectiveDate": "1900-01-01",
+      "name": "马提尼克",
+      "nameEn": "Martinique",
+      "phoneCode": 596,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mq"
+    },
+    {
+      "code": "MR",
+      "effectiveDate": "1900-01-01",
+      "name": "毛里塔尼亚",
+      "nameEn": "Mauritania",
+      "phoneCode": 222,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mr"
+    },
+    {
+      "code": "MS",
+      "effectiveDate": "1900-01-01",
+      "name": "蒙特塞拉特",
+      "nameEn": "Montserrat",
+      "phoneCode": 1664,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ms"
+    },
+    {
+      "code": "MT",
+      "effectiveDate": "1900-01-01",
+      "name": "马耳他",
+      "nameEn": "Malta",
+      "phoneCode": 356,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mt"
+    },
+    {
+      "code": "MU",
+      "effectiveDate": "1900-01-01",
+      "name": "毛里求斯",
+      "nameEn": "Mauritius",
+      "phoneCode": 230,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mu"
+    },
+    {
+      "code": "MV",
+      "effectiveDate": "1900-01-01",
+      "name": "马尔代夫",
+      "nameEn": "Maldives",
+      "phoneCode": 960,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mv"
+    },
+    {
+      "code": "MW",
+      "effectiveDate": "1900-01-01",
+      "name": "马拉维",
+      "nameEn": "Malawi",
+      "phoneCode": 265,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mw"
+    },
+    {
+      "code": "MX",
+      "effectiveDate": "1900-01-01",
+      "name": "墨西哥",
+      "nameEn": "Mexico",
+      "phoneCode": 52,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mx"
+    },
+    {
+      "code": "MY",
+      "effectiveDate": "1900-01-01",
+      "name": "马来西亚",
+      "nameEn": "Malaysia",
+      "phoneCode": 60,
+      "scheme": "odoo-country",
+      "sourceKey": "base.my"
+    },
+    {
+      "code": "MZ",
+      "effectiveDate": "1900-01-01",
+      "name": "莫桑比克",
+      "nameEn": "Mozambique",
+      "phoneCode": 258,
+      "scheme": "odoo-country",
+      "sourceKey": "base.mz"
+    },
+    {
+      "code": "NA",
+      "effectiveDate": "1900-01-01",
+      "name": "纳米比亚",
+      "nameEn": "Namibia",
+      "phoneCode": 264,
+      "scheme": "odoo-country",
+      "sourceKey": "base.na"
+    },
+    {
+      "code": "NC",
+      "effectiveDate": "1900-01-01",
+      "name": "新喀里多尼亚",
+      "nameEn": "New Caledonia",
+      "phoneCode": 687,
+      "scheme": "odoo-country",
+      "sourceKey": "base.nc"
+    },
+    {
+      "code": "NE",
+      "effectiveDate": "1900-01-01",
+      "name": "尼日尔",
+      "nameEn": "Niger",
+      "phoneCode": 227,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ne"
+    },
+    {
+      "code": "NF",
+      "effectiveDate": "1900-01-01",
+      "name": "诺福克岛",
+      "nameEn": "Norfolk Island",
+      "phoneCode": 672,
+      "scheme": "odoo-country",
+      "sourceKey": "base.nf"
+    },
+    {
+      "code": "NG",
+      "effectiveDate": "1900-01-01",
+      "name": "尼日利亚",
+      "nameEn": "Nigeria",
+      "phoneCode": 234,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ng"
+    },
+    {
+      "code": "NI",
+      "effectiveDate": "1900-01-01",
+      "name": "尼加拉瓜",
+      "nameEn": "Nicaragua",
+      "phoneCode": 505,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ni"
+    },
+    {
+      "code": "NL",
+      "effectiveDate": "1900-01-01",
+      "name": "荷兰",
+      "nameEn": "Netherlands",
+      "phoneCode": 31,
+      "scheme": "odoo-country",
+      "sourceKey": "base.nl"
+    },
+    {
+      "code": "NO",
+      "effectiveDate": "1900-01-01",
+      "name": "挪威",
+      "nameEn": "Norway",
+      "phoneCode": 47,
+      "scheme": "odoo-country",
+      "sourceKey": "base.no"
+    },
+    {
+      "code": "NP",
+      "effectiveDate": "1900-01-01",
+      "name": "尼泊尔",
+      "nameEn": "Nepal",
+      "phoneCode": 977,
+      "scheme": "odoo-country",
+      "sourceKey": "base.np"
+    },
+    {
+      "code": "NR",
+      "effectiveDate": "1900-01-01",
+      "name": "瑙鲁",
+      "nameEn": "Nauru",
+      "phoneCode": 674,
+      "scheme": "odoo-country",
+      "sourceKey": "base.nr"
+    },
+    {
+      "code": "NU",
+      "effectiveDate": "1900-01-01",
+      "name": "纽埃",
+      "nameEn": "Niue",
+      "phoneCode": 683,
+      "scheme": "odoo-country",
+      "sourceKey": "base.nu"
+    },
+    {
+      "code": "NZ",
+      "effectiveDate": "1900-01-01",
+      "name": "新西兰",
+      "nameEn": "New Zealand",
+      "phoneCode": 64,
+      "scheme": "odoo-country",
+      "sourceKey": "base.nz"
+    },
+    {
+      "code": "OM",
+      "effectiveDate": "1900-01-01",
+      "name": "阿曼",
+      "nameEn": "Oman",
+      "phoneCode": 968,
+      "scheme": "odoo-country",
+      "sourceKey": "base.om"
+    },
+    {
+      "code": "PA",
+      "effectiveDate": "1900-01-01",
+      "name": "巴拿马",
+      "nameEn": "Panama",
+      "phoneCode": 507,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pa"
+    },
+    {
+      "code": "PE",
+      "effectiveDate": "1900-01-01",
+      "name": "秘鲁",
+      "nameEn": "Peru",
+      "phoneCode": 51,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pe"
+    },
+    {
+      "code": "PF",
+      "effectiveDate": "1900-01-01",
+      "name": "法属波利尼西亚",
+      "nameEn": "French Polynesia",
+      "phoneCode": 689,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pf"
+    },
+    {
+      "code": "PG",
+      "effectiveDate": "1900-01-01",
+      "name": "巴布亚新几内亚",
+      "nameEn": "Papua New Guinea",
+      "phoneCode": 675,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pg"
+    },
+    {
+      "code": "PH",
+      "effectiveDate": "1900-01-01",
+      "name": "菲律宾",
+      "nameEn": "Philippines",
+      "phoneCode": 63,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ph"
+    },
+    {
+      "code": "PK",
+      "effectiveDate": "1900-01-01",
+      "name": "巴基斯坦",
+      "nameEn": "Pakistan",
+      "phoneCode": 92,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pk"
+    },
+    {
+      "code": "PL",
+      "effectiveDate": "1900-01-01",
+      "name": "波兰",
+      "nameEn": "Poland",
+      "phoneCode": 48,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pl"
+    },
+    {
+      "code": "PM",
+      "effectiveDate": "1900-01-01",
+      "name": "圣皮埃尔和密克隆",
+      "nameEn": "Saint Pierre and Miquelon",
+      "phoneCode": 508,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pm"
+    },
+    {
+      "code": "PN",
+      "effectiveDate": "1900-01-01",
+      "name": "皮特凯恩群岛",
+      "nameEn": "Pitcairn Islands",
+      "phoneCode": 64,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pn"
+    },
+    {
+      "code": "PR",
+      "effectiveDate": "1900-01-01",
+      "name": "波多黎各",
+      "nameEn": "Puerto Rico",
+      "phoneCode": 1939,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pr"
+    },
+    {
+      "code": "PS",
+      "effectiveDate": "1900-01-01",
+      "name": "巴勒斯坦国",
+      "nameEn": "State of Palestine",
+      "phoneCode": 970,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ps"
+    },
+    {
+      "code": "PT",
+      "effectiveDate": "1900-01-01",
+      "name": "葡萄牙",
+      "nameEn": "Portugal",
+      "phoneCode": 351,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pt"
+    },
+    {
+      "code": "PW",
+      "effectiveDate": "1900-01-01",
+      "name": "帕劳",
+      "nameEn": "Palau",
+      "phoneCode": 680,
+      "scheme": "odoo-country",
+      "sourceKey": "base.pw"
+    },
+    {
+      "code": "PY",
+      "effectiveDate": "1900-01-01",
+      "name": "巴拉圭",
+      "nameEn": "Paraguay",
+      "phoneCode": 595,
+      "scheme": "odoo-country",
+      "sourceKey": "base.py"
+    },
+    {
+      "code": "QA",
+      "effectiveDate": "1900-01-01",
+      "name": "卡塔尔",
+      "nameEn": "Qatar",
+      "phoneCode": 974,
+      "scheme": "odoo-country",
+      "sourceKey": "base.qa"
+    },
+    {
+      "code": "RE",
+      "effectiveDate": "1900-01-01",
+      "name": "留尼汪",
+      "nameEn": "Réunion",
+      "phoneCode": 262,
+      "scheme": "odoo-country",
+      "sourceKey": "base.re"
+    },
+    {
+      "code": "RO",
+      "effectiveDate": "1900-01-01",
+      "name": "罗马尼亚",
+      "nameEn": "Romania",
+      "phoneCode": 40,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ro"
+    },
+    {
+      "code": "RS",
+      "effectiveDate": "1900-01-01",
+      "name": "塞尔维亚",
+      "nameEn": "Serbia",
+      "phoneCode": 381,
+      "scheme": "odoo-country",
+      "sourceKey": "base.rs"
+    },
+    {
+      "code": "RU",
+      "effectiveDate": "1900-01-01",
+      "name": "俄罗斯联邦",
+      "nameEn": "Russian Federation",
+      "phoneCode": 7,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ru"
+    },
+    {
+      "code": "RW",
+      "effectiveDate": "1900-01-01",
+      "name": "卢旺达",
+      "nameEn": "Rwanda",
+      "phoneCode": 250,
+      "scheme": "odoo-country",
+      "sourceKey": "base.rw"
+    },
+    {
+      "code": "SA",
+      "effectiveDate": "1900-01-01",
+      "name": "沙特阿拉伯",
+      "nameEn": "Saudi Arabia",
+      "phoneCode": 966,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sa"
+    },
+    {
+      "code": "SB",
+      "effectiveDate": "1900-01-01",
+      "name": "所罗门群岛",
+      "nameEn": "Solomon Islands",
+      "phoneCode": 677,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sb"
+    },
+    {
+      "code": "SC",
+      "effectiveDate": "1900-01-01",
+      "name": "塞舌尔",
+      "nameEn": "Seychelles",
+      "phoneCode": 248,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sc"
+    },
+    {
+      "code": "SD",
+      "effectiveDate": "1900-01-01",
+      "name": "苏丹",
+      "nameEn": "Sudan",
+      "phoneCode": 249,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sd"
+    },
+    {
+      "code": "SE",
+      "effectiveDate": "1900-01-01",
+      "name": "瑞典",
+      "nameEn": "Sweden",
+      "phoneCode": 46,
+      "scheme": "odoo-country",
+      "sourceKey": "base.se"
+    },
+    {
+      "code": "SG",
+      "effectiveDate": "1900-01-01",
+      "name": "新加坡",
+      "nameEn": "Singapore",
+      "phoneCode": 65,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sg"
+    },
+    {
+      "code": "SH",
+      "effectiveDate": "1900-01-01",
+      "name": "圣赫勒拿，阿森松岛和特里斯坦达库尼亚",
+      "nameEn": "Saint Helena, Ascension and Tristan da Cunha",
+      "phoneCode": 290,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sh"
+    },
+    {
+      "code": "SI",
+      "effectiveDate": "1900-01-01",
+      "name": "斯洛文尼亚",
+      "nameEn": "Slovenia",
+      "phoneCode": 386,
+      "scheme": "odoo-country",
+      "sourceKey": "base.si"
+    },
+    {
+      "code": "SJ",
+      "effectiveDate": "1900-01-01",
+      "name": "斯瓦尔巴和揚馬延",
+      "nameEn": "Svalbard and Jan Mayen",
+      "phoneCode": 47,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sj"
+    },
+    {
+      "code": "SK",
+      "effectiveDate": "1900-01-01",
+      "name": "斯洛伐克",
+      "nameEn": "Slovakia",
+      "phoneCode": 421,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sk"
+    },
+    {
+      "code": "SL",
+      "effectiveDate": "1900-01-01",
+      "name": "塞拉利昂",
+      "nameEn": "Sierra Leone",
+      "phoneCode": 232,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sl"
+    },
+    {
+      "code": "SM",
+      "effectiveDate": "1900-01-01",
+      "name": "圣马力诺",
+      "nameEn": "San Marino",
+      "phoneCode": 378,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sm"
+    },
+    {
+      "code": "SN",
+      "effectiveDate": "1900-01-01",
+      "name": "塞内加尔",
+      "nameEn": "Senegal",
+      "phoneCode": 221,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sn"
+    },
+    {
+      "code": "SO",
+      "effectiveDate": "1900-01-01",
+      "name": "索马里",
+      "nameEn": "Somalia",
+      "phoneCode": 252,
+      "scheme": "odoo-country",
+      "sourceKey": "base.so"
+    },
+    {
+      "code": "SR",
+      "effectiveDate": "1900-01-01",
+      "name": "苏里南",
+      "nameEn": "Suriname",
+      "phoneCode": 597,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sr"
+    },
+    {
+      "code": "SS",
+      "effectiveDate": "1900-01-01",
+      "name": "南苏丹",
+      "nameEn": "South Sudan",
+      "phoneCode": 211,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ss"
+    },
+    {
+      "code": "ST",
+      "effectiveDate": "1900-01-01",
+      "name": "圣多美和普林西比",
+      "nameEn": "São Tomé and Príncipe",
+      "phoneCode": 239,
+      "scheme": "odoo-country",
+      "sourceKey": "base.st"
+    },
+    {
+      "code": "SV",
+      "effectiveDate": "1900-01-01",
+      "name": "萨尔瓦多",
+      "nameEn": "El Salvador",
+      "phoneCode": 503,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sv"
+    },
+    {
+      "code": "SX",
+      "effectiveDate": "1900-01-01",
+      "name": "圣马丁岛（荷兰的一部分）",
+      "nameEn": "Sint Maarten (Dutch part)",
+      "phoneCode": 1721,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sx"
+    },
+    {
+      "code": "SY",
+      "effectiveDate": "1900-01-01",
+      "name": "叙利亚",
+      "nameEn": "Syria",
+      "phoneCode": 963,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sy"
+    },
+    {
+      "code": "SZ",
+      "effectiveDate": "1900-01-01",
+      "name": "埃斯瓦蒂尼",
+      "nameEn": "Eswatini",
+      "phoneCode": 268,
+      "scheme": "odoo-country",
+      "sourceKey": "base.sz"
+    },
+    {
+      "code": "TC",
+      "effectiveDate": "1900-01-01",
+      "name": "特克斯和凯科斯群岛",
+      "nameEn": "Turks and Caicos Islands",
+      "phoneCode": 1649,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tc"
+    },
+    {
+      "code": "TD",
+      "effectiveDate": "1900-01-01",
+      "name": "乍得",
+      "nameEn": "Chad",
+      "phoneCode": 235,
+      "scheme": "odoo-country",
+      "sourceKey": "base.td"
+    },
+    {
+      "code": "TF",
+      "effectiveDate": "1900-01-01",
+      "name": "法属南部领地",
+      "nameEn": "French Southern Territories",
+      "phoneCode": 262,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tf"
+    },
+    {
+      "code": "TG",
+      "effectiveDate": "1900-01-01",
+      "name": "多哥",
+      "nameEn": "Togo",
+      "phoneCode": 228,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tg"
+    },
+    {
+      "code": "TH",
+      "effectiveDate": "1900-01-01",
+      "name": "泰国",
+      "nameEn": "Thailand",
+      "phoneCode": 66,
+      "scheme": "odoo-country",
+      "sourceKey": "base.th"
+    },
+    {
+      "code": "TJ",
+      "effectiveDate": "1900-01-01",
+      "name": "塔吉克斯坦",
+      "nameEn": "Tajikistan",
+      "phoneCode": 992,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tj"
+    },
+    {
+      "code": "TK",
+      "effectiveDate": "1900-01-01",
+      "name": "托克劳",
+      "nameEn": "Tokelau",
+      "phoneCode": 690,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tk"
+    },
+    {
+      "code": "TL",
+      "effectiveDate": "1900-01-01",
+      "name": "东帝汶",
+      "nameEn": "Timor-Leste",
+      "phoneCode": 670,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tl"
+    },
+    {
+      "code": "TM",
+      "effectiveDate": "1900-01-01",
+      "name": "土库曼斯坦",
+      "nameEn": "Turkmenistan",
+      "phoneCode": 993,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tm"
+    },
+    {
+      "code": "TN",
+      "effectiveDate": "1900-01-01",
+      "name": "突尼斯",
+      "nameEn": "Tunisia",
+      "phoneCode": 216,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tn"
+    },
+    {
+      "code": "TO",
+      "effectiveDate": "1900-01-01",
+      "name": "汤加",
+      "nameEn": "Tonga",
+      "phoneCode": 676,
+      "scheme": "odoo-country",
+      "sourceKey": "base.to"
+    },
+    {
+      "code": "TR",
+      "effectiveDate": "1900-01-01",
+      "name": "土耳其",
+      "nameEn": "Türkiye",
+      "phoneCode": 90,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tr"
+    },
+    {
+      "code": "TT",
+      "effectiveDate": "1900-01-01",
+      "name": "特立尼达和多巴哥",
+      "nameEn": "Trinidad and Tobago",
+      "phoneCode": 1868,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tt"
+    },
+    {
+      "code": "TV",
+      "effectiveDate": "1900-01-01",
+      "name": "图瓦卢",
+      "nameEn": "Tuvalu",
+      "phoneCode": 688,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tv"
+    },
+    {
+      "code": "TW",
+      "effectiveDate": "1900-01-01",
+      "name": "台湾",
+      "nameEn": "Taiwan",
+      "phoneCode": 886,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tw"
+    },
+    {
+      "code": "TZ",
+      "effectiveDate": "1900-01-01",
+      "name": "坦桑尼亚",
+      "nameEn": "Tanzania",
+      "phoneCode": 255,
+      "scheme": "odoo-country",
+      "sourceKey": "base.tz"
+    },
+    {
+      "code": "UA",
+      "effectiveDate": "1900-01-01",
+      "name": "乌克兰",
+      "nameEn": "Ukraine",
+      "phoneCode": 380,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ua"
+    },
+    {
+      "code": "UG",
+      "effectiveDate": "1900-01-01",
+      "name": "乌干达",
+      "nameEn": "Uganda",
+      "phoneCode": 256,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ug"
+    },
+    {
+      "code": "GB",
+      "effectiveDate": "1900-01-01",
+      "name": "英国",
+      "nameEn": "United Kingdom",
+      "phoneCode": 44,
+      "scheme": "odoo-country",
+      "sourceKey": "base.uk"
+    },
+    {
+      "code": "UM",
+      "effectiveDate": "1900-01-01",
+      "name": "美国本土外小岛屿",
+      "nameEn": "USA Minor Outlying Islands",
+      "phoneCode": 699,
+      "scheme": "odoo-country",
+      "sourceKey": "base.um"
+    },
+    {
+      "code": "US",
+      "effectiveDate": "1900-01-01",
+      "name": "美国",
+      "nameEn": "United States",
+      "phoneCode": 1,
+      "scheme": "odoo-country",
+      "sourceKey": "base.us"
+    },
+    {
+      "code": "UY",
+      "effectiveDate": "1900-01-01",
+      "name": "乌拉圭",
+      "nameEn": "Uruguay",
+      "phoneCode": 598,
+      "scheme": "odoo-country",
+      "sourceKey": "base.uy"
+    },
+    {
+      "code": "UZ",
+      "effectiveDate": "1900-01-01",
+      "name": "乌兹别克斯坦",
+      "nameEn": "Uzbekistan",
+      "phoneCode": 998,
+      "scheme": "odoo-country",
+      "sourceKey": "base.uz"
+    },
+    {
+      "code": "VA",
+      "effectiveDate": "1900-01-01",
+      "name": "教廷（梵蒂冈城）",
+      "nameEn": "Holy See (Vatican City State)",
+      "phoneCode": 379,
+      "scheme": "odoo-country",
+      "sourceKey": "base.va"
+    },
+    {
+      "code": "VC",
+      "effectiveDate": "1900-01-01",
+      "name": "圣文森特和格林纳丁斯",
+      "nameEn": "Saint Vincent and the Grenadines",
+      "phoneCode": 1784,
+      "scheme": "odoo-country",
+      "sourceKey": "base.vc"
+    },
+    {
+      "code": "VE",
+      "effectiveDate": "1900-01-01",
+      "name": "委内瑞拉",
+      "nameEn": "Venezuela",
+      "phoneCode": 58,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ve"
+    },
+    {
+      "code": "VG",
+      "effectiveDate": "1900-01-01",
+      "name": "维尔京群岛（英属）",
+      "nameEn": "Virgin Islands (British)",
+      "phoneCode": 1284,
+      "scheme": "odoo-country",
+      "sourceKey": "base.vg"
+    },
+    {
+      "code": "VI",
+      "effectiveDate": "1900-01-01",
+      "name": "维尔京群岛（美国）",
+      "nameEn": "Virgin Islands (USA)",
+      "phoneCode": 1340,
+      "scheme": "odoo-country",
+      "sourceKey": "base.vi"
+    },
+    {
+      "code": "VN",
+      "effectiveDate": "1900-01-01",
+      "name": "越南",
+      "nameEn": "Vietnam",
+      "phoneCode": 84,
+      "scheme": "odoo-country",
+      "sourceKey": "base.vn"
+    },
+    {
+      "code": "VU",
+      "effectiveDate": "1900-01-01",
+      "name": "瓦努阿图",
+      "nameEn": "Vanuatu",
+      "phoneCode": 678,
+      "scheme": "odoo-country",
+      "sourceKey": "base.vu"
+    },
+    {
+      "code": "WF",
+      "effectiveDate": "1900-01-01",
+      "name": "瓦利斯和富图纳",
+      "nameEn": "Wallis and Futuna",
+      "phoneCode": 681,
+      "scheme": "odoo-country",
+      "sourceKey": "base.wf"
+    },
+    {
+      "code": "WS",
+      "effectiveDate": "1900-01-01",
+      "name": "萨摩亚",
+      "nameEn": "Samoa",
+      "phoneCode": 685,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ws"
+    },
+    {
+      "code": "XI",
+      "effectiveDate": "1900-01-01",
+      "name": "北爱尔兰",
+      "nameEn": "Northern Ireland",
+      "phoneCode": 44,
+      "scheme": "odoo-country",
+      "sourceKey": "base.xi"
+    },
+    {
+      "code": "XK",
+      "effectiveDate": "1900-01-01",
+      "name": "科索沃",
+      "nameEn": "Kosovo",
+      "phoneCode": 383,
+      "scheme": "odoo-country",
+      "sourceKey": "base.xk"
+    },
+    {
+      "code": "YE",
+      "effectiveDate": "1900-01-01",
+      "name": "也门",
+      "nameEn": "Yemen",
+      "phoneCode": 967,
+      "scheme": "odoo-country",
+      "sourceKey": "base.ye"
+    },
+    {
+      "code": "YT",
+      "effectiveDate": "1900-01-01",
+      "name": "马约特",
+      "nameEn": "Mayotte",
+      "phoneCode": 262,
+      "scheme": "odoo-country",
+      "sourceKey": "base.yt"
+    },
+    {
+      "code": "ZA",
+      "effectiveDate": "1900-01-01",
+      "name": "南非",
+      "nameEn": "South Africa",
+      "phoneCode": 27,
+      "scheme": "odoo-country",
+      "sourceKey": "base.za"
+    },
+    {
+      "code": "ZM",
+      "effectiveDate": "1900-01-01",
+      "name": "赞比亚",
+      "nameEn": "Zambia",
+      "phoneCode": 260,
+      "scheme": "odoo-country",
+      "sourceKey": "base.zm"
+    },
+    {
+      "code": "ZW",
+      "effectiveDate": "1900-01-01",
+      "name": "津巴布韦",
+      "nameEn": "Zimbabwe",
+      "phoneCode": 263,
+      "scheme": "odoo-country",
+      "sourceKey": "base.zw"
+    }
+  ]
+}

@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "scope": "手工固定合同预期；仅验收设计，不执行或模拟产品授权/候选算法",
+  "actual_result": "not_run",
+  "cases": [
+    {
+      "id": "R4-V21",
+      "title": "拟分类改变关系期间",
+      "fixed_facts": {
+        "enterprise_start": "2020-01-01",
+        "C": [
+          {
+            "record": "create",
+            "start": "2026-01-01",
+            "type": "CREATE",
+            "bu": "BU_A",
+            "parent": null,
+            "reason": "NEW_ORGANIZATION"
+          },
+          {
+            "record": "stop",
+            "start": "2026-06-01",
+            "type": "DEACTIVATE",
+            "inherits": "create",
+            "reason": "ORG_RESTRUCTURING"
+          }
+        ],
+        "BU_A": "持续启用",
+        "BU_B": "持续启用",
+        "P_JUNE": {
+          "bu": "BU_A",
+          "active": [
+            "2026-06-01",
+            null
+          ]
+        },
+        "P_JULY": {
+          "bu": "BU_A",
+          "active": [
+            "2026-07-01",
+            null
+          ]
+        },
+        "P_SHORT": {
+          "bu": "BU_A",
+          "active": [
+            "2026-06-01",
+            "2026-10-01"
+          ]
+        },
+        "P_B": {
+          "bu": "BU_B",
+          "active": [
+            "2026-06-01",
+            null
+          ]
+        },
+        "source": "CS2",
+        "D": "2026-11-05"
+      },
+      "grants": "管理员在本企业有department.read/record.correct/deactivation.reclassify/record.reclassify及所需原新BU reassign/日期动作/完整关系字段和BU/父最小引用权；以下分类/期间对照不混入缺权因素。",
+      "context_base": {
+        "mode": "maintain",
+        "departmentId": "C",
+        "expectedSourceVersion": "CS2",
+        "action": "CORRECT",
+        "recordId": "stop",
+        "expectedRecordRevision": "stop-r1"
+      },
+      "variants": [
+        {
+          "id": "inherit",
+          "input_delta": {},
+          "expected": {
+            "effective_type": "DEACTIVATE",
+            "applicable": false,
+            "items": [],
+            "count": 0
+          }
+        },
+        {
+          "id": "change_june",
+          "input_delta": {
+            "classification": {
+              "operationType": "CHANGE",
+              "operationReason": "OTHER_DATA_ADJUSTMENT"
+            }
+          },
+          "expected": {
+            "effective_type": "CHANGE",
+            "target_active_range": [
+              "2026-06-01",
+              null
+            ],
+            "eligible_parents": [
+              "P_JUNE"
+            ],
+            "ineligible_parents": [
+              "P_JULY",
+              "P_SHORT",
+              "P_B"
+            ]
+          }
+        },
+        {
+          "id": "change_july",
+          "input_delta": {
+            "newEffectiveDate": "2026-07-01",
+            "classification": {
+              "operationType": "CHANGE",
+              "operationReason": "OTHER_DATA_ADJUSTMENT"
+            }
+          },
+          "expected": {
+            "target_active_range": [
+              "2026-07-01",
+              null
+            ],
+            "eligible_parents": [
+              "P_JUNE",
+              "P_JULY"
+            ],
+            "ineligible_parents": [
+              "P_SHORT",
+              "P_B"
+            ]
+          }
+        },
+        {
+          "id": "change_bu",
+          "input_delta": {
+            "changes": {
+              "managementBuId": "BU_B"
+            },
+            "classification": {
+              "operationType": "CHANGE",
+              "operationReason": "ORGANIZATION_REASSIGNMENT"
+            }
+          },
+          "expected": {
+            "eligible_parents": [
+              "P_B"
+            ],
+            "ineligible_parents": [
+              "P_JUNE",
+              "P_JULY",
+              "P_SHORT"
+            ]
+          }
+        },
+        {
+          "id": "reason_not_selected",
+          "input_delta": {
+            "classification": {
+              "operationType": "CHANGE"
+            }
+          },
+          "expected": {
+            "reference_same_as": "change_june",
+            "save_without_reason": "400 M02_INVALID_INPUT",
+            "no_synthetic_reason": true
+          }
+        },
+        {
+          "id": "invalid_presence",
+          "inputs": [
+            {
+              "classification": null
+            },
+            {
+              "classification": {}
+            },
+            {
+              "classification": {
+                "operationReason": "ORG_RESTRUCTURING"
+              }
+            },
+            {
+              "newEffectiveDate": null
+            },
+            {
+              "changes": {
+                "managementBuId": null
+              }
+            },
+            {
+              "changes": {}
+            }
+          ],
+          "expected": "各自400 M02_INVALID_INPUT，不能当成缺省、根或原分类"
+        },
+        {
+          "id": "explicit_same",
+          "input_delta": {
+            "classification": {
+              "operationType": "DEACTIVATE",
+              "operationReason": "ORG_RESTRUCTURING"
+            }
+          },
+          "expected": "期间仍停用/applicable=false；显式声明仍核分类字段权，保存不刷新原标签；改为缺省后仍按原分类"
+        },
+        {
+          "id": "root_and_late_response",
+          "input_delta": {
+            "changes": {
+              "parentDepartmentId": null
+            },
+            "classification": {
+              "operationType": "CHANGE",
+              "operationReason": "OTHER_DATA_ADJUSTMENT"
+            }
+          },
+          "expected": "null明确企业根；新分类/日期/BU查询身份覆盖旧身份，迟到停用候选不覆盖当前候选或选择；R5菜单另验"
+        }
+      ],
+      "save_comparison": "对每个列明父候选，将该父ID写入同一CORRECT命令的parentDepartmentId并补全合法分类及资料，在同一相关事实下比较保存资格；此关系变化使CHANGE不会因资料完全同值而消除。企业根同值分支另验冗余消除，不以不存在的CHANGE记录定位成功；查询未包含的名称准入不算关系结果不一致。",
+      "actual_result": "not_run",
+      "candidate_set_scope": "只比较列明的部门候选，企业根null另验；候选自身/同BU/无环约束仍适用。"
+    },
+    {
+      "id": "R4-V22",
+      "title": "无权目标状态不可成为诊断探针",
+      "fixed_facts": "当前C在BU_A，CORRECT来源/记录预期有效；请求改BU_B/父P，资料字段和值相同；每个variant独立初始化。",
+      "variants": [
+        {
+          "id": "missing_new_scope",
+          "grants": "C当前read、record.correct及managementBuId/parentDepartmentId完整字段；BU_A reassign；不授BU_B reassign或引用权。",
+          "target_states": [
+            "BU_B不存在",
+            "BU_B启用且父合格",
+            "BU_B停用",
+            "BU_B启用但父无效或成环"
+          ],
+          "expected": {
+            "status": 403,
+            "code": "ACCESS_DENIED",
+            "message": "当前权限不允许此操作",
+            "hierarchy_plan_called": false,
+            "department_command_result_writes": 0,
+            "field_present": false,
+            "details_present": false
+          }
+        },
+        {
+          "id": "missing_parent_reference",
+          "grants": "C及原新范围全部拟写权；BU_B最小引用权；不授P的department.reference.read。",
+          "target_states": [
+            "P不存在",
+            "P存在启用",
+            "P存在停用",
+            "P存在，但拟引用会违反同BU/父子约束（原父边仍合法）"
+          ],
+          "expected": {
+            "status": 404,
+            "code": "M02_OBJECT_NOT_FOUND",
+            "message": "引用对象不存在或当前不可见",
+            "hierarchy_plan_called": false,
+            "department_command_result_writes": 0,
+            "field_present": false,
+            "details_present": false
+          }
+        },
+        {
+          "id": "authorized_qualification",
+          "grants": "C及原新范围完整写权、BU_B/P资格引用权及字段均授予。",
+          "expected": "分别给获权BU_CONFLICT/PARENT_INVALID/HIERARCHY_CYCLE诊断，不显示无权祖先/下级；业务来源/关系/Outbox零写入",
+          "inputs": [
+            {
+              "case": "bu_inactive",
+              "facts": "BU_B停用，未创建其启用下级；C当前BU_A合法。",
+              "request": "更正C归BU_B且parent=null",
+              "expected_code": "M02_DEPARTMENT_BU_CONFLICT"
+            },
+            {
+              "case": "parent_coverage",
+              "facts": "BU_B持续启用，P自2026-01-01启用且2027-01-01停用；C当前BU_A合法。",
+              "request": "C自2026-12-01归BU_B/P，期间开放",
+              "expected_code": "M02_DEPARTMENT_PARENT_INVALID"
+            },
+            {
+              "case": "cycle",
+              "facts": "C/P同BU_A且自2026-01-01持续启用，C归企业、P归C，原关系无环；完整授权包含BU_A/P。",
+              "request": "更正C自2026-01-01归P，BU保持BU_A",
+              "expected_code": "M02_DEPARTMENT_HIERARCHY_CYCLE"
+            }
+          ]
+        },
+        {
+          "id": "hidden_dependency",
+          "grants": "C/明确目标P及BU具备上述权；不授内部祖先或下级的身份/名称/日期读取。",
+          "target_states": [
+            "隐藏下级未来恢复受损",
+            "隐藏祖先导致覆盖不合法"
+          ],
+          "expected": {
+            "status": 409,
+            "code": "M02_DEPARTMENT_REFERENCE_CONFLICT",
+            "message": "当前关系不满足保存条件",
+            "field_present": false,
+            "details_present": false
+          }
+        }
+      ],
+      "comparison": "固定状态/code/message/field/details及缺失元数据形状；不比较traceId或时长；允许X03授权证据，不允许业务来源。",
+      "actual_result": "not_run"
+    },
+    {
+      "id": "R4-V23",
+      "title": "来源诊断和查回受当前授权保护",
+      "variants": [
+        {
+          "id": "invisible_current",
+          "grants": "当前无C的department.read；只持旧来源/记录ID。",
+          "target_states": [
+            "C存在且预期正确",
+            "C存在但来源已变",
+            "C存在但修订错误",
+            "C不存在"
+          ],
+          "expected": {
+            "status": 404,
+            "code": "M02_OBJECT_NOT_FOUND",
+            "message": "部门不存在或当前不可见",
+            "department_command_result_writes": 0,
+            "field_present": false,
+            "details_present": false,
+            "observedSource_present": false
+          }
+        },
+        {
+          "id": "visible_but_no_action",
+          "grants": "当前C read，缺本次动作或声明字段权。",
+          "target_states": [
+            "本部门预期正确",
+            "本部门预期过期"
+          ],
+          "expected": {
+            "status": 403,
+            "code": "ACCESS_DENIED",
+            "field_present": false,
+            "details_present": false
+          }
+        },
+        {
+          "id": "visible_and_authorized",
+          "grants": "C read、本次动作/字段及明确引用/范围均获权。",
+          "target_states": [
+            "本部门来源过期",
+            "本部门来源正确但目标修订过期"
+          ],
+          "expected": "分别返回M02_SOURCE_CONFLICT/M02_REVISION_CONFLICT；零业务来源，不能以取消树令牌忽略自己的版本"
+        },
+        {
+          "id": "replay_reference_revoked",
+          "grants": "原资格拒绝时可看P；查回时仍有C read/history.read但P引用权已撤。",
+          "operation": "同一已存终态的resolve及准确重试；当前字段再裁剪。",
+          "expected": "隐藏P原诊断降格通用关系冲突，不含P身份/日期/来源；封存终态字节保持；不重跑原写资格，不能把裁剪写回结果表"
+        }
+      ],
+      "actual_result": "not_run"
+    },
+    {
+      "id": "R4-V24",
+      "title": "隐式归属变化与失败路径",
+      "fixed_facts": {
+        "C": [
+          {
+            "record": "first",
+            "start": "2026-01-01",
+            "type": "CREATE",
+            "bu": "BU_B",
+            "parent": null
+          },
+          {
+            "record": "move",
+            "start": "2026-07-01",
+            "type": "CHANGE",
+            "bu": "BU_A",
+            "parent": null
+          }
+        ],
+        "D": "2026-11-05",
+        "expected_source": "CS2"
+      },
+      "variants": [
+        {
+          "id": "delete_reverts_bu",
+          "grants": "C当前read及record.delete；BU_A reassign完整关系字段；不授BU_B reassign。",
+          "operation": "删除move，不携带任何关系changes。",
+          "target_states": [
+            "BU_B持续启用",
+            "BU_B自2026-08-01停用"
+          ],
+          "expected": "两种都在实际RelationDelta授权阶段403 ACCESS_DENIED，不进入Hierarchy.Plan，不生成业务来源/关系/Outbox/command_result"
+        },
+        {
+          "id": "redate_reverts_bu",
+          "grants": "C当前read及record.redate/effectiveDate；BU_A reassign；不授BU_B reassign。",
+          "operation": "move改为2026-12-01，未显式改BU。",
+          "target_states": [
+            "BU_B持续启用",
+            "BU_B自2026-08-01停用"
+          ],
+          "expected": "隐式延长BU_B期间仍先403；不以覆盖错误替代归属权；原所有资料和采用保持"
+        },
+        {
+          "id": "prepare_local_failure",
+          "grants": "本对象动作/字段及显式目标均获权；未隐式引入未授权目标。",
+          "operation": "构造同日占用或非法生命周期；分别改变不相关隐藏对象状态。",
+          "expected": "Prepare仅返回获权本部门日期/生命周期错误；不调用外部关系资格，不夹带隐藏对象诊断"
+        },
+        {
+          "id": "preview_and_technical_failure",
+          "grants": "分别使用上列缺权主体和完整授权主体。",
+          "operation": "对相同合法单条命令执行preview与save；另注入X03失败/锁超时。",
+          "expected": "同一权限/资格错误投影一致，preview零终态；技术失败按013/R2保留待确认，无伪造rejected；最终Requirements若扩大已授权范围则技术失败、零业务写入"
+        }
+      ],
+      "actual_result": "not_run"
+    }
+  ]
+}

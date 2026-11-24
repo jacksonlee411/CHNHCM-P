@@ -1,0 +1,372 @@
+// PRIVATE EXPERIMENT ONLY: copied into an owned source snapshot, never product.
+package history
+
+import (
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"reflect"
+
+	"chnhcm.local/chnhcm/internal/contexts/organization/domain"
+	"chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/compact"
+	"github.com/jackc/pgx/v5"
+)
+
+type Proof133Ref struct {
+	Hash         string
+	Start, Count int
+	Low, High    string
+}
+type proof133Node struct {
+	Instance, Object, Enterprise string
+	Start, Count                 int
+	Low, High                    string
+	Left, Right                  *Proof133Ref
+	Records                      []domain.Record
+}
+type proof133Built struct {
+	node        proof133Node
+	ref         Proof133Ref
+	raw         []byte
+	left, right *proof133Built
+}
+
+func proof133Build(c Chunk, records []domain.Record, start int) (*proof133Built, error) {
+	if len(records) == 0 {
+		return nil, compact.ErrCorrupt
+	}
+	n := &proof133Built{node: proof133Node{Instance: c.Instance, Object: c.Object, Enterprise: c.Enterprise, Start: start, Count: len(records), Low: records[0].Date, High: records[len(records)-1].Date}}
+	if len(records) <= 128 {
+		n.node.Records = records
+	} else {
+		split := len(records) / 2
+		var err error
+		n.left, err = proof133Build(c, records[:split], start)
+		if err != nil {
+			return nil, err
+		}
+		n.right, err = proof133Build(c, records[split:], start+split)
+		if err != nil {
+			return nil, err
+		}
+		n.node.Left, n.node.Right = &n.left.ref, &n.right.ref
+	}
+	var err error
+	n.raw, err = json.Marshal(n.node)
+	if err != nil {
+		return nil, err
+	}
+	h := sha256.Sum256(n.raw)
+	n.ref = Proof133Ref{hex.EncodeToString(h[:]), start, len(records), n.node.Low, n.node.High}
+	return n, nil
+}
+func proof133Bytes(hash string) ([]byte, error) {
+	v, e := hex.DecodeString(hash)
+	if e != nil || len(v) != 32 {
+		return nil, compact.ErrCorrupt
+	}
+	return v, nil
+}
+func proof133Load(ctx context.Context, tx pgx.Tx, c Chunk, ref Proof133Ref, reads *int) (proof133Node, error) {
+	var n proof133Node
+	var raw []byte
+	hash, err := proof133Bytes(ref.Hash)
+	if err != nil {
+		return n, err
+	}
+	*reads++
+	if err = tx.QueryRow(ctx, `SELECT payload FROM organization.proof133_node WHERE instance_id=$1 AND object_id=$2 AND hash=$3`, c.Instance, c.Object, hash).Scan(&raw); err != nil {
+		return n, err
+	}
+	h := sha256.Sum256(raw)
+	if !bytes.Equal(hash, h[:]) {
+		return n, compact.ErrCorrupt
+	}
+	if err = json.Unmarshal(raw, &n); err != nil {
+		return n, err
+	}
+	if n.Instance != c.Instance || n.Object != c.Object || n.Enterprise != c.Enterprise || n.Start != ref.Start || n.Count != ref.Count || n.Low != ref.Low || n.High != ref.High {
+		return n, compact.ErrCorrupt
+	}
+	if n.Left == nil {
+		if n.Right != nil || len(n.Records) != n.Count || n.Count > 128 || n.Count == 0 || n.Records[0].Date != n.Low || n.Records[n.Count-1].Date != n.High {
+			return n, compact.ErrCorrupt
+		}
+		for i, r := range n.Records {
+			if i > 0 && n.Records[i-1].Date >= r.Date {
+				return n, compact.ErrCorrupt
+			}
+			if _, e := compact.NewPool(compact.Values{}).ID(r.ID); e != nil {
+				return n, e
+			}
+			if _, e := compact.NewPool(compact.Values{}).ID(r.Revision); e != nil {
+				return n, e
+			}
+		}
+	} else if n.Right == nil || len(n.Records) != 0 || n.Left.Start != n.Start || n.Right.Start != n.Start+n.Left.Count || n.Count != n.Left.Count+n.Right.Count || n.Low != n.Left.Low || n.High != n.Right.High || n.Left.High >= n.Right.Low {
+		return n, compact.ErrCorrupt
+	}
+	return n, nil
+}
+func proof133Put(ctx context.Context, tx pgx.Tx, c Chunk, n *proof133Built, old *Proof133Ref) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if old != nil && *old == n.ref {
+		return nil
+	}
+	var oldLeft, oldRight *Proof133Ref
+	if old != nil && old.Start == n.ref.Start && old.Count == n.ref.Count {
+		count := 0
+		v, err := proof133Load(ctx, tx, c, *old, &count)
+		if err != nil {
+			return err
+		}
+		oldLeft, oldRight = v.Left, v.Right
+	}
+	var left, right []byte
+	if n.left != nil {
+		if err := proof133Put(ctx, tx, c, n.left, oldLeft); err != nil {
+			return err
+		}
+		if err := proof133Put(ctx, tx, c, n.right, oldRight); err != nil {
+			return err
+		}
+		left, _ = proof133Bytes(n.left.ref.Hash)
+		right, _ = proof133Bytes(n.right.ref.Hash)
+	}
+	_, err := tx.Exec(ctx, `INSERT INTO organization.proof133_node(instance_id,object_id,payload,first_slot,members,first_date,last_date,left_hash,right_hash) VALUES($1,$2,$3,$4,$5,$6::date,$7::date,$8,$9) ON CONFLICT DO NOTHING`, c.Instance, c.Object, n.raw, n.node.Start, n.node.Count, n.node.Low, n.node.High, left, right)
+	return err
+}
+
+// All material comes from the actual just-appended source; no synthetic source.
+func SaveProof133(ctx context.Context, tx pgx.Tx, c Chunk, source string, full compact.Values, raw []byte, publish bool) error {
+	defer foundation.BeginStage(ctx, "proof133.publish")()
+	v, err := DecodeBUState(ctx, full, raw)
+	if err != nil {
+		return err
+	}
+	i := c.Index(source)
+	if i < 0 || v.Timeline.BUID != c.Object || v.Timeline.Source != source || len(v.Timeline.Records) == 0 || v.Timeline.First != v.Timeline.Records[0].ID {
+		return compact.ErrCorrupt
+	}
+	var old *Proof133Ref
+	var root []byte
+	var members *int
+	if err = tx.QueryRow(ctx, `SELECT proof133_root,proof133_count FROM organization.business_unit WHERE instance_id=$1 AND bu_id=$2`, c.Instance, c.Object).Scan(&root, &members); err != nil {
+		return err
+	}
+	if len(root) > 0 {
+		var low, high string
+		if err = tx.QueryRow(ctx, `SELECT first_date::text,last_date::text FROM organization.proof133_node WHERE instance_id=$1 AND object_id=$2 AND hash=$3`, c.Instance, c.Object, root).Scan(&low, &high); err != nil {
+			return err
+		}
+		old = &Proof133Ref{hex.EncodeToString(root), 0, *members, low, high}
+	}
+	done := foundation.BeginStage(ctx, "proof133.build")
+	tree, err := proof133Build(c, v.Timeline.Records, 0)
+	done()
+	if err != nil {
+		return err
+	}
+	done = foundation.BeginStage(ctx, "proof133.nodes")
+	err = proof133Put(ctx, tx, c, tree, old)
+	done()
+	if err != nil {
+		return err
+	}
+	hash, _ := proof133Bytes(tree.ref.Hash)
+	_, err = tx.Exec(ctx, `INSERT INTO organization.proof133_source(instance_id,object_id,source_id,source_no,chunk_no,state_shape,root,members,first_id,first_date) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::date)`, c.Instance, c.Object, source, c.First+int64(i), c.Number, c.States[i], hash, len(v.Timeline.Records), v.Timeline.First, v.Timeline.Records[0].Date)
+	if err != nil {
+		return err
+	}
+	if publish {
+		tag, e := tx.Exec(ctx, `UPDATE organization.business_unit SET proof133_root=$4,proof133_count=$5 WHERE instance_id=$1 AND bu_id=$2 AND head_source_id=$3`, c.Instance, c.Object, source, hash, len(v.Timeline.Records))
+		if e != nil {
+			return e
+		}
+		if tag.RowsAffected() != 1 {
+			return compact.ErrCorrupt
+		}
+	}
+	return nil
+}
+
+type Proof133Page struct {
+	Source, First      string
+	FirstRecord        domain.Record
+	Records            []domain.Record
+	NodeReads, Members int
+}
+
+// The head, immutable source extension and real history slot share one snapshot.
+// Native append/head/source guards bind the source UUID and state once at
+// publication and protect that prefix forever. Read only the bounded (<=64)
+// source_refs directory here, never detoast the complete UUID pool per page.
+func ReadProof133(ctx context.Context, tx pgx.Tx, instance, object string, start, size int, day string) (Proof133Page, error) {
+	var out Proof133Page
+	var c Chunk
+	var ref Proof133Ref
+	var source, first, low, high string
+	var root []byte
+	var count int
+	err := tx.QueryRow(ctx, `SELECT b.enterprise_id::text,b.head_source_id::text,s.first_id::text,s.root,s.members,n.first_date::text,n.last_date::text FROM organization.business_unit b JOIN organization.proof133_source s ON(s.instance_id,s.object_id,s.source_id,s.root,s.members)=(b.instance_id,b.bu_id,b.head_source_id,b.proof133_root,b.proof133_count) JOIN organization.proof133_node n ON(n.instance_id,n.object_id,n.hash)=(s.instance_id,s.object_id,s.root) JOIN organization.bu_history h ON(h.instance_id,h.object_id,h.chunk_no)=(s.instance_id,s.object_id,s.chunk_no) WHERE b.instance_id=$1 AND b.bu_id=$2 AND b.head_no=s.source_no AND b.head_chunk=s.chunk_no AND s.source_no BETWEEN h.first_no AND h.first_no+cardinality(h.source_refs)-1`, instance, object).Scan(&c.Enterprise, &source, &first, &root, &count, &low, &high)
+	if err != nil {
+		return out, err
+	}
+	c.Instance, c.Object = instance, object
+	ref = Proof133Ref{hex.EncodeToString(root), 0, count, low, high}
+	out.Source, out.First, out.Members = source, first, count
+	cache := map[string]proof133Node{}
+	load := func(r Proof133Ref) (proof133Node, error) {
+		if n, ok := cache[r.Hash]; ok {
+			return n, nil
+		}
+		n, e := proof133Load(ctx, tx, c, r, &out.NodeReads)
+		if e == nil {
+			cache[r.Hash] = n
+		}
+		return n, e
+	}
+	var firstNode proof133Node
+	for r := ref; ; {
+		n, e := load(r)
+		if e != nil {
+			return out, e
+		}
+		if n.Left == nil {
+			firstNode = n
+			break
+		}
+		r = *n.Left
+	}
+	out.FirstRecord = firstNode.Records[0]
+	if out.FirstRecord.ID != first {
+		return out, compact.ErrCorrupt
+	}
+	if day != "" {
+		for r := ref; ; {
+			n, e := load(r)
+			if e != nil {
+				return out, e
+			}
+			if n.Left != nil {
+				r = *n.Left
+				if day >= n.Right.Low {
+					r = *n.Right
+				}
+				continue
+			}
+			item := n.Records[0]
+			for _, v := range n.Records {
+				if v.Date <= day {
+					item = v
+				}
+			}
+			out.Records = []domain.Record{item}
+			break
+		}
+	} else {
+		if start < 0 || size < 1 || size > 128 || start >= count {
+			return out, fmt.Errorf("invalid page")
+		}
+		end := min(start+size, count)
+		var visit func(Proof133Ref) error
+		visit = func(r Proof133Ref) error {
+			if r.Start >= end || r.Start+r.Count <= start {
+				return nil
+			}
+			n, e := load(r)
+			if e != nil {
+				return e
+			}
+			if n.Left == nil {
+				a, b := max(start-n.Start, 0), min(end-n.Start, n.Count)
+				out.Records = append(out.Records, n.Records[a:b]...)
+				return nil
+			}
+			if e = visit(*n.Left); e != nil {
+				return e
+			}
+			return visit(*n.Right)
+		}
+		if err = visit(ref); err != nil {
+			return out, err
+		}
+		if len(out.Records) != end-start {
+			return out, compact.ErrCorrupt
+		}
+	}
+	return out, nil
+}
+func VerifyProof133(ctx context.Context, tx pgx.Tx, c Chunk, source string) (any, error) {
+	i := c.Index(source)
+	if i < 0 {
+		return nil, compact.ErrCorrupt
+	}
+	raw, err := LoadShape(ctx, tx, BusinessUnit, c.Instance, c.Enterprise, c.States[i])
+	if err != nil {
+		return nil, err
+	}
+	v, err := DecodeBUState(ctx, c.Values, raw)
+	if err != nil {
+		return nil, err
+	}
+	maxPage, maxDay, pages, days := 0, 0, 0, 0
+	for offset := 0; offset < len(v.Timeline.Records); offset += 50 {
+		page, e := ReadProof133(ctx, tx, c.Instance, c.Object, offset, 50, "")
+		if e != nil {
+			return nil, e
+		}
+		if page.Source != source || page.First != v.Timeline.First || !reflect.DeepEqual(page.FirstRecord, v.Timeline.Records[0]) || !reflect.DeepEqual(page.Records, v.Timeline.Records[offset:min(offset+50, len(v.Timeline.Records))]) {
+			return nil, compact.ErrCorrupt
+		}
+		maxPage = max(maxPage, page.NodeReads)
+		pages++
+	}
+	for _, index := range []int{0, len(v.Timeline.Records) / 2, len(v.Timeline.Records) - 1} {
+		page, e := ReadProof133(ctx, tx, c.Instance, c.Object, 0, 1, v.Timeline.Records[index].Date)
+		if e != nil {
+			return nil, e
+		}
+		if page.Source != source || !reflect.DeepEqual(page.Records, []domain.Record{v.Timeline.Records[index]}) {
+			return nil, compact.ErrCorrupt
+		}
+		maxDay = max(maxDay, page.NodeReads)
+		days++
+	}
+	return map[string]any{"source": source, "members": len(v.Timeline.Records), "pages": pages, "days": days, "maxPageNodeReads": maxPage, "maxDayNodeReads": maxDay, "fullSourceEquality": true}, nil
+}
+
+func AuditProof133(ctx context.Context, tx pgx.Tx, c Chunk) (int, error) {
+	for i, ref := range c.Sources {
+		source := c.Values.IDs[ref-1]
+		raw, e := LoadShape(ctx, tx, BusinessUnit, c.Instance, c.Enterprise, c.States[i])
+		if e != nil {
+			return 0, e
+		}
+		v, e := DecodeBUState(ctx, c.Values, raw)
+		if e != nil {
+			return 0, e
+		}
+		tree, e := proof133Build(c, v.Timeline.Records, 0)
+		if e != nil {
+			return 0, e
+		}
+		var hash []byte
+		var count int
+		var first string
+		e = tx.QueryRow(ctx, `SELECT root,members,first_id::text FROM organization.proof133_source WHERE instance_id=$1 AND object_id=$2 AND source_id=$3`, c.Instance, c.Object, source).Scan(&hash, &count, &first)
+		if e != nil {
+			return 0, e
+		}
+		if tree.ref.Hash != hex.EncodeToString(hash) || count != len(v.Timeline.Records) || first != v.Timeline.First {
+			return 0, compact.ErrCorrupt
+		}
+	}
+	return c.Count(), nil
+}

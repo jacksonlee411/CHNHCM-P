@@ -1,0 +1,255 @@
+name: CHNHCM CI
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Diagnostic suite (does not satisfy PR checks)
+        type: choice
+        default: select-suite
+        options: [select-suite, geography-legal-entity, browser-full, full]
+
+env:
+  CI_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
+  CI_FULL_BROWSER_HEAD: ${{ vars.CI_FULL_BROWSER_HEAD }}
+  CI_FULL_PR_HEAD: ${{ vars.CI_FULL_PR_HEAD }}
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && format('diagnostic-{0}', github.run_id) || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'diagnostic quality' || 'quality' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      plan: ${{ steps.schedule.outputs.plan || steps.plan.outputs.plan }}
+      scope: ${{ steps.schedule.outputs.scope || steps.plan.outputs.scope }}
+      integration_matrix: ${{ steps.schedule.outputs.integration_matrix }}
+      browser_matrix: ${{ steps.schedule.outputs.browser_matrix }}
+      preflight_runner: ${{ steps.schedule.outputs.preflight_runner }}
+      run_preflight: ${{ steps.schedule.outputs.run_preflight }}
+      run_integration: ${{ steps.schedule.outputs.run_integration }}
+      run_browser: ${{ steps.schedule.outputs.run_browser }}
+      has_carried: ${{ steps.schedule.outputs.has_carried }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Final verification reports can refer to source retained only in Git.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind candidate and select validation scope
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_BROWSER_SELF_HOSTED_SHARDS: ${{ vars.CI_BROWSER_SELF_HOSTED_SHARDS }}
+          CI_INTEGRATION_SELF_HOSTED_SHARDS: ${{ vars.CI_INTEGRATION_SELF_HOSTED_SHARDS }}
+        run: python3 scripts/ci_policy.py plan
+      - name: Preview the ready scope for this draft
+        if: steps.plan.outputs.scope == 'draft'
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        run: python3 -B scripts/ci_preview.py --base "$PR_BASE" --summary "$GITHUB_STEP_SUMMARY"
+      - name: Document or equivalent-candidate checks
+        if: steps.plan.outputs.runtime_quality == 'false'
+        run: make docs
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        if: steps.plan.outputs.runtime_quality == 'true'
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        if: steps.plan.outputs.runtime_quality == 'true'
+        with:
+          node-version-file: package.json
+          package-manager-cache: false
+      - name: Install locked dependencies
+        if: steps.plan.outputs.runtime_quality == 'true'
+        run: |
+          npm install --global corepack@0.35.0
+          corepack enable
+          make install
+      - name: Verify generated sources
+        if: steps.plan.outputs.runtime_quality == 'true'
+        run: |
+          make generate
+          changes=$(git status --porcelain=v1 --untracked-files=all)
+          if [ -n "$changes" ]; then
+            printf 'Generated sources differ from the candidate:\n%s\n' "$changes"
+            exit 1
+          fi
+      - name: Static, unit and document checks
+        if: steps.plan.outputs.runtime_quality == 'true'
+        run: make check
+      - name: Build application
+        if: steps.plan.outputs.runtime_quality == 'true'
+        run: make build
+      - name: Verify actual browser selection and every shard
+        if: steps.plan.outputs.runtime_quality == 'true' && fromJSON(steps.plan.outputs.plan).browser_shards > 0
+        env:
+          CI_PLAN: ${{ steps.plan.outputs.plan }}
+        run: python3 scripts/ci_browser.py check --coverage-output "$RUNNER_TEMP/ci-browser.json"
+      - name: Verify actual integration selection and every shard
+        if: steps.plan.outputs.runtime_quality == 'true' && fromJSON(steps.plan.outputs.plan).integration_shards > 0
+        env:
+          CI_PLAN: ${{ steps.plan.outputs.plan }}
+        run: python3 scripts/integration-shard.py --check --coverage-output "$RUNNER_TEMP/ci-integration.json"
+      - name: Require a current ready candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_PLAN: ${{ steps.plan.outputs.plan }}
+        run: python3 scripts/ci_policy.py quality
+      - name: Schedule the shards required on this candidate
+        id: schedule
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_PLAN: ${{ steps.plan.outputs.plan }}
+          CI_BROWSER_SELF_HOSTED_SHARDS: ${{ vars.CI_BROWSER_SELF_HOSTED_SHARDS }}
+          CI_INTEGRATION_SELF_HOSTED_SHARDS: ${{ vars.CI_INTEGRATION_SELF_HOSTED_SHARDS }}
+        run: python3 scripts/ci_policy.py schedule
+      - name: Retain the full PR inventory before the business jobs start
+        if: github.event_name == 'pull_request' && steps.plan.outputs.scope == 'full'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ci-coverage-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-coverage.json
+          if-no-files-found: error
+          retention-days: 7
+
+  preflight:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'diagnostic preflight' || 'preflight' }}
+    needs: quality
+    if: needs.quality.result == 'success' && needs.quality.outputs.run_preflight == 'true'
+    runs-on: ${{ fromJSON(needs.quality.outputs.preflight_runner) }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && '0' || '2' }}
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+      - name: Use Docker Hub for the locked PostgreSQL image
+        run: sed -i 's#^docker.m.daocloud.io/#docker.io/#' deploy/local/postgres-image.txt
+      - name: Check old-database upgrades in PostgreSQL
+        run: python3 scripts/integration-shard.py --preflight
+        env:
+          CI_PLAN: ${{ needs.quality.outputs.plan }}
+      - uses: ./.github/actions/browser-runtime
+        if: fromJSON(needs.quality.outputs.plan).remote_browser
+        with:
+          shard: preflight
+        env:
+          CI_PLAN: ${{ needs.quality.outputs.plan }}
+
+  integration-shard:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'diagnostic ' || '' }}integration shard ${{ matrix.shard }}/${{ fromJSON(needs.quality.outputs.plan).integration_shards }}
+    needs: [quality, preflight]
+    if: >-
+      !cancelled() && needs.quality.result == 'success' &&
+      (needs.preflight.result == 'success' || (needs.quality.outputs.run_preflight == 'false' && needs.preflight.result == 'skipped')) &&
+      needs.quality.outputs.run_integration == 'true'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        include: ${{ fromJSON(needs.quality.outputs.integration_matrix) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && '0' || '2' }}
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+      - name: Verify Docker
+        run: docker info
+      - name: Use Docker Hub for the locked PostgreSQL image
+        run: sed -i 's#^docker.m.daocloud.io/#docker.io/#' deploy/local/postgres-image.txt
+      - name: PostgreSQL integration suite
+        env:
+          CI_PLAN: ${{ needs.quality.outputs.plan }}
+          CI_SHARD: ${{ matrix.shard }}
+        run: python3 scripts/integration-shard.py --shard "$CI_SHARD"
+
+  integration:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'diagnostic integration' || 'integration' }}
+    needs: [quality, preflight, integration-shard]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: ${{ (github.event_name == 'push' || needs.quality.outputs.has_carried == 'true') && '0' || '2' }}
+          persist-credentials: false
+      - name: Verify candidate, planned scope and actual jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_PLAN: ${{ needs.quality.outputs.plan }}
+          CI_NEEDS: ${{ toJSON(needs) }}
+        run: python3 scripts/ci_policy.py gate --kind integration
+
+  browser-shard:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'diagnostic ' || '' }}browser shard ${{ matrix.shard }}/${{ fromJSON(needs.quality.outputs.plan).browser_shards }}
+    needs: [quality, preflight]
+    if: >-
+      !cancelled() && needs.quality.result == 'success' &&
+      (needs.preflight.result == 'success' || (needs.quality.outputs.run_preflight == 'false' && needs.preflight.result == 'skipped')) &&
+      needs.quality.outputs.run_browser == 'true'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 11
+      matrix:
+        include: ${{ fromJSON(needs.quality.outputs.browser_matrix) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && '0' || '2' }}
+          persist-credentials: false
+      - uses: ./.github/actions/browser-runtime
+        with:
+          shard: ${{ matrix.shard }}
+        env:
+          CI_PLAN: ${{ needs.quality.outputs.plan }}
+
+  browser:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'diagnostic browser' || 'browser' }}
+    needs: [quality, preflight, integration, browser-shard]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: ${{ (github.event_name == 'push' || needs.quality.outputs.has_carried == 'true') && '0' || '2' }}
+          persist-credentials: false
+      - name: Verify candidate, planned scope and actual jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_PLAN: ${{ needs.quality.outputs.plan }}
+          CI_NEEDS: ${{ toJSON(needs) }}
+        run: python3 scripts/ci_policy.py gate --kind browser
+      - name: Retain selected PR evidence for equivalent main validation
+        if: github.event_name == 'pull_request' && needs.quality.outputs.scope != 'draft'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ci-evidence-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-evidence.json
+          if-no-files-found: error
+          retention-days: 7

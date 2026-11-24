@@ -1,0 +1,44 @@
+---
+title: M03 职务、职级、职位与编制 · 目标设计
+---
+flowchart TB
+  subgraph domain["M03 职务、职级、职位与编制"]
+    direction TB
+    JF["JobFamily 职务族"]:::own
+    J["Job 职务"]:::own
+    G["Grade 职级"]:::own
+    L["GradeLadder 职级阶梯"]:::own
+    P["Position 独立席位"]:::own
+    Q["StaffingQuota 部门与岗位额度"]:::own
+    R["Reservation / Occupancy 招聘预留与任职占编"]:::own
+    W["WorkforcePlan 编制目标与预算"]:::own
+    PH["PositionHierarchy 岗位层级版本"]:::own
+    POL["StaffingPolicy 岗位模式与占用规则"]:::own
+  end
+  O["M02 组织 地点及业务上下文"]:::external
+  H["M04 Assignment 任职"]:::external
+  C["M09 GradeRate 金额与报价"]:::external
+  A["M15 已确认实际成本"]:::external
+  D["M05 Requisition 招聘需求"]:::external
+  JF -->|分类| J
+  L -->|级别及进阶结构| G
+  J -->|工作类型| P
+  G -->|允许级别| P
+  O -->|组织引用| P
+  O -->|按部门核总额| Q
+  P -->|按岗位定额| Q
+  Q -->|按岗位核验用量| R
+  D -->|预留| R
+  R -->|占用引用任职身份| H
+  G -->|级别身份供金额引用| C
+  C -->|版本化预算报价| W
+  A -->|计划与实际比较| W
+  W -->|有权人按日采用| Q
+  PH -->|按有效版本引用岗位节点| P
+  POL -->|任职采用模式及占编规则| H
+  H -->|入转离及更正共同事务| R
+  POL -->|是否占编| R
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

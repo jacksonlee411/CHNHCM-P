@@ -1,0 +1,30 @@
+---
+title: M01 人员身份与个人资料 · 目标设计
+---
+flowchart TB
+  subgraph domain["M01 人员身份与个人资料"]
+    direction TB
+    P["Person 稳定人员身份"]:::own
+    V["身份核对与重复提示"]:::process
+    D["个人资料与联系人"]:::own
+    B["账户身份"]:::own
+    AL["PersonNumberAlias 旧号历史与唯一占位"]:::own
+  end
+  R["M05 候选人或人工登记"]:::external
+  H["M04 建立用工"]:::external
+  K["M14 工资账户用途"]:::external
+  S["X03 目的与字段权限"]:::shared
+  R -->|候选来源| V
+  V -->|明确登记或匹配| P
+  P -->|维护资料| D
+  P -->|账户归属| B
+  P -->|personId| H
+  B -->|身份引用| K
+  S -->|最少可见| D
+  S -->|敏感字段控制| B
+  P -->|登记及改号同事务| AL
+  AL -->|旧号解析及禁止重发| V
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

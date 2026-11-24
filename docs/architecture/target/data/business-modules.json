@@ -1,0 +1,4254 @@
+[
+  {
+    "id": "M01",
+    "title": "人员身份与个人资料",
+    "entities": [
+      [
+        "Person",
+        "personId；employeeNo在客户实例内唯一",
+        "跨雇主及离职再聘复用；登记后可尚无工作关系"
+      ],
+      [
+        "PersonalProfile",
+        "personId＋资料项id＋修订",
+        "身份、联系方式等按目的维护；有效证件与审核结论分开"
+      ],
+      [
+        "ContactRelationship",
+        "relationId＋主体personId",
+        "联系人角色、期限及最少必要资料；可选择关联已核对Person"
+      ],
+      [
+        "BankAccountIdentity",
+        "accountId＋ownerPersonId",
+        "目标统一账户身份；用途、生效分配和付款快照归M14"
+      ],
+      [
+        "PersonNumberAlias",
+        "所属personId＋规范化编号；客户内永久唯一",
+        "登记分配现号，纠错/制度迁移才改号；旧号永不重发，历史查询解析同一人员"
+      ]
+    ],
+    "rules": [
+      "人员编号在企业实例内唯一，空白及大小写按编号政策规范化。登记只按现用主要证件号码判断人员是否重复，同名不触发查询、提示或确认。",
+      "登记和入职分别保存；取消登记零写，登记后取消入职保留Person；不自动创建工资或参缴事实。",
+      "个人信息修订需expectedRevision；敏感字段读取和导出分别授权；旧工资快照不随资料更正改写。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "RegisterPerson按登记业务键幂等分配employeeNo；RenumberPerson固定理由、决定及前后号，Person与现/旧号占位同事务提交。旧号解析同一personId，封存采用保留当时编号；离职再聘不改号。",
+      "已建档案经人事发现可能误建时，由本域按证据核对，必要时冻结相关新用途。纠正逐域保留依据，不自动合并 Person 或跨域改外键（DDD §2.10）。",
+      "编号无业务生效切片；改号在保存后改变当前号码，GetRecordedNumber按确切登记来源版本返回原号码，永久别名解析同一人员；不提供按系统时间截点或businessAt查询编号。日期型资料仅限显式有效区间字段（DDD §6.1，AC06/AC08）。"
+    ],
+    "contract": "向M04提供已核对personId和资料版本；向M14提供最少必要的账户身份引用；招聘候选人通过显式匹配关联。",
+    "china": "证件种类、税收身份与国籍分开；联系人资料及账户信息有目的、权限和保留规则。",
+    "checks": [
+      "同名不同证号可分别建档，不同姓名使用同一现用证号不能再建。跨法人再聘人员编号不变。",
+      "越权查看隐藏资料；失败入职不留下半成品关系。",
+      "改号后旧号仍定位原人且不得重发。确认档案误建后，纠正时仍保留各自的工资和税务历史（AC08）。"
+    ],
+    "nodes": [
+      [
+        "R",
+        "M05 候选人或人工登记",
+        "external"
+      ],
+      [
+        "P",
+        "Person 稳定人员身份",
+        "own"
+      ],
+      [
+        "V",
+        "身份核对与重复提示",
+        "process"
+      ],
+      [
+        "D",
+        "个人资料与联系人",
+        "own"
+      ],
+      [
+        "B",
+        "账户身份",
+        "own"
+      ],
+      [
+        "H",
+        "M04 建立用工",
+        "external"
+      ],
+      [
+        "K",
+        "M14 工资账户用途",
+        "external"
+      ],
+      [
+        "S",
+        "X03 目的与字段权限",
+        "shared"
+      ],
+      [
+        "AL",
+        "PersonNumberAlias 旧号历史与唯一占位",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "R",
+        "V",
+        "候选来源"
+      ],
+      [
+        "V",
+        "P",
+        "明确登记或匹配"
+      ],
+      [
+        "P",
+        "D",
+        "维护资料"
+      ],
+      [
+        "P",
+        "B",
+        "账户归属"
+      ],
+      [
+        "P",
+        "H",
+        "personId"
+      ],
+      [
+        "B",
+        "K",
+        "身份引用"
+      ],
+      [
+        "S",
+        "D",
+        "最少可见"
+      ],
+      [
+        "S",
+        "B",
+        "敏感字段控制"
+      ],
+      [
+        "P",
+        "AL",
+        "登记及改号同事务"
+      ],
+      [
+        "AL",
+        "V",
+        "旧号解析及禁止重发"
+      ]
+    ],
+    "aggregate_ownership": [
+      "Person根 / RegisterPerson",
+      "Person内资料项 / CorrectProfile",
+      "Person内关系实体 / MaintainContact",
+      "BankAccountIdentity根 / RegisterAccount",
+      "Person内编号历史；客户内编号唯一登记守卫 / RegisterPerson、RenumberPerson"
+    ]
+  },
+  {
+    "id": "M02",
+    "title": "企业、组织与地点",
+    "entities": [
+      [
+        "OrganizationObject",
+        "objectId＋kind；按日版本",
+        "企业/业务单元/部门/地点及法律实体按类型保留身份；分支机构与设立单位可区分，法律资格不由名称推断"
+      ],
+      [
+        "LegalEntityUse",
+        "entityId＋用途＋生效区间",
+        "分别声明用人、派遣接收用工、薪资责任、扣缴、参缴、付款及成本允许用途；资格不等于具体人员关系，运营登记和账户由消费域维护"
+      ],
+      [
+        "HierarchyVersion",
+        "treeId＋用途＋生效日",
+        "组织的行政、人员范围、安全用途树分别版本化；节点引用组织身份，岗位层级由M03唯一维护"
+      ],
+      [
+        "OrganizationPublication / AdoptionReceiptIndex",
+        "sourceVersion；consumerId＋adoptionRef",
+        "M02拥有发布版本；采用由M04等消费者维护，本域只持可重建回执索引"
+      ],
+      [
+        "ContextBinding",
+        "bindingId＋业务上下文＋用途＋有效期",
+        "将BU/地点等上下文关联允许的法律主体用途；登记和运营账户继续由消费域维护"
+      ]
+    ],
+    "rules": [
+      "业务单元、部门、法律实体和地点不互相替代；同一组织可具不同角色，用途及资格分别按日期解析。用人单位不一概限定为独立法人或合同签字公司。",
+      "对象自身的适用规则只在被消费者选用时评价，不自动成为组织之间的禁止关系。",
+      "层级变更不静默改写旧任职或旧报表；历史事实按业务日期读，权限按当前授权上下文判。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "本域不维护Position之间的父子边；M03 PositionHierarchy负责岗位层级。本设计不另采纳可独立编辑的多套Position Tree，安全范围由X03显式引用层级版本，不能把组织树自动当岗位树。",
+      "大陆劳动关系语境首选用人单位；派遣单位与接收方用工单位分别识别。人员类别和组织责任是不同维度，非劳动或非工作关联按性质使用关联单位或具体角色名称。",
+      "分支机构使用可区分的组织身份并保留登记及资格依据；符合条件可作为用人单位。未取得相应证照但受委托签约只记录委托及签约事实，不据此自动认定独立用人责任。",
+      "M02提供组织身份及允许用途；M04维护具体关系性质、用人和实际用工角色与依据。付款、扣缴、参缴由M14/M11/M12分别确定，不由工作地点、合同落款或单一entityId推导。",
+      "CHNHCM-200/201：Organization拥有CountryRegion国家/地区目录、GeoArea行政区划及地址分区参考对象；实例共享，不挂BU。Location为企业工作地点。三对象独立事实，复用按日维护和提交机制。首批区域/地点限中国大陆、香港、澳门、台湾；国家目录全球。首次默认1900-01-01不代表真实成立日期。G0仅冻结范围及来源，产品按后续阶段实施。"
+    ],
+    "contract": "向M03/M04提供可用组织和地点；向M11/M12/M14提供法律主体引用；自身不拥有税费账户。",
+    "china": "劳动关系中的用人单位、派遣接收方用工单位、非劳动关系中的关联单位及实际付款主体分别识别。A派遣公司与人员建立劳动关系、B接收工作时，A为用人单位、B为用工单位；人员在B系统为非本单位员工不改变这一事实。用工建立关系与书面合同订立分别记录。",
+    "checks": [
+      "同名不同法人不得仅按名称匹配；跨法人部门共享需显式允许。",
+      "部门移树后历史任职仍指原版本；当前授权不能借历史日期扩大。",
+      "符合条件的非独立法人分支机构不能被模型一律排除；受委托签约不自动成为用人单位。",
+      "派遣A/B及实际付款C分别留有角色与来源；非员工分类不把B或C变为用人单位。"
+    ],
+    "nodes": [
+      [
+        "E",
+        "Enterprise 企业上下文",
+        "own"
+      ],
+      [
+        "BU",
+        "BusinessUnit 业务单元",
+        "own"
+      ],
+      [
+        "D",
+        "Department 部门",
+        "own"
+      ],
+      [
+        "LOC",
+        "Location 地点",
+        "own"
+      ],
+      [
+        "L",
+        "LegalEntity / Use 法律实体及用途<br/>含符合条件分支；用人/用工分别核定",
+        "own"
+      ],
+      [
+        "T",
+        "OrganizationHierarchy / Version 按用途的组织树",
+        "own"
+      ],
+      [
+        "B",
+        "ContextBinding 上下文用途绑定",
+        "own"
+      ],
+      [
+        "H",
+        "M03 M04 工作关系及任职<br/>关联单位不自动代表用人单位",
+        "external"
+      ],
+      [
+        "F",
+        "M10 M11 M12 M14 M15 责任消费者",
+        "external"
+      ],
+      [
+        "X",
+        "X02 对象类型及适用政策",
+        "shared"
+      ]
+    ],
+    "edges": [
+      [
+        "E",
+        "BU",
+        "企业内业务单元"
+      ],
+      [
+        "E",
+        "D",
+        "企业内管理组织"
+      ],
+      [
+        "E",
+        "L",
+        "企业内法律实体"
+      ],
+      [
+        "T",
+        "D",
+        "按用途引用节点"
+      ],
+      [
+        "BU",
+        "B",
+        "业务上下文"
+      ],
+      [
+        "LOC",
+        "B",
+        "地点上下文"
+      ],
+      [
+        "L",
+        "B",
+        "允许用途及主体"
+      ],
+      [
+        "X",
+        "B",
+        "日期及引用范围"
+      ],
+      [
+        "BU",
+        "H",
+        "引用"
+      ],
+      [
+        "D",
+        "H",
+        "引用"
+      ],
+      [
+        "LOC",
+        "H",
+        "引用"
+      ],
+      [
+        "B",
+        "F",
+        "按用途解析 不等同一棵树"
+      ]
+    ],
+    "aggregate_ownership": [
+      "OrganizationObject根，含Enterprise/BU/Department/Location及LegalEntity用途 / PublishObject",
+      "LegalEntity所属根的用途实体 / DeclareUse",
+      "Hierarchy根含版本及成员边 / PublishHierarchy",
+      "发布归源根；回执索引为派生投影 / RebuildIndex",
+      "ContextBinding根 / BindLegalPurpose"
+    ]
+  },
+  {
+    "id": "M03",
+    "title": "职务、职级、职位与编制",
+    "entities": [
+      [
+        "Job / JobFamily",
+        "jobId / familyId＋生效日",
+        "工作类型；不表示一个任职或一个席位"
+      ],
+      [
+        "Grade / Ladder",
+        "gradeId / ladderId＋版本",
+        "级别与进阶关系归本域；GradeRate金额由M09维护"
+      ],
+      [
+        "Position",
+        "positionId＋生效日",
+        "岗位定义记录组织和职务，岗位编制由 StaffingQuota 维护，父子边由 PositionHierarchy 维护。"
+      ],
+      [
+        "WorkforcePlan",
+        "planId＋期间＋版本",
+        "编制计划记录人数目标、预算和预测。管理员可以直接核编，也可以明确采用相应计划版本。"
+      ],
+      [
+        "StaffingQuota / Reservation / Occupancy",
+        "额度按企业、对象类型与部门或岗位身份定位。岗位用量各有 reservationId / occupancyId",
+        "部门核定总额与岗位定额各有按日时间线。招聘与人事接入后，按岗位记录限期交接、招聘预留及任职占编，引用招聘份额或 M04 任职并保留原采用。"
+      ],
+      [
+        "PositionHierarchy / HierarchyVersion",
+        "企业唯一管理汇报根hierarchyId；versionId；边含parentPositionId / childPositionId＋有效区间",
+        "M03维护岗位管理汇报边；按日期无环、单父；实际经理关系归M04，不由树变更自动更新"
+      ],
+      [
+        "StaffingPolicy",
+        "policyId＋版本＋适用期",
+        "企业按人员类别、用途和有效期间确定岗位模式及是否占编。"
+      ]
+    ],
+    "rules": [
+      "核定编制以非负整数名额表示。每份占编任职计 1，每份免占编任职计 0，人员数在查询范围内去重。",
+      "招聘预留转为任职占用时必须同一责任链扣减预留，重复办理不得双占。",
+      "职位默认向任职传播需明确采用和字段覆盖判断；不可把职位报价直接写成真实工资。",
+      "人事接入后，入职、调动、离任及撤改同步更新任职与占编。[共同事务合同](../10-ddd-and-state-contracts.md#staffing-quota-transaction)",
+      "HR 可只给部门核总额、只给岗位定额，或同日调整总额及直属岗位分配。岗位核定合计按当日直属启用岗位计算。已核部门的待分配数为总额减该合计，尚未核总额时留空。保存按现权与完整分配逐段复核，记录原因和新旧版本。[部门分配](../../../specs/m03/313-position-capacity-contract.md#m03-br-040)",
+      "按岗位任职须采用有效岗位，派遣等类别按明示规则占编。仅按职务任职采用有效职务和组织。新办理逐段采用有效规则，既有任职和预留保留原采用。显式切换时按期重验新旧岗位及名额。",
+      "本期减编按调整后各段的部门上限和岗位分配校验。接管真实用量后，调减岗位定额还须覆盖该段常规承诺及交接结束后的承诺。届时撤编须核对使用及交接，停岗还须核实免占编任职。",
+      "提前补招可按已登记的离任边界预留未来名额。撤销未来离任须重新取得恢复期间名额。编制计划经明确采用后才改变岗位核定数。",
+      "PositionHierarchy与组织树、实际经理关系分别维护；发布版本校验节点有效期、单父及无环，下游保存所采用版本，树改动不改历史任职。",
+      "有权人从指定招聘份额或内部调动安排一名接替者的交接，落实重叠段和后续常规名额。专用额度在本次截止日后自然结束。实际超期依人事依据更正占编，差额按日计算。[限期交接](../../../specs/m03/313-position-capacity-contract.md#m03-br-035)",
+      "正式未来调动从生效日起按段释放和取得占编。互换岗位时按同日对调后的两岗明细检查全部已知期间，保留其他人的预留和占编。[调动与对调](../../../specs/m03/313-position-capacity-contract.md#m03-br-039)"
+    ],
+    "contract": "本期由 M02 提供部门身份与有效期，M03 维护部门和岗位额度。招聘、人事接入后按 M05 的需求预留岗位名额，并向 M04 提供岗位和可用编制。人员编制计划可消费 M09 费率及 M15 已确认成本。",
+    "china": "编制以整数名额核定，派遣及正式兼岗是否占编由企业明示规则决定。",
+    "checks": [
+      "部门总额 10，开发 6、测试 3，待分配 1。只把测试调到 5 超额 1，同日一次改成 5、5 后待分配 0。未核部门总额时两岗仍可独立定额。",
+      "两次并发占同一最后席位，只允许一次成功。",
+      "调岗释放与占用一致；历史工资成本不能被当前职位报价覆盖。",
+      "两个并发入职争抢最后一个席位，只有一个事务成功；失败不留下预留已耗但任职不存在的中间态。",
+      "调减常规编制低于常规承诺、停岗期间仍有岗位引用或拟撤销未来离任却无足额去向时拒绝。人事补录实际到岗或更正交接超期后，按日可查核定数、实际占编及差额。",
+      "仅按职务任职时用职务与组织。改为占编的岗位任职时，同一事务重新核对该岗的可用编制。"
+    ],
+    "nodes": [
+      [
+        "JF",
+        "JobFamily 职务族",
+        "own"
+      ],
+      [
+        "J",
+        "Job 职务",
+        "own"
+      ],
+      [
+        "G",
+        "Grade 职级",
+        "own"
+      ],
+      [
+        "L",
+        "GradeLadder 职级阶梯",
+        "own"
+      ],
+      [
+        "P",
+        "Position 独立席位",
+        "own"
+      ],
+      [
+        "Q",
+        "StaffingQuota 部门与岗位额度",
+        "own"
+      ],
+      [
+        "R",
+        "Reservation / Occupancy 招聘预留与任职占编",
+        "own"
+      ],
+      [
+        "O",
+        "M02 组织 地点及业务上下文",
+        "external"
+      ],
+      [
+        "H",
+        "M04 Assignment 任职",
+        "external"
+      ],
+      [
+        "C",
+        "M09 GradeRate 金额与报价",
+        "external"
+      ],
+      [
+        "A",
+        "M15 已确认实际成本",
+        "external"
+      ],
+      [
+        "D",
+        "M05 Requisition 招聘需求",
+        "external"
+      ],
+      [
+        "W",
+        "WorkforcePlan 编制目标与预算",
+        "own"
+      ],
+      [
+        "PH",
+        "PositionHierarchy 岗位层级版本",
+        "own"
+      ],
+      [
+        "POL",
+        "StaffingPolicy 岗位模式与占用规则",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "JF",
+        "J",
+        "分类"
+      ],
+      [
+        "L",
+        "G",
+        "级别及进阶结构"
+      ],
+      [
+        "J",
+        "P",
+        "工作类型"
+      ],
+      [
+        "G",
+        "P",
+        "允许级别"
+      ],
+      [
+        "O",
+        "P",
+        "组织引用"
+      ],
+      [
+        "O",
+        "Q",
+        "按部门核总额"
+      ],
+      [
+        "P",
+        "Q",
+        "按岗位定额"
+      ],
+      [
+        "Q",
+        "R",
+        "按岗位核验用量"
+      ],
+      [
+        "D",
+        "R",
+        "预留"
+      ],
+      [
+        "R",
+        "H",
+        "占用引用任职身份"
+      ],
+      [
+        "G",
+        "C",
+        "级别身份供金额引用"
+      ],
+      [
+        "C",
+        "W",
+        "版本化预算报价"
+      ],
+      [
+        "A",
+        "W",
+        "计划与实际比较"
+      ],
+      [
+        "W",
+        "Q",
+        "有权人按日采用"
+      ],
+      [
+        "PH",
+        "P",
+        "按有效版本引用岗位节点"
+      ],
+      [
+        "POL",
+        "H",
+        "任职采用模式及占编规则"
+      ],
+      [
+        "H",
+        "R",
+        "入转离及更正共同事务"
+      ],
+      [
+        "POL",
+        "R",
+        "是否占编"
+      ]
+    ],
+    "aggregate_ownership": [
+      "Job与JobFamily独立根 / MaintainJob",
+      "Grade与GradeLadder独立根 / MaintainGrade",
+      "Position定义根 / MaintainPosition",
+      "WorkforcePlan根 / PublishWorkforcePlan",
+      "StaffingQuota 按部门或岗位维护核定数，同日调剂一次提交所有变动对象 / ChangeStaffingQuota。岗位后续办理补员状态、限期交接、预留及占编 / SetRecruitmentStatus、ReserveStaffingQuota、ReleaseReservation、ConvertReservation、ReleaseOccupancy",
+      "PositionHierarchy根含版本及边 / PublishPositionHierarchy",
+      "StaffingPolicy根 / PublishStaffingPolicy"
+    ]
+  },
+  {
+    "id": "M04",
+    "title": "用工、任职与劳动合同",
+    "entities": [
+      [
+        "Employment",
+        "employmentId＋personId＋entityId",
+        "一段人与关联组织的系统关系，entityId不自动等于用人单位；保存人员类型、关系性质及角色依据，支持非劳动或非工作关联"
+      ],
+      [
+        "Assignment / AssignmentRecord",
+        "assignmentId＋生效日＋修订",
+        "关系下的任职、部门、岗位及经理，每日保存一份有效任职事实。"
+      ],
+      [
+        "PersonContract / Process",
+        "contractId＋employmentId；processId",
+        "合同期限、续订/终结及前后继；与任职状态分开"
+      ],
+      [
+        "PrimarySelection / ManagementHome",
+        "personId或employmentId＋日期＋用途",
+        "主关系和关系内主任职各在相应层级选择"
+      ],
+      [
+        "BusinessActionRecord",
+        "actionRecordId＋目标对象及前后版本",
+        "真实业务动作实例；固定action/reason/status定义及政策版本、决定与发生依据；审计更正不代替业务动作"
+      ],
+      [
+        "EmploymentActionCatalog / ActionDefinition / ReasonDefinition / AssignmentStatusDefinition",
+        "catalogId＋versionId；稳定actionCode / reasonCode / statusCode",
+        "可复用配置：类型、动作原因关联、启停及允许状态转换；新命令采用有效版本，旧事实保留当时定义"
+      ],
+      [
+        "ManagerRelationship",
+        "所属assignmentId＋relationshipId＋managerAssignmentId＋用途及有效区间",
+        "Assignment根内实体；实际汇报两端均为任职身份；不自动从岗位树或主关系推导"
+      ],
+      [
+        "PrimarySelectionPolicy",
+        "policyId＋version＋用途/类别/状态/期间",
+        "两层主选择的资格与覆盖。岗位及占编规则由 M03 管理。"
+      ]
+    ],
+    "rules": [
+      "实际入职或派驻办理Hire时，关系和首任职必须一致保存；Person登记可独立先完成。明确的非工作关联由M04受控RegisterAssociation建立，可没有任职，按该关系的真实用途登记。",
+      "再聘不复活已终结关系或任职；保留原合同和工资采用链。",
+      "主关系/主任职用于明确单值视图，不决定所有税费、权限或成本归属。",
+      "跨法人变化显式交接新旧关系；合同、关系、任职结束动作及日期分别判断。",
+      "Staffing协调器原子提交关系/任职、M03资源变化、必要主选择和Outbox；组织版本提交时变化即拒绝。M01登记先前独立提交。",
+      "直接入职凭人事依据。经招聘时，人事从已接受且资料齐备的录用核实本人、到岗日及拟任期间，保存任职并转换适用预留，招聘自动取得结果。生效前撤销首次入职时，同笔撤销该次建立的工作关系、首任职与占编，结束或重选受影响的主关系和主任职。关联事实和后继无法合法处置时整笔拒绝。",
+      "反序补录不能用录入顺序决定业务先后；核对当日最终状态并保留每次真实动作。本设计不支持日内任职状态查询/计量，审计更正不是该能力的等价替代。",
+      "新动作核验所采用EmploymentActionCatalog版本、action/reason关联及启停；目录变更不重释旧BusinessActionRecord或Assignment状态切片。任职状态定义不决定Payroll是否计薪，工资域另行解释。",
+      "PrimarySelection以人员或关系＋用途唯一定位，按有效区间选择合格目标：关系属于该Person，任职属于该Employment；人员总体主任职由两层选择组合，不维护第三套权威。终结时结束/重选受影响选择，不指向失效对象。",
+      "ManagerRelationship引用双方有效任职及用途；禁止自引用和同用途有效期环路。SetManager及相关终结动作经Staffing共同守卫，锁定受影响关系图作用域/任职，防止并发成环；经理退出需明确结束或替换关系，不静默移给岗位上级。",
+      "EndEmployment/EndAssignment、未来终结撤销与日期更正，连同全部受影响资源、主选择、经理关系及Outbox在同一Staffing事务保存；保留原切片及更正链。再聘使用Hire路径建立新关系/任职，不能复活已完成终结。",
+      "PrimarySelection固定M04覆盖政策版本：仅登记/已全退出可为0；有效Employee的HR管理用途人员层及适用关系内恰好1；其他类别/用途按明确政策。Hire仍同事务建关系和首任职；结束、更正及政策激活校验所有日期段无空洞，共享政策栅栏（DDD §2.10）。",
+      "同日动作保留独立身份及依赖；CancelAction从基准和保留动作构建当日最终切片，不覆盖其他独立动作；依赖不明拒绝并待核。日级任职不提供日内状态，跨午夜按DDD §2.11切分。",
+      "Employment.entityId引用关系关联的M02组织身份；劳动关系明确用人单位，派遣/任职事实分别记录用人及实际用工角色，非劳动或非工作关联按性质命名。人员类型不能代替关系性质认定；付款、扣缴和参缴责任由消费域另行确定。",
+      "劳动关系起点与书面合同订立时间分别保存；合同未签、签约代理、工作地点或付款账户不能单独决定是否存在劳动关系或谁承担用人责任。",
+      "任职基数由关系类型明确：承担实际工作的关系保留首任职及相关守卫，不能把所有非劳动或非Employee关系都当成无任职。非工作关联默认不要求主任职；某用途显式required时必须存在真实合格目标，否则拒绝，不能制造占位任职。RegisterAssociation与EndEmployment仍校验身份、组织、权限、日期、政策及主选择并保存Outbox。",
+      "原岗确定的占编结束日可供未来补缺。人事凭履职依据从入职或任职补录实际到岗、更正交接日期，同笔登记相应占编，M03 按日计算差额。拟调动或延期仍须落实名额，已发录用从招聘办理变更。[履职事实与差额](../../../specs/m03/313-position-capacity-contract.md#m03-br-036)",
+      "纯内部接任从调动办理，双方任职、交接和后续去向均可查。改期或撤销重验两岗承诺，无冲突直接显示两岗结果，需协调时按权限提示期间、缺额及原单。满编岗位同日对调可一次保存。[调动与两岗占编](../../../specs/m03/313-position-capacity-contract.md#m03-br-037)"
+    ],
+    "contract": "消费M01身份与M02/M03允许值；向M06—M13提供日期有效的关系/任职事实，工资及参缴由下游明确建立。",
+    "china": "工作关系是上位系统概念；劳动关系性质、合同类型、用人单位、派遣接收用工单位及非劳动关联角色分别记录。退休或非员工类别不能替代关系认定，法律判断节点保留政策和事实依据。",
+    "checks": [
+      "一人多关系、多任职、合同独立续订均可追溯。",
+      "未来入职在生效前不计当前在职。生效前撤销后，原入职日查不到该次关系、首任职及指向它们的主选择，人员、独立既有关系和原件可查。重试只返回原结果。",
+      "入职或调动任一写入失败，全事务回滚；Person保留，旧占用不半释放。",
+      "停用“组织调整”原因后旧调动仍可解释，新调动不得选停用原因；未声明关联的入职动作不得使用该原因。",
+      "关系内主任职不允许指向别人的关系；经理终结、未来离职取消和日期更正不留下无效选择或悬空汇报区间。",
+      "结束主任职或政策升级不得产生required覆盖空洞；撤销当日调职级仍保留调部门（AC02/AC03）。",
+      "同一派遣人员在A有劳动关系、在B为非本单位员工时，不能把B系统关系的entityId直接解释为用人单位。",
+      "尚未订立书面合同与劳动关系不存在不能互推；非劳动关联不强制拥有用人角色。",
+      "非工作关联可只保存关系；实际工作的Contingent仍有适用任职。required而无真实合格任职时拒绝，不伪造Job或编制占用。"
+    ],
+    "nodes": [
+      [
+        "P",
+        "M01 Person",
+        "external"
+      ],
+      [
+        "O",
+        "M02 组织身份/允许用途；M03席位",
+        "external"
+      ],
+      [
+        "E",
+        "Employment 工作关系记录<br/>关联单位 人员类型 关系性质",
+        "own"
+      ],
+      [
+        "A",
+        "Assignment 任职时间线",
+        "own"
+      ],
+      [
+        "C",
+        "Contract 合同链",
+        "own"
+      ],
+      [
+        "L",
+        "入转调离 再聘联合办理",
+        "process"
+      ],
+      [
+        "Y",
+        "M09 M10 M12 下游归属",
+        "external"
+      ],
+      [
+        "T",
+        "X01 日期与修订",
+        "shared"
+      ],
+      [
+        "ACT",
+        "BusinessActionRecord 实际动作与定义采用",
+        "own"
+      ],
+      [
+        "DEF",
+        "EmploymentActionCatalog 动作 原因 状态定义",
+        "own"
+      ],
+      [
+        "PR",
+        "PrimarySelection 主关系与主任职",
+        "own"
+      ],
+      [
+        "MG",
+        "ManagerRelationship 双方任职引用",
+        "own"
+      ],
+      [
+        "PP",
+        "PrimarySelectionPolicy 资格与必需覆盖",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "P",
+        "E",
+        "同一人多关系"
+      ],
+      [
+        "E",
+        "A",
+        "按关系类型可为0 实际入职须有首任职"
+      ],
+      [
+        "E",
+        "C",
+        "合同归属"
+      ],
+      [
+        "O",
+        "L",
+        "组织允许值与岗位编制"
+      ],
+      [
+        "L",
+        "E",
+        "关系变化"
+      ],
+      [
+        "L",
+        "A",
+        "任职变化"
+      ],
+      [
+        "L",
+        "C",
+        "独立合同动作"
+      ],
+      [
+        "T",
+        "L",
+        "时点和历史守卫"
+      ],
+      [
+        "A",
+        "Y",
+        "来源版本供采用"
+      ],
+      [
+        "DEF",
+        "L",
+        "校验定义版本和允许转换"
+      ],
+      [
+        "L",
+        "ACT",
+        "成功写入来源与动作记录"
+      ],
+      [
+        "L",
+        "PR",
+        "共同守卫更新选择"
+      ],
+      [
+        "E",
+        "PR",
+        "关系归属与合格目标"
+      ],
+      [
+        "A",
+        "PR",
+        "关系内选择任职"
+      ],
+      [
+        "A",
+        "MG",
+        "所属及经理任职角色"
+      ],
+      [
+        "L",
+        "MG",
+        "共同守卫有效期及无环"
+      ],
+      [
+        "PP",
+        "PR",
+        "明确0或1与恰好1"
+      ],
+      [
+        "PP",
+        "L",
+        "激活及变更共用版本栅栏"
+      ]
+    ],
+    "aggregate_ownership": [
+      "Employment根 / Hire、RegisterAssociation、EndEmployment",
+      "Assignment根含Record及经理关系 / Transfer、EndAssignment",
+      "Contract根含过程及后继 / RenewContract",
+      "PrimarySelection根 / SelectPrimary",
+      "目标根内不可变动作记录及更正链 / ExecuteEmploymentAction、CorrectActionRecord、CancelAction",
+      "EmploymentActionCatalog根含定义及关联 / PublishEmploymentActions",
+      "Assignment根内关系实体 / SetManager、EndManagerRelationship",
+      "PrimarySelectionPolicy配置根 / PublishPrimaryPolicy、ActivatePrimaryPolicy"
+    ]
+  },
+  {
+    "id": "M05",
+    "title": "招聘、录用与入职协同",
+    "entities": [
+      [
+        "Requisition",
+        "requisitionId＋版本，需求内逐个标识待招名额",
+        "用人需求可先发布并寻访、面试。按份额记录计划到岗日、规则采用、候选绑定和交接版本，落实预留后保存各段名额来源和回执。"
+      ],
+      [
+        "Candidate / Application",
+        "candidateId；applicationId＝候选人与需求的申请",
+        "同一候选多申请；与Person建立显式匹配"
+      ],
+      [
+        "OfferVersion",
+        "offerId＋revision",
+        "录用条款、接受状态及失效；接受不自动产生真实工资"
+      ],
+      [
+        "HireHandoff",
+        "handoffId＋sourceVersion",
+        "已接受且资料齐备的录用可供人事办理。保存交接版本，关联人员身份、预留及实际用工结果"
+      ],
+      [
+        "RecruitingProcessDefinition",
+        "processId＋版本",
+        "招聘阶段、评价要求及所需核准；申请记录采用明确过程版本"
+      ],
+      [
+        "Interview / Assessment",
+        "assessmentId＋applicationId＋过程版本",
+        "针对申请的面试、评价及证据；保留评价者、量表与所用过程版本"
+      ]
+    ],
+    "rules": [
+      "候选人和人员可在核对后关联，不能按姓名、电话直接合并。",
+      "候选人接受且资料齐备后自动形成可办交接。暂停登记前已接受的有效录用可按原约定报到，免占编段沿用录用依据。人事核实身份和到岗安排，一次保存。招聘自动取得用工结果，入职失败保留预留，重送查回同一结果。[暂停补员](../../../specs/m03/313-position-capacity-contract.md#m03-br-029)",
+      "录用薪酬是M09定薪的候选依据；必须保留来源和差异确认。",
+      "预留可提前办理，沿用需求依据。缩招在原单改人数，未绑定、未承诺且条件相同的普通空缺由系统逐份释放。存在不同去留安排时选择具体名额。缩招、撤销均同笔释放相应未用预留和专用额度，沿用原单原因。独立提前释放记录新的原因。",
+      "换人使旧绑定和交接失效。预留变更、换人与人事交接共用份额守卫。交接核对有效录用、绑定、岗位、人员类别及用途，逐段按实际占编性质使用预留，免占编段可无预留。",
+      "原员工拟离职或调出时即可寻访。双方确定一个到岗日后，招聘一次发出正式录用。核对绑定、拟任期和分段资格，沿用本份预留或按权限同笔取得。缺额或越权时保留草稿和原预留。改期从原录用一并调整。[提前补招与到岗承诺](../../../specs/m03/313-position-capacity-contract.md#m03-br-034)",
+      "已办未来调动决定原岗哪天释放、新岗哪天已有占用。真实招聘份额由同一员工经调动接替时，核对绑定、录用及任期并一次转换。纯内部接任由人事办理。[调出补缺与内部接任](../../../specs/m03/313-position-capacity-contract.md#m03-br-038)"
+    ],
+    "contract": "本域维护招聘需求，向 M03 办理编制预留，从 M16 获取岗位要求。候选经 M01 身份核对后向 M04 交接，薪酬由 M09 确认。",
+    "china": "求职资料目的、保留期和联系同意按场景管理；入职资格/合同核对与招聘评价分开。",
+    "checks": [
+      "候选人重复投递不重复创建Person；撤回Offer不删除已完成用工历史。",
+      "五份等价空缺缩至三份，重试仍只释放原两份。混有已承诺份额时保护录用。换人先成则旧交接拒绝，入职先成则旧份额不能换人。"
+    ],
+    "nodes": [
+      [
+        "R",
+        "Requisition 招聘需求",
+        "own"
+      ],
+      [
+        "C",
+        "Candidate 候选人",
+        "own"
+      ],
+      [
+        "A",
+        "Application 申请",
+        "own"
+      ],
+      [
+        "E",
+        "Interview / Assessment 面试评价",
+        "own"
+      ],
+      [
+        "O",
+        "OfferVersion 录用条款",
+        "own"
+      ],
+      [
+        "H",
+        "HireHandoff 入职交接",
+        "own"
+      ],
+      [
+        "CAP",
+        "M03 招聘预留",
+        "external"
+      ],
+      [
+        "PER",
+        "M01 Person 身份匹配",
+        "external"
+      ],
+      [
+        "STAFF",
+        "M04 Employment / Assignment",
+        "external"
+      ],
+      [
+        "COMP",
+        "M09 薪酬确认",
+        "external"
+      ],
+      [
+        "T",
+        "M16 岗位要求",
+        "external"
+      ],
+      [
+        "PROC",
+        "RecruitingProcessDefinition 招聘阶段与评价规则",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "C",
+        "A",
+        "一候选可多申请"
+      ],
+      [
+        "R",
+        "A",
+        "每份申请对应需求"
+      ],
+      [
+        "A",
+        "E",
+        "评价对象"
+      ],
+      [
+        "T",
+        "E",
+        "要求及尺度"
+      ],
+      [
+        "A",
+        "O",
+        "录用版本及核准"
+      ],
+      [
+        "O",
+        "H",
+        "已接受且资料齐备"
+      ],
+      [
+        "C",
+        "PER",
+        "显式核对关联"
+      ],
+      [
+        "PER",
+        "H",
+        "personId"
+      ],
+      [
+        "H",
+        "STAFF",
+        "人事保存入职或调动"
+      ],
+      [
+        "H",
+        "COMP",
+        "候选薪酬条款"
+      ],
+      [
+        "PROC",
+        "A",
+        "采用过程版本与阶段规则"
+      ],
+      [
+        "CAP",
+        "R",
+        "提前预留或随录用落实"
+      ],
+      [
+        "H",
+        "CAP",
+        "适用时同事务转占用"
+      ]
+    ],
+    "aggregate_ownership": [
+      "Requisition根 / OpenRequisition",
+      "Candidate与Application独立根 / Apply",
+      "Offer根含不可变版本 / ApproveOffer、AcceptOffer",
+      "HireHandoff根 / 随已接受录用与资料齐备生成，关联用工结果",
+      "RecruitingProcessDefinition根 / PublishRecruitingProcess",
+      "Application根内评价实体及不可变证据 / RecordInterviewAssessment"
+    ]
+  },
+  {
+    "id": "M06",
+    "title": "排班与工时制度",
+    "entities": [
+      [
+        "WorkPattern / Shift",
+        "patternId / shiftId＋版本",
+        "班段、休息段、跨午夜及工作量单位"
+      ],
+      [
+        "SchedulePublication / Candidate",
+        "publicationId＋版本；candidateId；引用assignmentId及实际时段",
+        "候选是未发布方案；发布固定班段、日历、制度及来源版本，当前有效引用由ScheduleBook登记"
+      ],
+      [
+        "WorkingTimePolicy",
+        "policyId＋地区/对象＋生效期",
+        "工时制度和周期、适用依据；不由员工标签猜测"
+      ],
+      [
+        "ScheduleGenerationProfile",
+        "profileId＋revision",
+        "排班生成约束与候选方案；候选不等于发布"
+      ],
+      [
+        "WorkingCalendar",
+        "calendarId＋版本＋地区/企业用途",
+        "法定日与企业工作安排分别引用来源；排班明确采用，不直接作为计薪分母"
+      ],
+      [
+        "ScheduleBook",
+        "客户＋assignmentId，稳定唯一；revision",
+        "按任职持有权威有效发布引用，守卫跨业务日、跨午夜及不同发布的兼容性；不把归属日当实际时段"
+      ]
+    ],
+    "rules": [
+      "计划班次不直接计入实际出勤；更改已采用班表需输出影响事项。",
+      "跨午夜以明确归属日及起止时刻表达；法定日历、公司安排和计薪分母各自解析。",
+      "任职变更切分适用范围，不能使用月底任职覆盖全月排班。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "发布、换班、撤销及日期更正共同锁定受影响ScheduleBook，按实际起止时刻校验所有跨日时段、工作/休息段、政策允许的叠加及来源版本；同事务写发布版本、登记修订和Outbox。新publicationId不能绕过同任职守卫。",
+      "发布替换只明确停用指定旧版本的对应区间，保留历史及消费者采用；已被工时/缺勤采用的变化产生影响并推进来源依赖版本，未重新核对的结果不能作为最新准备依据。候选生成不预占发布权，也不自动改变当前班表。",
+      "WorkingTimePolicy内TimeAttributionPolicy区分actualInterval、staffingBusinessDate、valuationDate；按任职时区零点及班段分段再计量。班次归属日不扩张任职有效区间，末日在职跨午夜尾段需明确新覆盖或待核（DDD §2.11）。"
+    ],
+    "contract": "消费M04任职及X02政策证据、引用目录和适用元数据；本域维护工作日历与工时制度，排班明确采用其版本，向M07/M08提供发布班表和工作时间基准。",
+    "china": "标准/综合/不定时等制度作为有依据的适用配置；加班资格与金额计算由相应规则确认。",
+    "checks": [
+      "夜班跨日不重复计算；月底换班保留原发布版本。",
+      "制度或日历缺失时阻止相关计算并提示缺项。",
+      "周五22:00到周六06:00与另一周六00:00到08:00并发发布，若政策不兼容只能一项成功；更换业务归属日不能绕过实际区间守卫。"
+    ],
+    "nodes": [
+      [
+        "H",
+        "M04 任职有效段",
+        "external"
+      ],
+      [
+        "P",
+        "工作模式与班次",
+        "own"
+      ],
+      [
+        "W",
+        "工时制度适用",
+        "own"
+      ],
+      [
+        "S",
+        "排班与发布版本",
+        "own"
+      ],
+      [
+        "C",
+        "换班及影响识别",
+        "process"
+      ],
+      [
+        "T",
+        "M07 实际工时",
+        "external"
+      ],
+      [
+        "A",
+        "M08 缺勤权益",
+        "external"
+      ],
+      [
+        "K",
+        "X02 政策证据与适用元数据",
+        "shared"
+      ],
+      [
+        "GEN",
+        "GenerationProfile 排班生成约束",
+        "own"
+      ],
+      [
+        "CAL",
+        "WorkingCalendar 工作日历与版本",
+        "own"
+      ],
+      [
+        "BOOK",
+        "ScheduleBook 任职唯一发布登记",
+        "own"
+      ],
+      [
+        "CAN",
+        "ScheduleCandidate 未发布方案",
+        "process"
+      ],
+      [
+        "ATTR",
+        "TimeAttributionPolicy 实际时段与两类归属日",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "H",
+        "S",
+        "排班对象"
+      ],
+      [
+        "P",
+        "S",
+        "班段"
+      ],
+      [
+        "K",
+        "W",
+        "适用依据"
+      ],
+      [
+        "W",
+        "S",
+        "制度约束"
+      ],
+      [
+        "S",
+        "C",
+        "发布后变更"
+      ],
+      [
+        "C",
+        "S",
+        "后继版本"
+      ],
+      [
+        "S",
+        "T",
+        "预期工时"
+      ],
+      [
+        "S",
+        "A",
+        "应工作时间"
+      ],
+      [
+        "K",
+        "CAL",
+        "政策来源引用"
+      ],
+      [
+        "CAL",
+        "S",
+        "明确采用日历版本"
+      ],
+      [
+        "GEN",
+        "CAN",
+        "采用生成规则版本"
+      ],
+      [
+        "CAN",
+        "S",
+        "共同守卫后明确发布"
+      ],
+      [
+        "BOOK",
+        "S",
+        "全部实际时段兼容性及版本守卫"
+      ],
+      [
+        "C",
+        "BOOK",
+        "同事务替换登记及Outbox"
+      ],
+      [
+        "W",
+        "ATTR",
+        "根内版本配置"
+      ],
+      [
+        "ATTR",
+        "S",
+        "覆盖与班次归属分别校验"
+      ]
+    ],
+    "aggregate_ownership": [
+      "WorkPattern与Shift独立配置根 / PublishWorkPattern、PublishShift",
+      "SchedulePublication根含不可变发布版本；Candidate为未发布方案 / PublishSchedule、SwapSchedule、CancelSchedule、CorrectSchedule",
+      "WorkingTimePolicy根 / PublishWorkingTimePolicy",
+      "独立配置根 / DefineGenerationProfile",
+      "WorkingCalendar根 / PublishWorkingCalendar",
+      "ScheduleBook根含发布成员引用 / PublishSchedule、SwapSchedule、CancelSchedule、CorrectSchedule"
+    ]
+  },
+  {
+    "id": "M07",
+    "title": "考勤与实际工时",
+    "entities": [
+      [
+        "TimeEvent / DailyCheck",
+        "eventId / assignmentId＋日期＋revision",
+        "原始事件与人工核对结果分开；设备重复事件去重"
+      ],
+      [
+        "TimeRecord",
+        "recordId＋任职＋时段",
+        "实际工时、分类及修订；不直接等同工资金额"
+      ],
+      [
+        "MonthlyClosing",
+        "closingId＋范围/期间＋版本",
+        "核对的人员清单、源事实与控制总额"
+      ],
+      [
+        "TimePublication / AdoptionReceiptIndex",
+        "closingId＋revision；consumerAdoptionRef",
+        "M07发布月结；M10独占TimeAdoption写权限，M07只保留可重建采用回执索引"
+      ],
+      [
+        "TimePolicy / Category / ConsumerSet / Profile / Rule / Layout",
+        "policyId＋版本；根内categoryId / consumerSetId / profileId",
+        "可复用分类条件、单位、消费者选择/释放要求、录入及校验规则；运行记录和发布采用确切版本"
+      ],
+      [
+        "TimeDelivery / SourceDefinition",
+        "sourceFactId＋版本＋consumerId＋用途；sourceSystemId / deviceId",
+        "投递固定分类/消费者策略及原始来源；设备身份和允许输入由本域政策登记，X05映射渠道，消费者采用仍归M10等"
+      ]
+    ],
+    "rules": [
+      "迟到、缺卡、加班等事实与薪资扣补规则分开；未知出勤不能默认全勤。",
+      "月结核对引用不再造一份金额输入；同一原事实进入工资只能有一条有效采用路径。",
+      "已封存工资保留原采用；考勤更正走新月结及追溯差额。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "TimeCategory是可复用分类条件而非一次工时的分类值；TimeConsumerSet固定消费者、选择范围、期间、核准/释放前提及合同版本。两者由TimePolicy版本化维护，分发保存实际采用版本，不以当前配置重新解释旧发布。",
+      "原始TimeEvent以sourceSystemId＋deviceId＋sourceEventKey去重并保留时区/原时刻；不同内容冲突待核。更正工时保留原事件与人工修订依据，不改原设备观察。",
+      "M08缺勤覆盖在M07只用于核对，不生成第二条缺勤计薪来源。工时/缺勤分发携带canonicalOriginRef＋计薪用途及源版本；M10按该业务来源去重而非deliveryId或closingId。月结仍只核对引用。",
+      "MonthlyClosing固定对象清单、期间、工时/缺勤来源及配置版本，缺失/冲突不得按零补全。源改变后生成待核影响；新的发布或工资准备必须重核依赖版本，旧已封存采用通过追溯保护。",
+      "原时间观察完整保留；无任职覆盖片段待核，不能丢弃、当零或移到班次归属日。历史任职更正触发确认/释放复核，已采用工资由M10形成后继；依赖改变同步阻断新的错误采用（DDD §2.11）。"
+    ],
+    "contract": "消费M04/M06/M08；把核对引用及明确的工时分类提供M10，金额输入按来源契约唯一生成。",
+    "china": "跨月、节假日、调休及不同工时制度必须携带政策上下文，不用单一isWorkday决定全部计薪。",
+    "checks": [
+      "补卡重放不增加工时；月结重复采用不增加工资。",
+      "已支付月份改考勤只形成影响/差额，不覆盖已支付结果。",
+      "分类条件或消费者集合从v1到v2，旧分发仍能解释v1；重复投递或月结重发不会增加工资来源。",
+      "同一缺勤在M08发布且在M07显示覆盖，工资只采用M08原始业务来源一次。",
+      "最后日在职22点至次日6点仅前2小时有原任职覆盖，后6小时未核实前不释放；离职日更正不改旧采用（AC03）。"
+    ],
+    "nodes": [
+      [
+        "S",
+        "M06 发布班表",
+        "external"
+      ],
+      [
+        "P",
+        "原始打卡与时间事件",
+        "own"
+      ],
+      [
+        "D",
+        "逐日异常核对",
+        "process"
+      ],
+      [
+        "T",
+        "实际工时与分类",
+        "own"
+      ],
+      [
+        "A",
+        "M08 缺勤事实",
+        "external"
+      ],
+      [
+        "C",
+        "月结清单及来源版本",
+        "own"
+      ],
+      [
+        "R",
+        "发布引用与投递记录",
+        "process"
+      ],
+      [
+        "Y",
+        "M10 工资准备",
+        "external"
+      ],
+      [
+        "PROF",
+        "TimePolicy Profile Rule Layout 版本化配置",
+        "own"
+      ],
+      [
+        "CAT",
+        "TimeCategory 可复用分类条件",
+        "own"
+      ],
+      [
+        "CONS",
+        "TimeConsumerSet 消费者与释放规则",
+        "own"
+      ],
+      [
+        "SPAN",
+        "任职边界分段 无覆盖片段待核",
+        "process"
+      ],
+      [
+        "EMP",
+        "M04 任职有效段及更正",
+        "external"
+      ]
+    ],
+    "edges": [
+      [
+        "S",
+        "D",
+        "预期时间"
+      ],
+      [
+        "P",
+        "D",
+        "原始事件"
+      ],
+      [
+        "A",
+        "D",
+        "请假覆盖"
+      ],
+      [
+        "D",
+        "T",
+        "确认工时"
+      ],
+      [
+        "T",
+        "C",
+        "期间核对"
+      ],
+      [
+        "A",
+        "C",
+        "缺勤核对"
+      ],
+      [
+        "C",
+        "R",
+        "源版本"
+      ],
+      [
+        "R",
+        "Y",
+        "E发布通知；M10 C采用"
+      ],
+      [
+        "PROF",
+        "D",
+        "校验依据"
+      ],
+      [
+        "PROF",
+        "T",
+        "分类转换规则"
+      ],
+      [
+        "PROF",
+        "CAT",
+        "本域定义及版本"
+      ],
+      [
+        "PROF",
+        "CONS",
+        "本域定义及版本"
+      ],
+      [
+        "CAT",
+        "T",
+        "按采用版本分类"
+      ],
+      [
+        "CONS",
+        "R",
+        "明确选择范围 核准和分发条件"
+      ],
+      [
+        "T",
+        "Y",
+        "原始来源唯一的工时输入"
+      ],
+      [
+        "EMP",
+        "SPAN",
+        "按时区及日界核对"
+      ],
+      [
+        "SPAN",
+        "T",
+        "明确覆盖才可确认释放"
+      ]
+    ],
+    "aggregate_ownership": [
+      "TimeEvent不可变事实；DailyCheck属TimeRecord / ConfirmTime",
+      "TimeRecord根 / CorrectTime",
+      "MonthlyClosing根 / PublishClosing",
+      "发布属MonthlyClosing；采用回执为派生索引 / RebuildIndex",
+      "TimePolicy配置根含可复用定义与关联 / PublishTimePolicy、RetireTimePolicy",
+      "Delivery归TimeRecord或MonthlyClosing源根；SourceDefinition属TimePolicy / PublishTime、RegisterTimeSource"
+    ]
+  },
+  {
+    "id": "M08",
+    "title": "休假、缺勤与权益账户",
+    "entities": [
+      [
+        "AbsencePlan / Eligibility",
+        "planId＋版本；evaluationId＋主体/期间",
+        "计划定义BalanceTracked、Qualification或NoEntitlement模式及规则；资格评估不可变，采用目录/计划与来源版本"
+      ],
+      [
+        "EntitlementAccount / GrantLot / Entry / ConsumptionAllocation",
+        "personId＋planId＋规范权益范围；lotId / entryId / allocationId",
+        "账户持有授予批次、原有效期、到期/结转、预留和消费分配；取消必须回到原批次，不把到期额度变当前可用额"
+      ],
+      [
+        "LeaveRequest / AbsenceEvent",
+        "requestId＋personId；明确assignmentCoverage及有效时段",
+        "请求可覆盖一个或多个明确任职；决定、生效缺勤、取消和更正分别留证，确认时共同守卫所有覆盖时间线"
+      ],
+      [
+        "AbsenceCalculation",
+        "resultId＋规则版本＋来源",
+        "数量、单位、期间、待遇比例/分类、权益分配及来源版本；M10负责工资金额，不重复发布M07覆盖"
+      ],
+      [
+        "AbsenceCatalog / Type / Reason / Category",
+        "catalogId＋版本；typeId / reasonId / categoryId",
+        "可复用假种、原因及分类；Type关联允许原因、计划优先级和兼容性规则，支持一假种引用多计划"
+      ],
+      [
+        "AbsenceEnrollment",
+        "personId＋planId＋规范权益范围；enrollmentId及有效期",
+        "明确个人参与计划和所用资格结果；不以人员入职自动推导全部计划或虚构余额"
+      ],
+      [
+        "AbsenceTimeline",
+        "客户＋assignmentId，稳定唯一；revision",
+        "所有已确认缺勤覆盖的权威引用，跨计划共同校验实际时段和政策兼容性；不重复拥有请求事实"
+      ]
+    ],
+    "rules": [
+      "权益按授予批次/有效期和不可变流水计算；取消以原ConsumptionAllocation身份冲销，原批次已到期则仍不可用，不删除已采用消耗。",
+      "资格依据、工作时间和可用余额均要按请求期间解析；计划变更不改写原授予依据。",
+      "是否带薪、可休时长与工资扣减不是同一个字段；工资侧只接收约定的结果。",
+      "ConfirmAbsence在同一WorkTime短事务守卫任职时间线、全部适用账户和请求版本，保存确认缺勤、必要资源变化与Outbox；取消/更正共用范围。只有BalanceTracked模式要求账户余额，其他模式不创建虚构授予或消耗。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "AbsenceCatalog与AbsencePlan分别发布/停用。可复用Reason关联多个Type，Category用于归组；Type按顺序或明确并行规则引用多个Plan。新请求采用有效目录、原因、计划及Enrollment/Eligibility版本，旧记录不被定义更新重释。",
+      "BalanceTracked按有效授予批次消耗；Qualification按资格/期间产生待遇比例或分类；NoEntitlement登记无余额缺勤。三种模式都核验对象、实际时段、规则、必要决定和冲突；是否带薪不能由是否存在余额推断。",
+      "AbsenceTimeline按任职统一覆盖全部假种和计划；多个任职同时覆盖则固定顺序锁全部时间线、账户和请求，按实际时段及目录兼容规则共同决定重叠。政策允许的并存要明确待遇组合和来源，不能把两项充足余额当作兼容证据。",
+      "授予采用稳定来源/期间身份，修订额度按前后差额及CAS处理。减少至低于已消费/预留时拒绝整笔调整，保留原账并发起有依据的更正；不静默删除历史消费。结转关联原批次出账与后继入账同事务完成，重试不重复授予。",
+      "取消次年查询到的去年消费，仍返回原grantLot及有效期；过期量计入历史恢复/到期轨迹，不恢复本期可用额。需要重新授予时必须独立核准新业务事实，不能借取消暗中延长期限。",
+      "资格通过及DecisionRecord批准不自动等于ConfirmAbsence成功；确认时重核所有版本与守卫。未来已确认缺勤按有效区间展示和占用相应批次，生效日不再次扣减；拒绝/未确认请求不产生确认缺勤。"
+    ],
+    "contract": "消费M04人员关系、M06工作时间；向M07提供缺勤覆盖，向M10供唯一的缺勤工资影响来源。",
+    "china": "法定年假及地方假种、医疗/育儿等政策按适用对象和期间核验；企业增加待遇独立记录。",
+    "checks": [
+      "并发申请不能透支同一余额；撤销更正有可追踪流水。",
+      "跨政策生效日和跨月请假按规则分段；已采用结果保留。",
+      "无余额无薪假无需虚构账户也能办理；仍受资格、授权、决定及冲突检查。",
+      "同一时段分别用年假和另一计划并发确认，必须竞争同一AbsenceTimeline并按兼容政策裁决。",
+      "去年到期批次的消费次年取消不增加本年可用额度；缩减已消费授予整笔拒绝；结转重试只入账一次。"
+    ],
+    "nodes": [
+      [
+        "H",
+        "M04 关系及资格事实",
+        "external"
+      ],
+      [
+        "P",
+        "AbsencePlan 模式与资格评估",
+        "own"
+      ],
+      [
+        "B",
+        "EntitlementAccount 批次 流水及原消费分配",
+        "own"
+      ],
+      [
+        "R",
+        "申请与缺勤事实",
+        "own"
+      ],
+      [
+        "C",
+        "AbsenceCalculation 数量 比例与来源",
+        "process"
+      ],
+      [
+        "S",
+        "M06 工作时间",
+        "external"
+      ],
+      [
+        "T",
+        "M07 考勤核对",
+        "external"
+      ],
+      [
+        "Y",
+        "M10 工资采用",
+        "external"
+      ],
+      [
+        "CAT",
+        "AbsenceCatalog 假种 原因 分类与计划关联",
+        "own"
+      ],
+      [
+        "ENR",
+        "AbsenceEnrollment 参与及资格采用",
+        "own"
+      ],
+      [
+        "TL",
+        "AbsenceTimeline 跨计划覆盖守卫",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "H",
+        "P",
+        "适用对象"
+      ],
+      [
+        "R",
+        "C",
+        "已确认缺勤"
+      ],
+      [
+        "S",
+        "C",
+        "应工作时间"
+      ],
+      [
+        "R",
+        "T",
+        "缺勤覆盖"
+      ],
+      [
+        "CAT",
+        "P",
+        "假种按优先级引用计划"
+      ],
+      [
+        "CAT",
+        "R",
+        "采用假种 原因与兼容性版本"
+      ],
+      [
+        "P",
+        "ENR",
+        "明确参与及资格依据"
+      ],
+      [
+        "ENR",
+        "R",
+        "所有模式均校验参与及资格"
+      ],
+      [
+        "P",
+        "B",
+        "仅余额型的授予规则"
+      ],
+      [
+        "B",
+        "R",
+        "仅余额型联合守卫"
+      ],
+      [
+        "TL",
+        "R",
+        "全部任职及计划的共同冲突守卫"
+      ],
+      [
+        "C",
+        "B",
+        "余额型消费或按原分配冲销"
+      ],
+      [
+        "C",
+        "Y",
+        "唯一缺勤来源 数量与待遇分类"
+      ]
+    ],
+    "aggregate_ownership": [
+      "AbsencePlan配置根；Eligibility不可变评估 / PublishAbsencePlan、RetireAbsencePlan、EvaluateEligibility",
+      "EntitlementAccount根含授予批次/流水/分配 / Grant、Reserve、Consume、ReverseConsumption、Expire、CarryForward、AdjustGrant",
+      "AbsenceRequest根含Event、决定及更正 / SubmitAbsence、DecideAbsence、ConfirmAbsence、CancelAbsence、CorrectAbsence",
+      "AbsenceRequest下不可变结果 / CalculateAbsence",
+      "AbsenceCatalog配置根含定义和关联 / PublishAbsenceCatalog、RetireAbsenceCatalog",
+      "AbsenceEnrollment根 / EnrollAbsencePlan、EndAbsenceEnrollment",
+      "AbsenceTimeline根含确认覆盖引用 / ConfirmAbsence、CancelAbsence、CorrectAbsence"
+    ]
+  },
+  {
+    "id": "M09",
+    "title": "薪酬体系、定薪与激励",
+    "entities": [
+      [
+        "CompensationPlan / GradeRate",
+        "planId；gradeId＋币种/频率/有效期",
+        "薪酬结构和级别金额/区间；Grade身份来自M03"
+      ],
+      [
+        "CompensationAward",
+        "awardId＋personId/assignmentId＋revision",
+        "定薪调薪、固定/浮动授予；依据与预算记录"
+      ],
+      [
+        "AwardDelivery",
+        "deliveryId＋awardRevision＋用途",
+        "固定授予口径、频率、已应用步骤及版本；下发归M09，实际工资期运算/采用归M10"
+      ]
+    ],
+    "rules": [
+      "金额必须含币种、频率、单位和舍入规则；预算报价与真实授予分别标识。",
+      "薪酬授予引用任职、费率、绩效等来源版本；来源变化只产生待复核影响。",
+      "同一授予不得同时以固定条款和一次性输入重复进入工资；计薪分配由M10承担。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "AwardDelivery 交付适用于该任职的约定金额或小时单价、币种、频率、单位及来源版本。工资域按实际工资期办理换算和期间分摊，预算报价单独维护（DDD §2.12）。"
+    ],
+    "contract": "从M03获取职级/职位、M17获取确认绩效；向M10提供已确认授予，向M03提供有标记的预算报价。",
+    "china": "基本工资、津贴、奖金、年薪拆分及非现金待遇分别表达；税务所得分类由M11判断。",
+    "checks": [
+      "录用条款改动不直接覆盖已生效工资；跨月调薪可分段并追溯。",
+      "模拟来源不能静默提升为已确认事实。",
+      "约定年额 60000 分 12 期或月额 5000，覆盖 10/20 个工作日各得 2500.00。每个结果可追溯至实际采用的授予版本（AC05）。"
+    ],
+    "nodes": [
+      [
+        "G",
+        "M03 Grade / Ladder 级别结构",
+        "external"
+      ],
+      [
+        "P",
+        "CompensationPlan 薪酬计划",
+        "own"
+      ],
+      [
+        "R",
+        "GradeRate 费率及区间",
+        "own"
+      ],
+      [
+        "A",
+        "CompensationAward 个人授予",
+        "own"
+      ],
+      [
+        "D",
+        "AwardDelivery 下发记录",
+        "own"
+      ],
+      [
+        "S",
+        "M01 Person / M04 Assignment 授予对象",
+        "external"
+      ],
+      [
+        "F",
+        "M17 发布绩效 / M05 Offer 依据",
+        "external"
+      ],
+      [
+        "Y",
+        "M10 条款及输入采用",
+        "external"
+      ],
+      [
+        "B",
+        "M03 预算",
+        "external"
+      ],
+      [
+        "BASIS",
+        "DeliveryBasis 约定金额 单位 频率",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "G",
+        "R",
+        "级别身份"
+      ],
+      [
+        "P",
+        "R",
+        "计划金额规则"
+      ],
+      [
+        "R",
+        "A",
+        "金额 币种 频率版本"
+      ],
+      [
+        "S",
+        "A",
+        "明确人员或任职用途"
+      ],
+      [
+        "F",
+        "A",
+        "来源与差异核准"
+      ],
+      [
+        "A",
+        "D",
+        "确认版本及唯一用途"
+      ],
+      [
+        "D",
+        "Y",
+        "明确采用 不重复输入"
+      ],
+      [
+        "R",
+        "B",
+        "报价供预算参考"
+      ],
+      [
+        "D",
+        "BASIS",
+        "不可变载荷"
+      ],
+      [
+        "BASIS",
+        "Y",
+        "一次转换及分摊 逐步留证"
+      ]
+    ],
+    "aggregate_ownership": [
+      "CompensationPlan与GradeRate独立根 / PublishPlan、PublishRate",
+      "Award根 / ConfirmAward",
+      "Award内Delivery实体 / DeliverAward"
+    ]
+  },
+  {
+    "id": "M10",
+    "title": "工资核算、累计与追溯",
+    "entities": [
+      [
+        "PayrollContext",
+        "contextId＋personId＋薪资责任用途＋有效期",
+        "人员与薪资责任主体的独立计薪上下文；可汇集多个任职成员，不作为税务或参缴累计键"
+      ],
+      [
+        "PayrollMembership / Allocation",
+        "membershipId＋assignmentId＋contextId＋definitionId＋有效期",
+        "成员拥有分配事实；登记到唯一PayrollAllocationSet，同用途跨成员的重叠/总量通过共同事务守卫"
+      ],
+      [
+        "PayrollDefinition / Calendar",
+        "definitionId；calendarId＋period",
+        "周期、期间、计薪/支付日；RunType和报告归并范围为PayrollDefinition内版本化值定义"
+      ],
+      [
+        "Element / PayrollInput / CalculationRule",
+        "elementId；inputId及entryId＋来源版本；ruleId＋版本",
+        "Element拥有分类和输入规范；PayrollInput拥有Entry/采用；CalculationRule拥有计算值及查表版本，引用M09费率"
+      ],
+      [
+        "PayrollRun / Result / Balance",
+        "runId＋resultVersion；累计键＋维度",
+        "准备、计算、核对、封存；运行结果和累计历史"
+      ],
+      [
+        "RetroCase",
+        "caseId＋原结果/更正来源",
+        "差额、冲销及后继，不重写原已支付事实"
+      ],
+      [
+        "TimeAdoption / PayTermAdoption",
+        "consumerId＋sourceFactId＋用途＋版本",
+        "由M10保存采用和去重；来源域只有发布/下发记录"
+      ],
+      [
+        "PayslipPublication",
+        "publicationId＋resultVersion＋scope",
+        "工资单草稿、定时发布、撤回、替代及审计；M20只读投影"
+      ],
+      [
+        "PayableSourceHead",
+        "payableId＋币种＋sourceRevision",
+        "连续结果/更正/取消变动的权威来源头；M14采用水位必须追平才可占用或领取"
+      ],
+      [
+        "PayrollFlowDefinition / Instance",
+        "flowId＋版本；instanceId",
+        "业务步骤定义及一次运行；技术尝试由X04执行，结果由PayrollResult维护"
+      ],
+      [
+        "BalanceDefinition / Dimension / Group",
+        "definitionId＋版本；groupId",
+        "工资累计指标、维度及分组；结果和流水固定采用的定义版本，新版本不重释旧金额"
+      ],
+      [
+        "PayrollAllocationSet",
+        "客户＋assignmentId＋计薪用途，稳定唯一",
+        "权威成员集合及规则版本；跨context/definition共同守卫所有有效分配，金额仍由Membership维护"
+      ],
+      [
+        "PayrollImpactPolicy",
+        "policyId＋版本；来源类型/字段/变化类型/项目及日期范围",
+        "选择、归组来源和规则变化，形成分段/追溯影响事项；策略不是来源通知或RetroCase实例"
+      ],
+      [
+        "ResultSeriesHead",
+        "seriesId＝原始结果单元身份；currentFullVersion＋revision",
+        "同一计算责任/期间/币种结果系列的权威完整金额向量及后继指针；多次更正始终相对当前确认全量求差"
+      ]
+    ],
+    "rules": [
+      "计算使用冻结来源清单、规则版本及明确舍入；缺失法律或关键输入要阻断，不能按0补齐。",
+      "同一工资事实只采用一次；核对月结不再次生成缺勤/加班金额。",
+      "累计按人员、责任主体、年度及指标定义分域；工资累计不能冒充税务累计。",
+      "封存结果不可原地改写；追溯必须指出原结果、受影响区间和差额用途。",
+      "封存协调器同时提交Payroll结果、M11 TaxCommitment、M12实际代扣消费及各自Outbox；任一守卫失败均回滚。累计确认与付款按M11政策合同独立办理。",
+      "发布工资单独立于封存和付款；读取需Published、visibleFrom和X03当前字段权限。撤回/替代同步阻断旧常规内容读取。",
+      "预计前项累计支持计划/模拟，后项通过原TaxCommitment的SealNextItem续办，实际锚点核实前不形成可执行/可发布工资；历史封存件保持hold，正式后继重新封存。",
+      "PayrollContext归集同一人员在薪资责任用途下的计薪成员；PayrollMembership连接任职、上下文和工资定义。税务及参缴累计键独立由M11/M12确定。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "每任职及计薪用途只有一个稳定PayrollAllocationSet。新建、转组、终结和更正先锁受影响集合及全部成员，以可比单位按所有日期段校验重叠/总量，再同事务写成员、集合修订和Outbox；不同membershipId或contextId不能绕过范围守卫。",
+      "配置发布与业务执行分别有端口：Element、CalculationRule（含参数/查表）、Calendar、FlowDefinition、BalanceDefinition/Group独立版本化发布，输入/运行固定采用版本；发布不直接执行或重释已封存结果。",
+      "PayrollImpactPolicy选择来源字段、变更类型、有效期及项目范围；Inbox保留全部合法观察，策略仅决定生成何种影响案/待核原因，不能删除撤销事实或绕过同步依赖栅栏。策略变化显式评估历史影响，不静默重跑已结工资。",
+      "ResultSeriesHead通过稳定原结果单元识别同一更正系列。封存/更正/取消均CAS当前完整版本：差额＝新完整向量－当前完整向量，与Result、Balance流水、PayableSourceHead及Outbox同事务提交；新caseId不能另起基准。",
+      "100→120已确认后再到130只追加10；两个不同更正案同时基于120时只一个推进head，另一个重评。撤销早期更正也先从当前head计算有依据的后继，不能独立减回旧差额。",
+      "配置根通过本域Retire命令结束新采用的有效期或发布替代版本；已启动FlowInstance、输入和结果仍保留原版本供解释，继续执行需重核当前依赖守卫，停用不删除历史定义。",
+      "CalculationRule 采用 ConversionProrationPolicy 的频率和单位换算、期间分摊及舍入顺序。固定工资使用完整参考期分母，小时单价按确认的计薪小时计量（DDD §2.12，AC05）。",
+      "DependencyManifest固定来源/授予/任职、规则查表、政策、日历/标准工时、分摊、汇率（适用时）、舍入和引擎合同版本；可解释不等于旧算法永久可重跑。缺依赖明确报告，不能只存hash（DDD §6.1）。",
+      "来源插入/截断/撤销按PayrollImpactPolicy形成去重RetroCase/ImpactAssessment；无影响、待核、需处理、候选更新/后继形成及关闭保存政策和证据。Inbox/Ack不等于闭环；新封存同步校验依赖（DDD §6.2）。",
+      "采用标准小时法时，覆盖小时和完整参考期小时取同一任职日历。例如约定月额 5000，覆盖 80 小时、全期 160 小时，结果为 2500。按段保留日历与分母（AC05）。"
+    ],
+    "contract": "消费来源公开合同，自有ACL、采用及去重；通过M11/M12公开写端口共享短事务封存，输出唯一应付/成本变动。工资单由本域发布，M20经受控查询展示。",
+    "china": "计薪期间、所得归属期、支付日、申报期分别记录；跨年追溯交给M11按政策路由。",
+    "checks": [
+      "相同冻结输入确定性重算；撤回和重复采用不改变已封存结果。",
+      "已付款后更正只产生有前后继的差额，不重复支付原金额。",
+      "两次v7税评估不能封存两个并行可付款结果；第二次等待后重新评估。",
+      "封存未发布不可见；已发布未付款允许；撤回后旧URL和缓存不能绕过发布守卫。",
+      "同任职、日期段及用途上限100%，并发新增两份不同上下文的60%分配只能一份成功；跨段变更及反向更正也经同一集合守卫。",
+      "发布新追溯策略不抹去旧影响记录；未选择的变化仍可按显式决定建案，关键来源失效仍阻断执行。",
+      "原100、首次120、再次130，对外累计变动仅100+20+10；并发更正、零差额及中间更正撤销都保留系列链及当前基准。",
+      "晋升/授予通知已收但未评估时，Journey不得报工资处理完成；案关闭后再更正保留原结论并关联后继案（AC01/AC07）。"
+    ],
+    "nodes": [
+      [
+        "CTX",
+        "PayrollContext 人员及薪资责任上下文",
+        "own"
+      ],
+      [
+        "A",
+        "PayrollMembership 计薪归属",
+        "own"
+      ],
+      [
+        "E",
+        "PayrollInput / ElementEntry 采用与输入",
+        "own"
+      ],
+      [
+        "R",
+        "PayrollResult 不可变结果及封存",
+        "own"
+      ],
+      [
+        "B",
+        "PayrollBalance 工资累计",
+        "own"
+      ],
+      [
+        "P",
+        "PayslipPublication 工资单发布",
+        "own"
+      ],
+      [
+        "D",
+        "RetroCase 追溯与后继差额",
+        "own"
+      ],
+      [
+        "I",
+        "M01 M02 M04 身份及责任用途",
+        "external"
+      ],
+      [
+        "SRC",
+        "M07 M08 M09 M13 来源版本",
+        "external"
+      ],
+      [
+        "T",
+        "M11 税评估与承诺",
+        "external"
+      ],
+      [
+        "C",
+        "M12 代扣义务与消费",
+        "external"
+      ],
+      [
+        "O",
+        "M14 应付 / M15 成本",
+        "external"
+      ],
+      [
+        "S",
+        "M20 受控工资单视图",
+        "external"
+      ],
+      [
+        "FLOW",
+        "PayrollFlowInstance 本次业务运行",
+        "own"
+      ],
+      [
+        "BD",
+        "BalanceDefinition / Dimension 累计定义及维度",
+        "own"
+      ],
+      [
+        "SET",
+        "PayrollAllocationSet 任职及用途的共同分配守卫",
+        "own"
+      ],
+      [
+        "DEF",
+        "PayrollDefinition / Calendar 周期与运行类型",
+        "own"
+      ],
+      [
+        "RULE",
+        "Element / CalculationRule 项目 参数 查表与规则",
+        "own"
+      ],
+      [
+        "FLOWDEF",
+        "PayrollFlowDefinition 版本化步骤定义",
+        "own"
+      ],
+      [
+        "IMPACT",
+        "PayrollImpactPolicy 变更选择与影响规则",
+        "own"
+      ],
+      [
+        "HEAD",
+        "ResultSeriesHead 当前完整结果基准",
+        "own"
+      ],
+      [
+        "CONV",
+        "ConversionProrationPolicy 口径与单次运算",
+        "own"
+      ],
+      [
+        "DEPS",
+        "DependencyManifest 来源 规则 日历 舍入",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "I",
+        "CTX",
+        "按用途建立"
+      ],
+      [
+        "CTX",
+        "A",
+        "计薪成员"
+      ],
+      [
+        "E",
+        "T",
+        "Q税评估"
+      ],
+      [
+        "T",
+        "R",
+        "C同事务承诺"
+      ],
+      [
+        "C",
+        "R",
+        "C同事务扣收"
+      ],
+      [
+        "E",
+        "R",
+        "C封存结果单元"
+      ],
+      [
+        "R",
+        "B",
+        "工资指标确认"
+      ],
+      [
+        "R",
+        "O",
+        "E唯一差额来源"
+      ],
+      [
+        "R",
+        "P",
+        "C独立发布"
+      ],
+      [
+        "P",
+        "S",
+        "Q状态与当前权限"
+      ],
+      [
+        "R",
+        "D",
+        "C更正案"
+      ],
+      [
+        "D",
+        "E",
+        "后继准备"
+      ],
+      [
+        "FLOW",
+        "R",
+        "步骤引用及完成证据 不代写结果"
+      ],
+      [
+        "BD",
+        "B",
+        "冻结定义版本及计量口径"
+      ],
+      [
+        "SET",
+        "A",
+        "C所有成员及日期段同事务校验"
+      ],
+      [
+        "SRC",
+        "E",
+        "Q来源 C明确采用"
+      ],
+      [
+        "A",
+        "E",
+        "责任范围与有效归属"
+      ],
+      [
+        "DEF",
+        "E",
+        "期间及配置版本"
+      ],
+      [
+        "RULE",
+        "E",
+        "输入规范及计算版本"
+      ],
+      [
+        "FLOWDEF",
+        "FLOW",
+        "启动时采用定义版本"
+      ],
+      [
+        "IMPACT",
+        "D",
+        "选择来源变化形成影响案"
+      ],
+      [
+        "R",
+        "HEAD",
+        "封存同事务CAS推进完整基准"
+      ],
+      [
+        "HEAD",
+        "D",
+        "基于当前全量求后继差额"
+      ],
+      [
+        "RULE",
+        "CONV",
+        "根内规则版本"
+      ],
+      [
+        "CONV",
+        "R",
+        "分段 换算 分摊 舍入"
+      ],
+      [
+        "R",
+        "DEPS",
+        "封存精确依赖及轨迹"
+      ]
+    ],
+    "aggregate_ownership": [
+      "PayrollContext根 / EstablishPayrollContext",
+      "PayrollMembership根含Allocation，仅经集合协调入口 / AssignPayroll、EndPayrollMembership、CorrectAllocation",
+      "PayrollDefinition与Calendar独立根 / PublishPayrollDefinition、PublishPayrollCalendar",
+      "Element与CalculationRule独立配置根；PayrollInput根含Entry / PublishElement、PublishCalculationRule、AdoptInput、RetirePayrollConfiguration",
+      "PayrollRun只持结果引用；PayrollResult与PayrollBalance独立根 / SealResult",
+      "RetroCase根 / OpenRetroCase",
+      "消费者采用属输入或结果根 / AdoptSource",
+      "PayslipPublication根 / PublishPayslip",
+      "PayableSourceHead根 / AppendPayableMovement",
+      "FlowDefinition与FlowInstance独立根 / PublishPayrollFlow、StartPayrollFlow、RetirePayrollFlow",
+      "BalanceDefinition与BalanceGroup配置根；Dimension为定义内值类型 / PublishBalanceDefinition、PublishBalanceGroup",
+      "PayrollAllocationSet根含成员引用与规则依据 / AssignPayroll、EndPayrollMembership、CorrectAllocation",
+      "PayrollImpactPolicy配置根 / PublishPayrollImpactPolicy",
+      "ResultSeriesHead根含当前完整结果引用 / SealResult、CorrectResult、CancelResult"
+    ]
+  },
+  {
+    "id": "M11",
+    "title": "个人所得税扣缴与申报",
+    "entities": [
+      [
+        "WithholdingRegistration",
+        "registrationId＋entityId＋期间",
+        "扣缴主体登记及税务范围"
+      ],
+      [
+        "TaxIdentity / Deduction",
+        "personId＋适用期间＋revision",
+        "居民判定及证据、扣除信息、选择和外部来源"
+      ],
+      [
+        "TaxLedger / TaxAssessment",
+        "人员＋扣缴范围＋税年/所得类/币种；assessmentId",
+        "账本含确认/冲销流水；不可变评估保存baseRevision和输入依赖"
+      ],
+      [
+        "Filing / TaxMovement",
+        "filingId＋批次/更正链；movementId",
+        "申报、回执、缴退税和对账；申报接受不等于资金到账"
+      ],
+      [
+        "TaxCommitment / IncomeItemPlan / DispatchPermit",
+        "commitmentId；incomeItemId；instructionId",
+        "成员逐项确认；执行许可按用途关联所得成员、确认锚点或返还分类，不要求每种用途都有未决成员"
+      ],
+      [
+        "TaxPolicy / IncomeEvidence",
+        "policyId＋版本；来源业务身份",
+        "本域可执行税务规则引用X02证据；所得输入为采用快照，确认所得流水仍归TaxLedger"
+      ],
+      [
+        "PaymentTreatmentDecision",
+        "taxLedgerId＋decisionId＋来源/政策版本",
+        "非所得超收返还的用途决定、允许分配及撤销链；余额本身不证明分类"
+      ],
+      [
+        "TaxRemittanceAccount",
+        "扣缴登记＋税务机关＋税种用途＋币种；期间属行维度",
+        "来源唯一税债/更正、逐行应付、活动占用、净已付；不复用员工工资应付"
+      ],
+      [
+        "TaxRemittanceInstruction / SettlementAuthorization / SettlementInvestigation",
+        "instructionId＋账户/分配/模式/载荷版本",
+        "本域授权、直接执行或排他财务委托、unknown核查；TaxMovement独立记录已证实缴退资金"
+      ]
+    ],
+    "rules": [
+      "税收身份不由国籍或任职类型直接推导；未知事实须核对。",
+      "累计范围和外部历史引入按规则明确；跨雇主调动不无条件合并累计。",
+      "预扣、申报、实缴/退税和年度汇算使用不同对象；员工年度汇算不冒充企业申报任务。",
+      "计算更正保留原评估/申报链及政策版本；跨年不套用当前规则覆写过去。",
+      "模拟评估不更新累计；封存工资时CAS账本revision并占用未决承诺，与M10结果同事务提交。来源失效置hold，不原地改净额。",
+      "所得/扣缴确认按政策证据触发，保留唯一来源身份及冲销链；pending支付后的unknown不得释放占位；recognized锚点不因后续正常累计推进而失效。",
+      "AcquireDispatchPermit与M14领取CAS共享事务和TaxLedger守卫；取消先提交阻止领取，领取先提交则取消只能hold。逐项确认不提前释放多成员承诺，部分实现依政策分段并在原承诺中重评余项。",
+      "领取依赖后项前，必须核对predecessorItemIds的实际确认锚点、执行终结及评估版本；前驱pending/claimed/unknown阻断。预计前项只供模拟，取消或部分确认后先在原承诺内重评再封存/授权后项。",
+      "执行许可分realizePendingIncome、settleRecognizedIncome及returnRecoveryExcess。已确认所得结算核验原有效锚点；非所得超收返还核验本域分类决定及不可变回收/更正链，允许原所得已冲销，但不得创建新所得或形成通用免税出款。三者都与M14领取共用守卫。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "税款机构资金归本域：TaxRemittanceAccount采用确认税债的唯一变动；executionMode默认externalFinance，与direct排他且共用账户守卫。精确核准/领取、部分回执/退款按DDD §3.2办理；不用员工所得DispatchPermit冒充缴税授权。",
+      "unknown按原身份查询或人工证据核查，超时只升级；税务前驱及机构占用由本域分别决定，X04告警不释放。回执与义务更正分别记账（DDD §3.3，AC04/AC09）。",
+      "资金事实按渠道/账户及稳定资金事件键唯一，跨观察、指令、模式不换现金身份；未分配资金后来归单只改分配，不二次计现金，Movement共同守卫分配合计。渠道无可靠身份先待核（DDD §3.2，AC04）。",
+      "机构领取经M14公开端口先锁PayerAccount，校验PayerExecutionHold并登记ClaimRef，再守卫本域账户/来源/指令；未知责任出款与公共阻塞同事务登记，定位/解除无空窗。资金余额仍归本域（DDD §3.2，AC09）。"
+    ],
+    "contract": "消费M01必要身份、M04关系、M10所得结果、M13福利事实；向M10提供税额评估，向申报适配器和M15提供确认记录。 M14回收/返还来源经本域核定用途，执行许可与付款领取同事务提交。",
+    "china": "居民/非居民、工资薪金/劳务等所得、奖金及特殊所得分别确定适用政策；目录先保留未知项。",
+    "checks": [
+      "同一纳税人多关系不重复减除；同年跨雇主按独立规则核验。",
+      "申报未知结果先查询对账，重复回执只应用一次。",
+      "两个运行基于v7，先确认v8后另一个必须重算；取消、更改支付日和跨年更正有独立后继。",
+      "所得A已确认而B unknown，承诺保持open；B取消或重评不能使新C抢入，也不能重计A。",
+      "A仍unknown时B不得领取；A明确未执行后，B按不含A的实际累计重评，不能先付后用RetroCase补救。",
+      "A付100并确认后退40，若原确认仍有效则重付40；全额退回、后来C累计推进也不重计A；原确认被冲销则不得使用结算分支。",
+      "原应付及所得合法冲销、员工归还100后银行又退20，仅按有效非所得返还分类退20；不复活所得、不新建pending成员或重复返还。"
+    ],
+    "nodes": [
+      [
+        "REG",
+        "WithholdingRegistration 扣缴登记",
+        "own"
+      ],
+      [
+        "ID",
+        "TaxIdentity / Deduction 税务身份与扣除",
+        "own"
+      ],
+      [
+        "POL",
+        "TaxPolicy 所得规则及有效版本",
+        "own"
+      ],
+      [
+        "INC",
+        "IncomeEvidence 所得来源及性质",
+        "own"
+      ],
+      [
+        "L",
+        "TaxLedger 独立累计范围与流水",
+        "own"
+      ],
+      [
+        "A",
+        "TaxAssessment 不可变评估",
+        "own"
+      ],
+      [
+        "K",
+        "TaxCommitment 有序所得成员",
+        "own"
+      ],
+      [
+        "F",
+        "TaxFiling / Correction 申报更正",
+        "own"
+      ],
+      [
+        "CASH",
+        "TaxMovement 唯一资金事实与分配",
+        "own"
+      ],
+      [
+        "S",
+        "M01 M04 M10 M13 身份及所得来源",
+        "external"
+      ],
+      [
+        "Y",
+        "M10 结果封存",
+        "external"
+      ],
+      [
+        "P",
+        "M14 支付证据及领取守卫",
+        "external"
+      ],
+      [
+        "X",
+        "X05 申报及资金观察",
+        "shared"
+      ],
+      [
+        "XP",
+        "X02 政策证据及适用元数据",
+        "shared"
+      ],
+      [
+        "PER",
+        "PaymentTreatmentDecision / DispatchPermit 用途与许可",
+        "own"
+      ],
+      [
+        "AP",
+        "TaxRemittanceAccount 税债及机构应付",
+        "own"
+      ],
+      [
+        "SI",
+        "TaxRemittanceInstruction 核准与排他执行",
+        "own"
+      ],
+      [
+        "PAYER",
+        "M14 PayerAccount 执行准入守卫",
+        "external"
+      ]
+    ],
+    "edges": [
+      [
+        "S",
+        "ID",
+        "身份及扣除依据"
+      ],
+      [
+        "S",
+        "INC",
+        "来源唯一所得事实"
+      ],
+      [
+        "REG",
+        "L",
+        "扣缴范围"
+      ],
+      [
+        "ID",
+        "A",
+        "身份及扣除"
+      ],
+      [
+        "INC",
+        "A",
+        "所得分类及期间"
+      ],
+      [
+        "XP",
+        "POL",
+        "引用证据及适用条件"
+      ],
+      [
+        "POL",
+        "A",
+        "领域规则版本"
+      ],
+      [
+        "L",
+        "A",
+        "累计基准"
+      ],
+      [
+        "A",
+        "Y",
+        "Q返回评估"
+      ],
+      [
+        "Y",
+        "K",
+        "C同事务封存承诺"
+      ],
+      [
+        "K",
+        "L",
+        "政策证据确认或冲销"
+      ],
+      [
+        "L",
+        "F",
+        "确认所得的申报版本"
+      ],
+      [
+        "F",
+        "X",
+        "申报意图"
+      ],
+      [
+        "X",
+        "F",
+        "逐项回执"
+      ],
+      [
+        "X",
+        "CASH",
+        "缴退资金观察"
+      ],
+      [
+        "CASH",
+        "F",
+        "对账引用 不用申报成功代替资金"
+      ],
+      [
+        "K",
+        "PER",
+        "未决所得及前驱依据"
+      ],
+      [
+        "L",
+        "PER",
+        "确认冲销状态及结算分类"
+      ],
+      [
+        "POL",
+        "PER",
+        "政策版本约束"
+      ],
+      [
+        "P",
+        "PER",
+        "C回收证据 分类及领取请求"
+      ],
+      [
+        "PER",
+        "P",
+        "C同事务许可及来源守卫"
+      ],
+      [
+        "F",
+        "AP",
+        "确认税债来源 申报回执非资金"
+      ],
+      [
+        "AP",
+        "SI",
+        "来源head与可付占用守卫"
+      ],
+      [
+        "SI",
+        "X",
+        "直接或委托意图 只能一种"
+      ],
+      [
+        "CASH",
+        "AP",
+        "逐项核销 退款另核义务"
+      ],
+      [
+        "SI",
+        "CASH",
+        "原指令 分配及核查证据"
+      ],
+      [
+        "PAYER",
+        "SI",
+        "C同事务限制及领取登记"
+      ]
+    ],
+    "aggregate_ownership": [
+      "WithholdingRegistration根 / RegisterWithholding",
+      "TaxIdentity与Deduction独立有效根 / ConfirmTaxFacts",
+      "TaxLedger根；TaxAssessment不可变独立根 / Assess、RecognizeIncome",
+      "Filing与TaxMovement独立根 / File、ApplyTaxMovement",
+      "TaxLedger内成员与执行许可 / Commit、AcquirePermit",
+      "TaxPolicy配置根；IncomeEvidence属评估/确认快照 / PublishTaxPolicy、AdoptIncomeEvidence",
+      "TaxLedger内用途决定实体 / ClassifyRecoveryReturn",
+      "TaxRemittanceAccount根含义务行及来源head / ConfirmTaxLiability",
+      "TaxRemittanceInstruction根含分配、核准及核查 / PrepareInstitutionSettlement、ClaimInstitutionSettlement、ApplyInstitutionReceipt、ResolveUnknown"
+    ]
+  },
+  {
+    "id": "M12",
+    "title": "社会保险与住房公积金",
+    "entities": [
+      [
+        "AgencyAccount / Enrollment",
+        "accountId；enrollmentId＋人员/关系/险种＋期间",
+        "社保险种和公积金分别有账户、资格与属地"
+      ],
+      [
+        "ObligationAccount / ObligationVersion",
+        "obligationId＋参缴上下文/期/币种；versionId",
+        "稳定账户累计有符号差额；每个版本是完整应缴重述"
+      ],
+      [
+        "ContributionFiling / LineReceipt",
+        "filingId；lineId＋回执id",
+        "按行申报及接受/拒绝/未知结果"
+      ],
+      [
+        "ContributionSettlement",
+        "settlementId＋账户/义务行",
+        "机构实缴/退款资金事实；不等同申报状态"
+      ],
+      [
+        "EmployeeReceivable / DeductionReservation",
+        "obligationId；reservationId＋工资结果",
+        "员工子账余额/占用；M10封存时原子消费，旧版本不得新扣收"
+      ],
+      [
+        "Correction / CollectionAllocation",
+        "更正业务身份＋前版本；sourceMovementId＋分配id",
+        "差额以CAS防重复；分配关联稳定账户和原版本，历史不迁移"
+      ],
+      [
+        "AgencyPayableAccount",
+        "agencyPayableId＋经办账户＋币种",
+        "机构资金执行的占用及核销根；与ObligationAccount逐义务分配，承接同一义务的既有资金事实"
+      ],
+      [
+        "ContributionPolicy / BaseAssessment",
+        "policyId＋版本；assessmentId",
+        "险种/公积金规则引用属地政策证据；基数评估固定来源与期间"
+      ]
+    ],
+    "rules": [
+      "一个期间义务不从工资结果倒推存在与否；资格/地区/账户/基数不足时保留待核，不默认停缴。",
+      "个人应承担、工资已扣、机构实缴和退回分别核销；禁止用一个paid布尔值表示全部。",
+      "社保与公积金可同屏办理，但粒度、账户、属地和政策分别保存。",
+      "补退须关联原义务和实缴，不仅修改本期扣款；行级部分成功可继续核对。",
+      "全量120替代100只记＋20；全量90替代已收100记－10待退/抵，不能重记90应收。员工账与机构应付账分开。",
+      "扣收与机构资金分配同时守卫来源未分配金额和账户余额/活动占用；工资和其他收款不能双收。",
+      "机构付款由M12 AgencyPayableAccount复用M14资金协议：先冻结/占用再授权，未知保留占用，不共享工资应付余额。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "ContributionPolicy发布仅生成新配置版本；基数评估与义务确认固定采用版本和来源证据，不因政策发布直接覆盖旧义务。",
+      "停用/替代政策经本域命令保留旧定义及证据；新的评估不得选择已不适用版本，历史评估和义务继续保留当时依据，更正按明确业务期重新核定。",
+      "机构资金继续由AgencyPayableAccount拥有；直接/外部财务委托遵守DDD §3.2排他执行协议，不与员工代扣账户混记。unknown按§3.3升级/查证，超时不释放占用，部分资金只解除已查明范围。",
+      "资金事实按渠道/账户及稳定资金事件键唯一，跨观察、指令、模式不换现金身份；未分配资金后来归单只改分配，不二次计现金，Movement共同守卫分配合计。渠道无可靠身份先待核（DDD §3.2，AC04）。",
+      "机构领取经M14公开端口先锁PayerAccount，校验PayerExecutionHold并登记ClaimRef，再守卫本域账户/来源/指令；未知责任出款与公共阻塞同事务登记，定位/解除无空窗。资金余额仍归本域（DDD §3.2，AC09）。"
+    ],
+    "contract": "消费M04关系、X02政策及工资基数证据；向M10提供个人代扣义务，向M15提供单位成本，向X05提交经核对批次。",
+    "china": "基数年度、政策发布日期/生效日、新入职特殊口径和跨地接续分别记录；不能全国固定一套比例。",
+    "checks": [
+      "本期零工资仍可有参缴义务；扣款不足保留应收。",
+      "申报部分拒绝与资金到账分别对账，重复回执不重复记实缴。",
+      "100已收100更正120只待收20；独立更正90产生超收10；部分收40后改120剩80。",
+      "重复更正、重复回执、申报更正待受理及已实缴同时存在，不重复扣缴。"
+    ],
+    "nodes": [
+      [
+        "H",
+        "M04 关系及人员",
+        "external"
+      ],
+      [
+        "P",
+        "参缴资格与经办账户",
+        "own"
+      ],
+      [
+        "O",
+        "稳定ObligationAccount",
+        "own"
+      ],
+      [
+        "V",
+        "全量版本与有符号差额",
+        "own"
+      ],
+      [
+        "F",
+        "申报行与原版本回执",
+        "own"
+      ],
+      [
+        "E",
+        "员工应收 占用 扣收",
+        "own"
+      ],
+      [
+        "S",
+        "机构应付 执行意图 实缴与退款",
+        "own"
+      ],
+      [
+        "Y",
+        "M10 原子代扣消费",
+        "external"
+      ],
+      [
+        "C",
+        "M15 单位成本差额",
+        "external"
+      ],
+      [
+        "X",
+        "X05 经办与资金渠道",
+        "external"
+      ],
+      [
+        "POL",
+        "X02 政策证据 地区与有效期",
+        "shared"
+      ],
+      [
+        "BASE",
+        "基数证据 领域规则与险种",
+        "own"
+      ],
+      [
+        "PAYER",
+        "M14 PayerAccount 执行准入守卫",
+        "external"
+      ]
+    ],
+    "edges": [
+      [
+        "H",
+        "P",
+        "Q有效关系"
+      ],
+      [
+        "P",
+        "O",
+        "C期间义务"
+      ],
+      [
+        "O",
+        "V",
+        "C期望版本更正"
+      ],
+      [
+        "V",
+        "F",
+        "明确全量或差额payload"
+      ],
+      [
+        "V",
+        "E",
+        "员工承担delta"
+      ],
+      [
+        "V",
+        "S",
+        "应付delta"
+      ],
+      [
+        "E",
+        "Y",
+        "C占用和消费"
+      ],
+      [
+        "F",
+        "X",
+        "C已提交申报意图"
+      ],
+      [
+        "S",
+        "X",
+        "C冻结授权及资金意图"
+      ],
+      [
+        "X",
+        "F",
+        "C逐项回执"
+      ],
+      [
+        "X",
+        "S",
+        "C资金核销"
+      ],
+      [
+        "V",
+        "C",
+        "E单位承担delta"
+      ],
+      [
+        "POL",
+        "BASE",
+        "适用依据"
+      ],
+      [
+        "BASE",
+        "P",
+        "资格与基数核验"
+      ],
+      [
+        "PAYER",
+        "S",
+        "C同事务限制及领取登记"
+      ]
+    ],
+    "aggregate_ownership": [
+      "AgencyAccount与Enrollment独立根 / Register、Enroll",
+      "ObligationAccount根含Version及Delta / AssessObligation",
+      "FilingBatch根含LineReceipt / FileContribution",
+      "AgencyMovement根含结算引用 / ApplyAgencyMovement",
+      "ObligationAccount内员工子账及占用 / ReserveDeduction",
+      "ObligationAccount内更正及分配 / Correct、AllocateCollection",
+      "AgencyPayableAccount根含机构执行意图、授权及核查 / ReserveAgencyPayment、Settle、ResolveUnknown",
+      "ContributionPolicy配置根；BaseAssessment不可变评估 / PublishContributionPolicy、AssessContributionBase、RetireContributionPolicy"
+    ]
+  },
+  {
+    "id": "M13",
+    "title": "企业福利",
+    "entities": [
+      [
+        "BenefitPlan / Option",
+        "planId＋optionId＋版本",
+        "保障内容、费用分担、受众和适用期间"
+      ],
+      [
+        "BenefitEnrollment / LifeEvent",
+        "enrollmentId；eventId",
+        "个人/家属选择、资格变更、退出和证据"
+      ],
+      [
+        "BenefitCost / Premium",
+        "costId＋登记/期间",
+        "单位和个人费用、供应商账单及结算引用"
+      ],
+      [
+        "BenefitClaim",
+        "claimId＋enrollmentId＋事件",
+        "待遇申请、证据及决定；区分企业承担报销与保险商直接理赔，确认待遇来源不等于保费账单或已支付"
+      ],
+      [
+        "BenefitSupplierPayable",
+        "付款法律实体＋供应商收款身份＋币种；账单行为稳定来源",
+        "供应商保费义务、来源head、活动占用和净已付；员工报销/保险商直接理赔不进入此账"
+      ],
+      [
+        "SupplierSettlementInstruction / SupplierMovement",
+        "instructionId＋精确分配及模式；movementId＋渠道资金身份",
+        "直接/财务委托排他；本域拥有授权、unknown核查、部分付款/退款及核销"
+      ]
+    ],
+    "rules": [
+      "福利登记与税前可扣金额分开；M11根据适用政策处理税务结果。",
+      "一次生活事件只产生一组有效登记变更；新规则不覆盖已结算保单或费用。",
+      "家属资料按福利目的获取，不能因HR可见而对供应商全量导出。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "BenefitClaim采用计划/选项、登记、资格及证据版本。企业承担的核准报销以claimId＋确认版本＋用途生成唯一BenefitCost，经M10明确采用形成应付、M15采用确认成本；保险商直接理赔只记录外部确认/结算引用，不再生成企业工资或成本。",
+      "登记有效并不自动批准待遇；取消/更正claim经后继及差额，已经进入工资/税务/成本的来源保留原采用链。保费和待遇费用分别标明sourceKind，不能把同一赔付重复记为两种企业支出。",
+      "供应商保费以BenefitSupplierPayable独立结算；默认externalFinance，可配置direct但同账户不可并行执行。义务重述只产生差额，来源/占用/模式共同守卫；部分回执、退款及unknown按DDD §3.2—3.3，X05/M15无资金事实写权。",
+      "SupplierMovement仅提供现金核对引用；BenefitCost仍是M15单位成本唯一来源。企业员工报销仍经M10/M14，保险商直接理赔仅留外部证据，不再生成供应商应付。",
+      "资金事实按渠道/账户及稳定资金事件键唯一，跨观察、指令、模式不换现金身份；未分配资金后来归单只改分配，不二次计现金，Movement共同守卫分配合计。渠道无可靠身份先待核（DDD §3.2，AC04）。",
+      "机构领取经M14公开端口先锁PayerAccount，校验PayerExecutionHold并登记ClaimRef，再守卫本域账户/来源/指令；未知责任出款与公共阻塞同事务登记，定位/解除无空窗。资金余额仍归本域（DDD §3.2，AC09）。"
+    ],
+    "contract": "消费M01/M04资格事实；向M10提供确认扣款/非现金待遇、向M11提供税务所需来源、向M15提供单位成本。 企业承担报销经BenefitClaim确认后形成唯一BenefitCost，保险商直接理赔只经X05记录证据与结算引用。",
+    "china": "年金、商业保险、企业补充福利与基本社保分别表达；供应商结算和税务扣除不是同一状态。",
+    "checks": [
+      "福利取消后保留此前费用和税务采用；退保退款关联原账单。",
+      "重复账单不产生重复扣款。",
+      "保险商直接支付员工的理赔不得再向工资发款；企业报销重复确认只形成一个待遇来源，取消不删除已结算事实。",
+      "重复保费账单、两种执行模式竞争、部分付款及退款不会重复欠款、付款或确认成本（AC04）。"
+    ],
+    "nodes": [
+      [
+        "P",
+        "M01 M04 人员与家属资格",
+        "external"
+      ],
+      [
+        "L",
+        "福利计划与选项",
+        "own"
+      ],
+      [
+        "E",
+        "生活事件及资格判断",
+        "process"
+      ],
+      [
+        "N",
+        "福利登记与期间",
+        "own"
+      ],
+      [
+        "C",
+        "费用 账单与承担",
+        "own"
+      ],
+      [
+        "Y",
+        "M10 工资用途",
+        "external"
+      ],
+      [
+        "T",
+        "M11 税务处理",
+        "external"
+      ],
+      [
+        "A",
+        "X05 供应商及财务执行渠道",
+        "external"
+      ],
+      [
+        "FIN",
+        "M15 单位成本",
+        "external"
+      ],
+      [
+        "CLAIM",
+        "BenefitClaim 待遇申请与决定",
+        "own"
+      ],
+      [
+        "EXT",
+        "X05 保险商理赔观察与结算引用",
+        "external"
+      ],
+      [
+        "AP",
+        "BenefitSupplierPayable 供应商保费应付",
+        "own"
+      ],
+      [
+        "SI",
+        "SupplierSettlementInstruction 核准及排他执行",
+        "own"
+      ],
+      [
+        "CASH",
+        "SupplierMovement 唯一资金事实与分配",
+        "own"
+      ],
+      [
+        "PAYER",
+        "M14 PayerAccount 执行准入守卫",
+        "external"
+      ]
+    ],
+    "edges": [
+      [
+        "P",
+        "E",
+        "必要资料"
+      ],
+      [
+        "L",
+        "E",
+        "资格规则"
+      ],
+      [
+        "E",
+        "N",
+        "登记变更"
+      ],
+      [
+        "N",
+        "C",
+        "期间费用"
+      ],
+      [
+        "C",
+        "T",
+        "税务来源"
+      ],
+      [
+        "N",
+        "A",
+        "受控登记"
+      ],
+      [
+        "A",
+        "C",
+        "账单回执"
+      ],
+      [
+        "C",
+        "FIN",
+        "单位承担的唯一成本来源"
+      ],
+      [
+        "N",
+        "CLAIM",
+        "采用登记及计划版本"
+      ],
+      [
+        "E",
+        "CLAIM",
+        "资格和证据待核验"
+      ],
+      [
+        "CLAIM",
+        "C",
+        "企业承担报销的唯一确认来源"
+      ],
+      [
+        "CLAIM",
+        "EXT",
+        "保险商直接理赔 受控交换"
+      ],
+      [
+        "EXT",
+        "CLAIM",
+        "外部证据不等于本域自动核准"
+      ],
+      [
+        "C",
+        "Y",
+        "个人扣款 待遇或企业报销"
+      ],
+      [
+        "C",
+        "AP",
+        "仅确认供应商保费 来源唯一"
+      ],
+      [
+        "AP",
+        "SI",
+        "可付分配 占用及版本守卫"
+      ],
+      [
+        "SI",
+        "A",
+        "直接或财务委托执行意图"
+      ],
+      [
+        "A",
+        "CASH",
+        "原请求资金观察 经本域核对"
+      ],
+      [
+        "CASH",
+        "AP",
+        "逐项核销及退回"
+      ],
+      [
+        "CASH",
+        "FIN",
+        "现金核对 不再次确认成本"
+      ],
+      [
+        "PAYER",
+        "SI",
+        "C同事务限制及领取登记"
+      ]
+    ],
+    "aggregate_ownership": [
+      "BenefitPlan根含Option / PublishBenefitPlan",
+      "BenefitEnrollment与LifeEvent独立根 / EnrollBenefit",
+      "BenefitCost根含Premium及账单引用 / ConfirmBenefitCost",
+      "BenefitClaim根 / DecideClaim",
+      "BenefitSupplierPayable根 / ConfirmSupplierPayable",
+      "SupplierSettlementInstruction根含授权/核查；SupplierMovement不可变根 / PrepareInstitutionSettlement、ClaimInstitutionSettlement、ApplyInstitutionReceipt、ResolveUnknown"
+    ]
+  },
+  {
+    "id": "M14",
+    "title": "工资支付与银行用途",
+    "entities": [
+      [
+        "PayerAccount",
+        "payerAccountId＋entityId＋revision",
+        "机构运营付款账户由M14维护；引用M02允许用途，与M01个人收款账户分别建模；根内PayerExecutionHold及ClaimRef共同守卫工资/机构付款准入，不接管机构义务和资金余额"
+      ],
+      [
+        "PaymentUse / PayerConfiguration",
+        "useVersionId；payerConfigId＋revision",
+        "M01账户身份、M02允许用途的运营配置与分配"
+      ],
+      [
+        "PayableAccount / SettlementEntry / Reservation",
+        "payableId＋currency；entryId；reservationId",
+        "单一权威结算账：应付差额、支付、银行退回、员工归还及工资扣回分别记账；付款与追收分别占用；分录按来源类型引用指令资金、独立入款证据或工资扣回，保留业务去重键"
+      ],
+      [
+        "PaymentInstruction / Authorization",
+        "instructionId＋payloadHash；authorizationId",
+        "先冻结主体、收款人、方式、金额、分配和账户快照再授权；包含税务执行用途及原确认分配"
+      ],
+      [
+        "PaymentAttempt / Receipt / Movement",
+        "attemptId；渠道交易身份＋资金事件序号",
+        "unknown保留占用；唯一资金流水及原付款退回/后继；CashMovement仅表达指令出款及银行退回，员工归还另用不可变入款证据"
+      ],
+      [
+        "RecoveryAccount / Allocation",
+        "recoveryId＋payableId＋币种；allocationId",
+        "追收决定、占用与来源分配；余额由原PayableAccount净结算推导，不产生第二份退款/可付额度"
+      ]
+    ],
+    "rules": [
+      "先在账户事务内守卫余额并冻结payload，再按hash授权；新金额/账户/分配须取消可取消旧件、生成后继并重新授权。",
+      "新增付款占用须满足净结算＋付款活动占用＋本次金额不超过确认应付；净结算统一计入原支付、银行退回、员工归还及已确认工资扣回。超付只产生追收任务，不删除原付款。",
+      "领取CAS与M11 AcquireDispatchPermit同事务锁共享守卫；领取后撤销仅为stopRequested，查明前不释放占用。发送守卫包括税务成员计划及账户状态。",
+      "超时/崩溃为unknown，不自动新建业务身份重发；回执按渠道交易业务身份去重，部分成功仅转换对应金额，退回关联原资金。",
+      "执行终止与资金账独立；部分成功后终止仍可收原资金退款，不重开原指令。",
+      "占用和领取在共同事务锁M10 PayableSourceHead并比对已采用水位；来源差额尚未投递时先补齐，不按滞后余额付款。",
+      "M11共同守卫同时验证影响税评估的前驱所得已实际确认/依法取消及执行查明；计划版本未变不能证明依赖后项可领取。",
+      "冻结payload及授权hash含税务用途及其确切证据。已确认所得结算核验原锚点；非所得超收返还核验M11分类决定、回收来源和未返还分配，仍受同一原应付净结算及占用守卫。回执只核销资金和许可，不重计所得。",
+      "支付前确认所得的首次付款，先取得实际所得确认锚点和结算分配，再冻结、占用及授权；不能事后补写引用或沿用pending用途的旧授权。",
+      "个人收款账户身份由M01维护；机构付款账户由M14 PayerAccount维护并引用M02法律主体，机构参缴账户由M12维护，不以ownerPersonId代替机构归属。",
+      "超付由RecoveryAccount管理追收决定和分配；收回资金/工资扣回以独立SettlementEntry计入原PayableAccount。银行退回不重复计回收，所有补付/退还均受原结算账同一可付余额守卫。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "SettlementInvestigation核查记录归PaymentInstruction；按DDD §3.3保留原请求、证据及当前授权决定。aging超时只升级，部分查明只解除对应占用/税务约束。PayerAccount可向M11/M12/M13公开校验机构付款身份，不将机构义务并入员工PayableAccount。",
+      "PayerExecutionHold/ClaimRef归PayerAccount根，按付款账户及渠道范围、根revision守卫；工资和M11/M12/M13机构领取都先锁该根，再锁本域责任根。登记阻塞与未知出款同事务；先领取则保留占用待核。解除或转本域hold必须无空窗、逐个Hold有证据（DDD §3.2，AC09）。"
+    ],
+    "contract": "消费M10应付差额及M01个人账户身份，维护机构付款账户、权威结算账及追收决定；向X05发已授权指令，向M15分别输出现金和非现金扣回事实。",
+    "china": "账户主体与代发用途核对；集中代发主体与成本主体可以不同，需有明确责任和资金归属。",
+    "checks": [
+      "应付100，两条不同requestKey的80指令只能一条占用成功。",
+      "授权A账户后换B或变更分配，不能用原授权发送变更payload。",
+      "撤销与领取并发、unknown后迟到成功、部分退回及负差额超付均保留余额与历史。",
+      "先确认所得的正常分支，F04与E07均在冻结/授权前形成实际锚点；改变税务用途或引用必须新指令及新授权。",
+      "员工归还后又银行退回造成超收，返还须有M11分类及回收来源分配；同一原应付仅返还唯一余额，撤销分类与领取共用守卫。",
+      "未知责任出款登记与另一域同付款账户并发领取：Hold先提交则拒绝，领取先提交保留既有资金/税务占用；定位解除不制造可重复付款窗口（AC09）。"
+    ],
+    "nodes": [
+      [
+        "B",
+        "M01 个人收款账户 / M02 允许主体",
+        "external"
+      ],
+      [
+        "U",
+        "付款运营用途与分配",
+        "own"
+      ],
+      [
+        "R",
+        "M10 唯一应付变动",
+        "external"
+      ],
+      [
+        "Q",
+        "PayableAccount 唯一净结算与付款占用",
+        "own"
+      ],
+      [
+        "I",
+        "不可变payload及hash",
+        "own"
+      ],
+      [
+        "A",
+        "精确授权与撤销",
+        "own"
+      ],
+      [
+        "S",
+        "领取守卫及已提交意图",
+        "own"
+      ],
+      [
+        "T",
+        "M11 税务用途分类及执行许可",
+        "external"
+      ],
+      [
+        "X",
+        "X05 银行发送和查询",
+        "external"
+      ],
+      [
+        "C",
+        "业务资金流水与核销",
+        "own"
+      ],
+      [
+        "F",
+        "M15 现金及非现金扣回事实",
+        "external"
+      ],
+      [
+        "PA",
+        "PayerAccount 机构付款账户",
+        "own"
+      ],
+      [
+        "REC",
+        "RecoveryAccount 追收决定 占用及分配",
+        "own"
+      ],
+      [
+        "EMP",
+        "员工归还 / M10 核准扣回",
+        "external"
+      ],
+      [
+        "PH",
+        "PayerExecutionHold 渠道限制及ClaimRef",
+        "own"
+      ],
+      [
+        "INST",
+        "M11 M12 M13 机构付款责任域",
+        "external"
+      ]
+    ],
+    "edges": [
+      [
+        "B",
+        "U",
+        "Q身份和允许用途"
+      ],
+      [
+        "R",
+        "Q",
+        "C来源唯一入账"
+      ],
+      [
+        "U",
+        "I",
+        "冻结全部支付字段"
+      ],
+      [
+        "Q",
+        "I",
+        "C同事务守卫及占用"
+      ],
+      [
+        "I",
+        "A",
+        "C按hash授权"
+      ],
+      [
+        "A",
+        "S",
+        "C领取或撤销CAS"
+      ],
+      [
+        "T",
+        "S",
+        "C同事务执行占用守卫"
+      ],
+      [
+        "S",
+        "X",
+        "发送冻结payload"
+      ],
+      [
+        "X",
+        "C",
+        "C应用去重回执"
+      ],
+      [
+        "C",
+        "Q",
+        "原子占用转实付或释放"
+      ],
+      [
+        "C",
+        "F",
+        "E资金变动"
+      ],
+      [
+        "PA",
+        "U",
+        "付款主体及运营账户"
+      ],
+      [
+        "Q",
+        "REC",
+        "负差额识别追收范围"
+      ],
+      [
+        "EMP",
+        "REC",
+        "核准及来源唯一分配"
+      ],
+      [
+        "C",
+        "REC",
+        "银行退回事实核对"
+      ],
+      [
+        "REC",
+        "F",
+        "回收现金或扣回事实"
+      ],
+      [
+        "REC",
+        "Q",
+        "同事务唯一结算分录 无第二可退余额"
+      ],
+      [
+        "PA",
+        "PH",
+        "根内限制及共同revision"
+      ],
+      [
+        "PH",
+        "S",
+        "C同事务领取准入"
+      ],
+      [
+        "INST",
+        "PH",
+        "C领取及核查 公开端口"
+      ],
+      [
+        "PH",
+        "INST",
+        "限制及活动领取引用 非资金余额"
+      ]
+    ],
+    "aggregate_ownership": [
+      "PayerAccount根 / RegisterPayerAccount、PlacePayerHold、ReleasePayerHold、AcquirePayerExecution",
+      "PaymentUse与PayerConfiguration独立根 / ConfigurePaymentUse",
+      "PayableAccount根含SettlementEntry及付款Reservation / ApplySettlementEntry、ReservePayable",
+      "PaymentInstruction与Authorization独立根 / Freeze、Authorize",
+      "尝试属指令；Receipt观察去重后CashMovement不可变 / ApplyReceipt",
+      "RecoveryAccount根含追收占用及Allocation；实际分录归PayableAccount / ReserveRecovery、AllocateRecovery"
+    ]
+  },
+  {
+    "id": "M15",
+    "title": "人工成本与财务衔接",
+    "entities": [
+      [
+        "CostFact / CostAllocation",
+        "costId＋唯一来源业务版本；costId＋账簿＋会计用途＋币种为集合唯一键",
+        "CostFact不可变；CostAllocation根拥有完整分摊行、修订、已确认会计基准及活动批次引用，总量共同守卫"
+      ],
+      [
+        "AccountingMapping / Period",
+        "mappingId＋生效期；ledgerPeriodId",
+        "科目/成本中心/项目映射和开关账状态"
+      ],
+      [
+        "JournalRequest / Receipt",
+        "requestId＋批次hash；receiptId",
+        "会计输出、外部接受和过账回执分开"
+      ],
+      [
+        "CostCorrection",
+        "correctionId＋原costId/凭证",
+        "差额、冲销及新期间过账，不覆盖旧财务事实"
+      ]
+    ],
+    "rules": [
+      "人工成本、预算消耗、现金付款不是同一事实，报表不可简单相加。",
+      "每个成本来源只有一个责任对象；其他模块明确采用，不能各自复制金额并独立维护。",
+      "期间已关账时按财务规则产生后继调整；引用的原工资/参缴结果保留。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "每一costId＋账簿＋会计用途＋币种只有一个CostAllocation根，持有全部行和版本。提交前分摊完整、单位一致，按舍入规则精确合计为来源有符号成本；不能用不同allocationId分别占用同一来源。",
+      "PrepareJournal/ClaimJournal与BeginClosePeriod共享Period守卫，按期间、分摊集合、批次固定锁序冻结来源/分摊/映射版本及payloadHash；关账先提交则新领取拒绝，已领取/unknown保留原版本且阻止最终关闭，外部调用在事务后进行。",
+      "已会计确认分摊60/40改50/50，只形成引用原版本的-10/+10调整；未发送草稿可显式取消替代，已外发/unknown先查明，不能以新batchId再次输出全量。外部逐行确认后才推进对应会计基准；部分成功行不得重发。",
+      "Closed期间不得新投递原期调整；CostCorrection保留原业务期/原分摊，在明确允许的新会计期记录差额。原成本事实、已过账请求及回执不原地改写。"
+    ],
+    "contract": "消费M10工资、M12单位承担、M13福利的唯一成本来源及M14现金/非现金结算核对事实；向M03供确认成本，向外部ERP供可对账凭证。结算引用不再次确认工资成本。",
+    "china": "集中支付、跨法人分摊和属地缴费保持主体/币种/期间；会计处理具体口径由客户财务规则决定。",
+    "checks": [
+      "相同成本来源重复交换不会重复过账；部分失败保留已成功凭证。",
+      "原实际更正后预算冲销和财务差额有一致前后继。",
+      "同一成本100的两个80分摊不能各自提交；不足100的草稿不得发送；不同账簿范围的报表不可相加冒充同一成本。",
+      "60/40已过账后改50/50仅发送-10/+10；提交和关账并发有共同线性化点，unknown批次不能被新批次或关账吞掉。"
+    ],
+    "nodes": [
+      [
+        "S",
+        "M10 M12 M13 成本来源",
+        "external"
+      ],
+      [
+        "C",
+        "确认人工成本事实",
+        "own"
+      ],
+      [
+        "A",
+        "CostAllocation 完整分摊集合与版本",
+        "own"
+      ],
+      [
+        "M",
+        "AccountingMapping 科目与成本归属规则",
+        "own"
+      ],
+      [
+        "J",
+        "AccountingBatch 冻结请求与逐行回执",
+        "own"
+      ],
+      [
+        "E",
+        "X05 外部ERP",
+        "external"
+      ],
+      [
+        "B",
+        "M03 预算与实际",
+        "external"
+      ],
+      [
+        "P",
+        "M14 现金及非现金结算事实",
+        "external"
+      ],
+      [
+        "PER",
+        "Period 开放 关账中 已关闭",
+        "own"
+      ],
+      [
+        "GUARD",
+        "冻结与领取协调器 期间及分摊共同守卫",
+        "process"
+      ],
+      [
+        "COR",
+        "CostCorrection 原版本与后继差额",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "S",
+        "C",
+        "唯一来源版本"
+      ],
+      [
+        "C",
+        "A",
+        "成本明细"
+      ],
+      [
+        "M",
+        "A",
+        "映射"
+      ],
+      [
+        "E",
+        "J",
+        "过账回执"
+      ],
+      [
+        "C",
+        "B",
+        "确认实际"
+      ],
+      [
+        "P",
+        "J",
+        "结算对账引用 不重复确认成本"
+      ],
+      [
+        "A",
+        "GUARD",
+        "当前完整分摊及会计基准"
+      ],
+      [
+        "PER",
+        "GUARD",
+        "与关账共用守卫"
+      ],
+      [
+        "GUARD",
+        "J",
+        "同事务固定版本和活动批次"
+      ],
+      [
+        "J",
+        "E",
+        "领取提交后发送冻结payload"
+      ],
+      [
+        "J",
+        "A",
+        "确认行推进基准 未知保持占位"
+      ],
+      [
+        "A",
+        "COR",
+        "已确认分摊变化求差"
+      ],
+      [
+        "COR",
+        "GUARD",
+        "按允许会计期冻结调整"
+      ]
+    ],
+    "aggregate_ownership": [
+      "CostFact不可变根；CostAllocation集合根 / AdoptCost、AllocateCost、FreezeAllocation",
+      "AccountingMapping与Period独立根 / PublishMapping、BeginClosePeriod、ClosePeriod",
+      "AccountingBatch根含冻结请求及回执 / PrepareJournal、ClaimJournal、ApplyJournalReceipt",
+      "CostCorrection根引用原事实 / CorrectCost"
+    ]
+  },
+  {
+    "id": "M16",
+    "title": "人才档案、技能与资格",
+    "entities": [
+      [
+        "ContentType / Item / RatingModel",
+        "typeId/itemId/modelId＋版本",
+        "技能、资格和评分语义；内容及尺度分别发布，变更保留历史"
+      ],
+      [
+        "Profile / Section",
+        "profileId＋对象类型＋版本",
+        "人员与职务/职位档案分开；固定profileTypeId/version及章节定义引用，字段另有权限"
+      ],
+      [
+        "Qualification / Assessment",
+        "factId＋人员/项目＋期间＋来源",
+        "自评、经理、专家、证书等证据及有效期"
+      ],
+      [
+        "Questionnaire / Response",
+        "questionnaireId＋版本；responseId＋评价上下文",
+        "M16拥有问卷定义；回答由具体评价域的证据/文档持有，本域仅采用不可变来源引用"
+      ],
+      [
+        "QualificationDecision",
+        "decisionId＋qualificationId＋证据版本",
+        "授予、拒绝、撤销或更新资格的规则/人工决定；不以学习完成替代结论"
+      ],
+      [
+        "ProfileType / SectionDefinition",
+        "profileTypeId＋版本；sectionDefinitionId",
+        "可复用档案类型及章节定义，声明适用对象、内容类型引用和结构约束；实例固定采用版本"
+      ]
+    ],
+    "rules": [
+      "同名技能不能无映射合并；量表等级语义改变需新版本，旧评分不套新尺度。",
+      "学习完成只提供证据，不自动升级为已认证技能或岗位任职资格。",
+      "索引是可重建投影；权限在来源读取和搜索返回两端执行，不能由索引权限替代事实权限。",
+      "QualificationDecision归M16，可按明确规则自动核验或由授权人员决定；技能证据、资格结论与职位任命分别记录。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "ProfileType与实际TalentProfile分开发布和采用；类型v2不重释已有v1档案或评价。AdoptProfileTypeVersion显式验证结构迁移，生成后继档案版本并保留旧类型、章节与评价依据；缺少必要内容时待补，不静默补齐资格。",
+      "各评价域固定问卷、内容项和量表版本。M17绩效反馈回答由PerformanceDocument拥有，M16需要时采用其证据引用，不另建可独立修改的同一回答。学习证据更正/撤销通知M16产生资格复核事项；既有资格决定保留，后继资格由DecideQualification明确确认。"
+    ],
+    "contract": "服务M03岗位要求、M05招聘匹配、M17评价、M18发展和M19盘点；各消费者采用版本和用途可追溯。",
+    "china": "证书有效性、岗位准入资格和内部技能评分分开；附件及评价按目的限制。",
+    "checks": [
+      "来源证书失效使当前匹配提示变化，但旧录用评价保留依据。",
+      "受限人员技能不得经搜索/汇总泄露。",
+      "类型v1与v2章节结构不同，新档案可采用v2，旧评价仍按原v1解释；调整类型不批量覆盖档案或资格。"
+    ],
+    "nodes": [
+      [
+        "C",
+        "ContentType / Item / RatingModel 内容及评分语义",
+        "own"
+      ],
+      [
+        "P",
+        "PersonProfile 人员能力档案",
+        "own"
+      ],
+      [
+        "J",
+        "RequirementProfile 职务职位要求档案",
+        "own"
+      ],
+      [
+        "Q",
+        "Questionnaire 定义及来源回答引用",
+        "own"
+      ],
+      [
+        "E",
+        "Evidence 评价与证书证据",
+        "own"
+      ],
+      [
+        "D",
+        "Qualification / Decision 资格及决定",
+        "own"
+      ],
+      [
+        "M",
+        "Match / Gap 岗位匹配与差距",
+        "own"
+      ],
+      [
+        "S",
+        "M01 M04 人员与任职",
+        "external"
+      ],
+      [
+        "JOB",
+        "M03 Job / Position",
+        "external"
+      ],
+      [
+        "L",
+        "M18 学习完成证据",
+        "external"
+      ],
+      [
+        "O",
+        "M05 M17 M19 消费者",
+        "external"
+      ],
+      [
+        "PT",
+        "ProfileType / SectionDefinition 可复用类型及章节定义",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "S",
+        "P",
+        "人员引用"
+      ],
+      [
+        "JOB",
+        "J",
+        "要求对象引用"
+      ],
+      [
+        "Q",
+        "E",
+        "回答依据"
+      ],
+      [
+        "L",
+        "E",
+        "待核证据"
+      ],
+      [
+        "E",
+        "D",
+        "规则或人工核验"
+      ],
+      [
+        "D",
+        "P",
+        "资格结论"
+      ],
+      [
+        "P",
+        "M",
+        "个人能力版本"
+      ],
+      [
+        "J",
+        "M",
+        "岗位要求版本"
+      ],
+      [
+        "M",
+        "O",
+        "受控匹配及采用"
+      ],
+      [
+        "C",
+        "PT",
+        "内容类型及评分语义引用"
+      ],
+      [
+        "PT",
+        "P",
+        "显式采用类型及章节版本"
+      ],
+      [
+        "PT",
+        "J",
+        "显式采用类型及章节版本"
+      ]
+    ],
+    "aggregate_ownership": [
+      "ContentDefinition及RatingModel独立根 / PublishContent、PublishRatingModel、RetireDefinition",
+      "TalentProfile根含Section及所采用类型/章节版本 / MaintainProfile、AdoptProfileTypeVersion",
+      "Qualification根；Assessment为不可变证据 / RecordEvidence",
+      "Questionnaire配置根 / PublishQuestionnaire、RetireQuestionnaire；Response归所属评价聚合 / SubmitResponse",
+      "Qualification内DecisionRecord / DecideQualification",
+      "ProfileType配置根含SectionDefinition / PublishProfileType"
+    ]
+  },
+  {
+    "id": "M17",
+    "title": "目标与绩效",
+    "entities": [
+      [
+        "GoalDefinition / GoalPlan",
+        "definitionId/planId＋版本；周期/适用范围",
+        "可复用绩效目标与计划配置；计划声明期间、适用范围及可选目标，不保存个人进度"
+      ],
+      [
+        "ReviewPeriod / PerformanceTemplate",
+        "periodId/templateId＋版本",
+        "模板拥有章节、权重及资格/参与规则，引用ProcessDefinition、DocumentType和M16量表/问卷版本"
+      ],
+      [
+        "PerformanceDocument / StageInstance",
+        "documentId＋personId＋明确assignmentCoverage＋periodId＋revision",
+        "固定个人目标、模板/流程/类型/量表版本；阶段实例、评价责任分段及发布结果归本文档"
+      ],
+      [
+        "Feedback / Appeal / Calibration",
+        "caseId＋原文档版本",
+        "反馈、申诉、校准依据与结果前后继"
+      ],
+      [
+        "GoalAssignment / GoalInstance / Progress",
+        "goalAssignmentId＋personId＋planId＋periodId；goalInstanceId",
+        "个人分配根拥有目标实例、权重与进度，引用库/计划版本；可自建目标，确认后供绩效显式采用"
+      ],
+      [
+        "PerformanceProcessDefinition / DocumentType",
+        "processDefinitionId/typeId＋版本",
+        "可复用流程定义任务、顺序及完成条件；文档类型区分评价用途；实例状态归PerformanceDocument"
+      ]
+    ],
+    "rules": [
+      "调岗后评价责任按期间分段；当前经理不自动拥有全部历史敏感评价。",
+      "已发布成绩更正产生新版本并通知采用者；不自动重写已发奖金。",
+      "问卷/量表引用M16，薪酬决策归M09，绩效发布本身不生成工资。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "GoalPlan是配置，GoalAssignment是个人周期实例，绩效文档是采用者。改库或计划不覆盖已分配目标；个人目标更新不静默更新已发布绩效，RefreshGoals需显式采用新版本并重新核验受影响评价。",
+      "创建文档固定参与资格、assignmentCoverage、责任分段、模板/流程/类型/量表/问卷与个人目标版本；阶段推进和发布以文档revision守卫。PublishPerformance核对必经阶段、必要决定、有效评分及权重约束；X04任务完成只提供过程信息，不能跳过领域阶段或直接发布结果。",
+      "申诉/校准后的更正形成文档后继版本及Outbox，消费者收到复核事项后自行决定是否采用；旧奖金、盘点及评价证据均不被覆盖。",
+      "跳过阶段仅允许冻结流程明确声明的条件；记录跳过理由和必要决定，不能以X04任务取消绕过阶段。模板新增阶段不追改正在执行文档的过程版本。"
+    ],
+    "contract": "消费M04任职分段和M16量表；向M09提供已确认结果、向M18/M19提供授权的发展输入。",
+    "china": "考核结果、劳动关系决定和法定补偿不能由一个分数自动推导；保留人工判断与依据。",
+    "checks": [
+      "跨部门考核权重不重复计入；历史评分仍按旧量表解释。",
+      "申诉成功后已采用奖金产生待评估差异，不直接扣回。",
+      "计划v2不改变甲已确认的v1个人目标；修改个人目标必须显式刷新尚未发布的评价内容，已发布文档走后继。",
+      "两个评价者并发推进同一阶段仅当前revision成功；待办全部关闭但必需反馈或核准缺失仍不能发布。"
+    ],
+    "nodes": [
+      [
+        "H",
+        "M04 任职与经理分段",
+        "external"
+      ],
+      [
+        "G",
+        "GoalDefinition / GoalPlan 目标库与计划配置",
+        "own"
+      ],
+      [
+        "T",
+        "ReviewPeriod / PerformanceTemplate 周期 模板与章节",
+        "own"
+      ],
+      [
+        "D",
+        "PerformanceDocument 文档及阶段实例",
+        "own"
+      ],
+      [
+        "F",
+        "反馈 申诉与校准",
+        "own"
+      ],
+      [
+        "R",
+        "发布结果版本",
+        "process"
+      ],
+      [
+        "S",
+        "M16 评分与问卷",
+        "external"
+      ],
+      [
+        "C",
+        "M09 M18 M19 消费者",
+        "external"
+      ],
+      [
+        "GA",
+        "GoalAssignment 个人目标及进度",
+        "own"
+      ],
+      [
+        "PROC",
+        "ProcessDefinition / DocumentType 流程及文档类型",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "T",
+        "D",
+        "固定模板及过程版本"
+      ],
+      [
+        "H",
+        "D",
+        "责任分段"
+      ],
+      [
+        "S",
+        "D",
+        "评价语义"
+      ],
+      [
+        "D",
+        "F",
+        "反馈与调整"
+      ],
+      [
+        "F",
+        "R",
+        "核对后发布"
+      ],
+      [
+        "R",
+        "C",
+        "明确采用的版本"
+      ],
+      [
+        "G",
+        "GA",
+        "显式分配及采用版本"
+      ],
+      [
+        "GA",
+        "D",
+        "固定个人目标版本"
+      ],
+      [
+        "PROC",
+        "T",
+        "引用定义版本"
+      ],
+      [
+        "D",
+        "R",
+        "满足阶段守卫后发布"
+      ]
+    ],
+    "aggregate_ownership": [
+      "GoalDefinition及GoalPlan独立配置根 / PublishGoalDefinition、PublishGoalPlan、RetireGoalConfiguration",
+      "ReviewPeriod及PerformanceTemplate独立配置根 / PublishReviewPeriod、PublishTemplate、RetireTemplate",
+      "PerformanceDocument根含StageInstance及反馈 / CreatePerformanceDocument、Evaluate、AdvanceStage、PublishPerformance、CorrectPerformance",
+      "PerformanceDocument内决定及后继 / Appeal、Calibrate",
+      "GoalAssignment根含GoalInstance及Progress / AssignGoalPlan、AddGoal、UpdateGoalProgress、ConfirmGoals",
+      "PerformanceProcessDefinition及DocumentType独立配置根 / PublishPerformanceProcess、PublishDocumentType、RetirePerformanceConfiguration"
+    ]
+  },
+  {
+    "id": "M18",
+    "title": "学习与发展",
+    "entities": [
+      [
+        "LearningCatalog / Offering",
+        "courseId＋版本；offeringId＋revision",
+        "课程定义与开班/活动分开；Offering拥有容量、有效座位及候补登记"
+      ],
+      [
+        "LearningEnrollment / SeatReservation",
+        "enrollmentId＋personId＋offeringId；seatId",
+        "具体开班报名与座位状态；受学习指派、受众、前置、核准及容量共同守卫；座位登记归Offering"
+      ],
+      [
+        "LearningRecord",
+        "recordId＋人员＋课程/活动",
+        "进度、完成证据、考试/证书及修订"
+      ],
+      [
+        "DevelopmentPlan / DevelopmentGoal / Action",
+        "planId＋personId＋期间；goalId/actionId",
+        "个人发展目标可来自库或自建；含学习、辅导、实践等行动及状态，固定M17/M19需求来源"
+      ],
+      [
+        "LearningPath / Audience",
+        "pathId / audienceId＋版本",
+        "学习路径、前置条件与受众适用；权限由X03独立校验"
+      ],
+      [
+        "LearningAssignment",
+        "learningAssignmentId＋personId＋requirementScope＋revision",
+        "学习要求和截止/重修周期；可尚无开班、可更换报名，撤销要求不删除已完成证据"
+      ],
+      [
+        "DevelopmentGoalDefinition",
+        "developmentGoalDefinitionId＋版本",
+        "可复用发展目标定义；区别于M17绩效目标库和个人发展目标，更新不重写已采用行动"
+      ]
+    ],
+    "rules": [
+      "课程改版不重写已完成记录；报名成功不等于完成。",
+      "完成事件幂等，向M16提交证据仍需资格规则确认。",
+      "外部学习平台回执要保留来源及版本；缺失证据不能自动标完成。",
+      "LearningPath的前置条件、Audience适用与X03可见权限分别校验；资格授予仍由M16核验决定。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "学习要求、具体开班报名和实际完成分别有稳定身份。重复指派按来源行动/用途及重修周期幂等，不以课程名称去重，也不把指派视为已经报名或完成。",
+      "Enroll/Promote/Cancel/Transfer及容量修改共同锁定受影响Offering，再以固定ID顺序锁LearningAssignment/Enrollment，同一短事务更新座位、报名及Outbox。核准不预占席位；执行时重核受众、前置、有效决定和容量。满员按发布政策进入候补或拒绝，不超卖；缩容低于有效占座拒绝，需先明确撤销/转班。候补转正重新守卫，重复取消不多释放。",
+      "Offering取消/关闭在同一共同守卫内拒绝新报名；未完报名按明确命令取消/转班，历史完成保留。转班按两Offering固定顺序锁定；目标无位则整笔失败或明确保留原报名并登记候补，不出现两边同时占位或无故丢失原位。",
+      "完成记录固定报名/学习要求/课程活动版本及来源证据；重复同一sourceEventKey不重记，同键异文待核。更正/撤销生成后继与通知，不删除旧事实；M16决定资格后继，DevelopmentPlan按行动完成标准决定目标完成，不能由一次课程完成自动完成整个发展目标。",
+      "同一Offering＋Person至多一份有效SeatReservation；多个学习要求可显式引用同一报名，不能因此重复占位。重修需新的授权学习尝试，已完成记录仍保留。",
+      "候补不占已确认席位；按已发布优先规则在转正命令重核容量与全部前置，只有成功转正才成为Active。取消具体报名不取消其LearningAssignment，取消要求也不删除学习证据。"
+    ],
+    "contract": "消费M16技能差距、M17/M19发展行动；向M16提供可核验证据，向M20提供任务状态。",
+    "china": "岗位必须培训、证书周期和企业培养计划分别建模；个人学习行为数据按目的限制。",
+    "checks": [
+      "同一外部完成事件重复同步只记录一次。",
+      "课程失效后旧完成记录和证书依据仍可解释。",
+      "最后一席并发报名只能一个Active；另一候补或拒绝，缩容/转班/撤销共用容量守卫。",
+      "要求先创建而开班未确定时没有虚构报名；同课程下一认证周期可产生新的学习要求。",
+      "辅导行动可不报名课程；课程更正不抹去旧证据或自动取消资格，目标完成需全部必要行动。"
+    ],
+    "nodes": [
+      [
+        "N",
+        "M16 M17 M19 发展需求",
+        "external"
+      ],
+      [
+        "C",
+        "课程目录与版本",
+        "own"
+      ],
+      [
+        "O",
+        "LearningOffering 容量 座位与候补",
+        "own"
+      ],
+      [
+        "E",
+        "LearningEnrollment 报名与座位",
+        "own"
+      ],
+      [
+        "R",
+        "学习完成与证据",
+        "own"
+      ],
+      [
+        "P",
+        "DevelopmentPlan 个人发展目标与行动",
+        "own"
+      ],
+      [
+        "S",
+        "X05 学习平台",
+        "external"
+      ],
+      [
+        "Q",
+        "M16 资格证据确认",
+        "external"
+      ],
+      [
+        "PATH",
+        "LearningPath 路径与前置条件",
+        "own"
+      ],
+      [
+        "AUD",
+        "Audience 适用受众",
+        "own"
+      ],
+      [
+        "LA",
+        "LearningAssignment 学习要求与周期",
+        "own"
+      ],
+      [
+        "DG",
+        "DevelopmentGoalDefinition 可复用发展目标",
+        "own"
+      ]
+    ],
+    "edges": [
+      [
+        "N",
+        "P",
+        "发展目标"
+      ],
+      [
+        "C",
+        "O",
+        "课程版本"
+      ],
+      [
+        "E",
+        "R",
+        "学习过程"
+      ],
+      [
+        "S",
+        "R",
+        "外部证据"
+      ],
+      [
+        "R",
+        "Q",
+        "待确认资格"
+      ],
+      [
+        "R",
+        "P",
+        "完成反馈"
+      ],
+      [
+        "PATH",
+        "E",
+        "行动及前置校验"
+      ],
+      [
+        "AUD",
+        "E",
+        "适用范围另校验权限"
+      ],
+      [
+        "DG",
+        "P",
+        "显式采用或自建目标"
+      ],
+      [
+        "P",
+        "LA",
+        "需要学习的行动"
+      ],
+      [
+        "LA",
+        "E",
+        "选择具体开班"
+      ],
+      [
+        "O",
+        "E",
+        "同事务守卫座位及报名"
+      ]
+    ],
+    "aggregate_ownership": [
+      "Course与LearningOffering独立根 / PublishCourse、OpenOffering、ChangeCapacity、CloseOffering",
+      "LearningEnrollment根；SeatReservation及WaitlistEntry归LearningOffering / Enroll、CancelEnrollment、PromoteWaitlist、TransferEnrollment",
+      "LearningRecord根 / ConfirmCompletion",
+      "DevelopmentPlan根含DevelopmentGoal及Action / PlanDevelopment、AddDevelopmentGoal、UpdateDevelopmentAction、CompleteDevelopmentGoal",
+      "LearningPath及Audience独立配置根 / PublishPath、DefineAudience",
+      "LearningAssignment根 / AssignLearning、ReviseLearningRequirement、CancelLearningAssignment",
+      "DevelopmentGoalDefinition配置根 / PublishDevelopmentGoal、RetireDevelopmentGoal"
+    ]
+  },
+  {
+    "id": "M19",
+    "title": "人才盘点、人才池与继任",
+    "entities": [
+      [
+        "TalentReviewSession",
+        "sessionId＋范围/周期＋revision",
+        "盘点范围、评价维度、参与者和结论"
+      ],
+      [
+        "TalentPool / Membership",
+        "poolId；membershipId＋人员＋期间",
+        "入池、退出、依据与历史"
+      ],
+      [
+        "SuccessionPlan / Candidate",
+        "planId＋subjectType/ref；candidateId＋personId或M05 candidateId",
+        "计划主题为Job、Position或Incumbent（人员及任职范围）；可直接提名或引用人才池，不占资源"
+      ],
+      [
+        "ReadinessAssessment",
+        "assessmentId＋候选/日期",
+        "准备度依据、证据版本及后继"
+      ],
+      [
+        "TalentReviewTemplate / Dimension",
+        "templateId＋版本",
+        "盘点模板及评价维度引用M16尺度；Session保留模板/尺度版本，更新模板不改写旧盘点"
+      ]
+    ],
+    "rules": [
+      "继任候选不占用编制，也不保证任用；实际任命仍走M04/M03守卫。",
+      "盘点结论冻结采用的绩效/资格版本；未来评分变化不重写旧盘点。",
+      "权限按盘点范围、评价敏感度和参与者授权；员工自助默认不暴露内部继任名单。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "盘点Session固定模板、维度和评分尺度版本；模板v2只供新盘点采用，旧Session继续按v1解释。",
+      "SuccessionSubject是带类型的值对象：Job/Position引用M03，Incumbent引用M01/M04；适用BU/部门及生效范围固定版本。JobOnly任职可参与Job/Incumbent计划，不强造Position。来源对象停用或任职变化产生计划复核事项，旧盘点不倒改；实际任命按当时M04的岗位模式独立决定。",
+      "候选可以直接提名或来源于人才池；内部候选引用Person，外部候选引用M05 Candidate，拟入职时经M05→M01/M04核对转化；进入计划不先造Employment。发展行动用稳定ID交给M18显式采用，重复通知不重复创建目标。"
+    ],
+    "contract": "消费M03职务/职位、M01/M04在任者、M16资格及M17绩效；可引用M05外部候选，向M18提供稳定的发展行动，向M04提供任命候选而非任职事实。",
+    "china": "人才判断与法定劳动权利分开；人员标签和评分不自动触发解除用工。",
+    "checks": [
+      "人员转部门后按授权控制可见；旧盘点依据仍可核查。",
+      "同一继任候选可出现在多计划，实际任命只经一次资源核对。",
+      "JobOnly员工可进入Job或Incumbent继任计划；外部候选不因进入计划自动成为员工。"
+    ],
+    "nodes": [
+      [
+        "P",
+        "M03 Job Position / M01 M04 在任者",
+        "external"
+      ],
+      [
+        "E",
+        "M16 M17 资格与绩效",
+        "external"
+      ],
+      [
+        "R",
+        "人才盘点及评价快照",
+        "own"
+      ],
+      [
+        "T",
+        "人才池及成员历史",
+        "own"
+      ],
+      [
+        "S",
+        "SuccessionPlan 主题 候选及来源",
+        "own"
+      ],
+      [
+        "A",
+        "准备度与发展行动",
+        "own"
+      ],
+      [
+        "L",
+        "M18 学习发展",
+        "external"
+      ],
+      [
+        "H",
+        "M04 任命办理",
+        "external"
+      ],
+      [
+        "CFG",
+        "TalentReviewTemplate / Dimension 盘点模板及维度",
+        "own"
+      ],
+      [
+        "RC",
+        "M05 外部候选身份",
+        "external"
+      ]
+    ],
+    "edges": [
+      [
+        "E",
+        "R",
+        "授权采用"
+      ],
+      [
+        "R",
+        "T",
+        "入池或退出"
+      ],
+      [
+        "P",
+        "S",
+        "主题类型及范围"
+      ],
+      [
+        "T",
+        "S",
+        "候选来源"
+      ],
+      [
+        "S",
+        "A",
+        "准备度评估"
+      ],
+      [
+        "A",
+        "L",
+        "发展行动"
+      ],
+      [
+        "S",
+        "H",
+        "候选参考不直接任命"
+      ],
+      [
+        "CFG",
+        "R",
+        "采用模板及尺度版本"
+      ],
+      [
+        "RC",
+        "S",
+        "直接提名 不先造用工"
+      ]
+    ],
+    "aggregate_ownership": [
+      "TalentReview根 / ConfirmReview",
+      "TalentPool根含Membership / EnterPool、ExitPool",
+      "SuccessionPlan根含Subject、Candidate及发展行动引用 / CreateSuccessionPlan、NominateSuccessor、WithdrawCandidate、CloseSuccessionPlan",
+      "SuccessionPlan内ReadinessAssessment及决定 / ConfirmReadiness",
+      "TalentReviewTemplate配置根含Dimension / PublishReviewTemplate"
+    ]
+  },
+  {
+    "id": "M20",
+    "title": "员工经理服务与HR任务",
+    "entities": [
+      [
+        "ServiceRequest",
+        "requestId＋请求人＋业务主题",
+        "咨询/服务请求、分派及结论，不替代领域事实"
+      ],
+      [
+        "TaskProjection",
+        "sourceObjectId＋来源状态＋任务类型",
+        "可重建待办；办理动作返回所属领域"
+      ],
+      [
+        "JourneyInstance / StepInstance",
+        "journeyInstanceId＋templateId/version；stepId",
+        "实例固定模板版本、上下文和来源证据；步骤状态/完成依据归M20，实际业务状态仍归所属域"
+      ],
+      [
+        "Communication / DeliveryProjection",
+        "messageId＋受众快照；deliveryRef",
+        "内容与受众归M20；送达事实归X04/X05，本域只显示投影"
+      ],
+      [
+        "PayslipView",
+        "publicationId＋revision",
+        "M10发布状态/可见日与X03当前权限双守卫；无权发布工资单"
+      ],
+      [
+        "JourneyTemplate / StepDefinition",
+        "journeyTemplateId＋版本；stepDefinitionId",
+        "可复用清单、依赖顺序和证据要求；配置变更不改已有实例或完成证据"
+      ]
+    ],
+    "rules": [
+      "任务计数注明覆盖范围；0条待办不能宣告全部HCM完成。",
+      "自助动作通过领域命令和X03授权，工作台不直接修改底层对象。",
+      "通知、请求关闭和领域事实生效是不同状态；链接失效时重新核对来源。",
+      "Journey清单及业务完成由M20命令依据来源证据维护；X04仅持调度/尝试/通知状态。",
+      "工资单只通过M10受控查询，撤回或替代不能靠旧缓存继续阅读；通知送达不等于发布或付款。",
+      "本域按对象和动作定义核验/核准要求；决定绑定确切版本及政策，生效命令重核权限、版本和决定有效性；待办完成不替代业务事实。",
+      "初次办理和来源修订时按同一模板条件自动核对当前事实。已生效显示已满足，尚未办理或已撤销显示未满足，旧完成证据可查。依据不足以判定、相互矛盾或该步要求人判断时才生成复核待办。",
+      "任务列表、通知链接和工资单缓存每次读取均检查X03当前权限及源域可见状态；旧受众快照或创建时权限不能放大当前访问。",
+      "StartJourney固定发布模板及对象上下文；CancelJourney只停止尚未执行的本清单步骤和后续分派，不自动撤销已生效领域事实。模板依赖无环，实例推进/取消以revision守卫；已经执行或unknown的外部操作仍回所属域核对。",
+      "晋升调薪Journey分别确认M04动作/任职、M09授予/下发及M10影响评估/采用/闭环证据。任一步未满足不报整体完成；工资影响处理不推导到账。重试复用来源幂等键，取消不撤销已生效事实，源变更重核（DDD §2.13，AC01）。"
+    ],
+    "contract": "从各业务域收集授权后的任务投影，调用各域办理合同；使用X04编排和X05通知渠道。",
+    "china": "HR服务请求附件及沟通受众按目的限制；经理视图基于关系权限而不是部门名称。",
+    "checks": [
+      "历史/越权任务不泄露人员信息；重复点击返回同一办理结果。",
+      "消息失败不回滚已成功的人事事实，并显示可续办状态。",
+      "模板改版后在途清单仍用原版本。更正说明但任职仍有效，入职步骤保持已满足。明确撤销后自动显示未满足，原完成依据可查。这两种情况均无人工复核待办。",
+      "同一步骤的依据相互矛盾时提示待核。重送只对应同一步。任职已生效而调薪失败、授予成功而工资待核时，分别呈现各步真实状态。"
+    ],
+    "nodes": [
+      [
+        "D",
+        "M01至M19 领域事实",
+        "external"
+      ],
+      [
+        "T",
+        "授权任务投影",
+        "own"
+      ],
+      [
+        "S",
+        "员工 经理 HR 入口",
+        "process"
+      ],
+      [
+        "R",
+        "服务请求与办理记录",
+        "own"
+      ],
+      [
+        "J",
+        "JourneyInstance 清单实例及步骤证据",
+        "own"
+      ],
+      [
+        "C",
+        "沟通内容与送达投影",
+        "own"
+      ],
+      [
+        "X",
+        "X03 授权及目的",
+        "shared"
+      ],
+      [
+        "W",
+        "X04 编排与通知",
+        "shared"
+      ],
+      [
+        "P",
+        "M10 工资单发布读取守卫",
+        "external"
+      ],
+      [
+        "JT",
+        "JourneyTemplate 可复用清单及步骤定义",
+        "own"
+      ],
+      [
+        "DONE",
+        "晋升调薪完成证据 任职 授予 工资影响",
+        "process"
+      ]
+    ],
+    "edges": [
+      [
+        "D",
+        "T",
+        "状态和任务范围"
+      ],
+      [
+        "X",
+        "T",
+        "过滤及动作权限"
+      ],
+      [
+        "T",
+        "S",
+        "可办理事项"
+      ],
+      [
+        "S",
+        "D",
+        "所属域命令"
+      ],
+      [
+        "S",
+        "R",
+        "服务请求"
+      ],
+      [
+        "W",
+        "J",
+        "调度及技术证据"
+      ],
+      [
+        "J",
+        "D",
+        "Q核对源域完成证据"
+      ],
+      [
+        "W",
+        "C",
+        "消息派发"
+      ],
+      [
+        "P",
+        "S",
+        "Q发布状态及当前权限"
+      ],
+      [
+        "JT",
+        "J",
+        "固定模板版本 创建实例"
+      ],
+      [
+        "J",
+        "W",
+        "提交步骤运行意图"
+      ],
+      [
+        "J",
+        "DONE",
+        "模板明确每步完成口径"
+      ],
+      [
+        "D",
+        "DONE",
+        "Q有效版本及闭环依据"
+      ]
+    ],
+    "aggregate_ownership": [
+      "ServiceRequest根 / Open、ResolveRequest",
+      "可重建投影 / RefreshTaskProjection",
+      "JourneyInstance根含StepInstance / StartJourney、ConfirmStepByEvidence、ReassessStep、CancelJourney",
+      "Communication根；Delivery为X04/X05投影 / PublishCommunication",
+      "M10发布件授权投影 / ReadPayslip",
+      "JourneyTemplate配置根含StepDefinition / PublishJourneyTemplate、RetireJourneyTemplate"
+    ]
+  }
+]

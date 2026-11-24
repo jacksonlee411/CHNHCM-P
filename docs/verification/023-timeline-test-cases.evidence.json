@@ -1,0 +1,5271 @@
+{
+  "schema_version": 1,
+  "report": "docs/verification/023-timeline-test-cases.md",
+  "base_commit": "26877432b115d5c78e58f74fb87271658aedcb1b",
+  "working_tree": "dirty",
+  "scope": "test case documentation only; no runtime execution",
+  "baseline_sha256": {
+    ".editorconfig": "a00bf61ee5d97584bf29c813535a5b1b64462adfd9632d67f1acf7308007102c",
+    ".gitattributes": "7d6b010c8ff37a87126a4ac804ac34c3d4f7338c555e71d15c0c0bcfb17f9cc6",
+    ".github/workflows/README.md": "ac0238ea9c60a15a9a545bee19403ca324d2c64a2975b1d50397c6961d42e885",
+    ".github/workflows/ci.yml": "409d625837c6924759f6abd494c2309c71b96de45ed41706ecfbe3401fff5800",
+    ".gitignore": "7259a7c1615e9ee1df398510f985a3f9eaf10a2dee6b4454a11e3be7fc1baf8e",
+    ".node-version": "7e8a2fa94951112b894a3dbe3d05efef5e9263741fa49125f0a70f40fedab4cc",
+    "AGENTS.md": "af979f4ff8ab920787b9edcc1e97afd708d05d9ce31cd2882990c49c9f64b678",
+    "Makefile": "881794f408838c149cb98ff623cb2737a02b47092974219909ce95a2926ebe0c",
+    "NOTICE.txt": "91fe571ef7411614b04f3a02f93b957c54f0840b290c4af220d9cf0412c742c9",
+    "api/openapi.yaml": "15b4d623adeebc04f8ddcf52ffc97a1a5a5f8b68d49385904f3d9f31088c1705",
+    "apps/vendor-console/README.md": "4303a764ae5a23423f4bf13c284090ce5567c3c2112823455e438d9f4dcf9696",
+    "apps/web/index.html": "982365a69a5a3e8d822f938031913feaa66cbf0df6b633fadf420897f9bca757",
+    "apps/web/package.json": "6b5fbe53d84576937cc13a86d1029afb66c69e0d4ca3b756dd55fe08d3b60cc2",
+    "apps/web/public/THIRD-PARTY-NOTICES.txt": "97177ea99eb459280f916f681cbcbb055f67f1ce364f7996c9c9be5e5c701493",
+    "apps/web/src/app/App.tsx": "1f5276c8b1d50d5ae7bc15261ee89407abad51af4bc343b531debc3403c95d4f",
+    "apps/web/src/features/organization/BusinessUnits.tsx": "6c33a6df3b9b720d4c8267fde9256a984bd0db50a56508eceb09cc99d0eec957",
+    "apps/web/src/features/organization/useBusinessUnitNavigation.ts": "a73456185a75666245b0936e7b29656b13cf37777644e5d6d8d838b21a50f5ad",
+    "apps/web/src/locales/README.md": "7da9274b9d5b5573ba85a99fd76966911ab0e3ef4ce23a21f658e0837670c90a",
+    "apps/web/src/main.tsx": "64930a8d774fd503c0c9d064bddc2a56d60535f0ad6eda0d3c84f690fba3565e",
+    "apps/web/src/shared/navigation.ts": "e634c21f93f2ecdb500271262ca1f7b9b4b96ae8d597eb912939d35225718dad",
+    "apps/web/test-fixtures/experience.html": "a4eedd509a6c8fc3d26c5334a8536c66ab52c79d8caf4136f1cc1f2bfe0ccbe3",
+    "apps/web/test-fixtures/experience.tsx": "8376d1cdaaa604127aa881f42264a1674a86e78aee14754f404282b65ba9ff15",
+    "apps/web/tsconfig.json": "c450ec1ef30b097228d844e1e850b90ed7b271cf43f848e6b950b60d49f359d1",
+    "apps/web/vite.config.ts": "46744d29bcca99b4c76d9861a4a0c26afc997926bcd136f91b22ed62a99303b0",
+    "cmd/server/main.go": "72d38a3d32d3c84eb16719396f40fdefba03c86f033ffa8c8e5dd65ed45d6e14",
+    "cmd/upgrader/README.md": "6cdb0dfcb235f9f9ee37f8624fbd0b2fb8255717548d6d06c0bdc3d650fff0dc",
+    "cmd/upgrader/main.go": "2f04be22b311d2ed792b1c7b5e1343fd351626b73655a8c91d41ba2d553fe2f6",
+    "cmd/vendor/README.md": "0c9ec94546eec30f7c3a194615f49a725665aca5035dd28ce9088b6f0afd424a",
+    "cmd/worker/README.md": "875ed0cde5effd5544bc085308eb8b302e969eeab5fb4f29b58f8f3d7d36b2d6",
+    "db/migrations/00001_access.sql": "5bccf0f106085fe95341e001d9467bcb79dab7688cfb853c9920cf07d275fdb9",
+    "db/migrations/00002_organization.sql": "fe60522cf550636f25282e9a8b56ce87bc44074a62c5122fbcd012906bbc449c",
+    "db/migrations/00003_commit_evidence.sql": "032ed9131bb4d1b750f0d00a529aef38f82801cf6902ff2e6d56e5d078c6a77b",
+    "db/migrations/00004_retire_commit_capture.sql": "b52de7c2cfa24eb5da233b8ecb2b1699188bc796780670c22a54ba31a2f8f93f",
+    "db/migrations/README.md": "fb2bcac3ab60547272e1322441b40588964aabbacebbd18dad5b3df00bd2f672",
+    "db/migrations/embed.go": "0adb0c5b1c32c3f4d2d79773323776925b73410f9fe19c045f8e4bda9c45a7dd",
+    "db/queries/access/queries.sql": "e9810257109265e223c028b622fa48b72a0e3d02c0306d9eaad031ec7b14bb64",
+    "db/queries/organization/README.md": "56645bc478b3afd579ab942982491e40fdcb177ee2c6caa8fc36364afd99f22e",
+    "db/queries/organization/queries.sql": "1bf7653ec088d8f6a388fe3b852890581a062a0903512affe0ca1a8c18208681",
+    "deploy/backup/README.md": "d3a268ce0f23c770a5bc72fe2382888dcd7e44f85afebc991bd08b9446625b9e",
+    "deploy/compose/README.md": "40b4c9ec16be219eba6002afb692506d14d9db46d8e9f9fc18864be20f3feb86",
+    "deploy/local/compose.yaml": "7120c70aef1b9dd35590e7fc1123cce48896383bbb2266b774c6160b26f4f992",
+    "deploy/local/postgres-image.txt": "93e9dec9052f3162b00441897efc6d18377af1a14f8fa0427791e04e03b5dd51",
+    "deploy/upgrade/README.md": "8ee6588f3eb6186190f2d149692cec1daea8b7c422c5c71e119042133f2fb60b",
+    "docs/README.md": "b17f46b78e0b367d85f4002affde6cc9a1eedc88a92ec2677a02e5fe2dafe72b",
+    "docs/adr/002-technology-stack.md": "e13edeba22843690b8984c1ae8d8d41f117853dc001d66ab53427d4a3e6d4e7a",
+    "docs/adr/003-implementation-stages.md": "c3918a3c79dab19e30655f82e585d1a7322348eb91345c3d51137f808db44d6a",
+    "docs/adr/009-mainland-organization-terms.md": "6734ad48e497ca6b9809a25b46fd95cf6471e938300ac33f83a405dcde9c3b9c",
+    "docs/adr/016-m02-effective-record-history.md": "83ed84f6825133e7328229f0702811a6907b86a9bfe4eed13c45310eab897bba",
+    "docs/adr/018-effective-records-and-source-history.md": "855733d60a5ead154f96fbacc00c0972eea76e3f2639020694ad07b823f09787",
+    "docs/adr/020-effective-record-delete-and-redate.md": "a988df366767df54485889d3acf91f546360c66f712ad6755e7270e319f32801",
+    "docs/adr/021-bu-lifecycle-and-record-maintenance.md": "81c62e2ef46d639ccb00ad020a23256aab0d9c6cdc89d6c465939ccd93724a0e",
+    "docs/adr/022-joint-timeline-revision.md": "d788daf4f3c635ad2911ee1a839db9d4f291ee418ee6ce388f14dd429b3d0c85",
+    "docs/architecture/004-repository-layout.md": "065a638637e8480a360cf3ad5e351affd84a8533537efc632833207a71f1d0c0",
+    "docs/architecture/007-m02-entry.md": "acd66649e5e08a6bf741345ec5a87ccf72648985c8f1f45be49afcd9b1c1399d",
+    "docs/architecture/contexts.json": "7ef3e55d0f9340924322eda6a2824807636cc08c095c22505332e26c85f3710b",
+    "docs/architecture/target/02-target-architecture.md": "3ec13c25b3d39290ebcf3b843b3dac83284e0d74bdfd078741ffd01b35afd2c8",
+    "docs/architecture/target/03-consistency-contracts.md": "55b40ea642d54931ea8149764b8cb63648cfbff58b8febceda4cbd916c16fa25",
+    "docs/architecture/target/04-china-localization.md": "f9b42426a535825157dec1fc9408ce090676487b63848303d931d1e02382a10a",
+    "docs/architecture/target/07-concept-mapping.md": "aa1ce0ad47c8619c94152087f96ebc7da60343969802d8aff97f84fc0f07b9e0",
+    "docs/architecture/target/08-cross-module-flows.md": "73652e06fee2edfb379042e0c4f66ba9497516325b49321da2dfd5b0efb818b1",
+    "docs/architecture/target/10-ddd-and-state-contracts.md": "a8ec010cfdbfba8bd616fab8bd4bc5964773c3e4f2ce8f9c12832feac61cfc69",
+    "docs/architecture/target/12-concept-architecture.md": "4601ddcc8a7fd0a3b1e8f2899b8bdd895faefa65cd7c1ed1ae2567b8a7461ae0",
+    "docs/architecture/target/14-aggregate-catalog.md": "65019fe59d044f88a94649ccb1cd0ec9fceeed130049fe6789d996e452263f95",
+    "docs/architecture/target/16-command-acceptance-index.md": "8cee808535649d4ffd741c375d91bf4b888cfb24527394780d482922084ac4e0",
+    "docs/architecture/target/17-terminology-glossary.md": "75710ca0922c806d4459ff95845bf860d999daba558a03f28b9195c07121c934",
+    "docs/architecture/target/README.md": "e7ea0fbeff3cb03f3435fdcb9e52eedee519a3af9c84c673e9fa9ca4ac820ee6",
+    "docs/architecture/target/data/business-modules.json": "4ca515771d30f53b5d5ae349342dddd3ee0263a4e50a4495da7904d5c90906d4",
+    "docs/architecture/target/data/command-contract-index.json": "5b5859337796a801a2febb6afabd9845efe75b817a3ab61da212d87487bba3ef",
+    "docs/architecture/target/data/concept-mapping.csv": "1451f6f72bb448862ab17f4398d6dca82ed62fb6b3584850d2e7873f76f934cb",
+    "docs/architecture/target/data/concept-mapping.json": "0a8a937968f5ad2909f631a1ac65ab8b8df03e6ea9cf12c7b124bbbc53e21e33",
+    "docs/architecture/target/data/concept-refinement-sources.json": "0a0dcd8ee3ffb845f11a8f78521dcc389f376f5eaf981df6e49066054cbd0b43",
+    "docs/architecture/target/data/crosscutting-modules.json": "a406df8b84bd062c8d2692a0037c3648dc079a7cba781b6fca3f299539f0d2c4",
+    "docs/architecture/target/data/oracle-release-check.json": "584112f8d4e397a67b3626b3f042e474e5d38895ecfab08bf718428eb7b11af2",
+    "docs/architecture/target/data/render-partial.json": "19c3a10b4b90240214c982322634a99e7120720c0b2618a7811f1c2bc4e898cc",
+    "docs/architecture/target/data/terminology-glossary.json": "7757db35732d90fb7dc3182a6b990907e37add11b1678d98532f26ba3cb549ed",
+    "docs/architecture/target/diagrams/README.md": "10d5b446bc81edab575ba0b33ba5b7033e183c0be473dc17231867f211507795",
+    "docs/architecture/target/diagrams/c01-core-hcm-concepts.mmd": "befd7654f015d81a5d9ef3d4487b83b39d7557171357599f48f75f8ef3ff4f79",
+    "docs/architecture/target/diagrams/c01-core-hcm-concepts.svg": "415c1c5029d74a95efbabed50eced0202415010525690733169c05e50ecfa947",
+    "docs/architecture/target/diagrams/c02-payroll-concepts.mmd": "0bcae594eaad281e4ccb92332bec8922fcbdf1c46872be8a9fe88b24869795b8",
+    "docs/architecture/target/diagrams/c02-payroll-concepts.svg": "7d9039b760d287125c1ad3ec70d3b46d74404a051d10dba5bdc6abd793b85dce",
+    "docs/architecture/target/diagrams/c03-time-absence-concepts.mmd": "940167b4d79f14d8091d375300345980a7343d47886f23ef19db314fb226d328",
+    "docs/architecture/target/diagrams/c03-time-absence-concepts.svg": "67bca7e3a391bbdae1839149f6032310de5ef906226b554e2798f0f0e066de93",
+    "docs/architecture/target/diagrams/c04-talent-concepts.mmd": "9df02620ddf49c17f451e32e39b205bc36fae608df6b36c2d81ec433f07e352d",
+    "docs/architecture/target/diagrams/c04-talent-concepts.svg": "d902eb9cbdb9621ac41c983a637f28034a6ba870338269c327248056766ee971",
+    "docs/architecture/target/diagrams/c05-reference-access-concepts.mmd": "f59ad45ce853c9ce23dc0aa856082447ca95719e2ff099ed263958dc6d8a1e04",
+    "docs/architecture/target/diagrams/c05-reference-access-concepts.svg": "cf1f808f689c94c5f6dc68c7f23411a577006e84619ad0d4dd2cc8835c9c3c0a",
+    "docs/architecture/target/diagrams/e01-person-employment.mmd": "2e01b338b23005c1ffc8f0f3d78ad6fe363f24a8141729ba5d80948b5f49cfd0",
+    "docs/architecture/target/diagrams/e01-person-employment.svg": "194d95fa05f461cafa963e3531f95edce3b349e0a49f85749b026dbbf2a8b47c",
+    "docs/architecture/target/diagrams/e02-legal-contexts.mmd": "7be54c3a5ad06140df1b6d8ad3f5a90533046d798579f36a7024faaa6df83d81",
+    "docs/architecture/target/diagrams/e02-legal-contexts.svg": "7a432856f063e03f4c08848edc4d582332da2ce28f69ba7c066e9596f118765c",
+    "docs/architecture/target/diagrams/e03-contribution-ledgers.mmd": "05bf7eec8ccf579017a6b3d8c09034eec4518f6fe694d872be2089b7b99cb1e0",
+    "docs/architecture/target/diagrams/e03-contribution-ledgers.svg": "eba90b52f4fc1e3a9c3874c8895e4751b98357c1612cb17b841e79eb672f4d40",
+    "docs/architecture/target/diagrams/e04-effective-adoption.mmd": "1268613bd5bf1db3dcf5953df7582a8d95e83cf6221ed8fdd6c410e5dd34593e",
+    "docs/architecture/target/diagrams/e04-effective-adoption.svg": "c23a91466255ace9ec16c60c7c09d4235bf7abd073bb5ea3e0b013e6ffea80b0",
+    "docs/architecture/target/diagrams/e05-bank-payment-identity.mmd": "db4b75561995de35e120a23f8dc95bb39bfcee236ff7e20ae42c3919c145a9d7",
+    "docs/architecture/target/diagrams/e05-bank-payment-identity.svg": "e658022ee98dfb9164360b676bc62a58ad3d741f30dbafe027b1b7452b2d86ea",
+    "docs/architecture/target/diagrams/e06-external-state.mmd": "9002fe5de9848f80c92537c1af7ade36892acd9bd64a47be3fb5866152fb0f48",
+    "docs/architecture/target/diagrams/e06-external-state.svg": "444294805807ee6048364a442d39fa9dd0fe911cfc53e4341f81fe45e80b8b61",
+    "docs/architecture/target/diagrams/e07-tax-commitment.mmd": "18cd00e21e66729bc948ed3196d6bc82078722b6002185934a032b96177ebde7",
+    "docs/architecture/target/diagrams/e07-tax-commitment.svg": "f98720c5383fab6cb83daec370e91b0ee9ac825c595e998c08d9115a60e660d5",
+    "docs/architecture/target/diagrams/e08-payslip-publication.mmd": "a1f27d5c873ae5d493a0e015b01cf40e19cc35a43cca1793471102c06127238e",
+    "docs/architecture/target/diagrams/e08-payslip-publication.svg": "bfd7697e7892a216610b31206ae94d1c8921a0910a2f5a37b02b0a13f62602d0",
+    "docs/architecture/target/diagrams/f01-hire-first-pay.mmd": "321d60b6cd9117d9258ffdd3ad715dcb581ebcbc39bcdd76aeb3d7550fb73d0a",
+    "docs/architecture/target/diagrams/f01-hire-first-pay.svg": "bfc5b35378fa059970a67755a5b0a11b2a434b4e5e8ea72a5c3fb780e1999065",
+    "docs/architecture/target/diagrams/f02-transfer.mmd": "351a784ab9bc605ed1b26c03bd14db943befc81a278c16c3df5657a1c7acf0cd",
+    "docs/architecture/target/diagrams/f02-transfer.svg": "8ce26d7c5e3d470a2b0e564d77584c39d21d5e493e75e7479e79f5e84cc9d575",
+    "docs/architecture/target/diagrams/f03-time-payroll.mmd": "33c3d93ba1aeeafcc24a0ae5e69a9c444b6ed1415027462c375f0ee1e413a4a2",
+    "docs/architecture/target/diagrams/f03-time-payroll.svg": "391dc1c5d2bcbe6457402749361e59f93fdf5f4429032d688b2ff4006d9ff2f3",
+    "docs/architecture/target/diagrams/f04-performance-to-finance.mmd": "8c774e2802a6816afe75cef9f26e78d2ef3f6f9a7a964ca6edc355f619820d11",
+    "docs/architecture/target/diagrams/f04-performance-to-finance.svg": "27bf609a44d9ab4eab123e9aff190bce0e5d72e45380a08356c14b56b2ef0a7f",
+    "docs/architecture/target/diagrams/f05-retro-correction.mmd": "65bb1194f0b21f484985395b020feba9da249080e1e32398b006146b09caf24f",
+    "docs/architecture/target/diagrams/f05-retro-correction.svg": "2cfc8c9c7b18664df0b3da91781fba194ac8547d9feeedfa3309d2a8e72c308d",
+    "docs/architecture/target/diagrams/f06-contribution.mmd": "5aba8db274fe6be7dd2eb42f10faa98293b4854032df14a30e87cadb26049ae5",
+    "docs/architecture/target/diagrams/f06-contribution.svg": "c2ff12cb859a338cd2ae9df82b2513646cfcbfb14c25dddcf3e4471df8cdcc06",
+    "docs/architecture/target/diagrams/f07-exit-rehire.mmd": "62073817dbd3e4db96048b0ff72537f3684d8153872dafd2ca0af6028ff9146b",
+    "docs/architecture/target/diagrams/f07-exit-rehire.svg": "ac1180aca3665f5483a42e25cf6b949e7d4db3dc3fd76f43c3625c577b474548",
+    "docs/architecture/target/diagrams/f08-talent-development.mmd": "23b8762320e91db1be18d5987acb792aab55965a4d8b2c42ec19f7896ce3e6a8",
+    "docs/architecture/target/diagrams/f08-talent-development.svg": "5c2927a26bd8b1486b1dccb1683b286fc7f71c0d5ffd7730e0a951adb5ce22aa",
+    "docs/architecture/target/diagrams/f09-reliable-delivery.mmd": "bdaee196003386b8ba3d037dbf8f46d0c026438e1f0f91aed7d8bcf30ee63260",
+    "docs/architecture/target/diagrams/f09-reliable-delivery.svg": "0619eb2d7f4179919c27ad7c42c56708ed74b0504c0700fd625f11c4631d7dab",
+    "docs/architecture/target/diagrams/g02-target-domain-map.mmd": "654dc342c343611f1c2332a7204a73da9432f28ef903d5e5107c0c5292e7d29a",
+    "docs/architecture/target/diagrams/g02-target-domain-map.svg": "f1a3a785695dd136a4d4f3488b08b8c1eb492cb7f49fe63f5ab32e452542180c",
+    "docs/architecture/target/diagrams/g03-fact-ownership.mmd": "9dc3d5c2e38ab2ff23d6eacc8566f87c768fa3d9bffa410723b7ff52373c6417",
+    "docs/architecture/target/diagrams/g03-fact-ownership.svg": "9c806a4fd8a31a93b678dea000c183f794b77c6d282f8e76f60bd13b68c7792b",
+    "docs/architecture/target/diagrams/g04-formal-deployment.mmd": "66e0548baf04f233699a86987d5e5fc76fc1cb7812f9291e6b1d6b13e7bec148",
+    "docs/architecture/target/diagrams/g04-formal-deployment.svg": "08ffed2c7d0d417df3408626dfb5e3e8e2e197048ab329d55979351117f230ff",
+    "docs/architecture/target/diagrams/g05-context-map.mmd": "a15ea096932a180385ec9a48b0abb82981ebb20d1eb385583b614e48b68e3196",
+    "docs/architecture/target/diagrams/g05-context-map.svg": "68d673b33a7d12f6ad861a4ce49cd0cb1d5ab62e73b4add7b613feec9e5842a1",
+    "docs/architecture/target/diagrams/g06-aggregate-transactions.mmd": "5a83ca75253f88b8406cbe4366bbfe0afb78844d3cd2c48bc51bda22351a9762",
+    "docs/architecture/target/diagrams/g06-aggregate-transactions.svg": "7d791d0a23d3a1a9880295491b721f9b3efcf8d2649aef1ec9a5d50af934857d",
+    "docs/architecture/target/diagrams/m01.mmd": "cce4886b12039cf93579c81cb6f1bd2d66b6bfe988a237cb19da7e2439460c68",
+    "docs/architecture/target/diagrams/m01.svg": "0202dacd584121a5b2f791a827ac98bda0c66b68da6dc5c223de912a85e1a83e",
+    "docs/architecture/target/diagrams/m02.mmd": "1cd968feaa81d398cb2ce4b808b5fbb2a50dadbcce32b58872c34b0c402496d1",
+    "docs/architecture/target/diagrams/m02.svg": "cd10511767aff553e55a8a8fcb68a2c8884e6facfee6dd4ee578554f4cc660c0",
+    "docs/architecture/target/diagrams/m03.mmd": "e17f6bd337fe44e976c1fcbd56a900c3a1db841f754526ba193daeb16efa6569",
+    "docs/architecture/target/diagrams/m03.svg": "5e6caae8603fd55011e29d73de224d67b2b31294a21b91e7ebeac8b2a26832ce",
+    "docs/architecture/target/diagrams/m04.mmd": "9fd90b46c2c7420ce3a395b81af7ab98dce3eb07fe3e793e68198c877f29d4cd",
+    "docs/architecture/target/diagrams/m04.svg": "e59672171cdaf7169848d70defa572fe7b0ac18d58b4e9ec73cc2e770b4e0272",
+    "docs/architecture/target/diagrams/m05.mmd": "6218af84cc597d29e72dbe72717143f6c5f6fd1dc07aa313b6382dc11857576a",
+    "docs/architecture/target/diagrams/m05.svg": "a125038bccf96ea436a55ca8a0289bc16e35d17e224926c61412502bb717d194",
+    "docs/architecture/target/diagrams/m06.mmd": "7bcc87d8b78130967713244ab07f9b2b44ee77ab89ce370661a4dcb59f274ee3",
+    "docs/architecture/target/diagrams/m06.svg": "b90cd3dbc552dbda6697328035167a8d910b34ab22970957cb53ecfd7556936c",
+    "docs/architecture/target/diagrams/m07.mmd": "4bfdaad7ea848764b9b22154b4a922d4393e8bb5a2a538d86e4aa0bfeaf8b9ca",
+    "docs/architecture/target/diagrams/m07.svg": "bd9f8024d2e62965a8871c0c32622b373c965edbd4081aa2d19f71adeaf07bc1",
+    "docs/architecture/target/diagrams/m08.mmd": "1c442ed6dca571939669b5d700f8056e65f162beecf844d17b5eee2f2b719312",
+    "docs/architecture/target/diagrams/m08.svg": "442c02b1b1c4043f13b91033edc519254a8744bea553d5c91dd5967fcc3829b2",
+    "docs/architecture/target/diagrams/m09.mmd": "0139fdeb60374990497e1e07228c77ebb7f068ac0e618fd0f39c2dafce561581",
+    "docs/architecture/target/diagrams/m09.svg": "c3d3d59fd08b0331f78c86cdc1981a0c217700939f7c33aac1ef9d8d484cd9e3",
+    "docs/architecture/target/diagrams/m10.mmd": "07074d49cbbfe1cba7c1a09c2f774d6cb121da7dea77ce80e14416f84671eca8",
+    "docs/architecture/target/diagrams/m10.svg": "4f3ee2078e612ec2b0f2798430968adab8ca35163b269c6c6478ee5c235915c2",
+    "docs/architecture/target/diagrams/m11.mmd": "96c95b0c4d4ab7bdf3b531a2e95aab36759dfd9e8c9b0552db19f4c1243fe4a3",
+    "docs/architecture/target/diagrams/m11.svg": "72081681b14291130c63382c38e3b74ad204af63795fbc6b2bde5d2e9c055602",
+    "docs/architecture/target/diagrams/m12.mmd": "44fe5061fc15997b098d76bcad88cd2dd342b830ff2d437d5d7da520e5458645",
+    "docs/architecture/target/diagrams/m12.svg": "8ca98639d55a438329cc8d9d03d61709a92aa9143938c96e0355f16f1f57f7ac",
+    "docs/architecture/target/diagrams/m13.mmd": "0721628ba7ff191bb638cfc2fcfd9f3c9173bc247e1bf5794434ceb9a60c75bf",
+    "docs/architecture/target/diagrams/m13.svg": "f144524d40ba8ee57702ae5982f0abdb6ab079c6b7a81119be074b82f4ed87a6",
+    "docs/architecture/target/diagrams/m14.mmd": "1b0d60e3d8b92aeff5cf1e0d8c2712c3ab52ddcbf358e2127087c92794d8274b",
+    "docs/architecture/target/diagrams/m14.svg": "f3c41ecae669390b4c4660713ae44d251f7c6e121b515da7fd124c447284d6d8",
+    "docs/architecture/target/diagrams/m15.mmd": "9fa2307bbf3850f50e4ba87b478c34c208d6423bd4809b51bea43b5533b2c6b3",
+    "docs/architecture/target/diagrams/m15.svg": "44c96c159810cdcad9e85868e045c5b0dc64e2558a7c4a57c60b6f0d99725389",
+    "docs/architecture/target/diagrams/m16.mmd": "5dd0a558a78a9fd5d46cd99f6e6e48f399c55a8ce68c6dcf92775c9f2f0cfaef",
+    "docs/architecture/target/diagrams/m16.svg": "45208c1ddf353e5aceeddfe1157d641210f733f6d1aeb9b37222e1d40eed7206",
+    "docs/architecture/target/diagrams/m17.mmd": "b8d7e7c7e64c44958273b0ad45a3b5bc1d90ac676984e7314d1f63c930284952",
+    "docs/architecture/target/diagrams/m17.svg": "542cf0fd3bdef4b789bafb247230f4bf02c4ae92783db60b381b015813deb928",
+    "docs/architecture/target/diagrams/m18.mmd": "54296386af731bcfa37d1888d4ecfd39f155a37f3b9498742eacc5b0578a1a5e",
+    "docs/architecture/target/diagrams/m18.svg": "51bda950f22e3d0b45a960c279efc093c6a3befa32e41e76fa2dd2e389a80e9d",
+    "docs/architecture/target/diagrams/m19.mmd": "bb773da961a06022f169aa606a7a5b0b54778458f320958158104acf9670620f",
+    "docs/architecture/target/diagrams/m19.svg": "6613500b3fdd5a5e4bb15dfcb39a4a5e24ef0d81fb80effa97226d836d458feb",
+    "docs/architecture/target/diagrams/m20.mmd": "9219834632846b5153f188835cc9b3f90d6037ca7b3b728035320bb1145024cd",
+    "docs/architecture/target/diagrams/m20.svg": "8a01dd4e57e138e9be31bfe73b24da606b75a6a851c87514e2e6524be43c7cb2",
+    "docs/architecture/target/diagrams/mermaid-config.json": "4a953f91ce09b7081ecc3b99a110de3abfc768541cadd22f9e42d618fac63810",
+    "docs/architecture/target/diagrams/x01.mmd": "a95ffcd7a446592a0ce1b28a5690576b06a970740bd8c1c9217fab0fbb24a523",
+    "docs/architecture/target/diagrams/x01.svg": "e19dd36fdf3dd0be4cf0d6212896eebbfb891f9102e7472da9411416ccebdfc8",
+    "docs/architecture/target/diagrams/x02.mmd": "48ce544a2032b09883ac6a03fb5a22081a5c23e41b64538ee58c79f458cf365b",
+    "docs/architecture/target/diagrams/x02.svg": "ae1959ec3d98f5fab2a671a6562598c6e3426bcd1cb9e08f9af158a624105d08",
+    "docs/architecture/target/diagrams/x03.mmd": "91f4f14eea8eb16fe7044f281cc87e2b72ca36be7c87b06bd514ff91f0215521",
+    "docs/architecture/target/diagrams/x03.svg": "2f7ef40cc4aa4980f95aacd923399f1d99ea90a55d6239445ccfbd931bde42d0",
+    "docs/architecture/target/diagrams/x04.mmd": "11e8fbb80e75774ed7185ed76db4fcf2f9603f92c89d0e356e31c72038fdb37e",
+    "docs/architecture/target/diagrams/x04.svg": "a672b1be34469d25f6e47f0f209a3e20c49a76ae1de9a0174431261613bf9504",
+    "docs/architecture/target/diagrams/x05.mmd": "e6011b919b01a088292471bdedc4bd875d4f3182e0db7f27fa0b66fce04f0ed8",
+    "docs/architecture/target/diagrams/x05.svg": "c9d2de33e4378ef16930a54d8f83824694b63a2a77214f786bd1858e978336fc",
+    "docs/architecture/target/diagrams/x06.mmd": "b33a845e68b2cbcbdd3003cf358f44e742701c92cf563efbd857381e56990711",
+    "docs/architecture/target/diagrams/x06.svg": "86cd1f3fd7c6cd8b880f31052300cffc1b1a2d3c61cc399b1a4d4ca09515ae41",
+    "docs/architecture/target/modules/m01.md": "e3056f9056b74c4d028821c9ae6cf151ed8305f62dfcb2f384626b15190636fe",
+    "docs/architecture/target/modules/m02.md": "214b86787fef0aa9622174e4ffd8576f43324738848ce67a7e17a359737560a0",
+    "docs/architecture/target/modules/m03.md": "b7980b52f45862df2b63f0a3f51f0dd0bb518959c3c56c3a4d3073fd48582ce3",
+    "docs/architecture/target/modules/m04.md": "aaf5acb8c6e63658abe136f6007df1797d22040165d216189bcdd9c2fb34d768",
+    "docs/architecture/target/modules/m05.md": "8faf27027501e7ea95df2ced33faedc6d1469d0e99aba14fc413654b46896b26",
+    "docs/architecture/target/modules/m06.md": "72f6a90cbd6588bcbc65afd590c88a4fdedfa70786b97721778748d9ea43ec55",
+    "docs/architecture/target/modules/m07.md": "e958eaf816581c2ba7d464d19c9c6f01f1a0d2494b772b4986a6493ea050d746",
+    "docs/architecture/target/modules/m08.md": "8645f115c840107cefcd55fe238c55c9b4318e223d57bdd54b9a065a65a5b986",
+    "docs/architecture/target/modules/m09.md": "dfafc0615a9365d63057091ae994b48acf75bd3870058bdc5588e5d9223a88d8",
+    "docs/architecture/target/modules/m10.md": "8cccb1a8d4c40b4359fd1fb572561ad9e4250b42a0947a01e3d27f1f38b3531d",
+    "docs/architecture/target/modules/m11.md": "8ab7b97e609a1dd2cd3cf8c7d5726fb2820f7ac42ce8b45874fef72eace06bf0",
+    "docs/architecture/target/modules/m12.md": "18954dd8007e94a53ec735d71b69c0bdda301794025fc5506d1baa8d2a9648f6",
+    "docs/architecture/target/modules/m13.md": "41640a15ec56e2d587489981e71be6b4cac304bf4e244a6684336b1040038218",
+    "docs/architecture/target/modules/m14.md": "06e7fa6c177015e1952c265cbe7f4912335917379438db506eddc39ba2dd0df5",
+    "docs/architecture/target/modules/m15.md": "9668eae3f6fdbd1e2e36361a680886317587239f2eefff1d6ce9c7199ac17f1b",
+    "docs/architecture/target/modules/m16.md": "b37705a620b7de75994b3dbc7b8cc383df8172f7a1f5507d5cbfd0a18e7fed6c",
+    "docs/architecture/target/modules/m17.md": "328fb67ac96e7691765d87057f79d8f26c1f43975c0f0e63892109997917122c",
+    "docs/architecture/target/modules/m18.md": "7f0e3d11a0b0b2c04ddbd75cc25040f26c5457d6fc5de553e604c52865114903",
+    "docs/architecture/target/modules/m19.md": "e4923de6976211be12a24e678e8f884d20888693a8412a319fcc8b2bd4ee944f",
+    "docs/architecture/target/modules/m20.md": "19e30e6a5ec80b3b76d8c2877918b2db02d225b18d92622439f1213b9cfcc69c",
+    "docs/architecture/target/modules/x01.md": "bb59cbbd40f11022f3d566ef430da73e3dab75f2a08bddad06536fcc78093a1e",
+    "docs/architecture/target/modules/x02.md": "bdfced8d53f181be4565110c1e34030be2f13d42d3385e9ef31b307a85ff3d4a",
+    "docs/architecture/target/modules/x03.md": "ac83a87feef8e04bdca629d6bed7609696864ed960e6beea2e5a024a0fe536ca",
+    "docs/architecture/target/modules/x04.md": "96bbf82babd23bfdd0ed13ee3a8eaebc30b5d6b90af3180750a49c2b607405ec",
+    "docs/architecture/target/modules/x05.md": "cbccc4b97ef718dc6012ab710ab2ddfc072cb1ddbae7ff129b08404f7e2f4cda",
+    "docs/architecture/target/modules/x06.md": "f2f040df70b41bac5f0be48bedd853dfc2487e4a4830228538b7d4f88e6d9e8d",
+    "docs/architecture/target/scripts/build_modules.py": "fefa6be32612f58654c5e004a5c841dee7db741f60de70740935e910db4da354",
+    "docs/architecture/target/scripts/render_diagrams.mjs": "a506855003ef4ef705005e4f8fda3a8ea2af222d39791977a439d638f0c0cd0d",
+    "docs/assets/006-preservation-contract.md": "07ab2bb65bf3fa88d2bbb64419b2d12610175efa912d4c1c4e3b40fe281d7f47",
+    "docs/assets/business/README.md": "d9352f7ab71d3a9f7ae08003c4d620c764d47f219ec052ba63661f8cb34832d3",
+    "docs/assets/experience/README.md": "a25b703815c3fdc92e9a83b11f0a8bcadb3bc0105b91865cb4ef7ee363657130",
+    "docs/assets/inventory.json": "92d8f82c6b91e2664735d3e34b35d3842558cd3e8a7f71ac5ac1cbe0b603920f",
+    "docs/assets/verification/README.md": "8b928377c39cfff5775e208aaffafd029c36aa2d89ff4fa9dabdabe281d30d4f",
+    "docs/governance/005-branches-and-documents.md": "f31a606ef4b9cf3755736b96f675d4c66bd21bed2b65460a89b67479a34d0893",
+    "docs/governance/014-document-management.md": "1b952faa833343e7da73b98d2931669a5feca8d6c820d68fb647b62f805a268a",
+    "docs/governance/015-terminology-naming.md": "f1191da44043b93e86ddc58fd665820d8ba3bdde1942eb744fce0a05c6d23dbb",
+    "docs/governance/registry.json": "3f6c5d5f2fa05fd7ebe3041b25725e111deb754a2261c1149f83efb8489da962",
+    "docs/guides/017-local-bu-development.md": "63d0c25072869705381554a74c6abfee9eb17139d1233cea81751b4320ec3bf2",
+    "docs/plans/001-repository-bootstrap.md": "5d6f59a4ce186791606a4fb36a4a9f7c576f05c84ba5410026db942209662e73",
+    "docs/plans/008-next-steps.md": "d5e15905cf89b055c57c7b0e153c465dddd769f4b87ec36b84cec7c5cd1baea2",
+    "docs/plans/010-m02-scope-and-plan.md": "a19514eaf4425e3ea982062dc25b6e1fb9a635a42bcdeda0ebc6e1952a15e7bd",
+    "docs/plans/019-cubebox-experience-migration.md": "6094c64e53b9acd2888605ad091fc047fcbcebf958fb7afb58a1747483667568",
+    "docs/reference/README.md": "6db105ef34849f639fb4eb6fcc016403293067713225d0a9bce538aa5e153dde",
+    "docs/reference/baselines.json": "eff99efacca3ea269fcb78124466128f1936cde6af5a6fc24ed87ed3c13ae358",
+    "docs/reference/document-tooling.json": "67969a252bce499c8ca9b38e2f44bb3347e0b1da1337eb871a522a5e512e9e30",
+    "docs/reference/licenses/fscr-LICENSE.txt": "c3c9a15c5de5bb7aee20e4eaeb59e427e7f89e96efef2cbafdfe748177d9546e",
+    "docs/reference/local-revisions.json": "f173fc42336f7175ecfb191cf57729f43cb0d075fba432efc447b910c79c1b59",
+    "docs/reference/m02-terminology-sources.json": "38c603f78da511d884b897a1941d2d7f680f5e738da58485c8c5b7cf34668e36",
+    "docs/reference/not-imported.md": "e89af3c4c686c91510aaa9a6fdfd626feaf26f9fe7eb0639a560502f7942ba9e",
+    "docs/reference/sources/china-hcm-d88c993.zip": "b2559c26e17b53a8a757aa8f26c73d3c184a468c8b26a03062c5943cc22b665e",
+    "docs/reference/sources/cubebox-font-2deaf927.zip": "972a9915dc74eeb9eee1050b9069ed431434821d8b1c1ccbcb75106062ef6f71",
+    "docs/reference/sources/cubebox-m02-2deaf927.zip": "35df71913e276cfe270e9360e7282a83c485fa3a44906f428fda9c71d71528ad",
+    "docs/reference/sources/cubebox-ui-2deaf927.zip": "765c55ccf73559a4e9d4d1cb3ffae25a5ad2d5c27dfc33733e0a8725d9831dc7",
+    "docs/reference/ui-sources.json": "88ce821bbd4bf708c51018ce5a008507ae2e6f2acfba56e3b237eaa80be3cc49",
+    "docs/specs/README.md": "17641f54f0a7f098134fa4caced0256c63ec9acbccb8ee8dbf2ade645798d9fc",
+    "docs/specs/m02/011-m02-business-requirements.md": "a86b8f35816cc8363a02c2ed69ebe0728a86150a3106009edc182ef57b3d1f18",
+    "docs/specs/m02/012-m02-functional-and-interaction-design.md": "86e617dc897caabe2997038558472f84c01622f40fe9e30238577ff77dff51d3",
+    "docs/specs/m02/013-m02-technical-design.md": "129d46ec7e158ca9d6175fcb020499b22645750547d06ebbb2ef63ced754975b",
+    "docs/templates/README.md": "ec86b2776607c04de77c6dcd04dfcc69359de43c012922c85d24ebcbfb4a3293",
+    "docs/templates/architecture.md": "6a73e9ef7eaef7976e2d2c2b79e3245b4211f0ef923155b9235c2f52ea7eb79a",
+    "docs/templates/business-requirements.md": "bb0f753691bd63bce07cad1290ca8e0418f47f840d77f0710caf17ec7be04ddd",
+    "docs/templates/decision.md": "e447de2f3ea92c0bb57092a18c0a69a847699787451d7f0e240b4746f887c05b",
+    "docs/templates/functional-design.md": "77794bdf64756ac8fdde55eff550233603040b0c0a680ccc7568554cbf61bfc9",
+    "docs/templates/governance.md": "1ca782f68b20dae07587696041e4993e339b965a7dc7bd57fa89925af1100383",
+    "docs/templates/guide.md": "c3af0cd10223e7b49141815ec30cd419d161426903215749ffd6084cfc581726",
+    "docs/templates/plan.md": "062de0abd29870ddc741e2a8527bbc3271cc042dfe14dfc3650084ec9c3f0ece",
+    "docs/templates/technical-design.md": "b1438e06230c1bdd4854649a3a5bf880de1169685951225661c63346754bc6a7",
+    "docs/templates/verification.md": "9cfabbdd27e457351b78c8541c0448f233624c7a7f364f3ce21585348d4b1480",
+    "docs/verification/005-github-ci-preparation-evidence.json": "5112794bc9c302f51fa8e275806f7a15d7fffb12ef241a88fe8c78024a31f294",
+    "docs/verification/005-github-ci-preparation.md": "2c309b23c9e19a0f3eda11fe795d0dd75258b8a91f299e143cd3add0b296ad10",
+    "docs/verification/009-m02-terminology.md": "e3043b2182088a4a3f4c66ec2ec3227cdc53a39cfd2bac38bdfa759e03446b39",
+    "docs/verification/010-backoffice-scope-revision.md": "5b750cd3ac61ae23827744e7cc6b4fdbddad42fe1d2fafdeaaced4bdc36d2726",
+    "docs/verification/010-current-date-terminology.md": "50a19e989462cadfa42602bfe2966a49d1c697ae30ca5b3dac84db19500a2329",
+    "docs/verification/010-first-vertical-slice.md": "07c521111532d4b15c19d3f6e0ea49e42ec9eb8015cf1128b8be2cbe357294a3",
+    "docs/verification/010-review-fixes.md": "93a8784237d4bb6ae47a85916dfa4a78ca85e05b022181eae7f9a376611737f3",
+    "docs/verification/010-scope-draft.md": "57634cb5767a77f06f51989b641f34744510c44433b5eedc5ff45bfa6152597b",
+    "docs/verification/011-business-requirements-draft.md": "3f787abbc5a5eff0c243cf3bc411189d757fe1070b31c121e2e53bcca2fa551e",
+    "docs/verification/011-delete-record-terminology.md": "bc8cf8851e533d2af17a26a3270c088f5f84b3839e082d07e7daf95a0af5e9ae",
+    "docs/verification/011-effective-date-terminology.md": "513a85ef6150c22167a1c4d42d55a8b0f6e968e99ff68919a0ab3ac0b9ac3470",
+    "docs/verification/011-operation-classification.md": "5f8d948901dcce1f105d471b906d992d1d08677060289b0c1e7443df92e7d460",
+    "docs/verification/011-record-classification-simplification.md": "a074335645a330590684b8b6c149581edd7bd69fdf5c65c31d993c1fa18f16fa",
+    "docs/verification/011-retroactive-record-addition.evidence.json": "f06a1ea221fc0b08ed326fcb4876bd3acc51ffe3c4320b5a24bfd83cadca63da",
+    "docs/verification/011-retroactive-record-addition.md": "28ea845c07bb69f64396a05a3cd65e005e85442e29f4afb1be944058ecdcb6c8",
+    "docs/verification/011-terminology-registration.md": "f2ccaf66f1fde8d1291d271494a282aa28ded5212e0fa2dfdd197e48b3a8196f",
+    "docs/verification/013-multiround-review.md": "d86f8fe759f3a70f86c20612a2f9c6390d65deb611109ce5dd70b6aef9cccf29",
+    "docs/verification/013-series-review-fixes.md": "3118529d0e46b3e6ad818b22c5a00e533521cf2a117c0003f643f03719b30620",
+    "docs/verification/013-table-design-review-fixes.md": "f6e5c85ed0878f9fe722df00d543aa29f3103d31cb68ae735d0e7368e6c149fe",
+    "docs/verification/013-technical-design.md": "f3026d6e5a66b736c1a5a93d37ba77c959e0d468d372f85a73f60a8be3820184",
+    "docs/verification/014-document-management-review-fixes.md": "febea14926c1ec557637d7bba08cf148f15fe8d5e78f4ff708a8dda74cef657b",
+    "docs/verification/014-document-management.md": "2213512d549734174999a44537adf23171c9b25b20b4dbf1c507682eb50e3025",
+    "docs/verification/014-numbered-format-migration.md": "4447c056928df2fb472820582750e901830370288aa09dec345d6ce4f9d02d20",
+    "docs/verification/014-repository-document-revisions.md": "c175232496425cecaae7b66c218330780c54ceb6ad1bdb15796b2313bead23e0",
+    "docs/verification/015-terminology-naming.md": "53207cfe80c23bf36a69ba7cca82e322d64aebf8d6d97d540d08d23c7c7bc148",
+    "docs/verification/016-history-decision-and-012.md": "d695ac790dcb5fd9c99709f71edb7508769516529cce63c053fbd1a78c88a1b6",
+    "docs/verification/018-comprehensive-review-evidence.json": "7c5c7f60789dff808eeab6e02700f5d709451efb3e916bd067a9226466ef0538",
+    "docs/verification/018-comprehensive-review-fixes.md": "0a8cb8a0da5894897b2615dcdf86112bed9dac58995fd1dd4e0fc1d262da8442",
+    "docs/verification/018-multiround-evidence.json": "4a76461f918a853ba2495aa366ccc852efa272ebe0eafbb6364a313762aa7eaf",
+    "docs/verification/018-multiround-review.md": "df84fda8ba6cddb5d9c1c21a2cd9cc222ac0d49a6764420466374d867f9a5756",
+    "docs/verification/018-source-history-evidence.json": "43b7cdd85f40006578d71e3c2fd36c78aae4c8925419994e1c53b914ce54565f",
+    "docs/verification/018-source-history-simplification.md": "88cdd322395387e7b4c8f20e21e1634ebab33b7fc59328d3e4ce0e44db931a1a",
+    "docs/verification/019-cubebox-experience-migration.evidence.json": "7d569711df5ce9250b7c1073e0d3a3ea3d498e35df000cb99ad5e649b47acca3",
+    "docs/verification/019-cubebox-experience-migration.md": "39e19aa026079bf50c3540bee4bbb0eff8466d3eee29965df93f5c9f15ec6073",
+    "docs/verification/020-effective-record-delete-and-redate.evidence.json": "b42458727bf76eb7ce28f87261f7aa882686ba4c0ce96b29bac445923edc0e18",
+    "docs/verification/020-effective-record-delete-and-redate.md": "c519b28215ab33a99a3c6d3d79e0172a9054a55689bd8318859608e7e86bed1d",
+    "docs/verification/021-bu-lifecycle-and-record-maintenance.evidence.json": "c874e8b8b898f640129f85e2c94ce6eba8a948cec962d708d6f4525ddf3c5b89",
+    "docs/verification/021-bu-lifecycle-and-record-maintenance.md": "8a48c6a6e85cb68c9cdd251e877945fdcd86d450db277140dad79cfed9d5592a",
+    "docs/verification/022-joint-timeline-revision.evidence.json": "b88fe39d9b396dc7680881b31b88ac404c4a7a267fd54c68b5ce8a1063fd8220",
+    "docs/verification/022-joint-timeline-revision.md": "367bb0a7b0a44d54af71d85761cbb05c9b048528ebf87b753fb59d5ca5d30f92",
+    "docs/verification/022-timeline-review-fixes.evidence.json": "0fcaa9abc1014162f6442dc8cebe2df79b7616d28d9fa56f003a40abd88246b7",
+    "docs/verification/022-timeline-review-fixes.md": "1c70daba22b03623c278bd48860cf694184a2bfb9437ffc76b458542bbfc5390",
+    "docs/verification/022-timeline-robustness-fixes.evidence.json": "2185c61d1095e3db64b8437c22f243ab234dd09f9de627541061f8d796ffeffb",
+    "docs/verification/022-timeline-robustness-fixes.md": "6525f68de8030483ebc38fc3d811a214fcac63a38496db82d48cbfd0d5ce68ad",
+    "docs/verification/README.md": "1bbf4e54c5f30e5a793604983d10f3bfa73fb4d888eaaf1d429579c3dd5f8316",
+    "docs/verification/bootstrap.md": "ed6e04b998f146890ad9fd4bc4d7c3b97de4ec481398b8b7c5f5914d58841456",
+    "docs/verification/data/010-backoffice-scope-inputs.json": "95db57b39c8de6a1ea2c48956a2865b7057a70015e6e649c89ea8cd3da7c3f12",
+    "docs/verification/data/010-before-current-date.zip": "935097cce4d72b185e2a9ef55e83654156a2c4aa9d22990559d646423950a1e9",
+    "docs/verification/data/010-before-review-fixes.zip": "1fef9f106d82ce37f0ecf8268f2d3de3c489f1c5f581f328bee5fa862c10960f",
+    "docs/verification/data/010-current-date-inputs.json": "56eb9af6e54c042941f6392493ff1f81fdc235e99c01502142692b4dea7e89fb",
+    "docs/verification/data/010-first-vertical-slice-inputs.json": "17a50d9ab60a28cfecb5b03c99f519af671895d6857ddb97aeb6ea2adae7aa98",
+    "docs/verification/data/010-review-fixes-inputs.json": "c7a6f1632766559f730189351c94f576ca57a9c72e615b094a018adebf9e1857",
+    "docs/verification/data/010-scope-before-backoffice.zip": "2481549d8987ba494a6098de3cb4d282d6b110312353a72a47e00ab882905a89",
+    "docs/verification/data/010-scope-draft-inputs.json": "22c402a92deee62bf3a35e82eafa4d8c5058d8ce9c900a508e079982ae082cb5",
+    "docs/verification/data/011-before-classification-simplification.zip": "2018ebc958e94eba5e57719987b1db68b8ff1c548cf58622e00d92058a1579d5",
+    "docs/verification/data/011-before-delete-terminology.zip": "d31d6cf1c34908593be795b6f49f9f2721ca8d9d9956d7c4e3758bbe91b8d0b8",
+    "docs/verification/data/011-before-draft.zip": "49312137bbc1e3ccc81f82241617c4a70a07e901404c3aaa246b67da57a627cd",
+    "docs/verification/data/011-before-effective-date.zip": "79e5e557242b3e4387ad19a637a7b54376f1fa4501df1c3affd47af14ba37973",
+    "docs/verification/data/011-before-operation-terms.zip": "1c164efe4c0d82a8de32c9a53999c63599561a24b66a2a5df43d9104005c42ef",
+    "docs/verification/data/011-before-terminology.zip": "f8de81f3d6538b73460328a7cd72993d27a082c82d864df26009d183b7b60904",
+    "docs/verification/data/011-business-requirements-inputs.json": "8381d24407310af4c2e823fa9ec4295d4738c331987fed5b95ffffaabaa72e5b",
+    "docs/verification/data/011-delete-record-terminology-inputs.json": "01653fd3e61488a521f14a0fc813913b8dde61480daaaca747d0d9a67d69c5c9",
+    "docs/verification/data/011-effective-date-inputs.json": "db716afcb98bc828a21cbf5e995d8edb6e45a4ecbad5ac976c8adc77377d6b1f",
+    "docs/verification/data/011-operation-classification-inputs.json": "7e204730b59cd03b8658a2e425b4217b42010c1dbb064eda1ec26aecc114e37d",
+    "docs/verification/data/011-record-classification-simplification-inputs.json": "65f9f4c0b5970050660f2521480020af5f7d48e9ed11e8ee496a08cd2e466ea9",
+    "docs/verification/data/011-terminology-inputs.json": "8b85470a23d9c7c4c31a87b495519831b30add50f94e2c9acc7a6073ea3e0484",
+    "docs/verification/data/013-before-series-review.zip": "6e50c0ba1c700b0096446e2514160f925e665ec1e4904ea6abf3d7e74227f86e",
+    "docs/verification/data/013-before-table-review.zip": "cfe12c018ec325170b50418c7b95effd8914b1ebb524d9e8e9efc8f606211381",
+    "docs/verification/data/013-multiround-review-inputs.json": "f1c1c62351fb4a40e1eecbcc63d4795badde3da5f1ec4e8d35e6c82c4d8703f0",
+    "docs/verification/data/013-series-review-inputs.json": "608c3a3831ace03d7999167a27a12e97db900f9ad216593fc08b8f610f7692af",
+    "docs/verification/data/013-table-design-review-inputs.json": "f50067c15c1bb905a075ac9d4154b92f6e88a9bfdb413f3435b0da6620a72b1d",
+    "docs/verification/data/013-technical-design-inputs.json": "8af913585fdf2a53af8db203dd0bc4474c63e5b0ece0598ce6b0b60a4e8b8a6a",
+    "docs/verification/data/014-document-inputs.json": "dd964b26f9051a49de4fbf6bad506943aa36b8fed2731cbd7e5d0fc96c109bc3",
+    "docs/verification/data/014-numbered-format-inputs.json": "7c5f610f780943b9f96b86864d2edac23f256181e3047be13e53584a0125e817",
+    "docs/verification/data/014-repository-document-dispositions.json": "b3f90c1e63d40c4d845e68e8cba81f5b9b35c8b7073d8d68992e9b00cdc8512b",
+    "docs/verification/data/014-repository-document-inputs.json": "0c201c6c5b670e757d23d9896e607f4d35488b204eb6e0b79d20310e5d9c07a5",
+    "docs/verification/data/014-review-fixes-inputs.json": "b129a263efba4f6feed47c66ffa03f30f70462b9fb25ea7f2051d78155489c9d",
+    "docs/verification/data/015-before-naming-principle.zip": "fd52f40cc969870237b467a8a0ce59a8befd9913c086928675e5597aa632dc38",
+    "docs/verification/data/015-terminology-naming-inputs.json": "c9f6bfbebef31e7327a9dd56e5aff67fa10d8e4daa0199727b6f5f108f6f03a3",
+    "docs/verification/data/016-before-history-decision.zip": "9f92d126cef944697b7160c031da6eb2021e652c51f467f90069cc479049db1e",
+    "docs/verification/data/016-history-decision-and-012-inputs.json": "dfdd7e22a48b1f1b421ec804d6fb6590b29dceb1314b7b9ed3e43c500be67065",
+    "docs/verification/data/019-ui/changes.json": "ca66e4a17c797fed1f22da507db55c883cc032f9f5d1a62699e7a4cd1e750fb2",
+    "docs/verification/data/019-ui/checks/comparison-run-final.log": "3eab0780c9f9b794506786c5434edc2d0b246faffb62d65ed498cb8d76495477",
+    "docs/verification/data/019-ui/checks/final-build.log": "4276b8d16f2fdbfef6b7da28fbaf75f1debc8cf5f8a4e7392cb41d310ad31e18",
+    "docs/verification/data/019-ui/checks/final-check.log": "16e44352b405a8021a3e868ea1146d60b98acde3386aa5f02f51ee0304ebe22d",
+    "docs/verification/data/019-ui/checks/final-docs.log": "994bb2239decd8468a3607edf3062730620400ae63c36be744bfdd9a704a7c82",
+    "docs/verification/data/019-ui/checks/final-integration.log": "2636cf37e2c587e877809aca7883e54be15407c31dc91aa37fbfff11d5c2f178",
+    "docs/verification/data/019-ui/checks/final-smoke.log": "ad75634220db39cfcacf6164cc69dda194a708d1cd39e918a9c085ef6b26f2c1",
+    "docs/verification/data/019-ui/checks/first-full-smoke.log": "31f78bdc2c189c7d0c545d5c1d42c7147c5efda3e36a2505ecad636c5846bbbc",
+    "docs/verification/data/019-ui/checks/intermediate-full-smoke.log": "13676fd67269d5cef0f66ceb3981170f8f398a74a55fb57fb369b9ab62ac8d3f",
+    "docs/verification/data/019-ui/checks/retest-default-recovery.log": "1664eaffae3a41fb01e33e851ce52ca54f973632cd16adc66b957c32064ac4d5",
+    "docs/verification/data/019-ui/checks/retest-scroll-font.log": "6a88353aebc7a948b9a13b80ae3aa1a6987e604a7dba156e4817753defa2c65b",
+    "docs/verification/data/019-ui/first-full-inputs.json": "022b0cf65c51bbe9a372b4746f9ac66b9c9c2251b826401cf4cddc670d261307",
+    "docs/verification/data/019-ui/index.html": "e94de0afc4b663d0038f9801db29293158ffb636fd670f267d026e3b15cebbfd",
+    "docs/verification/data/019-ui/metrics.json": "67e4a87b1dd3687d47193b0411d4195f2e8ec9d73a808cb3fe95e7d2cf1ba6aa",
+    "docs/verification/data/019-ui/protected-baseline.json": "d1cc4416da0c6ad98739481e74b74a27330622134413fe9cc36a5f75099e9721",
+    "docs/verification/data/019-ui/source-build-info.json": "423044610bec776de8ae4e9349128b14e040291d79eb4e68cfcca8b6996ba337",
+    "docs/verification/data/019-ui/source-compact-form-desktop.png": "cd57e29f8950cdd951d72e42367180a41e3a296d1cd8ef5047c56b9083627644",
+    "docs/verification/data/019-ui/source-compact-form-narrow.png": "0915f2248aa84f273e559fddc70ce991bc5c3562052499ffb4e33bcfe24fcf79",
+    "docs/verification/data/019-ui/source-compact-form-short.png": "a73a4aae6c28ee5f9a9c505882355acecbbfcc3b27c0d5ad03242f60c5d19982",
+    "docs/verification/data/019-ui/source-detail-desktop.png": "1816dee6cbb98ae2045182a0bedda7e4d59381c77a36e8f0748ae0e8151cbe31",
+    "docs/verification/data/019-ui/source-detail-narrow.png": "8d7aa20b96049353383b61bf9a6439b4357ba65d3d55e99801f45a0df6436170",
+    "docs/verification/data/019-ui/source-detail-short.png": "3dc8cef385585f817ae9521e2c02927d39b704803e80ffa01bd9f3a38aea3f90",
+    "docs/verification/data/019-ui/source-form-desktop.png": "2844c1a2ae9c0a71db84fe97763929678114a4599f0117921ab31785dc8f7bd6",
+    "docs/verification/data/019-ui/source-form-narrow.png": "4e50bf66a3375689caca5c717483e629b73b0f95b5e5b9358706fb3d9121e001",
+    "docs/verification/data/019-ui/source-form-short.png": "a930311a40030f9267a00356e693e79106eec4862ae16cbb2c39c9012d8d8489",
+    "docs/verification/data/019-ui/source-list-desktop.png": "c9527f2870ebdc9481b147f67ab4ddc9cfe64a13b1bb987834dd7c1f47ef7e1d",
+    "docs/verification/data/019-ui/source-list-narrow.png": "64f1702c7b5a5559e34d9df5629420bf5c062f9f64f254cdfd525a73b21bb509",
+    "docs/verification/data/019-ui/source-list-short.png": "65f6dfda049255725b4f927ab439b0b177c18401318cd48171a1b7f4b6bdfbd8",
+    "docs/verification/data/019-ui/target-build.json": "b83183bcd6199bbfb0e07e4d5e55749e848f484e9f80e211d4fb95e4923e543b",
+    "docs/verification/data/019-ui/target-detail-desktop.png": "215d4eb8c52c987449c06824f7f8a0bf2de09b6f63f5f95adce2c06605665bc9",
+    "docs/verification/data/019-ui/target-detail-narrow.png": "a94de2a3483827d51d3ab5d3678925698e533db0dcb810995d2dfee8181cb73b",
+    "docs/verification/data/019-ui/target-detail-short.png": "bab27cfc4b567b2e48110d14da984876f6186de199cbb00d6ab4ca7fed6a1463",
+    "docs/verification/data/019-ui/target-form-desktop.png": "e3d15a4de8ea87f6e48221f90dc7dc0ba8735c6123fba0cbb905ea2fdb9e4f7e",
+    "docs/verification/data/019-ui/target-form-narrow.png": "5675b5f78881ee612ad73ae49170e20c33f11004f4730822612d244473a78a66",
+    "docs/verification/data/019-ui/target-form-short.png": "6a9f8c79b3ac174f44548f92bac3b61fca4a733a8e8af425d96f5fc89f65e498",
+    "docs/verification/data/019-ui/target-history-desktop.png": "e4f853cfbbad7a6467ecdfa36512b93d2df52001af64f91f938a0ffb8e0fa058",
+    "docs/verification/data/019-ui/target-history-narrow.png": "970353a65eec4d55d038846065033f4a512f50de108df09375085c94d4f7a119",
+    "docs/verification/data/019-ui/target-history-short.png": "f53b5163671b6068355cb0bdae5e78596e00779ece6726f473cac851b64e4077",
+    "docs/verification/data/019-ui/target-list-desktop.png": "339871e9c3df9a6134e12ceb9ad68a93093347ef772c57e11e7bfcf5050cf6fe",
+    "docs/verification/data/019-ui/target-list-narrow.png": "0a34e045c67e92c5cc83b7636171fd11c2c89f02f28a8333bc083e75810ef515",
+    "docs/verification/data/019-ui/target-list-short.png": "e6edd404d3c488537df0c97cd0fcf32d3b1abdc3b03ffc25fec2fff1bcef81d3",
+    "docs/verification/data/019-ui/test-inputs.json": "ade9f7c506a13f4a98ef872b51f6b4fc4804ea5b7086df2258dfb663b9b018e2",
+    "docs/verification/data/019-ui/viewer-check.json": "2c6c3c1410cc0cbacc36aa9e98c60e5919f2d174c334e803219059797112e9a2",
+    "docs/verification/data/019-ui/visual-review.json": "1c78e9c88b5ebf2c10cb80cdb44f445a267bea9d3f3218fd995b0077729d6820",
+    "docs/verification/data/020-before-record-maintenance.zip": "42874dade17a5041d389e423227cc9aa760a1969e585823a11a04769192dbc3b",
+    "docs/verification/data/021-before-bu-lifecycle.zip": "f7cb1e9b965d87863b5a35d64199cf1862e9648ca659bf1033f133e0fd86bf9f",
+    "docs/verification/data/022-before-joint-timeline-revision.zip": "841082e40e01a65331af91e99613d2ec20127e4c1e0edfa19a97a9b4c446da44",
+    "docs/verification/data/022-before-robustness-fixes.zip": "1c5f33c68fce957b8881a60ddc9d8f8eb76672f24052f31c231b777ce89aef84",
+    "docs/verification/data/022-before-timeline-review-fixes.zip": "9181b412036e20abf81278a3950564786e550097ce04bd4e942749e8bd8595fa",
+    "go.mod": "964030dad88b27daba3431d7b972a0490ee126587cdbd885b559216afb5ccf47",
+    "go.sum": "8c3530919663bd5e8d47a19aebc7fbd033de988c70b8d429d5c8008b06a064fa",
+    "internal/bootstrap/api.go": "a937ad84d23183ff159b483650e3144bb8300afe330e47e8311aece13ecee9f8",
+    "internal/bootstrap/http.go": "d35bc364ecc53d659161eee2a956f2aacb7dfe7320376e4c856bb015c52aed1f",
+    "internal/bootstrap/http_test.go": "d2b63cd5850753978acff9d862a07399c2ac231e7f60e7799166b7897deca288",
+    "internal/bootstrap/runtime.go": "e1547426e064a7ab4e76b684743b5fc3debf7d70844bafdfcfe96263c3db52b5",
+    "internal/contexts/access/application/service.go": "859f19f613d3d91c874e1fd5e577efa59eee7d4f56a86b7fe97b69eb142fcac4",
+    "internal/contexts/access/domain/policy.go": "363bf6c9aead8de9ca6ac6080b677ffdd861a2d0238e87a5501631e32dc76daa",
+    "internal/contexts/access/infra/postgres/access.go": "4d058f148577f7aa6f15ad2808ef563dc33322d6fd8d49e2c98819699578ce11",
+    "internal/contexts/access/infra/postgres/generated/db.go": "39aa06028414ed8f2694efca65a4e002d7e6f56bd510d26873320aa75a612a2c",
+    "internal/contexts/access/infra/postgres/generated/models.go": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8",
+    "internal/contexts/access/infra/postgres/generated/queries.sql.go": "08fba703d5c93c873a3f54da58ca520a2eaa42f71e5681eacd0bc88f085cc42e",
+    "internal/contexts/access/public/contracts.go": "a2d3f560b531258c9ac433d1621d04dcfd19157b9e428d13001094d82f9b1ac8",
+    "internal/contexts/organization/README.md": "5a404a22c885324e6229d62dec63bd564464171326e83440626bcd4fa17af496",
+    "internal/contexts/organization/application/README.md": "de3f74b04dfbd1d8e73efce67436cce3f5171527e05451beb457ad39eee7576d",
+    "internal/contexts/organization/application/service.go": "b6a4a6c5574f20f8d998274d0c502e5b907f0c67c2270e55b185156312bda43f",
+    "internal/contexts/organization/domain/README.md": "7d23ddba11d9af209fc7edd4aa5b466c208809b20decda2d4a9d13a36f4624a6",
+    "internal/contexts/organization/domain/business_unit.go": "17b232fb8d2fde4592a0ef2974c26d0307e9beac7e00e1db6243875ecfb10abc",
+    "internal/contexts/organization/domain/business_unit_test.go": "9378364557e0be90a1d3d4cbafc5d98284e97c1dacec018e321339ae2f8f3942",
+    "internal/contexts/organization/infra/postgres/generated/README.md": "e7067316cce57832351186b2b5b899b54477842ad58b95e7c4f8ff2c549204ce",
+    "internal/contexts/organization/infra/postgres/generated/db.go": "39aa06028414ed8f2694efca65a4e002d7e6f56bd510d26873320aa75a612a2c",
+    "internal/contexts/organization/infra/postgres/generated/models.go": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8",
+    "internal/contexts/organization/infra/postgres/generated/queries.sql.go": "94fe8d3d8430b92182e6190b4ef145de61e7a747f613aa5766689e3d9297029a",
+    "internal/contexts/organization/infra/postgres/queries.go": "7243facd3220b1ce3babde52b54ea56b02be4c901880198a383eaf57c0cfd315",
+    "internal/contexts/organization/infra/postgres/store.go": "7e29d75aca772e2edcbf318a43c4cc721300d13c53f2424cf84e9dd1742fb7a0",
+    "internal/contexts/organization/public/README.md": "f799cc74183cadc59f64e5d5568b562f677e0a97558d122a8396cbc24befa9ea",
+    "internal/contexts/organization/public/contracts.go": "37bfe842d82b20a376693864250353c25d127465c99fc6562aec979dab938560",
+    "internal/foundation/README.md": "76d8bb8f348c9617d87a744d9507f70b816496f84d7505f70fedafa9b1068b4e",
+    "internal/foundation/values.go": "fe3cd870db4cdebfff049e7434c1fcae1e560212c66a8462832092e06c5aba5d",
+    "internal/platform/README.md": "7942a3d02870ba57efbfe5c5db62db6ba60be93845b9c884be1d748165fb3db4",
+    "internal/releasecontrol/README.md": "b9e44830e7d18e299376feed42c62deaffc30b8f20f30540c68ca24a8466989e",
+    "package.json": "2234c8c349f0ff7301cb0a521a46083ea56256d4e7a34592093e3942031c348c",
+    "packages/api-client/README.md": "f7ad623cc6a9ac9bedfae6ac89ee9c5bdb6a3904c6b89ada7755a6c0e10214fe",
+    "packages/api-client/package.json": "a37857f46a94581bf34ab8f1707fd45357b141696d78873f68f1e75e95468c22",
+    "packages/api-client/src/index.ts": "7c8906377e52fffdc9b16a9f3933e4b4dec6c34ac22c620cc5fcfbf43e017899",
+    "packages/api-client/src/schema.d.ts": "8c1943bfcc747d713c35ccca24be8dccd5758d26eac8dc5e41a9e9b31f7bc009",
+    "packages/ui/package.json": "57f5ca349b11736d69eff3e0dc4b2a5b00da64a2bc767efc5b57fc19fab4e55f",
+    "packages/ui/src/AppShell.tsx": "08b5f7ac1bd782d79b33b48ffb3ae5a57341a62bab38434fac98875f459f1653",
+    "packages/ui/src/assets/NotoSansSC-Regular.otf": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+    "packages/ui/src/assets/OFL.txt": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+    "packages/ui/src/assets/source.json": "3d2d5fdf9d821e8f96076233c6a18366a6dad6bba42763890382805a7c333f19",
+    "packages/ui/src/components/AppNavigation.tsx": "28a117eca7a711885f32038e6de7bc9f49f245f1e949918a51499fbb3252c5bc",
+    "packages/ui/src/components/EffectiveDates.tsx": "c03b8edcba5a4e13fc59b3ea0b7cf8430e88ae8b73a05ed05b6ff5eff3db11d3",
+    "packages/ui/src/components/Feedback.tsx": "04ef3d589508dbb3c3a8854da5d125f0f95993a8f96aa4ec275650f100ad4cc9",
+    "packages/ui/src/components/Lists.tsx": "40e4f9581cb28f5b0a6f8c506c82067d112e7a5789defdfd2de9a7e2b9a84d44",
+    "packages/ui/src/components/ObjectDetail.tsx": "961beb662827b8064285b322c3afd89cda81538b2e176f50c0c638aca7afb87e",
+    "packages/ui/src/components/ObjectForm.tsx": "631ef5d6e342a5147fee8eee375617f2b357e42d29480d09fcf52dc0fce0f3b2",
+    "packages/ui/src/components/ObjectTabs.tsx": "264251a0d26c1059f4410447a1cf71a785a40d134f400b18514a22d1e36f859e",
+    "packages/ui/src/components/PageHeader.tsx": "beae25a0e7d0b4fef5b81209814a2cd20924b35058035d6e2436b8785e077207",
+    "packages/ui/src/components/RecordControl.tsx": "0723a8aeb397cf05dd2f4f5ae7fe3080b9d416a5c698d19b885114286d66d995",
+    "packages/ui/src/components/RecordNavigation.tsx": "89769b3ced758389caac60327e3d332010792d58b80a4021e020b7893831ab21",
+    "packages/ui/src/components/StatusChip.tsx": "09aa6aeeaeb54b1ef5718eeb3f9c6a5c9093a26bc6b3c288f0e83da9a4b45562",
+    "packages/ui/src/components/effective-dates.css": "513ae9bfd4432efc9b91e2b221555a28666a3b69253d5153e3a7686cda5864c9",
+    "packages/ui/src/components/object-detail.css": "cce842100d0e463bf6aa5c6adb6aecdea3e3e9125999fc0575b6c09ac03d7857",
+    "packages/ui/src/components/object-form.css": "8d3cfa3f0997d02cd12d0302df2b5f57d46cd05fca9c61d24fe59a0211fd230c",
+    "packages/ui/src/components/record-control.css": "0f0072819c26400fdf93467a8d52b16599c76d1c1bb2e95dfd5efb3c2b861452",
+    "packages/ui/src/index.ts": "30a6b13687b03ceb1d4b95a995bf8239d1a3ed0b99fe4a9ef25a9e8c2aa87efd",
+    "packages/ui/src/layout.css": "ad9af61da4a10f7292e392a598d8e26e52b5d9aabfab840d6720ae195c90fe7b",
+    "packages/ui/src/navigation.ts": "ffb376212482c97c72ab5a8e24189dd3ff3c1497d5cba6dc27cc837225498ba2",
+    "packages/ui/src/text.ts": "c8e5b1999a979707c19d0ff0fb674a02c618fca0cecb81ccd5a7bfe1c7768be6",
+    "packages/ui/src/theme.ts": "d3bb88870c2e483db381d9a1593c08af1460578e80b4e9e8587b97df1bdacb18",
+    "packages/ui/tsconfig.json": "8f6e85eeaa8025fe7b2f01763e03f32540d3e2869ae857490d685098460f4e3a",
+    "pnpm-lock.yaml": "7ae74bf7fc70c6a415b9c9c8ebeff96e680f111c5c4f93100f54e50df3837ef4",
+    "pnpm-workspace.yaml": "5368cfc196098255fc305311aca66c8ffbfc5ba392a8a6bcc96a5bdfd4fe33a9",
+    "scripts/check-boundaries/main.go": "a4ccd15443dea7bcfa8bb6bf4e02c30b283cb0d7a9da90c07d6495c19e7a4966",
+    "scripts/check-boundaries/main_test.go": "d5e674c7bde5108976005b27b540c254c79f1632f921c54a113d9854a540d756",
+    "scripts/check-repository.py": "2952e78e99261233cd84be220bd32a2090cc0733f0ec6b076299fc8b7944548f",
+    "scripts/compare-cubebox-ui.mjs": "bb228acabd4ba3ad6d87e8e7b5551a153f3c44a132acc6cf451e7a829f968e83",
+    "scripts/design_revisions.py": "f80de29985238d3cabe450197be35dead2842de8aabe411614f2483a112fc1ab",
+    "scripts/document_governance.py": "9cdbd05b11c428921aa887dcd5f386c3ec3cd9de0beb28450c2ad38105ad8067",
+    "scripts/local-bu.py": "eb390468da4172b09293f48a9ac6e67eb09bbd9c349c96f38c9280688c1e725e",
+    "scripts/test_design_revisions.py": "e474dcef268560f080b9fc2e8a01f2a369dfaba17e710c1b6852cc166a0a9d97",
+    "scripts/test_document_governance.py": "58c9b9876cac687de325113e386260e9fddda6f4635231d2c93152244e57cca9",
+    "sqlc.yaml": "7cbf47e9b5364eb26261335cbfd667b18a1f88cf5be842ad89e4933ce7ca0a4b",
+    "tests/e2e/bu.spec.ts": "6c3a8d2db8404990723f8b2cc5adcf11198c27b50947e892b65e4059fe59ab1f",
+    "tests/e2e/experience.spec.ts": "2e001bb5134bf1b37c05a7fb4333a9f0d23a6fb3c522de794450ab13fbfc33eb",
+    "tests/e2e/fixtures.ts": "db3270f5b8be98178dc48d7eb17cf432b7e433cf7807c708360c7762ce1edb75",
+    "tests/e2e/playwright.config.ts": "9ebe085d54b47c530a987cf986f9fde1fd79935808f66b72618db9eef71ffa33",
+    "tests/fixtures/README.md": "f77db1d7771615d43e0e71f3a0d48cbe1ddb425a40f545a245a2c7a0682a372e",
+    "tests/integration/README.md": "009c11e21ea4a916cc06ce2a9584f7f29d6c7d248b57892e1f35ca856d24f3b0",
+    "tests/integration/bu_test.go": "4ea0c92ccab96ef3c7604464614dd1232f5f45726402dee40f2526327dbb6e46",
+    "tests/integration/review_regressions_test.go": "0be52e2f7e516d1de171fe48dbe2311428de93d479230ec7b0ba0eff69e63fe0",
+    "tests/integration/source_history_test.go": "0d925e50e23e12b0451efd32db8086a16a16467c7135f36fd1b7fba8dc29de98",
+    "tests/scenarios/README.md": "d50600967fc9bf039d5c32939d5d5702d2cae6ad59f491c80efa550be0f61ac9",
+    "tsconfig.base.json": "67797210c45e7f4a25a30c756ff3839eaa04dc65ffedb875d636168f7fd96a4a"
+  },
+  "checks_round_1": {
+    "docs": {
+      "name": "docs",
+      "chunk_id": "9b88c6",
+      "wall_time_seconds": 9.043e-06,
+      "exit_code": 0,
+      "original_token_count": 74,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.599s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 138, \"local_links\": 4710, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    "refs": {
+      "name": "refs",
+      "chunk_id": "f85de3",
+      "wall_time_seconds": 7.108e-06,
+      "exit_code": 0,
+      "original_token_count": 74,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 138, \"local_links\": 4710, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    "diff": {
+      "name": "diff",
+      "chunk_id": "3a342b",
+      "wall_time_seconds": 1.2302e-05,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  "checks_final": {
+    "docs": {
+      "name": "docs",
+      "chunk_id": "79c8e8",
+      "wall_time_seconds": 0.706743164,
+      "exit_code": 0,
+      "original_token_count": 74,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.922s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 138, \"local_links\": 4710, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    "refs": {
+      "name": "refs",
+      "chunk_id": "d8edd3",
+      "wall_time_seconds": 0.272865373,
+      "exit_code": 0,
+      "original_token_count": 74,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 138, \"local_links\": 4710, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    "diff": {
+      "name": "diff",
+      "chunk_id": "a7e7da",
+      "wall_time_seconds": 1.3957e-05,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    "coverage_protection": {
+      "name": "coverage_protection",
+      "chunk_id": "bcb5d4",
+      "wall_time_seconds": 0.042484182,
+      "exit_code": 0,
+      "original_token_count": 515,
+      "output": "{\"coverage\": {\"status\": \"passed\", \"kind\": \"static document traceability only; not runtime or semantic proof\", \"cases\": 257, \"scenario_ids\": [\"SCN001\", \"SCN002\", \"SCN003\", \"SCN004\", \"SCN005\", \"SCN006\", \"SCN007\", \"SCN008\", \"SCN009\", \"SCN010\", \"SCN011\", \"SCN012\", \"SCN013\", \"SCN014\", \"SCN015\", \"SCN016\", \"SCN017\"], \"rule_ids\": [\"BR001\", \"BR002\", \"BR003\", \"BR004\", \"BR005\", \"BR006\", \"BR007\", \"BR008\", \"BR009\", \"BR010\", \"BR011\", \"BR012\", \"BR013\", \"BR014\", \"BR015\", \"BR016\", \"BR017\", \"BR018\", \"BR019\", \"BR020\", \"BR021\"], \"technical_counterexamples\": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33], \"required_layer_case_counts\": {\"A\": 251, \"B\": 179, \"D\": 193, \"F\": 70, \"G\": 140, \"M\": 11, \"P\": 4}, \"runtime_case_results\": \"all not_run\"}, \"protection\": {\"status\": \"passed\", \"baseline_files\": 466, \"preserved_files\": 457, \"changed_existing\": [\"docs/README.md\", \"docs/adr/022-joint-timeline-revision.md\", \"docs/governance/registry.json\", \"docs/plans/010-m02-scope-and-plan.md\", \"docs/specs/README.md\", \"docs/specs/m02/011-m02-business-requirements.md\", \"docs/specs/m02/012-m02-functional-and-interaction-design.md\", \"docs/specs/m02/013-m02-technical-design.md\", \"docs/verification/README.md\"], \"new_files\": [\"docs/specs/m02/023-m02-timeline-test-cases.md\", \"docs/verification/023-timeline-test-cases.evidence.json\", \"docs/verification/023-timeline-test-cases.md\"], \"existing_markdown_insert_only\": [\"docs/README.md\", \"docs/adr/022-joint-timeline-revision.md\", \"docs/plans/010-m02-scope-and-plan.md\", \"docs/specs/README.md\", \"docs/specs/m02/011-m02-business-requirements.md\", \"docs/specs/m02/012-m02-functional-and-interaction-design.md\", \"docs/specs/m02/013-m02-technical-design.md\", \"docs/verification/README.md\"], \"existing_registry_document_entries_unchanged\": 22, \"old_verification_records_preserved\": 34, \"old_verification_files_preserved\": 129, \"stable_business_ids_preserved\": 67, \"progress_prefixes_preserved\": 4, \"non_docs_files_preserved\": 128, \"branch_head_stash_unchanged\": true}}\n"
+    }
+  },
+  "coverage": {
+    "status": "passed",
+    "kind": "static document traceability only; not runtime or semantic proof",
+    "cases": 257,
+    "case_ids": [
+      "TL-001",
+      "TL-002",
+      "TL-003",
+      "TL-004",
+      "TL-005",
+      "TL-006",
+      "TL-007",
+      "TL-008",
+      "TL-009",
+      "TL-010",
+      "TL-011",
+      "TL-012",
+      "TL-013",
+      "TL-014",
+      "TL-015",
+      "TL-016",
+      "TL-017",
+      "TL-018",
+      "TL-019",
+      "TL-020",
+      "TL-021",
+      "TL-022",
+      "TL-023",
+      "TL-024",
+      "TL-025",
+      "TL-026",
+      "TL-027",
+      "TL-028",
+      "TL-029",
+      "TL-030",
+      "TL-031",
+      "TL-032",
+      "TL-033",
+      "TL-034",
+      "TL-035",
+      "TL-036",
+      "TL-037",
+      "TL-038",
+      "TL-039",
+      "TL-040",
+      "TL-041",
+      "TL-042",
+      "TL-043",
+      "TL-044",
+      "TL-045",
+      "TL-046",
+      "TL-047",
+      "TL-048",
+      "TL-049",
+      "TL-050",
+      "TL-051",
+      "TL-052",
+      "TL-053",
+      "TL-054",
+      "TL-055",
+      "TL-056",
+      "TL-057",
+      "TL-058",
+      "TL-059",
+      "TL-060",
+      "TL-061",
+      "TL-062",
+      "TL-063",
+      "TL-064",
+      "TL-065",
+      "TL-066",
+      "TL-067",
+      "TL-068",
+      "TL-069",
+      "TL-070",
+      "TL-071",
+      "TL-072",
+      "TL-073",
+      "TL-074",
+      "TL-075",
+      "TL-076",
+      "TL-077",
+      "TL-078",
+      "TL-079",
+      "TL-080",
+      "TL-081",
+      "TL-082",
+      "TL-083",
+      "TL-084",
+      "TL-085",
+      "TL-086",
+      "TL-087",
+      "TL-088",
+      "TL-089",
+      "TL-090",
+      "TL-091",
+      "TL-092",
+      "TL-093",
+      "TL-094",
+      "TL-095",
+      "TL-096",
+      "TL-097",
+      "TL-098",
+      "TL-099",
+      "TL-100",
+      "TL-101",
+      "TL-102",
+      "TL-103",
+      "TL-104",
+      "TL-105",
+      "TL-106",
+      "TL-107",
+      "TL-108",
+      "TL-109",
+      "TL-110",
+      "TL-111",
+      "TL-112",
+      "TL-113",
+      "TL-114",
+      "TL-115",
+      "TL-116",
+      "TL-117",
+      "TL-118",
+      "TL-119",
+      "TL-120",
+      "TL-121",
+      "TL-122",
+      "TL-123",
+      "TL-124",
+      "TL-125",
+      "TL-126",
+      "TL-127",
+      "TL-128",
+      "TL-129",
+      "TL-130",
+      "TL-131",
+      "TL-132",
+      "TL-133",
+      "TL-134",
+      "TL-135",
+      "TL-136",
+      "TL-137",
+      "TL-138",
+      "TL-139",
+      "TL-140",
+      "TL-141",
+      "TL-142",
+      "TL-143",
+      "TL-144",
+      "TL-145",
+      "TL-146",
+      "TL-147",
+      "TL-148",
+      "TL-149",
+      "TL-150",
+      "TL-151",
+      "TL-152",
+      "TL-153",
+      "TL-154",
+      "TL-155",
+      "TL-156",
+      "TL-157",
+      "TL-158",
+      "TL-159",
+      "TL-160",
+      "TL-161",
+      "TL-162",
+      "TL-163",
+      "TL-164",
+      "TL-165",
+      "TL-166",
+      "TL-167",
+      "TL-168",
+      "TL-169",
+      "TL-170",
+      "TL-171",
+      "TL-172",
+      "TL-173",
+      "TL-174",
+      "TL-175",
+      "TL-176",
+      "TL-177",
+      "TL-178",
+      "TL-179",
+      "TL-180",
+      "TL-181",
+      "TL-182",
+      "TL-183",
+      "TL-184",
+      "TL-185",
+      "TL-186",
+      "TL-187",
+      "TL-188",
+      "TL-189",
+      "TL-190",
+      "TL-191",
+      "TL-192",
+      "TL-193",
+      "TL-194",
+      "TL-195",
+      "TL-196",
+      "TL-197",
+      "TL-198",
+      "TL-199",
+      "TL-200",
+      "TL-201",
+      "TL-202",
+      "TL-203",
+      "TL-204",
+      "TL-205",
+      "TL-206",
+      "TL-207",
+      "TL-208",
+      "TL-209",
+      "TL-210",
+      "TL-211",
+      "TL-212",
+      "TL-213",
+      "TL-214",
+      "TL-215",
+      "TL-216",
+      "TL-217",
+      "TL-218",
+      "TL-219",
+      "TL-220",
+      "TL-221",
+      "TL-222",
+      "TL-223",
+      "TL-224",
+      "TL-225",
+      "TL-226",
+      "TL-227",
+      "TL-228",
+      "TL-229",
+      "TL-230",
+      "TL-231",
+      "TL-232",
+      "TL-233",
+      "TL-234",
+      "TL-235",
+      "TL-236",
+      "TL-237",
+      "TL-238",
+      "TL-239",
+      "TL-240",
+      "TL-241",
+      "TL-242",
+      "TL-243",
+      "TL-244",
+      "TL-245",
+      "TL-246",
+      "TL-247",
+      "TL-248",
+      "TL-249",
+      "TL-250",
+      "TL-251",
+      "TL-252",
+      "TL-253",
+      "TL-254",
+      "TL-255",
+      "TL-256",
+      "TL-257"
+    ],
+    "case_index": [
+      {
+        "id": "TL-001",
+        "title": "首条三类日期",
+        "acs": [
+          "AC002",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-002",
+        "title": "企业起点边界",
+        "acs": [
+          "AC002",
+          "AC003"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-003",
+        "title": "缺企业和有限企业",
+        "acs": [
+          "AC002",
+          "AC011"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-004",
+        "title": "未来首条可发现",
+        "acs": [
+          "AC001",
+          "AC002",
+          "AC007"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-005",
+        "title": "闰日与大小月",
+        "acs": [
+          "AC002",
+          "AC003"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-006",
+        "title": "日期格式拒绝",
+        "acs": [
+          "AC002",
+          "AC003",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-007",
+        "title": "日期上下界",
+        "acs": [
+          "AC002",
+          "AC003",
+          "AC014"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-008",
+        "title": "时区换日",
+        "acs": [
+          "AC001",
+          "AC003",
+          "AC024"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-009",
+        "title": "编码规范与同名",
+        "acs": [
+          "AC002"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-010",
+        "title": "编码边界",
+        "acs": [
+          "AC002"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-011",
+        "title": "名称码点与归一",
+        "acs": [
+          "AC002",
+          "AC004"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-012",
+        "title": "英文空值与非法文本",
+        "acs": [
+          "AC002",
+          "AC004",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-013",
+        "title": "分类必选与入口一致",
+        "acs": [
+          "AC002",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-014",
+        "title": "伪造服务器字段",
+        "acs": [
+          "AC002",
+          "AC013"
+        ],
+        "layers": [
+          "A"
+        ]
+      },
+      {
+        "id": "TL-015",
+        "title": "首次创建原子性",
+        "acs": [
+          "AC002",
+          "AC010",
+          "AC012",
+          "AC025"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-016",
+        "title": "初始化幂等与歧义",
+        "acs": [
+          "AC002",
+          "AC011"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-017",
+        "title": "半开期间与停启边界",
+        "acs": [
+          "AC001",
+          "AC008",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-018",
+        "title": "首条前无事实",
+        "acs": [
+          "AC001",
+          "AC008",
+          "AC014"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-019",
+        "title": "按查看日筛选",
+        "acs": [
+          "AC001",
+          "AC008",
+          "AC009"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-020",
+        "title": "查看日与选中记录分离",
+        "acs": [
+          "AC001",
+          "AC003",
+          "AC007"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-021",
+        "title": "未来首条旧来源",
+        "acs": [
+          "AC008"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-022",
+        "title": "更正删除多来源答案",
+        "acs": [
+          "AC004",
+          "AC005",
+          "AC008",
+          "AC013"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-023",
+        "title": "默认来源与确切来源",
+        "acs": [
+          "AC008",
+          "AC009"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-024",
+        "title": "来源不存在与对象越权",
+        "acs": [
+          "AC008",
+          "AC009"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-025",
+        "title": "查询格式不允许降级",
+        "acs": [
+          "AC008"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-026",
+        "title": "退役截点与采用未接入",
+        "acs": [
+          "AC008",
+          "AC011"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-027",
+        "title": "一次响应来源一致",
+        "acs": [
+          "AC001",
+          "AC008",
+          "AC010"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-028",
+        "title": "审计时刻相同或回退",
+        "acs": [
+          "AC008",
+          "AC012",
+          "AC024"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-029",
+        "title": "原记录从历史返回当前",
+        "acs": [
+          "AC005",
+          "AC007",
+          "AC008"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-030",
+        "title": "排序搜索与字段权限",
+        "acs": [
+          "AC001",
+          "AC009"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-031",
+        "title": "保存不等于未来到日",
+        "acs": [
+          "AC001",
+          "AC008",
+          "AC015"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-032",
+        "title": "读取失败与历史权限撤销",
+        "acs": [
+          "AC008",
+          "AC009",
+          "AC010"
+        ],
+        "layers": [
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-033",
+        "title": "开放尾段追加",
+        "acs": [
+          "AC003",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-034",
+        "title": "已结束区间插入",
+        "acs": [
+          "AC003",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-035",
+        "title": "当天与未来中段",
+        "acs": [
+          "AC003",
+          "AC024"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-036",
+        "title": "当前停用但历史合法",
+        "acs": [
+          "AC003",
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-037",
+        "title": "恢复后再次更名",
+        "acs": [
+          "AC003",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-038",
+        "title": "停用段内新增",
+        "acs": [
+          "AC003",
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-039",
+        "title": "首条与占用日",
+        "acs": [
+          "AC003",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-040",
+        "title": "同值新增不占日期",
+        "acs": [
+          "AC003",
+          "AC016",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-041",
+        "title": "同值也执行守卫",
+        "acs": [
+          "AC003",
+          "AC009",
+          "AC010",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-042",
+        "title": "字段省略与清空",
+        "acs": [
+          "AC003",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-043",
+        "title": "缺changes与受限输入",
+        "acs": [
+          "AC003",
+          "AC009",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-044",
+        "title": "补登记的真实保存时间",
+        "acs": [
+          "AC003",
+          "AC008",
+          "AC024"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-045",
+        "title": "插入前后引用范围",
+        "acs": [
+          "AC003",
+          "AC011",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-046",
+        "title": "首条名称更正",
+        "acs": [
+          "AC004",
+          "AC013",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-047",
+        "title": "中段更正只到独立后继",
+        "acs": [
+          "AC004",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-048",
+        "title": "重新启用名称纠错",
+        "acs": [
+          "AC004",
+          "AC015",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-049",
+        "title": "直接继承首条的停用变化",
+        "acs": [
+          "AC004",
+          "AC006",
+          "AC019",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-050",
+        "title": "曾部分输入的后继不传播",
+        "acs": [
+          "AC004",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-051",
+        "title": "明确联合后继更正",
+        "acs": [
+          "AC016",
+          "AC019",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-052",
+        "title": "受限字段保持",
+        "acs": [
+          "AC004",
+          "AC009",
+          "AC019"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-053",
+        "title": "英文显式清空",
+        "acs": [
+          "AC004",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-054",
+        "title": "同值更正",
+        "acs": [
+          "AC004",
+          "AC013",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-055",
+        "title": "停用没有名称更正入口",
+        "acs": [
+          "AC004",
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-056",
+        "title": "普通更正不能改日期分类",
+        "acs": [
+          "AC004",
+          "AC013",
+          "AC014",
+          "AC018"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-057",
+        "title": "历史或删除目标不可更正",
+        "acs": [
+          "AC004",
+          "AC008",
+          "AC010"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-058",
+        "title": "原因下架不妨碍普通更正",
+        "acs": [
+          "AC004",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-059",
+        "title": "末尾停用三类日期",
+        "acs": [
+          "AC006",
+          "AC013",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-060",
+        "title": "开放停用段恢复",
+        "acs": [
+          "AC006",
+          "AC013",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-061",
+        "title": "同名恢复仍是事实",
+        "acs": [
+          "AC015",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-062",
+        "title": "恢复仅改部分字段",
+        "acs": [
+          "AC009",
+          "AC015",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-063",
+        "title": "今日启用仍可排未来恢复",
+        "acs": [
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-064",
+        "title": "补历史整段必须联合",
+        "acs": [
+          "AC006",
+          "AC015",
+          "AC016",
+          "AC022"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-065",
+        "title": "停用后有普通后继",
+        "acs": [
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-066",
+        "title": "恢复后原恢复会重复",
+        "acs": [
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-067",
+        "title": "重复停用",
+        "acs": [
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-068",
+        "title": "重复恢复",
+        "acs": [
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-069",
+        "title": "首条之前与同日启停",
+        "acs": [
+          "AC003",
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-070",
+        "title": "三类状态全部转换",
+        "acs": [
+          "AC002",
+          "AC003",
+          "AC006",
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-071",
+        "title": "停止类型禁止资料夹带",
+        "acs": [
+          "AC006",
+          "AC013",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-072",
+        "title": "类型原因全目录",
+        "acs": [
+          "AC013",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-073",
+        "title": "多轮完整链",
+        "acs": [
+          "AC003",
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-074",
+        "title": "过去新增与原采用保持",
+        "acs": [
+          "AC008",
+          "AC011",
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-075",
+        "title": "首条始终不可删除",
+        "acs": [
+          "AC002",
+          "AC005",
+          "AC014",
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-076",
+        "title": "普通中段删除",
+        "acs": [
+          "AC005",
+          "AC008",
+          "AC013"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-077",
+        "title": "普通尾条删除",
+        "acs": [
+          "AC005",
+          "AC008"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-078",
+        "title": "停用前普通删除",
+        "acs": [
+          "AC005",
+          "AC006",
+          "AC015",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-079",
+        "title": "末尾停用删除",
+        "acs": [
+          "AC005",
+          "AC006",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-080",
+        "title": "停用有恢复后继",
+        "acs": [
+          "AC005",
+          "AC006",
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-081",
+        "title": "末尾重新启用删除",
+        "acs": [
+          "AC005",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-082",
+        "title": "恢复后有普通记录",
+        "acs": [
+          "AC005",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-083",
+        "title": "恢复后有再次停用",
+        "acs": [
+          "AC005",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-084",
+        "title": "成对删除保留正确后继",
+        "acs": [
+          "AC005",
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-085",
+        "title": "删除后同日重新新增",
+        "acs": [
+          "AC003",
+          "AC005",
+          "AC008",
+          "AC020"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-086",
+        "title": "重复删除与原结果重放",
+        "acs": [
+          "AC005",
+          "AC010"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-087",
+        "title": "删除输入和准确目标",
+        "acs": [
+          "AC005",
+          "AC009",
+          "AC010",
+          "AC013"
+        ],
+        "layers": [
+          "A"
+        ]
+      },
+      {
+        "id": "TL-088",
+        "title": "同值前序删除仍更新继承",
+        "acs": [
+          "AC005",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-089",
+        "title": "仅历史引用不阻断",
+        "acs": [
+          "AC005",
+          "AC011",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-090",
+        "title": "首条新旧日期九格",
+        "acs": [
+          "AC014",
+          "AC024"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-091",
+        "title": "普通尾条新旧日期九格",
+        "acs": [
+          "AC014"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-092",
+        "title": "停用新旧日期九格",
+        "acs": [
+          "AC014",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-093",
+        "title": "恢复新旧日期九格",
+        "acs": [
+          "AC014",
+          "AC015",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-094",
+        "title": "首条前移与后移",
+        "acs": [
+          "AC014",
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-095",
+        "title": "唯一首条移到未来",
+        "acs": [
+          "AC001",
+          "AC014"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-096",
+        "title": "首条越过后继拒绝",
+        "acs": [
+          "AC014",
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-097",
+        "title": "普通记录向前重排",
+        "acs": [
+          "AC014",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-098",
+        "title": "普通记录向后重排",
+        "acs": [
+          "AC014"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-099",
+        "title": "普通改日到停用段",
+        "acs": [
+          "AC014",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-100",
+        "title": "普通移到首条前或占用日",
+        "acs": [
+          "AC014"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-101",
+        "title": "停用合法前后移",
+        "acs": [
+          "AC014",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-102",
+        "title": "停用越过普通或恢复",
+        "acs": [
+          "AC014",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-103",
+        "title": "恢复合法边界和后继拒绝",
+        "acs": [
+          "AC014",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-104",
+        "title": "同值改日仍需权限版本",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC014",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-105",
+        "title": "改日前序同值仍换继承",
+        "acs": [
+          "AC014",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-106",
+        "title": "改日DTO及目标资格",
+        "acs": [
+          "AC008",
+          "AC013",
+          "AC014"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-107",
+        "title": "改日结果在再次维护后保持",
+        "acs": [
+          "AC008",
+          "AC010",
+          "AC014"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-108",
+        "title": "已有后继补整段启停",
+        "acs": [
+          "AC016",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-109",
+        "title": "成对删除启停",
+        "acs": [
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-110",
+        "title": "两个普通记录交换日期",
+        "acs": [
+          "AC014",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-111",
+        "title": "三个日期循环置换",
+        "acs": [
+          "AC014",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-112",
+        "title": "混合删新同日及更新",
+        "acs": [
+          "AC016",
+          "AC020"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-113",
+        "title": "去掉混合删除项",
+        "acs": [
+          "AC016",
+          "AC020"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-114",
+        "title": "一个项合并多修改面",
+        "acs": [
+          "AC014",
+          "AC016",
+          "AC020"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-115",
+        "title": "最终非法的启停交换",
+        "acs": [
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-116",
+        "title": "首条顺序及身份保护",
+        "acs": [
+          "AC016",
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-117",
+        "title": "重复itemId和目标",
+        "acs": [
+          "AC016",
+          "AC020"
+        ],
+        "layers": [
+          "G",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-118",
+        "title": "新增项不可再次更新",
+        "acs": [
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-119",
+        "title": "跨BU与非基准成员",
+        "acs": [
+          "AC009",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-120",
+        "title": "空集合与空更新",
+        "acs": [
+          "AC016",
+          "AC018",
+          "AC022"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-121",
+        "title": "同值ADD先验同日唯一",
+        "acs": [
+          "AC016",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-122",
+        "title": "ADD默认来自最终前序",
+        "acs": [
+          "AC016",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-123",
+        "title": "同值ADD消除后继续扫描",
+        "acs": [
+          "AC016",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-124",
+        "title": "无变化项仍有派生期间",
+        "acs": [
+          "AC016",
+          "AC021",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-125",
+        "title": "全项同值",
+        "acs": [
+          "AC016",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-126",
+        "title": "纯结构变化和分离影响",
+        "acs": [
+          "AC016",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-127",
+        "title": "显式删除全部非首条",
+        "acs": [
+          "AC005",
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-128",
+        "title": "任一项失败整笔保护",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC011",
+          "AC016",
+          "AC020",
+          "AC025"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-129",
+        "title": "唯一首条补全并保留原起点",
+        "acs": [
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-130",
+        "title": "已有后继且保留原日",
+        "acs": [
+          "AC017",
+          "AC019",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-131",
+        "title": "已有后继且不保留原日",
+        "acs": [
+          "AC017",
+          "AC019",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-132",
+        "title": "保留选择尚未确认",
+        "acs": [
+          "AC017",
+          "AC022"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-133",
+        "title": "单条前移与不同资料补全区分",
+        "acs": [
+          "AC014",
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-134",
+        "title": "补全边界与不自动改原因",
+        "acs": [
+          "AC013",
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-135",
+        "title": "补全与既有字段冻结引用",
+        "acs": [
+          "AC011",
+          "AC017"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-136",
+        "title": "首条原因纠错",
+        "acs": [
+          "AC013",
+          "AC018",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-137",
+        "title": "CHANGE改停用",
+        "acs": [
+          "AC018",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-138",
+        "title": "停用改CHANGE",
+        "acs": [
+          "AC018",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-139",
+        "title": "停用改重新启用",
+        "acs": [
+          "AC015",
+          "AC018"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-140",
+        "title": "重新启用改CHANGE",
+        "acs": [
+          "AC015",
+          "AC018",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-141",
+        "title": "重新启用改停用",
+        "acs": [
+          "AC015",
+          "AC018",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-142",
+        "title": "CHANGE改重新启用",
+        "acs": [
+          "AC015",
+          "AC018",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-143",
+        "title": "停用恢复互换类型及日期",
+        "acs": [
+          "AC014",
+          "AC018",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-144",
+        "title": "分类日期字段同时纠错",
+        "acs": [
+          "AC014",
+          "AC018",
+          "AC019",
+          "AC020"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-145",
+        "title": "单改前项造成孤立恢复",
+        "acs": [
+          "AC015",
+          "AC018"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-146",
+        "title": "首条与非首条类型限制",
+        "acs": [
+          "AC017",
+          "AC018"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-147",
+        "title": "转停用禁止名称面",
+        "acs": [
+          "AC009",
+          "AC018"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-148",
+        "title": "同分类及目录变化",
+        "acs": [
+          "AC013",
+          "AC018",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-149",
+        "title": "双侧分类与修改面权限",
+        "acs": [
+          "AC009",
+          "AC018",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-150",
+        "title": "缺项继续编辑",
+        "acs": [
+          "AC016",
+          "AC022"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-151",
+        "title": "非法集合补成合法",
+        "acs": [
+          "AC016",
+          "AC022"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-152",
+        "title": "未知分类与已知越权区分",
+        "acs": [
+          "AC009",
+          "AC018",
+          "AC022"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-153",
+        "title": "缺席与非法输入区分",
+        "acs": [
+          "AC013",
+          "AC022"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-154",
+        "title": "能力加入与保存分离",
+        "acs": [
+          "AC005",
+          "AC016",
+          "AC017",
+          "AC022"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-155",
+        "title": "预览默认失效",
+        "acs": [
+          "AC019",
+          "AC022"
+        ],
+        "layers": [
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-156",
+        "title": "预览合法后外部变化",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC011",
+          "AC022"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-157",
+        "title": "整笔同值可明确结束",
+        "acs": [
+          "AC016",
+          "AC022",
+          "AC023"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-158",
+        "title": "影响展示完整且可见",
+        "acs": [
+          "AC019",
+          "AC021"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-159",
+        "title": "每个入口取消无写入",
+        "acs": [
+          "AC007",
+          "AC013",
+          "AC016"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-160",
+        "title": "保存和删除后的定位",
+        "acs": [
+          "AC007",
+          "AC014",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-161",
+        "title": "未知结果离开后恢复",
+        "acs": [
+          "AC007",
+          "AC010",
+          "AC026"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-162",
+        "title": "旧会话迟到响应",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC026"
+        ],
+        "layers": [
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-163",
+        "title": "原拒绝重排与刷新定位",
+        "acs": [
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-164",
+        "title": "超限和服务不可用反馈",
+        "acs": [
+          "AC028",
+          "AC029"
+        ],
+        "layers": [
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-165",
+        "title": "长编辑区与键盘可达",
+        "acs": [
+          "AC007",
+          "AC016",
+          "AC022"
+        ],
+        "layers": [
+          "B"
+        ]
+      },
+      {
+        "id": "TL-166",
+        "title": "只读角色不能维护",
+        "acs": [
+          "AC009"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-167",
+        "title": "对象与实例隔离",
+        "acs": [
+          "AC009",
+          "AC011",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-168",
+        "title": "日期专用权矩阵",
+        "acs": [
+          "AC009",
+          "AC014",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-169",
+        "title": "删除专用权矩阵",
+        "acs": [
+          "AC005",
+          "AC009",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-170",
+        "title": "有效类型决定授权",
+        "acs": [
+          "AC009",
+          "AC018"
+        ],
+        "layers": [
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-171",
+        "title": "联合权不是子项权",
+        "acs": [
+          "AC009",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-172",
+        "title": "显式同值字段也需写权",
+        "acs": [
+          "AC009",
+          "AC019",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-173",
+        "title": "默认继承不增加字段写权",
+        "acs": [
+          "AC009",
+          "AC015",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-174",
+        "title": "原结果恢复核验原声明",
+        "acs": [
+          "AC009",
+          "AC023",
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-175",
+        "title": "原类别与当前类别分离",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC018",
+          "AC023"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-176",
+        "title": "授权完整单元",
+        "acs": [
+          "AC009"
+        ],
+        "layers": [
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-177",
+        "title": "认证和安全守卫不可用",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC012"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-178",
+        "title": "原授权证据不随配置改变",
+        "acs": [
+          "AC009",
+          "AC012",
+          "AC023"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-179",
+        "title": "未接消费者不当故障",
+        "acs": [
+          "AC011",
+          "AC015"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-180",
+        "title": "历史引用不会一概阻断",
+        "acs": [
+          "AC008",
+          "AC011",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-181",
+        "title": "真实业务点引用",
+        "acs": [
+          "AC011",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-182",
+        "title": "段引用半开边界",
+        "acs": [
+          "AC006",
+          "AC011",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-183",
+        "title": "首条后移消失期间",
+        "acs": [
+          "AC011",
+          "AC014"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-184",
+        "title": "分离区间不扩大守卫",
+        "acs": [
+          "AC011",
+          "AC021"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-185",
+        "title": "必要依赖失效或覆盖未知",
+        "acs": [
+          "AC011",
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-186",
+        "title": "受限依赖解释",
+        "acs": [
+          "AC009",
+          "AC011",
+          "AC027"
+        ],
+        "layers": [
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-187",
+        "title": "引用与写入共同守卫",
+        "acs": [
+          "AC010",
+          "AC011",
+          "AC015"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-188",
+        "title": "同身份同内容并发",
+        "acs": [
+          "AC010",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-189",
+        "title": "规范顺序重放",
+        "acs": [
+          "AC010",
+          "AC016",
+          "AC027"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-190",
+        "title": "同身份异内容",
+        "acs": [
+          "AC010",
+          "AC013",
+          "AC016",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-191",
+        "title": "不同主体及实例相同UUID",
+        "acs": [
+          "AC009",
+          "AC010"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-192",
+        "title": "同BU不同身份旧基准竞争",
+        "acs": [
+          "AC010",
+          "AC014",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-193",
+        "title": "不同BU无需全局版本冲突",
+        "acs": [
+          "AC010"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-194",
+        "title": "同编码及同日竞争",
+        "acs": [
+          "AC002",
+          "AC003",
+          "AC010",
+          "AC025"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-195",
+        "title": "未接受旧请求跨午夜",
+        "acs": [
+          "AC003",
+          "AC010",
+          "AC024"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-196",
+        "title": "已接受后对象继续演进",
+        "acs": [
+          "AC008",
+          "AC010",
+          "AC013",
+          "AC014",
+          "AC024"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-197",
+        "title": "拒绝和无变化不可重新解释",
+        "acs": [
+          "AC010",
+          "AC023",
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-198",
+        "title": "响应丢失与进程重启",
+        "acs": [
+          "AC010",
+          "AC012",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-199",
+        "title": "resolve先到封闭",
+        "acs": [
+          "AC010",
+          "AC026"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-200",
+        "title": "原写持锁时resolve",
+        "acs": [
+          "AC010",
+          "AC026",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-201",
+        "title": "回滚后精确重试先成功",
+        "acs": [
+          "AC026"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-202",
+        "title": "回滚后resolve先封闭",
+        "acs": [
+          "AC026"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-203",
+        "title": "回滚后拒绝先终结",
+        "acs": [
+          "AC026",
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-204",
+        "title": "终结本身出错",
+        "acs": [
+          "AC025",
+          "AC026",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-205",
+        "title": "写与撤权线性顺序",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC012"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-206",
+        "title": "登录与停用竞争",
+        "acs": [
+          "AC009",
+          "AC010"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-207",
+        "title": "死锁、锁超时与碰撞隔离",
+        "acs": [
+          "AC010",
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-208",
+        "title": "业务409不得泄漏身份",
+        "acs": [
+          "AC012",
+          "AC025"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-209",
+        "title": "各写阶段失败矩阵",
+        "acs": [
+          "AC012",
+          "AC016",
+          "AC020",
+          "AC025"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-210",
+        "title": "savepoint清理失败",
+        "acs": [
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-211",
+        "title": "技术故障不伪装业务拒绝",
+        "acs": [
+          "AC012",
+          "AC025",
+          "AC026"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-212",
+        "title": "授权判定与事实一致",
+        "acs": [
+          "AC009",
+          "AC012",
+          "AC025"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-213",
+        "title": "提交结果三分支",
+        "acs": [
+          "AC010",
+          "AC012",
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-214",
+        "title": "同字段多项拒绝准确定位",
+        "acs": [
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-215",
+        "title": "原拒绝不受当前头改变",
+        "acs": [
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-216",
+        "title": "多个错误的稳定顺序",
+        "acs": [
+          "AC027"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-217",
+        "title": "诊断安全和版本组合",
+        "acs": [
+          "AC013",
+          "AC027",
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-218",
+        "title": "诊断不越当前权限",
+        "acs": [
+          "AC009",
+          "AC023",
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-219",
+        "title": "正文大小和阻塞读取",
+        "acs": [
+          "AC028"
+        ],
+        "layers": [
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-220",
+        "title": "单项作用于长当前线",
+        "acs": [
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F",
+          "P"
+        ]
+      },
+      {
+        "id": "TL-221",
+        "title": "累计SQL超过整体预算",
+        "acs": [
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-222",
+        "title": "连接池和锁计入同一预算",
+        "acs": [
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F",
+          "P"
+        ]
+      },
+      {
+        "id": "TL-223",
+        "title": "预览与resolve各有上限",
+        "acs": [
+          "AC022",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-224",
+        "title": "有界清理和DB实际释放",
+        "acs": [
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-225",
+        "title": "终结不能另开完整预算",
+        "acs": [
+          "AC026",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-226",
+        "title": "写入跨午夜保留原办理日",
+        "acs": [
+          "AC024"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-227",
+        "title": "原采样空值与同值结果",
+        "acs": [
+          "AC023",
+          "AC024",
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-228",
+        "title": "正式提交协议完整性",
+        "acs": [
+          "AC002",
+          "AC010",
+          "AC013",
+          "AC016",
+          "AC027"
+        ],
+        "layers": [
+          "A"
+        ]
+      },
+      {
+        "id": "TL-229",
+        "title": "来源成员完整和范围一致",
+        "acs": [
+          "AC008",
+          "AC012",
+          "AC016"
+        ],
+        "layers": [
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-230",
+        "title": "期间与日期约束",
+        "acs": [
+          "AC003",
+          "AC012",
+          "AC014"
+        ],
+        "layers": [
+          "D"
+        ]
+      },
+      {
+        "id": "TL-231",
+        "title": "来源与修订前驱",
+        "acs": [
+          "AC008",
+          "AC012",
+          "AC025"
+        ],
+        "layers": [
+          "D"
+        ]
+      },
+      {
+        "id": "TL-232",
+        "title": "旧来源封口和运行角色",
+        "acs": [
+          "AC008",
+          "AC012",
+          "AC025"
+        ],
+        "layers": [
+          "D"
+        ]
+      },
+      {
+        "id": "TL-233",
+        "title": "删除修订与成员分开",
+        "acs": [
+          "AC005",
+          "AC008",
+          "AC012"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-234",
+        "title": "单条及联合终态组合",
+        "acs": [
+          "AC010",
+          "AC012",
+          "AC016",
+          "AC027"
+        ],
+        "layers": [
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-235",
+        "title": "结果不能冒领来源",
+        "acs": [
+          "AC009",
+          "AC010",
+          "AC012",
+          "AC026"
+        ],
+        "layers": [
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-236",
+        "title": "联合直接项与派生项",
+        "acs": [
+          "AC016",
+          "AC020",
+          "AC021",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-237",
+        "title": "影响与事件版本",
+        "acs": [
+          "AC012",
+          "AC016",
+          "AC021"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-238",
+        "title": "源保存不冒充投递采用",
+        "acs": [
+          "AC008",
+          "AC011",
+          "AC012"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-239",
+        "title": "空库与00004前向升级",
+        "acs": [
+          "AC014",
+          "AC015",
+          "AC016",
+          "AC027",
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-240",
+        "title": "升级重复与失败关闭",
+        "acs": [
+          "AC025",
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-241",
+        "title": "旧制品和旧凭据隔离",
+        "acs": [
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-242",
+        "title": "存量连接排空",
+        "acs": [
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "M",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-243",
+        "title": "缺失和未知迁移不接入",
+        "acs": [
+          "AC029"
+        ],
+        "layers": [
+          "A",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-244",
+        "title": "结果解码不假定单目标",
+        "acs": [
+          "AC016",
+          "AC027",
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-245",
+        "title": "初始化与新增权限不自动扩张",
+        "acs": [
+          "AC009",
+          "AC015",
+          "AC016",
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-246",
+        "title": "受控恢复后真实读回",
+        "acs": [
+          "AC008",
+          "AC012",
+          "AC016",
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-247",
+        "title": "旧时间证据退役回归",
+        "acs": [
+          "AC008",
+          "AC012",
+          "AC029"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "M"
+        ]
+      },
+      {
+        "id": "TL-248",
+        "title": "四类动作完整状态矩阵",
+        "acs": [
+          "AC002",
+          "AC003",
+          "AC006",
+          "AC014",
+          "AC015",
+          "AC016"
+        ],
+        "layers": [
+          "G",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-249",
+        "title": "新建到历史修复完整旅程",
+        "acs": [
+          "AC002",
+          "AC003",
+          "AC004",
+          "AC005",
+          "AC006",
+          "AC007",
+          "AC008",
+          "AC014",
+          "AC015"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-250",
+        "title": "失败后联合修复再失败保护",
+        "acs": [
+          "AC005",
+          "AC006",
+          "AC010",
+          "AC012",
+          "AC016",
+          "AC026"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "B",
+          "F"
+        ]
+      },
+      {
+        "id": "TL-251",
+        "title": "首条补全到分类更正旅程",
+        "acs": [
+          "AC017",
+          "AC018",
+          "AC019"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "id": "TL-252",
+        "title": "排列不变与同值性质",
+        "acs": [
+          "AC016",
+          "AC020",
+          "AC023",
+          "AC027"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-253",
+        "title": "小状态空间非法后继",
+        "acs": [
+          "AC003",
+          "AC015",
+          "AC016",
+          "AC018"
+        ],
+        "layers": [
+          "G"
+        ]
+      },
+      {
+        "id": "TL-254",
+        "title": "相同业务值不等于同结构",
+        "acs": [
+          "AC018",
+          "AC021",
+          "AC023"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A"
+        ]
+      },
+      {
+        "id": "TL-255",
+        "title": "既定规模与并发测量",
+        "acs": [
+          "AC001",
+          "AC010",
+          "AC012",
+          "AC028"
+        ],
+        "layers": [
+          "D",
+          "A",
+          "P"
+        ]
+      },
+      {
+        "id": "TL-256",
+        "title": "长当前线与超预算压力",
+        "acs": [
+          "AC016",
+          "AC025",
+          "AC028"
+        ],
+        "layers": [
+          "G",
+          "D",
+          "A",
+          "F",
+          "P"
+        ]
+      },
+      {
+        "id": "TL-257",
+        "title": "不在范围的办理明确拒绝",
+        "acs": [
+          "AC005",
+          "AC008",
+          "AC013",
+          "AC015",
+          "AC016",
+          "AC017"
+        ],
+        "layers": [
+          "A",
+          "B"
+        ]
+      }
+    ],
+    "acceptance_coverage": {
+      "AC001": [
+        "TL-004",
+        "TL-008",
+        "TL-017",
+        "TL-018",
+        "TL-019",
+        "TL-020",
+        "TL-027",
+        "TL-030",
+        "TL-031",
+        "TL-095",
+        "TL-255"
+      ],
+      "AC002": [
+        "TL-001",
+        "TL-002",
+        "TL-003",
+        "TL-004",
+        "TL-005",
+        "TL-006",
+        "TL-007",
+        "TL-009",
+        "TL-010",
+        "TL-011",
+        "TL-012",
+        "TL-013",
+        "TL-014",
+        "TL-015",
+        "TL-016",
+        "TL-070",
+        "TL-075",
+        "TL-194",
+        "TL-228",
+        "TL-248",
+        "TL-249"
+      ],
+      "AC003": [
+        "TL-002",
+        "TL-005",
+        "TL-006",
+        "TL-007",
+        "TL-008",
+        "TL-020",
+        "TL-033",
+        "TL-034",
+        "TL-035",
+        "TL-036",
+        "TL-037",
+        "TL-038",
+        "TL-039",
+        "TL-040",
+        "TL-041",
+        "TL-042",
+        "TL-043",
+        "TL-044",
+        "TL-045",
+        "TL-069",
+        "TL-070",
+        "TL-073",
+        "TL-085",
+        "TL-194",
+        "TL-195",
+        "TL-230",
+        "TL-248",
+        "TL-249",
+        "TL-253"
+      ],
+      "AC004": [
+        "TL-011",
+        "TL-012",
+        "TL-022",
+        "TL-046",
+        "TL-047",
+        "TL-048",
+        "TL-049",
+        "TL-050",
+        "TL-052",
+        "TL-053",
+        "TL-054",
+        "TL-055",
+        "TL-056",
+        "TL-057",
+        "TL-058",
+        "TL-249"
+      ],
+      "AC005": [
+        "TL-022",
+        "TL-029",
+        "TL-075",
+        "TL-076",
+        "TL-077",
+        "TL-078",
+        "TL-079",
+        "TL-080",
+        "TL-081",
+        "TL-082",
+        "TL-083",
+        "TL-084",
+        "TL-085",
+        "TL-086",
+        "TL-087",
+        "TL-088",
+        "TL-089",
+        "TL-127",
+        "TL-154",
+        "TL-169",
+        "TL-233",
+        "TL-249",
+        "TL-250",
+        "TL-257"
+      ],
+      "AC006": [
+        "TL-036",
+        "TL-038",
+        "TL-049",
+        "TL-055",
+        "TL-059",
+        "TL-060",
+        "TL-063",
+        "TL-064",
+        "TL-065",
+        "TL-067",
+        "TL-069",
+        "TL-070",
+        "TL-071",
+        "TL-073",
+        "TL-078",
+        "TL-079",
+        "TL-080",
+        "TL-182",
+        "TL-248",
+        "TL-249",
+        "TL-250"
+      ],
+      "AC007": [
+        "TL-004",
+        "TL-020",
+        "TL-029",
+        "TL-159",
+        "TL-160",
+        "TL-161",
+        "TL-165",
+        "TL-249"
+      ],
+      "AC008": [
+        "TL-017",
+        "TL-018",
+        "TL-019",
+        "TL-021",
+        "TL-022",
+        "TL-023",
+        "TL-024",
+        "TL-025",
+        "TL-026",
+        "TL-027",
+        "TL-028",
+        "TL-029",
+        "TL-031",
+        "TL-032",
+        "TL-044",
+        "TL-057",
+        "TL-074",
+        "TL-076",
+        "TL-077",
+        "TL-085",
+        "TL-106",
+        "TL-107",
+        "TL-180",
+        "TL-196",
+        "TL-229",
+        "TL-231",
+        "TL-232",
+        "TL-233",
+        "TL-238",
+        "TL-246",
+        "TL-247",
+        "TL-249",
+        "TL-257"
+      ],
+      "AC009": [
+        "TL-019",
+        "TL-023",
+        "TL-024",
+        "TL-030",
+        "TL-032",
+        "TL-041",
+        "TL-043",
+        "TL-052",
+        "TL-062",
+        "TL-087",
+        "TL-104",
+        "TL-119",
+        "TL-128",
+        "TL-147",
+        "TL-149",
+        "TL-152",
+        "TL-156",
+        "TL-162",
+        "TL-166",
+        "TL-167",
+        "TL-168",
+        "TL-169",
+        "TL-170",
+        "TL-171",
+        "TL-172",
+        "TL-173",
+        "TL-174",
+        "TL-175",
+        "TL-176",
+        "TL-177",
+        "TL-178",
+        "TL-186",
+        "TL-191",
+        "TL-205",
+        "TL-206",
+        "TL-212",
+        "TL-218",
+        "TL-235",
+        "TL-245"
+      ],
+      "AC010": [
+        "TL-015",
+        "TL-027",
+        "TL-032",
+        "TL-041",
+        "TL-057",
+        "TL-086",
+        "TL-087",
+        "TL-104",
+        "TL-107",
+        "TL-128",
+        "TL-156",
+        "TL-161",
+        "TL-162",
+        "TL-175",
+        "TL-177",
+        "TL-187",
+        "TL-188",
+        "TL-189",
+        "TL-190",
+        "TL-191",
+        "TL-192",
+        "TL-193",
+        "TL-194",
+        "TL-195",
+        "TL-196",
+        "TL-197",
+        "TL-198",
+        "TL-199",
+        "TL-200",
+        "TL-205",
+        "TL-206",
+        "TL-207",
+        "TL-213",
+        "TL-228",
+        "TL-234",
+        "TL-235",
+        "TL-250",
+        "TL-255"
+      ],
+      "AC011": [
+        "TL-003",
+        "TL-016",
+        "TL-026",
+        "TL-045",
+        "TL-074",
+        "TL-089",
+        "TL-128",
+        "TL-135",
+        "TL-156",
+        "TL-167",
+        "TL-179",
+        "TL-180",
+        "TL-181",
+        "TL-182",
+        "TL-183",
+        "TL-184",
+        "TL-185",
+        "TL-186",
+        "TL-187",
+        "TL-238"
+      ],
+      "AC012": [
+        "TL-015",
+        "TL-028",
+        "TL-177",
+        "TL-178",
+        "TL-198",
+        "TL-205",
+        "TL-208",
+        "TL-209",
+        "TL-211",
+        "TL-212",
+        "TL-213",
+        "TL-229",
+        "TL-230",
+        "TL-231",
+        "TL-232",
+        "TL-233",
+        "TL-234",
+        "TL-235",
+        "TL-237",
+        "TL-238",
+        "TL-246",
+        "TL-247",
+        "TL-250",
+        "TL-255"
+      ],
+      "AC013": [
+        "TL-001",
+        "TL-006",
+        "TL-012",
+        "TL-013",
+        "TL-014",
+        "TL-022",
+        "TL-033",
+        "TL-043",
+        "TL-046",
+        "TL-054",
+        "TL-056",
+        "TL-058",
+        "TL-059",
+        "TL-060",
+        "TL-071",
+        "TL-072",
+        "TL-076",
+        "TL-087",
+        "TL-106",
+        "TL-134",
+        "TL-136",
+        "TL-148",
+        "TL-153",
+        "TL-159",
+        "TL-190",
+        "TL-196",
+        "TL-217",
+        "TL-228",
+        "TL-257"
+      ],
+      "AC014": [
+        "TL-007",
+        "TL-018",
+        "TL-056",
+        "TL-075",
+        "TL-090",
+        "TL-091",
+        "TL-092",
+        "TL-093",
+        "TL-094",
+        "TL-095",
+        "TL-096",
+        "TL-097",
+        "TL-098",
+        "TL-099",
+        "TL-100",
+        "TL-101",
+        "TL-102",
+        "TL-103",
+        "TL-104",
+        "TL-105",
+        "TL-106",
+        "TL-107",
+        "TL-110",
+        "TL-111",
+        "TL-114",
+        "TL-133",
+        "TL-143",
+        "TL-144",
+        "TL-160",
+        "TL-168",
+        "TL-183",
+        "TL-192",
+        "TL-196",
+        "TL-230",
+        "TL-239",
+        "TL-248",
+        "TL-249"
+      ],
+      "AC015": [
+        "TL-017",
+        "TL-031",
+        "TL-036",
+        "TL-037",
+        "TL-038",
+        "TL-039",
+        "TL-048",
+        "TL-055",
+        "TL-059",
+        "TL-060",
+        "TL-061",
+        "TL-062",
+        "TL-063",
+        "TL-064",
+        "TL-065",
+        "TL-066",
+        "TL-067",
+        "TL-068",
+        "TL-069",
+        "TL-070",
+        "TL-071",
+        "TL-072",
+        "TL-073",
+        "TL-074",
+        "TL-078",
+        "TL-079",
+        "TL-080",
+        "TL-081",
+        "TL-082",
+        "TL-083",
+        "TL-084",
+        "TL-089",
+        "TL-092",
+        "TL-093",
+        "TL-099",
+        "TL-101",
+        "TL-102",
+        "TL-103",
+        "TL-109",
+        "TL-115",
+        "TL-127",
+        "TL-139",
+        "TL-140",
+        "TL-141",
+        "TL-142",
+        "TL-145",
+        "TL-168",
+        "TL-169",
+        "TL-173",
+        "TL-179",
+        "TL-180",
+        "TL-181",
+        "TL-187",
+        "TL-239",
+        "TL-245",
+        "TL-248",
+        "TL-249",
+        "TL-253",
+        "TL-257"
+      ],
+      "AC016": [
+        "TL-040",
+        "TL-051",
+        "TL-064",
+        "TL-070",
+        "TL-074",
+        "TL-080",
+        "TL-084",
+        "TL-108",
+        "TL-109",
+        "TL-110",
+        "TL-111",
+        "TL-112",
+        "TL-113",
+        "TL-114",
+        "TL-115",
+        "TL-116",
+        "TL-117",
+        "TL-118",
+        "TL-119",
+        "TL-120",
+        "TL-121",
+        "TL-122",
+        "TL-123",
+        "TL-124",
+        "TL-125",
+        "TL-126",
+        "TL-127",
+        "TL-128",
+        "TL-150",
+        "TL-151",
+        "TL-154",
+        "TL-157",
+        "TL-159",
+        "TL-160",
+        "TL-165",
+        "TL-167",
+        "TL-171",
+        "TL-188",
+        "TL-189",
+        "TL-190",
+        "TL-192",
+        "TL-198",
+        "TL-209",
+        "TL-228",
+        "TL-229",
+        "TL-234",
+        "TL-236",
+        "TL-237",
+        "TL-239",
+        "TL-244",
+        "TL-245",
+        "TL-246",
+        "TL-248",
+        "TL-250",
+        "TL-252",
+        "TL-253",
+        "TL-256",
+        "TL-257"
+      ],
+      "AC017": [
+        "TL-075",
+        "TL-094",
+        "TL-096",
+        "TL-116",
+        "TL-129",
+        "TL-130",
+        "TL-131",
+        "TL-132",
+        "TL-133",
+        "TL-134",
+        "TL-135",
+        "TL-146",
+        "TL-154",
+        "TL-251",
+        "TL-257"
+      ],
+      "AC018": [
+        "TL-056",
+        "TL-120",
+        "TL-136",
+        "TL-137",
+        "TL-138",
+        "TL-139",
+        "TL-140",
+        "TL-141",
+        "TL-142",
+        "TL-143",
+        "TL-144",
+        "TL-145",
+        "TL-146",
+        "TL-147",
+        "TL-148",
+        "TL-149",
+        "TL-152",
+        "TL-170",
+        "TL-175",
+        "TL-251",
+        "TL-253",
+        "TL-254"
+      ],
+      "AC019": [
+        "TL-034",
+        "TL-042",
+        "TL-046",
+        "TL-047",
+        "TL-048",
+        "TL-049",
+        "TL-050",
+        "TL-051",
+        "TL-052",
+        "TL-053",
+        "TL-061",
+        "TL-062",
+        "TL-093",
+        "TL-097",
+        "TL-108",
+        "TL-122",
+        "TL-130",
+        "TL-131",
+        "TL-138",
+        "TL-140",
+        "TL-141",
+        "TL-142",
+        "TL-143",
+        "TL-144",
+        "TL-155",
+        "TL-158",
+        "TL-172",
+        "TL-251"
+      ],
+      "AC020": [
+        "TL-085",
+        "TL-112",
+        "TL-113",
+        "TL-114",
+        "TL-117",
+        "TL-128",
+        "TL-144",
+        "TL-209",
+        "TL-236",
+        "TL-252"
+      ],
+      "AC021": [
+        "TL-045",
+        "TL-049",
+        "TL-051",
+        "TL-078",
+        "TL-088",
+        "TL-105",
+        "TL-124",
+        "TL-126",
+        "TL-130",
+        "TL-131",
+        "TL-136",
+        "TL-137",
+        "TL-158",
+        "TL-182",
+        "TL-184",
+        "TL-236",
+        "TL-237",
+        "TL-254"
+      ],
+      "AC022": [
+        "TL-064",
+        "TL-120",
+        "TL-132",
+        "TL-150",
+        "TL-151",
+        "TL-152",
+        "TL-153",
+        "TL-154",
+        "TL-155",
+        "TL-156",
+        "TL-157",
+        "TL-165",
+        "TL-223"
+      ],
+      "AC023": [
+        "TL-040",
+        "TL-041",
+        "TL-054",
+        "TL-104",
+        "TL-121",
+        "TL-123",
+        "TL-124",
+        "TL-125",
+        "TL-148",
+        "TL-149",
+        "TL-157",
+        "TL-172",
+        "TL-173",
+        "TL-174",
+        "TL-175",
+        "TL-178",
+        "TL-190",
+        "TL-197",
+        "TL-218",
+        "TL-227",
+        "TL-236",
+        "TL-252",
+        "TL-254"
+      ],
+      "AC024": [
+        "TL-008",
+        "TL-028",
+        "TL-035",
+        "TL-044",
+        "TL-090",
+        "TL-195",
+        "TL-196",
+        "TL-226",
+        "TL-227"
+      ],
+      "AC025": [
+        "TL-015",
+        "TL-128",
+        "TL-185",
+        "TL-194",
+        "TL-204",
+        "TL-207",
+        "TL-208",
+        "TL-209",
+        "TL-210",
+        "TL-211",
+        "TL-212",
+        "TL-213",
+        "TL-220",
+        "TL-221",
+        "TL-224",
+        "TL-231",
+        "TL-232",
+        "TL-240",
+        "TL-256"
+      ],
+      "AC026": [
+        "TL-161",
+        "TL-162",
+        "TL-199",
+        "TL-200",
+        "TL-201",
+        "TL-202",
+        "TL-203",
+        "TL-204",
+        "TL-211",
+        "TL-225",
+        "TL-235",
+        "TL-250"
+      ],
+      "AC027": [
+        "TL-163",
+        "TL-174",
+        "TL-186",
+        "TL-189",
+        "TL-197",
+        "TL-203",
+        "TL-214",
+        "TL-215",
+        "TL-216",
+        "TL-217",
+        "TL-218",
+        "TL-227",
+        "TL-228",
+        "TL-234",
+        "TL-239",
+        "TL-244",
+        "TL-252"
+      ],
+      "AC028": [
+        "TL-164",
+        "TL-185",
+        "TL-200",
+        "TL-204",
+        "TL-207",
+        "TL-210",
+        "TL-213",
+        "TL-219",
+        "TL-220",
+        "TL-221",
+        "TL-222",
+        "TL-223",
+        "TL-224",
+        "TL-225",
+        "TL-255",
+        "TL-256"
+      ],
+      "AC029": [
+        "TL-164",
+        "TL-217",
+        "TL-239",
+        "TL-240",
+        "TL-241",
+        "TL-242",
+        "TL-243",
+        "TL-244",
+        "TL-245",
+        "TL-246",
+        "TL-247"
+      ]
+    },
+    "scenario_ids": [
+      "SCN001",
+      "SCN002",
+      "SCN003",
+      "SCN004",
+      "SCN005",
+      "SCN006",
+      "SCN007",
+      "SCN008",
+      "SCN009",
+      "SCN010",
+      "SCN011",
+      "SCN012",
+      "SCN013",
+      "SCN014",
+      "SCN015",
+      "SCN016",
+      "SCN017"
+    ],
+    "rule_ids": [
+      "BR001",
+      "BR002",
+      "BR003",
+      "BR004",
+      "BR005",
+      "BR006",
+      "BR007",
+      "BR008",
+      "BR009",
+      "BR010",
+      "BR011",
+      "BR012",
+      "BR013",
+      "BR014",
+      "BR015",
+      "BR016",
+      "BR017",
+      "BR018",
+      "BR019",
+      "BR020",
+      "BR021"
+    ],
+    "technical_counterexamples": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33
+    ],
+    "required_layer_case_counts": {
+      "A": 251,
+      "B": 179,
+      "D": 193,
+      "F": 70,
+      "G": 140,
+      "M": 11,
+      "P": 4
+    },
+    "runtime_case_results": "all not_run"
+  },
+  "protection": {
+    "status": "passed",
+    "baseline_files": 466,
+    "preserved_files": 457,
+    "changed_existing": [
+      "docs/README.md",
+      "docs/adr/022-joint-timeline-revision.md",
+      "docs/governance/registry.json",
+      "docs/plans/010-m02-scope-and-plan.md",
+      "docs/specs/README.md",
+      "docs/specs/m02/011-m02-business-requirements.md",
+      "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "docs/specs/m02/013-m02-technical-design.md",
+      "docs/verification/README.md"
+    ],
+    "new_files": [
+      "docs/specs/m02/023-m02-timeline-test-cases.md",
+      "docs/verification/023-timeline-test-cases.evidence.json",
+      "docs/verification/023-timeline-test-cases.md"
+    ],
+    "existing_markdown_insert_only": [
+      "docs/README.md",
+      "docs/adr/022-joint-timeline-revision.md",
+      "docs/plans/010-m02-scope-and-plan.md",
+      "docs/specs/README.md",
+      "docs/specs/m02/011-m02-business-requirements.md",
+      "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "docs/specs/m02/013-m02-technical-design.md",
+      "docs/verification/README.md"
+    ],
+    "existing_registry_document_entries_unchanged": 22,
+    "old_verification_records_preserved": 34,
+    "old_verification_files_preserved": 129,
+    "stable_business_ids_preserved": 67,
+    "progress_prefixes_preserved": 4,
+    "non_docs_files_preserved": 128,
+    "branch_head_stash_unchanged": true
+  },
+  "input_sha256": {
+    "docs/README.md": "b175b7c7206961cdeff7169279ef6a3da5ce9b2951c06766b6d8111a779ca993",
+    "docs/adr/022-joint-timeline-revision.md": "24b6aad08e91d567f138052d8cecb52d36f046ef225ec0310a83af202461ebe1",
+    "docs/governance/registry.json": "0d4c112cbc576199807b5bbdc25b2987e882ef40e2927ca8d1c54ddfb5f0834d",
+    "docs/plans/010-m02-scope-and-plan.md": "37b1abb02a28f38cae1f11e5b12c4135b66e6dea60804542a4bf24e67c57ffe5",
+    "docs/specs/README.md": "d41b89d6b730efcc9b347ec375ddd7c1cce63887b2d8e80f043d5184b8653505",
+    "docs/specs/m02/011-m02-business-requirements.md": "706f7b0006fe20c4873f5daf956b33dd88c5dd630803fa1cbc8e0c640ea65cd7",
+    "docs/specs/m02/012-m02-functional-and-interaction-design.md": "3d5cbf2b351b8f83923cb9a3493d7169b6278a162c9543d6451c2855d91f324a",
+    "docs/specs/m02/013-m02-technical-design.md": "27adcd10f6529b8cc9aeab5abe598789ca7c83345611667b43ae5100ca3c3463",
+    "docs/verification/README.md": "3d9ca0adc31558df2b032e32fdc5f48668e31637315c2d2b16ef44dd13015a8a",
+    "docs/specs/m02/023-m02-timeline-test-cases.md": "54af1cfb4060fa4c8bf8f4d3a5b6cf4e7b53d980a1e471118df2e262ba42c24e",
+    "docs/verification/023-timeline-test-cases.md": "0bc94728a5069686ba392818fff23cb110ae526d8d16d90d1baccb992f2bc4f0"
+  },
+  "round_1_scope": "Intermediate draft; final textual boundary clarifications and report/registration finalization are checked separately.",
+  "static_review": {
+    "actor": "/root",
+    "kind": "self-review of authored case design against current 011/012/013/022, not independent review or runtime tests",
+    "reviewed": "fixtures and dates; full lifecycle; first-record constraints; six classification directions; no-op/derived revisions; terminal/auth/error recovery; bounded execution; schema and old-binary admission",
+    "remaining": "all 257 cases and parameter instances need implementation and actual execution"
+  },
+  "evidence_hash_policy": "Evidence file itself excluded to avoid self-reference; final inputs and frozen baseline hashes included."
+}

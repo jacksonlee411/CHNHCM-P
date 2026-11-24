@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "related_documents": [
+    "CHNHCM-113",
+    "CHNHCM-111"
+  ],
+  "checked_on": "2026-11-03",
+  "decision": "CHNHCM-113",
+  "target": {
+    "name": "@mui/x-data-grid",
+    "version": "8.29.3",
+    "upstream_repository": "mui/mui-x",
+    "upstream_commit": "109f5a0c73075355f755352ad2849d52a01197b5",
+    "mode": "untranspiled Community runtime TS/TSX via local workspace, to be imported in T01",
+    "source_imported": false,
+    "runtime_verified": false,
+    "license": "MIT",
+    "release_license": "docs/reference/licenses/mui-x-data-grid-LICENSE.txt",
+    "release_license_sha256": "619b16f56e57883d2213612363fa2faa6f5b43ec9e73b5009cbac8f7001e94aa"
+  },
+  "cubebox_reference": {
+    "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+    "adopt": "Community DataGrid and responsive summary-column technique",
+    "not_adopt": "DemoState/search engine, row-click navigation, 10/20/50 page sizes, lighter header",
+    "preserved_files": [
+      {
+        "archive": "docs/reference/sources/cubebox-m02-2deaf927.zip",
+        "member": "apps/prototype/src/shared/components/DataGridPage.tsx"
+      },
+      {
+        "archive": "docs/reference/sources/cubebox-ui-2deaf927.zip",
+        "member": "apps/prototype/src/operations/staffing-controls.tsx"
+      }
+    ],
+    "responsive_summary_observation": {
+      "repository": "CubeBox",
+      "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+      "path": "apps/prototype/src/ui.tsx",
+      "sha256": "37720d149274ddb2ce851fa24b53f0443909e7a014181458b1368738683da96a",
+      "preserved_in_current_archives": false,
+      "evidence": "docs/verification/data/113-community-adoption-docs/cubebox-summary-inspection.json"
+    }
+  },
+  "sources": [
+    {
+      "url": "https://v8.mui.com/x/introduction/licensing/",
+      "publisher": "MUI",
+      "observed_version": "8.29.5 rolling archive",
+      "use": "Community package MIT licensing; rolling feature lists are not exact patch API evidence"
+    },
+    {
+      "url": "https://v8.mui.com/x/react-data-grid/pagination/",
+      "publisher": "MUI",
+      "observed_version": "8.29.5 rolling archive",
+      "use": "Community pagination and 100-row maximum; existing 20/50/100 fits"
+    },
+    {
+      "url": "https://v8.mui.com/x/react-data-grid/list-view/",
+      "publisher": "MUI",
+      "observed_version": "8.29.5 rolling archive",
+      "use": "Native listView is Pro; replace with Community summary column"
+    },
+    {
+      "url": "https://v8.mui.com/x/react-data-grid/column-pinning/",
+      "publisher": "MUI",
+      "observed_version": "8.29.5 rolling archive",
+      "use": "Native pinning is Pro; a non-Pro replacement remains in scope"
+    },
+    {
+      "url": "https://mui.com/x/react-data-grid/column-ordering/",
+      "publisher": "MUI",
+      "observed_version": "9.17.0 rolling current documentation",
+      "use": "Native drag reordering is Pro; no claim that 9.x APIs exist in 8.29.3"
+    }
+  ],
+  "exact_release_static_inspection": "docs/verification/data/113-community-adoption-docs/community-package-inspection.json",
+  "limitations": [
+    "官网为滚动资料，不保存页面不可变快照，不以其证明精确patch运行结果。",
+    "8.29.3列宽能力另核对已安装DataGrid的resize挂钩，不能仅据许可页概述判断其不具备。",
+    "本次仅文档和发布基础包静态核对，固定Community源码纳入范围及构建待T01。",
+    "原Pro来源登记、源码归档和商业许可证不改写或删除。"
+  ],
+  "scope_amendments": [
+    {
+      "date": "2026-11-03",
+      "decision": "CHNHCM-113",
+      "user_decision": "以CubeBox部门列表为样板，不再要求列拖动和固定",
+      "template_record": "docs/reference/113-department-list-template.json",
+      "current_columns": "Community原生菜单/显隐/列宽/恢复；取消拖动/固定及自研适配",
+      "historical_note": "sources.use保留初轮能力与采用注释；其中non-Pro replacement remains in scope仅为修订前历史，当前范围由本条及113正文持有。"
+    }
+  ],
+  "implementation": {
+    "date": "2026-11-03",
+    "manifest": "packages/mui-x-data-grid/upstream.json",
+    "source_imported": true,
+    "runtime_entry": "unchanged upstream TS/TSX, transpiled locally",
+    "declarations": "official same-version .d.ts via types export only",
+    "runtime_component_verified": true,
+    "business_acceptance_verified": false,
+    "evidence": "docs/verification/111-community-t01-t02.md"
+  },
+  "record_note": "原target及sources为文档准备时观察；当前实施状态由implementation持有，原观察不回写。"
+}

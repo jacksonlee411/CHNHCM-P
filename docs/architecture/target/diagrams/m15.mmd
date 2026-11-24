@@ -1,0 +1,35 @@
+---
+title: M15 人工成本与财务衔接 · 目标设计
+---
+flowchart TB
+  subgraph domain["M15 人工成本与财务衔接"]
+    direction TB
+    C["确认人工成本事实"]:::own
+    A["CostAllocation 完整分摊集合与版本"]:::own
+    M["AccountingMapping 科目与成本归属规则"]:::own
+    J["AccountingBatch 冻结请求与逐行回执"]:::own
+    PER["Period 开放 关账中 已关闭"]:::own
+    GUARD["冻结与领取协调器 期间及分摊共同守卫"]:::process
+    COR["CostCorrection 原版本与后继差额"]:::own
+  end
+  S["M10 M12 M13 成本来源"]:::external
+  E["X05 外部ERP"]:::external
+  B["M03 预算与实际"]:::external
+  P["M14 现金及非现金结算事实"]:::external
+  S -->|唯一来源版本| C
+  C -->|成本明细| A
+  M -->|映射| A
+  E -->|过账回执| J
+  C -->|确认实际| B
+  P -->|结算对账引用 不重复确认成本| J
+  A -->|当前完整分摊及会计基准| GUARD
+  PER -->|与关账共用守卫| GUARD
+  GUARD -->|同事务固定版本和活动批次| J
+  J -->|领取提交后发送冻结payload| E
+  J -->|确认行推进基准 未知保持占位| A
+  A -->|已确认分摊变化求差| COR
+  COR -->|按允许会计期冻结调整| GUARD
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

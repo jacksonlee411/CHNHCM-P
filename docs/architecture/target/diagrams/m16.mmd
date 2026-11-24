@@ -1,0 +1,35 @@
+---
+title: M16 人才档案、技能与资格 · 目标设计
+---
+flowchart TB
+  subgraph domain["M16 人才档案、技能与资格"]
+    direction TB
+    C["ContentType / Item / RatingModel 内容及评分语义"]:::own
+    P["PersonProfile 人员能力档案"]:::own
+    J["RequirementProfile 职务职位要求档案"]:::own
+    Q["Questionnaire 定义及来源回答引用"]:::own
+    E["Evidence 评价与证书证据"]:::own
+    D["Qualification / Decision 资格及决定"]:::own
+    M["Match / Gap 岗位匹配与差距"]:::own
+    PT["ProfileType / SectionDefinition 可复用类型及章节定义"]:::own
+  end
+  S["M01 M04 人员与任职"]:::external
+  JOB["M03 Job / Position"]:::external
+  L["M18 学习完成证据"]:::external
+  O["M05 M17 M19 消费者"]:::external
+  S -->|人员引用| P
+  JOB -->|要求对象引用| J
+  Q -->|回答依据| E
+  L -->|待核证据| E
+  E -->|规则或人工核验| D
+  D -->|资格结论| P
+  P -->|个人能力版本| M
+  J -->|岗位要求版本| M
+  M -->|受控匹配及采用| O
+  C -->|内容类型及评分语义引用| PT
+  PT -->|显式采用类型及章节版本| P
+  PT -->|显式采用类型及章节版本| J
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

@@ -1,0 +1,42 @@
+---
+title: M04 用工、任职与劳动合同 · 目标设计
+---
+flowchart TB
+  subgraph domain["M04 用工、任职与劳动合同"]
+    direction TB
+    E["Employment 工作关系记录<br/>关联单位 人员类型 关系性质"]:::own
+    A["Assignment 任职时间线"]:::own
+    C["Contract 合同链"]:::own
+    L["入转调离 再聘联合办理"]:::process
+    ACT["BusinessActionRecord 实际动作与定义采用"]:::own
+    DEF["EmploymentActionCatalog 动作 原因 状态定义"]:::own
+    PR["PrimarySelection 主关系与主任职"]:::own
+    MG["ManagerRelationship 双方任职引用"]:::own
+    PP["PrimarySelectionPolicy 资格与必需覆盖"]:::own
+  end
+  P["M01 Person"]:::external
+  O["M02 组织身份/允许用途；M03席位"]:::external
+  Y["M09 M10 M12 下游归属"]:::external
+  T["X01 日期与修订"]:::shared
+  P -->|同一人多关系| E
+  E -->|按关系类型可为0 实际入职须有首任职| A
+  E -->|合同归属| C
+  O -->|组织允许值与岗位编制| L
+  L -->|关系变化| E
+  L -->|任职变化| A
+  L -->|独立合同动作| C
+  T -->|时点和历史守卫| L
+  A -->|来源版本供采用| Y
+  DEF -->|校验定义版本和允许转换| L
+  L -->|成功写入来源与动作记录| ACT
+  L -->|共同守卫更新选择| PR
+  E -->|关系归属与合格目标| PR
+  A -->|关系内选择任职| PR
+  A -->|所属及经理任职角色| MG
+  L -->|共同守卫有效期及无环| MG
+  PP -->|明确0或1与恰好1| PR
+  PP -->|激活及变更共用版本栅栏| L
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

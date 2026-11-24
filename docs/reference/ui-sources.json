@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "plan": "CHNHCM-019",
+  "sources": [
+    {
+      "repository": "CubeBox",
+      "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+      "archive": "docs/reference/sources/cubebox-ui-2deaf927.zip",
+      "archive_sha256": "765c55ccf73559a4e9d4d1cb3ffae25a5ad2d5c27dfc33733e0a8725d9831dc7",
+      "archive_members": [
+        {
+          "path": "apps/prototype/src/PrototypeNavigation.tsx",
+          "sha256": "990e6e664eea5bbc90a9698071fa72b43dd139cd24d581e5fb646865efb19549"
+        },
+        {
+          "path": "apps/prototype/src/navigation.ts",
+          "sha256": "e217a1758b628d3830c4198162001a8430b34c3bdad4e36e74432171e59b9474"
+        },
+        {
+          "path": "apps/prototype/src/style.css",
+          "sha256": "8823591e83c725c6119d23341ec17c507bd30a610df0458d59f444085dab7391"
+        },
+        {
+          "path": "apps/prototype/src/operations/staffing-controls.tsx",
+          "sha256": "98f4d131f308e30430bad581d4e985da811fb4a1e62703fc65dc12c3b95b9830"
+        },
+        {
+          "path": "apps/prototype/src/operations/staffing-layout.css",
+          "sha256": "a01f95b1aa9f22e59cc6a3b733690afe6bb8fdcacea3e6bccdca7064a3eb6151"
+        },
+        {
+          "path": "apps/prototype/src/operations/staffing-view-date.tsx",
+          "sha256": "beb6cc6c88dab1bba778f66d0c88d299fdee6a6b7611e24b0131d1ce333f5c7b"
+        },
+        {
+          "path": "apps/prototype/src/operations/effective-dates.tsx",
+          "sha256": "8de4ece370c6e57ecd66317ec769bf4efe66582e505fe4631c910cfd472681ee"
+        },
+        {
+          "path": "apps/prototype/src/operations/effective-dates.css",
+          "sha256": "76ae743cee2df967cb4de1b8ab5da2550ab047adbcd1b3317f629c04d6e9bf1a"
+        },
+        {
+          "path": "apps/prototype/src/operations/search/search-control.tsx",
+          "sha256": "9f9a131ae6705e9f5ddc459f293e45cc9f5ba45de86ac3f953909339b7599698"
+        },
+        {
+          "path": "apps/prototype/src/operations/search/search.css",
+          "sha256": "39f514559327a640547934cbb85e3ad436fa1c3ce2dcf9075fc81d026bba0140"
+        },
+        {
+          "path": "apps/prototype/src/operations/geography.css",
+          "sha256": "7be67efcc4e1e2bd413124dcec98fb286c7fe947a9c30a39ae08890b6797550a"
+        }
+      ],
+      "private_url": "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-ui-2deaf927.zip"
+    },
+    {
+      "repository": "CubeBox",
+      "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+      "archive": "docs/reference/sources/cubebox-font-2deaf927.zip",
+      "archive_sha256": "972a9915dc74eeb9eee1050b9069ed431434821d8b1c1ccbcb75106062ef6f71",
+      "archive_members": [
+        {
+          "path": "apps/prototype/assets/NotoSansSC-Regular.otf",
+          "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9"
+        },
+        {
+          "path": "apps/prototype/assets/OFL.txt",
+          "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
+        },
+        {
+          "path": "apps/prototype/assets/source.json",
+          "sha256": "3d2d5fdf9d821e8f96076233c6a18366a6dad6bba42763890382805a7c333f19"
+        }
+      ],
+      "private_url": "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-font-2deaf927.zip"
+    },
+    {
+      "repository": "CubeBox",
+      "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+      "archive": "docs/reference/sources/cubebox-geography-2deaf927.zip",
+      "archive_sha256": "8ffa0c5f633d6f5706dcff2bef7d86bf3af44cdbb7bcd76e638e5a2733553ad7",
+      "archive_members": [
+        {
+          "path": "apps/prototype/src/data/geography/baseline.json",
+          "sha256": "85f8ff5e3c011a03724df7dd1e7dd3ab322a800cc66e696cfea68763c53b0fe4"
+        },
+        {
+          "path": "apps/prototype/src/data/geography/official-divisions.json",
+          "sha256": "db3dcdec71a7833291a7e63370f14aa6cf49b0a7facc542e1290cc54b3c7e0de"
+        },
+        {
+          "path": "apps/prototype/src/data/geography/supplements.json",
+          "sha256": "29ea23f14b4f93c0e2f53f1d6cc5456fda34e453bc9d9eb41747f5c46575ead9"
+        },
+        {
+          "path": "apps/prototype/src/data/geography/NOTICE.txt",
+          "sha256": "3b83dcf8cd6c9857c7a52b602ebdead7bd14490dd6e4a9dad37973d8ea903df3"
+        },
+        {
+          "path": "apps/prototype/src/data/geography/ODOO-LICENSE.txt",
+          "sha256": "abc09dad5f84a76e1b0279237053cae16c03228ab27d8d467677054c2bd17eeb"
+        },
+        {
+          "path": "docs/reference/geography-source.json",
+          "sha256": "fff3d8e49d0f955eff89bec0b93f59019b763c7485ffbafd1fbd6ddc9b26a0d2"
+        },
+        {
+          "path": "docs/reference/geography-206-official-sources.json",
+          "sha256": "c7df6f6874b1449ee97861e037619ddb977ffb0880256c073a33f9ad30d02dbe"
+        },
+        {
+          "path": "docs/dev-plans/ui-ux/202-geography-configuration.md",
+          "sha256": "a5583f31aac3f5c906ba9a0c3b6132c86bb87dd81839d0526f9e2b1a71a126ce"
+        },
+        {
+          "path": "docs/dev-plans/ui-ux/206-configuration-data-migration.md",
+          "sha256": "055a81b47926a277444f345e6f44fabe88dca22061e9cf98581f86beaee24d6a"
+        },
+        {
+          "path": "docs/dev-plans/ui-ux/207-geography-directories-and-address-selection.md",
+          "sha256": "ff1bc5b94c5627c049b4db0becf89d88926d37355214c9549bc9702a84929c28"
+        },
+        {
+          "path": "apps/prototype/src/domain/geography.ts",
+          "sha256": "ab6f6112cf40d53511a02f64fdcc36663b5a08a9fdc02e370fa6d429a2b4a1e5"
+        },
+        {
+          "path": "apps/prototype/src/domain/geography-official.ts",
+          "sha256": "52e68a50ab0474d9d893a505bd0f6299a3bffa403f9fd479983e4af7864a0566"
+        },
+        {
+          "path": "scripts/sync-odoo-geography.py",
+          "sha256": "5b2c0ed5002f706680891d46ae5225012a8e3c803c85d3b63493c7185514ac45"
+        },
+        {
+          "path": "scripts/migrate-official-geography.py",
+          "sha256": "4f1b044f6eede30b96ee5b369ed35611c9d43da31caf2719cefb130ed7112605"
+        },
+        {
+          "path": "apps/prototype/src/operations/geography-page.tsx",
+          "sha256": "817109c4f3257ccb82f05109af228523be538258c9162e5054f9648cb47115f4"
+        },
+        {
+          "path": "apps/prototype/src/operations/geography-list.tsx",
+          "sha256": "160edb9fe9e672335af3e03c6ee6f30391e89e75998ad486cf14432ff160e570"
+        },
+        {
+          "path": "apps/prototype/src/operations/geography-detail.tsx",
+          "sha256": "b0a31461f0ec9329181132a45f136b80084ae09083cd4d8282ca3cc3685413ad"
+        },
+        {
+          "path": "apps/prototype/src/domain/geography-directories.test.ts",
+          "sha256": "b02836784083a3afe683df37cd25f6e02709b4a7ce5f377cb37ca2c7efab5be5"
+        },
+        {
+          "path": "apps/prototype/src/domain/geography-versions.test.ts",
+          "sha256": "427881d7c1ccaf9fb24fef343d8f440fc90c9da8ea97da87e3a957b8e7e58079"
+        },
+        {
+          "path": "apps/prototype/scripts/flows-geography-directories.mjs",
+          "sha256": "b0f3ec6a17bd79af2da70a6481a21bab713d59858beb2d3fd01cfafb217438fa"
+        }
+      ],
+      "purpose": "CHNHCM-200/201地理参考数据、业务、体验及验证来源；离线只读，非产品实现",
+      "private_url": "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-geography-2deaf927.zip"
+    },
+    {
+      "repository": "CubeBox",
+      "commit": "074fe044ab41c80abbab41a74aadd2a97b66efcf",
+      "archive": "docs/reference/sources/cubebox-personnel-074fe044.zip",
+      "archive_sha256": "42781ba0ac1f37f5cba71bc04b937a16e4706c41004d33db167464384e7feeb9",
+      "archive_members": [
+        {
+          "path": "apps/prototype/src/operations/staffing-list.tsx",
+          "sha256": "901ea143a709d1c636d9b7c2440474fcc1a09e8c85a517c0f0f88b96d8b8af5f"
+        },
+        {
+          "path": "docs/dev-plans/ui-ux/203-employee-personal-information.md",
+          "sha256": "9d92ad1b5dcc51602fb863bef1142fcc551eed06283fd1c6bf1cfb16f7a37442"
+        }
+      ],
+      "purpose": "500 T00 留存任职行与去重人数、个人资料多值和整笔取消的原始依据。501/502 按人员、当前权限及来源版本重新定义任务。",
+      "private_url": "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-personnel-074fe044.zip"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "version": "chnhcm-geography-g0-v1",
+  "defaultEffectiveDate": "1900-01-01",
+  "archive": "docs/reference/sources/cubebox-geography-2deaf927.zip",
+  "sourceArchiveSHA256": "8ffa0c5f633d6f5706dcff2bef7d86bf3af44cdbb7bcd76e638e5a2733553ad7",
+  "package": "package.json.gz",
+  "sha256": "dc7eac11535bb2da2f3f72431d0767dc510c250a3e11596ffd76428e3fafc123",
+  "countryCount": 251,
+  "areaCounts": {
+    "base.hk": 21,
+    "base.cn": 3209,
+    "base.tw": 390
+  },
+  "excludedCrossReferences": 3,
+  "macauHeld": 8,
+  "unmappedLegacyCount": 414,
+  "locationCount": 0,
+  "runtimePublished": false,
+  "limits": [
+    "Fixed source editions, not latest official coverage or complete historical geography.",
+    "MO supports country plus detailed address; all eight old areas are held.",
+    "Source keys are not product UUIDs; Go ingestion and database publication belong to G2/G3."
+  ]
+}

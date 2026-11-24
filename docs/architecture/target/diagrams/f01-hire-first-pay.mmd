@@ -1,0 +1,42 @@
+---
+title: F01 录用、身份核对、入职与首次工资 · 目标流程
+config:
+  sequence:
+    diagramMarginY: 24
+---
+sequenceDiagram
+  actor H as HR
+  participant R as M05 招聘
+  participant P as M01 人员
+  participant E as M04 用工
+  participant Q as M03 编制管理
+  participant C as M09 薪酬
+  participant S as M12 参缴
+  participant Y as M10 工资
+  R-->>H: 已接受且资料齐备的录用自动可办
+  H->>P: 核对现有人或明确登记
+  P-->>H: 稳定personId，暂可无用工
+  H->>E: 从录用办理入职，带入来源版本
+  E->>Q: 核对StaffingPolicy、日期及组织职务允许值
+  alt PositionManaged且政策要求占编
+    E->>Q: 核对有效岗位及预留/可用编制
+    Q-->>E: 岗位编制版本或冲突
+  else JobOnly或明确免占编
+    Q-->>E: 无岗位或不计入的明确政策依据
+  end
+  alt 取消或来源失效
+    E-->>H: 不写关系及任职；保留已登记Person
+  else 明确保存
+    Note over E,Q: 同一短事务 固定锁序及全期间编制校验
+    E->>Q: C重核模式/来源版本，适用时转换预留及占用
+    E->>E: 保存关系 首任职 主选择及Outbox
+    Note over E,Q: 一起提交；任一失败全部回滚
+    E-->>H: 返回同一请求对应的结果
+    E-->>R: 招聘自动取得本次用工结果
+    H->>C: 独立确认定薪，不自动采用Offer金额
+    H->>S: 独立核对资格、属地、账户与参缴
+    C-->>Y: 可采用的授予版本
+    S-->>Y: 已核对个人代扣义务
+    H->>Y: 核对计薪归属并开始首期准备
+  end
+  Note over P,Y: 人员、用工、定薪、参缴和工资是相连但独立的事实保存

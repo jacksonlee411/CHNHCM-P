@@ -1,0 +1,39 @@
+---
+title: F09 持久事实通知与消费者采用 · 至少一次投递
+---
+sequenceDiagram
+  participant S as 来源域
+  participant O as 来源Outbox/日志
+  participant W as X04投递设施
+  participant C as 消费域Inbox及水位
+  participant H as 消费者领域命令
+  participant J as M20或X06授权投影
+  S->>O: 同事务提交事实revision及E信封
+  Note over S,O: 提交后崩溃仍有持久意图
+  W->>O: 扫描未投递或待重试
+  O-->>W: eventId 聚合revision schemaVersion
+  W->>C: 至少一次投递
+  alt 旧消息或重复
+    C-->>W: 返回原处理记录 不重复业务写入
+  else 缺号或协议不支持
+    C->>O: Q按水位补拉 或隔离待升级
+    C-->>W: 待处理及责任域
+  else 按序可处理
+    C->>H: 核对来源变更及已采用结果
+    H->>S: Q读取确切来源及权限
+    alt 普通变更已确认无影响
+      C->>C: 同笔保存Inbox、水位、版本和判定依据
+      C-->>W: Ack处理完成
+    else 已有影响、依据不足或专项追溯
+      C->>C: 同笔保存Inbox、水位和本域影响案
+      C-->>W: Ack案件已登记
+      alt 处置证据齐备
+        H->>H: C记录政策、依赖及结果，按版本关闭
+        H-->>J: E ImpactResolution案件结论
+      else 尚需核实或处理
+        H-->>J: 可查待核或待处理的业务事项
+      end
+    end
+  end
+  J->>H: Q按当前权限查判定依据或案件结论
+  Note over C,H: 工资 金额 申报和付款<br/>不能因重放通知自动重做

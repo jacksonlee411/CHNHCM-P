@@ -1,0 +1,40 @@
+//go:build integration
+
+package bootstrap_test
+
+import (
+	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	"chnhcm.local/chnhcm/internal/foundation"
+	"encoding/json"
+	"os"
+	"os/exec"
+	"testing"
+)
+
+func TestBackupBeforePersonnel(t *testing.T) {
+	h := staffingSetup307(t)
+	f := h.f
+	must(t, f.runtime.InitializeCountryCatalog(f.ctx, access.LoginInput{Login: "admin", Password: f.password}))
+	locations := location204{t, f, h.b, map[string]string{"MO": geoCountry203(t, f, "MO")}}
+	location := locations.create("LOC-T01", "MO", "", "2026-01-01")
+	bu := h.b.call("POST", "/api/v1/business-units", createBody("BU-T01", "2026-01-01"), foundation.NewID(), 201)["buId"].(string)
+	dep := h.b.call("POST", "/api/v1/departments", departmentCreateBody("DEP-T01", bu), foundation.NewID(), 201)["departmentId"]
+	family := h.create("jobfamily", "FT01", "")
+	grade := h.create("grade", "GT01", "")["id"].(string)
+	job := create310(h, "job", "JT01", []string{grade}, family["id"].(string))
+	pos := h.b.call("POST", "/api/v1/positions", map[string]any{"code": "PT01", "name": "迁移样本岗位", "effectiveDate": "2027-01-01", "operationType": "CREATE", "operationReason": "NEW_POSITION", "departmentId": dep, "locationId": location["id"], "jobId": job["id"], "gradeId": grade}, foundation.NewID(), 201)["objectId"].(string)
+	if os.Getenv("CHNHCM_BACKUP_POSITION_QUOTA") == "1" {
+		h.b.call("POST", "/api/v1/staffing-quotas/"+pos, map[string]any{
+			"action": "SET", "effectiveDate": "2027-04-01", "quantity": 1, "reason": "核编",
+		}, foundation.NewID(), 200)
+	}
+	dir := os.Getenv("PERSONNEL_BACKUP_DIR")
+	dump, e := os.OpenFile(dir+"/before.dump", os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	must(t, e)
+	cmd := exec.Command("docker", "exec", f.container.GetContainerID(), "pg_dump", "-U", "postgres", "-d", "chnhcm", "-Fc")
+	cmd.Stdout = dump
+	must(t, cmd.Run())
+	must(t, dump.Close())
+	raw, _ := json.Marshal(map[string]string{"instance": f.instance, "password": f.password, "bu": bu, "position": pos})
+	must(t, os.WriteFile(dir+"/fixture.json", raw, 0600))
+}

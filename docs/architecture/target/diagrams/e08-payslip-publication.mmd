@@ -1,0 +1,25 @@
+---
+title: E08 工资单发布生命周期 · M10唯一写者
+---
+stateDiagram-v2
+  [*] --> Draft
+  state "草稿 绑定结果版本及artifactHash" as Draft
+  state "定时发布 等待visibleFrom" as Scheduled
+  state "已发布 可受控读取" as Published
+  state "已撤回 常规读取阻断" as Withdrawn
+  state "已被新发布件替代" as Superseded
+  Draft --> Scheduled: C核验封存 角色 字段及明细清单
+  Draft --> Published: C即时发布及守卫
+  Scheduled --> Published: 到期重新核验并原子发布
+  Scheduled --> Withdrawn: 取消发布
+  Published --> Withdrawn: C撤回原因及审计
+  Published --> Superseded: C新结果新发布件原子替代
+  note right of Published
+    M20经M10受控读取
+    发布状态 可见日 当前身份及字段权限同时成立
+    已发布不表示已付款
+  end note
+  note right of Withdrawn
+    旧URL和缓存也检查撤销栅栏
+    原artifact仅供受限审计或明确留存流程
+  end note

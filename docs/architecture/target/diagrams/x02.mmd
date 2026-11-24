@@ -1,0 +1,32 @@
+---
+title: X02 共享配置、适用范围、默认与政策版本 · 目标设计
+---
+flowchart TB
+  subgraph domain["X02 共享配置、适用范围、默认与政策版本"]
+    direction TB
+    R["SharedReference 引用描述及适用元数据"]:::own
+    P["政策证据与适用条件"]:::own
+    A["ApplicabilityDecision 允许范围与版本依据"]:::process
+    D["建议默认值"]:::process
+    DR["DefaultRule 默认规则及发布版本"]:::own
+  end
+  S["各模块配置所有者"]:::external
+  C["消费者明确采用"]:::external
+  H["X01 版本与采用协议"]:::shared
+  CTX["BU 法人 地点 日期 用途 对象类型"]:::external
+  OBJ["Job Grade Location 领域规则"]:::external
+  P -->|地区日期条件| A
+  R -->|对象上下文| A
+  A -->|允许集合内建议| D
+  A -->|允许或拒绝原因| C
+  D -->|可接受的建议| C
+  CTX -->|适用请求| A
+  OBJ -->|所属域稳定身份及版本| R
+  S -->|来源域发布描述 对象仍归来源域| R
+  H -->|采用信封协议| C
+  OBJ -->|来源域实际发布版本| C
+  DR -->|采用规则版本及优先级| D
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

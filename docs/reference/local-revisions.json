@@ -1,0 +1,1243 @@
+{
+  "schema_version": 1,
+  "policy": "Append local design revisions after immutable initial adoption; preserve source archives and original adopted hashes.",
+  "revisions": [
+    {
+      "id": "CHNHCM-009",
+      "decision": "docs/adr/009-mainland-organization-terms.md",
+      "base_commit": "5f8b613e0cc7e121d97f3527302d61d4c891ae3b",
+      "scope": "Mainland organization roles and directly related M02/M04/M14 terminology, contracts and five diagrams; no runtime or whole source increment acceptance.",
+      "verification": "docs/verification/009-m02-terminology.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/04-china-localization.md",
+          "before_sha256": "fef56fddf6c3b5dc0ddbb78a785665534e4827a0e27f2f004b6727f6fbb8585d",
+          "after_sha256": "d2c264916cc4e5566f99eba5fa2a717b61a416a45b21d4a3301d134467547021"
+        },
+        {
+          "path": "docs/architecture/target/07-concept-mapping.md",
+          "before_sha256": "7a3958724e93713d25eeeec0a2b07860a5f6be77957e3addfc396441298ba5eb",
+          "after_sha256": "a5d819ab9b96ac4a2c9d3122952e116f35473764898873afd3b8dbe8a5ecc52f"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "2863f34e4ad7c4d7f240d0ea9ff4c8271589955806ccf2728c5c42744f22d829",
+          "after_sha256": "8a363e771d1588a714438d5ce5d84df4c6754771b5c547c3e238a2d1b0b20ba1"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "3c5af0ccee96c87158fb70ad8f381477f07f65cff7ab810ba6cbe6a836594cc7",
+          "after_sha256": "65019fe59d044f88a94649ccb1cd0ec9fceeed130049fe6789d996e452263f95"
+        },
+        {
+          "path": "docs/architecture/target/16-command-acceptance-index.md",
+          "before_sha256": "f0b7d2fedbdfd8045c464147e7ff8088ffe34ffc452ef01f8078d3671daf88c4",
+          "after_sha256": "720a3c3e664fd2ba9e8d63b2268b54237bb742421124db1fa76175ef614c57e6"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "b284fed1b1583c11b78174890b280b5dd5d666f3322caaae690fbc35890e1ee5",
+          "after_sha256": "733df4c7ed6468a61d4af77df038dc9064763052687f2fb39c8d1e1e99255563"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "bcbe9654f98f92ebfbfd039a4e3d8133e71dccb42f67ba6ade9c58be42f6bc91",
+          "after_sha256": "e2302af2e7eec303c0862195900f7e3b05bc8caab6dcb762d8e69fea8a93b115"
+        },
+        {
+          "path": "docs/architecture/target/data/concept-mapping.csv",
+          "before_sha256": "f01a61e03d6cf90e6d050e6837617baf039912e312a89dbebe4c98a6388cb519",
+          "after_sha256": "1451f6f72bb448862ab17f4398d6dca82ed62fb6b3584850d2e7873f76f934cb"
+        },
+        {
+          "path": "docs/architecture/target/data/concept-mapping.json",
+          "before_sha256": "a61d8acb7c3c2a0ec7d401b51dc86716878045917047a3479945bdfb868a4f77",
+          "after_sha256": "0a8a937968f5ad2909f631a1ac65ab8b8df03e6ea9cf12c7b124bbbc53e21e33"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "ad6290e7f060888efb28a137789c25178eb9604364c8550ea28542c112332a89",
+          "after_sha256": "293ea2de59bb0d9101f64aaea780db0bfaaa8c248e267cac12549a22df7fea66"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.mmd",
+          "before_sha256": "446ea5a19ea269d28eaa0ea5e2a008ea9e6361ffaab6315420fb489c54664624",
+          "after_sha256": "befd7654f015d81a5d9ef3d4487b83b39d7557171357599f48f75f8ef3ff4f79"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.svg",
+          "before_sha256": "3498783fec84d83eb2ceda1439e713474a5bd4f2dce2ffdc52ca59e168e185d6",
+          "after_sha256": "415c1c5029d74a95efbabed50eced0202415010525690733169c05e50ecfa947"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e01-person-employment.mmd",
+          "before_sha256": "8eb3159a7328ea91701a03c38f6c5dd7cc5a75d3b7bab045484f938bab5fe4d2",
+          "after_sha256": "2e01b338b23005c1ffc8f0f3d78ad6fe363f24a8141729ba5d80948b5f49cfd0"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e01-person-employment.svg",
+          "before_sha256": "8a717ec3333d277a9ce0502b85f2412c7a2934c0ee3a9c24df00d1db7500401f",
+          "after_sha256": "194d95fa05f461cafa963e3531f95edce3b349e0a49f85749b026dbbf2a8b47c"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e02-legal-contexts.mmd",
+          "before_sha256": "7058d262aed60c2e69caa7ba3d7ef071527eacf637d882b89b48a52bf2efac8a",
+          "after_sha256": "7be54c3a5ad06140df1b6d8ad3f5a90533046d798579f36a7024faaa6df83d81"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e02-legal-contexts.svg",
+          "before_sha256": "3ee6f5e05a662303b97da7d84720b8a51bd59fab8a831a40b2731d51fee93b51",
+          "after_sha256": "7a432856f063e03f4c08848edc4d582332da2ce28f69ba7c066e9596f118765c"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m02.mmd",
+          "before_sha256": "c7c6c3c7362496be0a0eb22977170d37f1970e469b9f05d907129c230e98dede",
+          "after_sha256": "1cd968feaa81d398cb2ce4b808b5fbb2a50dadbcce32b58872c34b0c402496d1"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m02.svg",
+          "before_sha256": "c2271cc69a4dd18b333368025fa5f36e310b0e9254aba8f0f9bbc1982152a284",
+          "after_sha256": "cd10511767aff553e55a8a8fcb68a2c8884e6facfee6dd4ee578554f4cc660c0"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m04.mmd",
+          "before_sha256": "da27111de82ac8400e6213ba011f8500cb3eb6f1d4c69596a657b14f8f7325d3",
+          "after_sha256": "9fd90b46c2c7420ce3a395b81af7ab98dce3eb07fe3e793e68198c877f29d4cd"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m04.svg",
+          "before_sha256": "266d1f92ae7015f6858d49ee23143ceb5a0683792aa97429458f25f9ce0e5bc2",
+          "after_sha256": "e59672171cdaf7169848d70defa572fe7b0ac18d58b4e9ec73cc2e770b4e0272"
+        },
+        {
+          "path": "docs/architecture/target/modules/m02.md",
+          "before_sha256": "8b4455e4b450408d76659581d377b86eb5673ea57fe2fa706f677421c027e098",
+          "after_sha256": "214b86787fef0aa9622174e4ffd8576f43324738848ce67a7e17a359737560a0"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "63718e8c7a24fa35e9c81ed78f7024bdc74bf1dda27857bb58e5bec60222f66b",
+          "after_sha256": "aaf5acb8c6e63658abe136f6007df1797d22040165d216189bcdd9c2fb34d768"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-014",
+      "decision": "docs/governance/014-document-management.md",
+      "base_commit": "6aecf74ef2d659915a37b855451f9e5d24b3fcab",
+      "scope": "014文档规范的来源与维护说明校正：区分源仓/本仓、工具与生成说明、既有评审范围；不改变业务规则、模块数据、术语ID或图稿。",
+      "verification": "docs/verification/014-repository-document-revisions.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/04-china-localization.md",
+          "before_sha256": "d2c264916cc4e5566f99eba5fa2a717b61a416a45b21d4a3301d134467547021",
+          "after_sha256": "f13c17e41dbc27dd67efc7e7db7c685e51b480011a653270a46078073435e4e0"
+        },
+        {
+          "path": "docs/architecture/target/07-concept-mapping.md",
+          "before_sha256": "a5d819ab9b96ac4a2c9d3122952e116f35473764898873afd3b8dbe8a5ecc52f",
+          "after_sha256": "67c675c8896521a14bf5130c2183aab345ca176316335c8bb42337b05cbdb104"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "8a363e771d1588a714438d5ce5d84df4c6754771b5c547c3e238a2d1b0b20ba1",
+          "after_sha256": "31b91dc219a918add1058ca6ebc18d1aab09215baad411d473a625c407d901cb"
+        },
+        {
+          "path": "docs/architecture/target/16-command-acceptance-index.md",
+          "before_sha256": "720a3c3e664fd2ba9e8d63b2268b54237bb742421124db1fa76175ef614c57e6",
+          "after_sha256": "8cee808535649d4ffd741c375d91bf4b888cfb24527394780d482922084ac4e0"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/README.md",
+          "before_sha256": "39ceb12a342e7dab5a3ad392a4239ecd0f391fcf7b1717d2eb23b4527da0da3b",
+          "after_sha256": "10d5b446bc81edab575ba0b33ba5b7033e183c0be473dc17231867f211507795"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-011",
+      "decision": "docs/specs/m02/011-m02-business-requirements.md",
+      "base_commit": "f21c99ac42d1662bd7fc077399e27fd144d7a8d0",
+      "scope": "用户确认的 M02 首批术语修正与17登记：澄清4个既有词条，补充5个公共记录/查询用语；不扩大业务范围或提升整版规格、来源增量、运行验收状态。",
+      "verification": "docs/verification/011-terminology-registration.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "293ea2de59bb0d9101f64aaea780db0bfaaa8c248e267cac12549a22df7fea66",
+          "after_sha256": "a38b0b09ff219e7655b232d165145c9553d3c64b77ff90424f4d321f6d627d9d"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "733df4c7ed6468a61d4af77df038dc9064763052687f2fb39c8d1e1e99255563",
+          "after_sha256": "e5a161625f65de785ef0c443c4562dcd338fca43cd9d37115ce2f2863e8e937d"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-015",
+      "decision": "docs/governance/015-terminology-naming.md",
+      "base_commit": "f21c99ac42d1662bd7fc077399e27fd144d7a8d0",
+      "scope": "登记用户要求的中文名称双字/四字优先、一般六字以内、超过四字一般组合词及有据例外原则；本轮不逐项改名或认定例外。",
+      "verification": "docs/verification/015-terminology-naming.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "a38b0b09ff219e7655b232d165145c9553d3c64b77ff90424f4d321f6d627d9d",
+          "after_sha256": "7366acc60bd388e25b1b334fe044ad313ffa60183fe32ba9f1196985596ec3ed"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "e5a161625f65de785ef0c443c4562dcd338fca43cd9d37115ce2f2863e8e937d",
+          "after_sha256": "ace989e80090054f020d1bf1036d9e194766a141fe88ae5936e8c42b505d0d2f"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-010",
+      "decision": "docs/plans/010-m02-scope-and-plan.md",
+      "base_commit": "f21c99ac42d1662bd7fc077399e27fd144d7a8d0",
+      "scope": "同步010/011当前日期用语：首选中文当前日期、英文说明名Current Date，保留x01-business-today身份及旧名；服务端时区、查看/生效日期和跨午夜判断不变。",
+      "verification": "docs/verification/010-current-date-terminology.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "7366acc60bd388e25b1b334fe044ad313ffa60183fe32ba9f1196985596ec3ed",
+          "after_sha256": "08378b136149975e94f15d117e1154559e7b9835771cd794bcdc9f456fd2c287"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "ace989e80090054f020d1bf1036d9e194766a141fe88ae5936e8c42b505d0d2f",
+          "after_sha256": "16edd68bc9d6fd38f09d84ea0f47aea53bf02359eb2bfb5c1fea3a6db4c69567"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-011",
+      "revision": 2,
+      "decision": "docs/specs/m02/011-m02-business-requirements.md",
+      "base_commit": "f21c99ac42d1662bd7fc077399e27fd144d7a8d0",
+      "scope": "统一生效日期用语，停用操作采用停用日期；本次只限定当前操作，不另建日期类型；保留词条身份、日期规则及前次修订。",
+      "verification": "docs/verification/011-effective-date-terminology.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "08378b136149975e94f15d117e1154559e7b9835771cd794bcdc9f456fd2c287",
+          "after_sha256": "934f11a68c5c85dec31e70738556235c8bac810a17aaca9d6638418fcc955e8f"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "16edd68bc9d6fd38f09d84ea0f47aea53bf02359eb2bfb5c1fea3a6db4c69567",
+          "after_sha256": "982bd480f7ce414ef3a7060c6a3fa744eaefad7b3f7655422fa1adfef92b44c9"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-011",
+      "revision": 3,
+      "decision": "docs/specs/m02/011-m02-business-requirements.md",
+      "base_commit": "f21c99ac42d1662bd7fc077399e27fd144d7a8d0",
+      "scope": "采用操作类型、操作原因与记录处理，取消独立办理依据；停用统一生效日期；M02 固定目录及更正/撤销原因保留，M04 目录归属不变。",
+      "verification": "docs/verification/011-operation-classification.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "934f11a68c5c85dec31e70738556235c8bac810a17aaca9d6638418fcc955e8f",
+          "after_sha256": "c9bbb2d772a6dbc51fa6ff5438b1bea0edd3dfe637c7e09c447e8980ce4457b6"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "982bd480f7ce414ef3a7060c6a3fa744eaefad7b3f7655422fa1adfef92b44c9",
+          "after_sha256": "5350de25cc35721c7d3fe01b2db66ba8bae69834760f32abc7d5446b6482ac3a"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-011",
+      "revision": 4,
+      "decision": "docs/specs/m02/011-m02-business-requirements.md",
+      "base_commit": "d822836cac3ffe5f90007277e85932cd2e7fc26c",
+      "scope": "按用户决定统一使用删除记录，不增加撤销动作；沿用未来非首条、引用与历史保护限制。17 首选名称改为删除未来记录，保留稳定 ID、英文及历史检索别名；同步 010/011/012/016 和概念映射。",
+      "verification": "docs/verification/011-delete-record-terminology.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/07-concept-mapping.md",
+          "before_sha256": "67c675c8896521a14bf5130c2183aab345ca176316335c8bb42337b05cbdb104",
+          "after_sha256": "7bbebaf5351fa96a6c101255b81b732e8414fe875ddcd19b1bab2bfbfafee13b"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "5350de25cc35721c7d3fe01b2db66ba8bae69834760f32abc7d5446b6482ac3a",
+          "after_sha256": "2077e1196c6a8ba65393cdd11452e0551eee2d1194c65af0f92e9b9f041631b8"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "c9bbb2d772a6dbc51fa6ff5438b1bea0edd3dfe637c7e09c447e8980ce4457b6",
+          "after_sha256": "b9bc1d8a9c697fbb6ec5dd8a736c0c2fc479e4d1d5282882e75831564b1445ba"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-011",
+      "revision": 5,
+      "decision": "docs/specs/m02/011-m02-business-requirements.md",
+      "base_commit": "d822836cac3ffe5f90007277e85932cd2e7fc26c",
+      "scope": "采纳 B&B 分类与记录处理分离：新业务选择原因，更正/删除继承准确目标分类并自动留痕，不另填处理原因；首批原分类、生效日期及删除范围限制保持。同步现行合同及 17 的 5 个直接关联词条，不引入可选说明或共享运行平台。",
+      "verification": "docs/verification/011-record-classification-simplification.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "2077e1196c6a8ba65393cdd11452e0551eee2d1194c65af0f92e9b9f041631b8",
+          "after_sha256": "c6ec732e36b5a63fa61f8a9ec3ce675690be8d97486ae4b6203ed14863eee745"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "b9bc1d8a9c697fbb6ec5dd8a736c0c2fc479e4d1d5282882e75831564b1445ba",
+          "after_sha256": "ac6bb7288f933c117839469132eb1bfc8d0e91d8f324876af677b4ec957537d8"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-009",
+      "revision": 2,
+      "decision": "docs/adr/009-mainland-organization-terms.md",
+      "base_commit": "4a9844498b9a51330d6011ab4a5efe7556616709",
+      "scope": "M02系列评审交接修正：M04 RegisterAssociation具体接口/载荷/事务由后续M04专项规格承接，013仅负责首批BU；不改变组织角色、任职规则或业务边界，不重验外部资料。",
+      "verification": "docs/verification/013-series-review-fixes.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "31b91dc219a918add1058ca6ebc18d1aab09215baad411d473a625c407d901cb",
+          "after_sha256": "c0b76cb51d4837de1095764282f0155742909ab7003658e172c937534951a08a"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-018",
+      "revision": 1,
+      "decision": "docs/adr/018-effective-records-and-source-history.md",
+      "base_commit": "1bf1ee683ec1e1172f277e3931c74082df559ca2",
+      "scope": "取消任意系统截点与采集；同步DDD能力矩阵、03/04、M01/X01/X02/X06、17术语和E04/X01。保留确切来源及采用、日期、审计、当前授权；不改源包或旧评审范围。",
+      "verification": "docs/verification/018-source-history-simplification.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/03-consistency-contracts.md",
+          "before_sha256": "edb0b2457d11dc374b3bc1b5ca3074865733ecd45e275a75b2b25cb1c84a141e",
+          "after_sha256": "55b40ea642d54931ea8149764b8cb63648cfbff58b8febceda4cbd916c16fa25"
+        },
+        {
+          "path": "docs/architecture/target/04-china-localization.md",
+          "before_sha256": "f13c17e41dbc27dd67efc7e7db7c685e51b480011a653270a46078073435e4e0",
+          "after_sha256": "f9b42426a535825157dec1fc9408ce090676487b63848303d931d1e02382a10a"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "c0b76cb51d4837de1095764282f0155742909ab7003658e172c937534951a08a",
+          "after_sha256": "a8ec010cfdbfba8bd616fab8bd4bc5964773c3e4f2ce8f9c12832feac61cfc69"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "c6ec732e36b5a63fa61f8a9ec3ce675690be8d97486ae4b6203ed14863eee745",
+          "after_sha256": "c05431511c491a90afd569ca14a1fac7045a356db7acb17a45a52e747e481cff"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "e2302af2e7eec303c0862195900f7e3b05bc8caab6dcb762d8e69fea8a93b115",
+          "after_sha256": "4ca515771d30f53b5d5ae349342dddd3ee0263a4e50a4495da7904d5c90906d4"
+        },
+        {
+          "path": "docs/architecture/target/data/crosscutting-modules.json",
+          "before_sha256": "0fb8f6e265e9b507e593b7fd34acac90861e341617eb9cdbb1baf79dfb183c59",
+          "after_sha256": "a406df8b84bd062c8d2692a0037c3648dc079a7cba781b6fca3f299539f0d2c4"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "ac6bb7288f933c117839469132eb1bfc8d0e91d8f324876af677b4ec957537d8",
+          "after_sha256": "eb79c6b8592ec46b8ee444bb7bc54758d2f65716a56bdfc6912362898c9eb1a1"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e04-effective-adoption.mmd",
+          "before_sha256": "4569eacb9d35338208bee8f904f897e1f9ede0cdda9cfd9b24ad0db50d549a61",
+          "after_sha256": "1268613bd5bf1db3dcf5953df7582a8d95e83cf6221ed8fdd6c410e5dd34593e"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e04-effective-adoption.svg",
+          "before_sha256": "6ab47bc8e4552e9d53eb33b2796e4a387fe13480e887251a7f2e069337ecfeb5",
+          "after_sha256": "c23a91466255ace9ec16c60c7c09d4235bf7abd073bb5ea3e0b013e6ffea80b0"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/x01.mmd",
+          "before_sha256": "cab1c3da001a0a5f8e8758dcf38a0142f22ff92c90ffd3143c22a78fda0ff52d",
+          "after_sha256": "a95ffcd7a446592a0ce1b28a5690576b06a970740bd8c1c9217fab0fbb24a523"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/x01.svg",
+          "before_sha256": "6bcf26b9873633d1a3fcd6be953edeedf83179dfa00fd08692cd51b37dfcc073",
+          "after_sha256": "e19dd36fdf3dd0be4cf0d6212896eebbfb891f9102e7472da9411416ccebdfc8"
+        },
+        {
+          "path": "docs/architecture/target/modules/m01.md",
+          "before_sha256": "635e868c28dc131fbed5c153f8897c222ac4e941d396edc458c95779b12e7a02",
+          "after_sha256": "e3056f9056b74c4d028821c9ae6cf151ed8305f62dfcb2f384626b15190636fe"
+        },
+        {
+          "path": "docs/architecture/target/modules/x01.md",
+          "before_sha256": "0d91b9b65cbb8edc0e6e4820f82d9283490c97b1751308084f91887d1f7ea883",
+          "after_sha256": "bb59cbbd40f11022f3d566ef430da73e3dab75f2a08bddad06536fcc78093a1e"
+        },
+        {
+          "path": "docs/architecture/target/modules/x02.md",
+          "before_sha256": "38c410aaa64161d1d8ff9263a0b9ef6a3ed546a627fe5cf6aa5c1644becc4b5f",
+          "after_sha256": "bdfced8d53f181be4565110c1e34030be2f13d42d3385e9ef31b307a85ff3d4a"
+        },
+        {
+          "path": "docs/architecture/target/modules/x06.md",
+          "before_sha256": "9ae9e96644677bf398c3c26607712db2bc4b211f46689965ee152fa4cb422117",
+          "after_sha256": "f2f040df70b41bac5f0be48bedd853dfc2487e4a4830228538b7d4f88e6d9e8d"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-020",
+      "revision": 1,
+      "decision": "docs/adr/020-effective-record-delete-and-redate.md",
+      "base_commit": "889bcd91ebd8c187bf278de6daa06a9bf8f17fec",
+      "scope": "按用户范围决定同步M02已生效记录删除和改日，首条禁止删除但允许改日；保留词条身份及旧名称别名、不可变来源和原采用；不改变其他领域资格或旧报告。",
+      "verification": "docs/verification/020-effective-record-delete-and-redate.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "eb79c6b8592ec46b8ee444bb7bc54758d2f65716a56bdfc6912362898c9eb1a1",
+          "after_sha256": "d5c570647f52d0fce809b2a8f27f15609497d1c12d9e8b3ee21b623cc2299d6b"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "c05431511c491a90afd569ca14a1fac7045a356db7acb17a45a52e747e481cff",
+          "after_sha256": "3837c1bca380f60dea17b68b4d3e5256c4f773eefeda2a7501d13cb69ef616da"
+        },
+        {
+          "path": "docs/architecture/target/07-concept-mapping.md",
+          "before_sha256": "7bbebaf5351fa96a6c101255b81b732e8414fe875ddcd19b1bab2bfbfafee13b",
+          "after_sha256": "aa1ce0ad47c8619c94152087f96ebc7da60343969802d8aff97f84fc0f07b9e0"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-021",
+      "revision": 1,
+      "decision": "docs/adr/021-bu-lifecycle-and-record-maintenance.md",
+      "base_commit": "889bcd91ebd8c187bf278de6daa06a9bf8f17fec",
+      "scope": "同步M02独立重新启用、多次启停、统一过去/当天/未来新增及删除改日依赖；新增重新启用词条，保留旧词条身份/绑定、来源及采用边界。",
+      "verification": "docs/verification/021-bu-lifecycle-and-record-maintenance.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "d5c570647f52d0fce809b2a8f27f15609497d1c12d9e8b3ee21b623cc2299d6b",
+          "after_sha256": "f9596e0f3ec2e356c6d1e9455640e34384c9095aa1ef6208c0c256e88e29b190"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "3837c1bca380f60dea17b68b4d3e5256c4f773eefeda2a7501d13cb69ef616da",
+          "after_sha256": "56e33b280433a4f395038f32a3c2069579e7eabbc9b3a7cd103f8f562ce48186"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-022",
+      "revision": 1,
+      "decision": "docs/adr/022-joint-timeline-revision.md",
+      "base_commit": "889bcd91ebd8c187bf278de6daa06a9bf8f17fec",
+      "scope": "按用户采纳纳入单BU有限联合修订、首条历史补全及显式分类纠错；更新M02术语说明并新增联合修订词条，原身份/绑定、旧来源及其他域资格保持。",
+      "verification": "docs/verification/022-joint-timeline-revision.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "f9596e0f3ec2e356c6d1e9455640e34384c9095aa1ef6208c0c256e88e29b190",
+          "after_sha256": "7757db35732d90fb7dc3182a6b990907e37add11b1678d98532f26ba3cb549ed"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "56e33b280433a4f395038f32a3c2069579e7eabbc9b3a7cd103f8f562ce48186",
+          "after_sha256": "75710ca0922c806d4459ff95845bf860d999daba558a03f28b9195c07121c934"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-117",
+      "revision": 1,
+      "decision": "docs/adr/117-m02-dated-maintenance-and-department-boundary.md",
+      "base_commit": "3736354855be0acb3a257c4a0fa89be5cd3e81c8",
+      "scope": "只同步M02状态称谓及R1数据更改目录目标注记；原术语身份/绑定、其他域状态语义、原分类快照与来源原件不变。",
+      "verification": "docs/verification/116-r0-contract-preparation.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "7757db35732d90fb7dc3182a6b990907e37add11b1678d98532f26ba3cb549ed",
+          "after_sha256": "f24f87f5268b0d641a7225c543437d76269b3611b99f9ecdfd1021b0b4f3d576"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "75710ca0922c806d4459ff95845bf860d999daba558a03f28b9195c07121c934",
+          "after_sha256": "99799323463c0632e32f0f9793e3177d949040c399b78d3013d15ba411762828"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-128",
+      "revision": 1,
+      "decision": "docs/adr/128-authorization-evidence-removal.md",
+      "base_commit": "b33df10ca495dc3d19e7180085727d8c47e26a7b",
+      "scope": "撤除逐次授权过程持久化；AccessDecision收敛为请求内结果，必要认证/安全/导出事件只保存最小事实；同步源JSON、DDD/概念/聚合/术语、X03/X04/X05/X06及两张源图和SVG，来源包保持。",
+      "verification": "docs/verification/128-implementation.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "a8ec010cfdbfba8bd616fab8bd4bc5964773c3e4f2ce8f9c12832feac61cfc69",
+          "after_sha256": "e610c754aa085ffd7cf82b0b4007ba49c4ef0d15196ed44f7c5f1c08fabfea3a"
+        },
+        {
+          "path": "docs/architecture/target/12-concept-architecture.md",
+          "before_sha256": "4601ddcc8a7fd0a3b1e8f2899b8bdd895faefa65cd7c1ed1ae2567b8a7461ae0",
+          "after_sha256": "669189754bc340a650d5882d587314e1ba91581c2749e3f5185c8d067305201f"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "65019fe59d044f88a94649ccb1cd0ec9fceeed130049fe6789d996e452263f95",
+          "after_sha256": "dd6b18664f34435e67ba66b6e07610b8e254272ee31fe7eae11d40462e797d1b"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "99799323463c0632e32f0f9793e3177d949040c399b78d3013d15ba411762828",
+          "after_sha256": "7a26a1727da3ace4adc6387aebebb32a2fae41c846341973850ab5a542c05da3"
+        },
+        {
+          "path": "docs/architecture/target/data/crosscutting-modules.json",
+          "before_sha256": "a406df8b84bd062c8d2692a0037c3648dc079a7cba781b6fca3f299539f0d2c4",
+          "after_sha256": "bacc8339967ab1464050f7581df6995e0dbb97cc1cf75303890c4c0aef14623d"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "f24f87f5268b0d641a7225c543437d76269b3611b99f9ecdfd1021b0b4f3d576",
+          "after_sha256": "ff38b7b806de89841a948b5ea7ba02807cdc329b9115ee24919c53b7cc06ac3a"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c05-reference-access-concepts.mmd",
+          "before_sha256": "f59ad45ce853c9ce23dc0aa856082447ca95719e2ff099ed263958dc6d8a1e04",
+          "after_sha256": "363de7c09be5e60fa82d40245161e73021cb3ed5b04b13174fde524ebf5de652"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c05-reference-access-concepts.svg",
+          "before_sha256": "cf1f808f689c94c5f6dc68c7f23411a577006e84619ad0d4dd2cc8835c9c3c0a",
+          "after_sha256": "936bec1a975af990aca33fddba711d7cfc4442597f8feca152ecad2b451abf51"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/x03.mmd",
+          "before_sha256": "91f4f14eea8eb16fe7044f281cc87e2b72ca36be7c87b06bd514ff91f0215521",
+          "after_sha256": "4f840865793cea8c0b3f25e26414a18429b4b161b3bc6b21a484be3ed96857d3"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/x03.svg",
+          "before_sha256": "2f7ef40cc4aa4980f95aacd923399f1d99ea90a55d6239445ccfbd931bde42d0",
+          "after_sha256": "7e66b248da13f89158c4e877ffb2b597c430d7c1111f63c34f559d39324237db"
+        },
+        {
+          "path": "docs/architecture/target/modules/x03.md",
+          "before_sha256": "ac83a87feef8e04bdca629d6bed7609696864ed960e6beea2e5a024a0fe536ca",
+          "after_sha256": "694389839544b776ede2645d4506bd62e4f6fa54b50be5902daf190c9109b911"
+        },
+        {
+          "path": "docs/architecture/target/modules/x04.md",
+          "before_sha256": "96bbf82babd23bfdd0ed13ee3a8eaebc30b5d6b90af3180750a49c2b607405ec",
+          "after_sha256": "2e9541f343382e7b1ed6fd132bf02ed8a6002f05aaddfd696abfae330fd7734d"
+        },
+        {
+          "path": "docs/architecture/target/modules/x05.md",
+          "before_sha256": "cbccc4b97ef718dc6012ab710ab2ddfc072cb1ddbae7ff129b08404f7e2f4cda",
+          "after_sha256": "0d8dbc59e818a71622c92ed5e00aaac01bd0772c2f5fd6105367e81820b77432"
+        },
+        {
+          "path": "docs/architecture/target/modules/x06.md",
+          "before_sha256": "f2f040df70b41bac5f0be48bedd853dfc2487e4a4830228538b7d4f88e6d9e8d",
+          "after_sha256": "58e181f3bf507490828c9b8a1bf8604dd7256a2b415cd62142eecbc2846bf15e"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-201",
+      "decision": "docs/specs/m02/201-geography-and-location-design.md",
+      "base_commit": "0842699c9ab93acb1ab14d55c05bfdde289eb2e9",
+      "scope": "G0 geographic reference object ownership and phase boundary; no implemented API or database claim.",
+      "verification": "docs/verification/200-g0-source-admission.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/modules/m02.md",
+          "before_sha256": "214b86787fef0aa9622174e4ffd8576f43324738848ce67a7e17a359737560a0",
+          "after_sha256": "d097e7ab3a5a8edb7dfa1516b549ba24083985b0853051dacffa8ca9a93ba6bb"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "4ca515771d30f53b5d5ae349342dddd3ee0263a4e50a4495da7904d5c90906d4",
+          "after_sha256": "65c9bf90d674a76f4803e7782a01a11075eef99d77c72c3f527029d8adfc8e15"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-313",
+      "revision": 1,
+      "decision": "docs/specs/m03/313-position-capacity-contract.md",
+      "base_commit": "c5fc24d41524b48cb70f9ca3af2301afd8ac534e",
+      "scope": "岗位按整数名额核编、调编与占编。同步用工、招聘、薪酬、工资、统计及相关目标图，原始来源独立保留。",
+      "verification": "docs/verification/313-staffing-establishment-review.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/02-target-architecture.md",
+          "before_sha256": "3ec13c25b3d39290ebcf3b843b3dac83284e0d74bdfd078741ffd01b35afd2c8",
+          "after_sha256": "648f68dcfd4e3b4e16b27cd14be2ff6c322734a285fb02dcbafb3c793871c1be"
+        },
+        {
+          "path": "docs/architecture/target/03-consistency-contracts.md",
+          "before_sha256": "55b40ea642d54931ea8149764b8cb63648cfbff58b8febceda4cbd916c16fa25",
+          "after_sha256": "9e4e158273ef31fd63368ed308e80ac46c623b18fdaff12dfe81faf2dddefa22"
+        },
+        {
+          "path": "docs/architecture/target/07-concept-mapping.md",
+          "before_sha256": "aa1ce0ad47c8619c94152087f96ebc7da60343969802d8aff97f84fc0f07b9e0",
+          "after_sha256": "7a4ae1f6de469afc30ab5972e17a3434246cc79b4adb74daba4d880ad941b67f"
+        },
+        {
+          "path": "docs/architecture/target/08-cross-module-flows.md",
+          "before_sha256": "73652e06fee2edfb379042e0c4f66ba9497516325b49321da2dfd5b0efb818b1",
+          "after_sha256": "9745fa79ac0b201a8458043306e1df84904b1842151b9b78dc735c0ec4db4e1b"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "e610c754aa085ffd7cf82b0b4007ba49c4ef0d15196ed44f7c5f1c08fabfea3a",
+          "after_sha256": "1ea9e73709eb40bf3cb1e76304ce3e70ec0ba9c94dba7d230ca0136850e415c4"
+        },
+        {
+          "path": "docs/architecture/target/12-concept-architecture.md",
+          "before_sha256": "669189754bc340a650d5882d587314e1ba91581c2749e3f5185c8d067305201f",
+          "after_sha256": "522442d4764179e9030636273bf570e75973fe6be85dfb5e3b9eb576f4aa8f54"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "dd6b18664f34435e67ba66b6e07610b8e254272ee31fe7eae11d40462e797d1b",
+          "after_sha256": "dd6441c1ad202f57ff0579b5b8beca2222e8042fd7d506a3ca0562bc6c83dfdc"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "7a26a1727da3ace4adc6387aebebb32a2fae41c846341973850ab5a542c05da3",
+          "after_sha256": "aa98b602c16a8fcfc72336b259125e4f2793249f3f33850c2bda1e573084abc9"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "65c9bf90d674a76f4803e7782a01a11075eef99d77c72c3f527029d8adfc8e15",
+          "after_sha256": "40cb57582d6d3735d21a855014cdcea84cae9b8f13ce4baf0ff3bb5ee2cbc83e"
+        },
+        {
+          "path": "docs/architecture/target/data/concept-mapping.csv",
+          "before_sha256": "1451f6f72bb448862ab17f4398d6dca82ed62fb6b3584850d2e7873f76f934cb",
+          "after_sha256": "9df0f8b4dbf0372ae23d6023d34c1121e0fbded13ac96976da55f62932e416ee"
+        },
+        {
+          "path": "docs/architecture/target/data/concept-mapping.json",
+          "before_sha256": "0a8a937968f5ad2909f631a1ac65ab8b8df03e6ea9cf12c7b124bbbc53e21e33",
+          "after_sha256": "92e9c54c7fe235b2dbe0a7f0d7e46d566829fa1d02aee07fa3585a15a489e2a2"
+        },
+        {
+          "path": "docs/architecture/target/data/crosscutting-modules.json",
+          "before_sha256": "bacc8339967ab1464050f7581df6995e0dbb97cc1cf75303890c4c0aef14623d",
+          "after_sha256": "3e03b23b8be2d184f0a92ea0c37c03d0b2a640fd7849147da36eed9c76a95fd5"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "ff38b7b806de89841a948b5ea7ba02807cdc329b9115ee24919c53b7cc06ac3a",
+          "after_sha256": "62b0993cf06edef5c2335c032819b3eb669818e9063fc66ea7216af653ab697f"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.mmd",
+          "before_sha256": "befd7654f015d81a5d9ef3d4487b83b39d7557171357599f48f75f8ef3ff4f79",
+          "after_sha256": "0cc33262c62fad0d5d450ba0a0c2058885a9da2640885ad80b479822ceaa5e2b"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.svg",
+          "before_sha256": "415c1c5029d74a95efbabed50eced0202415010525690733169c05e50ecfa947",
+          "after_sha256": "0cb5429680db3ede75253135b7952271b1e02ee976f5136cd05b02d003b564cb"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c02-payroll-concepts.mmd",
+          "before_sha256": "0bcae594eaad281e4ccb92332bec8922fcbdf1c46872be8a9fe88b24869795b8",
+          "after_sha256": "66030e4684ad5a5a0ef60bd08fa01cf8d6326ddd519ca53d216adc85be4065e1"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c02-payroll-concepts.svg",
+          "before_sha256": "7d9039b760d287125c1ad3ec70d3b46d74404a051d10dba5bdc6abd793b85dce",
+          "after_sha256": "d8e9397067601d9970d9fccfd93185dc9fd2e12947eed04bb102aa2d084f0a85"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e04-effective-adoption.mmd",
+          "before_sha256": "1268613bd5bf1db3dcf5953df7582a8d95e83cf6221ed8fdd6c410e5dd34593e",
+          "after_sha256": "5b8c879024c0c9748375402fd7fdeaa9e6ca3c2870132371a1a2e63656b58d6f"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e04-effective-adoption.svg",
+          "before_sha256": "c23a91466255ace9ec16c60c7c09d4235bf7abd073bb5ea3e0b013e6ffea80b0",
+          "after_sha256": "18553ce7425a2338e63dbcbc5938ac7105123ff09ccfe4300cfe5b3df3686d57"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f01-hire-first-pay.mmd",
+          "before_sha256": "321d60b6cd9117d9258ffdd3ad715dcb581ebcbc39bcdd76aeb3d7550fb73d0a",
+          "after_sha256": "5b55ae093bff2fc36ce19e4f9ff9258e27ba68c25d39436e25f2bd8af114c91e"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f01-hire-first-pay.svg",
+          "before_sha256": "bfc5b35378fa059970a67755a5b0a11b2a434b4e5e8ea72a5c3fb780e1999065",
+          "after_sha256": "1d345ea97d7df5d899788872a2bb4970d37a2d342f3d7688ceef862a158eaacc"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f02-transfer.mmd",
+          "before_sha256": "351a784ab9bc605ed1b26c03bd14db943befc81a278c16c3df5657a1c7acf0cd",
+          "after_sha256": "cf577a82d9ce243d8c9a077d692b40e2e6a025208d40d02d9d932ceede51f997"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f02-transfer.svg",
+          "before_sha256": "8ce26d7c5e3d470a2b0e564d77584c39d21d5e493e75e7479e79f5e84cc9d575",
+          "after_sha256": "d6bb7fd99d6602d3ec4e2852281d4b08a03a6ef81dd096ce2bc435b0b4a51cb2"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f07-exit-rehire.mmd",
+          "before_sha256": "62073817dbd3e4db96048b0ff72537f3684d8153872dafd2ca0af6028ff9146b",
+          "after_sha256": "1298ced8bb262711f0c05ed65450558fa0ba8621346c7a2c8a45374839c82cf6"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f07-exit-rehire.svg",
+          "before_sha256": "ac1180aca3665f5483a42e25cf6b949e7d4db3dc3fd76f43c3625c577b474548",
+          "after_sha256": "eedc4d146511f04d245039db0a792f0e36c9bd58d08dab49cc75cb55af9642c8"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/g03-fact-ownership.mmd",
+          "before_sha256": "9dc3d5c2e38ab2ff23d6eacc8566f87c768fa3d9bffa410723b7ff52373c6417",
+          "after_sha256": "09931d781c8d010c1c48d2dd37ea705d2602b2b86ad199500d00c653c9e8283d"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/g03-fact-ownership.svg",
+          "before_sha256": "9c806a4fd8a31a93b678dea000c183f794b77c6d282f8e76f60bd13b68c7792b",
+          "after_sha256": "d086d862a15a9582873f54b4398851d9e5c44898d2e1dd51aaa7c856bedc2249"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/g06-aggregate-transactions.mmd",
+          "before_sha256": "5a83ca75253f88b8406cbe4366bbfe0afb78844d3cd2c48bc51bda22351a9762",
+          "after_sha256": "ddd19e7c7d227bd188ee405c5e4408bb33949c523443f2e1c4d072f96f765cbd"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/g06-aggregate-transactions.svg",
+          "before_sha256": "7d791d0a23d3a1a9880295491b721f9b3efcf8d2649aef1ec9a5d50af934857d",
+          "after_sha256": "3d7307c68625613eab5bbbd7c4c8c2673442e72028daceb69e0172188cea086a"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m03.mmd",
+          "before_sha256": "e17f6bd337fe44e976c1fcbd56a900c3a1db841f754526ba193daeb16efa6569",
+          "after_sha256": "b0a80e3c66284ee33b4330a6aee58d441cea62a496c0ad9666fb231cfd07fbb8"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m03.svg",
+          "before_sha256": "5e6caae8603fd55011e29d73de224d67b2b31294a21b91e7ebeac8b2a26832ce",
+          "after_sha256": "7a36bc93e3fe375c25ee9db105170e59dd9d6cf3edcca5971622fc63f0faa322"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m04.mmd",
+          "before_sha256": "9fd90b46c2c7420ce3a395b81af7ab98dce3eb07fe3e793e68198c877f29d4cd",
+          "after_sha256": "037ac970d5d2ea8bdbdd414f5da2805b3a9f7fd9326cc3ca64cac12b16635173"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m04.svg",
+          "before_sha256": "e59672171cdaf7169848d70defa572fe7b0ac18d58b4e9ec73cc2e770b4e0272",
+          "after_sha256": "f2132d7ca54373018164541ac8561d4337693275a5465a332439f1acec65fc5f"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m05.mmd",
+          "before_sha256": "6218af84cc597d29e72dbe72717143f6c5f6fd1dc07aa313b6382dc11857576a",
+          "after_sha256": "6d844375f45476ad7e8033bba6713c7dfd29c255e66ca077ac96cc0bcb0d098d"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m05.svg",
+          "before_sha256": "a125038bccf96ea436a55ca8a0289bc16e35d17e224926c61412502bb717d194",
+          "after_sha256": "77d927b4cab18652188506dad524b5f1cd4798f7704e30e66ae8b68cef43ada7"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m09.mmd",
+          "before_sha256": "0139fdeb60374990497e1e07228c77ebb7f068ac0e618fd0f39c2dafce561581",
+          "after_sha256": "8ca78cdf371277736a92791b5337eacfc79bfeed06e7bcb8a31c49576f84bff7"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m09.svg",
+          "before_sha256": "c3d3d59fd08b0331f78c86cdc1981a0c217700939f7c33aac1ef9d8d484cd9e3",
+          "after_sha256": "9e771c1efda1f0ace16181b9ec90d26f82524e1c9656ac37dc6c53a4f2e7c924"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m10.mmd",
+          "before_sha256": "07074d49cbbfe1cba7c1a09c2f774d6cb121da7dea77ce80e14416f84671eca8",
+          "after_sha256": "3df30b4f5736054c7f4a67458457bad2ac150f6b34fe935842b7653271553b3c"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m10.svg",
+          "before_sha256": "4f3ee2078e612ec2b0f2798430968adab8ca35163b269c6c6478ee5c235915c2",
+          "after_sha256": "8b93a17c16a179c3021992f7de7c155ca7bb936c17f746c3486b51972a375043"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "b7980b52f45862df2b63f0a3f51f0dd0bb518959c3c56c3a4d3073fd48582ce3",
+          "after_sha256": "62812c4e65bed0a608d0c3794b074981b43d1bc83bddc55aaeb36641ab46141a"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "aaf5acb8c6e63658abe136f6007df1797d22040165d216189bcdd9c2fb34d768",
+          "after_sha256": "092fbca98440b8405c2d41115d82b63e8ef19bf1fe50b46ef1de10a2ed439e0d"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "8faf27027501e7ea95df2ced33faedc6d1469d0e99aba14fc413654b46896b26",
+          "after_sha256": "73b2119b1f9f88b1f190717080130977904c12a0b5e6a2a2745c5abae3b7d989"
+        },
+        {
+          "path": "docs/architecture/target/modules/m09.md",
+          "before_sha256": "dfafc0615a9365d63057091ae994b48acf75bd3870058bdc5588e5d9223a88d8",
+          "after_sha256": "8aaf498439e93d8476eb525a8e64d75ba3f7cf54baaca376980bd03591b961d2"
+        },
+        {
+          "path": "docs/architecture/target/modules/m10.md",
+          "before_sha256": "8cccb1a8d4c40b4359fd1fb572561ad9e4250b42a0947a01e3d27f1f38b3531d",
+          "after_sha256": "b9c03230141d3c4d135c58edaada10a03ac483de841d75e457cbd8d310627dce"
+        },
+        {
+          "path": "docs/architecture/target/modules/x06.md",
+          "before_sha256": "58e181f3bf507490828c9b8a1bf8604dd7256a2b415cd62142eecbc2846bf15e",
+          "after_sha256": "dca2516b35a7c9f93381b5106d10636dde6762d50678c519d95df1eebd4e5d70"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-313",
+      "revision": 2,
+      "decision": "docs/specs/m03/313-position-capacity-contract.md",
+      "base_commit": "c5fc24d41524b48cb70f9ca3af2301afd8ac534e",
+      "scope": "招聘按需求份额保存预留、绑定及交接，明确规则采用、编制写端口和跨域并发顺序。",
+      "verification": "docs/verification/313-staffing-establishment-independent-review.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "1ea9e73709eb40bf3cb1e76304ce3e70ec0ba9c94dba7d230ca0136850e415c4",
+          "after_sha256": "3f114c571e5f20616fe6c2dd04c28de43747f072e39b8e4b16b4e2b5e628ed88"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "dd6441c1ad202f57ff0579b5b8beca2222e8042fd7d506a3ca0562bc6c83dfdc",
+          "after_sha256": "ce475c02f44587d8ed1fd5bddd67ca3249d46780131c7a37a847f266cae44ee4"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "40cb57582d6d3735d21a855014cdcea84cae9b8f13ce4baf0ff3bb5ee2cbc83e",
+          "after_sha256": "5c4905f8a6d45c77a13bc4ca11094b94bfda186a221ce041bcadb03488dd1730"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "62812c4e65bed0a608d0c3794b074981b43d1bc83bddc55aaeb36641ab46141a",
+          "after_sha256": "537e5556f09c6317959974ce1468e58c94c2d1dd433c0fa117d948ba3c244488"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "092fbca98440b8405c2d41115d82b63e8ef19bf1fe50b46ef1de10a2ed439e0d",
+          "after_sha256": "78be4c056f90b4ca1e22dc88e2ce4edca2c614410189e791828a76fab2e6af8d"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "73b2119b1f9f88b1f190717080130977904c12a0b5e6a2a2745c5abae3b7d989",
+          "after_sha256": "7796a0ebf6bc3484c907d65da807a187c6aa4e78d62a7ccd553e49a4d51f9f61"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-313",
+      "revision": 3,
+      "decision": "docs/specs/m03/313-position-capacity-contract.md",
+      "base_commit": "362239f5fae11bcbd6d3249742d6f296f4fc7978",
+      "scope": "提前补招与录用承诺，常规和限期交接名额的分段使用，实际在岗差额及编制、招聘和人事的共同办理。",
+      "verification": "docs/verification/313-backfill-and-handover-review.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "3f114c571e5f20616fe6c2dd04c28de43747f072e39b8e4b16b4e2b5e628ed88",
+          "after_sha256": "2136667797d7b7dd72fbc725052d3b6fccad1171fcf4212e04d750b592d191da"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "ce475c02f44587d8ed1fd5bddd67ca3249d46780131c7a37a847f266cae44ee4",
+          "after_sha256": "8b4c907efec26d85c804c90dde631d0ff30a01c49af622d279a4d1db16665b1a"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "5c4905f8a6d45c77a13bc4ca11094b94bfda186a221ce041bcadb03488dd1730",
+          "after_sha256": "83a0f8475002e4b95b0e7e7ec0f9161810919ca851ec36c2e65f087dd49cd885"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "537e5556f09c6317959974ce1468e58c94c2d1dd433c0fa117d948ba3c244488",
+          "after_sha256": "58ac21325da5a3159e29cdf27c949131b65e058fb348e9fc558b4e87164f0845"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "78be4c056f90b4ca1e22dc88e2ce4edca2c614410189e791828a76fab2e6af8d",
+          "after_sha256": "962b37b0d9ac38882d868531947626663dd2fb9b24bc0076eaa9134c1a3e9f02"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "7796a0ebf6bc3484c907d65da807a187c6aa4e78d62a7ccd553e49a4d51f9f61",
+          "after_sha256": "b9626609a0a0eac98b5c05bf6fff1653a5b60b4338fd5c31f9eb9c55f47262af"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-313",
+      "revision": 4,
+      "decision": "docs/specs/m03/313-position-capacity-contract.md",
+      "base_commit": "362239f5fae11bcbd6d3249742d6f296f4fc7978",
+      "scope": "调动按生效日在两岗释放、占用和办理限期交接。支持内部接任、真实招聘份额转换、改期撤销与满编岗位同日对调。",
+      "verification": "docs/verification/313-staff-transfer-review.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "2136667797d7b7dd72fbc725052d3b6fccad1171fcf4212e04d750b592d191da",
+          "after_sha256": "0b6181cd77bf2b3a4b74dea0d61f21f64bb418d2e8eee7cedece4d5aef37b3e4"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "83a0f8475002e4b95b0e7e7ec0f9161810919ca851ec36c2e65f087dd49cd885",
+          "after_sha256": "e710d6db4e67305995102e7d2b7cabd5f806d1db735d3858006c731aad7dfccb"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "58ac21325da5a3159e29cdf27c949131b65e058fb348e9fc558b4e87164f0845",
+          "after_sha256": "63e0fa80c7cdbaa53642b70442bb980d88357a5fe5b030657975960472281c68"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "962b37b0d9ac38882d868531947626663dd2fb9b24bc0076eaa9134c1a3e9f02",
+          "after_sha256": "74cda3007dad9438d16c274f9dbc762addd37d8bde0c924834ae3573f9f75a84"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "b9626609a0a0eac98b5c05bf6fff1653a5b60b4338fd5c31f9eb9c55f47262af",
+          "after_sha256": "d92cf5f64450fe373fee06957b17e4fa1ffee0515df3541035a9dd9f6adef4b7"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-313",
+      "revision": 5,
+      "decision": "docs/specs/m03/313-position-capacity-contract.md",
+      "base_commit": "362239f5fae11bcbd6d3249742d6f296f4fc7978",
+      "scope": "按一次接替的起止日安排交接，正式录用确定一个到岗日，差额从原事实重算，运营指标由报表按需验收。",
+      "verification": "docs/verification/313-capacity-simplification.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "0b6181cd77bf2b3a4b74dea0d61f21f64bb418d2e8eee7cedece4d5aef37b3e4",
+          "after_sha256": "8a93414c84b8a1a5e81262f522de873f35b9b27d54e6dc0997610ff081de03db"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "8b4c907efec26d85c804c90dde631d0ff30a01c49af622d279a4d1db16665b1a",
+          "after_sha256": "b23b8dabdd500449d94d9e1cb7c631ac1e7a4bdabdc4d3ab3def08e45b09c92e"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "e710d6db4e67305995102e7d2b7cabd5f806d1db735d3858006c731aad7dfccb",
+          "after_sha256": "1df6b0667f4cfdfda9c7895af21a8632eec5f3488807e7d087d6e04300433d03"
+        },
+        {
+          "path": "docs/architecture/target/data/crosscutting-modules.json",
+          "before_sha256": "3e03b23b8be2d184f0a92ea0c37c03d0b2a640fd7849147da36eed9c76a95fd5",
+          "after_sha256": "7e35e16bd08a1adfbd5bad93bcbd4e714417e3545750b0bb8b6150a5f0662890"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "63e0fa80c7cdbaa53642b70442bb980d88357a5fe5b030657975960472281c68",
+          "after_sha256": "58bfa97027dc7770e3b9580c2cfabe98a89145358333dbd43bc15c09689d232d"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "74cda3007dad9438d16c274f9dbc762addd37d8bde0c924834ae3573f9f75a84",
+          "after_sha256": "5a0b26f747eafbe8513a274bf58b90e3d807dc2fc07374066faf7334a54fb3a4"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "d92cf5f64450fe373fee06957b17e4fa1ffee0515df3541035a9dd9f6adef4b7",
+          "after_sha256": "55f2104420ee0ba26a6ef34ed8b7342cd42df95c5b7574ebaded943ce1f444c6"
+        },
+        {
+          "path": "docs/architecture/target/modules/x06.md",
+          "before_sha256": "dca2516b35a7c9f93381b5106d10636dde6762d50678c519d95df1eebd4e5d70",
+          "after_sha256": "bbda92431e48f940bbb1319f67004796ce0eeb8d24d312dff71d9f1057da7cef"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-313",
+      "revision": 6,
+      "decision": "docs/specs/m03/313-position-capacity-contract.md",
+      "base_commit": "362239f5fae11bcbd6d3249742d6f296f4fc7978",
+      "scope": "原单沿用原因、按人数缩招、发录用同步落实预留、人事直接办理入职和调动撤改。普通无影响变更在原处理结果留据，员工历程按实际来源更新。",
+      "verification": "docs/verification/313-staffing-procedure-review.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/03-consistency-contracts.md",
+          "before_sha256": "9e4e158273ef31fd63368ed308e80ac46c623b18fdaff12dfe81faf2dddefa22",
+          "after_sha256": "4898d9f060ed63399787c636ef5b7c18b0701e4181a5a09e9f6927d3a0838564"
+        },
+        {
+          "path": "docs/architecture/target/08-cross-module-flows.md",
+          "before_sha256": "9745fa79ac0b201a8458043306e1df84904b1842151b9b78dc735c0ec4db4e1b",
+          "after_sha256": "2e594924b3359240112d55b2ef06a15fee92da64c6554fb6f5a0fe6f11689b11"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "8a93414c84b8a1a5e81262f522de873f35b9b27d54e6dc0997610ff081de03db",
+          "after_sha256": "116c829de57a9feff99f72919745d4bfdae67a29959a88fcf49c73f130ef7340"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "b23b8dabdd500449d94d9e1cb7c631ac1e7a4bdabdc4d3ab3def08e45b09c92e",
+          "after_sha256": "566532f95d03d4250e689729abf2e8640edb76454b8fa8a8d9f76cd379a16398"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "aa98b602c16a8fcfc72336b259125e4f2793249f3f33850c2bda1e573084abc9",
+          "after_sha256": "84003a718c099d1b0039fcf6f09b4fe3004eba839258f06be98942ba567ed462"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "1df6b0667f4cfdfda9c7895af21a8632eec5f3488807e7d087d6e04300433d03",
+          "after_sha256": "e81f2f322d1da8061678cd2d2ffff3c9ee3ff075085e344ba556ea2c659a918c"
+        },
+        {
+          "path": "docs/architecture/target/data/crosscutting-modules.json",
+          "before_sha256": "7e35e16bd08a1adfbd5bad93bcbd4e714417e3545750b0bb8b6150a5f0662890",
+          "after_sha256": "d3d6a6cbea6253a8e15bbcc8d82f98275baae6aef5fb2dc4a548e3d5893125cc"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "62b0993cf06edef5c2335c032819b3eb669818e9063fc66ea7216af653ab697f",
+          "after_sha256": "3b5eb7efc1db87fd11536393a738771742ef7a3ea8b0027001a32a3515d04e6f"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e04-effective-adoption.mmd",
+          "before_sha256": "5b8c879024c0c9748375402fd7fdeaa9e6ca3c2870132371a1a2e63656b58d6f",
+          "after_sha256": "4de6a810e61fb9b8ae77f168bf4c5671f2fa1b09f5f8af7ab73417984b07a629"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/e04-effective-adoption.svg",
+          "before_sha256": "18553ce7425a2338e63dbcbc5938ac7105123ff09ccfe4300cfe5b3df3686d57",
+          "after_sha256": "d8dd74c665f9f7aa05898698a152bf9276b4523a610c848f26f416fc733ba153"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f01-hire-first-pay.mmd",
+          "before_sha256": "5b55ae093bff2fc36ce19e4f9ff9258e27ba68c25d39436e25f2bd8af114c91e",
+          "after_sha256": "3e2511c156d6cebd4f0a96c56c6c1ce947d7a93728a5c42af657b25a8f0fabaf"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f01-hire-first-pay.svg",
+          "before_sha256": "1d345ea97d7df5d899788872a2bb4970d37a2d342f3d7688ceef862a158eaacc",
+          "after_sha256": "9c951cb9876ea4872d9789e3b2e21a84a937e1a46f18fafbf2b3577d8be34eb2"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f02-transfer.mmd",
+          "before_sha256": "cf577a82d9ce243d8c9a077d692b40e2e6a025208d40d02d9d932ceede51f997",
+          "after_sha256": "2d93d7bccdb5987b63ff53d4b22276ea9f127887d400363845c03807a7e673a3"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f02-transfer.svg",
+          "before_sha256": "d6bb7fd99d6602d3ec4e2852281d4b08a03a6ef81dd096ce2bc435b0b4a51cb2",
+          "after_sha256": "3a944d3e0c6802dff85e485a8beec2b973cdd1c6267af98e4d121acbd5cb5555"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f09-reliable-delivery.mmd",
+          "before_sha256": "bdaee196003386b8ba3d037dbf8f46d0c026438e1f0f91aed7d8bcf30ee63260",
+          "after_sha256": "ae5b5deb52ef115f74a95d4dd67719bfedcf7607291028bd82b2de70ac17cbd7"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f09-reliable-delivery.svg",
+          "before_sha256": "0619eb2d7f4179919c27ad7c42c56708ed74b0504c0700fd625f11c4631d7dab",
+          "after_sha256": "afbd0098ab1eaa211ed6e7f2d1d25ac63a5feeec109cd3e0b61b6c4100d24320"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m05.mmd",
+          "before_sha256": "6d844375f45476ad7e8033bba6713c7dfd29c255e66ca077ac96cc0bcb0d098d",
+          "after_sha256": "90aefafc217adc73432b0d8db91c49107b76b40ecb96ef8f474092ec112ee605"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m05.svg",
+          "before_sha256": "77d927b4cab18652188506dad524b5f1cd4798f7704e30e66ae8b68cef43ada7",
+          "after_sha256": "fbcdc6d1262b1401b313e021e758ab7874636476dfbf2d1066710ebbdfd219dd"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "5a0b26f747eafbe8513a274bf58b90e3d807dc2fc07374066faf7334a54fb3a4",
+          "after_sha256": "7f92dbcb489e1786dfff4828810394699dbda138fee744f056f8de5ed84fec06"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "55f2104420ee0ba26a6ef34ed8b7342cd42df95c5b7574ebaded943ce1f444c6",
+          "after_sha256": "f15c7544a2d892ff3b4d91f379075cff28435e5854a1784ebef1384a3c50e87d"
+        },
+        {
+          "path": "docs/architecture/target/modules/m20.md",
+          "before_sha256": "19e30e6a5ec80b3b76d8c2877918b2db02d225b18d92622439f1213b9cfcc69c",
+          "after_sha256": "d70021687b6debe3ca4302d0a0acafe79dcf3069d029b7983dd705938648e3f2"
+        },
+        {
+          "path": "docs/architecture/target/modules/x01.md",
+          "before_sha256": "bb59cbbd40f11022f3d566ef430da73e3dab75f2a08bddad06536fcc78093a1e",
+          "after_sha256": "a28a9385e54488c202b522fe88cd2ea95e9032bd5b3b304bef3a2e2ead5fe1de"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-312",
+      "decision": "docs/specs/m03/312-position-contract.md",
+      "base_commit": "1ddb90055fc587be2e49ceccb6ab0478d466f2e4",
+      "scope": "岗位管理汇报为企业内唯一的岗位上下级关系，同步 M03 业务边界、状态合同及术语。 合并时以主线已登记的编制修订为基线；原岗位修订及输入摘要保存在 wt-dev-b 提交 e0cee597。",
+      "verification": "docs/verification/139-position-workspace-implementation.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "116c829de57a9feff99f72919745d4bfdae67a29959a88fcf49c73f130ef7340",
+          "after_sha256": "33396bf12565321cabab3503b758fc414bde7c509fc074b941e4c58f3b43d5fd"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "84003a718c099d1b0039fcf6f09b4fe3004eba839258f06be98942ba567ed462",
+          "after_sha256": "c7710295979493d9fbf865039820a50707d2af78864319d46c5e036f3399f090"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "e81f2f322d1da8061678cd2d2ffff3c9ee3ff075085e344ba556ea2c659a918c",
+          "after_sha256": "4005d62d15c3416a3892f6f10a2f128a036eb917d3f277b7b18ccfd7e797f023"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "3b5eb7efc1db87fd11536393a738771742ef7a3ea8b0027001a32a3515d04e6f",
+          "after_sha256": "b4260ea30868df52ef01b972b2f2e5eb0554238bc985c234bfb5a9526e530402"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "58bfa97027dc7770e3b9580c2cfabe98a89145358333dbd43bc15c09689d232d",
+          "after_sha256": "f6be2970a9416de0214b2beeb7f89bb4396260141353a9644cf17f367d007ca3"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-315",
+      "decision": "docs/plans/315-staffing-quota-administration.md",
+      "base_commit": "c8b63983edf859b1eb0259a644369b3184cfb9ec",
+      "scope": "将 D 分支 CHNHCM-313 第 7、8 次修订的部门与岗位核编规则，接续到主线 CHNHCM-312 管理汇报修订。原两份修订和逐文件摘要保存在 c7e6d8d42ba63e8b09e4aa0ae8fd4a4a7b8c6675。",
+      "verification": "docs/verification/315-department-quota-allocation.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/03-consistency-contracts.md",
+          "before_sha256": "4898d9f060ed63399787c636ef5b7c18b0701e4181a5a09e9f6927d3a0838564",
+          "after_sha256": "3bae144b2e78dd9e123622686f192175a6c2b2cdf0140bcc55ca47e54da66ea5"
+        },
+        {
+          "path": "docs/architecture/target/08-cross-module-flows.md",
+          "before_sha256": "2e594924b3359240112d55b2ef06a15fee92da64c6554fb6f5a0fe6f11689b11",
+          "after_sha256": "f9d4a860f53e95e50fe3b18debe0249e749002fc2c86005105864172d406198c"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "33396bf12565321cabab3503b758fc414bde7c509fc074b941e4c58f3b43d5fd",
+          "after_sha256": "8aa5daa4bef9b958b4afcc2ea2269b090e729e566e631e92fe05c625803c2e16"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "566532f95d03d4250e689729abf2e8640edb76454b8fa8a8d9f76cd379a16398",
+          "after_sha256": "13225dc2719ca640997b6b6aa0538103283f134839417a5ddbe41a542b0215af"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "c7710295979493d9fbf865039820a50707d2af78864319d46c5e036f3399f090",
+          "after_sha256": "40bc0ee53c69e3de40762e37871020d65ca6b81acfb8ea8012577801e906988e"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "4005d62d15c3416a3892f6f10a2f128a036eb917d3f277b7b18ccfd7e797f023",
+          "after_sha256": "ca25016b7e96d9ee4354928f95dec9b6255d4b4a241f0241fcfa1493e2c87676"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "b4260ea30868df52ef01b972b2f2e5eb0554238bc985c234bfb5a9526e530402",
+          "after_sha256": "4daab4f3576fe2121a679f2fdc6b6ac06f346e5ffc2b9bdfbcf021d1daad975e"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.mmd",
+          "before_sha256": "0cc33262c62fad0d5d450ba0a0c2058885a9da2640885ad80b479822ceaa5e2b",
+          "after_sha256": "0779715fd71f50de74ec770a613a01f136de5493fe6b923d3ecf60aa56804b58"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.svg",
+          "before_sha256": "0cb5429680db3ede75253135b7952271b1e02ee976f5136cd05b02d003b564cb",
+          "after_sha256": "971cc6cdca8ab30774cfe61a22252282660b9b27cdaa3d832e5ec33b89823315"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m03.mmd",
+          "before_sha256": "b0a80e3c66284ee33b4330a6aee58d441cea62a496c0ad9666fb231cfd07fbb8",
+          "after_sha256": "41835b495f55a00addde62d599d8207ef472d7ec72d02f8c62bcef06e53be219"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m03.svg",
+          "before_sha256": "7a36bc93e3fe375c25ee9db105170e59dd9d6cf3edcca5971622fc63f0faa322",
+          "after_sha256": "e4b0745a150116770ee84a52c42c8d94de006fb6c695afd4faef8846895f7cca"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "f6be2970a9416de0214b2beeb7f89bb4396260141353a9644cf17f367d007ca3",
+          "after_sha256": "a9753ee8450be3473fddca797a93c8da29ae093e621aafadda980b4c3e3dedd9"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "7f92dbcb489e1786dfff4828810394699dbda138fee744f056f8de5ed84fec06",
+          "after_sha256": "176c2dcbcad043686ad65cd49ebc287c12b5821fdf82d32f3acee907c5c71aca"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "f15c7544a2d892ff3b4d91f379075cff28435e5854a1784ebef1384a3c50e87d",
+          "after_sha256": "721895bbab8d02cd1dc14771337884c24fb023736aad3f283ffa083405379e25"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-501",
+      "revision": 1,
+      "decision": "docs/specs/m01/501-person-registration-requirements.md",
+      "base_commit": "45a4c22717be0770f061d89a8a01a3a266b6f62f",
+      "scope": "M01 人员登记只按主要证件号码判断人员是否重复，取消登记时的同名查询、提示和确认。 主线汇合时在保留原岗位与部门设计的版本上重放 M01 变更，原摘要见 0fcdfcfc。",
+      "verification": "docs/verification/500-registration-without-name-prompts.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "ca25016b7e96d9ee4354928f95dec9b6255d4b4a241f0241fcfa1493e2c87676",
+          "after_sha256": "ccf55964c01b134f25f50fedd73636cd887d024e8f2796c3a3792c178748e6bf"
+        },
+        {
+          "path": "docs/architecture/target/modules/m01.md",
+          "before_sha256": "e3056f9056b74c4d028821c9ae6cf151ed8305f62dfcb2f384626b15190636fe",
+          "after_sha256": "989931835f8487533440dc3f88f0467f2c4615f442baea23cebd7ebb6715710a"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "8aa5daa4bef9b958b4afcc2ea2269b090e729e566e631e92fe05c625803c2e16",
+          "after_sha256": "98ac76fb3f3c93c2136197ae1ef47e907db2bdbf7244545267bcef71a64bb7df"
+        }
+      ]
+    }
+  ]
+}

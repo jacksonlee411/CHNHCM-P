@@ -1,0 +1,27 @@
+CHNHCM necessary geographic areas: chnhcm-geography-g0-v1 (3620 entries).
+
+areas.json preserves the admitted CN 3209 / HK 21 / TW 390 input, including
+source spelling, string codes, fixed dates, classifications and parent keys.
+It is extracted without value changes from tests/fixtures/geography/v1/package.json.gz.
+Macau's eight unverified legacy entries, the three cross-reference roots and
+414 unmatched legacy addresses are excluded; their evidence remains in that package.
+
+Original bytes, provider attribution and licensing material are preserved in
+docs/reference/sources/cubebox-geography-2deaf927.zip from CubeBox commit
+2deaf9276086f68e07aaa0c2cf7f35025046a9ee. Per-file origins, source editions and
+SHA256 digests are recorded in docs/reference/200-geography-sources.json;
+admission decisions are in docs/verification/200-g0-source-admission.md.
+No neighboring checkout, network download or Odoo service is needed.
+
+Provider metadata is offline initialization evidence, not a public resource or
+permission field. This package prepares input; it does not publish a directory,
+write a database or fabricate historical adoption references.
+
+Macau supplement: chnhcm-macau-20261119-v1. macau.json contains ten place
+names transcribed as factual data from Macau Post's standard postal address
+format (three regions) and the government Cadastre Information System (seven
+parishes). Each source entry contains the official URL and SHA-256 of the
+retrieved page. The spelling is the provider's traditional Chinese. Entry keys
+are CHNHCM identifiers. Neither source supplies an official code or a parent
+relationship between these two sets. Page layout and maps are not redistributed.
+The G0 source archive and published CN/HK/TW package remain independently pinned.

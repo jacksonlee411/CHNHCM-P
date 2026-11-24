@@ -1,0 +1,35 @@
+---
+title: M08 休假、缺勤与权益账户 · 目标设计
+---
+flowchart TB
+  subgraph domain["M08 休假、缺勤与权益账户"]
+    direction TB
+    P["AbsencePlan 模式与资格评估"]:::own
+    B["EntitlementAccount 批次 流水及原消费分配"]:::own
+    R["申请与缺勤事实"]:::own
+    C["AbsenceCalculation 数量 比例与来源"]:::process
+    CAT["AbsenceCatalog 假种 原因 分类与计划关联"]:::own
+    ENR["AbsenceEnrollment 参与及资格采用"]:::own
+    TL["AbsenceTimeline 跨计划覆盖守卫"]:::own
+  end
+  H["M04 关系及资格事实"]:::external
+  S["M06 工作时间"]:::external
+  T["M07 考勤核对"]:::external
+  Y["M10 工资采用"]:::external
+  H -->|适用对象| P
+  R -->|已确认缺勤| C
+  S -->|应工作时间| C
+  R -->|缺勤覆盖| T
+  CAT -->|假种按优先级引用计划| P
+  CAT -->|采用假种 原因与兼容性版本| R
+  P -->|明确参与及资格依据| ENR
+  ENR -->|所有模式均校验参与及资格| R
+  P -->|仅余额型的授予规则| B
+  B -->|仅余额型联合守卫| R
+  TL -->|全部任职及计划的共同冲突守卫| R
+  C -->|余额型消费或按原分配冲销| B
+  C -->|唯一缺勤来源 数量与待遇分类| Y
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

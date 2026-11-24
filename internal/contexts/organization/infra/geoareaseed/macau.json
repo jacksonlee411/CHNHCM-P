@@ -1,0 +1,62 @@
+{
+  "version": "chnhcm-macau-20261119-v1",
+  "observedOn": "2026-11-19",
+  "sources": [
+    {
+      "scheme": "MO-CTT",
+      "level": "postal-region",
+      "url": "https://www.ctt.gov.mo/MacauPost/Contents/AddressFormat.aspx?lang=zh-t",
+      "responseSHA256": "0a1fc3d60b366ada8282ca90442225fa27834dd8b8fbdf920570a79c606d20a3",
+      "entries": [
+        {
+          "key": "macau",
+          "name": "澳門"
+        },
+        {
+          "key": "taipa",
+          "name": "氹仔"
+        },
+        {
+          "key": "coloane",
+          "name": "路環"
+        }
+      ]
+    },
+    {
+      "scheme": "MO-CADASTRE",
+      "level": "parish",
+      "url": "https://cadastre.gis.gov.mo/MGSP_Cad/chn/bak/main_20160628.html",
+      "responseSHA256": "68b9438e242791647240dadde61d95c82f93170fe53366c1975b3f90af4c6741",
+      "entries": [
+        {
+          "key": "santo-antonio",
+          "name": "花王堂區"
+        },
+        {
+          "key": "sao-lazaro",
+          "name": "望德堂區"
+        },
+        {
+          "key": "sao-lourenco",
+          "name": "風順堂區"
+        },
+        {
+          "key": "se",
+          "name": "大堂區"
+        },
+        {
+          "key": "fatima",
+          "name": "花地瑪堂區"
+        },
+        {
+          "key": "carmo",
+          "name": "嘉模堂區"
+        },
+        {
+          "key": "sao-francisco-xavier",
+          "name": "聖方濟各堂區"
+        }
+      ]
+    }
+  ]
+}

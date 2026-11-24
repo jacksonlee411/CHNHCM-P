@@ -1,0 +1,66 @@
+---
+title: C03 China HCM 时间与缺勤概念 · 计划 实际 权益与工资采用
+---
+flowchart TB
+  ASG["Assignment 有效任职 · M04"]
+  POLICY["政策证据与适用元数据 · X02"]
+  subgraph plan["计划工作时间 · M06"]
+    WP["WorkPattern / Shift<br/>工作模式 班段与休息段"]
+    CAL["WorkingCalendar<br/>本域工作日历及来源版本"]
+    WT["WorkingTimePolicy<br/>工时制度及周期"]
+    ATTR["TimeAttributionPolicy<br/>真实时段 任职日与计量归属日"]
+    SCH["SchedulePublication<br/>按任职 日期的已发布班表"]
+    BOOK["ScheduleBook<br/>任职唯一的发布登记"]
+    WP -->|班段定义| SCH
+    WT -->|制度约束| SCH
+    WT -->|根内配置版本| ATTR
+    CAL -->|采用日历版本| SCH
+    BOOK -->|跨午夜及发布之间共同守卫| SCH
+  end
+  subgraph absence["休假与权益 · M08"]
+    CAT["AbsenceCatalog<br/>假种 原因 分类与计划关联"]
+    AP["AbsencePlan / Eligibility<br/>余额型 资格待遇 无权益模式"]
+    ENR["AbsenceEnrollment<br/>个人参与及资格采用"]
+    TL["AbsenceTimeline<br/>跨计划确认覆盖及兼容性"]
+    AC["EntitlementAccount / GrantLot<br/>原批次消费 退回 到期 结转"]
+    REQ["LeaveRequest / AbsenceEvent<br/>申请 原因与生效缺勤分别记录"]
+    RES["AbsenceCalculation<br/>规则版本及唯一计薪影响"]
+    CAT -->|版本化定义及计划优先级| AP
+    CAT -->|原因及兼容性定义| REQ
+    AP -->|明确参与并采用资格| ENR
+    ENR -->|所有模式都核验| REQ
+    TL -->|全部覆盖任职的共同守卫| REQ
+    AP -->|仅余额型授予| AC
+    AC -->|仅余额型可用性守卫| REQ
+    REQ -->|按规则计算| RES
+    RES -->|按原批次分配消耗或冲销| AC
+  end
+  subgraph actual["实际工时 · M07"]
+    EVT["TimeEvent<br/>原始事件及设备来源身份"]
+    TP["TimePolicy / Category / ConsumerSet<br/>可复用分类与消费者释放规则"]
+    TR["TimeRecord<br/>核对后实际工时及分类结果"]
+    SPAN["CoverageSegment<br/>任职日界分段 无覆盖片段待核"]
+    CLOSE["MonthlyClosing<br/>期间清单及原事实引用"]
+    EVT -->|核验 去重 分类| TR
+    TP -->|采用分类定义版本| TR
+    TR -->|核对引用| CLOSE
+  end
+  ADOPT["TimeAdoption / ElementEntry · M10<br/>消费者采用与唯一金额输入路径"]
+  ASG -->|排班对象| SCH
+  ASG -->|按任职时区解释有效段| SPAN
+  ATTR -->|分别决定覆盖与计量归属| SPAN
+  SPAN -->|不丢原观察 明确覆盖才释放| TR
+  ASG -->|资格来源| AP
+  POLICY -->|日期 地区 对象条件| WT
+  POLICY -->|证据引用| CAL
+  POLICY -->|适用规则| AP
+  SCH -->|预期工时与归属日| TR
+  SCH -->|应工作时间基准| RES
+  REQ -->|缺勤覆盖| TR
+  RES -->|已确认<br/>影响引用| CLOSE
+  TR -->|按输入合同生成工时输入| ADOPT
+  TP -->|按消费者选择范围及释放条件| ADOPT
+  RES -->|唯一缺勤影响来源| ADOPT
+  CLOSE -->|核对范围与版本 不再次加金额| ADOPT
+  N["计划班表 实际工时 权益余额 工资金额分别建模；更正保留旧采用并由工资域决定重算或差额"]
+  ADOPT --> N

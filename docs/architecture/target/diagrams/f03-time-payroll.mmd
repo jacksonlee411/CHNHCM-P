@@ -1,0 +1,55 @@
+---
+title: F03 排班、工时、缺勤、月结与工资 · 目标流程
+config:
+  sequence:
+    mirrorActors: false
+    diagramMarginY: 20
+---
+sequenceDiagram
+  actor H as 假勤专员
+  participant S as M06 排班
+  participant A as M08 缺勤
+  participant T as M07 工时
+  participant Y as M10 工资
+  H->>S: 生成候选，明确核准发布
+  S->>S: 同事务ScheduleBook守卫跨日时段及版本
+  S-->>T: 发布的工作时段、归属日及依赖版本
+  H->>A: 核对目录、计划参与、资格、覆盖任职及必要决定
+  A->>S: 核对实际时段及工作时间基准
+  Note over S,A: ConfirmAbsence短事务 按固定顺序锁全部覆盖时间线和适用账户
+  A->>A: AbsenceTimeline按政策裁决跨计划重叠
+  alt BalanceTracked余额型
+    A->>A: 守卫并分配有效授予批次，保存消费
+  else Qualification或NoEntitlement
+    A->>A: 核验资格和模式，不造虚构余额或消耗
+  end
+  A->>A: 联合保存确认缺勤、计算依据和Outbox
+  Note over S,A: 任一守卫失败全部回滚，批准不保证确认成功
+  A-->>T: 已确认缺勤覆盖，仅用于核对
+  H->>T: 核对打卡、异常、跨午夜及任职变化
+  T->>T: 按TimePolicy/Category版本确认工时及月结引用
+  T-->>Y: 按ConsumerSet释放原工时来源
+  A-->>Y: 唯一缺勤来源及数量/待遇分类
+  H->>Y: 预览月结采用
+  Y->>T: 读取清单范围、原来源及全部依赖版本
+  alt 未覆盖、冲突或来源陈旧
+    Y-->>H: 阻止采用并列出待核对项
+  else 明确采用
+    Y->>Y: 按canonicalOriginRef和用途保存采用
+    Note over T,Y: 月结不新增金额，M07缺勤覆盖不复制M08计薪输入
+    H->>Y: 重新准备与计算
+  end
+  opt 取消或更正已确认缺勤
+    H->>A: 引用原请求、原消费分配及决定
+    A->>A: 同一Timeline与账户守卫下反向/后继
+    Note over A: 退回原批次和有效期，已到期不恢复当前额度
+    A-->>T: E更正覆盖，旧月结待复核
+    A-->>Y: E来源后继及影响
+  end
+  H->>T: 更正工时并保存后继月结及Outbox
+  T-->>Y: E版本通知，Inbox去重及缺号补拉
+  alt 工资尚可重新准备
+    Y->>Y: 显式撤回/更新采用后重算
+  else 原工资已封存或支付
+    Y->>Y: 保留原采用，按结果系列处理追溯
+  end

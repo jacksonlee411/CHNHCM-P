@@ -1,0 +1,45 @@
+---
+title: E06 付款执行与资金两个维度 · 同事务应用回执
+---
+stateDiagram-v2
+  state "同一付款指令的两个维度" as Instruction {
+    state "执行维度" as Execution {
+      [*] --> Frozen
+      state "冻结payload并占用" as Frozen
+      state "按hash授权 已入队" as Queued
+      state "领取完成 可能外发" as Claimed
+      state "未知 保留未决占用" as Unknown
+      state "渠道受理 待查明余项" as Pending
+      state "执行终结 原指令不再发送" as Closed
+      Frozen --> Queued: 精确授权
+      Frozen --> Closed: 未发取消并释放
+      Queued --> Closed: 撤销先提交
+      Queued --> Claimed: M11执行占用与M14领取同事务
+      Claimed --> Unknown: 超时 崩溃 或stopRequested
+      Claimed --> Pending: 受理或部分结果
+      Claimed --> Closed: 全部查明
+      Unknown --> Unknown: 查询仍不明 禁止盲重发
+      Unknown --> Pending: 查明部分结果
+      Unknown --> Closed: 全部查明
+      Pending --> Closed: 余款成功或明确未执行
+    }
+    --
+    state "资金维度" as Funds {
+      [*] --> NoCash
+      state "尚无已核实资金" as NoCash
+      state "不可变资金流水及汇总" as Ledger
+      NoCash --> Ledger: 首笔成功资金
+      Ledger --> Ledger: 新成功或原成功部分退款
+      note right of Ledger
+        累计成功 退回 净实付分别汇总
+        执行Closed仍接受合法退款
+        资金业务身份去重 退款不超原未退额
+        不重新打开原指令发送
+      end note
+    }
+  }
+  note right of Closed
+    已成功金额保留
+    仅明确未执行余额释放
+    后继指令按可用余额重新授权
+  end note

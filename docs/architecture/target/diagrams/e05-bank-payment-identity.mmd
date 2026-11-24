@@ -1,0 +1,61 @@
+---
+title: E05 冻结payload、精确授权与稳定应付账户 · 目标ER
+---
+erDiagram
+  LEGAL_ENTITY ||--o{ PAYER_ACCOUNT : "机构付款账户M14"
+  PERSON ||--o{ BANK_ACCOUNT_IDENTITY : "个人收款账户M01"
+  PAYER_ACCOUNT ||--o{ PAYMENT_INSTRUCTION : "冻结机构账户版本"
+  PAYABLE_ACCOUNT ||--o| RECOVERY_ACCOUNT : "追收决定及占用"
+  PAYABLE_ACCOUNT ||--o{ SETTLEMENT_ENTRY : "唯一净结算口径"
+  RECOVERY_ALLOCATION |o--|| SETTLEMENT_ENTRY : "仅回收类分录有分配"
+  RECOVERY_ACCOUNT ||--o{ RECOVERY_ALLOCATION : "归还或核准扣回"
+  BANK_ACCOUNT_IDENTITY ||--o{ PAYMENT_USE_VERSION : "M01身份与M14用途分离"
+  PAYABLE_ACCOUNT ||--o{ PAYABLE_MOVEMENT : "M10唯一来源差额"
+  PAYABLE_ACCOUNT ||--o{ RESERVATION : "原子余额守卫"
+  PAYMENT_INSTRUCTION ||--|| RESERVATION : "同事务冻结占用"
+  PAYMENT_INSTRUCTION ||--o| ACCOUNT_SNAPSHOT : "银行方式必填"
+  PAYMENT_USE_VERSION ||--o{ ACCOUNT_SNAPSHOT : "冻结原版本"
+  AUTHORIZATION }o--|{ PAYMENT_INSTRUCTION : "确切清单及hash"
+  PAYMENT_INSTRUCTION ||--o{ CHANNEL_ATTEMPT : "稳定业务身份"
+  PAYMENT_INSTRUCTION ||--o{ CASH_MOVEMENT : "仅指令出款及银行退回"
+  PAYABLE_ACCOUNT ||--o{ CASH_MOVEMENT : "占用转实付或退回"
+  PAYABLE_ACCOUNT {
+    string payableIdCurrency PK
+    int revision
+    decimal payableLimit
+    decimal activeReservations
+    decimal netSettled
+    string holdStatus
+  }
+  PAYMENT_INSTRUCTION {
+    string instructionId PK
+    string payloadHash
+    string payerPayeeMethodCurrency
+    decimal amount
+    string distributionVersion
+    string executionPurpose
+    string incomeRecognitionRefs "所得结算用途"
+    string recoveryReturnRefs "非所得超收返还用途"
+    string treatmentDecisionRef "M11分类及版本"
+    string state
+  }
+  AUTHORIZATION {
+    string authorizationId PK
+    string orderedPayloadHash
+    string authorityScope
+    string status
+  }
+  SETTLEMENT_ENTRY {
+    string entryId PK
+    string sourceKind "指令资金 员工入款 工资扣回或冲销"
+    string sourceBusinessKey "结合分录类型去重"
+    string evidenceRef "员工归还用独立入款证据"
+    string reversesEntryRef
+    decimal signedAmount
+  }
+  CASH_MOVEMENT {
+    string movementId PK
+    string channelTransactionEventKey UK
+    string originalPaymentRef
+    decimal signedAmount
+  }

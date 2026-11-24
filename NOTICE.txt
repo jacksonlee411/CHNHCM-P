@@ -1,0 +1,51 @@
+CHNHCM is an independently initialized local repository.
+
+Architecture material is adopted from the local oracle-fscr design branch.
+The source repository includes LICENSE.txt (Universal Permissive License 1.0);
+its original license is preserved in docs/reference/licenses/fscr-LICENSE.txt.
+Exact source commits, files, hashes and local adaptations are recorded in
+docs/reference/baselines.json. Locally authored China HCM additions are not
+represented as Oracle product behavior, implementation acceptance or a grant
+of rights beyond the source terms.
+
+CubeBox experience, business and verification materials are retained privately for this user's local project. The pinned source has
+no repository-wide license file. No new redistribution license is asserted.
+Source-specific notices, if selected, remain with their source files.
+Odoo is an interaction reference only; no Odoo proprietary source is imported.
+
+Historical source packages are excluded from application builds and tests.
+CHNHCM does not currently select a public distribution license.
+
+The UI uses the unchanged Noto Sans SC font selected by CubeBox. Its original
+SIL Open Font License and provenance are included in packages/ui/src/assets/
+OFL.txt and source.json. Supplemental source archives and hashes are listed
+in docs/reference/ui-sources.json.
+
+The BU name profile uses Unicode 15.0.0 DerivedJoiningType and emoji-data
+snapshots (copyright Unicode, Inc.), preserved under domain/testdata with
+source URLs and SHA-256 checks in scripts/generate-name-tables.py. Their
+Unicode license is preserved in docs/reference/licenses/unicode-LICENSE.txt.
+
+The frontend imports unchanged Community @mui/x-data-grid 8.29.3 runtime
+TypeScript/TSX from mui/mui-x commit 109f5a0c73075355f755352ad2849d52a01197b5.
+Vite transpiles that local source. Unchanged official 8.29.3 declarations are
+used only by TypeScript types exports; published compiled JavaScript is not
+used as this component's runtime entry. Original MIT notices, source and
+release-declaration archives and SHA-256 manifests are preserved under
+packages/mui-x-data-grid/upstream.json and docs/reference/sources/.
+
+The commercial source archive is excluded from the public snapshot.
+The former Pro runtime source, dependency and license initialization have
+been removed. Its privately retained source archive, original commercial notices, historical
+reports and intake manifest (docs/reference/112-datagrid-pro-upstream.json)
+are retained for provenance and excluded from the application runtime. They
+have not been relicensed as MIT. Community does not require a commercial
+license key; no vendor watermark or verification code has been suppressed.
+
+Geographical reference materials for CHNHCM-200/201 are preserved in the
+offline CubeBox geography source archive. The Odoo-derived base, l10n_cn and
+l10n_tw factual data retain their original LGPL-3.0 notice and bundled license.
+Government-source names and code observations retain the original attribution
+and mapping limits. This archive is reference material, not an application
+runtime dependency or a copy of Odoo Enterprise application code. See
+docs/reference/200-geography-sources.json and the archive NOTICE.txt.

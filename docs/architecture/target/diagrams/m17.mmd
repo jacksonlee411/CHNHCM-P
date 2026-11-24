@@ -1,0 +1,31 @@
+---
+title: M17 目标与绩效 · 目标设计
+---
+flowchart TB
+  subgraph domain["M17 目标与绩效"]
+    direction TB
+    G["GoalDefinition / GoalPlan 目标库与计划配置"]:::own
+    T["ReviewPeriod / PerformanceTemplate 周期 模板与章节"]:::own
+    D["PerformanceDocument 文档及阶段实例"]:::own
+    F["反馈 申诉与校准"]:::own
+    R["发布结果版本"]:::process
+    GA["GoalAssignment 个人目标及进度"]:::own
+    PROC["ProcessDefinition / DocumentType 流程及文档类型"]:::own
+  end
+  H["M04 任职与经理分段"]:::external
+  S["M16 评分与问卷"]:::external
+  C["M09 M18 M19 消费者"]:::external
+  T -->|固定模板及过程版本| D
+  H -->|责任分段| D
+  S -->|评价语义| D
+  D -->|反馈与调整| F
+  F -->|核对后发布| R
+  R -->|明确采用的版本| C
+  G -->|显式分配及采用版本| GA
+  GA -->|固定个人目标版本| D
+  PROC -->|引用定义版本| T
+  D -->|满足阶段守卫后发布| R
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

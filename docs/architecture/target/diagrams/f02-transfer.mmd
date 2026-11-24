@@ -1,0 +1,59 @@
+---
+title: F02 调动及晋升调薪 · 分域生效与业务完成
+---
+sequenceDiagram
+  participant H as HR办理人
+  participant J as M20 Journey
+  participant O as M02 组织
+  participant Q as M03 编制管理
+  participant E as M04 用工
+  participant C as M09 薪酬
+  participant Y as M10 工资
+  participant S as M12 参缴
+  participant T as M11 个税
+  opt 晋升并调薪清单
+    H->>J: C按模板版本启动<br/>固定来源命令身份及完成口径
+  end
+  H->>E: 从任职或原调动记录直接办理
+  E->>O: 按日期解析新旧组织、主体和地点
+  E->>Q: 核验两岗及后续任职、预留和录用
+  alt 存在冲突或权限不足
+    E-->>H: 保留原安排，按权限提示冲突和可办动作
+  else 校验通过并明确保存
+    Note over Q,E: 开启短事务 固定锁序再校验来源和可用编制
+    alt 同一工作关系内调动
+      E->>E: 新任职业务切片或新任职<br/>按任务语义办理
+    else 跨法人建立新关系
+      E->>E: 明确旧关系/任职终结<br/>建立新关系/任职
+      Note over E: Person保持<br/>合同独立核对<br/>不删除旧关系
+    end
+    E->>Q: C按模式协调旧释放与新占用
+    E->>E: C结束或重选主选择<br/>核对经理关系期间
+    E->>E: C保存各根变化<br/>同事务写Outbox
+    Note over Q,E: 全部提交或全部回滚
+    E-->>H: 显示两岗办理结果
+    E-->>Y: E持久投递 新旧有效段及影响
+    E-->>S: E持久投递 参缴责任变化待办理
+    Y->>T: 核对扣缴主体、所得和累计范围
+    T-->>Y: 不无条件跨雇主合并累计
+    opt 晋升并调薪清单
+      J->>E: Q核对动作及任职当前有效证据
+      J->>J: C确认人事步骤<br/>此时整体仍未完成
+      H->>C: C确认授予并下发<br/>固定任职及金额口径版本
+      alt 薪酬办理失败
+        C-->>J: 人事已生效 薪酬待办理<br/>按原业务键重试
+      else 授予及下发成功
+        C-->>Y: E授予版本及用途
+        J->>C: Q核对授予及下发证据
+        Y->>Y: C对任职及授予评估影响<br/>明确采用或形成后继
+        J->>Y: Q核对影响闭环证据<br/>不能以Ack代替
+        alt 工资影响待核或未处置
+          J-->>H: 薪酬已生效 工资影响未完成
+        else 必需步骤证据均有效
+          J-->>H: 本模板完成<br/>到账要求须另有支付证据步骤
+        end
+      end
+    end
+  end
+  Note over Y,S: 旧期间未结事项继续引用旧主体，不能被新任职默认覆盖
+  Note over J,C: 取消Journey只停后续分派；已生效事实分别走领域更正，不整体回滚

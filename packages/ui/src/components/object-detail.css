@@ -1,0 +1,58 @@
+/* The existing employee/position/department classes share these layout rules. */
+.object-detail-sheet.MuiPaper-root { width: calc(100% - 40px); max-width: 1260px; margin: 16px auto 20px; padding: 0; background: #fff; border: 1px solid #dde3e5; border-radius: 3px; box-sizing: border-box; }
+.object-detail-identity { padding: 26px 32px 24px; min-height: 128px; }
+.object-detail-sheet.MuiPaper-root .MuiTabs-root { padding: 0 24px; min-height: 42px; overflow: hidden; border-bottom: 1px solid #d9e0e3; }
+.object-detail-sheet.MuiPaper-root .MuiTabs-indicator { top: 0; bottom: auto; height: 3px; }
+.object-detail-sheet.MuiPaper-root .MuiTab-root { min-height: 42px; border: 1px solid transparent; border-bottom: 0; padding: 10px 20px; font-size: 14px; }
+.object-detail-sheet.MuiPaper-root .MuiTab-root.Mui-selected { border-color: #d9e0e3; color: #087f7b; background: #fff; }
+.object-detail-timeline .effective-dates { margin: 0 !important; padding: 10px 32px; background: #fafcfc; border-bottom: 1px solid #e7ebed; }
+.object-detail-timeline .effective-date-slot { justify-content: flex-start; }
+.object-detail-body { padding: 20px 32px 30px; }
+.object-detail-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; align-items: start; }
+.object-detail-section { position: relative; min-width: 0; margin: 4px 0 22px; }
+.object-detail-section:last-child { margin-bottom: 0; }
+.object-detail-section .object-section-title { font-size: 14px; font-weight: 600; line-height: 24px; padding: 0 0 8px; margin: 0 0 12px; border-bottom: 1px solid #dfe4e7; color: #374957; }
+.object-detail-field { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 14px; min-height: 36px; align-items: baseline; padding: 3px 0; }
+.object-field-label.MuiTypography-root { font-size: 13px; line-height: 28px; color: #4a5864; font-weight: 500; }
+.object-field-value { min-width: 0; font-size: 14px; line-height: 28px; color: #263541; overflow-wrap: anywhere; }
+.object-identity-layout { display: flex; align-items: center; gap: 20px; }
+.object-identity-icon { display: grid; place-items: center; width: 72px; height: 72px; flex-shrink: 0; background: #e6f3f2; color: #07918d; border-radius: 6px; }
+.object-identity-icon > svg { font-size: 36px; }
+.object-identity-icon > img { width: 58px; height: 58px; object-fit: contain; }
+.object-identity-name { flex: 1; min-width: 0; }
+.object-identity-name h1 { font-size: 30px; font-weight: 500; line-height: 1.3; overflow-wrap: anywhere; }
+.object-identity-summary { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.object-identity-related { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 48%; }
+.object-identity-related .MuiButton-root { border: 1px solid #d1dddd; padding: 8px 14px; text-align: start; }
+.object-detail-editor { padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid #e4e9eb; }
+.object-detail-references { margin-top: 20px; color: #667580; font-size: 12px; }
+.object-detail-references > summary { cursor: pointer; padding: 5px 0; }
+.object-detail-references > summary:focus-visible { outline: 2px solid #09a7a3; outline-offset: 2px; }
+.object-detail-references[open] > summary { margin-bottom: 8px; }
+@media (max-width: 899px) {
+  .object-detail-sheet.MuiPaper-root { width: calc(100% - 16px); margin-top: 8px; padding: 0; }
+  .object-detail-identity { padding: 20px 16px; }
+  .object-detail-sheet.MuiPaper-root .MuiTabs-root { padding: 0 8px; }
+  .object-detail-timeline .effective-dates { padding: 10px 16px; }
+  .object-detail-body { padding: 16px; }
+  .object-detail-columns { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .object-detail-field { grid-template-columns: 95px minmax(0, 1fr); gap: 10px; }
+  .object-detail-section { margin-bottom: 22px; }
+  .object-identity-layout { display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 12px; }
+  .object-identity-icon { height: 50px; width: 50px; }
+  .object-identity-icon > svg { font-size: 28px; }
+  .object-identity-icon > img { height: 42px; width: 42px; }
+  .object-identity-name h1 { font-size: 25px; }
+  .object-identity-related { grid-column: 2; justify-content: flex-start; max-width: 100%; }
+  .object-identity-related .MuiButton-root { padding: 6px 10px; }
+}
+@media (max-width: 359px) {
+  .object-detail-sheet.MuiPaper-root .MuiTabs-root:has([role="tab"]:nth-child(3):last-child) .MuiTabs-scrollButtons {
+    display: none;
+  }
+  .object-detail-sheet.MuiPaper-root [role="tablist"]:has(> [role="tab"]:nth-child(3):last-child) > .MuiTab-root {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline: 6px;
+  }
+}

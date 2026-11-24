@@ -1,0 +1,32 @@
+---
+title: F06 独立参缴义务、申报、扣收和实缴 · 目标流程
+---
+sequenceDiagram
+  actor H as 参缴专员
+  participant C as M12 参缴
+  participant Y as M10 工资
+  participant A as X05 经办渠道
+  participant B as X05 资金渠道
+  participant F as M15 财务
+  H->>C: 核对资格、属地、账户、基数与政策版本
+  C->>C: 稳定账户记完整版本及相对前版本差额
+  Note over C,Y: 本期无工资也可有参缴义务
+  H->>C: 确认申报批次
+  C->>A: 提交行级义务引用及幂等键
+  A-->>C: 部分接受/拒绝/未知的逐项回执
+  C->>C: 保留成功行，失败行单独核对；未知先查询
+  Y->>C: C按当前版本占用可扣余额
+  alt 工资可扣足
+    Y->>C: C与工资封存同事务消费占用并记扣收
+  else 零工资或扣款不足
+    Y->>C: C仅消费实扣占用 未扣释放并保留应收
+  end
+  C->>C: 机构应付余额守卫 冻结payload并占用
+  H->>C: C按payloadHash授权机构缴款
+  C->>B: 提交已授权缴款指令及幂等键
+  B-->>C: 机构实缴或退款事实
+  C->>C: 按账户、所属期及义务行核销
+  C-->>F: E唯一单位承担差额及独立资金引用
+  H->>C: C更正完整金额100为120
+  C->>C: CAS记差额20 旧核销保持原版本
+  Note over C,B: 申报接受、工资代扣和机构实缴各有状态，互不替代

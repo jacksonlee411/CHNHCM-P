@@ -1,0 +1,30 @@
+---
+title: M19 人才盘点、人才池与继任 · 目标设计
+---
+flowchart TB
+  subgraph domain["M19 人才盘点、人才池与继任"]
+    direction TB
+    R["人才盘点及评价快照"]:::own
+    T["人才池及成员历史"]:::own
+    S["SuccessionPlan 主题 候选及来源"]:::own
+    A["准备度与发展行动"]:::own
+    CFG["TalentReviewTemplate / Dimension 盘点模板及维度"]:::own
+  end
+  P["M03 Job Position / M01 M04 在任者"]:::external
+  E["M16 M17 资格与绩效"]:::external
+  L["M18 学习发展"]:::external
+  H["M04 任命办理"]:::external
+  RC["M05 外部候选身份"]:::external
+  E -->|授权采用| R
+  R -->|入池或退出| T
+  P -->|主题类型及范围| S
+  T -->|候选来源| S
+  S -->|准备度评估| A
+  A -->|发展行动| L
+  S -->|候选参考不直接任命| H
+  CFG -->|采用模板及尺度版本| R
+  RC -->|直接提名 不先造用工| S
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

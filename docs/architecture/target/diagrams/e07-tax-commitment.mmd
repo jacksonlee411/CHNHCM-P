@@ -1,0 +1,58 @@
+---
+title: E07 税评估、未决承诺与正式累计 · 保守串行策略
+---
+sequenceDiagram
+  participant Y as M10 封存协调器
+  participant T as M11 TaxLedger
+  participant P as M14 Payment
+  participant S as 所得来源与政策证据
+  alt 新工资核算
+    Y->>T: Q评估 输入依赖与baseRevision
+    T-->>Y: 不可变TaxAssessment 不写累计
+    rect rgb(233, 244, 255)
+      Note over Y,T: 同库短事务 全部成功或回滚
+      Y->>T: C核验版本并建立承诺
+      T-->>Y: 承诺ID 或冲突重评
+      Y->>Y: 原子封存与代扣
+    end
+    alt 政策要求先确认所得
+      S->>T: C逐项所得确认
+      T->>T: 记该项累计及锚点
+    else 政策需支付后证据
+      Note over T,P: 保留pending承诺 阻止同账本另一可执行封存
+    end
+  else 既有确认所得的结算或退款重付
+    P->>T: Q原确认锚点及政策结算分类
+    T-->>P: 允许原承诺closed的结算依据
+    Note over Y,T: 复用原结果及所得 不重建承诺
+  else 非所得超收返还
+    P->>T: C回收更正链及政策分类
+    T-->>P: PaymentTreatmentDecision及允许分配
+    Note over T,P: 原所得可已冲销 不创建新所得
+  end
+  P->>P: 冻结用途和payload 占用并精确授权
+  alt 首次实现尚未确认所得
+    Note over T,P: 当前pending；前驱未决则阻断依赖后项
+  else 结算已确认所得或退款重付
+    Note over T,P: 核验原确认及政策分类；允许原承诺已结束
+    Note over T,P: 不重开承诺 不重复确认所得
+  else 返还有证据的超额回收
+    Note over T,P: 核验分类决定 来源分配及唯一余额
+    Note over T,P: 不得变成通用免税付款
+  end
+  P->>T: C同事务AcquirePermit
+  T-->>P: 按用途核验依据 登记占用或阻断
+  P->>P: 同事务CAS领取
+  P->>P: 提交后发送原payload
+  alt 回执未知
+    P-->>T: E未知观察 保留未决状态
+    Note over Y,T: 不因超时自动释放或换税额
+  else 首次实现且确认依据齐备
+    S->>T: C按政策确认所得分段
+    T->>T: 幂等记账 保留未决余项
+  else 已确认所得结算或非所得返还成功
+    P->>T: C仅解析执行占用 不记新所得
+  end
+  Note over Y,T: 全部成员终结才释放承诺
+  Note over T,P: 部分确认保留余项；取消与领取共用守卫
+  Note over Y,T: 余项按实际锚点重评及后继封存；已确认不重计

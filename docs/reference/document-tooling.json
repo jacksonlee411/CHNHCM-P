@@ -1,0 +1,19 @@
+{
+  "source_repository": "oracle-fscr",
+  "source_commit": "d88c993d13d325b18943549f120c5f03e7864205",
+  "license": "docs/reference/licenses/fscr-LICENSE.txt",
+  "adopted_on": "2026-10-30",
+  "purpose": "self-contained document maintenance; no source workspace runtime dependency",
+  "tools": [
+    {
+      "source_path": "docs/china-hcm/scripts/build_modules.py",
+      "source_sha256": "a0a3635d12fe1532b2f88332ffe2408b4d4e564b3e321b8cd6b7c630d46b7f04",
+      "target_path": "docs/architecture/target/scripts/build_modules.py"
+    },
+    {
+      "source_path": "docs/china-hcm/scripts/render_diagrams.mjs",
+      "source_sha256": "b4926e75e2d7ea81620bf472f81040ed553382ee34438aff16d555f9f39ca1ef",
+      "target_path": "docs/architecture/target/scripts/render_diagrams.mjs"
+    }
+  ]
+}

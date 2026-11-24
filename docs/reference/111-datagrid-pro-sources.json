@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "related_documents": [
+    "CHNHCM-110",
+    "CHNHCM-111"
+  ],
+  "checked_on": "2026-11-03",
+  "scope": "Original documentation/candidate metadata plus actual 112 source selection; no valid-key license runtime acceptance.",
+  "candidate": {
+    "name": "@mui/x-data-grid-pro",
+    "version": "8.29.3",
+    "metadata_url": "https://registry.npmjs.org/@mui%2Fx-data-grid-pro/8.29.3",
+    "peer_dependencies": {
+      "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+      "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0",
+      "@mui/system": "^5.15.14 || ^6.0.0 || ^7.0.0",
+      "@mui/material": "^5.15.14 || ^6.0.0 || ^7.0.0",
+      "@emotion/react": "^11.9.0",
+      "@emotion/styled": "^11.8.1"
+    },
+    "license_declaration": "SEE LICENSE IN LICENSE",
+    "selection_status": "candidate_not_locked"
+  },
+  "sources": [
+    {
+      "url": "https://v8.mui.com/x/react-data-grid/list-view/",
+      "publisher": "MUI",
+      "observed_version_family": "8.x rolling archive",
+      "use": "List view and listViewColumn controlled responsive summary; final patch still to verify."
+    },
+    {
+      "url": "https://mui.com/x/react-data-grid/filtering/multi-filters/",
+      "publisher": "MUI",
+      "observed_version_family": "9.x rolling current documentation",
+      "use": "Native Pro multi-filter panel capability; not a guarantee for every 8.x API."
+    },
+    {
+      "url": "https://mui.com/x/react-data-grid/components/#pagination",
+      "publisher": "MUI",
+      "observed_version_family": "9.x rolling current documentation",
+      "use": "GridPagination reuse and slots; validate selected patch."
+    },
+    {
+      "url": "https://mui.com/x/react-data-grid/filtering/customization/#apply-filters-on-demand",
+      "publisher": "MUI",
+      "observed_version_family": "9.x rolling current documentation",
+      "use": "On-demand applied-vs-draft pattern; GridFilterPanelBase must not be assumed present in 8.x."
+    },
+    {
+      "url": "https://mui.com/x/react-data-grid/filtering/header-filters/",
+      "publisher": "MUI",
+      "observed_version_family": "9.x rolling current documentation",
+      "use": "headerFilters adds a persistent row; not enabled by base scope."
+    },
+    {
+      "url": "https://mui.com/x/react-data-grid/row-grouping/",
+      "publisher": "MUI",
+      "observed_version_family": "9.x rolling current documentation",
+      "use": "Native row grouping is Premium; not included by selecting Pro."
+    }
+  ],
+  "limitations": [
+    "Rolling official pages are version-sensitive; this record preserves observed applicability rather than immutable page content.",
+    "At the original preimplementation observation, code, lockfile and license configuration had not changed; selected_implementation records later execution separately.",
+    "No new CubeBox source archive is adopted; existing source bytes and hashes stay unchanged."
+  ],
+  "selected_implementation": {
+    "version": "8.29.3",
+    "mode": "untranspiled Pro runtime TS/TSX; base dependencies published",
+    "source_manifest": "packages/mui-x-data-grid-pro/upstream.json",
+    "decision": "CHNHCM-112",
+    "valid_license_key_configured": false,
+    "licensed_runtime_acceptance": "not_run",
+    "business_list_wiring": "T02 code implemented; real licensed grid/business runtime not yet accepted"
+  },
+  "retirement": {
+    "date": "2026-11-03",
+    "decision": "CHNHCM-113",
+    "runtime_removed": true,
+    "preserved_manifest": "docs/reference/112-datagrid-pro-upstream.json",
+    "evidence": "docs/verification/111-community-t01-t02.md"
+  }
+}

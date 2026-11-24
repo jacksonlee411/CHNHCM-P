@@ -1,0 +1,2623 @@
+[
+  {
+    "id": "C001",
+    "reference_section": 1,
+    "concept": "Person",
+    "owners": [
+      "M01"
+    ],
+    "decision": "采纳并调整创建路径",
+    "target": "稳定自然人身份；允许身份核对登记先于工作关系，登记目的、权限与保留政策独立管理",
+    "diagram_refs": [
+      {
+        "diagram": "c01-core-hcm-concepts",
+        "nodes": [
+          "P"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C002",
+    "reference_section": 1,
+    "concept": "Work Relationship",
+    "owners": [
+      "M04"
+    ],
+    "decision": "采纳并区分关系性质",
+    "target": "Employment记录人与明确组织的系统关系；劳动关系核对用人单位，非劳动/非工作关联按实际角色；entityId不自动等于雇主",
+    "diagram_refs": [
+      {
+        "diagram": "c01-core-hcm-concepts",
+        "nodes": [
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C003",
+    "reference_section": 1,
+    "concept": "Assignment",
+    "owners": [
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "关系下任职独立身份和时间轴",
+    "diagram_refs": [
+      {
+        "diagram": "c01-core-hcm-concepts",
+        "nodes": [
+          "A"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C004",
+    "reference_section": 1,
+    "concept": "Primary relationship",
+    "owners": [
+      "M04"
+    ],
+    "decision": "语义替代",
+    "target": "按日期及用途的主关系选择，不以人员主岗位字段替代",
+    "diagram_refs": [
+      {
+        "diagram": "c01-core-hcm-concepts",
+        "nodes": [
+          "PR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C005",
+    "reference_section": 1,
+    "concept": "Primary assignment",
+    "owners": [
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "工作关系内主任职；不推导全部税费与权限",
+    "diagram_refs": [
+      {
+        "diagram": "c01-core-hcm-concepts",
+        "nodes": [
+          "PR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C006",
+    "reference_section": 1,
+    "concept": "Action",
+    "owners": [
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "M04可复用ActionDefinition与真实BusinessActionRecord分别有身份；运行保留采用的目录版本",
+    "diagram_refs": [
+      {
+        "diagram": "m04",
+        "nodes": [
+          "DEF",
+          "ACT",
+          "L"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C007",
+    "reference_section": 1,
+    "concept": "Action Reason",
+    "owners": [
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "ReasonDefinition按动作关联、期间启停；旧动作保留原定义版本",
+    "diagram_refs": [
+      {
+        "diagram": "m04",
+        "nodes": [
+          "DEF",
+          "ACT"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C008",
+    "reference_section": 1,
+    "concept": "Contact Relationship",
+    "owners": [
+      "M01"
+    ],
+    "decision": "纳入目标设计",
+    "target": "联系人关系和必要资料；可显式关联已核Person",
+    "diagram_refs": [
+      {
+        "diagram": "m01",
+        "nodes": [
+          "D",
+          "P"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C009",
+    "reference_section": 1,
+    "concept": "Person Types",
+    "owners": [
+      "M04"
+    ],
+    "decision": "语义替代",
+    "target": "人员类型在工作关系上下文，非Person全局标签",
+    "diagram_refs": [
+      {
+        "diagram": "c01-core-hcm-concepts",
+        "nodes": [
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C010",
+    "reference_section": 1,
+    "concept": "Name Styles / Name Formats",
+    "owners": [
+      "M01"
+    ],
+    "decision": "语义替代",
+    "target": "姓名展示及来源规范；不改变稳定身份",
+    "diagram_refs": [
+      {
+        "diagram": "m01",
+        "nodes": [
+          "D",
+          "P"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C011",
+    "reference_section": 1,
+    "concept": "Assignment Status",
+    "owners": [
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "版本化AssignmentStatusDefinition与任职状态实例分离；关系、合同、计薪状态分别维护",
+    "diagram_refs": [
+      {
+        "diagram": "m04",
+        "nodes": [
+          "DEF",
+          "A"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C012",
+    "reference_section": 2,
+    "concept": "Enterprise",
+    "owners": [
+      "M02"
+    ],
+    "decision": "语义替代",
+    "target": "客户实例及企业总体上下文，不等同一个部门",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C013",
+    "reference_section": 2,
+    "concept": "Legal Entity",
+    "owners": [
+      "M02"
+    ],
+    "decision": "采纳",
+    "target": "法律实体稳定身份",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "L",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C014",
+    "reference_section": 2,
+    "concept": "Legal Employer",
+    "owners": [
+      "M02",
+      "M04"
+    ],
+    "decision": "大陆语境映射",
+    "target": "劳动关系语境首选用人单位，保留Legal Employer对照与检索别名；法律身份、允许用途与具体人员关系分别确定",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "L",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C015",
+    "reference_section": 2,
+    "concept": "Business Unit",
+    "owners": [
+      "M02"
+    ],
+    "decision": "语义替代",
+    "target": "业务处理及允许值上下文；不默认等同法人",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "BU"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C016",
+    "reference_section": 2,
+    "concept": "Department",
+    "owners": [
+      "M02"
+    ],
+    "decision": "采纳",
+    "target": "按日有效的管理部门",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C017",
+    "reference_section": 2,
+    "concept": "Job",
+    "owners": [
+      "M03"
+    ],
+    "decision": "采纳",
+    "target": "工作类型，不是人员占用席位",
+    "diagram_refs": [
+      {
+        "diagram": "m03",
+        "nodes": [
+          "JF",
+          "J"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C018",
+    "reference_section": 2,
+    "concept": "Job Family",
+    "owners": [
+      "M03"
+    ],
+    "decision": "采纳",
+    "target": "职务分类及有效关系",
+    "diagram_refs": [
+      {
+        "diagram": "m03",
+        "nodes": [
+          "JF",
+          "J"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C019",
+    "reference_section": 2,
+    "concept": "Position",
+    "owners": [
+      "M03"
+    ],
+    "decision": "采纳",
+    "target": "独立岗位，按日核编，空缺仍保留身份",
+    "diagram_refs": [
+      {
+        "diagram": "m03",
+        "nodes": [
+          "P",
+          "Q",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C020",
+    "reference_section": 2,
+    "concept": "Grade",
+    "owners": [
+      "M03"
+    ],
+    "decision": "采纳",
+    "target": "职级身份与结构",
+    "diagram_refs": [
+      {
+        "diagram": "m03",
+        "nodes": [
+          "G",
+          "L"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C021",
+    "reference_section": 2,
+    "concept": "Grade Ladder",
+    "owners": [
+      "M03"
+    ],
+    "decision": "采纳",
+    "target": "级别进阶结构；晋级动作与结构分开",
+    "diagram_refs": [
+      {
+        "diagram": "m03",
+        "nodes": [
+          "G",
+          "L"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C022",
+    "reference_section": 2,
+    "concept": "Grade Rate",
+    "owners": [
+      "M09"
+    ],
+    "decision": "采纳",
+    "target": "职级金额/范围、币种频率及有效期由薪酬维护",
+    "diagram_refs": [
+      {
+        "diagram": "m09",
+        "nodes": [
+          "G",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C023",
+    "reference_section": 2,
+    "concept": "Location",
+    "owners": [
+      "M02"
+    ],
+    "decision": "采纳",
+    "target": "实际地点、地址及适用上下文",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "LOC"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C024",
+    "reference_section": 2,
+    "concept": "Reference Data Set / Common Set",
+    "owners": [
+      "X02"
+    ],
+    "decision": "语义替代",
+    "target": "稳定共享对象＋按类型/BU等上下文的适用策略、默认及明确采用；支持企业共享与专用范围，保持同名对象身份独立",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "REF",
+          "APP",
+          "DEFAULT"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C025",
+    "reference_section": 2,
+    "concept": "SetID / TableSet",
+    "owners": [
+      "X02"
+    ],
+    "decision": "明确不采纳",
+    "target": "不将SetID/TableSet作为China HCM的目标机制；对象级适用策略承担引用范围职责，属于本设计取舍",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "REF",
+          "APP",
+          "DEFAULT"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C026",
+    "reference_section": 2,
+    "concept": "Tree",
+    "owners": [
+      "M02",
+      "M03"
+    ],
+    "decision": "采纳组织树；岗位树作明确取舍",
+    "target": "M02组织用途树、M03岗位层级分别有根、节点边和有效版本；不另采纳多套可独立编辑Position Tree，历史采用保留",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "T",
+          "D"
+        ]
+      },
+      {
+        "diagram": "m03",
+        "nodes": [
+          "PH",
+          "P"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C027",
+    "reference_section": 2,
+    "concept": "Tree Version",
+    "owners": [
+      "M02",
+      "M03"
+    ],
+    "decision": "采纳组织树；岗位树作明确取舍",
+    "target": "M02组织用途树、M03岗位层级分别有根、节点边和有效版本；不另采纳多套可独立编辑Position Tree，历史采用保留",
+    "diagram_refs": [
+      {
+        "diagram": "m02",
+        "nodes": [
+          "T",
+          "D"
+        ]
+      },
+      {
+        "diagram": "m03",
+        "nodes": [
+          "PH",
+          "P"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C028",
+    "reference_section": 2,
+    "concept": "Position hierarchy / Manager relationship",
+    "owners": [
+      "M03",
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "M03岗位层级与M04双方任职的实际经理关系独立；不自动同步",
+    "diagram_refs": [
+      {
+        "diagram": "c01-core-hcm-concepts",
+        "nodes": [
+          "PH",
+          "POS",
+          "MG"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C029",
+    "reference_section": 3,
+    "concept": "LDG",
+    "owners": [
+      "X02"
+    ],
+    "decision": "语义替代",
+    "target": "法规上下文、地区币种与政策适用，非物理复制Oracle对象",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "LAW"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C030",
+    "reference_section": 3,
+    "concept": "PSU",
+    "owners": [
+      "M02",
+      "M10"
+    ],
+    "decision": "语义替代",
+    "target": "M02声明薪资责任用途；M10 PayrollContext绑定人员和该责任用途，不并入单一组织树",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "LEG",
+          "CTX"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C031",
+    "reference_section": 3,
+    "concept": "TRU",
+    "owners": [
+      "M11"
+    ],
+    "decision": "语义替代",
+    "target": "扣缴/报告登记与用途，按中国申报责任表达",
+    "diagram_refs": [
+      {
+        "diagram": "m11",
+        "nodes": [
+          "REG"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C032",
+    "reference_section": 3,
+    "concept": "Payroll Relationship",
+    "owners": [
+      "M10",
+      "M11"
+    ],
+    "decision": "语义替代",
+    "target": "PayrollContext连接Person与薪资责任主体；PayrollMembership连接任职、计薪上下文及工资定义；税务/参缴累计独立",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "PERSON",
+          "CTX",
+          "MEM"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C033",
+    "reference_section": 3,
+    "concept": "Country Extension",
+    "owners": [
+      "X02",
+      "M11",
+      "M12"
+    ],
+    "decision": "语义替代",
+    "target": "中国政策包、地区适用和领域规则版本",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "LAW"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C034",
+    "reference_section": 3,
+    "concept": "Organization Calculation Card",
+    "owners": [
+      "M11",
+      "M12"
+    ],
+    "decision": "语义替代",
+    "target": "主体登记、资格/扣缴/参缴事实及规则引用，不照搬卡片形状",
+    "diagram_refs": [
+      {
+        "diagram": "m11",
+        "nodes": [
+          "REG",
+          "ID",
+          "POL"
+        ]
+      },
+      {
+        "diagram": "m12",
+        "nodes": [
+          "P",
+          "BASE"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C035",
+    "reference_section": 3,
+    "concept": "Payroll Definition",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "工资定义及周期、所属期和运行规则",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "DEF",
+          "RUN"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C036",
+    "reference_section": 3,
+    "concept": "Time Definition",
+    "owners": [
+      "M10",
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "计算日期和期间语义；与实际工时不同",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "DEF",
+          "RUN"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C037",
+    "reference_section": 3,
+    "concept": "Consolidation Group",
+    "owners": [
+      "M10"
+    ],
+    "decision": "语义替代",
+    "target": "运行/报告归并范围，不改变事实身份",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "DEF",
+          "RUN"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C038",
+    "reference_section": 3,
+    "concept": "Payroll Period / Calendar",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "期间、计薪日、支付日和日历",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "DEF",
+          "RUN"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C039",
+    "reference_section": 3,
+    "concept": "Run Type",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "普通、非周期等运行类型及允许处理",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "DEF",
+          "RUN"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C040",
+    "reference_section": 3,
+    "concept": "Element",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "有身份的工资项目及输入输出语义",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "EL"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C041",
+    "reference_section": 3,
+    "concept": "Element Classification",
+    "owners": [
+      "M10",
+      "M11"
+    ],
+    "decision": "采纳",
+    "target": "工资项目分类与税务所得性质分别映射",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "EL"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C042",
+    "reference_section": 3,
+    "concept": "Rate",
+    "owners": [
+      "M09",
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "费率单位、频率、精度及版本",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "RULE"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C043",
+    "reference_section": 3,
+    "concept": "Calculation Value",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "计算参数、金额/数量和适用条件",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "RULE"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C044",
+    "reference_section": 3,
+    "concept": "Fast Formula",
+    "owners": [
+      "M10"
+    ],
+    "decision": "语义替代",
+    "target": "受控计算规则/表达式及版本，不要求使用Oracle语言",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "RULE"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C045",
+    "reference_section": 3,
+    "concept": "UDT",
+    "owners": [
+      "X02",
+      "M10"
+    ],
+    "decision": "语义替代",
+    "target": "有主责、版本和适用条件的规则查表数据",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "RULE"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C046",
+    "reference_section": 3,
+    "concept": "Element Entry",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "来源唯一的项目输入及期间/实例",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "INPUT"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C047",
+    "reference_section": 3,
+    "concept": "Assignment payroll input",
+    "owners": [
+      "M09",
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "任职授予和工资采用分开，含来源版本",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "SOURCE",
+          "INPUT"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C048",
+    "reference_section": 3,
+    "concept": "Run Result",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "冻结输入下的候选及确认结果版本",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "RUN"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C049",
+    "reference_section": 3,
+    "concept": "Balance Definition",
+    "owners": [
+      "M10",
+      "M11",
+      "M12"
+    ],
+    "decision": "采纳",
+    "target": "工资、税务、参缴各自指标定义和记账时点",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "BD",
+          "BAL",
+          "TAX"
+        ]
+      },
+      {
+        "diagram": "m10",
+        "nodes": [
+          "BD",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C050",
+    "reference_section": 3,
+    "concept": "Balance Dimension / Group",
+    "owners": [
+      "M10",
+      "M11"
+    ],
+    "decision": "采纳",
+    "target": "人员、主体、年度、所得/指标等维度及分组",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "BD",
+          "BAL",
+          "TAX"
+        ]
+      },
+      {
+        "diagram": "m10",
+        "nodes": [
+          "BD",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C051",
+    "reference_section": 3,
+    "concept": "Retro Event / Event Group",
+    "owners": [
+      "M10",
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "M10 PayrollImpactPolicy版本化选择/归组来源及规则变更，运行形成影响事项和RetroCase；X01仅提供信封协议",
+    "diagram_refs": [
+      {
+        "diagram": "m10",
+        "nodes": [
+          "IMPACT",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C052",
+    "reference_section": 3,
+    "concept": "Retro Action",
+    "owners": [
+      "M10",
+      "M11",
+      "M12"
+    ],
+    "decision": "采纳",
+    "target": "按ResultSeriesHead当前完整版本求差，串行推进后继；税费各域独立更正，不按原始结果重复补差",
+    "diagram_refs": [
+      {
+        "diagram": "m10",
+        "nodes": [
+          "HEAD",
+          "D",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C053",
+    "reference_section": 3,
+    "concept": "Payment Method",
+    "owners": [
+      "M14"
+    ],
+    "decision": "采纳",
+    "target": "银行、现金等方式及不同必需条件",
+    "diagram_refs": [
+      {
+        "diagram": "m14",
+        "nodes": [
+          "U",
+          "I"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C054",
+    "reference_section": 3,
+    "concept": "Payslip",
+    "owners": [
+      "M10",
+      "M20"
+    ],
+    "decision": "采纳",
+    "target": "M10 PayslipPublication独立发布/定时/撤回/替代，M20受控查询；封存、通知、支付不代替发布，读取结合X03当前权限",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "SLIP"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C055",
+    "reference_section": 3,
+    "concept": "Costing",
+    "owners": [
+      "M15"
+    ],
+    "decision": "采纳",
+    "target": "确认成本来源、归属、分摊和差额",
+    "diagram_refs": [
+      {
+        "diagram": "m15",
+        "nodes": [
+          "C",
+          "A",
+          "M",
+          "J"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C056",
+    "reference_section": 3,
+    "concept": "Accounting Structure",
+    "owners": [
+      "M15"
+    ],
+    "decision": "语义替代",
+    "target": "科目/成本中心/项目映射及会计期间",
+    "diagram_refs": [
+      {
+        "diagram": "m15",
+        "nodes": [
+          "C",
+          "A",
+          "M",
+          "J"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C057",
+    "reference_section": 3,
+    "concept": "Payroll Flow definition / execution",
+    "owners": [
+      "X04",
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "任务定义与一次运行实例分开",
+    "diagram_refs": [
+      {
+        "diagram": "m10",
+        "nodes": [
+          "FLOWDEF",
+          "FLOW",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C058",
+    "reference_section": 3,
+    "concept": "Compensation",
+    "owners": [
+      "M09"
+    ],
+    "decision": "采纳",
+    "target": "薪酬体系和授予，不等于已发工资",
+    "diagram_refs": [
+      {
+        "diagram": "m09",
+        "nodes": [
+          "P",
+          "A",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C059",
+    "reference_section": 3,
+    "concept": "Benefits",
+    "owners": [
+      "M13"
+    ],
+    "decision": "纳入目标设计",
+    "target": "计划、资格、登记和费用；独立福利领域职责",
+    "diagram_refs": [
+      {
+        "diagram": "m13",
+        "nodes": [
+          "L",
+          "E",
+          "N",
+          "CLAIM",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C060",
+    "reference_section": 3,
+    "concept": "Payroll",
+    "owners": [
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "准备、计算、累计、结果、追溯及下游采用",
+    "diagram_refs": [
+      {
+        "diagram": "c02-payroll-concepts",
+        "nodes": [
+          "CTX",
+          "INPUT",
+          "RUN",
+          "BAL"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C061",
+    "reference_section": 3,
+    "concept": "Social insurance / Housing fund",
+    "owners": [
+      "M12"
+    ],
+    "decision": "语义替代",
+    "target": "中国独立参缴义务、申报、扣收和实缴",
+    "diagram_refs": [
+      {
+        "diagram": "m12",
+        "nodes": [
+          "P",
+          "O",
+          "F",
+          "E",
+          "S"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C062",
+    "reference_section": 4,
+    "concept": "Work Pattern",
+    "owners": [
+      "M06"
+    ],
+    "decision": "采纳",
+    "target": "班次模式与周期",
+    "diagram_refs": [
+      {
+        "diagram": "c03-time-absence-concepts",
+        "nodes": [
+          "WP",
+          "SCH"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C063",
+    "reference_section": 4,
+    "concept": "Shift",
+    "owners": [
+      "M06"
+    ],
+    "decision": "采纳",
+    "target": "计划班段与跨午夜归属",
+    "diagram_refs": [
+      {
+        "diagram": "c03-time-absence-concepts",
+        "nodes": [
+          "WP",
+          "SCH"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C064",
+    "reference_section": 4,
+    "concept": "Schedule",
+    "owners": [
+      "M06"
+    ],
+    "decision": "采纳",
+    "target": "ScheduleBook按任职统一守卫跨日发布/替换，发布版本固定实际时段和来源",
+    "diagram_refs": [
+      {
+        "diagram": "m06",
+        "nodes": [
+          "BOOK",
+          "S"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C065",
+    "reference_section": 4,
+    "concept": "Generation Profile",
+    "owners": [
+      "M06"
+    ],
+    "decision": "纳入目标设计",
+    "target": "排班生成条件与约束；生成不等于发布",
+    "diagram_refs": [
+      {
+        "diagram": "m06",
+        "nodes": [
+          "GEN",
+          "S"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C066",
+    "reference_section": 4,
+    "concept": "Time Category",
+    "owners": [
+      "M07"
+    ],
+    "decision": "采纳",
+    "target": "M07 TimePolicy内可复用分类条件/单位与运行分类值分开，记录采用版本",
+    "diagram_refs": [
+      {
+        "diagram": "m07",
+        "nodes": [
+          "CAT",
+          "T"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C067",
+    "reference_section": 4,
+    "concept": "Consumer Set",
+    "owners": [
+      "M07",
+      "X05"
+    ],
+    "decision": "语义替代",
+    "target": "M07消费者选择及核准/释放规则定义与发布实例分开；消费者独占采用",
+    "diagram_refs": [
+      {
+        "diagram": "m07",
+        "nodes": [
+          "CONS",
+          "R",
+          "Y"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C068",
+    "reference_section": 4,
+    "concept": "Time Profile",
+    "owners": [
+      "M07",
+      "X02"
+    ],
+    "decision": "语义替代",
+    "target": "工时录入/校验规则的日期有效适用",
+    "diagram_refs": [
+      {
+        "diagram": "m07",
+        "nodes": [
+          "PROF",
+          "D",
+          "T"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C069",
+    "reference_section": 4,
+    "concept": "Time Layout",
+    "owners": [
+      "M07",
+      "M20"
+    ],
+    "decision": "语义替代",
+    "target": "角色任务的录入展示，不承载另一套事实",
+    "diagram_refs": [
+      {
+        "diagram": "m07",
+        "nodes": [
+          "PROF",
+          "D",
+          "T"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C070",
+    "reference_section": 4,
+    "concept": "Time Rule",
+    "owners": [
+      "M07"
+    ],
+    "decision": "采纳",
+    "target": "验证、分类和转换规则及版本",
+    "diagram_refs": [
+      {
+        "diagram": "m07",
+        "nodes": [
+          "PROF",
+          "D",
+          "T"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C071",
+    "reference_section": 4,
+    "concept": "Device",
+    "owners": [
+      "M07",
+      "X05"
+    ],
+    "decision": "采纳",
+    "target": "时间事件来源、设备身份、序列和重复校验",
+    "diagram_refs": [
+      {
+        "diagram": "c03-time-absence-concepts",
+        "nodes": [
+          "EVT",
+          "TR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C072",
+    "reference_section": 4,
+    "concept": "Actual Time / Time Record",
+    "owners": [
+      "M07"
+    ],
+    "decision": "采纳",
+    "target": "原始时间与核对结果分别保留",
+    "diagram_refs": [
+      {
+        "diagram": "c03-time-absence-concepts",
+        "nodes": [
+          "EVT",
+          "TR"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C073",
+    "reference_section": 4,
+    "concept": "Time validation / confirmation",
+    "owners": [
+      "M07",
+      "X04"
+    ],
+    "decision": "语义替代",
+    "target": "工时确认责任、证据及DecisionRecord；所需核验/审批由WorkTime政策确定",
+    "diagram_refs": [
+      {
+        "diagram": "m07",
+        "nodes": [
+          "D"
+        ]
+      },
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "REQ",
+          "CMD"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C074",
+    "reference_section": 4,
+    "concept": "Time distribution",
+    "owners": [
+      "M07",
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "来源版本和唯一输入路径；月结不重复加金额",
+    "diagram_refs": [
+      {
+        "diagram": "c03-time-absence-concepts",
+        "nodes": [
+          "TR",
+          "CLOSE",
+          "ADOPT"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C075",
+    "reference_section": 4,
+    "concept": "Absence Type",
+    "owners": [
+      "M08"
+    ],
+    "decision": "采纳",
+    "target": "AbsenceCatalog中假种定义及版本，独立引用计划与允许原因",
+    "diagram_refs": [
+      {
+        "diagram": "m08",
+        "nodes": [
+          "CAT",
+          "P",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C076",
+    "reference_section": 4,
+    "concept": "Absence Reason",
+    "owners": [
+      "M08"
+    ],
+    "decision": "采纳",
+    "target": "可复用原因定义与请求原因采用分开，多个假种显式关联",
+    "diagram_refs": [
+      {
+        "diagram": "m08",
+        "nodes": [
+          "CAT",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C077",
+    "reference_section": 4,
+    "concept": "Absence Plan",
+    "owners": [
+      "M08"
+    ],
+    "decision": "采纳",
+    "target": "计划定义余额型、资格待遇或无权益模式；个人参与与资格采用独立",
+    "diagram_refs": [
+      {
+        "diagram": "m08",
+        "nodes": [
+          "P",
+          "ENR",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C078",
+    "reference_section": 4,
+    "concept": "Absence Category",
+    "owners": [
+      "M08"
+    ],
+    "decision": "采纳",
+    "target": "目录中的假种分类，不替代计划规则或个人评估",
+    "diagram_refs": [
+      {
+        "diagram": "m08",
+        "nodes": [
+          "CAT",
+          "P"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C079",
+    "reference_section": 4,
+    "concept": "Eligibility",
+    "owners": [
+      "M08",
+      "M12",
+      "M13"
+    ],
+    "decision": "采纳",
+    "target": "领域各自拥有资格结果，X02提供适用政策合同",
+    "diagram_refs": [
+      {
+        "diagram": "c03-time-absence-concepts",
+        "nodes": [
+          "AP",
+          "REQ"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C080",
+    "reference_section": 4,
+    "concept": "Entitlement / Balance",
+    "owners": [
+      "M08"
+    ],
+    "decision": "采纳",
+    "target": "授予批次/有效期、消费分配、原路退回和到期/结转可追溯",
+    "diagram_refs": [
+      {
+        "diagram": "m08",
+        "nodes": [
+          "B",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C081",
+    "reference_section": 4,
+    "concept": "Absence Request / Event",
+    "owners": [
+      "M08"
+    ],
+    "decision": "采纳",
+    "target": "请求与确认缺勤分别成立，所有覆盖任职/计划由共同时间线守卫",
+    "diagram_refs": [
+      {
+        "diagram": "m08",
+        "nodes": [
+          "R",
+          "TL"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C082",
+    "reference_section": 4,
+    "concept": "Cancellation / Correction",
+    "owners": [
+      "M08",
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "原消费分配反向及已到期保护；已采用工资经后继差额，不改历史",
+    "diagram_refs": [
+      {
+        "diagram": "m08",
+        "nodes": [
+          "B",
+          "C",
+          "TL",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C083",
+    "reference_section": 5,
+    "concept": "Candidate",
+    "owners": [
+      "M05"
+    ],
+    "decision": "纳入目标设计",
+    "target": "候选身份与Person显式关联",
+    "diagram_refs": [
+      {
+        "diagram": "m05",
+        "nodes": [
+          "C",
+          "PER"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C084",
+    "reference_section": 5,
+    "concept": "Application",
+    "owners": [
+      "M05"
+    ],
+    "decision": "纳入目标设计",
+    "target": "同一候选可有多个需求申请",
+    "diagram_refs": [
+      {
+        "diagram": "m05",
+        "nodes": [
+          "C",
+          "A",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C085",
+    "reference_section": 5,
+    "concept": "Recruiting Process Configuration",
+    "owners": [
+      "M05"
+    ],
+    "decision": "纳入目标设计",
+    "target": "招聘阶段/评价过程模板与实际申请状态分开",
+    "diagram_refs": [
+      {
+        "diagram": "m05",
+        "nodes": [
+          "PROC",
+          "A"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C086",
+    "reference_section": 5,
+    "concept": "Offer",
+    "owners": [
+      "M05"
+    ],
+    "decision": "纳入目标设计",
+    "target": "条款版本、接受/撤回及入职交接",
+    "diagram_refs": [
+      {
+        "diagram": "m05",
+        "nodes": [
+          "A",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C087",
+    "reference_section": 5,
+    "concept": "Hire conversion",
+    "owners": [
+      "M05",
+      "M01",
+      "M04"
+    ],
+    "decision": "采纳并扩展",
+    "target": "身份核对后建立用工；预留转化不双占",
+    "diagram_refs": [
+      {
+        "diagram": "m05",
+        "nodes": [
+          "H",
+          "PER",
+          "STAFF",
+          "CAP"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C088",
+    "reference_section": 5,
+    "concept": "Goal Library",
+    "owners": [
+      "M17"
+    ],
+    "decision": "纳入目标设计",
+    "target": "绩效目标定义与个人目标/进度分开；发展目标库归M18",
+    "diagram_refs": [
+      {
+        "diagram": "m17",
+        "nodes": [
+          "G",
+          "GA"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C089",
+    "reference_section": 5,
+    "concept": "Goal Plan",
+    "owners": [
+      "M17"
+    ],
+    "decision": "纳入目标设计",
+    "target": "版本化GoalPlan配置和个人GoalAssignment实例；个人目标供绩效显式采用",
+    "diagram_refs": [
+      {
+        "diagram": "m17",
+        "nodes": [
+          "G",
+          "GA",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C090",
+    "reference_section": 5,
+    "concept": "Review Period",
+    "owners": [
+      "M17"
+    ],
+    "decision": "采纳并扩展",
+    "target": "考核周期及任职分段",
+    "diagram_refs": [
+      {
+        "diagram": "m17",
+        "nodes": [
+          "T",
+          "H",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C091",
+    "reference_section": 5,
+    "concept": "Performance Template",
+    "owners": [
+      "M17"
+    ],
+    "decision": "纳入目标设计",
+    "target": "版本化模板/章节、资格及参与规则，引用流程定义和文档类型",
+    "diagram_refs": [
+      {
+        "diagram": "m17",
+        "nodes": [
+          "T",
+          "PROC",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C092",
+    "reference_section": 5,
+    "concept": "Performance Document",
+    "owners": [
+      "M17"
+    ],
+    "decision": "采纳并扩展",
+    "target": "个人周期文档，按多任职期间分配评价责任",
+    "diagram_refs": [
+      {
+        "diagram": "m17",
+        "nodes": [
+          "D",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C093",
+    "reference_section": 5,
+    "concept": "Process Flow",
+    "owners": [
+      "M17",
+      "X04"
+    ],
+    "decision": "语义替代",
+    "target": "M17流程定义与文档阶段实例；X04只提供分派运行，不拥有决定和发布",
+    "diagram_refs": [
+      {
+        "diagram": "m17",
+        "nodes": [
+          "PROC",
+          "T",
+          "D",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C094",
+    "reference_section": 5,
+    "concept": "Feedback / Appeal",
+    "owners": [
+      "M17"
+    ],
+    "decision": "采纳",
+    "target": "反馈、申诉、依据及已发布结果更正",
+    "diagram_refs": [
+      {
+        "diagram": "m17",
+        "nodes": [
+          "F",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C095",
+    "reference_section": 5,
+    "concept": "Content Type",
+    "owners": [
+      "M16"
+    ],
+    "decision": "采纳",
+    "target": "人才内容类型定义",
+    "diagram_refs": [
+      {
+        "diagram": "m16",
+        "nodes": [
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C096",
+    "reference_section": 5,
+    "concept": "Content Item",
+    "owners": [
+      "M16"
+    ],
+    "decision": "采纳",
+    "target": "技能/资格项目身份及语义版本",
+    "diagram_refs": [
+      {
+        "diagram": "m16",
+        "nodes": [
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C097",
+    "reference_section": 5,
+    "concept": "Profile Type",
+    "owners": [
+      "M16"
+    ],
+    "decision": "采纳",
+    "target": "版本化ProfileType及SectionDefinition由M16发布；人员或岗位档案固定采用类型及章节版本",
+    "diagram_refs": [
+      {
+        "diagram": "m16",
+        "nodes": [
+          "PT",
+          "P",
+          "J",
+          "C"
+        ]
+      },
+      {
+        "diagram": "c04-talent-concepts",
+        "nodes": [
+          "TYPE",
+          "PP",
+          "JP"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C098",
+    "reference_section": 5,
+    "concept": "Profile Section",
+    "owners": [
+      "M16"
+    ],
+    "decision": "采纳",
+    "target": "章节结构、字段与读写权限",
+    "diagram_refs": [
+      {
+        "diagram": "m16",
+        "nodes": [
+          "P",
+          "J",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C099",
+    "reference_section": 5,
+    "concept": "Rating Model",
+    "owners": [
+      "M16"
+    ],
+    "decision": "采纳",
+    "target": "量表等级定义，旧结果保留原尺度",
+    "diagram_refs": [
+      {
+        "diagram": "m16",
+        "nodes": [
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C100",
+    "reference_section": 5,
+    "concept": "Questionnaire",
+    "owners": [
+      "M16"
+    ],
+    "decision": "纳入目标设计",
+    "target": "模板版本与个人回答分开",
+    "diagram_refs": [
+      {
+        "diagram": "m16",
+        "nodes": [
+          "Q",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C101",
+    "reference_section": 5,
+    "concept": "Catalog Item",
+    "owners": [
+      "M18"
+    ],
+    "decision": "纳入目标设计",
+    "target": "学习内容目录身份",
+    "diagram_refs": [
+      {
+        "diagram": "m18",
+        "nodes": [
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C102",
+    "reference_section": 5,
+    "concept": "Course",
+    "owners": [
+      "M18"
+    ],
+    "decision": "纳入目标设计",
+    "target": "课程定义与版本",
+    "diagram_refs": [
+      {
+        "diagram": "m18",
+        "nodes": [
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C103",
+    "reference_section": 5,
+    "concept": "Learning Event / Offering",
+    "owners": [
+      "M18"
+    ],
+    "decision": "纳入目标设计",
+    "target": "开班容量/座位/候补由Offering共同守卫；指派要求与实际报名分开",
+    "diagram_refs": [
+      {
+        "diagram": "m18",
+        "nodes": [
+          "O",
+          "LA",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C104",
+    "reference_section": 5,
+    "concept": "Learning Path",
+    "owners": [
+      "M18"
+    ],
+    "decision": "纳入目标设计",
+    "target": "学习路径前置条件、个人发展目标与行动；仅学习行动形成学习要求",
+    "diagram_refs": [
+      {
+        "diagram": "m18",
+        "nodes": [
+          "PATH",
+          "DG",
+          "P",
+          "LA",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C105",
+    "reference_section": 5,
+    "concept": "Audience",
+    "owners": [
+      "M18",
+      "X03"
+    ],
+    "decision": "纳入目标设计",
+    "target": "受众适用与可见权限分开",
+    "diagram_refs": [
+      {
+        "diagram": "m18",
+        "nodes": [
+          "AUD",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C106",
+    "reference_section": 5,
+    "concept": "Learning Record",
+    "owners": [
+      "M18"
+    ],
+    "decision": "纳入目标设计",
+    "target": "实际学习/完成证据，由学习证据形成确认记录",
+    "diagram_refs": [
+      {
+        "diagram": "m18",
+        "nodes": [
+          "R",
+          "Q"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C107",
+    "reference_section": 5,
+    "concept": "Talent Review dimension / template",
+    "owners": [
+      "M19"
+    ],
+    "decision": "纳入目标设计",
+    "target": "盘点评价维度、模板与本次结论分开",
+    "diagram_refs": [
+      {
+        "diagram": "m19",
+        "nodes": [
+          "CFG",
+          "R"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C108",
+    "reference_section": 5,
+    "concept": "Talent Pool",
+    "owners": [
+      "M19"
+    ],
+    "decision": "纳入目标设计",
+    "target": "成员资格、入退池及历史",
+    "diagram_refs": [
+      {
+        "diagram": "m19",
+        "nodes": [
+          "T"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C109",
+    "reference_section": 5,
+    "concept": "Succession Plan",
+    "owners": [
+      "M19"
+    ],
+    "decision": "纳入目标设计",
+    "target": "Job/Position/Incumbent三种计划主题；直接或人才池/招聘候选，不占编制",
+    "diagram_refs": [
+      {
+        "diagram": "m19",
+        "nodes": [
+          "P",
+          "T",
+          "S",
+          "H"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C110",
+    "reference_section": 5,
+    "concept": "Readiness",
+    "owners": [
+      "M19"
+    ],
+    "decision": "纳入目标设计",
+    "target": "准备度及依据，不等于自动任命",
+    "diagram_refs": [
+      {
+        "diagram": "m19",
+        "nodes": [
+          "S",
+          "A"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C111",
+    "reference_section": 6,
+    "concept": "Stable logical object / dated slices",
+    "owners": [
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "逻辑身份与日期切片分开",
+    "diagram_refs": [
+      {
+        "diagram": "e04-effective-adoption",
+        "nodes": [
+          "O",
+          "D1",
+          "D2"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C112",
+    "reference_section": 6,
+    "concept": "Effective Date query",
+    "owners": [
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "业务日期选择对应有效版本",
+    "diagram_refs": [
+      {
+        "diagram": "e04-effective-adoption",
+        "nodes": [
+          "O",
+          "D1",
+          "D2"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C113",
+    "reference_section": 6,
+    "concept": "Update",
+    "owners": [
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "新增有效业务切片，不覆盖历史",
+    "diagram_refs": [
+      {
+        "diagram": "e04-effective-adoption",
+        "nodes": [
+          "O",
+          "D1",
+          "D2"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C114",
+    "reference_section": 6,
+    "concept": "Correction",
+    "owners": [
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "同日更正保留审计修订和旧采用",
+    "diagram_refs": [
+      {
+        "diagram": "e04-effective-adoption",
+        "nodes": [
+          "R1",
+          "R2",
+          "AU"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C115",
+    "reference_section": 6,
+    "concept": "End Date",
+    "owners": [
+      "X01",
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "终结有效范围，非删除身份",
+    "diagram_refs": [
+      {
+        "diagram": "x01",
+        "nodes": [
+          "K",
+          "V"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C116",
+    "reference_section": 6,
+    "concept": "Future slice deletion",
+    "owners": [
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "明确允许范围、引用检查及历史保护",
+    "diagram_refs": [
+      {
+        "diagram": "x01",
+        "nodes": [
+          "K",
+          "V"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C117",
+    "reference_section": 6,
+    "concept": "Date interval overlap",
+    "owners": [
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "同时间轴/作用域区间不可冲突",
+    "diagram_refs": [
+      {
+        "diagram": "x01",
+        "nodes": [
+          "K",
+          "V"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C118",
+    "reference_section": 6,
+    "concept": "Same-day effective sequence",
+    "owners": [
+      "M04",
+      "X01"
+    ],
+    "decision": "明确不采纳",
+    "target": "选择日级任职最终状态；真实动作另记发生依据，不支持日内任职状态查询/计量，审计修订非等价替代",
+    "diagram_refs": [
+      {
+        "diagram": "e04-effective-adoption",
+        "nodes": [
+          "D1",
+          "ACT",
+          "AU",
+          "N"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C119",
+    "reference_section": 6,
+    "concept": "Parent-child date alignment",
+    "owners": [
+      "X01",
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "主子对象适用日期和动作分别校验",
+    "diagram_refs": [
+      {
+        "diagram": "x01",
+        "nodes": [
+          "K",
+          "V"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C120",
+    "reference_section": 6,
+    "concept": "Audit timestamp / revision",
+    "owners": [
+      "X01"
+    ],
+    "decision": "采纳",
+    "target": "系统记录顺序与真实动作发生依据分开；不能用反序补录重建业务生效先后",
+    "diagram_refs": [
+      {
+        "diagram": "e04-effective-adoption",
+        "nodes": [
+          "R1",
+          "R2",
+          "AU"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C121",
+    "reference_section": 6,
+    "concept": "Adopted history / result version",
+    "owners": [
+      "X01",
+      "M10"
+    ],
+    "decision": "采纳",
+    "target": "已采用快照与新事实、计算结果分别版本化",
+    "diagram_refs": [
+      {
+        "diagram": "e04-effective-adoption",
+        "nodes": [
+          "A",
+          "OLD",
+          "NEW"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C122",
+    "reference_section": 6,
+    "concept": "Concurrent editing / stale authorization",
+    "owners": [
+      "X01",
+      "X03",
+      "X04"
+    ],
+    "decision": "语义替代",
+    "target": "expectedRevision与确切版本核准；失效决定重新评估，最终执行重核当前权限",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "TARGET",
+          "REQ",
+          "CMD"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C123",
+    "reference_section": 7,
+    "concept": "Job Role / functional permission",
+    "owners": [
+      "X03"
+    ],
+    "decision": "语义替代",
+    "target": "RoleDefinition职责配置引用领域动作；授予按完整角色/范围/字段/用途单元匹配",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "ROLE",
+          "GRANT",
+          "ALLOW"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C124",
+    "reference_section": 7,
+    "concept": "HCM Data Role",
+    "owners": [
+      "X03"
+    ],
+    "decision": "语义替代",
+    "target": "RoleGrant完整绑定角色、数据范围、字段、用途及期限；禁止跨授予拼接放大",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "ROLE",
+          "SCOPE",
+          "GRANT",
+          "ALLOW"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C125",
+    "reference_section": 7,
+    "concept": "Security Profile",
+    "owners": [
+      "X03"
+    ],
+    "decision": "语义替代",
+    "target": "分对象层次的范围/字段策略与授予关联，当前权限不由历史业务日期恢复",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "SCOPE",
+          "GRANT",
+          "TARGET"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C126",
+    "reference_section": 7,
+    "concept": "Person vs relationship access",
+    "owners": [
+      "X03",
+      "M04"
+    ],
+    "decision": "采纳",
+    "target": "能见Person不等于能见全部关系、任职及工资",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "SCOPE",
+          "TARGET"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C127",
+    "reference_section": 7,
+    "concept": "Business applicability",
+    "owners": [
+      "X02"
+    ],
+    "decision": "采纳",
+    "target": "对象、地区、日期和用途允许范围",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "CTX",
+          "APP"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C128",
+    "reference_section": 7,
+    "concept": "Default selection",
+    "owners": [
+      "X02"
+    ],
+    "decision": "采纳",
+    "target": "DefaultRule配置生成带版本依据的建议，执行时重新核验后由消费者显式采用",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "DR",
+          "DEFAULT",
+          "CMD",
+          "ADOPT"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C129",
+    "reference_section": 7,
+    "concept": "Execution permission / approval",
+    "owners": [
+      "X03",
+      "X04"
+    ],
+    "decision": "语义替代",
+    "target": "业务域拥有DecisionRequirement/DecisionRecord；核准、业务生效、访问授权及外部执行许可分别定义",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "REQ",
+          "CMD",
+          "TASK"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C130",
+    "reference_section": 7,
+    "concept": "OAuth / authentication",
+    "owners": [
+      "X03",
+      "X05"
+    ],
+    "decision": "语义替代",
+    "target": "认证技术身份不替代业务权限，凭据不得进业务事实",
+    "diagram_refs": [
+      {
+        "diagram": "c05-reference-access-concepts",
+        "nodes": [
+          "PERSON",
+          "USER"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "C131",
+    "reference_section": 7,
+    "concept": "AvailableFlag / CSV / execution_mode",
+    "owners": [
+      "X05"
+    ],
+    "decision": "边界区分",
+    "target": "FSCR执行目录元数据不直接成为China HCM业务能力；适配能力和权限仍分开",
+    "diagram_refs": [
+      {
+        "diagram": "x05",
+        "nodes": [
+          "M",
+          "I",
+          "A"
+        ]
+      }
+    ]
+  }
+]

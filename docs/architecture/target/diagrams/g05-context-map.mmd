@@ -1,0 +1,52 @@
+---
+title: G05 限界上下文地图 · 模块化单体目标
+---
+flowchart TB
+  subgraph foundation["上游人员与资源语言"]
+    PER["Personnel M01"]
+    ORG["Organization M02"]
+    STAFF["Staffing M03 M04"]
+    HIRE["Recruiting M05"]
+  end
+  subgraph business["业务上下文 · 各自聚合和公开端口"]
+    TIME["WorkTime M06 M07 M08"]
+    COMP["Compensation M09"]
+    PAY["Payroll M10"]
+    TAX["Tax M11"]
+    CONTR["Contribution M12"]
+    BEN["Benefits M13"]
+    CASH["Payment M14"]
+    COST["Cost M15"]
+    TAL["Talent M16 M17 M18 M19"]
+    SVC["Service M20"]
+  end
+  SUP["支持上下文：X02 Configuration / X03 Access / X06 Analytics"]
+  LIB["X01 小型协议库 · X04 运行设施 · X05 适配器ACL"]
+  STAFF -->|"Q身份"| PER
+  STAFF -->|"Q允许组织"| ORG
+  HIRE -->|"Q资源"| STAFF
+  HIRE -->|"C入职交接"| STAFF
+  STAFF -->|"E有效关系"| TIME
+  STAFF -->|"E有效关系"| CONTR
+  BEN -->|"Q资格来源"| STAFF
+  TAL -->|"Q岗位身份"| STAFF
+  TAL -->|"E绩效发布"| COMP
+  TIME -->|"E来源发布；消费者C采用"| PAY
+  COMP -->|"E授予下发"| PAY
+  BEN -->|"E费用确认"| PAY
+  PAY -->|"C代扣占用与消费"| CONTR
+  PAY -->|"Q评估 / C承诺及确认"| TAX
+  TAX -->|"返回评估及有效承诺"| PAY
+  CASH -->|"C共享领取取消守卫"| TAX
+  TAX -->|"C付款账户执行准入"| CASH
+  CONTR -->|"C付款账户执行准入"| CASH
+  BEN -->|"C付款账户执行准入"| CASH
+  PAY -->|"E唯一应付变动"| CASH
+  CASH -->|"Q账户身份"| PER
+  PAY -->|"E工资成本"| COST
+  CONTR -->|"E单位承担差额"| COST
+  BEN -->|"E福利成本"| COST
+  CASH -->|"E现金及非现金结算核对"| COST
+  SVC -->|"Q受控发布视图"| PAY
+  SUP -.->|"公开配置 鉴权及投影端口"| business
+  LIB -.->|"协议复用；禁止集中业务事实"| business

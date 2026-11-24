@@ -1,0 +1,178 @@
+{
+  "date": "2026-11-13",
+  "chnhcm_base_commit": "3afa295e2e65275b456e0a346a23ffec4600dfc1",
+  "cubebox": {
+    "path": "/home/jason/Projects/CubeBox-wt-dev-d",
+    "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+    "branch_e_commit": "70af0b30943b0ef42ec81163be9ea443734bf8f4",
+    "three_data_files_equal_across_d_e": true,
+    "archive": "docs/reference/sources/cubebox-geography-2deaf927.zip",
+    "archive_sha256": "8ffa0c5f633d6f5706dcff2bef7d86bf3af44cdbb7bcd76e638e5a2733553ad7",
+    "members": [
+      {
+        "path": "apps/prototype/src/data/geography/baseline.json",
+        "sha256": "85f8ff5e3c011a03724df7dd1e7dd3ab322a800cc66e696cfea68763c53b0fe4"
+      },
+      {
+        "path": "apps/prototype/src/data/geography/official-divisions.json",
+        "sha256": "db3dcdec71a7833291a7e63370f14aa6cf49b0a7facc542e1290cc54b3c7e0de"
+      },
+      {
+        "path": "apps/prototype/src/data/geography/supplements.json",
+        "sha256": "29ea23f14b4f93c0e2f53f1d6cc5456fda34e453bc9d9eb41747f5c46575ead9"
+      },
+      {
+        "path": "apps/prototype/src/data/geography/NOTICE.txt",
+        "sha256": "3b83dcf8cd6c9857c7a52b602ebdead7bd14490dd6e4a9dad37973d8ea903df3"
+      },
+      {
+        "path": "apps/prototype/src/data/geography/ODOO-LICENSE.txt",
+        "sha256": "abc09dad5f84a76e1b0279237053cae16c03228ab27d8d467677054c2bd17eeb"
+      },
+      {
+        "path": "docs/reference/geography-source.json",
+        "sha256": "fff3d8e49d0f955eff89bec0b93f59019b763c7485ffbafd1fbd6ddc9b26a0d2"
+      },
+      {
+        "path": "docs/reference/geography-206-official-sources.json",
+        "sha256": "c7df6f6874b1449ee97861e037619ddb977ffb0880256c073a33f9ad30d02dbe"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/202-geography-configuration.md",
+        "sha256": "a5583f31aac3f5c906ba9a0c3b6132c86bb87dd81839d0526f9e2b1a71a126ce"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/206-configuration-data-migration.md",
+        "sha256": "055a81b47926a277444f345e6f44fabe88dca22061e9cf98581f86beaee24d6a"
+      },
+      {
+        "path": "docs/dev-plans/ui-ux/207-geography-directories-and-address-selection.md",
+        "sha256": "ff1bc5b94c5627c049b4db0becf89d88926d37355214c9549bc9702a84929c28"
+      },
+      {
+        "path": "apps/prototype/src/domain/geography.ts",
+        "sha256": "ab6f6112cf40d53511a02f64fdcc36663b5a08a9fdc02e370fa6d429a2b4a1e5"
+      },
+      {
+        "path": "apps/prototype/src/domain/geography-official.ts",
+        "sha256": "52e68a50ab0474d9d893a505bd0f6299a3bffa403f9fd479983e4af7864a0566"
+      },
+      {
+        "path": "scripts/sync-odoo-geography.py",
+        "sha256": "5b2c0ed5002f706680891d46ae5225012a8e3c803c85d3b63493c7185514ac45"
+      },
+      {
+        "path": "scripts/migrate-official-geography.py",
+        "sha256": "4f1b044f6eede30b96ee5b369ed35611c9d43da31caf2719cefb130ed7112605"
+      },
+      {
+        "path": "apps/prototype/src/operations/geography-page.tsx",
+        "sha256": "817109c4f3257ccb82f05109af228523be538258c9162e5054f9648cb47115f4"
+      },
+      {
+        "path": "apps/prototype/src/operations/geography-list.tsx",
+        "sha256": "160edb9fe9e672335af3e03c6ee6f30391e89e75998ad486cf14432ff160e570"
+      },
+      {
+        "path": "apps/prototype/src/operations/geography-detail.tsx",
+        "sha256": "b0a31461f0ec9329181132a45f136b80084ae09083cd4d8282ca3cc3685413ad"
+      },
+      {
+        "path": "apps/prototype/src/domain/geography-directories.test.ts",
+        "sha256": "b02836784083a3afe683df37cd25f6e02709b4a7ce5f377cb37ca2c7efab5be5"
+      },
+      {
+        "path": "apps/prototype/src/domain/geography-versions.test.ts",
+        "sha256": "427881d7c1ccaf9fb24fef343d8f440fc90c9da8ea97da87e3a957b8e7e58079"
+      },
+      {
+        "path": "apps/prototype/scripts/flows-geography-directories.mjs",
+        "sha256": "b0f3ec6a17bd79af2da70a6481a21bab713d59858beb2d3fd01cfafb217438fa"
+      }
+    ],
+    "new_asset_ids": [
+      "ASSET-0212",
+      "ASSET-0213",
+      "ASSET-0214",
+      "ASSET-0215",
+      "ASSET-0216",
+      "ASSET-0217",
+      "ASSET-0218",
+      "ASSET-0219",
+      "ASSET-0220",
+      "ASSET-0221",
+      "ASSET-0222",
+      "ASSET-0223",
+      "ASSET-0224",
+      "ASSET-0225",
+      "ASSET-0226",
+      "ASSET-0227",
+      "ASSET-0228",
+      "ASSET-0229",
+      "ASSET-0230",
+      "ASSET-0231"
+    ]
+  },
+  "baseline": {
+    "version": "odoo-20.0+e-20260924",
+    "snapshotId": "190d9ebb5f5b2c28dc57983435a59b575f2270b471565b36273a2f3b94162e11",
+    "kind_counts": {
+      "state": 2130,
+      "country": 251,
+      "group": 8,
+      "city": 3247
+    },
+    "scope_counts": {
+      "CN": {
+        "state": 34,
+        "city": 2850
+      },
+      "HK": {
+        "state": 3,
+        "city": 18
+      },
+      "MO": {
+        "city": 8
+      },
+      "TW": {
+        "state": 22,
+        "city": 371
+      }
+    }
+  },
+  "official": {
+    "version": "official-geography-206-v1",
+    "defaultEffectiveDate": "1900-01-01",
+    "total_records": 3623,
+    "scope_levels": {
+      "CN": {
+        "province": 31,
+        "county": 2845,
+        "prefecture": 333
+      },
+      "HK": {
+        "district": 18,
+        "region": 3
+      },
+      "MO": {},
+      "TW": {
+        "county-city": 22,
+        "township": 368
+      }
+    },
+    "mapping_total": 3306,
+    "mapped": 2892,
+    "unmapped": 414,
+    "mainland_excluded_crossreferences": [
+      "mca-2024:710000",
+      "mca-2025:810000",
+      "mca-2025:820000"
+    ]
+  },
+  "limits": [
+    "原型来源通过不等于CHNHCM实现或验证",
+    "源snapshot日期不证明逐条行政沿革日期",
+    "全球251条为Odoo国家/地区目录范围，不能称为251个主权国家或全部ISO正式分配码",
+    "原Odoo地址地点和待核对来源不直接种入M02工作地点"
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "related_documents": [
+    "CHNHCM-113",
+    "CHNHCM-111",
+    "CHNHCM-012",
+    "CHNHCM-013",
+    "CHNHCM-023"
+  ],
+  "observed_on": "2026-11-03",
+  "reference_url": "http://localhost:4180/#/org/units?search=%7B%22version%22%3A1%2C%22list%22%3A%22departments%22%2C%22facets%22%3A%5B%5D%2C%22groups%22%3A%5B%5D%2C%22groupOrder%22%3A%22%22%2C%22order%22%3A%5B%7B%22field%22%3A%22code%22%2C%22direction%22%3A%22asc%22%7D%5D%7D&department_panel=1",
+  "source_repository": "CubeBox",
+  "pinned_component_commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+  "served_build": {
+    "branch": "wt-dev-c",
+    "commit": "c8fe4eddf444fa583a2c70a86570b8a6aa89a604",
+    "sourceDirty": true,
+    "htmlSHA256": "5497f816978d025950dc7b5aa8f9cd3f0e068d386dc2ae553cc6dc412b032c58",
+    "runtimeContentSHA256": "7194678359092ba9481eb0e62786f99d85a1de03afdf58bb6a866f0b5f7f40ce",
+    "dependencyLockSHA256": "1ecd5c831a5c4f11cafc51cd0fbdc2e59ab6d160808262a9a028e3d72135fdfa"
+  },
+  "identity_boundary": "4180构建身份与组件来源分别登记；九个组件字节匹配固定提交，不声明整个sourceDirty构建等同该提交。",
+  "source_files": [
+    {
+      "path": "apps/prototype/src/operations/departments-list.tsx",
+      "sha256": "98706174c8b5a2dbb6913c25046d69fe14c65ca14d1bcbbab9866e44ca7ef5ce",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/operations/departments-page.tsx",
+      "sha256": "1d2e2057e89a2c7e1b3bb44509b1cef8c1341bbb7705214bac6fbf2ea4ff3ac0",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/operations/staffing-controls.tsx",
+      "sha256": "98f4d131f308e30430bad581d4e985da811fb4a1e62703fc65dc12c3b95b9830",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/operations/staffing-layout.css",
+      "sha256": "a01f95b1aa9f22e59cc6a3b733690afe6bb8fdcacea3e6bccdca7064a3eb6151",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/operations/departments.css",
+      "sha256": "b470cd27f905e10d94207a410356a9faca2d628c75c861de6f161160d3da4fdb",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/ui.tsx",
+      "sha256": "37720d149274ddb2ce851fa24b53f0443909e7a014181458b1368738683da96a",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/shared/components/DataGridPage.tsx",
+      "sha256": "25c55a9723696fa5e09008fb14f925bf46e07503ef6c94e5479a5a7c9132c546",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/operations/search/search-control.tsx",
+      "sha256": "9f9a131ae6705e9f5ddc459f293e45cc9f5ba45de86ac3f953909339b7599698",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "apps/prototype/src/operations/department-tree.tsx",
+      "sha256": "0c71d424ad2e3630679161491f3abb262bd28914678d4c5619685c6ee1149bc4",
+      "matches_served_source_manifest": true,
+      "matches_pinned_commit": true
+    }
+  ],
+  "observed_viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "state": "department_panel=1，桌面树栏和列表",
+      "image": "docs/verification/data/113-department-list-template-docs/desktop.png"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "原URL先打开部门抽屉；关闭后观察摘要列表",
+      "image": "docs/verification/data/113-department-list-template-docs/mobile.png"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "state": "原URL的部门抽屉",
+      "image": "docs/verification/data/113-department-list-template-docs/mobile-drawer.png"
+    }
+  ],
+  "measurements": "docs/verification/data/113-department-list-template-docs/template-measurements.json",
+  "scope": {
+    "adopt": [
+      "三段控制区",
+      "白色表格面板、细边框、顶部圆角及紧凑行",
+      "Community列菜单、显隐、列宽",
+      "摘要列技术及响应式布局经验"
+    ],
+    "retain_chnhcm": [
+      "未转译Community8.29.3源码",
+      "文本框＋查询及A/D",
+      "仅名称真实链接",
+      "原生GridPagination及20/50/100，手机可达",
+      "CHNHCM导航、#066b68及Go查询/授权"
+    ],
+    "excluded": [
+      "列拖动",
+      "列固定",
+      "自研拖动/固定适配",
+      "额外列顺序编辑器",
+      "部门树及department_panel参数",
+      "层级视图",
+      "负责人/路径/人数",
+      "多选工具条",
+      "导出",
+      "原型search JSON/useDemo/客户端全量切页"
+    ]
+  },
+  "evidence_boundary": "截图及测量复用上一轮样板分析，当前仅重新读取HTTP构建/来源清单并核对；非CHNHCM产品验收，未导入这些CubeBox运行源码。",
+  "implemented": false,
+  "verified": false
+}

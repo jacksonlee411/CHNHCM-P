@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-31",
+  "base_commit": "1798a2a8a14194701bafaaee0591a2b8dbaf18a7",
+  "inputs": {
+    ".github/workflows/ci.yml": "3a7b3c55223ff1f47a8ade2cfd2074cf41eb438ee2b68b01cf792b849e9c6f9e",
+    ".github/workflows/README.md": "0566c275f53165c4e300dd85dbd0bda7cb6a4c98a6d582e02b2602311195fbba",
+    "AGENTS.md": "af979f4ff8ab920787b9edcc1e97afd708d05d9ce31cd2882990c49c9f64b678",
+    "docs/governance/005-branches-and-documents.md": "f31a606ef4b9cf3755736b96f675d4c66bd21bed2b65460a89b67479a34d0893",
+    "docs/README.md": "f399d28f2135e90cf591f96751f4fe3650d9bc0af4908bf2ae5e9d974b2261e4"
+  },
+  "protected_files": {
+    "docs/verification/018-comprehensive-review-fixes.md": "0a8cb8a0da5894897b2615dcdf86112bed9dac58995fd1dd4e0fc1d262da8442",
+    "docs/verification/018-comprehensive-review-evidence.json": "7c5c7f60789dff808eeab6e02700f5d709451efb3e916bd067a9226466ef0538",
+    "docs/verification/018-multiround-review.md": "df84fda8ba6cddb5d9c1c21a2cd9cc222ac0d49a6764420466374d867f9a5756",
+    "docs/verification/018-multiround-evidence.json": "4a76461f918a853ba2495aa366ccc852efa272ebe0eafbb6364a313762aa7eaf"
+  },
+  "checks": {
+    "actionlint": {
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "check": {
+      "exit_code": 0,
+      "log_sha256": "2af04572749e7f05f4b94e95000f50c30d3cd41c50d8487aacfcb96532aa4d03"
+    },
+    "build": {
+      "exit_code": 0,
+      "log_sha256": "cdc54eff44ad45dad917096969f9f797e8e55310c2e21075e85f840dcb79202e"
+    },
+    "generate": {
+      "exit_code": 0,
+      "log_sha256": "6ffc49c870d7c40f820ca9b5458613f1daf7f6e64b2776dda3f9edc6a072e2df"
+    },
+    "docs": {
+      "exit_code": 0,
+      "log_sha256": "8f1be3fd0449d0240c75c4a72f935e340312a857c4e7d60bec3224ba45a676a4"
+    }
+  },
+  "remote_execution": "not_run_at_preparation_cutoff",
+  "history_protection": "matched_base_commit"
+}

@@ -1,0 +1,319 @@
+{
+  "scope": "Navigation metadata only; domain semantics remain in DDD and module contracts. QueryHistory/ConfirmTime/AssessImpact/ResolveImpact/ApplyRecovery denote interface families, not implemented APIs.",
+  "entries": [
+    {
+      "id": "K01",
+      "title": "晋升与调薪分步完成",
+      "commands": [
+        "StartJourney",
+        "ConfirmStepByEvidence",
+        "ReassessStep",
+        "CancelJourney"
+      ],
+      "objects": [
+        {
+          "module": "M20",
+          "entity": "JourneyInstance / StepInstance"
+        },
+        {
+          "module": "M04",
+          "entity": "Assignment / AssignmentRecord"
+        },
+        {
+          "module": "M09",
+          "entity": "CompensationAward"
+        },
+        {
+          "module": "M10",
+          "entity": "RetroCase"
+        }
+      ],
+      "contract_anchor": "213-跨域业务完成晋升并调薪",
+      "recovery_anchor": "62-消费者影响案与闭环",
+      "acceptance": [
+        "AC01"
+      ]
+    },
+    {
+      "id": "K02",
+      "title": "主选择资格、唯一及覆盖",
+      "commands": [
+        "Hire",
+        "SelectPrimary",
+        "EndAssignment",
+        "ActivatePrimaryPolicy"
+      ],
+      "objects": [
+        {
+          "module": "M04",
+          "entity": "PrimarySelection / ManagementHome"
+        },
+        {
+          "module": "M04",
+          "entity": "PrimarySelectionPolicy"
+        },
+        {
+          "module": "M04",
+          "entity": "Employment"
+        }
+      ],
+      "contract_anchor": "210-人员编号与主选择覆盖",
+      "recovery_anchor": "22-核心人事的配置层级与完整生命周期",
+      "acceptance": [
+        "AC02"
+      ]
+    },
+    {
+      "id": "K03",
+      "title": "同日动作及跨午夜",
+      "commands": [
+        "CancelAction",
+        "CorrectEndDate",
+        "ConfirmTime",
+        "PublishSchedule"
+      ],
+      "objects": [
+        {
+          "module": "M04",
+          "entity": "BusinessActionRecord"
+        },
+        {
+          "module": "M06",
+          "entity": "WorkingTimePolicy"
+        },
+        {
+          "module": "M07",
+          "entity": "TimeRecord"
+        }
+      ],
+      "contract_anchor": "211-日级人事与跨午夜时间",
+      "recovery_anchor": "27-worktime的配置时间覆盖与权益",
+      "acceptance": [
+        "AC03"
+      ]
+    },
+    {
+      "id": "K04",
+      "title": "机构义务和执行",
+      "commands": [
+        "ConfirmTaxLiability",
+        "ConfirmSupplierPayable",
+        "PrepareInstitutionSettlement",
+        "ClaimInstitutionSettlement",
+        "ApplyInstitutionReceipt"
+      ],
+      "objects": [
+        {
+          "module": "M11",
+          "entity": "TaxRemittanceAccount"
+        },
+        {
+          "module": "M11",
+          "entity": "TaxRemittanceInstruction / SettlementAuthorization / SettlementInvestigation"
+        },
+        {
+          "module": "M12",
+          "entity": "AgencyPayableAccount"
+        },
+        {
+          "module": "M13",
+          "entity": "BenefitSupplierPayable"
+        },
+        {
+          "module": "M13",
+          "entity": "SupplierSettlementInstruction / SupplierMovement"
+        },
+        {
+          "module": "M14",
+          "entity": "PayerAccount"
+        }
+      ],
+      "contract_anchor": "32-机构付款责任与外部财务委托",
+      "recovery_anchor": "33-unknown的运营处置",
+      "acceptance": [
+        "AC04"
+      ]
+    },
+    {
+      "id": "K05",
+      "title": "薪酬口径与工资期运算",
+      "commands": [
+        "ConfirmAward",
+        "DeliverAward",
+        "AdoptInput",
+        "SealResult"
+      ],
+      "objects": [
+        {
+          "module": "M09",
+          "entity": "AwardDelivery"
+        },
+        {
+          "module": "M10",
+          "entity": "Element / PayrollInput / CalculationRule"
+        },
+        {
+          "module": "M10",
+          "entity": "PayrollRun / Result / Balance"
+        }
+      ],
+      "contract_anchor": "212-薪酬口径转换与期间分摊",
+      "recovery_anchor": "24-工资配置影响规则与连续更正",
+      "acceptance": [
+        "AC05"
+      ]
+    },
+    {
+      "id": "K06",
+      "title": "历史查询及采用解释",
+      "commands": [
+        "QueryHistory",
+        "ExplainResult",
+        "ReproduceResult"
+      ],
+      "objects": [
+        {
+          "module": "X01",
+          "entity": "Revision / Adoption / Event Envelope"
+        },
+        {
+          "module": "M04",
+          "entity": "Assignment / AssignmentRecord"
+        },
+        {
+          "module": "M10",
+          "entity": "PayrollRun / Result / Balance"
+        }
+      ],
+      "contract_anchor": "61-历史查询能力与计算依赖",
+      "recovery_anchor": "61-历史查询能力与计算依赖",
+      "acceptance": [
+        "AC06"
+      ]
+    },
+    {
+      "id": "K07",
+      "title": "消费者影响闭环",
+      "commands": [
+        "AssessImpact",
+        "ResolveImpact",
+        "CorrectResult"
+      ],
+      "objects": [
+        {
+          "module": "M10",
+          "entity": "RetroCase"
+        },
+        {
+          "module": "M10",
+          "entity": "PayrollImpactPolicy"
+        },
+        {
+          "module": "X01",
+          "entity": "Impact Lookup Protocol"
+        }
+      ],
+      "contract_anchor": "62-消费者影响案与闭环",
+      "recovery_anchor": "24-工资配置影响规则与连续更正",
+      "acceptance": [
+        "AC07"
+      ]
+    },
+    {
+      "id": "K08",
+      "title": "人员编号与误建核对",
+      "commands": [
+        "RegisterPerson",
+        "RenumberPerson"
+      ],
+      "objects": [
+        {
+          "module": "M01",
+          "entity": "PersonNumberAlias"
+        },
+        {
+          "module": "M01",
+          "entity": "Person"
+        }
+      ],
+      "contract_anchor": "210-人员编号与主选择覆盖",
+      "recovery_anchor": "210-人员编号与主选择覆盖",
+      "acceptance": [
+        "AC08"
+      ]
+    },
+    {
+      "id": "K09",
+      "title": "未知执行升级及查明",
+      "commands": [
+        "ResolveUnknown",
+        "ApplyInstitutionReceipt",
+        "PlacePayerHold",
+        "ReleasePayerHold"
+      ],
+      "objects": [
+        {
+          "module": "M14",
+          "entity": "PaymentInstruction / Authorization"
+        },
+        {
+          "module": "M11",
+          "entity": "TaxRemittanceInstruction / SettlementAuthorization / SettlementInvestigation"
+        },
+        {
+          "module": "M13",
+          "entity": "SupplierSettlementInstruction / SupplierMovement"
+        },
+        {
+          "module": "X04",
+          "entity": "TaskProjection / Job / Attempt"
+        },
+        {
+          "module": "M12",
+          "entity": "AgencyPayableAccount"
+        },
+        {
+          "module": "M15",
+          "entity": "JournalRequest / Receipt"
+        },
+        {
+          "module": "M14",
+          "entity": "PayerAccount"
+        }
+      ],
+      "contract_anchor": "33-unknown的运营处置",
+      "recovery_anchor": "32-机构付款责任与外部财务委托",
+      "acceptance": [
+        "AC09"
+      ]
+    },
+    {
+      "id": "K10",
+      "title": "保留连续更正与净追收不变量",
+      "commands": [
+        "CorrectResult",
+        "CancelResult",
+        "ApplyRecovery"
+      ],
+      "objects": [
+        {
+          "module": "M10",
+          "entity": "ResultSeriesHead"
+        },
+        {
+          "module": "M14",
+          "entity": "RecoveryAccount / Allocation"
+        },
+        {
+          "module": "M11",
+          "entity": "TaxLedger / TaxAssessment"
+        }
+      ],
+      "contract_anchor": "24-工资配置影响规则与连续更正",
+      "recovery_anchor": "31-付款账户与超付追收",
+      "acceptance": [
+        "AC10"
+      ]
+    }
+  ]
+}

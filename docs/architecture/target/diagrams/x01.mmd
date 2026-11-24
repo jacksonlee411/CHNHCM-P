@@ -1,0 +1,25 @@
+---
+title: X01 身份、有效期、修订与采用历史 · 目标设计
+---
+flowchart TB
+  subgraph domain["X01 身份、有效期、修订与采用历史"]
+    direction TB
+    K["ID 日期区间与修订值类型"]:::own
+    E["采用及事件信封协议"]:::own
+    V["纯验证与序列化"]:::process
+    QUERY["历史查询能力 businessAt sourceVersion adoptedRef"]:::own
+    IMPACT["ImpactResolution 消费者闭环证据协议"]:::own
+  end
+  S["来源域 修订和Outbox"]:::external
+  C["消费者 采用和Inbox"]:::external
+  K -->|校验| V
+  E -->|版本协议| V
+  V -->|复用协议不代写事实| S
+  V -->|复用协议不代写采用| C
+  S -->|E持久投递及Q补读| C
+  QUERY -->|各类来源声明支持范围| S
+  C -->|消费者拥有影响案及结论| IMPACT
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

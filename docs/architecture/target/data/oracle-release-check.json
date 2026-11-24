@@ -1,0 +1,182 @@
+{
+  "release_discovery": {
+    "url": "https://docs.oracle.com/en/cloud/saas/readiness/hcm.html",
+    "latest_observed": "26D for the relevant HCM families",
+    "checked_on": "2026-10-29"
+  },
+  "latest_book_catalogs": [
+    "https://docs.oracle.com/en/cloud/saas/human-resources/books.html",
+    "https://docs.oracle.com/en/cloud/saas/talent-management/books.html"
+  ],
+  "note": "Guide URLs are the current official unversioned FA Latest channel; copyright year alone is not a release label. Catalog/metadata checking is not verification of every product feature.",
+  "sources": [
+    {
+      "id": "O01",
+      "topic": "Global HR",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34712-11",
+      "title": "Implementing Global Human Resources",
+      "html_sha256": "81b616d5c5e9ac3f420aedadd589fd8a3e411b688f7f1fcf040e52d5057c249d"
+    },
+    {
+      "id": "O02",
+      "topic": "Person",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/person-records.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/person-records.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34740-15",
+      "title": "Person Records",
+      "html_sha256": "e7b46a9f25db572127709c987a71f4f2a54833629358284fb35c207407f235af"
+    },
+    {
+      "id": "O03",
+      "topic": "Work Relationship",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/work-relationships.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/work-relationships.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34740-15",
+      "title": "Work Relationships",
+      "html_sha256": "4a5fb2208529f3ef290fba48a809e5220cb131178c7c60a3992ec847b53f62a7"
+    },
+    {
+      "id": "O04",
+      "topic": "Assignment",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/assignments.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/assignments.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34740-15",
+      "title": "Assignments",
+      "html_sha256": "cfb739b46c550c007de5ced52cba0817c325013226b97a356cef92c137de9ef4"
+    },
+    {
+      "id": "O05",
+      "topic": "Legal purposes",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/how-legal-employers-work-with-payroll-statutory-units-and-tax.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/how-legal-employers-work-with-payroll-statutory-units-and-tax.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34712-11",
+      "title": "How Legal Employers Work with Payroll Statutory Units and Tax Reporting Units",
+      "html_sha256": "a630d92f2cc5538c6b3d0206d386b21a732670a1a330201ed68fd1acfd306e5f"
+    },
+    {
+      "id": "O06",
+      "topic": "China Payroll",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faich/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faich/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34717-02",
+      "title": "Implementing Payroll for China",
+      "html_sha256": "b29691b0e02223533a5707f69f5d9f2da8bb3451608bdeb1ea522d2cd7637fcc"
+    },
+    {
+      "id": "O07",
+      "topic": "Recruiting",
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/faimh/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/faimh/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34431-12",
+      "title": "Implementing Recruiting",
+      "html_sha256": "0ea2f05a74a96d3f575bb6a6c53d00be20bee0fcf7110042b94db3885130fe1b"
+    },
+    {
+      "id": "O08",
+      "topic": "Learning",
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/faiml/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/faiml/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34429-04",
+      "title": "Implementing Learning",
+      "html_sha256": "03186f99f32b6429c590421d3b015d281a7e8b083d0b798271ed202f7aa4301a"
+    },
+    {
+      "id": "O09",
+      "topic": "Performance",
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/faipm/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/faipm/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34430-04",
+      "title": "Implementing Performance Management",
+      "html_sha256": "7e43f421e833dca67ed2ea2ea66fbb2504eeedaeddac1e3bc8ebb332b24a3484"
+    },
+    {
+      "id": "O10",
+      "topic": "Talent Review Succession",
+      "url": "https://docs.oracle.com/en/cloud/saas/talent-management/fatrs/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/talent-management/fatrs/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34433-01",
+      "title": "Implementing Talent Review and Succession Management",
+      "html_sha256": "24c0bb1cf7cb6fac68646ae94965abf658d5bced4211958a84cef4ded7eaca26"
+    },
+    {
+      "id": "O11",
+      "topic": "Scheduling",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiws/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiws/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34728-01",
+      "title": "Implementing and Administering Workforce Scheduling",
+      "html_sha256": "e185348209cfefe37a911366693e5a1ddd4fdb81a00c458a68135e604e6f17c0"
+    },
+    {
+      "id": "O12",
+      "topic": "Compensation",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiwc/index.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faiwc/index.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34711-06",
+      "title": "Implementing Compensation",
+      "html_sha256": "5d7cf93bca2f14980bc15853e428db1be5a29a533b916142a05a5dd52efc78a6"
+    },
+    {
+      "id": "O13",
+      "topic": "HCM Data Role",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/ochus/hcm-data-roles.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/ochus/hcm-data-roles.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34732-10",
+      "title": "HCM Data Roles",
+      "html_sha256": "7e575f183f1bbc796743ce92431ebb200944dd5518ff3628d08145a726051884"
+    },
+    {
+      "id": "O14",
+      "topic": "Reference Data Set",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/how-business-units-work-with-reference-data-sets.html",
+      "resolved_url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/how-business-units-work-with-reference-data-sets.html",
+      "checked_on": "2026-10-29",
+      "http_status": 200,
+      "release_metadata": "FA Latest",
+      "document_number": "G34712-11",
+      "title": "How Business Units Work with Reference Data Sets",
+      "html_sha256": "27f3586a0545d9e4c2e5e73a99491fdab2d2d445f4322eebbf02b7876e34be55"
+    }
+  ]
+}

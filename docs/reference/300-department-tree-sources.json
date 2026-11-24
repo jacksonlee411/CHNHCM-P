@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "document": "CHNHCM-300",
+  "observed_on": "2026-11-13",
+  "chnhcm_base_commit": "8408cc5fb87e8005cdf75c63b300c70de3942bd5",
+  "cubebox": {
+    "repository": "CubeBox",
+    "commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+    "assets": [
+      {
+        "asset_id": "ASSET-0126",
+        "archive": "docs/reference/sources/cubebox-m02-2deaf927.zip",
+        "member": "apps/prototype/src/operations/department-tree.tsx",
+        "sha256": "0c71d424ad2e3630679161491f3abb262bd28914678d4c5619685c6ee1149bc4"
+      },
+      {
+        "asset_id": "ASSET-0202",
+        "archive": "docs/reference/sources/cubebox-ui-2deaf927.zip",
+        "member": "apps/prototype/src/operations/staffing-layout.css",
+        "sha256": "a01f95b1aa9f22e59cc6a3b733690afe6bb8fdcacea3e6bccdca7064a3eb6151"
+      }
+    ],
+    "sample_record": "docs/reference/113-department-list-template.json",
+    "sample_screenshot": "docs/verification/data/113-department-list-template-docs/desktop.png"
+  },
+  "odoo": {
+    "repository": "odoo/odoo",
+    "version": "19.0",
+    "reference_commit": "74d39b2fdaa8cd60885943fa58a08bff62e53207",
+    "files": [
+      {
+        "path": "addons/hr/views/hr_employee_views.xml",
+        "url": "https://github.com/odoo/odoo/blob/74d39b2fdaa8cd60885943fa58a08bff62e53207/addons/hr/views/hr_employee_views.xml",
+        "summary": "员工搜索视图的SearchPanel配置company_id和department_id；部门字段作为层级单选入口。"
+      },
+      {
+        "path": "addons/hr/views/hr_department_views.xml",
+        "url": "https://github.com/odoo/odoo/blob/74d39b2fdaa8cd60885943fa58a08bff62e53207/addons/hr/views/hr_department_views.xml",
+        "summary": "标准部门搜索视图未配置SearchPanel；不能将员工列表的部门树说成部门标准列表的已有功能。"
+      },
+      {
+        "path": "addons/web/static/src/search/search_panel/search_panel.xml",
+        "url": "https://github.com/odoo/odoo/blob/74d39b2fdaa8cd60885943fa58a08bff62e53207/addons/web/static/src/search/search_panel/search_panel.xml",
+        "summary": "分类节点提供折叠、名称截断、选中标识及条件计数的显示结构。"
+      }
+    ],
+    "documentation": "https://www.odoo.com/documentation/19.0/developer/reference/user_interface/view_architectures.html#searchpanel",
+    "adoption": "参考层级筛选和展开交互；不复制Odoo运行源码、业务规则或资产，不增加构建依赖。"
+  },
+  "proposed_adoption": {
+    "layout": "220px侧栏，28px树行，14px字体，16px箭头和逐级缩进，浅青选中及细层级线，折叠窄栏和窄屏抽屉。",
+    "interaction": "单选查询范围，含子部门，树内定位，当前身份和展开状态分离。",
+    "chnhcm_differences": "今日有效关系；全部状态仍由原列表可查；Go权威、当前权限、按层分页和固定身份选择导出；节点计数后置。"
+  },
+  "evidence_boundary": "来源与方案核对，不代表CHNHCM树已实现、已验证或达到容量目标。原113排除部门树的范围保持。",
+  "implemented": false,
+  "verified": false
+}

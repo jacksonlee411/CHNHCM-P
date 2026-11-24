@@ -1,0 +1,811 @@
+{
+  "date": "2026-10-31",
+  "base_commit": "1bf1ee683ec1e1172f277e3931c74082df559ca2",
+  "branch": "wt-dev-a",
+  "working_tree": "dirty",
+  "scope": "Retire knownAt and capture; retain businessAt, immutable exact-source history, current authorization, idempotency and source sealing. No subsequent BU writers implemented.",
+  "checks": {
+    "integration": {
+      "passed": 7,
+      "skipped_default_load": 1,
+      "seconds": 28.327
+    },
+    "browser": {
+      "passed": 6,
+      "total": 6,
+      "seconds": 24.9,
+      "engine": "Playwright Chromium",
+      "normal_entry": "设置 → 组织配置 → 业务单元"
+    },
+    "load": {
+      "units": 2000,
+      "sessions": 20,
+      "sources_per_unit": 1,
+      "samples_per_read": 100,
+      "write_seconds": 4.572803165,
+      "latency_ms_p50_p95_p99": {
+        "create": [
+          46,
+          54,
+          79
+        ],
+        "list": [
+          79,
+          130,
+          142
+        ],
+        "detail": [
+          20,
+          34,
+          35
+        ],
+        "sourceVersion": [
+          20,
+          34,
+          35
+        ]
+      },
+      "database_bytes": 20846271
+    },
+    "make_check": "passed",
+    "make_build": "passed_with_existing_MUI_and_chunk_size_warnings",
+    "generated_outputs_identical": 7,
+    "independent_reviews": [
+      "retire_knownat_runtime_review",
+      "retire_knownat_docs_review"
+    ]
+  },
+  "local_db_before": {
+    "schema": 3,
+    "versions": 50,
+    "units": 50,
+    "capture_error": "CAPTURE_CLOCK_REGRESSED"
+  },
+  "local_upgrade": {
+    "before": {
+      "business_unit": {
+        "sha256": "ac188bab2c0cd92c86d3bdcb3b2c4a9ad58a032110f948c169e04369b959e39b",
+        "rows": 50
+      },
+      "effective_record": {
+        "sha256": "44eadd558f8de27085983db02940c904e548a4ddae31777a7653815ee03c51c8",
+        "rows": 50
+      },
+      "source_version": {
+        "sha256": "3b3dc884f15870a80ceaef5bcf71b2a14083acdeaf94471241773c78cfe2a374",
+        "rows": 50
+      },
+      "source_member": {
+        "sha256": "9ae81ee9c48fd7ae70001c1936ce515a08fd97c9ea6fe91afe9cab4b0184a0df",
+        "rows": 50
+      },
+      "record_revision": {
+        "sha256": "9deea6a629a1a07e230e51939eaff10d3b263af8c438f7c21638c205b79712b6",
+        "rows": 50
+      },
+      "command_result": {
+        "sha256": "175f88e6cb5d616255630fabc30b6a5840c58d0aeb020eb841d0c0608e23ff3d",
+        "rows": 59
+      },
+      "change_entry": {
+        "sha256": "b902f0724905b644a24c9d993378d543403d04f413d2902ae5cd1309891c1141",
+        "rows": 50
+      },
+      "outbox": {
+        "sha256": "2ae8aeb98ca1d9c728b98cf4c5806bab8cc2fb7dd7e6b6e49fd8391e52559827",
+        "rows": 50
+      }
+    },
+    "after": {
+      "business_unit": {
+        "sha256": "ac188bab2c0cd92c86d3bdcb3b2c4a9ad58a032110f948c169e04369b959e39b",
+        "rows": 50
+      },
+      "effective_record": {
+        "sha256": "44eadd558f8de27085983db02940c904e548a4ddae31777a7653815ee03c51c8",
+        "rows": 50
+      },
+      "source_version": {
+        "sha256": "3b3dc884f15870a80ceaef5bcf71b2a14083acdeaf94471241773c78cfe2a374",
+        "rows": 50
+      },
+      "source_member": {
+        "sha256": "9ae81ee9c48fd7ae70001c1936ce515a08fd97c9ea6fe91afe9cab4b0184a0df",
+        "rows": 50
+      },
+      "record_revision": {
+        "sha256": "9deea6a629a1a07e230e51939eaff10d3b263af8c438f7c21638c205b79712b6",
+        "rows": 50
+      },
+      "command_result": {
+        "sha256": "175f88e6cb5d616255630fabc30b6a5840c58d0aeb020eb841d0c0608e23ff3d",
+        "rows": 59
+      },
+      "change_entry": {
+        "sha256": "b902f0724905b644a24c9d993378d543403d04f413d2902ae5cd1309891c1141",
+        "rows": 50
+      },
+      "outbox": {
+        "sha256": "2ae8aeb98ca1d9c728b98cf4c5806bab8cc2fb7dd7e6b6e49fd8391e52559827",
+        "rows": 50
+      }
+    },
+    "business_contents_unchanged": true
+  },
+  "local_runtime_after_browser": {
+    "wal_level": "replica",
+    "schema": 4,
+    "capture_slots": 0,
+    "capture_publications": 0,
+    "capture_roles": 0,
+    "capture_progress_present": false,
+    "units": 73
+  },
+  "protected_originals": [
+    {
+      "path": "docs/reference/baselines.json",
+      "sha256": "eff99efacca3ea269fcb78124466128f1936cde6af5a6fc24ed87ed3c13ae358"
+    },
+    {
+      "path": "docs/reference/sources/china-hcm-d88c993.zip",
+      "sha256": "b2559c26e17b53a8a757aa8f26c73d3c184a468c8b26a03062c5943cc22b665e"
+    },
+    {
+      "path": "docs/reference/sources/cubebox-m02-2deaf927.zip",
+      "sha256": "35df71913e276cfe270e9360e7282a83c485fa3a44906f428fda9c71d71528ad"
+    },
+    {
+      "path": "docs/verification/009-m02-terminology.md",
+      "sha256": "e3043b2182088a4a3f4c66ec2ec3227cdc53a39cfd2bac38bdfa759e03446b39"
+    },
+    {
+      "path": "docs/verification/010-backoffice-scope-revision.md",
+      "sha256": "5b750cd3ac61ae23827744e7cc6b4fdbddad42fe1d2fafdeaaced4bdc36d2726"
+    },
+    {
+      "path": "docs/verification/010-current-date-terminology.md",
+      "sha256": "50a19e989462cadfa42602bfe2966a49d1c697ae30ca5b3dac84db19500a2329"
+    },
+    {
+      "path": "docs/verification/010-first-vertical-slice.md",
+      "sha256": "07c521111532d4b15c19d3f6e0ea49e42ec9eb8015cf1128b8be2cbe357294a3"
+    },
+    {
+      "path": "docs/verification/010-review-fixes.md",
+      "sha256": "93a8784237d4bb6ae47a85916dfa4a78ca85e05b022181eae7f9a376611737f3"
+    },
+    {
+      "path": "docs/verification/010-scope-draft.md",
+      "sha256": "57634cb5767a77f06f51989b641f34744510c44433b5eedc5ff45bfa6152597b"
+    },
+    {
+      "path": "docs/verification/011-business-requirements-draft.md",
+      "sha256": "3f787abbc5a5eff0c243cf3bc411189d757fe1070b31c121e2e53bcca2fa551e"
+    },
+    {
+      "path": "docs/verification/011-delete-record-terminology.md",
+      "sha256": "bc8cf8851e533d2af17a26a3270c088f5f84b3839e082d07e7daf95a0af5e9ae"
+    },
+    {
+      "path": "docs/verification/011-effective-date-terminology.md",
+      "sha256": "513a85ef6150c22167a1c4d42d55a8b0f6e968e99ff68919a0ab3ac0b9ac3470"
+    },
+    {
+      "path": "docs/verification/011-operation-classification.md",
+      "sha256": "5f8d948901dcce1f105d471b906d992d1d08677060289b0c1e7443df92e7d460"
+    },
+    {
+      "path": "docs/verification/011-record-classification-simplification.md",
+      "sha256": "a074335645a330590684b8b6c149581edd7bd69fdf5c65c31d993c1fa18f16fa"
+    },
+    {
+      "path": "docs/verification/011-terminology-registration.md",
+      "sha256": "f2ccaf66f1fde8d1291d271494a282aa28ded5212e0fa2dfdd197e48b3a8196f"
+    },
+    {
+      "path": "docs/verification/013-multiround-review.md",
+      "sha256": "d86f8fe759f3a70f86c20612a2f9c6390d65deb611109ce5dd70b6aef9cccf29"
+    },
+    {
+      "path": "docs/verification/013-series-review-fixes.md",
+      "sha256": "3118529d0e46b3e6ad818b22c5a00e533521cf2a117c0003f643f03719b30620"
+    },
+    {
+      "path": "docs/verification/013-table-design-review-fixes.md",
+      "sha256": "f6e5c85ed0878f9fe722df00d543aa29f3103d31cb68ae735d0e7368e6c149fe"
+    },
+    {
+      "path": "docs/verification/013-technical-design.md",
+      "sha256": "f3026d6e5a66b736c1a5a93d37ba77c959e0d468d372f85a73f60a8be3820184"
+    },
+    {
+      "path": "docs/verification/014-document-management-review-fixes.md",
+      "sha256": "febea14926c1ec557637d7bba08cf148f15fe8d5e78f4ff708a8dda74cef657b"
+    },
+    {
+      "path": "docs/verification/014-document-management.md",
+      "sha256": "2213512d549734174999a44537adf23171c9b25b20b4dbf1c507682eb50e3025"
+    },
+    {
+      "path": "docs/verification/014-numbered-format-migration.md",
+      "sha256": "4447c056928df2fb472820582750e901830370288aa09dec345d6ce4f9d02d20"
+    },
+    {
+      "path": "docs/verification/014-repository-document-revisions.md",
+      "sha256": "c175232496425cecaae7b66c218330780c54ceb6ad1bdb15796b2313bead23e0"
+    },
+    {
+      "path": "docs/verification/015-terminology-naming.md",
+      "sha256": "53207cfe80c23bf36a69ba7cca82e322d64aebf8d6d97d540d08d23c7c7bc148"
+    },
+    {
+      "path": "docs/verification/016-history-decision-and-012.md",
+      "sha256": "d695ac790dcb5fd9c99709f71edb7508769516529cce63c053fbd1a78c88a1b6"
+    },
+    {
+      "path": "docs/verification/bootstrap.md",
+      "sha256": "ed6e04b998f146890ad9fd4bc4d7c3b97de4ec481398b8b7c5f5914d58841456"
+    },
+    {
+      "path": "docs/verification/data/010-backoffice-scope-inputs.json",
+      "sha256": "95db57b39c8de6a1ea2c48956a2865b7057a70015e6e649c89ea8cd3da7c3f12"
+    },
+    {
+      "path": "docs/verification/data/010-before-current-date.zip",
+      "sha256": "935097cce4d72b185e2a9ef55e83654156a2c4aa9d22990559d646423950a1e9"
+    },
+    {
+      "path": "docs/verification/data/010-before-review-fixes.zip",
+      "sha256": "1fef9f106d82ce37f0ecf8268f2d3de3c489f1c5f581f328bee5fa862c10960f"
+    },
+    {
+      "path": "docs/verification/data/010-current-date-inputs.json",
+      "sha256": "56eb9af6e54c042941f6392493ff1f81fdc235e99c01502142692b4dea7e89fb"
+    },
+    {
+      "path": "docs/verification/data/010-first-vertical-slice-inputs.json",
+      "sha256": "17a50d9ab60a28cfecb5b03c99f519af671895d6857ddb97aeb6ea2adae7aa98"
+    },
+    {
+      "path": "docs/verification/data/010-review-fixes-inputs.json",
+      "sha256": "c7a6f1632766559f730189351c94f576ca57a9c72e615b094a018adebf9e1857"
+    },
+    {
+      "path": "docs/verification/data/010-scope-before-backoffice.zip",
+      "sha256": "2481549d8987ba494a6098de3cb4d282d6b110312353a72a47e00ab882905a89"
+    },
+    {
+      "path": "docs/verification/data/010-scope-draft-inputs.json",
+      "sha256": "22c402a92deee62bf3a35e82eafa4d8c5058d8ce9c900a508e079982ae082cb5"
+    },
+    {
+      "path": "docs/verification/data/011-before-classification-simplification.zip",
+      "sha256": "2018ebc958e94eba5e57719987b1db68b8ff1c548cf58622e00d92058a1579d5"
+    },
+    {
+      "path": "docs/verification/data/011-before-delete-terminology.zip",
+      "sha256": "d31d6cf1c34908593be795b6f49f9f2721ca8d9d9956d7c4e3758bbe91b8d0b8"
+    },
+    {
+      "path": "docs/verification/data/011-before-draft.zip",
+      "sha256": "49312137bbc1e3ccc81f82241617c4a70a07e901404c3aaa246b67da57a627cd"
+    },
+    {
+      "path": "docs/verification/data/011-before-effective-date.zip",
+      "sha256": "79e5e557242b3e4387ad19a637a7b54376f1fa4501df1c3affd47af14ba37973"
+    },
+    {
+      "path": "docs/verification/data/011-before-operation-terms.zip",
+      "sha256": "1c164efe4c0d82a8de32c9a53999c63599561a24b66a2a5df43d9104005c42ef"
+    },
+    {
+      "path": "docs/verification/data/011-before-terminology.zip",
+      "sha256": "f8de81f3d6538b73460328a7cd72993d27a082c82d864df26009d183b7b60904"
+    },
+    {
+      "path": "docs/verification/data/011-business-requirements-inputs.json",
+      "sha256": "8381d24407310af4c2e823fa9ec4295d4738c331987fed5b95ffffaabaa72e5b"
+    },
+    {
+      "path": "docs/verification/data/011-delete-record-terminology-inputs.json",
+      "sha256": "01653fd3e61488a521f14a0fc813913b8dde61480daaaca747d0d9a67d69c5c9"
+    },
+    {
+      "path": "docs/verification/data/011-effective-date-inputs.json",
+      "sha256": "db716afcb98bc828a21cbf5e995d8edb6e45a4ecbad5ac976c8adc77377d6b1f"
+    },
+    {
+      "path": "docs/verification/data/011-operation-classification-inputs.json",
+      "sha256": "7e204730b59cd03b8658a2e425b4217b42010c1dbb064eda1ec26aecc114e37d"
+    },
+    {
+      "path": "docs/verification/data/011-record-classification-simplification-inputs.json",
+      "sha256": "65f9f4c0b5970050660f2521480020af5f7d48e9ed11e8ee496a08cd2e466ea9"
+    },
+    {
+      "path": "docs/verification/data/011-terminology-inputs.json",
+      "sha256": "8b85470a23d9c7c4c31a87b495519831b30add50f94e2c9acc7a6073ea3e0484"
+    },
+    {
+      "path": "docs/verification/data/013-before-series-review.zip",
+      "sha256": "6e50c0ba1c700b0096446e2514160f925e665ec1e4904ea6abf3d7e74227f86e"
+    },
+    {
+      "path": "docs/verification/data/013-before-table-review.zip",
+      "sha256": "cfe12c018ec325170b50418c7b95effd8914b1ebb524d9e8e9efc8f606211381"
+    },
+    {
+      "path": "docs/verification/data/013-multiround-review-inputs.json",
+      "sha256": "f1c1c62351fb4a40e1eecbcc63d4795badde3da5f1ec4e8d35e6c82c4d8703f0"
+    },
+    {
+      "path": "docs/verification/data/013-series-review-inputs.json",
+      "sha256": "608c3a3831ace03d7999167a27a12e97db900f9ad216593fc08b8f610f7692af"
+    },
+    {
+      "path": "docs/verification/data/013-table-design-review-inputs.json",
+      "sha256": "f50067c15c1bb905a075ac9d4154b92f6e88a9bfdb413f3435b0da6620a72b1d"
+    },
+    {
+      "path": "docs/verification/data/013-technical-design-inputs.json",
+      "sha256": "8af913585fdf2a53af8db203dd0bc4474c63e5b0ece0598ce6b0b60a4e8b8a6a"
+    },
+    {
+      "path": "docs/verification/data/014-document-inputs.json",
+      "sha256": "dd964b26f9051a49de4fbf6bad506943aa36b8fed2731cbd7e5d0fc96c109bc3"
+    },
+    {
+      "path": "docs/verification/data/014-numbered-format-inputs.json",
+      "sha256": "7c5f610f780943b9f96b86864d2edac23f256181e3047be13e53584a0125e817"
+    },
+    {
+      "path": "docs/verification/data/014-repository-document-dispositions.json",
+      "sha256": "b3f90c1e63d40c4d845e68e8cba81f5b9b35c8b7073d8d68992e9b00cdc8512b"
+    },
+    {
+      "path": "docs/verification/data/014-repository-document-inputs.json",
+      "sha256": "0c201c6c5b670e757d23d9896e607f4d35488b204eb6e0b79d20310e5d9c07a5"
+    },
+    {
+      "path": "docs/verification/data/014-review-fixes-inputs.json",
+      "sha256": "b129a263efba4f6feed47c66ffa03f30f70462b9fb25ea7f2051d78155489c9d"
+    },
+    {
+      "path": "docs/verification/data/015-before-naming-principle.zip",
+      "sha256": "fd52f40cc969870237b467a8a0ce59a8befd9913c086928675e5597aa632dc38"
+    },
+    {
+      "path": "docs/verification/data/015-terminology-naming-inputs.json",
+      "sha256": "c9f6bfbebef31e7327a9dd56e5aff67fa10d8e4daa0199727b6f5f108f6f03a3"
+    },
+    {
+      "path": "docs/verification/data/016-before-history-decision.zip",
+      "sha256": "9f92d126cef944697b7160c031da6eb2021e652c51f467f90069cc479049db1e"
+    },
+    {
+      "path": "docs/verification/data/016-history-decision-and-012-inputs.json",
+      "sha256": "dfdd7e22a48b1f1b421ec804d6fb6590b29dceb1314b7b9ed3e43c500be67065"
+    },
+    {
+      "path": "db/migrations/00001_access.sql",
+      "sha256": "5bccf0f106085fe95341e001d9467bcb79dab7688cfb853c9920cf07d275fdb9"
+    },
+    {
+      "path": "db/migrations/00002_organization.sql",
+      "sha256": "fe60522cf550636f25282e9a8b56ce87bc44074a62c5122fbcd012906bbc449c"
+    },
+    {
+      "path": "db/migrations/00003_commit_evidence.sql",
+      "sha256": "032ed9131bb4d1b750f0d00a529aef38f82801cf6902ff2e6d56e5d078c6a77b"
+    }
+  ],
+  "adr016_original_body": "byte-identical after removing the new historical routing banner",
+  "render": {
+    "renderer": "@mermaid-js/mermaid-cli",
+    "version": "12.0.0",
+    "browser": "Chrome/140.0.7339.186",
+    "generatedAt": "2026-10-31T11:56:41.382Z",
+    "partial": true,
+    "diagrams": [
+      {
+        "file": "e04-effective-adoption.mmd",
+        "title": null,
+        "sourceSha256": "1268613bd5bf1db3dcf5953df7582a8d95e83cf6221ed8fdd6c410e5dd34593e",
+        "svgSha256": "c23a91466255ace9ec16c60c7c09d4235bf7abd073bb5ea3e0b013e6ffea80b0",
+        "bytes": 47540,
+        "status": "rendered"
+      },
+      {
+        "file": "x01.mmd",
+        "title": null,
+        "sourceSha256": "a95ffcd7a446592a0ce1b28a5690576b06a970740bd8c1c9217fab0fbb24a523",
+        "svgSha256": "e19dd36fdf3dd0be4cf0d6212896eebbfb891f9102e7472da9411416ccebdfc8",
+        "bytes": 28942,
+        "status": "rendered"
+      }
+    ]
+  },
+  "raw_log_hashes": [
+    {
+      "path": ".local/018/integration-final.log",
+      "sha256": "245fdefd4e43e7e1d49ce58f81371313cb060046929f869a15d70705252778c4",
+      "bytes": 51
+    },
+    {
+      "path": ".local/018/browser-1.log",
+      "sha256": "6b65890014839523e9a081bbf1445a3b92e76243ee329660be9b40947498e29f",
+      "bytes": 1272
+    },
+    {
+      "path": ".local/018/load-final.log",
+      "sha256": "852dff1650b61d1a2ff92b815700a00fe558c5ace6bcd2bcc7ed76f47f75d741",
+      "bytes": 2093
+    },
+    {
+      "path": ".local/018/generate-final.log",
+      "sha256": "5c489bd8aa4de876cc6fa672772c4446e22ad42feedc07433ad4f3475b44c1ca",
+      "bytes": 333
+    },
+    {
+      "path": ".local/018/generate-reproducible.log",
+      "sha256": "423fb1707ebda75f117334b4991dd7baaaa9ba9e483d8246d64061df0ed5ede4",
+      "bytes": 333
+    },
+    {
+      "path": ".local/018/build-final.log",
+      "sha256": "232880950499879b70390d56116dfdaf90982280993537c486e8181f0a6b9cc2",
+      "bytes": 121142
+    },
+    {
+      "path": ".local/018/check-final.log",
+      "sha256": "7421be7e21524dbac2dbad803a94d61cb55da246e2628c19e2c7893f6b1a3b29",
+      "bytes": 2074
+    },
+    {
+      "path": ".local/018/docs-final.log",
+      "sha256": "1e0831590944a5e68b6a8ee79c672dd48a52d2ad849ed8da4841e3707fe6fb3c",
+      "bytes": 536
+    },
+    {
+      "path": ".local/018/local-up-final.log",
+      "sha256": "bcd3769a84c06b424e9ec0789c253b60198ca449a9b377ad14f247230d101697",
+      "bytes": 490
+    },
+    {
+      "path": ".local/018/render-final.log",
+      "sha256": "8950341283143009f0be3f7ad3714edc7cabaaf01fc65fb79b8fdd914fc6a7a0",
+      "bytes": 53
+    }
+  ],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "state": "present",
+      "sha256": "de63938cde826fe202779b9367480cd9686532de9ecb2ba545b226ba3685b701"
+    },
+    {
+      "path": "Makefile",
+      "state": "present",
+      "sha256": "881794f408838c149cb98ff623cb2737a02b47092974219909ce95a2926ebe0c"
+    },
+    {
+      "path": "api/openapi.yaml",
+      "state": "present",
+      "sha256": "89600b7def742863d00ee856eec9d1a58431154c9cea8c099f05048a96ebe7a6"
+    },
+    {
+      "path": "apps/web/src/features/organization/BusinessUnits.tsx",
+      "state": "present",
+      "sha256": "db3038dff7d5570028d4797722ac85be8844d3b0d56119b13732f89e7bd1a1ab"
+    },
+    {
+      "path": "cmd/upgrader/main.go",
+      "state": "present",
+      "sha256": "2f04be22b311d2ed792b1c7b5e1343fd351626b73655a8c91d41ba2d553fe2f6"
+    },
+    {
+      "path": "cmd/worker/README.md",
+      "state": "present",
+      "sha256": "875ed0cde5effd5544bc085308eb8b302e969eeab5fb4f29b58f8f3d7d36b2d6"
+    },
+    {
+      "path": "cmd/worker/main.go",
+      "state": "deleted",
+      "sha256": null
+    },
+    {
+      "path": "db/migrations/00004_retire_commit_capture.sql",
+      "state": "present",
+      "sha256": "b52de7c2cfa24eb5da233b8ecb2b1699188bc796780670c22a54ba31a2f8f93f"
+    },
+    {
+      "path": "db/migrations/README.md",
+      "state": "present",
+      "sha256": "fb2bcac3ab60547272e1322441b40588964aabbacebbd18dad5b3df00bd2f672"
+    },
+    {
+      "path": "db/queries/organization/queries.sql",
+      "state": "present",
+      "sha256": "1bf7653ec088d8f6a388fe3b852890581a062a0903512affe0ca1a8c18208681"
+    },
+    {
+      "path": "deploy/local/compose.yaml",
+      "state": "present",
+      "sha256": "7120c70aef1b9dd35590e7fc1123cce48896383bbb2266b774c6160b26f4f992"
+    },
+    {
+      "path": "docs/README.md",
+      "state": "present",
+      "sha256": "bb3fecab815d2fc8aeaf0e2186e0dff2de589faa38c41807efd0647546b99849"
+    },
+    {
+      "path": "docs/adr/016-m02-effective-record-history.md",
+      "state": "present",
+      "sha256": "83ed84f6825133e7328229f0702811a6907b86a9bfe4eed13c45310eab897bba"
+    },
+    {
+      "path": "docs/adr/018-effective-records-and-source-history.md",
+      "state": "present",
+      "sha256": "0c2baa712154ba1b321c5075612bd0b0ccd36ed7295ac40028716cb057287c0c"
+    },
+    {
+      "path": "docs/architecture/007-m02-entry.md",
+      "state": "present",
+      "sha256": "acd66649e5e08a6bf741345ec5a87ccf72648985c8f1f45be49afcd9b1c1399d"
+    },
+    {
+      "path": "docs/architecture/target/03-consistency-contracts.md",
+      "state": "present",
+      "sha256": "55b40ea642d54931ea8149764b8cb63648cfbff58b8febceda4cbd916c16fa25"
+    },
+    {
+      "path": "docs/architecture/target/04-china-localization.md",
+      "state": "present",
+      "sha256": "f9b42426a535825157dec1fc9408ce090676487b63848303d931d1e02382a10a"
+    },
+    {
+      "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+      "state": "present",
+      "sha256": "a8ec010cfdbfba8bd616fab8bd4bc5964773c3e4f2ce8f9c12832feac61cfc69"
+    },
+    {
+      "path": "docs/architecture/target/17-terminology-glossary.md",
+      "state": "present",
+      "sha256": "c05431511c491a90afd569ca14a1fac7045a356db7acb17a45a52e747e481cff"
+    },
+    {
+      "path": "docs/architecture/target/README.md",
+      "state": "present",
+      "sha256": "e7ea0fbeff3cb03f3435fdcb9e52eedee519a3af9c84c673e9fa9ca4ac820ee6"
+    },
+    {
+      "path": "docs/architecture/target/data/business-modules.json",
+      "state": "present",
+      "sha256": "4ca515771d30f53b5d5ae349342dddd3ee0263a4e50a4495da7904d5c90906d4"
+    },
+    {
+      "path": "docs/architecture/target/data/crosscutting-modules.json",
+      "state": "present",
+      "sha256": "a406df8b84bd062c8d2692a0037c3648dc079a7cba781b6fca3f299539f0d2c4"
+    },
+    {
+      "path": "docs/architecture/target/data/render-partial.json",
+      "state": "present",
+      "sha256": "19c3a10b4b90240214c982322634a99e7120720c0b2618a7811f1c2bc4e898cc"
+    },
+    {
+      "path": "docs/architecture/target/data/terminology-glossary.json",
+      "state": "present",
+      "sha256": "eb79c6b8592ec46b8ee444bb7bc54758d2f65716a56bdfc6912362898c9eb1a1"
+    },
+    {
+      "path": "docs/architecture/target/diagrams/e04-effective-adoption.mmd",
+      "state": "present",
+      "sha256": "1268613bd5bf1db3dcf5953df7582a8d95e83cf6221ed8fdd6c410e5dd34593e"
+    },
+    {
+      "path": "docs/architecture/target/diagrams/e04-effective-adoption.svg",
+      "state": "present",
+      "sha256": "c23a91466255ace9ec16c60c7c09d4235bf7abd073bb5ea3e0b013e6ffea80b0"
+    },
+    {
+      "path": "docs/architecture/target/diagrams/x01.mmd",
+      "state": "present",
+      "sha256": "a95ffcd7a446592a0ce1b28a5690576b06a970740bd8c1c9217fab0fbb24a523"
+    },
+    {
+      "path": "docs/architecture/target/diagrams/x01.svg",
+      "state": "present",
+      "sha256": "e19dd36fdf3dd0be4cf0d6212896eebbfb891f9102e7472da9411416ccebdfc8"
+    },
+    {
+      "path": "docs/architecture/target/modules/m01.md",
+      "state": "present",
+      "sha256": "e3056f9056b74c4d028821c9ae6cf151ed8305f62dfcb2f384626b15190636fe"
+    },
+    {
+      "path": "docs/architecture/target/modules/x01.md",
+      "state": "present",
+      "sha256": "bb59cbbd40f11022f3d566ef430da73e3dab75f2a08bddad06536fcc78093a1e"
+    },
+    {
+      "path": "docs/architecture/target/modules/x02.md",
+      "state": "present",
+      "sha256": "bdfced8d53f181be4565110c1e34030be2f13d42d3385e9ef31b307a85ff3d4a"
+    },
+    {
+      "path": "docs/architecture/target/modules/x06.md",
+      "state": "present",
+      "sha256": "f2f040df70b41bac5f0be48bedd853dfc2487e4a4830228538b7d4f88e6d9e8d"
+    },
+    {
+      "path": "docs/governance/registry.json",
+      "state": "present",
+      "sha256": "64a415b306b14d722ee4846765699c421d312a2c06c3a5fdb324bf5a6b27012c"
+    },
+    {
+      "path": "docs/guides/017-local-bu-development.md",
+      "state": "present",
+      "sha256": "220aac434b604ca137bce2e01eed649e7f5a8844d21dec8c9b196298cbf74c17"
+    },
+    {
+      "path": "docs/plans/008-next-steps.md",
+      "state": "present",
+      "sha256": "d5e15905cf89b055c57c7b0e153c465dddd769f4b87ec36b84cec7c5cd1baea2"
+    },
+    {
+      "path": "docs/plans/010-m02-scope-and-plan.md",
+      "state": "present",
+      "sha256": "1a761e13aa6e071d72917c20cb2b7168e22838defbfbd4058a282206b89ad2e2"
+    },
+    {
+      "path": "docs/reference/README.md",
+      "state": "present",
+      "sha256": "2a54d7f8915675df23099c30993801ec77de6b8d78a0d441d2e88f944d8181c5"
+    },
+    {
+      "path": "docs/reference/local-revisions.json",
+      "state": "present",
+      "sha256": "49bb58ffd9de9aa97519d9c7418ef91e8cda3dda81f17e08809260b455ac7a56"
+    },
+    {
+      "path": "docs/specs/README.md",
+      "state": "present",
+      "sha256": "51666ed549b06b595314a74655c7b61888f78ebba7591eff0d43a92602bd908e"
+    },
+    {
+      "path": "docs/specs/m02/011-m02-business-requirements.md",
+      "state": "present",
+      "sha256": "d192100657ea6a89deb207c11e88a0a05f2e40e5c08dd69527fcd4aa0e1efce8"
+    },
+    {
+      "path": "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "state": "present",
+      "sha256": "670e9e414f2f5aedcf6a03e2d5ca5df28ae2c38a5d7af032b5b257a85774fd14"
+    },
+    {
+      "path": "docs/specs/m02/013-m02-technical-design.md",
+      "state": "present",
+      "sha256": "3d54f14f36fb1976ae15959a9ae8f85d77c99c12f8c7a94496a706e107b55e16"
+    },
+    {
+      "path": "docs/templates/business-requirements.md",
+      "state": "present",
+      "sha256": "bb0f753691bd63bce07cad1290ca8e0418f47f840d77f0710caf17ec7be04ddd"
+    },
+    {
+      "path": "docs/templates/technical-design.md",
+      "state": "present",
+      "sha256": "b1438e06230c1bdd4854649a3a5bf880de1169685951225661c63346754bc6a7"
+    },
+    {
+      "path": "docs/verification/018-source-history-simplification.md",
+      "state": "present",
+      "sha256": "88cdd322395387e7b4c8f20e21e1634ebab33b7fc59328d3e4ce0e44db931a1a"
+    },
+    {
+      "path": "docs/verification/README.md",
+      "state": "present",
+      "sha256": "ebfe74ad40819b5da39ef2ecfcfbc337266ae189669c79dc7498d9c788cc3bad"
+    },
+    {
+      "path": "internal/bootstrap/api.go",
+      "state": "present",
+      "sha256": "8fd0d7014f027e20870b376899aa0bbd6fd2af961f81e244474a6e8f461e9eba"
+    },
+    {
+      "path": "internal/bootstrap/runtime.go",
+      "state": "present",
+      "sha256": "e1547426e064a7ab4e76b684743b5fc3debf7d70844bafdfcfe96263c3db52b5"
+    },
+    {
+      "path": "internal/contexts/access/infra/postgres/generated/models.go",
+      "state": "present",
+      "sha256": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8"
+    },
+    {
+      "path": "internal/contexts/organization/README.md",
+      "state": "present",
+      "sha256": "5a404a22c885324e6229d62dec63bd564464171326e83440626bcd4fa17af496"
+    },
+    {
+      "path": "internal/contexts/organization/application/service.go",
+      "state": "present",
+      "sha256": "f21d32c1547bb6e38cfb7781e5f8a62348b766443a875c057f5af98d39a6c8bf"
+    },
+    {
+      "path": "internal/contexts/organization/infra/postgres/capture.go",
+      "state": "deleted",
+      "sha256": null
+    },
+    {
+      "path": "internal/contexts/organization/infra/postgres/capture_test.go",
+      "state": "deleted",
+      "sha256": null
+    },
+    {
+      "path": "internal/contexts/organization/infra/postgres/generated/models.go",
+      "state": "present",
+      "sha256": "9b87f8116d188c727ba032761768f625b09689495a676086a20a6ca92665f7c8"
+    },
+    {
+      "path": "internal/contexts/organization/infra/postgres/generated/queries.sql.go",
+      "state": "present",
+      "sha256": "94fe8d3d8430b92182e6190b4ef145de61e7a747f613aa5766689e3d9297029a"
+    },
+    {
+      "path": "internal/contexts/organization/infra/postgres/queries.go",
+      "state": "present",
+      "sha256": "998eee0eb1ae73ece91f7ac356a1c221876aea1a550144d23e5ba55c90b69e1f"
+    },
+    {
+      "path": "internal/contexts/organization/infra/postgres/store.go",
+      "state": "present",
+      "sha256": "7e29d75aca772e2edcbf318a43c4cc721300d13c53f2424cf84e9dd1742fb7a0"
+    },
+    {
+      "path": "internal/contexts/organization/public/contracts.go",
+      "state": "present",
+      "sha256": "37bfe842d82b20a376693864250353c25d127465c99fc6562aec979dab938560"
+    },
+    {
+      "path": "packages/api-client/src/schema.d.ts",
+      "state": "present",
+      "sha256": "82f18d715d5e9feb19af078880c2ea58eada87ffc56a6f15bfb627eb6eeea0a4"
+    },
+    {
+      "path": "scripts/local-bu.py",
+      "state": "present",
+      "sha256": "eb390468da4172b09293f48a9ac6e67eb09bbd9c349c96f38c9280688c1e725e"
+    },
+    {
+      "path": "tests/e2e/bu.spec.ts",
+      "state": "present",
+      "sha256": "8c1b8dc90cba174b042e26f97657243770420fdc397f423fef4ade0736b73f29"
+    },
+    {
+      "path": "tests/integration/bu_test.go",
+      "state": "present",
+      "sha256": "2d8649f1355cdc44c37694fb9d48a1e9748e50199de89219ff1d92b49bf8e2c7"
+    },
+    {
+      "path": "tests/integration/source_history_test.go",
+      "state": "present",
+      "sha256": "0d925e50e23e12b0451efd32db8086a16a16467c7135f36fd1b7fba8dc29de98"
+    }
+  ],
+  "excluded_from_self_digest": [
+    "docs/verification/018-source-history-evidence.json"
+  ],
+  "adjacent_design_evidence": {
+    "repository": "oracle-fscr",
+    "path": "docs/china-hcm/data/018-source-history-verification.json",
+    "sha256": "b97798b24a091038ad2784df5af1792ff38110c8ebdf2d18d104952cbccde615"
+  },
+  "limits": [
+    "History fixtures do not implement later BU business actions.",
+    "Single-source load sample only; no production recovery or cross-machine upgrade.",
+    "No system-clock changes, external Fusion execution, push or commit.",
+    "Current host time still governs dates, audit displays and sessions."
+  ]
+}

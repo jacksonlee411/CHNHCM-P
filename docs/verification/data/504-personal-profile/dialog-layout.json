@@ -1,0 +1,412 @@
+{
+  "date": "2026-11-23",
+  "product": "CubeBox",
+  "browser": "Chromium 140.0.7339.186",
+  "locale": "zh-CN",
+  "route": "/staffing/job-info/person-01?assignment_id=assignment-1&tab=personal",
+  "prototype_source": "86a5195cab75ce376b0f1342fe8294a7470beb21d8dbc23e1fcc8229861734b1",
+  "html_sha256": "df4799f2e6d3c15b0beb5ca5497e179b0bb61b4298b8c2ab612e04cb32c5fe5e",
+  "measurement": "尺寸均为 CSS 像素。列起点相对弹框左边。各样例的弹框高度、正文有无溢出按 viewports 的顺序列出。窄屏按每个 desktop_rows 内的从左至右顺序逐项显示。仅保留标签、尺寸和控件操作。",
+  "counts": {"section_mode_pairs": 21, "variant_mode_pairs": 36, "samples": 40, "viewport_observations": 280},
+  "viewports": [
+    {
+      "content_viewport": [1440, 900],
+      "zoom_percent": 100,
+      "paper_width": 900,
+      "row_and_column_gap": "10px 36px",
+      "content_padding": "16px 24px",
+      "label_width": 132,
+      "label_to_value_gap": 14,
+      "close_and_final_action_right_inset": 24,
+      "field_columns_by_body_overflow": {"fits": {"field_column_left": [24, 468], "field_column_width": "408px 408px"}}
+    },
+    {
+      "content_viewport": [1440, 540],
+      "zoom_percent": 100,
+      "paper_width": 900,
+      "row_and_column_gap": "10px 36px",
+      "content_padding": "16px 24px",
+      "label_width": 132,
+      "label_to_value_gap": 14,
+      "close_and_final_action_right_inset": 24,
+      "field_columns_by_body_overflow": {
+        "fits": {"field_column_left": [24, 468], "field_column_width": "408px 408px"},
+        "scrolling": {"field_column_left": [24, 468], "field_column_width": "408px 408px"}
+      }
+    },
+    {
+      "content_viewport": [390, 844],
+      "zoom_percent": 100,
+      "paper_width": 390,
+      "row_and_column_gap": "8px 0px",
+      "content_padding": "12px 16px",
+      "label_width": 108,
+      "label_to_value_gap": 12,
+      "close_and_final_action_right_inset": 16,
+      "field_columns_by_body_overflow": {
+        "fits": {"field_column_left": [16], "field_column_width": "358px"},
+        "scrolling": {"field_column_left": [16], "field_column_width": "358px"}
+      }
+    },
+    {
+      "content_viewport": [320, 900],
+      "zoom_percent": 100,
+      "paper_width": 320,
+      "row_and_column_gap": "8px 0px",
+      "content_padding": "12px 16px",
+      "label_width": 108,
+      "label_to_value_gap": 12,
+      "close_and_final_action_right_inset": 16,
+      "field_columns_by_body_overflow": {
+        "fits": {"field_column_left": [16], "field_column_width": "288px"},
+        "scrolling": {"field_column_left": [16], "field_column_width": "288px"}
+      }
+    },
+    {
+      "content_viewport": [320, 256],
+      "zoom_percent": 100,
+      "paper_width": 320,
+      "row_and_column_gap": "8px 0px",
+      "content_padding": "12px 16px",
+      "label_width": 108,
+      "label_to_value_gap": 12,
+      "close_and_final_action_right_inset": 16,
+      "field_columns_by_body_overflow": {"scrolling": {"field_column_left": [16], "field_column_width": "288px"}}
+    },
+    {
+      "content_viewport": [640, 450],
+      "zoom_percent": 200,
+      "paper_width": 576,
+      "row_and_column_gap": "10px 36px",
+      "content_padding": "16px 24px",
+      "label_width": 132,
+      "label_to_value_gap": 10,
+      "close_and_final_action_right_inset": 24,
+      "field_columns_by_body_overflow": {
+        "fits": {"field_column_left": [24, 306], "field_column_width": "246px 246px"},
+        "scrolling": {"field_column_left": [24, 302], "field_column_width": "242.25px 242.25px"}
+      }
+    },
+    {
+      "content_viewport": [320, 225],
+      "zoom_percent": 400,
+      "paper_width": 320,
+      "row_and_column_gap": "8px 0px",
+      "content_padding": "12px 16px",
+      "label_width": 108,
+      "label_to_value_gap": 12,
+      "close_and_final_action_right_inset": 16,
+      "field_columns_by_body_overflow": {"scrolling": {"field_column_left": [16], "field_column_width": "284.25px"}}
+    }
+  ],
+  "breakpoint_samples": [
+    {"width": 320, "columns": 1, "full": true, "paperWidth": 320, "gridWidth": 288},
+    {"width": 390, "columns": 1, "full": true, "paperWidth": 390, "gridWidth": 358},
+    {"width": 599, "columns": 1, "full": true, "paperWidth": 599, "gridWidth": 567},
+    {"width": 600, "columns": 2, "full": false, "paperWidth": 536, "gridWidth": 488},
+    {"width": 1440, "columns": 2, "full": false, "paperWidth": 900, "gridWidth": 852}
+  ],
+  "native_zoom": {
+    "method": "有界面 Chromium 在隔离的 X 显示器上通过 Ctrl 加号及 Ctrl+0 操作，每次直接读取内容尺寸和浏览器缩放后的 devicePixelRatio，保持窗口外框固定并恢复 100%。",
+    "calibration": {"width": 1280, "height": 900, "outer": [1280, 987], "factor": 1}
+  },
+  "modes": {
+    "查看": {"title_suffix": "记录详情", "header_right": ["关闭"], "footer_right": ["关闭"]},
+    "新增": {"title_suffix": "新增记录", "header_right": ["关闭"], "footer_right": ["取消", "应用"]},
+    "编辑": {"title_suffix": "编辑记录", "header_right": ["关闭"], "footer_right": ["取消", "应用"]}
+  },
+  "layouts": [
+    {
+      "section": "身份证件",
+      "variant": "有期限",
+      "desktop_rows": [["证件类型", "证件号码"], ["证件姓名", "签发国家/地区"], ["签发机关", "签发日期"], ["到期日期", "长期有效"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [349, 349, 844, 900, 256, 349, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [357, 357, 844, 900, 256, 357, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [357, 357, 844, 900, 256, 357, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        }
+      ]
+    },
+    {
+      "section": "身份证件",
+      "variant": "长期有效",
+      "desktop_rows": [["证件类型", "证件号码"], ["证件姓名", "签发国家/地区"], ["签发机关", "签发日期"], ["长期有效"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [349, 349, 844, 900, 256, 375, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [356, 356, 844, 900, 256, 356, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [356, 356, 844, 900, 256, 356, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        }
+      ]
+    },
+    {
+      "section": "地址",
+      "variant": "通用",
+      "desktop_rows": [["地址类型", "国家/地区"], ["省/州", "地址地区"], ["详细地址", "邮政编码"], ["主要地址"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [349, 349, 844, 900, 256, 375, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [429, 429, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [429, 429, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        }
+      ]
+    },
+    {
+      "section": "联系方式",
+      "variant": "电话",
+      "desktop_rows": [["联系渠道", "联系用途"], ["电话", "主要联系方式"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [257, 257, 844, 900, 256, 257, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [297, 297, 844, 900, 256, 297, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [297, 297, 844, 900, 256, 297, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        }
+      ]
+    },
+    {
+      "section": "联系方式",
+      "variant": "电子邮箱",
+      "desktop_rows": [["联系渠道", "联系用途"], ["电子邮箱", "主要联系方式"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [257, 257, 844, 900, 256, 283, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [297, 297, 844, 900, 256, 297, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [297, 297, 844, 900, 256, 297, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        }
+      ]
+    },
+    {
+      "section": "家庭成员与紧急联系人",
+      "variant": "通用",
+      "desktop_rows": [["联系人姓名", "与员工关系"], ["出生日期", "工作单位"], ["职务", "电话"], ["电子邮箱", "紧急联系人"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [349, 349, 844, 900, 256, 375, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "查看",
+          "paper_height": [349, 349, 844, 900, 256, 349, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [357, 357, 844, 900, 256, 357, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [357, 357, 844, 900, 256, 357, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [357, 357, 844, 900, 256, 357, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        }
+      ]
+    },
+    {
+      "section": "教育经历",
+      "variant": "学习经历",
+      "desktop_rows": [["教育记录类型", "学校/授予院校"], ["所学专业", "学历"], ["学位", "学习形式"], ["教育途径", "入学年月"], ["毕业/结束年月", "教育完成状态"], ["最高学历", "最高学位"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [441, 441, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "查看",
+          "paper_height": [467, 467, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [549, 476, 844, 900, 256, 386, 225],
+          "body_overflow": [false, true, false, false, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [555, 476, 844, 900, 256, 386, 225],
+          "body_overflow": [false, true, true, true, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [555, 476, 844, 900, 256, 386, 225],
+          "body_overflow": [false, true, true, true, true, true, true]
+        }
+      ]
+    },
+    {
+      "section": "教育经历",
+      "variant": "已取得学历",
+      "desktop_rows": [["教育记录类型", "学校/授予院校"], ["所学专业", "学历"], ["学习形式", "教育途径"], ["毕业/结束年月", "最高学历"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [349, 349, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [448, 448, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [454, 454, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        }
+      ]
+    },
+    {
+      "section": "教育经历",
+      "variant": "学位授予",
+      "desktop_rows": [["教育记录类型", "学校/授予院校"], ["所学专业", "学位"], ["学位授予日期", "最高学位"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [303, 303, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [397, 397, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [403, 403, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        }
+      ]
+    },
+    {
+      "section": "专业技术职称、职业资格与技能等级证书",
+      "variant": "有期限",
+      "desktop_rows": [["凭证类别", "职称/资格名称"], ["等级", "专业方向"], ["证书编号", "颁发机构"], ["签发日期", "有效起始日期"], ["有效截止日期", "长期有效"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [421, 421, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [457, 457, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [460, 460, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        }
+      ]
+    },
+    {
+      "section": "专业技术职称、职业资格与技能等级证书",
+      "variant": "长期有效",
+      "desktop_rows": [["凭证类别", "职称/资格名称"], ["等级", "专业方向"], ["证书编号", "颁发机构"], ["签发日期", "有效起始日期"], ["长期有效"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [395, 395, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [456, 456, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [462, 462, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        }
+      ]
+    },
+    {
+      "section": "银行账户",
+      "variant": "通用",
+      "desktop_rows": [["银行名称", "开户支行"], ["户名", "银行账号"], ["币种", "主要账户"]],
+      "samples": [
+        {
+          "mode": "查看",
+          "paper_height": [303, 303, 844, 900, 256, 357, 225],
+          "body_overflow": [false, false, false, false, true, false, true]
+        },
+        {
+          "mode": "新增",
+          "paper_height": [372, 372, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        },
+        {
+          "mode": "编辑",
+          "paper_height": [375, 375, 844, 900, 256, 386, 225],
+          "body_overflow": [false, false, false, false, true, true, true]
+        }
+      ]
+    }
+  ],
+  "education_edit_at_320x256": {
+    "wheel": {
+      "before": {"scroll": 0, "headerTop": 0, "footerTop": 168, "lastVisible": false},
+      "after": {"scroll": 646, "headerTop": 0, "footerTop": 168, "lastVisible": true},
+      "footerTabOrder": ["取消", "应用"]
+    },
+    "footer_hint": "新增和编辑底栏在操作前提示应用到本页草稿、最后统一保存。"
+  }
+}

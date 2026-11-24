@@ -1,0 +1,108 @@
+{
+  "document": "CHNHCM-122",
+  "checked_on": "2026-11-04",
+  "evidence_boundary": "官方文档为设计参考；PeopleSoft为历史系统样本观察；二者均不是本仓产品验证。",
+  "sources": [
+    {
+      "id": "MS-AUDIT",
+      "publisher": "Microsoft",
+      "title": "Manage Dataverse auditing",
+      "url": "https://learn.microsoft.com/en-us/power-platform/admin/manage-dataverse-auditing#use-the-audit-history-in-a-model-driven-app",
+      "version": "在线文档，2026-11-04重新核对",
+      "facts": [
+        "单记录Audit History展示操作、操作者及字段前后值；View Audit History是独立权限",
+        "文档示例按字段筛选"
+      ],
+      "adopt": [
+        "操作分组表格和前后值直观展示",
+        "摘要读取与历史读取分别授权"
+      ],
+      "not_adopt": [
+        "独立Filter on下拉框：用户要求复用当前表格筛选",
+        "删除审计日志、环境级审计平台",
+        "不把其标签显示/时区/模型直接当作本项目保存时快照合同"
+      ]
+    },
+    {
+      "id": "MS-MODIFIED",
+      "publisher": "Microsoft",
+      "title": "Account table/entity reference: ModifiedBy / ModifiedOn",
+      "url": "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/reference/entities/account#modifiedby",
+      "version": "在线文档，2026-11-04重新核对",
+      "facts": [
+        "只读属性ModifiedBy和ModifiedOn可用于表单、表示记录最后修改者及时间"
+      ],
+      "adopt": [
+        "资料表单可直接展示最小修改元数据"
+      ],
+      "limits": [
+        "不证明Dataverse默认在底部并排展示姓名账号；不证明本项目按日修订的具体归因"
+      ]
+    },
+    {
+      "id": "PS-DOC",
+      "publisher": "Oracle",
+      "title": "PeopleSoft Enterprise HRMS 9.1 Application Fundamentals PeopleBook - Setting Up Jobs",
+      "url": "https://docs.oracle.com/cd/E20215_01/hr91pbr1/eng/psbooks/hhaf/htm/hhaf14.htm",
+      "version": "HRMS 9.1，2026-11-04重新核对",
+      "facts": [
+        "职务代码概要提供Updated On和Updated By"
+      ],
+      "adopt": [
+        "最近一次操作信息作为表单辅助元数据"
+      ],
+      "limits": [
+        "不采用SetID/TableSet、历史界面日期格式或同日序号；不作为当前业务法规依据"
+      ]
+    },
+    {
+      "id": "PS-LIVE",
+      "publisher": "本地PeopleSoft学习环境观察",
+      "title": "职务代码概要页底部更新时间和更新用户",
+      "observed_at": "2026-11-04T07:05:15.664Z",
+      "navigation": "设置 HRMS → 基础表 → 职务属性 → 职务代码表 → 职务代码概要",
+      "sample": {
+        "set_id": "SHARE",
+        "job_code": "110000",
+        "title": "Accountant",
+        "effective_date_as_displayed": "1980/01/01",
+        "row_count_as_displayed": "1/1",
+        "updated_time_as_displayed": "06/05/23 14:07:43",
+        "updated_user_as_displayed": "SAMPLE"
+      },
+      "facts": [
+        "业务字段及国家区块之后、保存等按钮之前，常显更新时间和更新用户，无需进入变更日志或展开来源"
+      ],
+      "field_ids": [
+        "JOBCODE_TBL_LASTUPDDTTM$0",
+        "JOBCODE_TBL_LASTUPDOPRID$0"
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reference/122-operation-summary/job-code-profile-overview.png",
+          "sha256": "1cd4a619f96758767ec11fbf9506d01bc60ee8f0682653c9839c4b9b19ba7e23",
+          "origin": "本对话前轮PeopleSoft实机观察，2026-11-04；本轮只保全原截图，不重新运行或改图"
+        },
+        {
+          "path": "docs/reference/122-operation-summary/job-code-update-footer.png",
+          "sha256": "2d74a2ad2699f563fadbc2361bc0888dd24d03551c3d371ff586da1bc3d27dff",
+          "origin": "本对话前轮PeopleSoft实机观察，2026-11-04；本轮只保全原截图，不重新运行或改图"
+        }
+      ],
+      "limits": [
+        "此样本为职务代码概要，不等同人员Job Data的职务信息页",
+        "只观察一个生效记录，未验证多修订归因、姓名账号并列或历史权限矩阵",
+        "前轮人员职务信息样本未观察到同类字段，不能外推所有页面",
+        "本轮未重新登录或验证VM状态，只有截图原字节和官方文档复核"
+      ]
+    }
+  ],
+  "project_decisions": [
+    "基本资料业务字段底部一行操作者：姓名（账号）、操作时间；次级文字默认可见",
+    "所选记录修订创建来源决定归因，不采用BU最新头",
+    "正文取消重复来源说明；日志查看列承接准确原件链接和来源行展开",
+    "复用现有单列筛选、应用/取消/清除，原示意图独立筛选框不作为现行规范",
+    "本项目身份快照、字段裁剪、删除前后目标及分页上界是自有合同，非来源产品已证明的共同机制"
+  ],
+  "license_boundary": "仅保存本地学习环境界面观察截图及出处元数据；不复制Oracle/Microsoft运行代码，不增加运行或构建依赖。"
+}

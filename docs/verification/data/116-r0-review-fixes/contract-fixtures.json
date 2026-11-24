@@ -1,0 +1,2328 @@
+{
+  "schema_version": 1,
+  "contract": "CHNHCM-116/117/118/119/120/121",
+  "date": "2026-11-04",
+  "purpose": "用户采纳的未生效授权、有效父边/历史引用及启停路径补充预期；全为手工设计，未运行产品。",
+  "extends": "docs/verification/data/116-r0/contract-fixtures.json",
+  "alias_policy": "I/E/BU_A/BU_B/P/C及记录/来源别名由未来驱动映射至隔离库身份，不从被测算法生成expected；每个独立variant重置before。",
+  "date_semantics": "YYYY-MM-DD，区间[start,end)，null结束为开放；执行日与查看日分别给定；受控Clock不修改主机时间。",
+  "defaults": {
+    "instance": "I",
+    "enterprise": "E",
+    "enterprise_name": "高谷集团",
+    "enterprise_active": [
+      "2026-01-01",
+      null
+    ],
+    "execution_date": "2026-11-04",
+    "business_date": "2026-11-04",
+    "business_units": {
+      "BU_A": [
+        "2026-01-01",
+        null
+      ],
+      "BU_B": [
+        "2026-01-01",
+        null
+      ]
+    },
+    "department_name": "组织发展部",
+    "department_short_name": null,
+    "department_code": "ORG001",
+    "parent_null_means": "enterprise_root",
+    "record_reasons": {
+      "CREATE": "NEW_ORGANIZATION",
+      "CHANGE": "OTHER_DATA_ADJUSTMENT",
+      "DEACTIVATE": "ORG_RESTRUCTURING",
+      "REACTIVATE": "BUSINESS_RESUMPTION"
+    },
+    "source_building": "before资料/层级在共同当前来源一致；先给定父源再建立部门源证据，source_order或sequence显式覆盖。纯停用继承前序准确资料和成员引用。",
+    "submission_identity": "每个命令不同的本人提交号；重试/resolve沿用其原号。",
+    "grant_contract": "每条grant在scope/action/fields上完整匹配；profile不表示隐含超级权限。对不存在部门的创建使用候选BU范围。 read_fields_ref/write_fields_ref引用field_sets的完整数组，驱动逐条展开，不跨Grant合并写字段。"
+  },
+  "grant_profiles": {
+    "enterprise_full": [
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.create",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_3"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.record.add",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.record.correct",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.deactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.reactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.record.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.record.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.record.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.deactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.deactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.deactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.reactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.reactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.reactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.first.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.first.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.export",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.reassign",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "enterprise",
+        "scope_id": "E",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "maintain_A": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.create",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_3"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.add",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.correct",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.first.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.first.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.export",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reassign",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "maintain_AB": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.create",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_3"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.add",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.correct",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.first.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.first.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.export",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reassign",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.create",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_3"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.add",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.correct",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.deactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.deactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.deactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.deactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reactivation.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.first.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.first.reclassify",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.export",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reassign",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "read_A": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.export",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "read_B": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.export",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "create_A_only": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.create",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_3"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "create_read_A": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.create",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_3"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "correct_AB_without_reclassify": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.record.correct",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reassign",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.correct",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reassign",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "lifecycle_A_without_reassign": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reactivate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.deactivation.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "rollback_B_without_reassign": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.delete",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.record.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_4"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "department.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_B",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "path_reader_no_ancestor": [
+      {
+        "scope_kind": "department",
+        "scope_id": "C",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "department",
+        "scope_id": "C",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "department",
+        "scope_id": "C",
+        "action": "department.export",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      }
+    ],
+    "first_redate_A": [
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.history.read",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "bu.reference.read",
+        "read_fields_ref": "fields_5",
+        "write_fields_ref": "fields_2"
+      },
+      {
+        "scope_kind": "bu",
+        "scope_id": "BU_A",
+        "action": "department.first.redate",
+        "read_fields_ref": "fields_1",
+        "write_fields_ref": "fields_6"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "D20",
+      "title": "未来首条创建后读取及丢响应查回",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-030",
+        "M02-BR-032",
+        "M02-AC-039"
+      ],
+      "actor_profile": "maintain_A",
+      "before": {},
+      "command": {
+        "create": {
+          "department": "C",
+          "date": "2027-01-01",
+          "bu": "BU_A",
+          "parent": null,
+          "reason": "NEW_ORGANIZATION"
+        },
+        "drop_response_after_commit": true,
+        "then": [
+          "list_today",
+          "detail_today",
+          "read_at_2027-01-01",
+          "resolve_same_submission"
+        ]
+      },
+      "expected": {
+        "accepted": true,
+        "authorization_bu": "BU_A",
+        "today_status": "NOT_EFFECTIVE",
+        "today_effective_parent_edges": 0,
+        "today_path_mode": "no_fact",
+        "today_path": null,
+        "future_parent": "E",
+        "future_path": "高谷集团 / 组织发展部",
+        "resolve": "accepted",
+        "same_submission_and_source": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D21",
+      "title": "创建缺少保存后读取或查回权限拒绝",
+      "rules": [
+        "M02-BR-030",
+        "M02-BR-032",
+        "M02-AC-039"
+      ],
+      "actor_profile": "create_A_only",
+      "before": {},
+      "command": {
+        "variants": [
+          {
+            "actor_profile": "create_A_only"
+          },
+          {
+            "actor_profile": "create_read_A"
+          }
+        ],
+        "create": {
+          "department": "C",
+          "date": "2027-01-01",
+          "bu": "BU_A",
+          "parent": null
+        }
+      },
+      "expected": {
+        "each_variant_accepted": false,
+        "failure_category": "authorization_denied",
+        "new_department_rows": 0,
+        "new_hierarchy_business_rows": 0,
+        "grant_auto_added": false,
+        "owner_resolve_rejected_without_target_allowed": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D22",
+      "title": "同BU首条后移未来不改变授权归属",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-030",
+        "M02-AC-039"
+      ],
+      "actor_profile": "first_redate_A",
+      "before": {
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "redate": "C_FIRST",
+        "new_date": "2027-01-01",
+        "then": [
+          "detail_today",
+          "resolve_same_submission"
+        ]
+      },
+      "expected": {
+        "accepted": true,
+        "authorization_bu_before": "BU_A",
+        "authorization_bu_after": "BU_A",
+        "today_status": "NOT_EFFECTIVE",
+        "today_path_mode": "no_fact",
+        "today_effective_parent_edges": 0,
+        "record_identity_unchanged": true,
+        "reassign_required": false,
+        "old_source_unchanged": true,
+        "resolve": "accepted"
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D23",
+      "title": "未生效首条BU纠错完整授权且继承CREATE分类",
+      "rules": [
+        "M02-BR-026",
+        "M02-BR-030",
+        "M02-AC-035",
+        "M02-AC-039"
+      ],
+      "actor_profile": "correct_AB_without_reclassify",
+      "before": {
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2027-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ],
+        "reason": "NEW_ORGANIZATION"
+      },
+      "command": {
+        "correct": "C_FIRST",
+        "bu": "BU_B",
+        "parent": null,
+        "variants": [
+          {
+            "actor_profile": "maintain_A",
+            "expected": "denied"
+          },
+          {
+            "actor_profile": "correct_AB_without_reclassify",
+            "expected": "accepted"
+          }
+        ]
+      },
+      "expected": {
+        "authorized_variant_accepted": true,
+        "authorization_bu_after": "BU_B",
+        "today_status": "NOT_EFFECTIVE",
+        "operation_type": "CREATE",
+        "reason": "NEW_ORGANIZATION",
+        "reclassify_required": false,
+        "old_source_unchanged": true,
+        "read_A_after": false,
+        "read_B_after": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D24",
+      "title": "未来转入按执行日切换且查看日旧源不能扩权",
+      "rules": [
+        "M02-BR-030",
+        "M02-BR-033",
+        "M02-AC-039",
+        "M02-AC-040"
+      ],
+      "actor_profile": "read_A",
+      "before": {
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_MOVE",
+            "date": "2027-01-01",
+            "operation_type": "CHANGE",
+            "status": "ACTIVE",
+            "bu": "BU_B",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ],
+        "selection": "SV_A"
+      },
+      "command": {
+        "controlled_execution_dates": [
+          "2026-12-31",
+          "2027-01-01"
+        ],
+        "business_dates": [
+          "2026-01-01",
+          "2027-01-01"
+        ],
+        "read_modes": [
+          "current",
+          "explicit_source_before_move"
+        ],
+        "profiles": [
+          "read_A",
+          "read_B"
+        ],
+        "export_old_selection_on": "2027-01-01"
+      },
+      "expected": {
+        "authorization_bu_on_2026_12_31": "BU_A",
+        "authorization_bu_on_2027_01_01": "BU_B",
+        "before_transfer_read_A": true,
+        "before_transfer_read_B": false,
+        "after_transfer_read_A": false,
+        "after_transfer_read_B": true,
+        "business_date_or_source_changes_authorization": false,
+        "old_selection_export_accepted": false,
+        "department_head_changed_by_clock": false,
+        "grant_rows_changed_by_clock": false
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D25",
+      "title": "停用部门与停用BU仍可按既有范围读取",
+      "rules": [
+        "M02-BR-027",
+        "M02-BR-030",
+        "M02-AC-039"
+      ],
+      "actor_profile": "read_A",
+      "before": {
+        "BU_A": {
+          "active_start": "2026-01-01",
+          "active_end": "2026-06-01"
+        },
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "read": "C",
+        "business_date": "2026-11-04",
+        "read_modes": [
+          "current",
+          "explicit_source"
+        ],
+        "resolve_own_accepted_submission": true
+      },
+      "expected": {
+        "read_allowed": true,
+        "authorization_bu": "BU_A",
+        "status": "INACTIVE",
+        "effective_parent_edges_today": 0,
+        "path_mode": "inactive_before_stop",
+        "path_business_date": "2026-05-31",
+        "resolve": "accepted",
+        "bu_active_required_for_read": false
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D26",
+      "title": "停用下级旧引用不阻断父部门后续转BU",
+      "rules": [
+        "M02-BR-027",
+        "M02-BR-028",
+        "M02-BR-029",
+        "M02-AC-036"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ],
+        "child_source": "CS_STOP"
+      },
+      "command": {
+        "move": "P",
+        "date": "2026-07-01",
+        "bu": "BU_B",
+        "parent": null,
+        "then_read_child_on": "2026-11-04",
+        "reason": "ORGANIZATION_REASSIGNMENT"
+      },
+      "expected": {
+        "accepted": true,
+        "child_head": "CS_STOP",
+        "child_source_unchanged": true,
+        "child_history_reference_retained": true,
+        "child_active_parent_period": [
+          "2026-01-01",
+          "2026-06-01"
+        ],
+        "child_authorization_bu": "BU_A",
+        "child_path_business_date": "2026-05-31",
+        "child_path": "高谷集团 / 组织效能中心 / 组织发展部",
+        "child_rows_auto_moved": 0
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D27",
+      "title": "当前停用但未来恢复仍约束父部门转BU",
+      "rules": [
+        "M02-BR-027",
+        "M02-BR-028",
+        "M02-AC-036"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_RESUME",
+            "date": "2026-08-01",
+            "operation_type": "REACTIVATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "move": "P",
+        "date": "2026-07-01",
+        "bu": "BU_B",
+        "parent": null,
+        "reason": "ORGANIZATION_REASSIGNMENT",
+        "execution_date": "2026-06-15"
+      },
+      "expected": {
+        "accepted": false,
+        "invalid_interval": [
+          "2026-08-01",
+          null
+        ],
+        "failure_category": "cross_bu_active_parent",
+        "all_business_heads_unchanged": true,
+        "child_auto_changed": false
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D28",
+      "title": "恢复原上级不合格需明确改选或获权转BU",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-026",
+        "M02-BR-027",
+        "M02-BR-030",
+        "M02-AC-036"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          },
+          {
+            "record": "P_MOVE",
+            "date": "2026-07-01",
+            "operation_type": "CHANGE",
+            "status": "ACTIVE",
+            "bu": "BU_B",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "reactivate": "C",
+        "date": "2026-08-01",
+        "variants": [
+          {
+            "bu": "BU_A",
+            "parent": "P",
+            "actor_profile": "enterprise_full"
+          },
+          {
+            "bu": "BU_A",
+            "parent": null,
+            "actor_profile": "enterprise_full"
+          },
+          {
+            "bu": "BU_B",
+            "parent": "P",
+            "actor_profile": "maintain_A"
+          },
+          {
+            "bu": "BU_B",
+            "parent": "P",
+            "actor_profile": "maintain_AB"
+          }
+        ]
+      },
+      "expected": {
+        "variant_accepted": [
+          false,
+          true,
+          false,
+          true
+        ],
+        "successful_edge_start": "2026-08-01",
+        "successful_operation_type": "REACTIVATE",
+        "successful_reason": "BUSINESS_RESUMPTION",
+        "relation_identity_change_requires_reassign": true,
+        "silent_parent_clear": false,
+        "new_active_member_reference": true,
+        "old_sources_unchanged": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D29",
+      "title": "删除停用恢复出跨BU父边拒绝",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-027",
+        "M02-AC-036"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          },
+          {
+            "record": "P_MOVE",
+            "date": "2026-07-01",
+            "operation_type": "CHANGE",
+            "status": "ACTIVE",
+            "bu": "BU_B",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "delete": "C_STOP"
+      },
+      "expected": {
+        "accepted": false,
+        "invalid_interval": [
+          "2026-07-01",
+          null
+        ],
+        "all_business_heads_unchanged": true,
+        "original_stop_revision_retained": true,
+        "partial_business_writes": 0
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D30",
+      "title": "后移停用延长出跨BU父边拒绝",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-027",
+        "M02-AC-036"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          },
+          {
+            "record": "P_MOVE",
+            "date": "2026-07-01",
+            "operation_type": "CHANGE",
+            "status": "ACTIVE",
+            "bu": "BU_B",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "redate": "C_STOP",
+        "new_date": "2026-08-01"
+      },
+      "expected": {
+        "accepted": false,
+        "invalid_interval": [
+          "2026-07-01",
+          "2026-08-01"
+        ],
+        "all_business_heads_unchanged": true,
+        "partial_business_writes": 0
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D31",
+      "title": "前移父部门停用使下级失去覆盖拒绝",
+      "rules": [
+        "M02-BR-027",
+        "M02-BR-028",
+        "M02-AC-036"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          },
+          {
+            "record": "P_STOP",
+            "date": "2026-08-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-07-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "redate": "P_STOP",
+        "new_date": "2026-06-01"
+      },
+      "expected": {
+        "accepted": false,
+        "invalid_interval": [
+          "2026-06-01",
+          "2026-07-01"
+        ],
+        "all_business_heads_unchanged": true,
+        "partial_business_writes": 0
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D32",
+      "title": "删除停用须先过生命周期且不自动删除恢复",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-028",
+        "M02-AC-035",
+        "M02-AC-036"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_RESUME",
+            "date": "2026-08-01",
+            "operation_type": "REACTIVATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "independent_variants": [
+          {
+            "delete": "C_STOP"
+          },
+          {
+            "delete_fixed_pair": [
+              "C_STOP",
+              "C_RESUME"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "single_delete_accepted": false,
+        "single_delete_failure": "reactivate_without_deactivation",
+        "single_delete_auto_removed_records": 0,
+        "fixed_pair_accepted": true,
+        "fixed_pair_final_active_parent_period": [
+          "2026-01-01",
+          null
+        ],
+        "fixed_pair_intermediate_commit": false,
+        "old_sources_unchanged": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D33",
+      "title": "合法停用改日更新解析日且保留旧源",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-028",
+        "M02-BR-029",
+        "M02-AC-037"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          },
+          {
+            "record": "P_NAME",
+            "date": "2026-07-01",
+            "operation_type": "CHANGE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织管理中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-08-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ],
+        "source_order": [
+          "P_NAME",
+          "CS_STOP"
+        ],
+        "child_old_source": "CS_STOP"
+      },
+      "command": {
+        "redate": "C_STOP",
+        "new_date": "2026-07-01",
+        "read_date": "2026-11-04"
+      },
+      "expected": {
+        "accepted": true,
+        "current_path_business_date": "2026-06-30",
+        "current_path": "高谷集团 / 组织效能中心 / 组织发展部",
+        "old_source_path_business_date": "2026-07-31",
+        "old_source_path": "高谷集团 / 组织管理中心 / 组织发展部",
+        "old_source_unchanged": true,
+        "current_child_edge_end": "2026-07-01",
+        "same_record_identity": true,
+        "additional_same_day_events": 0
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D34",
+      "title": "提前登记停用后祖先更名进入当前路径而不改旧证据",
+      "rules": [
+        "M02-BR-029",
+        "M02-BR-033",
+        "M02-AC-037",
+        "M02-AC-040"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "sequence": [
+          {
+            "execution_date": "2026-05-01",
+            "stop": "C",
+            "date": "2026-08-01",
+            "source": "CS_STOP"
+          },
+          {
+            "execution_date": "2026-05-01",
+            "select_child": "C",
+            "business_date": "2026-09-01",
+            "selection": "SV_BEFORE_PARENT_RENAME"
+          },
+          {
+            "execution_date": "2026-06-01",
+            "rename": "P",
+            "date": "2026-07-01",
+            "name": "组织管理中心",
+            "reason": "NAME_ADJUSTMENT"
+          },
+          {
+            "execution_date": "2026-09-01",
+            "read": "C",
+            "business_date": "2026-09-01",
+            "read_modes": [
+              "current",
+              "explicit_CS_STOP"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "child_head_after_parent_rename": "CS_STOP",
+        "current_path_business_date": "2026-07-31",
+        "current_path": "高谷集团 / 组织管理中心 / 组织发展部",
+        "explicit_head_source_path": "高谷集团 / 组织效能中心 / 组织发展部",
+        "current_and_explicit_head_modes_distinct": true,
+        "child_head_changed_by_parent_rename": false,
+        "path_version_changed": true,
+        "old_selection_usable": false
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D35",
+      "title": "停用前回溯更正影响当前解释而停用后变化不带入",
+      "rules": [
+        "M02-BR-029",
+        "M02-AC-037"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ],
+        "child_source": "CS_STOP"
+      },
+      "command": {
+        "sequence": [
+          {
+            "rename": "P",
+            "date": "2026-04-01",
+            "name": "组织管理中心",
+            "reason": "NAME_ADJUSTMENT"
+          },
+          {
+            "rename": "P",
+            "date": "2026-07-01",
+            "name": "组织运营中心",
+            "reason": "NAME_ADJUSTMENT"
+          },
+          {
+            "read": "C",
+            "business_date": "2026-11-04",
+            "read_modes": [
+              "current",
+              "explicit_CS_STOP"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "current_path_business_date": "2026-05-31",
+        "current_path": "高谷集团 / 组织管理中心 / 组织发展部",
+        "explicit_source_path": "高谷集团 / 组织效能中心 / 组织发展部",
+        "post_stop_name_used": false,
+        "child_head": "CS_STOP",
+        "child_sources_unchanged": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D36",
+      "title": "停用路径祖先失权时所有模式整条裁剪",
+      "rules": [
+        "M02-BR-031",
+        "M02-BR-033",
+        "M02-AC-039",
+        "M02-AC-040"
+      ],
+      "actor_profile": "path_reader_no_ancestor",
+      "before": {
+        "P": [
+          {
+            "record": "P_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织效能中心"
+          },
+          {
+            "record": "P_MOVE",
+            "date": "2026-07-01",
+            "operation_type": "CHANGE",
+            "status": "ACTIVE",
+            "bu": "BU_B",
+            "parent": null,
+            "name": "组织效能中心"
+          }
+        ],
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_STOP",
+            "date": "2026-06-01",
+            "operation_type": "DEACTIVATE",
+            "status": "INACTIVE",
+            "bu": "BU_A",
+            "parent": "P",
+            "name": "组织发展部"
+          }
+        ],
+        "child_source": "CS_STOP"
+      },
+      "command": {
+        "read_modes": [
+          "current",
+          "explicit_CS_STOP"
+        ],
+        "business_date": "2026-11-04",
+        "then": "export_child"
+      },
+      "expected": {
+        "child_read_allowed": true,
+        "path_mode": "restricted",
+        "path": null,
+        "path_business_date_disclosed": false,
+        "ancestor_ids_names_count_or_sources_disclosed": false,
+        "csv_department_path": "",
+        "false_root_path": false,
+        "not_reported_as_no_fact": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D37",
+      "title": "删除改日归属记录产生回退须检查额外权限",
+      "rules": [
+        "M02-BR-030",
+        "M02-AC-039"
+      ],
+      "actor_profile": "rollback_B_without_reassign",
+      "before": {
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          },
+          {
+            "record": "C_MOVE",
+            "date": "2026-07-01",
+            "operation_type": "CHANGE",
+            "status": "ACTIVE",
+            "bu": "BU_B",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ],
+        "move_reason": "ORGANIZATION_REASSIGNMENT"
+      },
+      "command": {
+        "independent_variants": [
+          {
+            "delete": "C_MOVE"
+          },
+          {
+            "redate": "C_MOVE",
+            "new_date": "2026-08-01"
+          }
+        ],
+        "authorized_repeats_profile": "maintain_AB"
+      },
+      "expected": {
+        "unauthorized_variant_accepted": [
+          false,
+          false
+        ],
+        "failure_category": "authorization_denied",
+        "reassign_required": true,
+        "relation_field_write_required": true,
+        "required_relation_bu_scopes": [
+          "BU_A",
+          "BU_B"
+        ],
+        "authorized_variant_accepted": [
+          true,
+          true
+        ],
+        "old_sources_unchanged": true
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D38",
+      "title": "纯启停关闭重开同一关系不追加归属权限",
+      "rules": [
+        "M02-BR-025",
+        "M02-BR-028",
+        "M02-BR-030",
+        "M02-AC-039"
+      ],
+      "actor_profile": "lifecycle_A_without_reassign",
+      "before": {
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ]
+      },
+      "command": {
+        "sequence": [
+          {
+            "stop": "C",
+            "date": "2026-06-01"
+          },
+          {
+            "reactivate": "C",
+            "date": "2026-08-01"
+          }
+        ]
+      },
+      "expected": {
+        "accepted_commands": 2,
+        "effective_parent_periods": [
+          [
+            "2026-01-01",
+            "2026-06-01"
+          ],
+          [
+            "2026-08-01",
+            null
+          ]
+        ],
+        "inactive_interval_has_effective_edge": false,
+        "inactive_adoption_reference_retained": true,
+        "reactivation_member_reference_new": true,
+        "reassign_required": false,
+        "reference_revision_change_is_structural": true,
+        "same_day_second_event_created": false
+      },
+      "actual_result": "not_run"
+    },
+    {
+      "id": "D39",
+      "title": "结束父边中途失败无部分事实",
+      "rules": [
+        "M02-BR-028",
+        "M02-BR-032",
+        "M02-AC-038"
+      ],
+      "actor_profile": "enterprise_full",
+      "before": {
+        "C": [
+          {
+            "record": "C_FIRST",
+            "date": "2026-01-01",
+            "operation_type": "CREATE",
+            "status": "ACTIVE",
+            "bu": "BU_A",
+            "parent": null,
+            "name": "组织发展部"
+          }
+        ],
+        "snapshot_groups": [
+          "department",
+          "department_hierarchy",
+          "bu"
+        ]
+      },
+      "command": {
+        "stop": "C",
+        "date": "2026-06-01",
+        "inject_failure_after": "hierarchy_source_write_before_department_and_result_commit"
+      },
+      "expected": {
+        "accepted": false,
+        "department_and_hierarchy_heads_unchanged": true,
+        "bu_group_unchanged": true,
+        "business_outbox_rows_added": 0,
+        "accepted_result_rows_added": 0,
+        "original_active_parent_period": [
+          "2026-01-01",
+          null
+        ],
+        "locks_reacquirable": true,
+        "old_sources_unchanged": true
+      },
+      "actual_result": "not_run"
+    }
+  ],
+  "field_sets": {
+    "fields_1": [
+      "code",
+      "name",
+      "shortName",
+      "managementBuId",
+      "parentDepartmentId",
+      "departmentPath",
+      "status",
+      "effectiveDate",
+      "operationType",
+      "operationReason"
+    ],
+    "fields_2": [],
+    "fields_3": [
+      "code",
+      "name",
+      "shortName",
+      "managementBuId",
+      "parentDepartmentId",
+      "effectiveDate",
+      "operationType",
+      "operationReason"
+    ],
+    "fields_4": [
+      "name",
+      "shortName",
+      "managementBuId",
+      "parentDepartmentId",
+      "effectiveDate",
+      "operationType",
+      "operationReason"
+    ],
+    "fields_5": [
+      "code",
+      "name"
+    ],
+    "fields_6": [
+      "effectiveDate"
+    ]
+  }
+}

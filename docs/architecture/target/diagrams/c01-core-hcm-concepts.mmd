@@ -1,0 +1,68 @@
+---
+title: C01 China HCM 核心人事概念 · 归属与业务引用
+---
+flowchart TB
+  subgraph people["人员与工作关系"]
+    P["Person 人员 · M01"]
+    NUM["PersonNumberAlias · M01<br/>现号与永久旧号引用"]
+    E["Employment 工作关系记录 · M04<br/>关联单位 人员类型 关系性质 存续期"]
+    A["Assignment 任职 · M04<br/>职责 状态 工时 生效区间"]
+    CT["Contract 合同 · M04"]
+    PR["PrimarySelection 主关系与主任职 · M04<br/>分别按层级 日期 用途选择"]
+    PP["PrimarySelectionPolicy · M04<br/>合格目标 可空或必需覆盖"]
+    MG["ManagerRelationship 实际汇报 · M04"]
+    DEF["EmploymentActionCatalog · M04<br/>动作 原因 任职状态定义"]
+    ACT["BusinessActionRecord · M04<br/>真实动作及采用的定义版本"]
+    P -->|零到多段关系| E
+    P -->|稳定身份与改号历史| NUM
+    PP -->|按类别 状态 用途校验全区间| PR
+    E -->|按关系类型0到多 实际入职须有首任职| A
+    E -->|独立合同链| CT
+    P -->|人员层选择关系| PR
+    E -->|关系层选择任职| PR
+    A -->|按任职期间引用经理任职| MG
+    DEF -->|采用定义并校验转换| ACT
+    ACT -->|记录变化前后版本| A
+  end
+  subgraph org["组织与地点 · Organization M02"]
+    ENT["Enterprise 企业上下文"]
+    ORG["OrganizationObject 关联组织身份<br/>关联单位不自动代表用人单位"]
+    LE["LegalEntity / LegalEntityUse<br/>法律身份及用人等允许用途"]
+    BU["BusinessUnit 业务单元"]
+    DEP["Department 部门"]
+    LOC["Location 地点"]
+    TREE["Hierarchy / Version<br/>按用途的树及有效版本"]
+    ENT -->|企业内独立对象| LE
+    ORG -->|法律身份及资格视图| LE
+    ENT -->|企业内独立对象| BU
+    ENT -->|企业内独立对象| DEP
+    TREE -->|成员引用 不合并对象身份| DEP
+  end
+  subgraph work["工作定义与资源 · Staffing M03"]
+    JOB["Job / JobFamily 职务与分类"]
+    POS["Position 独立席位"]
+    GR["Grade / Ladder 职级与阶梯"]
+    CAP["StaffingQuota 部门总额或岗位定额<br/>Reservation / Occupancy 岗位预留与占编"]
+    PH["PositionHierarchy 岗位层级版本"]
+    MODE["StaffingPolicy 岗位模式与占用规则"]
+    JOB -->|工作类型引用| POS
+    POS -->|按岗位定额| CAP
+    PH -->|有向父子边及有效期| POS
+  end
+  REF["X02 引用适用与默认<br/>对象类型 BU 法律主体 地点 日期 用途"]
+  PAY["PayrollMembership 计薪归属 · M10"]
+  DEP -->|按部门核总额| CAP
+  ORG -->|entityId 关系关联组织| E
+  LE -->|劳动关系核对用人角色及依据| E
+  A -->|引用工作定义| JOB
+  A -->|岗位模式必选 无岗位模式为空| POS
+  MODE -->|明确采用模式及计入规则| A
+  A -->|任职组织引用| DEP
+  A -->|工作地点引用| LOC
+  A -->|业务上下文引用| BU
+  A -->|级别引用| GR
+  CAP -->|岗位占编引用 assignmentId| A
+  A -->|下游明确建立| PAY
+  REF -->|校验上述引用 明确采用版本| A
+  N["概念连线非表外键或同一聚合；岗位层级与实际汇报独立；适用与权限分别校验<br/>人员类别与组织责任独立；派遣用人/用工及付款角色分别确定；关联和资格不直接认定劳动关系"]
+  PR -.-> N

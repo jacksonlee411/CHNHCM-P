@@ -1,0 +1,43 @@
+---
+title: F08 技能、绩效、学习、盘点与继任 · 目标流程
+config:
+  sequence:
+    mirrorActors: false
+    diagramMarginX: 50
+    diagramMarginY: 20
+---
+sequenceDiagram
+  actor H as 人才责任角色
+  participant P as M16 档案资格
+  participant F as M17 目标绩效
+  participant T as M19 盘点继任
+  participant L as M18 学习发展
+  participant E as M04 任职
+  H->>F: 分配目标计划并确认个人目标/进度版本
+  P-->>F: 量表 问卷及资格证据版本
+  F->>F: 文档采用模板/流程及目标；按阶段核验后发布
+  F-->>T: 授权的已发布绩效版本
+  P-->>T: 资格和技能差距
+  H->>T: 盘点/入退池；按Job Position或Incumbent提名
+  T->>T: 冻结采用依据与准备度；候选可直接提名
+  T-->>L: 稳定ID的发展行动
+  L->>L: 明确采用为个人发展目标及行动
+  opt 行动需要学习
+    H->>L: 建立学习要求；选择具体Offering报名
+    L->>L: 共同锁Offering及报名；重核前置 核准与容量
+    alt 有席位且守卫通过
+      L->>L: 同事务占位及激活报名
+      L->>L: 按真实活动及来源证据确认完成；重复事件去重
+      L-->>P: 学习/考试证据或更正版本
+    else 满员
+      L-->>H: 按政策候补或拒绝；不标成已报名
+    end
+  end
+  L->>L: 按学习 辅导 实践等全部必要行动判断目标完成
+  alt 证据足以证明资格
+    H->>P: 按规则决定资格新版本或撤销后继
+  else 证据不足
+    P-->>H: 保留证据及待核事项
+  end
+  T-->>E: 内部候选或经招聘身份转换的外部候选参考
+  Note over T,E: 候选不占编制；M04按当时岗位模式 权限 关系及资源独立任命

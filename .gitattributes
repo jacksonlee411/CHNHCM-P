@@ -1,0 +1,158 @@
+* text=auto eol=lf
+*.svg text
+*.zip binary
+*.png binary
+
+# Preserve this original R6 Testcontainers diagnostic byte for byte.
+docs/verification/data/116-r6/checks/clock-browser-r6.txt -whitespace
+
+# Preserve immutable T07 tool output, including its original whitespace.
+docs/verification/data/010-t07-acceptance/**/*.log -whitespace
+
+# Preserve the original CHNHCM-101 validation logs and their output whitespace.
+docs/verification/data/101-direct-save/*.log -whitespace
+
+# Preserve original 104 command output while restoring its Git archival eligibility.
+docs/verification/data/104-unified-record-correction/*.log -whitespace
+
+# Preserve original CHNHCM-109 Testcontainers output; application whitespace checks stay enabled.
+docs/verification/data/109-lifecycle-pair-maintenance/integration-all-first.txt -whitespace
+docs/verification/data/109-lifecycle-pair-maintenance/integration-failures-fixed.txt -whitespace
+docs/verification/data/109-lifecycle-pair-maintenance/integration-second.txt -whitespace
+docs/verification/data/109-lifecycle-pair-maintenance/integration-third.txt -whitespace
+docs/verification/data/109-lifecycle-pair-maintenance/midnight-browser.txt -whitespace
+docs/verification/data/109-lifecycle-pair-maintenance/pair-and-budget-round2.txt -whitespace
+docs/verification/data/109-lifecycle-pair-maintenance/targeted-cross-first.txt -whitespace
+
+# Preserve three original CHNHCM-105 Testcontainers logs included in this publication.
+docs/verification/data/105-positioned-addition-and-coverage/integration-first.log -whitespace
+docs/verification/data/105-positioned-addition-and-coverage/integration-review-fixes.log -whitespace
+docs/verification/data/105-positioned-addition-and-coverage/positioned-api-first.log -whitespace
+
+# Preserve original CHNHCM-111 T03 Testcontainers diagnostic whitespace.
+docs/verification/data/111-community-t03/integration.txt -whitespace
+
+# Preserve the three original CHNHCM-111 single-column Testcontainers diagnostics.
+docs/verification/data/111-single-column-filter/integration-first.txt -whitespace
+docs/verification/data/111-single-column-filter/integration-second.txt -whitespace
+docs/verification/data/111-single-column-filter/integration-final.txt -whitespace
+
+# Preserve the original typecheck output terminal blank line.
+docs/verification/data/111-single-column-filter/typecheck-second.txt whitespace=-blank-at-eof
+
+# Preserve original R1 command output and the exact retest patch context.
+docs/verification/data/116-r1/b3-directory-db-first.log -whitespace
+docs/verification/data/116-r1/b3-directory-db-second.log -whitespace
+docs/verification/data/116-r1/b3-integration-first.log -whitespace
+docs/verification/data/116-r1/b3-types.log whitespace=-blank-at-eof
+docs/verification/data/116-r1/lifecycle-retest.patch -whitespace
+
+# Preserve exact R4 raw verification output; source whitespace checks stay enabled.
+docs/verification/data/116-r4-backend/api-ports-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/browser-full.txt -whitespace
+docs/verification/data/116-r4-backend/bu-recovery-fix.txt -whitespace
+docs/verification/data/116-r4-backend/concurrency-faults-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/export-137-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/final-gaps-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/first-chain-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/first-chain-attempt2.txt -whitespace
+docs/verification/data/116-r4-backend/first-chain-attempt3.txt -whitespace
+docs/verification/data/116-r4-backend/fixed-d01-d18-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/fixed-d20-d38-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/fixed-variants-complete-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/generate.txt -whitespace
+docs/verification/data/116-r4-backend/guard-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/h45-pf-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/h45-pf-attempt2.txt -whitespace
+docs/verification/data/116-r4-backend/identity-empty-name.txt -whitespace
+docs/verification/data/116-r4-backend/integration-first.txt -whitespace
+docs/verification/data/116-r4-backend/integrity-auth-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/maintenance-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/physical-faults-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/pool-budget-retest.txt -whitespace
+docs/verification/data/116-r4-backend/ports-review-db.txt -whitespace
+docs/verification/data/116-r4-backend/reverse-actions-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/review-oracles-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/review-oracles-v21-retest.txt -whitespace
+docs/verification/data/116-r4-backend/s-fixed-time.txt -whitespace
+docs/verification/data/116-r4-backend/storage-bu-first.txt -whitespace
+docs/verification/data/116-r4-backend/storage-final-targeted.txt -whitespace
+docs/verification/data/116-r4-backend/storage-summary-attempt1.txt -whitespace
+docs/verification/data/116-r4-backend/storage-summary-attempt2.txt -whitespace
+docs/verification/data/116-r4-backend/summary-integrity-targeted-retest.txt -whitespace
+docs/verification/data/116-r4-implementation-review-fixes/before-fix.log -whitespace
+docs/verification/data/116-r4-implementation-review-fixes/guard-diagnostic.log -whitespace
+docs/verification/data/116-r4-implementation-review-fixes/guard-original-retest.log -whitespace
+docs/verification/data/116-r4-implementation-review-fixes/reviewer-probes.log -whitespace
+docs/verification/data/116-r4-implementation-review-fixes/targeted-fix.log -whitespace
+
+# Preserve original R5 verification output and recorded diffs byte for byte.
+docs/verification/data/116-r5-authorization-followup/browser-before.txt -whitespace
+docs/verification/data/116-r5-authorization-followup/browser-reload-loop.txt -whitespace
+docs/verification/data/116-r5-authorization-followup/product.patch -whitespace
+docs/verification/data/116-r5-authorization-followup/reviewer-probes-first.txt -whitespace
+docs/verification/data/116-r5-authorization-followup/reviewer-relations.txt -whitespace
+docs/verification/data/116-r5-multiround-review/f08-browser.txt -whitespace
+docs/verification/data/116-r5-multiround-review/f089-browser.txt -whitespace
+docs/verification/data/116-r5-multiround-review/f09-before.txt -whitespace
+docs/verification/data/116-r5-multiround-review/focus-fix-first.txt -whitespace
+docs/verification/data/116-r5-multiround-review/name-after.txt -whitespace
+docs/verification/data/116-r5-multiround-review/name-before.txt -whitespace
+docs/verification/data/116-r5-multiround-review/recorded-source-delta.patch -whitespace
+docs/verification/data/116-r5-multiround-review/round1.txt -whitespace
+docs/verification/data/116-r5-multiround-review/round3-browser.txt -whitespace
+docs/verification/data/116-r5-multiround-review/selected-api.txt -whitespace
+docs/verification/data/116-r5-multiround-review/typecheck.txt -whitespace
+docs/verification/data/116-r5-multiround-review/working-tree.patch -whitespace
+docs/verification/data/116-r5-review-fixes/product-first.patch -whitespace
+docs/verification/data/116-r5-review-fixes/product.patch -whitespace
+
+# Preserve the original failed R6 suite output byte for byte.
+docs/verification/data/116-r6/checks/smoke-first.txt -whitespace
+docs/verification/data/116-r6/checks/integration-first.txt -whitespace
+docs/verification/data/116-r6/checks/smoke-second.txt -whitespace
+
+# Preserve the exact CHNHCM-125 diagnostic/test output; source checks remain enabled.
+docs/verification/data/125-implementation/browser-full-first.txt -whitespace
+docs/verification/data/125-implementation/clock-browser-first.txt -whitespace
+docs/verification/data/125-implementation/compressed-projection-integration.txt -whitespace
+docs/verification/data/125-implementation/digest-read-integration.txt -whitespace
+docs/verification/data/125-implementation/format3-integration-first.txt -whitespace
+docs/verification/data/125-implementation/format3-integration-second.txt -whitespace
+docs/verification/data/125-implementation/full-integration-after-recovery.txt -whitespace
+docs/verification/data/125-implementation/full-integration-first.txt -whitespace
+docs/verification/data/125-implementation/full-integration-resume.txt -whitespace
+docs/verification/data/125-implementation/loader-failure-first.txt -whitespace
+docs/verification/data/125-implementation/read-integration-first.txt -whitespace
+docs/verification/data/125-implementation/read-write-integration-second.txt -whitespace
+docs/verification/data/125-implementation/recovery-targeted-integration.txt -whitespace
+docs/verification/data/125-implementation/resume-capacity/final-integration.txt -whitespace
+docs/verification/data/125-implementation/resume-read-integration.txt -whitespace
+docs/verification/data/125-implementation/resume-read-protection.txt -whitespace
+docs/verification/data/125-implementation/saturation-first.txt -whitespace
+docs/verification/data/125-implementation/seek-read-integration.txt -whitespace
+docs/verification/data/125-implementation/snapshot-barrier-first.txt -whitespace
+docs/verification/data/125-implementation/uuid-baseline.txt -whitespace
+docs/verification/data/125-implementation/uuid-optimized.txt -whitespace
+*.pprof binary
+
+# Keep original carriage returns in captured external tool output.
+docs/verification/data/125-implementation/wsl-orphan-cleanup/compaction-first/compact-result.json -text -whitespace
+docs/verification/data/125-implementation/wsl-orphan-cleanup/compaction-first/linux-restore-output.txt -text -whitespace
+docs/verification/data/125-implementation/wsl-orphan-cleanup/compaction-first/linux-stop-output.txt -text -whitespace
+docs/verification/data/125-implementation/wsl-orphan-cleanup/compaction-first/maintenance-progress.json -text -whitespace
+docs/verification/data/125-implementation/wsl-orphan-cleanup/compaction-first/scheduled-launch.json -text -whitespace
+
+# Preserve the original V127 Testcontainers diagnostic byte for byte.
+docs/verification/data/127-vanke-history/historical-name-addition-integration.txt -whitespace
+
+# Preserve original R5 command output restored after the PR #9 clean-checkout failure.
+docs/verification/data/116-r5/browser-boundaries-first.log -whitespace
+docs/verification/data/116-r5/browser-final.log -whitespace
+docs/verification/data/116-r5/browser-full.log -whitespace
+
+# Keep the 136 cost snapshot byte-identical to its recorded input hashes.
+docs/verification/data/136-actions-policy/jobs.csv -text -whitespace
+
+# Preserve the upstream 204 raw Testcontainers diagnostic whitespace.
+docs/verification/data/204-location-region-picker/related-api.log -whitespace

@@ -1,0 +1,63 @@
+{
+  "id": "CHNHCM-009",
+  "checked_on": "2026-10-30",
+  "jurisdiction": "中国大陆",
+  "source_guidance_consulted": "oracle-fscr d88c993 knowledge/product-guidance/pillars/hcm/global-human-resources/reference.md (read-only reference, not an execution dependency)",
+  "oracle_release": {
+    "discovery": "https://docs.oracle.com/en/cloud/saas/readiness/hcm.html",
+    "latest_relevant_release_observed": "26D",
+    "release_entry": "https://docs.oracle.com/en/cloud/saas/readiness/hcm/26d/hure-26d/index.html",
+    "catalog": "https://docs.oracle.com/en/cloud/saas/human-resources/books.html",
+    "concept_channel": "Current cumulative official book URLs selected from the catalog; not a guessed version path",
+    "version_path_probe": "Guessed /human-resources/26d/ topic paths were inaccessible; no older release substituted"
+  },
+  "sources": [
+    {
+      "id": "cn-labor-contract-law-009",
+      "title": "中华人民共和国劳动合同法（第二、七、十、五十八、五十九条）",
+      "url": "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193025/content.html",
+      "checked_on": "2026-10-30",
+      "observation": "国家税务总局法规库标注全文有效；本轮核对用人单位、用工建立关系及派遣双方角色，不扩张为全部劳动法实施结论。"
+    },
+    {
+      "id": "cn-labor-contract-regulations-009",
+      "title": "中华人民共和国劳动合同法实施条例（第三、四条）",
+      "url": "https://xzfg.moj.gov.cn/front/law/detail?LawID=284",
+      "checked_on": "2026-10-30",
+      "observation": "司法部行政法规库；区分合伙等组织、取得证照的分支机构与受委托签约。"
+    },
+    {
+      "id": "oracle-legal-employer-009",
+      "title": "Oracle: What is a legal employer?",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/faigh/what-s-a-legal-employer.html",
+      "checked_on": "2026-10-30",
+      "observation": "经当前书目定位的累计文档渠道；Legal Employer 在工作关系层记录。HR最新Readiness入口为26D，不将产品字段直接等同中国法律角色。"
+    },
+    {
+      "id": "oracle-work-relationships-009",
+      "title": "Oracle: Work Relationships",
+      "url": "https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/work-relationships.html",
+      "checked_on": "2026-10-30",
+      "observation": "当前累计文档；Employee、Contingent Worker、Nonworker 等是产品类型，Nonworker可记录非工作关联。"
+    },
+    {
+      "id": "oracle-assignments-zh-009",
+      "title": "Oracle 简中：分配",
+      "url": "https://docs.oracle.com/zh-cn/cloud/saas/human-resources/fawhr/assignments.html",
+      "checked_on": "2026-10-30",
+      "observation": "同页出现合法雇主与法定雇主；证明译名用例，不证明完整界面译名唯一。"
+    }
+  ],
+  "project_inference": [
+    "Use 用人单位 as the China labor-relationship preferred term without treating Oracle Legal Employer as legally equivalent in all contexts",
+    "Employment.entityId is an association reference; relationship nature and organizational responsibilities are distinct",
+    "Qualifying branch identity and delegated signing must be modeled separately",
+    "Payment execution operator and funding organization must not be conflated"
+  ],
+  "limits": [
+    "Target terminology and directly affected contracts only",
+    "No comprehensive review of all Oracle UI translations or Chinese employment situations",
+    "No business runtime, current payroll amounts or external integration validation",
+    "No closure claim for the other R25-post-snapshot naming increments"
+  ]
+}

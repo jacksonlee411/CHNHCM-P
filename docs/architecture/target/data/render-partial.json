@@ -1,0 +1,25 @@
+{
+  "renderer": "@mermaid-js/mermaid-cli",
+  "version": "12.0.0",
+  "browser": "Chrome/140.0.7339.186",
+  "generatedAt": "2026-11-08T02:18:36.850Z",
+  "partial": true,
+  "diagrams": [
+    {
+      "file": "c05-reference-access-concepts.mmd",
+      "title": null,
+      "sourceSha256": "363de7c09be5e60fa82d40245161e73021cb3ed5b04b13174fde524ebf5de652",
+      "svgSha256": "936bec1a975af990aca33fddba711d7cfc4442597f8feca152ecad2b451abf51",
+      "bytes": 65482,
+      "status": "rendered"
+    },
+    {
+      "file": "x03.mmd",
+      "title": null,
+      "sourceSha256": "4f840865793cea8c0b3f25e26414a18429b4b161b3bc6b21a484be3ed96857d3",
+      "svgSha256": "7e66b248da13f89158c4e877ffb2b597c430d7c1111f63c34f559d39324237db",
+      "bytes": 36772,
+      "status": "rendered"
+    }
+  ]
+}

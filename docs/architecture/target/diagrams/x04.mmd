@@ -1,0 +1,29 @@
+---
+title: X04 任务、作业与人工核对 · 目标设计
+---
+flowchart TB
+  subgraph domain["X04 任务、作业与人工核对"]
+    direction TB
+    D["投递 尝试及检查点"]:::own
+    N["通知请求与技术送达"]:::own
+    H["隔离队列 告警与恢复"]:::process
+    AGE["unknown责任队列 时长告警与升级"]:::process
+  end
+  S["来源域状态与Outbox"]:::external
+  C["消费者Inbox及业务处理"]:::external
+  M["M20 Journey 内容与受众"]:::external
+  X["X05 渠道适配"]:::shared
+  S -->|已提交意图| D
+  D -->|至少一次投递| C
+  C -->|处理Ack非采用| D
+  D -->|失败或缺号| H
+  H -->|补拉或受控重试| D
+  M -->|C通知意图| N
+  N -->|技术发送| X
+  X -->|送达观察| N
+  N -->|Q送达投影| M
+  H -->|技术升级 不解除业务守卫| AGE
+  classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
+  classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
+  classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;
+  classDef shared fill:#e7f5ed,stroke:#478565,color:#214d34;

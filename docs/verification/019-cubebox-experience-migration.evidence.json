@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "base_commit": "57ac388a3a2c8001d8e335ebb35298e47f70e126",
+  "branch": "wt-dev-a",
+  "working_tree": "dirty",
+  "date": "2026-11-01",
+  "runtime_inputs": "docs/verification/data/019-ui/test-inputs.json",
+  "runtime_input_count": 127,
+  "before_after_inputs_equal": true,
+  "database_inputs_unchanged_from_base": "docs/verification/data/019-ui/protected-baseline.json",
+  "source_commit": "2deaf9276086f68e07aaa0c2cf7f35025046a9ee",
+  "visual_review": "docs/verification/data/019-ui/visual-review.json",
+  "comparison_viewer": "docs/verification/data/019-ui/viewer-check.json",
+  "target_build": "docs/verification/data/019-ui/target-build.json",
+  "checks": [
+    {
+      "check": "首次完整浏览器26/27，保留菜单流程失败",
+      "result": "failed",
+      "evidence": "docs/verification/data/019-ui/checks/first-full-smoke.log"
+    },
+    {
+      "check": "最终make check/build及生产字体许可",
+      "result": "passed",
+      "evidence": "docs/verification/019-cubebox-experience-migration.md"
+    },
+    {
+      "check": "真实DB11项业务回归；容量项未启用",
+      "result": "passed",
+      "evidence": "docs/verification/data/019-ui/checks/final-integration.log"
+    },
+    {
+      "check": "最终Chromium27/27，127份运行/验证输入前后相同",
+      "result": "passed",
+      "evidence": "docs/verification/data/019-ui/checks/final-smoke.log"
+    },
+    {
+      "check": "三种视口24张图面逐图复核及几何",
+      "result": "passed",
+      "evidence": "docs/verification/data/019-ui/visual-review.json"
+    },
+    {
+      "check": "本地图面对照页15种组合可浏览",
+      "result": "passed",
+      "evidence": "docs/verification/data/019-ui/viewer-check.json"
+    },
+    {
+      "check": "259份后端/API/历史原件和原197项来源身份及整项状态保护",
+      "result": "passed",
+      "evidence": "docs/verification/019-cubebox-experience-migration.md"
+    },
+    {
+      "check": "最终报告、资产采用及计划关闭登记后的make docs（46项、127份Markdown、211资产）",
+      "result": "passed",
+      "evidence": "docs/verification/data/019-ui/checks/final-docs.log"
+    }
+  ],
+  "source_assets": {
+    "original": 197,
+    "added": 14,
+    "total": 211,
+    "partial_adoptions": 34,
+    "partial_browser_verified": 33,
+    "whole_font_license_verified": 3,
+    "other_whole_asset_states_unchanged": true
+  },
+  "limits": [
+    "仅创建/查询；其他记录维护未实施。",
+    "多节点日期轴及跨页签错误使用展示夹具；浏览器故障注入不等同生产故障。",
+    "图面采用公共紧凑标准，保留业务字段和显式查看日差异，不作逐像素等同声明。",
+    "PageHeader仅类型/构建验证；未作BU实际入口验收。",
+    "仅Chromium；未运行生产部署、全产品或外部HCM验收。",
+    "构建有默认分块体积提示，未作网络性能验收。"
+  ],
+  "task_text_credential_scan": "passed; identifier substrings excluded",
+  "commit_push_pr_deploy_performed": false,
+  "changes_manifest": "docs/verification/data/019-ui/changes.json",
+  "validation_limit": "make check/build和最终截图/Chromium使用相同127份运行/验证输入；最终make docs覆盖随后仅文档/登记/证据的变化。数据库11项在本轮运行，后端输入始终未变。"
+}

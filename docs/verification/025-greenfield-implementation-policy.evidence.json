@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "base_commit": "e58f8df007bf65b22460ae7330ed030388d50a41",
+  "date": "2026-11-01",
+  "working_tree": "dirty",
+  "scope": "全新实施策略及AGENTS/现行文档修订；不包含运行实现或业务验收",
+  "input_files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "341aaf2eb7e066f680bb5828da8c511de7165ccf8e2acf83b77c99e9790edc41"
+    },
+    {
+      "path": "docs/README.md",
+      "sha256": "12e2dbf73ee4571809d0d54e4c8dbd0254156a878d4c4062500a8ffe09b2c543"
+    },
+    {
+      "path": "docs/adr/003-implementation-stages.md",
+      "sha256": "1b8710855b22250a89b52b14d145c44f351056378a4a16a560858bf1c4a6f831"
+    },
+    {
+      "path": "docs/adr/018-effective-records-and-source-history.md",
+      "sha256": "edea79349d4ce9c85f254a91f2ac89fd8f877ef30757e1128f72e0ba0ae68b0a"
+    },
+    {
+      "path": "docs/adr/020-effective-record-delete-and-redate.md",
+      "sha256": "6cdc9c9e289631400845ddd849cdc06454d2dc76d7cd8c6a1e58bb6e1678fc70"
+    },
+    {
+      "path": "docs/adr/021-bu-lifecycle-and-record-maintenance.md",
+      "sha256": "0960223065f3bef8b91d0dfaea95652c737fc221a9ef1633ac85051f89fa54a5"
+    },
+    {
+      "path": "docs/adr/022-joint-timeline-revision.md",
+      "sha256": "3126bdc990e6eae438a659f035b4d8048efc26cfc493027922632d63b344314f"
+    },
+    {
+      "path": "docs/adr/024-timeline-implementation-simplification.md",
+      "sha256": "bbd247c019e9d44f855e14323f2485c0c61bfd55f26f8efa455d5174b53fdfc3"
+    },
+    {
+      "path": "docs/adr/025-greenfield-implementation-policy.md",
+      "sha256": "f897cb844a7780c5d90292f95c43bec67cd940e7c565c42b45423a0a085d7a6f"
+    },
+    {
+      "path": "docs/architecture/004-repository-layout.md",
+      "sha256": "07526e882577f81c6432fd80bea6490e0f5bfe625fdcacdba15423930a80011d"
+    },
+    {
+      "path": "docs/governance/registry.json",
+      "sha256": "4c81e9489b031d36dd48b8a845de56eecd26788966e79bd5eedfb5df39ff2805"
+    },
+    {
+      "path": "docs/plans/010-m02-scope-and-plan.md",
+      "sha256": "00398de34315df972c5a86af307b9cdeaab789e032db09782dec358909f3a077"
+    },
+    {
+      "path": "docs/specs/README.md",
+      "sha256": "d3858d13fa35d3eb475c9d64db6fe5ca6d74ffc648b9cf6f56c93ef96bc1ef5d"
+    },
+    {
+      "path": "docs/specs/m02/011-m02-business-requirements.md",
+      "sha256": "7e0a8196cf2a1588413b03889330eed362e3393693e864feb7ded60c1bb9f3ca"
+    },
+    {
+      "path": "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "sha256": "fb50cdd1d293188becc1d2048f2e5828bdfae149c344453747706a6b6f55c6f2"
+    },
+    {
+      "path": "docs/specs/m02/013-m02-technical-design.md",
+      "sha256": "5c06312d1597fdc0aa168e33b85e65ecc006ddf5dc71e91fa636c63b7eab9c5a"
+    },
+    {
+      "path": "docs/specs/m02/023-m02-timeline-test-cases.md",
+      "sha256": "f321b3d143aa6aee10fb6987f855498800cfc11fd9284f626cb779abe627e09b"
+    },
+    {
+      "path": "docs/verification/025-greenfield-implementation-policy.md",
+      "sha256": "557d4fdef73c3b0b9216cf5c7a18110a410d0357c8b2131c7d4bbc1b3d988a99"
+    },
+    {
+      "path": "docs/verification/README.md",
+      "sha256": "ff153fb881f80fb18f3bd425dba2a5ab70daf23f949fe29dccf97cac708bd8a3"
+    }
+  ],
+  "manual_review": {
+    "reviewer": "/root（修订后自查，非独立评审或业务验收）",
+    "result": "passed",
+    "topics": [
+      "AGENTS与003/004区分开发基线和正式发布；当前不要求向后兼容",
+      "010第一批T01/T02/T03交付统一候选、当前存储和新增/更正；其他动作分批接入同一内核",
+      "013移除兼容初始列、旧CREATE空元数据和双代事件；保持业务历史、当前授权、原子性及结果恢复",
+      "018/020/021/022/024部分替代范围明确；旧报告、进度和024未提交输入保留",
+      "023的四个旧版本专项明确退役；253现行案例与29个AC双向映射完整，不计运行通过"
+    ]
+  },
+  "static_scan": {
+    "base_commit": "e58f8df007bf65b22460ae7330ed030388d50a41",
+    "baseline_files": 472,
+    "changed_existing_files": [
+      "docs/adr/024-timeline-implementation-simplification.md",
+      "AGENTS.md",
+      "docs/README.md",
+      "docs/adr/003-implementation-stages.md",
+      "docs/adr/018-effective-records-and-source-history.md",
+      "docs/adr/020-effective-record-delete-and-redate.md",
+      "docs/adr/021-bu-lifecycle-and-record-maintenance.md",
+      "docs/adr/022-joint-timeline-revision.md",
+      "docs/architecture/004-repository-layout.md",
+      "docs/governance/registry.json",
+      "docs/plans/010-m02-scope-and-plan.md",
+      "docs/specs/README.md",
+      "docs/specs/m02/011-m02-business-requirements.md",
+      "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "docs/specs/m02/013-m02-technical-design.md",
+      "docs/specs/m02/023-m02-timeline-test-cases.md",
+      "docs/verification/README.md"
+    ],
+    "preserved_baseline_files": 455,
+    "preserved_verification_files": 133,
+    "preserved_verification_records": 36,
+    "preserved_runtime_and_other_non_document_files": 127,
+    "preserved_progress_lines": 41,
+    "stable_business_ids": 67,
+    "scenario_links": 17,
+    "rule_links": 21,
+    "acceptance_ids": 29,
+    "technical_counterexample_ids": 33,
+    "current_technical_counterexamples": 32,
+    "case_ids": 257,
+    "current_case_entries": 253,
+    "retired_case_ids": [
+      241,
+      242,
+      246,
+      247
+    ],
+    "primary_layers": {
+      "G": 122,
+      "A": 52,
+      "B": 25,
+      "D": 47,
+      "M": 5,
+      "P": 2
+    },
+    "supplementary_layers": {
+      "B": 21,
+      "D": 12,
+      "A": 8
+    },
+    "fault_condition_cases": 69,
+    "browser_case_entries": 46,
+    "archive": {
+      "path": "docs/verification/data/025-before-greenfield-policy.zip",
+      "sha256": "4a201da9214ee11020327413c9944a6bbdf07254d0006424c305a7d67cd44af4",
+      "entries": 13,
+      "verified_024_input_hashes": 12
+    },
+    "business_test_result": "not_run"
+  },
+  "static_validation_method": "对照修改前472份文件SHA-256、024快照和HEAD；逐条核对旧验证登记、进度行和稳定锚点，解析案例末列主/补层及AC，展开AC反向范围后比较集合；退役编号仅241/242/246/247。临时检查脚本不作为新增产品测试。",
+  "commands": [
+    {
+      "check": "make docs",
+      "exit_code": 0,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.775s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 142, \"local_links\": 4777, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "check": "repository refs",
+      "exit_code": 0,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 142, \"local_links\": 4777, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "check": "diff check",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "runtime_validation": {
+    "result": "not_run",
+    "current_case_count": 253,
+    "retired_case_count": 4,
+    "code_or_database_changed": false,
+    "limits": [
+      "未运行Go/DB/API/浏览器/故障/容量业务测试",
+      "未执行数据库重建、旧库升级、凭据轮换或对外发布",
+      "当前创建/查询仍按原代码及报告管理，新合同待第一批实施"
+    ]
+  }
+}

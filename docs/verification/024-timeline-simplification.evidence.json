@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "base_commit": "e58f8df007bf65b22460ae7330ed030388d50a41",
+  "date": "2026-11-01",
+  "working_tree": "dirty",
+  "scope": "024及相关时间轴方案/案例文档修订；业务实现和业务测试不在本次范围",
+  "input_files": [
+    {
+      "path": "docs/README.md",
+      "sha256": "6381f6853587fd83875d7ee030839e7b8b9797e7c48611723c3779466f4d9926"
+    },
+    {
+      "path": "docs/adr/022-joint-timeline-revision.md",
+      "sha256": "2c3f000977c97ec0ad5b81fe458ecebe6927ebc5f82f9c7fa679dd3ca878958f"
+    },
+    {
+      "path": "docs/governance/registry.json",
+      "sha256": "cbed98b67b77ba0f719e6111b473337715a1f0c52f9a4eacbf35e59dd47ac9b8"
+    },
+    {
+      "path": "docs/plans/010-m02-scope-and-plan.md",
+      "sha256": "9da257f787943572da771c8b3b9dd437ac6945632e11afd85133c4fee61a0b29"
+    },
+    {
+      "path": "docs/specs/README.md",
+      "sha256": "92af8aaddd231cc038fc06c6c2677655c726b9c067957ad9b2426b52fcf67113"
+    },
+    {
+      "path": "docs/specs/m02/011-m02-business-requirements.md",
+      "sha256": "3ab6a7cb66e9b6e5a9b666467a926e95dd3acb2d655b0f54e160129b11c7f325"
+    },
+    {
+      "path": "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "sha256": "9aecae71b0b5e3e59f3af2ae9c2ebe27348f0bd187882a636817c6eca5a2c64f"
+    },
+    {
+      "path": "docs/specs/m02/013-m02-technical-design.md",
+      "sha256": "afffeaf72c87d3327c357e07acfed37fad1241922809aa00e4daa25433e9cc40"
+    },
+    {
+      "path": "docs/specs/m02/023-m02-timeline-test-cases.md",
+      "sha256": "dbc2a775d6d4e8b0e4af5648f97939915e9fd3a55e2b0232e99708f14e16c52c"
+    },
+    {
+      "path": "docs/verification/README.md",
+      "sha256": "f43e579c8ee4883de6663ce4d75aa989e0fe6bd31eb3d2fc3a9bc544df5cdfed"
+    },
+    {
+      "path": "docs/adr/024-timeline-implementation-simplification.md",
+      "sha256": "e075c82d3631805ffdb6adc913cabcfef7c34579b1713bc9f4d5032d9b6fedd7"
+    },
+    {
+      "path": "docs/verification/024-timeline-simplification.md",
+      "sha256": "02cc9a0d3e93d14b4882c16572a1b697e7b757af01c69c324bda0a200c8ea06a"
+    }
+  ],
+  "manual_review": {
+    "reviewer": "/root，实施后静态复核，非独立评审或业务验收",
+    "result": "passed",
+    "topics": [
+      "已存终态读权与新执行写权分开；旧CREATE格式/元数据保持，T01调整入口授权次序并回归",
+      "原锁内拒绝与整体失败的显式查回；无回滚后二次补拒绝者，已有唯一终态和迟到反馈保持",
+      "主要层全参数、补充层独有断言及代表输入；共同业务预期按观测层分配，不重复全矩阵",
+      "停服排空、一次密码轮换可重入、匹配程序实际版本检查；制品清单转正式交付",
+      "标准排序、扫描批次检查及实测最大取消延迟；超预算才优化，原子性/历史/引用保持"
+    ]
+  },
+  "static_scan": {
+    "base_commit": "e58f8df007bf65b22460ae7330ed030388d50a41",
+    "existing_changed_files": [
+      "docs/README.md",
+      "docs/adr/022-joint-timeline-revision.md",
+      "docs/governance/registry.json",
+      "docs/plans/010-m02-scope-and-plan.md",
+      "docs/specs/README.md",
+      "docs/specs/m02/011-m02-business-requirements.md",
+      "docs/specs/m02/012-m02-functional-and-interaction-design.md",
+      "docs/specs/m02/013-m02-technical-design.md",
+      "docs/specs/m02/023-m02-timeline-test-cases.md",
+      "docs/verification/README.md"
+    ],
+    "preserved_baseline_files": 459,
+    "preserved_verification_files": 131,
+    "preserved_verification_records": 35,
+    "preserved_non_document_files": 128,
+    "preserved_progress_lines": 31,
+    "stable_business_ids": 67,
+    "scenario_links": 17,
+    "rule_links": 21,
+    "acceptance_ids": 29,
+    "technical_counterexamples": 33,
+    "case_entries": 257,
+    "primary_layers": {
+      "G": 122,
+      "A": 52,
+      "B": 25,
+      "D": 47,
+      "M": 9,
+      "P": 2
+    },
+    "supplementary_layers": {
+      "B": 21,
+      "D": 12,
+      "A": 8
+    },
+    "conditions": {
+      "F": 70
+    },
+    "browser_case_entries": 46,
+    "business_test_result": "not_run"
+  },
+  "static_validation_method": [
+    "以受测基线git ls-files的469份文件SHA256与现工作区比对，仅允许10份既有文档/导航/登记改变；新增024及报告/证据单列。",
+    "比较旧verification记录前缀、旧验证文件、非docs文件以及既有日期进度段，均要求原样保持。",
+    "比较011的SCN/BR/AC显式锚点及023的TL-001—257、三时/九格标签；验证各案例AC链接保持且存在于反向表的展开区间。",
+    "只解析案例表最后一列，要求恰一主要层及不重复的补充层；四类改日九格和排列/枚举性质主G无重复补层。",
+    "核对17场景、21规则、29AC和33技术反例追踪；这是静态关联，不能证明业务预期正确或实际运行。"
+  ],
+  "commands": [
+    {
+      "command": "make docs",
+      "result": "passed",
+      "exit_code": 0,
+      "output": "python3 -B -m unittest discover -s scripts -p 'test_*.py'\n..............................................\n----------------------------------------------------------------------\nRan 46 tests in 0.787s\n\nOK\npython3 -B scripts/check-repository.py\n{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 140, \"local_links\": 4737, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": false, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "command": "python3 -B scripts/check-repository.py --check-refs",
+      "result": "passed",
+      "exit_code": 0,
+      "output": "{\"status\": \"passed\", \"read_only\": true, \"markdown_files\": 140, \"local_links\": 4737, \"target_diagrams\": 53, \"preserved_assets\": 211, \"fixed_branch_ranges\": 6, \"git_refs_checked\": true, \"limits\": \"No external URL, full heading slug, domain semantics, database or product acceptance validation\"}\n"
+    },
+    {
+      "command": "ad hoc case/traceability/preservation scan",
+      "result": "passed",
+      "exit_code": 0,
+      "output": "{\"base_commit\": \"e58f8df007bf65b22460ae7330ed030388d50a41\", \"existing_changed_files\": [\"docs/README.md\", \"docs/adr/022-joint-timeline-revision.md\", \"docs/governance/registry.json\", \"docs/plans/010-m02-scope-and-plan.md\", \"docs/specs/README.md\", \"docs/specs/m02/011-m02-business-requirements.md\", \"docs/specs/m02/012-m02-functional-and-interaction-design.md\", \"docs/specs/m02/013-m02-technical-design.md\", \"docs/specs/m02/023-m02-timeline-test-cases.md\", \"docs/verification/README.md\"], \"preserved_baseline_files\": 459, \"preserved_verification_files\": 131, \"preserved_verification_records\": 35, \"preserved_non_document_files\": 128, \"preserved_progress_lines\": 31, \"stable_business_ids\": 67, \"scenario_links\": 17, \"rule_links\": 21, \"acceptance_ids\": 29, \"technical_counterexamples\": 33, \"case_entries\": 257, \"primary_layers\": {\"G\": 122, \"A\": 52, \"B\": 25, \"D\": 47, \"M\": 9, \"P\": 2}, \"supplementary_layers\": {\"B\": 21, \"D\": 12, \"A\": 8}, \"conditions\": {\"F\": 70}, \"browser_case_entries\": 46, \"business_test_result\": \"not_run\"}\n"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "earlier_check_failure": {
+    "check": "ad hoc layer scan",
+    "result": "failed",
+    "output": "Traceback (most recent call last):\n  File \"/tmp/chnhcm024-check.py\", line 58, in <module>\n    assert len(sup)<=1\n           ^^^^^^^^^^^\nAssertionError\n",
+    "note": "步骤栏和末列均含补B，原扫描重复计数；改为只解析末列后复验通过。组合shell返回0未被作为该扫描通过依据。"
+  },
+  "runtime_validation": {
+    "result": "not_run",
+    "cases": 257,
+    "limits": [
+      "Go/SQL/API/页面未修改",
+      "未执行DB、浏览器、故障、升级或容量测试",
+      "本轮无提交、推送或发布"
+    ]
+  }
+}

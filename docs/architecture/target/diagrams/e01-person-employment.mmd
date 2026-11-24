@@ -1,0 +1,96 @@
+---
+title: E01 人员、关系、任职、合同与工资归属 · 目标概念ER
+---
+erDiagram
+  PERSON ||--o{ EMPLOYMENT : "跨期稳定身份"
+  PERSON ||--o{ PERSON_NUMBER_ALIAS : "旧号永久归原人"
+  ORGANIZATION_OBJECT ||--o{ EMPLOYMENT : "关联组织 不自动认定用人角色"
+  EMPLOYMENT ||--o{ ASSIGNMENT : "按关系类型 实际入职须有首任职"
+  EMPLOYMENT ||--o{ CONTRACT : "独立合同链"
+  ASSIGNMENT ||--|{ ASSIGNMENT_SLICE : "按日生效"
+  POSITION |o--o{ ASSIGNMENT_SLICE : "可选席位引用"
+  PERSON ||--o{ PAYROLL_CONTEXT : "人员计薪责任上下文"
+  LEGAL_ENTITY ||--o{ PAYROLL_CONTEXT : "薪资责任用途"
+  PAYROLL_CONTEXT ||--o{ PAYROLL_MEMBERSHIP : "计薪成员"
+  ASSIGNMENT ||--o{ PAYROLL_ALLOCATION_SET : "按计薪用途唯一"
+  PAYROLL_ALLOCATION_SET ||--o{ PAYROLL_MEMBERSHIP : "权威成员登记及共同守卫"
+  PERSON ||--o{ PRIMARY_RELATION : "按日期和用途选择"
+  EMPLOYMENT ||--o{ PRIMARY_RELATION : "被选择关系"
+  EMPLOYMENT ||--o{ PRIMARY_ASSIGNMENT : "关系内按用途和期间选择"
+  ASSIGNMENT ||--o{ PRIMARY_ASSIGNMENT : "被选择且属于该关系"
+  PRIMARY_SELECTION_POLICY ||--o{ PRIMARY_RELATION : "按类别状态用途要求覆盖"
+  PRIMARY_SELECTION_POLICY ||--o{ PRIMARY_ASSIGNMENT : "同一政策版本明确可空或必需"
+  ASSIGNMENT ||--o{ MANAGER_RELATIONSHIP : "所属下属任职"
+  ASSIGNMENT ||--o{ MANAGER_RELATIONSHIP : "被引用经理任职"
+  PERSON {
+    string personId PK
+    string employeeNo UK "客户实例内唯一"
+  }
+  PERSON_NUMBER_ALIAS {
+    string personId FK
+    string oldNumber UK "客户内永久保留 不重发"
+    string recordedRevision
+  }
+  PRIMARY_SELECTION_POLICY {
+    string policyId PK
+    string version
+    string purpose
+    string eligibilityAndCoverage "有效日期段无空洞"
+  }
+  EMPLOYMENT {
+    string employmentId PK
+    string personId FK
+    string entityId FK "M02关联组织身份"
+    string relationshipKind "关系性质 与人员分类分开"
+    date startDate
+    date lastActiveDate
+  }
+  ORGANIZATION_OBJECT {
+    string objectId PK
+    string kind "按类型与资格识别角色"
+  }
+  ASSIGNMENT {
+    string assignmentId PK
+    string employmentId FK
+  }
+  ASSIGNMENT_SLICE {
+    string assignmentId FK
+    date effectiveDate "同日一份业务切片"
+    string revision "审计修订不是EFFSEQ"
+  }
+  CONTRACT {
+    string contractId PK
+    string employmentId FK
+    string predecessorId
+  }
+  PRIMARY_RELATION {
+    string selectionId PK
+    string personId FK
+    string employmentId FK
+    string purpose
+    string effectiveInterval
+    string policyVersionRef
+  }
+  PRIMARY_ASSIGNMENT {
+    string selectionId PK
+    string employmentId FK
+    string assignmentId FK
+    string purpose
+    string effectiveInterval
+    string policyVersionRef
+  }
+  MANAGER_RELATIONSHIP {
+    string relationshipId PK "所属Assignment根内实体"
+    string subordinateAssignmentId FK
+    string managerAssignmentId FK
+    string purpose
+    string effectiveInterval
+  }
+  PAYROLL_MEMBERSHIP {
+    string membershipId PK
+    string assignmentId FK
+    string allocationSetId FK
+    string contextId FK
+    string payrollDefinitionId FK
+    date effectiveFrom
+  }
