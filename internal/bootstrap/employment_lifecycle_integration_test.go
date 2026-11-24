@@ -46,6 +46,14 @@ func TestActualManagersConcurrentAndExit(t *testing.T) {
 	if facts := old["managers"].([]any); len(facts) != 1 || facts[0].(M)["manager"] != parent {
 		t.Fatal(old)
 	}
+	origin := x.hire
+	if parent == c {
+		origin = other
+	}
+	b.call("POST", "/api/v1/employment-actions/"+origin["action"].(string)+"/cancel", M{"revision": origin["revision"], "reason": "到岗前撤回"}, f.NewID(), 409)
+	if view(parent, "2027-08-31")["state"] == nil {
+		t.Fatal("未来首聘撤销破坏了他人的实际汇报")
+	}
 	// The reverse functional relationship is independent from the direct purpose.
 	b.call("POST", base(parent)+"/managers", M{"businessDate": "2027-06-01", "expectedSourceVersion": view(parent, "2027-06-01")["sourceVersion"], "purpose": "functional", "manager": child}, f.NewID(), 200)
 	p := view(parent, "2027-08-31")
@@ -68,7 +76,7 @@ func TestActualManagersConcurrentAndExit(t *testing.T) {
 		t.Fatal("经理退出", v)
 	}
 	v := b.call("GET", base(child)+"?businessAt=2027-09-01&sourceVersion="+old["sourceVersion"].(string), nil, "", 200)
-	if len(v["managers"].([]any)) != 1 {
+	if len(v["managers"].([]any)) != 1 || v["relationshipPrimary"] != true {
 		t.Fatal("误改退出之前的汇报来源")
 	}
 	original := b.call("GET", "/api/v1/employment-actions/"+saved["action"].(string), nil, "", 200)
@@ -130,6 +138,16 @@ func TestPartialExitAndRehireKeepPermanentRecordNumbers(t *testing.T) {
 	cmd := M{"person": x.person, "employer": x.entity, "department": x.dep, "job": x.job, "arrival": "2027-10-01", "notice": "十月再聘通知"}
 	b.call("POST", "/api/v1/hires", cmd, f.NewID(), 409)
 	cmd["rehireOf"] = ref
+	decision := f.NewID()
+	elected := b.call("POST", "/api/v1/appointment-decisions", M{"source": decision, "number": "再次任用48", "roster": false, "rows": []M{{"person": x.person, "arrival": "2027-10-01"}}}, f.NewID(), 200)
+	query := "/api/v1/persons/" + x.person + "/appointment-decisions?rehireAction=" + left["action"].(string) + "&rehireRevision=" + left["revision"].(string)
+	code, _, err := b.response("GET", query, nil, "")
+	must(t, err)
+	if code != 200 {
+		t.Fatalf("再聘人无法读取本人任用决定 %d", code)
+	}
+	delete(cmd, "notice")
+	cmd["decision"] = M{"source": decision, "version": elected["version"]}
 	key := f.NewID()
 	saved := b.call("POST", "/api/v1/hires", cmd, key, 200)
 	if saved["employment"] == x.hire["employment"] || saved["assignment"] == id || saved["recordNumber"] != 0.0 {

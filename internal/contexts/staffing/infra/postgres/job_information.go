@@ -180,7 +180,9 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			}
 		}
 
-		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment_primary WHERE instance_id=$1 AND layer='assignment' AND owner_id=$2 AND target_id=$3 AND period @> $4::date)`, st.Instance, a.Employment, id, day).Scan(&out.RelationshipPrimary)
+		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_member m JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
+            WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind IN ('Hire','Rehire','ParallelEmployment'))
+            AND EXISTS(SELECT FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date)`, st.Instance, id, version, day).Scan(&out.RelationshipPrimary)
 		if e != nil {
 			return e
 		}

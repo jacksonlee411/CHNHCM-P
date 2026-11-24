@@ -113,7 +113,7 @@ func targetID(v *org.EligibleEntity) string {
 	}
 	return ""
 }
-func (st *Store) HireDecisions(ctx context.Context, c f.Credentials, person string) ([]h.DecisionOption, error) {
+func (st *Store) HireDecisions(ctx context.Context, c f.Credentials, person string, rehire *h.ActionRef) ([]h.DecisionOption, error) {
 	if !f.ValidID(person) {
 		return nil, f.Fail(400, "HIRE_INPUT", "人员无效")
 	}
@@ -122,7 +122,13 @@ func (st *Store) HireDecisions(ctx context.Context, c f.Credentials, person stri
 		if err := st.HirePeople.CheckHirePerson(dbtx.With(ctx, u.tx), c, person); err != nil {
 			return err
 		}
-		ok, err := u.employmentAllowed(ctx, "hire", person, "", "", true)
+		if rehire != nil {
+			if err := u.checkRehireOrigin(ctx, person, "9999-12-31", rehire); err != nil {
+				return err
+			}
+		}
+		permission := hirePermission(rehire)
+		ok, err := u.employmentAllowed(ctx, permission, person, "", "", true)
 		if err != nil {
 			return err
 		}
@@ -138,7 +144,7 @@ func (st *Store) HireDecisions(ctx context.Context, c f.Credentials, person stri
 			return err
 		}
 		for _, opt := range opts {
-			ok, err := u.employmentAllowed(ctx, "hire", person, targetID(opt.Employer), targetID(opt.Department), true)
+			ok, err := u.employmentAllowed(ctx, permission, person, targetID(opt.Employer), targetID(opt.Department), true)
 			if err != nil {
 				return err
 			}

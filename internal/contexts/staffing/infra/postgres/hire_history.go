@@ -161,6 +161,9 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if !f.ValidID(original) || !f.ValidID(in.Revision) || strings.TrimSpace(in.Reason) == "" || utf8.RuneCountInString(in.Reason) > 1000 {
 			return "", f.Fail(400, "HIRE_INPUT", "请核对原办理并填写撤销依据")
 		}
+		if err := u.lockReporting(ctx); err != nil {
+			return "", err
+		}
 		a, err := u.action(ctx, original)
 		if err != nil {
 			return "", err
@@ -191,6 +194,16 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
          JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(head.instance_id,head.assignment_id,head.version) WHERE x.instance_id=$1 AND x.person_id=$2 AND x.id<>$3 AND s.period && daterange($4::date,nullif($5,'')::date,'[)'))`, st.Instance, a.Person, a.Assignment, a.From, a.Until).Scan(&parallel)
 		if err != nil {
 			return "", err
+		}
+		var reporting bool
+		err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.manager_agreement g JOIN staffing.assignment_head h USING(instance_id,assignment_id)
+			JOIN staffing.assignment_member m USING(instance_id,assignment_id,version,action_id,revision)
+			WHERE g.instance_id=$1 AND g.manager_assignment=$2 AND g.period && daterange($3::date,nullif($4,'')::date,'[)'))`, st.Instance, a.Assignment, a.From, a.Until).Scan(&reporting)
+		if err != nil {
+			return "", err
+		}
+		if reporting {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "已有实际汇报引用本任期，请先核对后续安排")
 		}
 		if parallel {
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "原期间已有关联任职，请先核对后续安排")

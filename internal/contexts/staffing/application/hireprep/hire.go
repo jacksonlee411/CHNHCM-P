@@ -154,7 +154,7 @@ type TargetSearch struct {
 type Hires interface {
 	JobInformation
 	PublishDecision(context.Context, f.Credentials, string, DecisionPublication) (DecisionEdition, error)
-	HireDecisions(context.Context, f.Credentials, string) ([]DecisionOption, error)
+	HireDecisions(context.Context, f.Credentials, string, *ActionRef) ([]DecisionOption, error)
 	HireTargets(context.Context, f.Credentials, TargetSearch) ([]org.EligibleEntity, error)
 	HireEmployers(context.Context, f.Credentials, EmployerSearch) ([]org.EligibleEntity, error)
 	OriginalAction(context.Context, f.Credentials, string, string) (Original, error)

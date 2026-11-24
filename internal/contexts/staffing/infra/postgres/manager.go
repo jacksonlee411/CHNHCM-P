@@ -32,8 +32,9 @@ func (u *unit) lifecycleSource(ctx context.Context, assignment, old, action, rev
 }
 
 func (u *unit) managerFacts(ctx context.Context, a h.Action, day, version string) ([]h.ManagerFact, error) {
-	rows, e := u.tx.Query(ctx, `SELECT purpose,coalesce(manager_assignment::text,''),lower(period)::text,coalesce(upper(period)::text,'')
-	FROM (SELECT DISTINCT ON (g.purpose) g.* FROM staffing.manager_agreement g
+	rows, e := u.tx.Query(ctx, `SELECT purpose,coalesce(manager_assignment::text,''),lower(period)::text,coalesce(upper(period)::text,''),name
+	FROM (SELECT DISTINCT ON (g.purpose) g.*,coalesce(r.adoption#>>'{manager,name}','') AS name FROM staffing.manager_agreement g
+	JOIN staffing.employment_action_revision r USING(instance_id,assignment_id,action_id,revision)
 	JOIN staffing.assignment_member m USING(instance_id,assignment_id,action_id,revision)
 	WHERE g.instance_id=$1 AND g.assignment_id=$2 AND m.version=$3 AND lower(g.period)<=$4::date
 	ORDER BY g.purpose,lower(g.period) DESC) at_day WHERE period @> $4::date AND manager_assignment IS NOT NULL ORDER BY purpose`,
@@ -42,7 +43,7 @@ func (u *unit) managerFacts(ctx context.Context, a h.Action, day, version string
 		return nil, e
 	}
 	facts, e := pgx.CollectRows(rows, func(r pgx.CollectableRow) (v h.ManagerFact, e error) {
-		e = r.Scan(&v.Purpose, &v.Manager, &v.From, &v.Until)
+		e = r.Scan(&v.Purpose, &v.Manager, &v.From, &v.Until, &v.Name)
 		return
 	})
 	if e != nil {
@@ -81,7 +82,9 @@ func (u *unit) discloseManager(ctx context.Context, fact *h.ManagerFact, day str
 	if e != nil || len(people) != 1 {
 		return false, e
 	}
-	fact.Name = people[0].Name
+	if fact.Name == "" {
+		fact.Name = people[0].Name
+	}
 	fact.RecordNumber = manager.RecordNumber
 	return true, nil
 }

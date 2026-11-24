@@ -12058,6 +12058,8 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
+      - {name: rehireAction, in: query, schema: {type: string, format: uuid}}
+      - {name: rehireRevision, in: query, schema: {type: string, format: uuid}}
       responses:
         '200':
           description: Applicable originals for this person under current authority

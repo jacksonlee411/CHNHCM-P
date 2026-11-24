@@ -59,8 +59,10 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   const overview = person.useRead(JSON.stringify([id, day]), () => employment(id, day));
   const eligibleHire=draft.rehireOf ? !!overview.data?.actions.some(a=>a.canRehire&&a.id===draft.rehireOf?.action&&a.revision===draft.rehireOf.revision) : !!overview.data?.canHire;
   const hireTitle=draft.rehireOf ? '办理再聘' : '办理入职';
-  const decisions = person.useRead(mode === 'hire' && overview.data?.canHire && !draft.rehireOf ? id : undefined, async () =>
-    unwrap(await api.GET('/api/v1/persons/{id}/appointment-decisions', { params: { path: { id } } })),
+  const decisions = person.useRead(mode === 'hire' && eligibleHire ? JSON.stringify([id, draft.rehireOf]) : undefined, async () =>
+    unwrap(await api.GET('/api/v1/persons/{id}/appointment-decisions', {
+      params: { path: { id }, query: {rehireAction: draft.rehireOf?.action, rehireRevision: draft.rehireOf?.revision} }
+    })),
   );
   const basis = decisions.data?.find(
     (v) => v.ref.source === draft.decision?.source && v.ref.version === draft.decision.version,

@@ -23264,7 +23264,10 @@ export interface operations {
     };
     listPersonAppointmentDecisions: {
         parameters: {
-            query?: never;
+            query?: {
+                rehireAction?: string;
+                rehireRevision?: string;
+            };
             header?: never;
             path: {
                 id: string;
