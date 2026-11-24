@@ -11,11 +11,12 @@ import subprocess
 import zipfile
 
 import ci_coverage as coverage
+from ci_shards import FULL_BROWSER, TIMINGS, selected_browser_count, selected_integration_count
 from ci_coverage import (ROOT, WORKFLOW, POLICY, SHA, changed_paths, git, latest_jobs,
                          run, selection_for, unpack_evidence)
 from ci_impact import SELECTION_KEYS, full, select, validate_mapping
 
-CONTRACT_PATHS = (WORKFLOW, POLICY, '.github/actions/browser-runtime/action.yml',
+CONTRACT_PATHS = (WORKFLOW, POLICY, TIMINGS, 'scripts/ci_shards.py', '.github/actions/browser-runtime/action.yml',
                   'scripts/ci_policy.py', 'scripts/ci_coverage.py', 'scripts/ci_impact.py', 'scripts/ci_browser.py',
                   'scripts/ci_preview.py', 'scripts/integration-shard.py')
 
@@ -62,6 +63,13 @@ class GitHub:
         raise ValueError('GitHub page budget exceeded')
 
 
+def geography_selection(policy, root):
+    pattern = policy['geography']['integration_filter']
+    files = browser_files(policy, root)
+    return dict(integration_filter=pattern, integration_shards=selected_integration_count(pattern),
+                browser_files=files, browser_shards=selected_browser_count(files))
+
+
 def classify(paths, policy, regular=True, root=ROOT):
     decision = select(paths, policy, regular, root)
     return decision['scope'], decision['reason']
@@ -93,7 +101,7 @@ def preflight_jobs(plan):
 
 
 def shard_routes(plan, event, suite, setting):
-    limit = {'browser': 11, 'integration': 8}[suite]
+    limit = {'browser': FULL_BROWSER, 'integration': 8}[suite]
     setting = setting or '0'
     if setting not in {str(i) for i in range(limit + 1)}:
         raise ValueError(f'CI_{suite.upper()}_SELF_HOSTED_SHARDS must be a shard count from 0 to {limit}')
@@ -116,8 +124,8 @@ def plan_outputs(plan, event, env):
     integration = shard_routes(plan, event, 'integration', env.get('CI_INTEGRATION_SELF_HOSTED_SHARDS'))
     preflight_runner = (browser if plan['remote_browser'] else integration)[0]['runner']
     carried = plan.get('carried', {})
-    browser = [row for row in browser if f'browser shard {row["shard"]}/11' not in carried]
-    integration = [row for row in integration if f'integration shard {row["shard"]}/8' not in carried]
+    browser = [row for row in browser if f'browser shard {row["shard"]}/{plan["browser_shards"]}' not in carried]
+    integration = [row for row in integration if f'integration shard {row["shard"]}/{plan["integration_shards"]}' not in carried]
     if not plan['remote_browser'] or not plan['browser_shards']:
         browser = []
     counts = {suite: sum('self-hosted' in row['runner'] for row in routes)
@@ -273,8 +281,7 @@ def build_plan(event, env, api, root=ROOT):
             plan.update(scope='selected', reason='explicit full browser diagnostic', integration_filter='', integration_shards=0)
         elif suite == 'geography-legal-entity':
             plan.update(scope='selected', reason='explicit diagnostic scope, not a PR gate',
-                        integration_filter=policy['geography']['integration_filter'], integration_shards=4,
-                        browser_files=browser_files(policy, root), browser_shards=4)
+                        **geography_selection(policy, root))
     else:
         raise ValueError('unsupported formal CI event')
     return plan
@@ -326,9 +333,10 @@ def validate_plan(plan, env, root=ROOT):
         policy = json.loads((root / POLICY).read_text())
         suite = json.loads(Path(env['GITHUB_EVENT_PATH']).read_text()).get('inputs', {}).get('suite')
         if suite == 'browser-full':
-            expected = ('', 0, [], 11)
+            expected = ('', 0, [], FULL_BROWSER)
         elif suite == 'geography-legal-entity':
-            expected = (policy['geography']['integration_filter'], 4, browser_files(policy, root), 4)
+            selected = geography_selection(policy, root)
+            expected = tuple(selected[key] for key in SELECTION_KEYS[2:])
         else:
             raise ValueError('unknown diagnostic suite')
         if plan.get('scope') != 'selected' or tuple(plan.get(k) for k in SELECTION_KEYS[2:]) != expected:
@@ -414,8 +422,8 @@ def main():
             current = outputs['plan']
             early = '执行' if outputs['run_preflight'] else '复用'
             browser_count = len(scheduled_jobs(current, 'browser')) if outputs['run_browser'] else 0
-            f.write(f'本轮派发 DB/API {len(scheduled_jobs(current, "integration"))}/8 片，'
-                    f'浏览器 {browser_count}/11 片，前置回归{early}。\n\n')
+            f.write(f'本轮派发 DB/API {len(scheduled_jobs(current, "integration"))}/{current["integration_shards"]} 片，'
+                    f'浏览器 {browser_count}/{current["browser_shards"]} 片，前置回归{early}。\n\n')
             for rid in sorted({ref['run'] for ref in current['carried'].values()}):
                 names = sorted(n for n, ref in current['carried'].items() if ref['run'] == rid)
                 url = f'{env["GITHUB_SERVER_URL"]}/{current["repo"]}/actions/runs/{rid}'

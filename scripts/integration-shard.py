@@ -7,6 +7,8 @@ from pathlib import Path
 import re
 import subprocess
 
+from ci_shards import FULL_INTEGRATION, SECONDS, balanced_groups
+
 PACKAGES = ('./tests/integration', './internal/bootstrap')
 PREFLIGHT_ROOTS = {
     ('chnhcm.local/chnhcm/internal/bootstrap', 'TestCountry200SourceFieldRemovalMigration'),
@@ -30,11 +32,10 @@ def discover(output):
 
 
 def partition(roots, shard, total):
-    if not 1 <= shard <= total <= len(roots):
+    if not 1 <= shard <= total:
         raise ValueError('require 1 <= shard <= total <= test count')
-    if len(set(roots)) != len(roots):
-        raise ValueError('duplicate test roots')
-    return sorted(roots)[shard - 1::total]
+    groups = balanced_groups(roots, total, lambda root: SECONDS['integration'].get(root[1], 3))
+    return groups[shard - 1]
 
 
 def select_roots(roots, pattern):
@@ -72,15 +73,16 @@ def main():
     parser.add_argument('--shard', type=int)
     parser.add_argument('--check', action='store_true', help='verify every planned partition without executing tests')
     parser.add_argument('--coverage-output', type=Path, help='write the checked full partition for PR reuse')
-    parser.add_argument('--total', type=int, default=8)
+    parser.add_argument('--total', type=int, default=FULL_INTEGRATION)
     parser.add_argument('--list', action='store_true', help='only print the selected roots')
     parser.add_argument('--results', type=Path, help='record actual local preflight root outcomes')
+    parser.add_argument('--after-preflight', action='store_true', help='local replay of the full post-preflight partitions')
     parser.add_argument('--preflight', action='store_true', help='run the two old-database upgrade checks')
     parser.add_argument('--filter', default='^Test', help='explicit admitted test-root pattern')
     args = parser.parse_args()
     if args.results and not args.preflight:
         parser.error('--results requires --preflight')
-    split_preflight = args.preflight or bool(args.coverage_output)
+    split_preflight = args.preflight or args.after_preflight or bool(args.coverage_output)
     if os.environ.get('CI_PLAN'):
         from ci_policy import validate_plan
         plan = json.loads(os.environ['CI_PLAN'])

@@ -44,7 +44,7 @@ class ImpactTests(unittest.TestCase):
         self.assertIn('country200.spec.ts', p['browser_files'])
         self.assertIn('geography205-joint.spec.ts', p['browser_files'])
         self.assertNotIn('department-selection.spec.ts', p['browser_files'])
-        self.assertLess(p['browser_shards'], 11)
+        self.assertLess(p['browser_shards'], 16)
         mixed = self.select('apps/web/src/features/organization/Countries.tsx',
                             'docs/verification/data/306-publication/integration-summary.json')
         self.assertEqual(mixed['browser_files'], p['browser_files'])
@@ -66,7 +66,7 @@ class ImpactTests(unittest.TestCase):
             (directory / 'GeoAreas.tsx').write_text("import './Countries';")
             (directory / 'UnknownConsumer.tsx').write_text("import './GeoAreas';")
             p = self.select('apps/web/src/features/organization/Countries.tsx', root=root)
-            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 11))
+            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 16))
 
     def test_new_backend_or_browser_consumers_cannot_disappear_from_coverage(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -75,7 +75,7 @@ class ImpactTests(unittest.TestCase):
             spec.parent.mkdir(parents=True)
             spec.write_text('test new business')
             p = self.select('apps/web/src/features/organization/Countries.tsx', root=root)
-            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 11))
+            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 16))
             p = self.select('tests/e2e/new-business.spec.ts', root=root)
             self.assertEqual(p['browser_files'], ['new-business.spec.ts'])
             consumer = root / 'internal/newbusiness/reader.go'
@@ -114,7 +114,7 @@ class ImpactTests(unittest.TestCase):
         self.assertRegex('TestStaffing308LogSourcesPagingAndFilters', plan['integration_filter'])
         for path in ['apps/web/src/shared/dated/ColumnFilter.tsx', 'apps/web/src/shared/dated/OperationLog.tsx']:
             plan = self.select(path)
-            self.assertEqual(plan['browser_shards'], 11)
+            self.assertEqual(plan['browser_shards'], 16)
             self.assertEqual(plan['integration_shards'], 0)
             self.assertEqual(plan['browser_files'], [])  # None selector means the complete browser manifest.
 
@@ -124,34 +124,34 @@ class ImpactTests(unittest.TestCase):
         self.assertEqual(own['integration_shards'],0)
         enterprise=self.select('internal/contexts/organization/application/enterprise/service.go')
         self.assertRegex('TestStaffing307EnterpriseBothLockOrders',enterprise['integration_filter'])
-        self.assertEqual(enterprise['browser_shards'],11)
+        self.assertEqual(enterprise['browser_shards'],16)
         staff=self.select('internal/contexts/staffing/application/commands.go')
         self.assertIn('staffing307.spec.ts',staff['browser_files'])
         self.assertIn('enterprise304.spec.ts',staff['browser_files'])
         self.assertRegex('TestEnterprise304References',staff['integration_filter'])
-        self.assertEqual(self.select('apps/web/src/shared/dated/submission.ts')['browser_shards'],11)
+        self.assertEqual(self.select('apps/web/src/shared/dated/submission.ts')['browser_shards'],16)
 
     def test_tests_select_only_their_execution_layer(self):
         browser = self.select('tests/e2e/department-journeys.spec.ts')
         self.assertEqual((browser['integration_shards'], browser['browser_shards']), (0, 1))
         self.assertEqual(browser['browser_files'], ['department-journeys.spec.ts'])
         integration = self.select('tests/integration/department_contract_test.go')
-        self.assertEqual((integration['integration_shards'], integration['browser_shards']), (8, 0))
+        self.assertEqual((integration['integration_shards'], integration['browser_shards']), (2, 0))
         unit = self.select('internal/contexts/organization/domain/department/path_test.go')
         self.assertEqual((unit['scope'], unit['integration_shards'], unit['browser_shards']), ('selected', 0, 0))
 
     def test_shared_frontend_and_frontend_lock_do_not_expand_backend(self):
         for path in ['apps/web/src/app/App.tsx', 'apps/web/src/features/organization/dated/Workflow.tsx', 'pnpm-lock.yaml']:
             p = self.select(path)
-            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 11))
+            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 16))
 
     def test_core_validation_inputs_unknown_and_nonregular_stay_full(self):
-        for path in ['scripts/ci_impact.py', '.github/ci-scopes.json', 'go.mod', 'package.json',
+        for path in ['scripts/ci_impact.py', '.github/ci-scopes.json', '.github/ci-shard-seconds.json', 'scripts/ci_shards.py', 'go.mod', 'package.json',
                      'internal/contexts/organization/domain/dated/timeline.go', 'migrations/00017.sql',
                      'tests/e2e/fixtures.ts', 'api/openapi.yaml', 'unknown.file']:
             with self.subTest(path=path):
                 p = self.select(path)
-                self.assertEqual((p['scope'], p['integration_shards'], p['browser_shards']), ('full', 8, 11))
+                self.assertEqual((p['scope'], p['integration_shards'], p['browser_shards']), ('full', 2, 16))
         self.assertEqual(impact.select(['docs/README.md'], self.policy, False, ci.ROOT)['scope'], 'full')
 
     def test_deleted_frontend_keeps_consumer_tests_and_unknown_test_delete_widens(self):
@@ -160,7 +160,7 @@ class ImpactTests(unittest.TestCase):
             p = self.select('apps/web/src/features/organization/Countries.tsx', root=root)
             self.assertIn('country200.spec.ts', p['browser_files'])
             p = self.select('tests/e2e/removed.spec.ts', root=root)
-            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 11))
+            self.assertEqual((p['integration_shards'], p['browser_shards']), (0, 16))
 
     def test_mapping_requires_consumers_to_exist_and_have_one_owner(self):
         impact.validate_mapping(self.policy, ci.ROOT)

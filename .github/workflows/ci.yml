@@ -161,10 +161,10 @@ jobs:
       (needs.preflight.result == 'success' || (needs.quality.outputs.run_preflight == 'false' && needs.preflight.result == 'skipped')) &&
       needs.quality.outputs.run_integration == 'true'
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 2
       matrix:
         include: ${{ fromJSON(needs.quality.outputs.integration_matrix) }}
     steps:
@@ -214,7 +214,7 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      max-parallel: 11
+      max-parallel: 16
       matrix:
         include: ${{ fromJSON(needs.quality.outputs.browser_matrix) }}
     steps:
