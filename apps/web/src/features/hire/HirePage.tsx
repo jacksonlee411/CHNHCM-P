@@ -37,15 +37,15 @@ export function HirePage({ session }: { session: Models['Principal'] }) {
   const { id = '' } = useParams();
   return <EmployeeHire key={session.instanceId + session.subjectId + id} id={id} session={session} />;
 }
-function EmployeeHire({ id, session }: { id: string; session: Models['Principal'] }) {
+export function EmployeeHire({ id, session, cancellation }: { id: string; session: Models['Principal']; cancellation?: {action:Models['EmploymentAction']; returnTo:string; done:()=>void} }) {
   const route = useLocation(),
-    back = person.path + '/' + id + route.search;
+    back = cancellation?.returnTo ?? person.path + '/' + id + route.search;
   const [day, setDay] = useState(''),
-    [mode, setMode] = useState<'hire' | 'cancel' | ''>(route.state?.hire ? 'hire' : '');
+    [mode, setMode] = useState<'hire' | 'cancel' | ''>(cancellation ? 'cancel' : route.state?.hire ? 'hire' : '');
   const [draft, setDraft] = useState(() => empty(id)),
     [choices, setChoices] = useState<Partial<Record<TargetKind, Option>>>({});
   const [reason, setReason] = useState(''),
-    [action, setAction] = useState<Models['EmploymentAction']>(),
+    [action, setAction] = useState<Models['EmploymentAction'] | undefined>(cancellation?.action),
     [original, setOriginal] = useState('');
   const [notice, setNotice] = useState(''),
     [error, setError] = useState(''),
@@ -86,6 +86,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
   const close = () => {
     selected.current = undefined;
     setMode('');
+    if (cancellation) cancellation.done();
     setDraft(empty(id));
     setChoices({});
     setReason('');

@@ -59,7 +59,7 @@ export function AssignmentPage({ session }: { session: Models['Principal'] }) {
       key={assignment}
       id={id}
       assignment={assignment}
-      day={params.get('businessAt') ?? ''}
+      day={params.get('assignmentDay') ?? params.get('businessAt') ?? ''}
       session={session}
     />
   );
@@ -116,8 +116,12 @@ function AssignmentDetail({
   const backQuery = new URLSearchParams(params);
   backQuery.delete('from');
   backQuery.delete('view');
-  const back =
-    params.get('from') === 'assignments'
+  const returnAction = params.get('returnAction');
+  const registerQuery = new URLSearchParams(params);
+  for (const key of ['returnAction', 'assignmentDay']) registerQuery.delete(key);
+  const back = returnAction
+    ? '/personnel/actions/' + returnAction + '?' + registerQuery
+    : params.get('from') === 'assignments'
       ? employees + '?' + backQuery
       : person.path + '/' + id + '?' + backQuery;
   const personQuery = new URLSearchParams(params);
@@ -132,7 +136,7 @@ function AssignmentDetail({
       <RecordControl
         identity={
           <>
-            <RecordBackButton component={Link} to={back} />
+            <RecordBackButton component={Link} to={back} label={returnAction ? '返回办理明细' : undefined} />
             {data?.name} {data?.number}
           </>
         }

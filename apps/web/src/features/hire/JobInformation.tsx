@@ -35,6 +35,7 @@ export function JobInformation({
   session,
   onSave,
   actionSlot,
+  selectedAction,
 }: {
   assignment: string;
   day: string;
@@ -42,11 +43,12 @@ export function JobInformation({
   session: Models['Principal'];
   onSave: () => void;
   actionSlot: HTMLElement | null;
+  selectedAction?: string;
 }) {
   const [source, setSource] = useState('');
   const [draft, setDraft] = useState<Draft>();
   const [search, setSearch] = useState('');
-  const [opened, setOpened] = useState<Action>();
+  const [chosen, setOpened] = useState<Action>();
   const [revision, setRevision] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -65,6 +67,7 @@ export function JobInformation({
     ),
   );
   const data = state.data;
+  const opened = selectedAction ? data?.actions.find((a) => a.id === selectedAction && a.canHistory) : chosen;
   useEffect(() => {
     if (!data || !draft) return;
     const allowed = draft.action
@@ -196,7 +199,7 @@ export function JobInformation({
   const at = data?.actions.filter((a) => a.businessDate === day) ?? [];
   const availableDays = Array.from(new Set(data?.actions.map((a) => a.businessDate) ?? []));
   return (
-    <ObjectDetailSection title="职务信息">
+    <ObjectDetailSection title={selectedAction ? '办理明细' : '职务信息'}>
       {state.error && (
         <Alert severity="error" action={<Button onClick={state.refresh}>重试</Button>}>
           {state.error}
@@ -266,61 +269,65 @@ export function JobInformation({
             </Box>
           ) : (
             <>
-              {availableDays.length > 0 && (
-                <EffectiveDates
-                  dates={availableDays}
-                  selected={day}
-                  onSelect={(value) => {
-                    onDay(value);
-                    setOpened(undefined);
-                    setRevision('');
-                  }}
-                />
-              )}
-              <ObjectTextField
-                type="date"
-                label="查看业务日"
-                value={day}
-                onChange={(e) => {
-                  onDay(e.target.value);
-                  setOpened(undefined);
-                  setRevision('');
-                }}
-              />
-              <ObjectDetailField label="该日任职">
-                {data.state
-                  ? [data.state.department, data.state.job, data.state.location?.name]
-                      .filter(Boolean)
-                      .join(' · ')
-                  : '该日无有效任职'}
-              </ObjectDetailField>
-              <Typography component="h3">当日办理</Typography>
-              <Stack direction="row" flexWrap="wrap" gap={1}>
-                {at.map((a) =>
-                  a.canHistory ? (
-                    <Button
-                      key={a.id}
-                      onClick={() => {
-                        setOpened(a);
+              {!selectedAction && (
+                <>
+                  {availableDays.length > 0 && (
+                    <EffectiveDates
+                      dates={availableDays}
+                      selected={day}
+                      onSelect={(value) => {
+                        onDay(value);
+                        setOpened(undefined);
                         setRevision('');
                       }}
-                    >
-                      {actionLabel(a)} · {a.businessDate}
-                    </Button>
-                  ) : (
-                    <Typography key={a.id}>{actionLabel(a)}</Typography>
-                  ),
-                )}
-                {!at.length && <Typography>没有当日办理</Typography>}
-              </Stack>
-              {data.canChangeLocation &&
-                actionSlot &&
-                createPortal(
-                  <Button variant="contained" onClick={(e) => begin(e.currentTarget)}>
-                    新增记录
-                  </Button>,
-                  actionSlot,
-                )}
+                    />
+                  )}
+                  <ObjectTextField
+                    type="date"
+                    label="查看业务日"
+                    value={day}
+                    onChange={(e) => {
+                      onDay(e.target.value);
+                      setOpened(undefined);
+                      setRevision('');
+                    }}
+                  />
+                  <ObjectDetailField label="该日任职">
+                    {data.state
+                      ? [data.state.department, data.state.job, data.state.location?.name]
+                          .filter(Boolean)
+                          .join(' · ')
+                      : '该日无有效任职'}
+                  </ObjectDetailField>
+                  <Typography component="h3">当日办理</Typography>
+                  <Stack direction="row" flexWrap="wrap" gap={1}>
+                    {at.map((a) =>
+                      a.canHistory ? (
+                        <Button
+                          key={a.id}
+                          onClick={() => {
+                            setOpened(a);
+                            setRevision('');
+                          }}
+                        >
+                          {actionLabel(a)} · {a.businessDate}
+                        </Button>
+                      ) : (
+                        <Typography key={a.id}>{actionLabel(a)}</Typography>
+                      ),
+                    )}
+                    {!at.length && <Typography>没有当日办理</Typography>}
+                  </Stack>
+                  {data.canChangeLocation &&
+                    actionSlot &&
+                    createPortal(
+                      <Button variant="contained" onClick={(e) => begin(e.currentTarget)}>
+                        新增记录
+                      </Button>,
+                      actionSlot,
+                    )}
+                </>
+              )}
               {opened && original.error && (
                 <Alert severity="error" action={<Button onClick={original.refresh}>重试</Button>}>
                   {original.error}
@@ -328,39 +335,11 @@ export function JobInformation({
               )}
               {opened && original.data && (
                 <Box>
-                  <Typography component="h3">{actionLabel(opened)}原件</Typography>
-                  {original.data.locationChange && (
-                    <ObjectDetailField label="工作地点">
-                      {original.data.locationChange.before?.name ?? '—'} →{' '}
-                      {original.data.locationChange.after.name}
-                    </ObjectDetailField>
-                  )}
-                  {original.data.locationChange?.replaced && (
-                    <ObjectDetailField label="更正前记录值">
-                      {original.data.locationChange.replaced.name}
-                    </ObjectDetailField>
-                  )}
-                  {original.data.action.notice && (
-                    <ObjectDetailField label="人事依据">{original.data.action.notice}</ObjectDetailField>
-                  )}
-                  {original.data.revisions?.map((r) => (
-                    <Button
-                      key={r.id}
-                      onClick={() => setRevision(r.id)}
-                      aria-pressed={r.id === original.data?.action.revision}
-                    >
-                      查看修订 · {recordedTime(r.recordedAt)}
-                    </Button>
-                  ))}
-                  {original.data.revisions?.find((r) => r.id === original.data?.action.revision) && (
-                    <ObjectDetailField label="经办人">
-                      {original.data.revisions.find((r) => r.id === original.data?.action.revision)?.operator}
-                    </ObjectDetailField>
-                  )}
+                  <OriginalEvidence original={original.data} setRevision={setRevision} />
                   {opened.canCorrectLocation &&
                     original.data.action.revision === opened.revision &&
                     !source && <Button onClick={(e) => begin(e.currentTarget, opened)}>更正记录</Button>}
-                  {original.data.action.sourceVersion !== data.sourceVersion && (
+                  {!selectedAction && original.data.action.sourceVersion !== data.sourceVersion && (
                     <Button
                       onClick={() => {
                         setSource(original.data!.action.sourceVersion);
@@ -400,5 +379,43 @@ export function JobInformation({
       {submit.storageError && <Alert severity="error">无法保存提交号，请恢复浏览器存储后办理。</Alert>}
       <UnsavedChangesDialog {...exit.dialog} />
     </ObjectDetailSection>
+  );
+}
+
+export function OriginalEvidence({
+  original,
+  setRevision,
+}: {
+  original: Models['HireOriginal'];
+  setRevision: (id: string) => void;
+}) {
+  const operator = original.revisions?.find((r) => r.id === original.action.revision)?.operator;
+  return (
+    <>
+      <Typography component="h3">{actionLabel(original.action)}原件</Typography>
+      <ObjectDetailField label="生效日期">{original.action.businessDate}</ObjectDetailField>
+      <ObjectDetailField label="首次办理时间">{recordedTime(original.action.recordedAt)}</ObjectDetailField>
+      {original.departmentName && (
+        <ObjectDetailField label="发生部门">{original.departmentName}</ObjectDetailField>
+      )}
+      {original.locationChange && <ObjectDetailField label="业务原因">工作地点变更</ObjectDetailField>}
+      {original.locationChange && (
+        <ObjectDetailField label="工作地点">
+          {original.locationChange.before?.name ?? '—'} → {original.locationChange.after.name}
+        </ObjectDetailField>
+      )}
+      {original.locationChange?.replaced && (
+        <ObjectDetailField label="更正前记录值">{original.locationChange.replaced.name}</ObjectDetailField>
+      )}
+      {original.action.notice && (
+        <ObjectDetailField label="人事依据">{original.action.notice}</ObjectDetailField>
+      )}
+      {original.revisions?.map((r) => (
+        <Button key={r.id} onClick={() => setRevision(r.id)} aria-pressed={r.id === original.action.revision}>
+          查看修订 · {recordedTime(r.recordedAt)}
+        </Button>
+      ))}
+      {operator && <ObjectDetailField label="经办人">{operator}</ObjectDetailField>}
+    </>
   );
 }
