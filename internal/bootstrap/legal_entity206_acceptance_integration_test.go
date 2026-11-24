@@ -291,6 +291,7 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
 		if f.scalar("SELECT (SELECT count(*) FROM staffing.employment)+(SELECT count(*) FROM staffing.hire_terminal)+(SELECT count(*) FROM access.employment_grant)") != 0 {
 			t.Fatal("prefix fixture contains employment data")
 		}
+		f.exec("DROP TABLE IF EXISTS access.employment_succession_fixture")
 		f.exec("DROP TABLE access.employment_lifecycle_fixture,access.employment_promotion_fixture,access.employment_probation_fixture,access.employment_parallel_fixture,access.employment_history_fixture,access.employment_register_fixture,access.employment_location_fixture,access.employment_fixture,access.employment_grant; DELETE FROM public.goose_db_version WHERE version_id=37")
 	}
 	if f.scalar("SELECT (to_regclass('access.hire_identity_fixture') IS NOT NULL)::int") > 0 {
