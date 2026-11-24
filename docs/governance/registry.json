@@ -2775,9 +2775,9 @@
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "复核按事项确定输入、实况与拟议用量、共用通知、误录撤销、真实前序和关系转正核权。",
+        "scope": "核对旧首单接入 0 号、首笔在职写入的升级时点、动作修订及按能力衔接原回执与双入口。",
         "result": "accepted",
-        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2806,9 +2806,9 @@
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "核对 T04 按职务先验普通纠错，按岗再验已履职补录，以及同日共同办理、撤销和归属授权的菜单签收。",
+        "scope": "复核按职务首单到首笔变更的实施次序、可并行的后续办理、106 汇合场景及按岗、合同和招聘的真实依赖。",
         "result": "accepted",
-        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
       },
       "execution_status": "in_progress",
       "superseded_by": [],
@@ -2968,9 +2968,9 @@
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "核对普通更正与人事依据、误录撤销、满编实况、两笔共用通知、独立动作及关系级转正归属。",
+        "scope": "核对同日联验所需试用、职级及兼岗的业务来源，以及分批使用原有验收样本的范围。",
         "result": "accepted",
-        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2992,9 +2992,9 @@
       "review": {
         "date": "2026-11-24",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "复核普通更正、误录撤销、实际履职、共用通知和同日补录从正常菜单直接办理的输入与结果。",
+        "scope": "核对各阶段的档案、任职与原笔入口，离职间隔的再聘路径及跨人办理查询分批验收。",
         "result": "accepted",
-        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3014,6 +3014,26 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/500-job-information-delivery-review.md",
+        "related_documents": ["CHNHCM-106", "CHNHCM-313", "CHNHCM-400", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "37712728874cf89fccc15187a4c23361be436569",
+        "working_tree": "dirty",
+        "change_description": "重排职务信息实施步骤，补齐首单升级、可独立交付的办理及跨模块衔接。",
+        "environment": "wt-dev-f 本地文档工作区，参照固定 e 分支的 404 定稿。",
+        "scope": "实施顺序、真实前置、正常菜单、交付结果及组合样本的承接。",
+        "results": [
+          {"check": "比对现有首单约束、单笔接口和 404 交接，逐项对照实施步骤与业务样本", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "核对依赖图无环，分别移去后续能力复核查询、共同办理及组合联验能否独立交付", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "首轮仓库检查发现三个四级标题缺少编号", "result": "failed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "补齐编号后文档治理、仓库资料、领域边界、改写链接及差异空白复验", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "T04 产品升级、接口、数据库及正常菜单实施验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["本次交付为实施方案修订，各产品增量随实际开发验证。"]
+      },
       {
         "path": "docs/verification/506-job-information-direct-entry-review.md",
         "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-313", "CHNHCM-401", "CHNHCM-402", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],

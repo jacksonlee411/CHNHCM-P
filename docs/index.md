@@ -2,7 +2,7 @@
 
 此索引保留公开项目前身的技术文档和验收导航。历史运行附件由原仓保管，对应链接需要私仓权限。
 
-人员方案设「员工」与「人事事务」两个入口。员工列表按部门列各份任职，同人同部门也分行。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。人事事务按笔跨员工查询，与职务信息的「当日办理」共用原记录。[编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [T03／T04 分批实施](plans/500-personnel-roadmap.md#job-information-delivery) · [设计复核与参考来源](verification/506-job-information-design-review.md)
+人员方案设「员工」与「人事事务」两个入口。员工列表按部门列各份任职，同人同部门也分行。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。实施先把已有按职务首单接入 0 号页签，再交地点变更与原笔更正。人事事务从这笔变更开始复用任职中的办理，兼岗和同日动作按各自前置接入。[分批实施及依赖图](plans/500-personnel-roadmap.md#job-information-delivery) · [编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [设计复核与参考来源](verification/506-job-information-design-review.md)
 
 [M01 个人资料扩展](plans/504-personal-profile-extension.md)单列 T01 之后的九栏维护。字段、整页保存及七类弹框布局由[九栏目合同](specs/m01/505-personal-profile-contract.md)规定。[九栏方案评审](verification/504-personal-profile-review.md) · [弹框布局核对](verification/504-personal-profile-dialog-layout.md) · [第一批三栏实测与验收地址](verification/504-personal-profile-first-batch.md) · [第二批地址与家庭联系人实测及验收地址](verification/504-personal-profile-second-batch.md) · [第三批教育经历与专业凭证](verification/504-personal-profile-third-batch.md) · [第四批银行、健康及九栏联验](verification/504-personal-profile-fourth-batch.md)
 
