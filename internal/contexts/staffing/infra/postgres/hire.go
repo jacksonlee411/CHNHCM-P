@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"reflect"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -60,6 +61,7 @@ type hirePlan struct {
 	prepared               h.Preparation
 	term                   f.Period
 	employment, assignment string
+	previousAction         string
 }
 
 func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
@@ -76,8 +78,8 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		return plan, err
 	}
 	plan.employment, plan.assignment = f.NewID(), f.NewID()
-	request := h.FirstRequest{Appointment: h.Appointment{Person: in.Person, Employer: in.Employer, Department: in.Department, Job: in.Job, Period: term},
-		Basis: h.Basis{Notice: strings.TrimSpace(in.Notice)}, Relationship: h.Choice{Complete: true, Eligible: []string{plan.employment}},
+	request := h.FirstRequest{Appointment: h.Appointment{Person: in.Person, Employer: in.Employer, Department: in.Department, Job: in.Job, BU: in.BU, Location: in.Location, Period: term},
+		Basis: h.Basis{Decision: in.Decision, Notice: strings.TrimSpace(in.Notice)}, Relationship: h.Choice{Complete: true, Eligible: []string{plan.employment}},
 		Assignments: map[string]h.Choice{plan.employment: {Complete: true, Eligible: []string{plan.assignment}}}}
 	legal := org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}
 	ent, err := u.Enterprise(ctx, true)
@@ -86,6 +88,9 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	}
 	job := staff.AssignmentCheck{Period: term, Category: "Employee", Purpose: "hire", Enterprise: ent.ID, Department: in.Department, Job: in.Job}
 	if in.Expected != nil {
+		if !reflect.DeepEqual(in.Decision, in.Expected.Decision) {
+			return plan, appointmentConflict()
+		}
 		if in.Expected.Rule == "" || len(in.Expected.Legal) == 0 || len(in.Expected.Segments) == 0 {
 			return plan, f.Fail(400, "HIRE_EXPECTED", "期望采用不完整")
 		}
@@ -95,13 +100,19 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		job.Adopted = in.Expected.Segments
 	}
 	ctx = dbtx.With(ctx, u.tx)
-	plan.prepared, err = h.PrepareFirst(ctx, h.Sources{Rules: u.store, People: u.store.HirePeople}, u.credentials, request)
+	plan.prepared, err = h.PrepareFirst(ctx, h.Sources{Rules: u.store, People: u.store.HirePeople, Decisions: u}, u.credentials, request)
 	if err != nil {
 		return plan, err
 	}
 	if len(plan.prepared.Identity.Missing) > 0 {
 		plan.Missing = plan.prepared.Identity.Missing
 		return plan, nil
+	}
+	if in.Decision != nil {
+		plan.previousAction, err = u.previousDecisionHire(ctx, in, term)
+		if err != nil {
+			return plan, err
+		}
 	}
 	var existing bool
 	err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment e WHERE e.instance_id=$1 AND e.person_id=$2
@@ -110,10 +121,10 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	if err != nil {
 		return plan, err
 	}
-	if existing {
+	if existing && plan.previousAction == "" {
 		return plan, f.Fail(409, "HIRE_EXISTING", "当前无法按首笔入职办理，请由获权人核对工作安排")
 	}
-	adopt := h.Adoption{Rule: plan.prepared.RuleVersion, Identity: plan.prepared.Identity.Source}
+	adopt := h.Adoption{Decision: in.Decision, Rule: plan.prepared.RuleVersion, Identity: plan.prepared.Identity.Source}
 	adopt.Legal, err = u.store.HirePurposes.CheckPurpose(ctx, u.credentials, in.Employer, legal)
 	if err != nil {
 		return plan, err
@@ -162,6 +173,9 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		if err = u.requireEmployment(ctx, "hire", in.Person, in.Employer, in.Department); err != nil {
 			return "", err
 		}
+		if p.previousAction != "" {
+			return p.previousAction, nil
+		}
 		id := f.NewID()
 		instance := st.Instance
 		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment VALUES($1,$2,$3,$4,'Employee',daterange($5::date,NULLIF($6,'')::date,'[)'))`, instance, p.employment, in.Person, in.Employer, p.term.From, p.term.Until)
@@ -183,6 +197,12 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		VALUES($1,$2,$3,'Hire',$4,$5,$6,$7,$8,$9)`, instance, id, f.NewID(), p.employment, p.assignment, in.Arrival, u.guard.Principal().ID, p.prepared.Basis.Notice, adoption)
 		if err != nil {
 			return "", err
+		}
+		if in.Decision != nil {
+			_, err = u.tx.Exec(ctx, `INSERT INTO staffing.hire_decision_use(instance_id,source,version,line_id,action_id) VALUES($1,$2,$3,NULLIF($4,'')::uuid,$5)`, instance, in.Decision.Source, in.Decision.Version, in.Decision.Line, id)
+			if err != nil {
+				return "", err
+			}
 		}
 		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_primary
 		SELECT $1::uuid,$2::uuid,v.layer,v.owner,v.target,$6,daterange($7::date,NULLIF($8,'')::date,'[)')

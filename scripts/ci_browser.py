@@ -11,6 +11,7 @@ import subprocess
 
 from ci_policy import ROOT, POLICY, browser_files, validate_plan
 from ci_coverage import inventory_part
+from ci_shards import FULL_BROWSER, balanced_groups, browser_seconds, selected_browser_count
 
 
 PREFLIGHT_CASES = (
@@ -79,13 +80,15 @@ def selected_files(scope, root=ROOT):
     return browser_files(json.loads((root / POLICY).read_text()), root) if scope == 'geography' else []
 
 
-def arguments(files, shard=None, total=None):
-    args = ['(?:^|/)' + re.escape(p) + '$' for p in files]
-    if shard is not None:
-        if not total or not 1 <= shard <= total:
-            raise ValueError('invalid browser shard')
-        args.append(f'--shard={shard}/{total}')
-    return args
+def arguments(files):
+    return ['(?:^|/)' + re.escape(p) + '$' for p in files]
+
+
+def shard_files(selected, total, dependencies):
+    entries = sorted({owner for key, owner in selected.items() if key[0] not in dependencies})
+    if not entries and total == 1:
+        return [sorted(set(selected.values()))]
+    return balanced_groups(entries, total, browser_seconds)
 
 
 def discover(args, expected_titles=()):
@@ -105,7 +108,8 @@ def check_inventory(files, total, split=False, coverage_output=None):
     early = title_args(PREFLIGHT_TITLES)
     shards = [discover(early, PREFLIGHT_TITLES)] if split else []
     remaining = ['--grep-invert', early[1]] if split else []
-    shards.extend(discover(arguments(files, i, total) + remaining) for i in range(1, total + 1))
+    shards.extend(discover(arguments(group) + remaining)
+                  for group in shard_files(selected, total, dependencies))
     result = verify_partition(selected, shards, dependencies)
     if split and coverage_output:
         parts = [inventory_part([(*key, owner) for key, owner in shard.items()], shard.values())
@@ -130,12 +134,12 @@ def main():
             raise ValueError('browser suite is not in the current plan')
     elif args.scope:
         scope = args.scope
-        total = 4 if args.scope == 'geography' else 11
         files = selected_files(args.scope)
+        total = selected_browser_count(files) if files else FULL_BROWSER
     else:
         parser.error('CI_PLAN or an explicit local --scope is required')
     early = title_args(PREFLIGHT_TITLES)
-    split = scope == 'full' and (args.command == 'check' or bool(os.environ.get('CI_PLAN')))
+    split = scope == 'full'
     remaining = ['--grep-invert', early[1]] if split else []
     if args.command == 'check':
         print(json.dumps(check_inventory(files, total, split, args.coverage_output)))
@@ -147,7 +151,11 @@ def main():
         else:
             if args.shard is None:
                 parser.error('run requires a shard')
-            selected_args = arguments(files, args.shard, total) + remaining
+            if not 1 <= args.shard <= total:
+                parser.error('invalid browser shard')
+            dependencies = json.loads((ROOT / POLICY).read_text())['dependency_projects']
+            groups = shard_files(discover(arguments(files)), total, dependencies)
+            selected_args = arguments(groups[args.shard - 1]) + remaining
         selected = discover(selected_args, PREFLIGHT_TITLES if args.command == 'preflight' else ())
         print(json.dumps({'phase': args.command, 'shard': args.shard, 'total': total, 'tests': sorted(selected)}), flush=True)
         # Pass an argument vector directly: file patterns never enter a shell.

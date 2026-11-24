@@ -8,6 +8,7 @@ import subprocess
 import tarfile
 import tempfile
 
+from ci_shards import FULL_BROWSER, FULL_INTEGRATION
 from ci_impact import full, select
 from ci_policy import POLICY, ROOT, changed_paths, git, run, validate_mapping
 
@@ -105,10 +106,10 @@ def shadow_plan(base, paths, regular, current, policy, tree, repo):
     if not admitted:
         return current, []
     result = select(remaining, policy, root=tree, backend_impacts=('staffing',))
-    if result['browser_shards'] == 11:
+    if result['browser_shards'] == FULL_BROWSER and not result['browser_files']:
         return full(result['reason']), admitted
     if migration:
-        result.update(integration_filter='^Test', integration_shards=8)
+        result.update(integration_filter='^Test', integration_shards=FULL_INTEGRATION)
     return result, admitted
 
 

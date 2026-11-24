@@ -213,7 +213,7 @@
           "module": "M04",
           "capability": "人事动作与任职",
           "state": "verified_slice",
-          "scope": "普通劳动关系凭无编号任用通知仅按职务办理首单。人员、主体及职务采用、两层主选择、按日任职、未来撤销、原号恢复与 L3 引用并发已验。",
+          "scope": "普通劳动关系从已有单人任用决定、多人名单的本人行或无编号通知仅按职务办理首单。人员、主体及职务采用、两层主选择、按日任职、未来撤销、原号恢复与 L3 引用并发已验。",
           "entry": "/api/v1/hires",
           "entry_source": "internal/bootstrap/hire_readiness.go",
           "source": "internal/contexts/staffing/infra/postgres/hire.go",

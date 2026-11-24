@@ -281,6 +281,12 @@ func removeEmptyLegalEntity206(t *testing.T, f *fixture) {
       DROP FUNCTION organization.legal_purpose_member_guard();
       DELETE FROM public.goose_db_version WHERE version_id IN (32,33);`)
 	}
+	if f.scalar("SELECT (to_regclass('staffing.appointment_version') IS NOT NULL)::int") > 0 {
+		if f.scalar("SELECT count(*) FROM staffing.appointment_version") != 0 {
+			t.Fatal("prefix fixture contains decisions")
+		}
+		f.exec("DROP TABLE access.appointment_issuer_fixture; DELETE FROM public.goose_db_version WHERE version_id=39")
+	}
 	if f.scalar("SELECT (to_regclass('staffing.employment') IS NOT NULL)::int") > 0 {
 		if f.scalar("SELECT (SELECT count(*) FROM staffing.employment)+(SELECT count(*) FROM staffing.hire_terminal)+(SELECT count(*) FROM access.employment_grant)") != 0 {
 			t.Fatal("prefix fixture contains employment data")

@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 import zipfile
 
 from ci_impact import select
+from ci_shards import FULL_BROWSER, FULL_INTEGRATION
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = '.github/workflows/ci.yml'
@@ -64,7 +65,7 @@ def unpack_evidence(data, filename='ci-evidence.json'):
         return json.loads(z.read(items[0]))
 
 
-SUITES = {'integration': 8, 'browser': 11}
+SUITES = {'integration': FULL_INTEGRATION, 'browser': FULL_BROWSER}
 READ_ERRORS = (ValueError, KeyError, TypeError, OSError, subprocess.SubprocessError, zipfile.BadZipFile)
 
 

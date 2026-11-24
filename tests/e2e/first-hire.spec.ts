@@ -21,9 +21,9 @@ async function seed(page: Page, withDocument = true) {
     employer = '用人单位' + suffix,
     job = '专员' + suffix;
   const bu = await apiBU(page, '管理单元' + suffix);
-  await apiDepartment(page, bu.id, { name: department });
+  const dep = await apiDepartment(page, bu.id, { name: department });
   const family = await seed308(page, 'jobfamily');
-  await seed308(page, 'job', family.id, { name: job });
+  const positionJob = await seed308(page, 'job', family.id, { name: job });
   const send = async (path: string, input: object, status: number) => {
     const r = await request(page, 'POST', '/api/v1/' + path, input, randomUUID());
     expect(r.status, r.body.message).toBe(status);
@@ -84,7 +84,16 @@ async function seed(page: Page, withDocument = true) {
     },
     200,
   );
-  return { name, department, employer, job, id: saved.id };
+  return {
+    name,
+    department,
+    employer,
+    job,
+    id: saved.id,
+    departmentId: dep.id,
+    employerId: entity.legalEntityId,
+    jobId: positionJob.id,
+  };
 }
 async function openPerson(page: Page, name: string) {
   if (await page.evaluate(() => matchMedia('(min-width:900px)').matches)) {
@@ -118,9 +127,63 @@ async function fillHire(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
     .toBe(true);
 }
-async function journey(page: Page, sample: Awaited<ReturnType<typeof seed>>, disconnect = false) {
+async function selectIssuedDecision(page: Page, sample: Awaited<ReturnType<typeof seed>>, roster: boolean) {
+  const number = '合成人事任字-' + randomUUID().slice(0, 8);
+  const ref = { source: randomUUID(), version: randomUUID(), line: roster ? randomUUID() : undefined };
+  const rows = [
+    {
+      person: sample.id,
+      line: ref.line,
+      employer: { id: sample.employerId, name: sample.employer },
+      arrival: '2027-04-01',
+      department: { id: sample.departmentId, name: sample.department },
+      job: { id: sample.jobId, name: sample.job },
+    },
+  ];
+  if (roster) {
+    const other = await request(page, 'POST', '/api/v1/persons', {
+      submissionId: randomUUID(),
+      name: '同份名单另一人',
+    });
+    expect(other.status).toBe(200);
+    rows.push({ ...rows[0], person: other.body.id, line: randomUUID() });
+  }
+  const issued = await request(
+    page,
+    'POST',
+    '/api/v1/appointment-decisions',
+    {
+      source: ref.source,
+      number,
+      roster,
+      withdrawn: false,
+      rows,
+    },
+    ref.version,
+  );
+  expect(issued.status, issued.body.message).toBe(200);
+  await openPerson(page, sample.name);
+  await page.getByRole('link', { name: '办理入职', exact: true }).click();
+  const basis = page.getByRole('combobox', { name: '任用依据' });
+  await basis.focus();
+  await basis.press('ArrowDown');
+  await page.getByRole('option', { name: number, exact: true }).click();
+  for (const text of [sample.employer, sample.department, sample.job, '2027-04-01'])
+    await expect(page.getByText(text, { exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: /任用通知说明/ })).toHaveCount(0);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+    .toBe(true);
+  return { ...ref, number };
+}
+async function journey(
+  page: Page,
+  sample: Awaited<ReturnType<typeof seed>>,
+  disconnect = false,
+  roster = false,
+) {
   const button = (name: string) => page.getByRole('button', { name, exact: true });
-  await fillHire(page, sample);
+  const ref = await selectIssuedDecision(page, sample, roster);
   if (disconnect) {
     await page.route(
       '**/api/v1/hires',
@@ -137,6 +200,9 @@ async function journey(page: Page, sample: Awaited<ReturnType<typeof seed>>, dis
   await expect(page.getByText('可见在职 1 人，任职 1 份，占编 0')).toBeVisible();
   await button('查看原办理').click();
   await expect(page.getByText('采用规则 T02-employee-1')).toBeVisible();
+  await expect(page.getByText('任用决定 ' + ref.number)).toBeVisible();
+  await expect(page.getByText('原单 ' + ref.source + '，修订 ' + ref.version)).toBeVisible();
+  if (ref.line) await expect(page.getByText('名单行 ' + ref.line + '，修订 ' + ref.version)).toBeVisible();
   await page.getByRole('textbox', { name: /^查询日期/ }).fill('2027-03-31');
   await expect(page.getByText('可见在职 0 人，任职 0 份，占编 0')).toBeVisible();
   await button('撤销未来入职').click();
@@ -255,7 +321,7 @@ for (const [width, height] of [
     await signIn(page);
     const sample = await seed(page);
     await page.setViewportSize({ width, height });
-    await journey(page, sample, width === 1440 && height === 540);
+    await journey(page, sample, width === 1440 && height === 540, width <= 390);
   });
 }
 test('T03 原生 200% 首单办理及撤销', async () => {

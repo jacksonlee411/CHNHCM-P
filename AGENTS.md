@@ -29,7 +29,7 @@
 ## 验证与交付
 
 - 非平凡业务工作先明确角色、正常菜单、前置、结果、异常、取消、更正及历史。按合同确定独立预期，按实际影响验证；不得以目录占位、mock或健康接口宣称业务完成。
-- 按[003](docs/adr/003-implementation-stages.md)和[137](docs/governance/137-actions-and-validation.md)优先在本地发现、修复并复验问题，候选稳定后再推送，减少远程 CI 消耗。按影响运行 make 的 docs、boundaries、check、integration、smoke 目标，交付前 `git diff --check`。远程 CI 默认只跑改动所需检查。DB/API 可按需自动全量。本地按影响实测浏览器。公共仓库自动运行所需远程浏览器前置及分片，全量范围为十一片。
+- 按[003](docs/adr/003-implementation-stages.md)和[137](docs/governance/137-actions-and-validation.md)优先在本地发现、修复并复验问题，候选稳定后再推送，减少远程 CI 消耗。按影响运行 make 的 docs、boundaries、check、integration、smoke 目标，交付前 `git diff --check`。远程 CI 默认只跑改动所需检查。DB/API 可按需自动全量。本地按影响实测浏览器。公共仓库自动运行所需远程浏览器前置及分片。
 - 如实记录基线、范围、首败、复验及未完成项。产品开发并验证通过后，交付前按[003 验收环境更新规则](docs/adr/003-implementation-stages.md#acceptance-environment-update)更新本工作树负责的手工验收环境，从用户实际地址复查业务并交接。常规更新由固定环境责任方执行。发布须用户授权，合并须最终 PR 的 quality、integration、browser 汇总成功。browser 核对所选远程分片及获准复用的证据，禁止强推。
 - 收尾按[003资源规则](docs/adr/003-implementation-stages.md#development-environment-cleanup)和[017运行指南](docs/guides/017-local-bu-development.md#local-runtime-cleanup)执行：回收自有可丢弃临时资源；持久环境`local-down`只停机保留数据；保留运行须记录用途、责任和复查点。
 - 本地开发账号为`admin`/`reader`，公开预设密码`admin1234567`；仅限本地开发。数据库随机凭据留仓外，不为登录读取数据库秘密；启动后报告实际profile和端口。

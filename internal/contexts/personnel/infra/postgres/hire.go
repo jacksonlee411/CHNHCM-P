@@ -61,13 +61,7 @@ func (s *Store) CheckIdentity(ctx context.Context, c f.Credentials, in p.HireIde
 func (r *request) hireIdentity(in p.HireIdentityRequest) (p.HireIdentityResult, error) {
 	var result p.HireIdentityResult
 	// Missing/disposed identity payload or expired ordinary use must not reveal the archive.
-	var version string
-	err := r.tx.QueryRow(r.ctx, `SELECT p.head FROM personnel.person p JOIN personnel.identity_payload n
-	ON (n.instance_id,n.person_id,n.version)=(p.instance_id,p.person_id,p.head)
-	WHERE p.instance_id=$1 AND p.person_id=$2 AND p.ordinary_until>clock_timestamp() AND n.name<>''`, r.instance, in.PersonID).Scan(&version)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return result, d.Missing()
-	}
+	version, err := r.hirePersonVersion(in.PersonID)
 	if err != nil {
 		return result, err
 	}
@@ -116,4 +110,34 @@ func (r *request) hireIdentity(in p.HireIdentityRequest) (p.HireIdentityResult, 
 		return result, d.Missing()
 	}
 	return p.HireIdentityResult{Missing: []string{missing}}, nil
+}
+
+// CheckHirePerson permits discovery of appointment originals for an existing
+// person without requiring an arrival date or disclosing any document data.
+func (s *Store) CheckHirePerson(ctx context.Context, c f.Credentials, id string) error {
+	tx, ok := dbtx.From(ctx)
+	if !ok {
+		return errors.New("appointment lookup requires caller transaction")
+	}
+	a, _, err := s.Authorize(ctx, tx, c)
+	if err != nil {
+		return err
+	}
+	r := request{ctx: ctx, tx: tx, a: a, instance: a.Principal.InstanceID}
+	if requiredPolicy(&r) != nil || !r.allowed("hire.check", id, "name", "document") {
+		return d.Missing()
+	}
+	_, err = r.hirePersonVersion(id)
+	return err
+}
+
+func (r *request) hirePersonVersion(person string) (string, error) {
+	var version string
+	err := r.tx.QueryRow(r.ctx, `SELECT p.head FROM personnel.person p JOIN personnel.identity_payload n
+	ON (n.instance_id,n.person_id,n.version)=(p.instance_id,p.person_id,p.head)
+	WHERE p.instance_id=$1 AND p.person_id=$2 AND p.ordinary_until>clock_timestamp() AND n.name<>''`, r.instance, person).Scan(&version)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", d.Missing()
+	}
+	return version, err
 }

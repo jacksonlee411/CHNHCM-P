@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Box, Button, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, MenuItem, Paper, Stack, Typography } from '@mui/material';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { api, ApiError, unwrap, type Models } from '@chnhcm/api-client';
 import {
+  ObjectDetailField,
   ObjectDetailSection,
   ObjectForm,
   ObjectTextField,
@@ -15,7 +16,7 @@ import { useDraftExit } from '../../shared/dated/useDraftExit';
 import { usePageTitle } from '../../shared/navigation';
 import * as person from '../personnel/api';
 import { useRuleSubmission } from '../readiness/useRuleSubmission';
-import { Target, type TargetKind, type Option } from './Target';
+import { Target, labels, type TargetKind, type Option } from './Target';
 
 export const employment = async (id: string, businessAt?: string) =>
   unwrap(
@@ -53,6 +54,12 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
     saved = useRef(false);
   const details = person.useRead(id, () => person.profile(id));
   const overview = person.useRead(JSON.stringify([id, day]), () => employment(id, day));
+  const decisions = person.useRead(mode === 'hire' && overview.data?.canHire ? id : undefined, async () =>
+    unwrap(await api.GET('/api/v1/persons/{id}/appointment-decisions', { params: { path: { id } } })),
+  );
+  const basis = decisions.data?.find(
+    (v) => v.ref.source === draft.decision?.source && v.ref.version === draft.decision.version,
+  );
   const source = person.useRead(original || undefined, async () =>
     unwrap(await api.GET('/api/v1/employment-actions/{id}', { params: { path: { id: original } } })),
   );
@@ -64,7 +71,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
     draft.employer &&
     draft.department &&
     draft.job &&
-    draft.notice.trim();
+    (draft.decision ? !!basis : draft.notice?.trim());
   const previewKey = JSON.stringify([draft, generation]);
   const selected = useRef<{ key: string; adoption: Models['HireAdoption'] } | undefined>(undefined);
   const preview = person.useRead(ready ? previewKey : undefined, async () => {
@@ -127,6 +134,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
         close();
         overview.invalidate();
       }
+      if (e instanceof ApiError && e.code === 'APPOINTMENT_CHANGED') decisions.refresh();
       setError(person.message(e));
     },
   });
@@ -159,6 +167,34 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
     setDraft((v) => ({ ...v, ...patch }));
     setError('');
   };
+  const selectDecision = (source: string) => {
+    const item = decisions.data?.find((v) => v.ref.source === source);
+    selected.current = undefined;
+    setDraft({
+      ...empty(id),
+      decision: item?.ref,
+      arrival: item?.arrival ?? '',
+      lastDay: item?.lastDay,
+      department: item?.department?.id ?? '',
+      job: item?.job?.id ?? '',
+      bu: item?.bu?.id,
+      location: item?.location?.id,
+      employer: item?.employer?.id ?? '',
+    });
+    setChoices({});
+    setError('');
+  };
+  useEffect(() => {
+    if (
+      draft.decision &&
+      (decisions.status === 403 || decisions.status === 404 || (decisions.data && !basis))
+    ) {
+      setDraft(empty(id));
+      setChoices({});
+      selected.current = undefined;
+      setError('原任用决定已变化或不可用，请重新选择依据。');
+    }
+  }, [decisions.status, decisions.data, draft.decision, basis, id]);
   const changeTarget = (kind: TargetKind, v?: Option) => {
     selected.current = undefined;
     setChoices((old) => ({
@@ -168,7 +204,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
     }));
     update({
       [kind]: v?.id ?? '',
-      ...(['bu', 'location', 'department'].includes(kind) ? { employer: '' } : {}),
+      ...(!basis?.employer && ['bu', 'location', 'department'].includes(kind) ? { employer: '' } : {}),
     });
   };
   const begin = (next: 'hire' | 'cancel', row?: Models['EmploymentAction']) => {
@@ -199,16 +235,25 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
       ? editable.includes('documentKind') && editable.includes('documentNumber')
       : field === 'expiryDate' && (editable.includes('expiryDate') || editable.includes('longTerm')),
   );
-  const targets = (k: TargetKind) => (
-    <Target
-      key={k}
-      kind={k}
-      draft={draft}
-      session={session}
-      choice={choices[k]}
-      onChange={(v) => changeTarget(k, v)}
-    />
-  );
+  const targets = (k: TargetKind) => {
+    const fixed = basis?.[k];
+    if (fixed)
+      return (
+        <ObjectDetailField key={k} label={labels[k]}>
+          {fixed.name}
+        </ObjectDetailField>
+      );
+    return (
+      <Target
+        key={k}
+        kind={k}
+        draft={draft}
+        session={session}
+        choice={choices[k]}
+        onChange={(v) => changeTarget(k, v)}
+      />
+    );
+  };
   return (
     <Box className="standard-page object-page">
       <RecordControl
@@ -260,33 +305,60 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
               <ObjectForm>
                 {mode === 'hire' && overview.data.canHire && (
                   <ObjectDetailSection title="拟任安排">
-                    <ObjectTextField
-                      type="date"
-                      required
-                      label="到岗日"
-                      value={draft.arrival}
-                      onChange={(e) => update({ arrival: e.target.value })}
-                    />
-                    <ObjectTextField
-                      type="date"
-                      label="任期至（含当日）"
-                      value={draft.lastDay ?? ''}
-                      onChange={(e) => update({ lastDay: e.target.value || undefined })}
-                    />
+                    {!!decisions.data?.length && (
+                      <ObjectTextField
+                        select
+                        label="任用依据"
+                        slotProps={{ select: { displayEmpty: true } }}
+                        value={basis?.ref.source ?? ''}
+                        onChange={(e) => selectDecision(e.target.value)}
+                      >
+                        <MenuItem value="">无编号任用通知</MenuItem>
+                        {decisions.data.map((v) => (
+                          <MenuItem key={v.ref.source} value={v.ref.source}>
+                            {v.number}
+                          </MenuItem>
+                        ))}
+                      </ObjectTextField>
+                    )}
+                    {decisions.error && <Alert severity="error">{decisions.error}</Alert>}
+                    {basis?.arrival ? (
+                      <ObjectDetailField label="到岗日">{basis.arrival}</ObjectDetailField>
+                    ) : (
+                      <ObjectTextField
+                        type="date"
+                        required
+                        label="到岗日"
+                        value={draft.arrival}
+                        onChange={(e) => update({ arrival: e.target.value })}
+                      />
+                    )}
+                    {basis?.lastDay ? (
+                      <ObjectDetailField label="任期至（含当日）">{basis.lastDay}</ObjectDetailField>
+                    ) : (
+                      <ObjectTextField
+                        type="date"
+                        label="任期至（含当日）"
+                        value={draft.lastDay ?? ''}
+                        onChange={(e) => update({ lastDay: e.target.value || undefined })}
+                      />
+                    )}
                     {(['department', 'job', 'bu', 'location', 'employer'] as const).map(targets)}
-                    <ObjectTextField
-                      required
-                      label="任用通知说明"
-                      multiline
-                      value={draft.notice}
-                      onChange={(e) => update({ notice: e.target.value })}
-                    />
+                    {!draft.decision && (
+                      <ObjectTextField
+                        required
+                        label="任用通知说明"
+                        multiline
+                        value={draft.notice ?? ''}
+                        onChange={(e) => update({ notice: e.target.value })}
+                      />
+                    )}
                   </ObjectDetailSection>
                 )}
                 {mode === 'cancel' && action && (
                   <ObjectDetailSection title="撤销依据">
                     <Typography>
-                      {action.from} 到岗 · {action.notice}
+                      {action.from} 到岗 · {action.notice || '任用决定'}
                     </Typography>
                     <ObjectTextField
                       required
@@ -321,17 +393,19 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                     保存
                   </Button>
                   <Button onClick={() => leave.request(close)}>取消</Button>
-                  {(error || preview.error || preview.data?.missing?.length) && mode === 'hire' && (
-                    <Button
-                      onClick={() => {
-                        setError('');
-                        selected.current = undefined;
-                        newPreview((v) => v + 1);
-                      }}
-                    >
-                      重新核对
-                    </Button>
-                  )}
+                  {(error || decisions.error || preview.error || preview.data?.missing?.length) &&
+                    mode === 'hire' && (
+                      <Button
+                        onClick={() => {
+                          setError('');
+                          selected.current = undefined;
+                          if (draft.decision || decisions.error) decisions.refresh();
+                          newPreview((v) => v + 1);
+                        }}
+                      >
+                        重新核对
+                      </Button>
+                    )}
                 </Stack>
               </ObjectForm>
             </Box>
@@ -358,7 +432,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                     <Typography>
                       {a.from} ·{' '}
                       {a.kind === 'CancelHire' ? '撤销入职' : a.cancelled ? '入职（已撤销）' : '入职'} ·{' '}
-                      {a.notice}
+                      {a.notice || '任用决定'}
                     </Typography>
                     <Typography variant="body2">{recordedTime(a.recordedAt)}</Typography>
                     {a.canHistory && (
@@ -384,6 +458,21 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                                 {v.from} 起 · {v.departmentName} · {v.jobName}
                               </Typography>
                             ))}
+                            {source.data.appointment && (
+                              <>
+                                <Typography>任用决定 {source.data.appointment.number}</Typography>
+                                <Typography>
+                                  原单 {source.data.appointment.ref.source}，修订{' '}
+                                  {source.data.appointment.ref.version}
+                                </Typography>
+                                {source.data.appointment.ref.line && (
+                                  <Typography>
+                                    名单行 {source.data.appointment.ref.line}，修订{' '}
+                                    {source.data.appointment.ref.lineRevision}
+                                  </Typography>
+                                )}
+                              </>
+                            )}
                             <Typography>采用规则 {source.data.sources.rule}</Typography>
                             <Typography>人员来源 {source.data.sources.identity.personVersion}</Typography>
                             <Typography>

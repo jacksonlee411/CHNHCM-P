@@ -12013,6 +12013,64 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PurposeCandidates'
+  /api/v1/appointment-decisions:
+    post:
+      operationId: publishAppointmentDecision
+      security:
+      - session: []
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionEdition'
+        default:
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionPublication'
+  /api/v1/persons/{id}/appointment-decisions:
+    get:
+      operationId: listPersonAppointmentDecisions
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Applicable originals for this person under current authority
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/DecisionOption'}
+        default:
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Error'}
   /api/v1/hires/preview:
     post:
       operationId: previewHire
@@ -12259,6 +12317,7 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        appointment: {$ref: '#/components/schemas/DecisionOption'}
         action: {$ref: '#/components/schemas/EmploymentAction'}
         sources: {$ref: '#/components/schemas/HireAdoption'}
         reason: {type: string}
@@ -12291,6 +12350,55 @@ components:
         inspectionRevision:
           type: string
           format: uuid
+    DecisionRef:
+      type: object
+      additionalProperties: false
+      required: [source, version]
+      properties:
+        source: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+        line: {type: string, format: uuid}
+        lineRevision: {type: string, format: uuid}
+    DecisionEdition:
+      type: object
+      required: [source, version]
+      properties:
+        source: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+    DecisionRow:
+      type: object
+      required: [person]
+      properties:
+        person: {type: string, format: uuid}
+        line: {type: string, format: uuid}
+        employer: {$ref: '#/components/schemas/EligibleEntity'}
+        department: {$ref: '#/components/schemas/EligibleEntity'}
+        job: {$ref: '#/components/schemas/EligibleEntity'}
+        bu: {$ref: '#/components/schemas/EligibleEntity'}
+        location: {$ref: '#/components/schemas/EligibleEntity'}
+        arrival: {type: string, format: date}
+        lastDay: {type: string, format: date}
+    DecisionOption:
+      allOf:
+      - {$ref: '#/components/schemas/DecisionRow'}
+      - type: object
+        required: [ref, number]
+        properties:
+          ref: {$ref: '#/components/schemas/DecisionRef'}
+          number: {type: string}
+    DecisionPublication:
+      type: object
+      additionalProperties: false
+      required: [source, number, roster, rows]
+      properties:
+        source: {type: string, format: uuid}
+        expected: {type: string, format: uuid}
+        number: {type: string}
+        roster: {type: boolean}
+        withdrawn: {type: boolean}
+        rows:
+          type: array
+          items: {$ref: '#/components/schemas/DecisionRow'}
     HireAdoption:
       type: object
       additionalProperties: false
@@ -12300,6 +12408,7 @@ components:
       - legal
       - segments
       properties:
+        decision: {$ref: '#/components/schemas/DecisionRef'}
         identity:
           $ref: '#/components/schemas/HireIdentity'
         rule:
@@ -12321,8 +12430,8 @@ components:
       - department
       - job
       - arrival
-      - notice
       properties:
+        decision: {$ref: '#/components/schemas/DecisionRef'}
         person:
           type: string
           format: uuid

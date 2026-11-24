@@ -8,6 +8,11 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AccessAppointmentIssuerFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessCredential struct {
 	InstanceID       string
 	PrincipalID      string
@@ -1062,6 +1067,26 @@ type PersonnelTerminal struct {
 	Fault        []byte
 }
 
+type StaffingAppointmentOutbox struct {
+	InstanceID string
+	Source     string
+	Version    string
+}
+
+type StaffingAppointmentVersion struct {
+	InstanceID string
+	Source     string
+	Version    string
+	Edition    int32
+	Number     string
+	Roster     bool
+	Withdrawn  bool
+	Members    []byte
+	Digest     string
+	Actor      string
+	RecordedAt pgtype.Timestamptz
+}
+
 type StaffingAssignment struct {
 	InstanceID   string
 	ID           string
@@ -1333,6 +1358,14 @@ type StaffingGradeTerminal struct {
 	Digest       []byte
 	Result       []byte
 	ClosedAt     pgtype.Timestamptz
+}
+
+type StaffingHireDecisionUse struct {
+	InstanceID string
+	Source     string
+	Version    string
+	LineID     pgtype.UUID
+	ActionID   string
 }
 
 type StaffingHireRuleSource struct {

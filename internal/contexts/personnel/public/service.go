@@ -7,6 +7,7 @@ import (
 
 // Service exposes people independently of work relationships and assignments.
 type Service interface {
+	CheckHirePerson(context.Context, foundation.Credentials, string) error
 	CheckIdentity(context.Context, foundation.Credentials, HireIdentityRequest) (HireIdentityResult, error)
 	Entry(context.Context, foundation.Credentials) (Entry, error)
 	CreateQuery(context.Context, foundation.Credentials, string) (string, error)
