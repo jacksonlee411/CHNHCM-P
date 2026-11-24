@@ -41,7 +41,7 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 		if out.BusinessAt == "" {
 			out.BusinessAt = u.now.In(f.Shanghai).Format("2006-01-02")
 		}
-		rows, e := u.tx.Query(ctx, `SELECT t.id,t.person_id,t.employment_id,t.record_number,s.department_id,e.employer_id,s.adoption->>'departmentName',s.adoption->>'jobName',lower(t.period)::text,coalesce((SELECT first_inactive::text FROM staffing.assignment_exit WHERE instance_id=t.instance_id AND assignment_id=t.id),upper(t.period)::text,'')
+		rows, e := u.tx.Query(ctx, `SELECT t.id,t.person_id,t.employment_id,t.record_number,s.department_id,e.employer_id,s.adoption->>'departmentName',s.adoption->>'jobName',coalesce(s.adoption->>'positionName',''),lower(t.period)::text,coalesce((SELECT first_inactive::text FROM staffing.assignment_exit WHERE instance_id=t.instance_id AND assignment_id=t.id),upper(t.period)::text,'')
 			FROM staffing.assignment_head head JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
 			JOIN staffing.assignment t ON (t.instance_id,t.id)=(s.instance_id,s.assignment_id)
 			JOIN staffing.employment e ON (e.instance_id,e.id)=(t.instance_id,t.employment_id)
@@ -56,7 +56,7 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 		var candidates []candidate
 		for rows.Next() {
 			var r candidate
-			if e = rows.Scan(&r.ID, &r.Person, &r.Employment, &r.RecordNumber, &r.Department, &r.employer, &r.DepartmentName, &r.JobName, &r.From, &r.Until); e != nil {
+			if e = rows.Scan(&r.ID, &r.Person, &r.Employment, &r.RecordNumber, &r.Department, &r.employer, &r.DepartmentName, &r.JobName, &r.PositionName, &r.From, &r.Until); e != nil {
 				rows.Close()
 				return e
 			}

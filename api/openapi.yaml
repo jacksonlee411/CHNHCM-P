@@ -13878,6 +13878,7 @@ components:
         department: {type: string, format: uuid}
         departmentName: {type: string}
         jobName: {type: string}
+        positionName: {type: string}
         from: {type: string, format: date}
         until: {type: string, format: date}
     EmployeeAssignmentLink:

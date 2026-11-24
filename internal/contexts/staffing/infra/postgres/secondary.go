@@ -121,6 +121,9 @@ func (st *Store) AddSecondary(ctx context.Context, c f.Credentials, id, key stri
 		if e != nil {
 			return "", e
 		}
+		if len(segments) == 0 {
+			return "", f.Fail(409, "SECONDARY_PERIOD", "所选期间缺少可用任职安排")
+		}
 		var adoptedGrade *h.GradeRef
 		for i, seg := range segments {
 			dept, job := in.Department, in.Job

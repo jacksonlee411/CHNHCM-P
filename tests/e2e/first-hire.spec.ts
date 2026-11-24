@@ -1597,7 +1597,7 @@ async function secondaryPositionJourney(page:Page,sample:Awaited<ReturnType<type
     await expect(page.getByText(second.department,{exact:true})).toBeVisible();await expect(page.getByText(second.job.name,{exact:true})).toBeVisible();
     const end=page.getByRole('textbox',{name:/^最后任职日/});await end.fill('2027-04-30');await end.press('Tab');
     await page.getByLabel(/任用依据/).fill('兼任第二岗位至四月底');
-    const save=page.getByRole('button',{name:'保存',exact:true});await save.focus();await page.keyboard.press('Enter');
+    const save=page.getByRole('button',{name:'保存',exact:true});await expect(save).toBeEnabled();await save.focus();await expect(save).toBeFocused();await page.keyboard.press('Enter');
     await expect(page.getByRole('heading',{name:/1 号兼岗/})).toBeVisible();
     await expect(page.getByText(second.name+' · 占编',{exact:true})).toBeVisible();
     for(const [p,day,n] of [[main,first,1],[second,first,1],[second,'2027-05-01',0]] as const) {
@@ -1622,3 +1622,25 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 一人两个占编岗位 原生200%',async()=>{await native200(secondaryPositionJourney)});
+
+test('M04 员工列表首次默认日期延迟时保留已输入的业务日和姓名',async({page})=>{
+  test.setTimeout(90000);
+  await signIn(page);const sample=await seed(page);await hireAtLocation(page,sample);
+  await page.setViewportSize({width:320,height:256});
+  let release!:()=>void;
+  const pending=new Promise<void>(resolve=>{release=resolve});
+  await page.route('**/api/v1/assignments/query',async route=>{
+    const body=route.request().postDataJSON();
+    if(!body.businessAt&&!body.ref)await pending;
+    await route.continue();
+  });
+  try {
+    await page.goto('/personnel/assignments');
+    const day=page.getByRole('textbox',{name:/^业务日期/});
+    await day.fill('2027-04-01');
+    const search=page.getByRole('textbox',{name:'姓名或人员编号'});await search.fill(sample.name);await search.press('Enter');
+    await expect(page).toHaveURL(u=>u.searchParams.get('businessAt')==='2027-04-01'&&u.searchParams.has('ref'));
+  } finally { release(); }
+  await expect(page.getByText('1 份任职，1 人',{exact:true})).toBeVisible();
+  await expect(page.getByRole('textbox',{name:/^业务日期/})).toHaveValue('2027-04-01');
+});

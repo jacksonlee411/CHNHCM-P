@@ -56,6 +56,17 @@ func TestSecondaryPositionUsesOnlyItsOwnDatedSeat(t *testing.T) {
 		if b.call("GET", "/api/v1/assignments/"+added["assignment"].(string)+"?businessAt="+start, nil, "", 200)["recordNumber"] != 1.0 {
 			t.Fatal("兼岗号或失败回滚错误")
 		}
+		rows := b.call("POST", "/api/v1/assignments/query", M{"person": person, "businessAt": start, "page": 1, "pageSize": 20, "sort": "number"}, "", 200)
+		if rows["people"] != 1.0 || rows["total"] != 2.0 {
+			t.Fatal("兼岗目录未按人去重", rows)
+		}
+		names := map[any]bool{}
+		for _, v := range rows["rows"].([]any) {
+			names[v.(M)["positionName"]] = true
+		}
+		if !names["兼岗A"+mode] || !names["兼岗B"+mode] {
+			t.Fatal("员工列表未显示实际主兼岗位", rows)
+		}
 		count := func(id, day string) float64 {
 			return b.call("GET", "/api/v1/positions/"+id+"/replenishment?businessAt="+day, nil, "", 200)["occupied"].(float64)
 		}

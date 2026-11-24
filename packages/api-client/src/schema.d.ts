@@ -6599,6 +6599,7 @@ export interface components {
             department: string;
             departmentName: string;
             jobName: string;
+            positionName?: string;
             /** Format: date */
             from: string;
             /** Format: date */

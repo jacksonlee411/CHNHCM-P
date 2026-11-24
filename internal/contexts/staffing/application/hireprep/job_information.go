@@ -113,6 +113,7 @@ type EmployeeRow struct {
 	Department     string `json:"department"`
 	DepartmentName string `json:"departmentName"`
 	JobName        string `json:"jobName"`
+	PositionName   string `json:"positionName,omitempty"`
 	f.Period
 }
 type EmployeeDepartment struct {

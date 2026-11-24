@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Box, Button, MenuItem, Stack, Typography, useMediaQuery } from '@mui/material';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useGridApiRef, type GridColDef } from '@mui/x-data-grid';
@@ -35,8 +35,13 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   const apiRef = useGridApiRef(),
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
-  const [dateInput, setDateInput] = useState<string>();
-  useEffect(() => setDateInput(undefined), [query.businessAt]);
+  const [dateEdit, setDateEdit] = useState<{ base?: string; value: string }>();
+  const dateField = useRef<HTMLInputElement>(null);
+  const dateInput = dateEdit && dateEdit.base === query.businessAt ? dateEdit.value : undefined;
+  const appliedParams = useRef(params);
+  useLayoutEffect(() => {
+    appliedParams.current = params;
+  }, [params]);
   const readyRef = useRef<string | undefined>(undefined),
     request = useRef(0),
     edit = useRef(0);
@@ -70,12 +75,13 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   function update(fields: Record<string, string>) {
     if (window.location.pathname !== route.pathname) return;
     // A search reply can arrive after another filter has already navigated.
-    const next = new URLSearchParams(window.location.search);
+    const next = new URLSearchParams(appliedParams.current);
     next.delete('selected');
     for (const [k, v] of Object.entries(fields)) {
       if (v) next.set(k, v);
       else next.delete(k);
     }
+    appliedParams.current = next;
     setParams(next);
   }
   async function search() {
@@ -134,7 +140,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
         renderCell: ({ row }) => (
           <Stack>
             {row.jobName}
-            <small>—</small>
+            {row.positionName && <small>{row.positionName}</small>}
           </Stack>
         ),
       },
@@ -168,7 +174,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
               {row.name} · {row.recordNumber} 号{row.primaryJob ? '主岗' : '兼岗'}
             </Link>
             <small>
-              {row.number} · {row.departmentName} · {row.jobName}
+              {[row.number, row.departmentName, row.jobName, row.positionName].filter(Boolean).join(' · ')}
             </small>
           </Stack>
         );
@@ -243,18 +249,19 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
           >
             <Stack direction="row" flexWrap="wrap" gap={2} alignItems="center">
               <ObjectTextField
+                inputRef={dateField}
                 type="date"
                 label="业务日期"
                 value={dateInput ?? query.businessAt ?? data?.businessAt ?? ''}
                 onChange={(e) => {
                   const value = e.target.value;
-                  setDateInput(value);
+                  setDateEdit({ base: query.businessAt, value });
                   if (value && e.target.validity.valid) update({ businessAt: value, page: '1' });
                 }}
                 onBlur={() => {
-                  if (dateInput === '') {
-                    setDateInput(undefined);
-                    update({ businessAt: '', page: '1' });
+                  const field = dateField.current;
+                  if (field && dateEdit && field.validity.valid && field.value !== (appliedParams.current.get('businessAt') ?? '')) {
+                    update({ businessAt: field.value, page: '1' });
                   }
                 }}
               />
