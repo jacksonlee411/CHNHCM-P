@@ -107,7 +107,7 @@ func (r *request) editable(id string) []string {
 		}
 	}
 	for _, s := range d.ItemSections {
-		if !r.itemRead(s, id, "", s.Required[0]) {
+		if !r.itemVisible(s, id, "") {
 			continue
 		}
 		for _, k := range s.Fields {
@@ -116,6 +116,9 @@ func (r *request) editable(id string) []string {
 			}
 		}
 	}
+	if r.healthWritable(id) {
+		fields = append(fields, "healthSummary")
+	}
 	return fields
 }
 func validItemView(view, prefix string) bool {
@@ -123,7 +126,7 @@ func validItemView(view, prefix string) bool {
 	return ok && f.ValidID(id)
 }
 func (s *Store) Detail(ctx context.Context, c f.Credentials, id, version, view string) (p.Detail, error) {
-	if view != "" && view != "fullDocument" && !(version == "" && (view == "edit" || validItemView(view, "document-") || validItemView(view, "credential-"))) {
+	if view != "" && view != "fullDocument" && !(version == "" && (view == "edit" || validItemView(view, "document-") || validItemView(view, "credential-") || validItemView(view, "bank-"))) {
 		return p.Detail{}, d.Invalid("view", "无效的查看方式")
 	}
 	return run(ctx, s, c, func(r *request) (p.Detail, error) {
@@ -196,6 +199,7 @@ func (r *request) detail(id, version string, exactSource bool, view string) (p.D
 		out.Decision = nil
 		r.projectProfile(v, &out, view)
 		r.projectItems(v, &out, view)
+		r.projectHealth(v, &out)
 		out.Editable = r.editable(id)
 		if !r.a.At.Before(v.materialUntil) {
 			out.Editable = slices.DeleteFunc(out.Editable, func(v string) bool { return v == "evidence" })

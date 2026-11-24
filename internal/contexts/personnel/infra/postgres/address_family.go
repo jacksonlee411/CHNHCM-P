@@ -26,6 +26,20 @@ func (r *request) itemRead(s d.ItemSection, id, item string, k string) bool {
 func (r *request) itemWrite(s d.ItemSection, id, item string, k string) bool {
 	return r.itemRead(s, id, item, k) && r.a.ItemAllowed(id, item, s.Action+".correct", k)
 }
+
+// Bank fields have independent read grants. A row with only masked number access
+// is visible without requiring disclosure of its bank name.
+func (r *request) itemVisible(s d.ItemSection, id, item string) bool {
+	if r.itemRead(s, id, item, s.Required[0]) {
+		return true
+	}
+	if s.Name != d.BankAccounts.Name {
+		return false
+	}
+	return r.itemRead(s, id, item, "accountNumber.masked") || slices.ContainsFunc(s.Fields[1:], func(key string) bool {
+		return r.itemRead(s, id, item, key)
+	})
+}
 func (r *request) removable(s d.ItemSection, id string, row profileItem) bool {
 	for k := range row.Fields {
 		if !r.itemWrite(s, id, row.ItemID, k) {
@@ -36,7 +50,7 @@ func (r *request) removable(s d.ItemSection, id string, row profileItem) bool {
 }
 func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 	for _, s := range d.ItemSections {
-		if !r.itemRead(s, v.ID, "", s.Required[0]) {
+		if !r.itemVisible(s, v.ID, "") {
 			continue
 		}
 		for _, k := range s.Fields {
@@ -45,7 +59,7 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 			}
 		}
 		for _, row := range v.profileItems {
-			if row.Section != s.Name || !r.itemRead(s, v.ID, row.ItemID, s.Required[0]) {
+			if row.Section != s.Name || !r.itemVisible(s, v.ID, row.ItemID) {
 				continue
 			}
 			x := p.ProfileItem{ItemID: row.ItemID, Revision: row.Revision, Fields: map[string]string{}, Adoptions: map[string]p.CountryAdoption{}}
@@ -54,6 +68,9 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 				if full {
 					if val, ok := row.Fields[k]; ok {
 						x.Fields[k] = val
+						if k == "accountNumber" && view != "bank-"+row.ItemID {
+							x.Fields[k] = "********"
+						}
 						if k == "certificateNumber" && view != "credential-"+row.ItemID && !(view == "edit" && r.itemWrite(s, v.ID, row.ItemID, k)) {
 							x.Fields[k] = "********"
 						}
@@ -65,7 +82,7 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 				} else if itemMaskable(k) && r.itemRead(s, v.ID, row.ItemID, k+".masked") {
 					x.Masked = append(x.Masked, k)
 					if val := row.Fields[k]; val != "" {
-						if k == "certificateNumber" {
+						if k == "certificateNumber" || k == "accountNumber" {
 							x.Fields[k] = "********"
 						} else {
 							x.Fields[k] = d.Mask(familyChannel(k), val)
@@ -80,6 +97,8 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 			}
 			x.CanRemove = view == "edit" && r.removable(s, v.ID, row)
 			switch s.Name {
+			case "bankAccounts":
+				out.BankAccounts = append(out.BankAccounts, x)
 			case "education":
 				out.Education = append(out.Education, x)
 			case "credentials":
@@ -92,7 +111,9 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 		}
 	}
 }
-func itemMaskable(key string) bool { return key == "certificateNumber" || familyChannel(key) != "" }
+func itemMaskable(key string) bool {
+	return key == "accountNumber" || key == "certificateNumber" || familyChannel(key) != ""
+}
 
 func familyChannel(k string) string {
 	switch k {
@@ -111,6 +132,13 @@ func (r *request) checkItemFault(id string, in p.Correct, field string) error {
 	var section d.ItemSection
 	var edits []p.ProfileItemEdit
 	switch group {
+	case "healthSummary":
+		if !r.healthWritable(id) {
+			return d.Denied()
+		}
+		return nil
+	case "bankAccounts":
+		section, edits = d.BankAccounts, in.BankAccounts
 	case "addresses":
 		section, edits = d.Addresses, in.Addresses
 	case "family":
@@ -123,7 +151,7 @@ func (r *request) checkItemFault(id string, in p.Correct, field string) error {
 		return nil
 	}
 	if !rowField {
-		if !r.itemRead(section, id, "", section.Required[0]) {
+		if !r.itemVisible(section, id, "") {
 			return d.Denied()
 		}
 		return nil
@@ -134,7 +162,7 @@ func (r *request) checkItemFault(id string, in p.Correct, field string) error {
 		return d.Denied()
 	}
 	edit := edits[n]
-	if !r.itemRead(section, id, edit.ItemID, section.Required[0]) || !r.itemRead(section, id, edit.ItemID, key) {
+	if !r.itemVisible(section, id, edit.ItemID) || !r.itemRead(section, id, edit.ItemID, key) {
 		return d.Denied()
 	}
 	for k := range edit.Fields {
@@ -176,6 +204,7 @@ func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItem
 	}
 	seen := map[string]bool{}
 	selected := map[string]string{}
+	bankInputs := map[[2]string]int{}
 	for n, edit := range edits {
 		idx := slices.IndexFunc(v.profileItems, func(x profileItem) bool { return x.Section == s.Name && x.ItemID == edit.ItemID })
 		if edit.ItemID == "" {
@@ -188,17 +217,22 @@ func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItem
 				}
 			}
 			ordinary, evidence := r.a.Policy.OrdinaryDays, r.a.Policy.EvidenceDays
+			policy := r.a.Policy.Version
+			if s.Name == d.BankAccounts.Name {
+				terms := r.a.Purposes["personal-bank"]
+				policy, ordinary, evidence = terms.Version, terms.OrdinaryDays, terms.EvidenceDays
+			}
 			if s.Name == d.Family.Name {
 				ordinary, evidence = r.a.Policy.ContactDays, r.a.Policy.ContactEvidenceDays
 			}
 			row := profileItem{
 				ProfileItem: p.ProfileItem{ItemID: f.NewID(), Fields: map[string]string{}, Adoptions: map[string]p.CountryAdoption{}},
-				Section:     s.Name, policy: r.a.Policy.Version, ordinary: d.Cutoff(r.a.At, ordinary), evidence: d.Cutoff(r.a.At, evidence),
+				Section:     s.Name, policy: policy, ordinary: d.Cutoff(r.a.At, ordinary), evidence: d.Cutoff(r.a.At, evidence),
 			}
 			v.profileItems = append(v.profileItems, row)
 			idx = len(v.profileItems) - 1
 		} else {
-			if idx < 0 || !r.itemRead(s, v.ID, edit.ItemID, s.Required[0]) {
+			if idx < 0 || !r.itemVisible(s, v.ID, edit.ItemID) {
 				return d.Denied()
 			}
 			if seen[edit.ItemID] || edit.ExpectedRevision != v.profileItems[idx].Revision {
@@ -221,8 +255,19 @@ func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItem
 		if err := r.editItemFields(s, v.ID, n, row, edit); err != nil {
 			return err
 		}
-		for _, flag := range []string{"addressPrimary", "highestEducation", "highestDegree"} {
-			if edit.Fields[flag] != "yes" {
+		if s.Name == d.BankAccounts.Name {
+			if edit.ItemID == "" {
+				// The identity outlives removal from the current profile.
+				if _, err := r.tx.Exec(r.ctx, "insert into personnel.bank_account(instance_id,person_id,account_id) values($1,$2,$3)", r.instance, v.ID, row.ItemID); err != nil {
+					return err
+				}
+			}
+			if edit.Fields["bankName"] != "" || edit.Fields["accountNumber"] != "" {
+				bankInputs[bankKey(row.Fields)] = n
+			}
+		}
+		for _, flag := range []string{"bankPrimary", "addressPrimary", "highestEducation", "highestDegree"} {
+			if _, sent := edit.Fields[flag]; !sent || row.Fields[flag] != "yes" {
 				continue
 			}
 			if selected[flag] != "" {
@@ -238,12 +283,32 @@ func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItem
 		for i := range v.profileItems {
 			x := &v.profileItems[i]
 			if x.Section == s.Name && x.ItemID != primary && x.Fields[flag] == "yes" {
-				if !r.itemRead(s, v.ID, x.ItemID, s.Required[0]) || !r.itemWrite(s, v.ID, x.ItemID, flag) {
+				if !r.itemVisible(s, v.ID, x.ItemID) || !r.itemWrite(s, v.ID, x.ItemID, flag) {
 					return d.Denied()
 				}
 				delete(x.Fields, flag)
 				x.Revision = f.NewID()
 			}
+		}
+	}
+	if s.Name == d.BankAccounts.Name {
+		seen := map[[2]string]bool{}
+		for _, row := range v.profileItems {
+			if row.Section != s.Name {
+				continue
+			}
+			key := bankKey(row.Fields)
+			if seen[key] {
+				if index, ok := bankInputs[key]; ok {
+					field := "bankName"
+					if edits[index].Fields["accountNumber"] != "" {
+						field = "accountNumber"
+					}
+					return &f.Fault{Status: 409, Code: "PERSON_CONFLICT", Field: fmt.Sprintf("bankAccounts.%d.%s", index, field), Message: "无法保存此行，请核对录入的账户资料"}
+				}
+				return d.Conflict()
+			}
+			seen[key] = true
 		}
 	}
 	if s.Name == d.Education.Name {
@@ -264,6 +329,10 @@ func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItem
 	}
 	return nil
 }
+func bankKey(fields map[string]string) [2]string {
+	return [2]string{fields["bankName"], d.BankNumberKey(fields["accountNumber"])}
+}
+
 func placeChanged() error {
 	return f.Fail(409, "PERSON_PLACE_CHANGED", "地址目录或上下级已变化，请重新选择")
 }
@@ -323,7 +392,7 @@ func (r *request) editItemFields(s d.ItemSection, id string, n int, row *profile
 		if err != nil {
 			return rowInputError(s.Name, n, k, err)
 		}
-		if slices.Contains([]string{"emergency", "addressPrimary", "highestEducation", "highestDegree", "indefinite"}, k) && val != "" && val != "yes" {
+		if slices.Contains([]string{"emergency", "bankPrimary", "addressPrimary", "highestEducation", "highestDegree", "indefinite"}, k) && val != "" && val != "yes" {
 			return rowInputError(s.Name, n, k, d.Invalid(k, "请选择有效标记"))
 		}
 		delete(row.Adoptions, k)
@@ -370,7 +439,7 @@ func (r *request) editItemFields(s d.ItemSection, id string, n int, row *profile
 	// changes even when the client did not receive the old values.
 	for k := range row.Fields {
 		obsolete := s.Name == d.Education.Name && !d.EducationFieldApplies(row.Fields["educationType"], k) ||
-			s.Name == d.Credentials.Name && k == "validUntil" && row.Fields["indefinite"] == "yes" && edit.Fields["indefinite"] == "yes"
+			s.Name == d.Credentials.Name && k == "validUntil" && row.Fields["indefinite"] == "yes" && strings.TrimSpace(edit.Fields["indefinite"]) == "yes"
 		if !obsolete {
 			continue
 		}

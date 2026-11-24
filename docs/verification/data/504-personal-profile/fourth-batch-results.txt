@@ -1,0 +1,144 @@
+CHNHCM-504 第四批，本地实测摘录（合成客户）
+工作区基线 bc769ff43a4b0fafd7114b0c022c26515a93e71b
+运行账本 00001—00039（任用决定）—00040（银行与健康）
+平台 Linux WSL2，Intel i7-9850H，8 个逻辑 CPU，约 16 GiB，Go 1.26.0，PostgreSQL 18.6，API 连接池上限 12
+
+升级、实库和 API
+--- PASS: TestPersonnelAddressFamily (16.11s)
+--- PASS: TestPersonnelFamilyRejectedReceipt (12.34s)
+--- PASS: TestPersonnelExpiredPrimaryAddress (11.53s)
+--- PASS: TestPersonnelAddressDirectory (249.29s)
+--- PASS: TestPersonnelBankHealth (11.46s)
+--- PASS: TestHireIdentityArchiveAndGuards (11.71s)
+--- PASS: TestPersonnelLogPaginationAndFilters (11.81s)
+--- PASS: TestPersonnelLogAuthorizedSourceDifferences (10.43s)
+--- PASS: TestPersonnelWholeProfile (11.34s)
+--- PASS: TestPersonnelEducationCredentials (11.28s)
+--- PASS: TestPersonnelRegistration (11.28s)
+--- PASS: TestPersonnelRetentionAndFieldAccess (10.01s)
+--- PASS: TestPersonnelRaces (11.47s)
+--- PASS: TestPersonnelCustomerIsolation (11.36s)
+--- PASS: TestPersonnelMaintenanceAndQueryLifetime (11.15s)
+--- PASS: TestPersonnelNameOnlyRegistrationGrant (10.93s)
+--- PASS: TestPersonnelPrimaryDocumentLifecycle (12.16s)
+ok  	chnhcm.local/chnhcm/tests/integration	435.724s
+--- PASS: TestLocationAddressMigration (13.16s)
+--- PASS: TestAppointmentDecisionFirstHire (30.00s)
+--- PASS: TestPublic38UpgradeToAppointmentDecisions (8.19s)
+--- PASS: TestFirstHireAndPurposeProtection (28.88s)
+--- PASS: TestHire400UpgradeFrom28 (10.13s)
+--- PASS: TestPublic39UpgradeToBankHealth (8.88s)
+--- PASS: TestPublic37UpgradeToEducationCredentials (8.23s)
+--- PASS: TestHire400UpgradeFromPersonnel34 (25.30s)
+--- PASS: TestLegalEntity206PairsAndPermissions (24.73s)
+--- PASS: TestLegalEntity206ExactCountry (25.20s)
+--- PASS: TestLegalEntity206SelectionNavigation (26.10s)
+--- PASS: TestLegalEntity206Core (24.47s)
+--- PASS: TestLegalEntity206Recovery (22.57s)
+--- PASS: TestLegalEntity206Boundaries (21.70s)
+--- PASS: TestLegalEntity206CountryRaces (20.94s)
+--- PASS: TestPersonnelMainlinePrefixes (22.95s)
+personnel_restore_integration_test.go:502: 00038 → 00040，14 张原表一致，6 人，11 回执，API 查回 11 个已接受的原回执，既有地址及家庭行数 9
+--- PASS: TestPersonnelProfileV38Backup (15.52s)
+--- PASS: TestStaffing309MigrationPreservesPriorFacts (7.11s)
+--- PASS: TestStaffing310MigrationPreservesPriorFacts (6.88s)
+--- PASS: TestStaffing312MigrationPreservesPriorFacts (7.22s)
+--- PASS: TestStaffing312HierarchyMigration (7.50s)
+--- PASS: TestReportingBranch24JobClassificationUpgrade (6.87s)
+--- PASS: TestReportingOnlyMigration (20.75s)
+--- PASS: TestStaffing315AllocationPredecessor (7.16s)
+ok  	chnhcm.local/chnhcm/internal/bootstrap	400.499s
+首次整包并行运行在 20 分钟包超时处中断，原在执行的两个用例单独复跑
+--- PASS: TestDepartmentParent131CurrentContextAndCandidateSave (55.65s)
+--- PASS: TestEnterprise304LocationFirstDateLocks (48.12s)
+
+手工验收环境 m01-profile-f，Web 4386 / API 8386 / DB 54376
+核对原业务及授权表 160 张一致，新增空表 4 张，连续 1—40。
+核对原业务及授权表 160 张一致，新增空表 4 张，连续 1—40。
+原库保存在同卷内 p504_pre40_retained ，固定地址继续使用 chnhcm。
+Verified this checkout's Web/API ownership and readiness.
+九栏读回、双账户身份、单项查看、主要切换、摘要更正及普通读者隐藏通过 a812f9c2-ed4e-4ee8-b35d-06429e6e630d P00000001 ea853e93-042b-44ad-acf5-efd82f0af629
+固定构建清单 sha256 bd7e1c6980255495a1af2f175fd55033f5f03288d761b0180d443231418f9728
+4386 与临时浏览器 profile 的固定构建清单一致，含 1844 个源文件。
+4386 的实际 HTTP 静态文件逐个匹配（5 个），API 二进制 SHA-256 129f024a8f88257efea309a6b604a9efb16928230e66f0faf7cad6f7d95c757a。
+
+容量首测（写入合批前）
+personnel_nine_sections_capacity_test.go:255: detail sessions=1 N=200 HTTP=200 errors=0 total=3.784765491s P50=17.6348ms P95=26.4371ms P99=47.528899ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: correct-resolve-read sessions=1 N=200 HTTP=600 errors=0 total=16.07865363s P50=76.445599ms P95=112.0269ms P99=123.187699ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: detail sessions=20 N=200 HTTP=200 errors=0 total=1.151843399s P50=96.6237ms P95=246.6516ms P99=288.9994ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: correct-resolve-read sessions=20 N=200 HTTP=600 errors=0 total=6.308894493s P50=595.842099ms P95=717.487999ms P99=888.571899ms peakLockWaiters=11
+personnel_nine_sections_capacity_test.go:261: correct-resolve-read P95 exceeded 500ms
+
+写入合批后的诊断轮（与其他目录导入重叠）
+personnel_nine_sections_capacity_test.go:255: detail sessions=1 N=200 HTTP=200 errors=0 total=3.098432496s P50=14.8637ms P95=19.8717ms P99=25.677ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: correct-resolve-read sessions=1 N=200 HTTP=600 errors=0 total=11.330974195s P50=55.2507ms P95=63.3018ms P99=84.0265ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: detail sessions=20 N=200 HTTP=200 errors=0 total=858.7397ms P50=60.3172ms P95=293.196ms P99=326.1218ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: correct-resolve-read sessions=20 N=200 HTTP=600 errors=0 total=4.253017299s P50=400.9544ms P95=498.5883ms P99=621.9035ms peakLockWaiters=11
+
+正式固定构建浏览器
+✓   1 [enterprise-maintenance] › tests/e2e/enterprise304.spec.ts:78:1 › 140 企业首条后移预览跨闰日，取消后保留来源 (7.9s)
+✓   2 [enterprise-maintenance] › tests/e2e/enterprise304.spec.ts:95:1 › 304 正常菜单完整维护：首条、插入、更正、删除、固定期间、启停及历史 (18.4s)
+✓   3 [enterprise-maintenance] › tests/e2e/enterprise304.spec.ts:223:1 › 304 草稿取消、冲突重读和丢失响应查回 (7.8s)
+✓   4 [enterprise-maintenance] › tests/e2e/enterprise304.spec.ts:317:1 › 304 查询者和窄屏：唯一企业、记录与历史只读 (5.6s)
+✓   5 [enterprise-maintenance] › tests/e2e/enterprise304.spec.ts:360:1 › 304 企业更名保持部门当前及历史路径独立 (7.7s)
+✓   6 [chromium] › tests/e2e/first-hire.spec.ts:402:3 › T03 首单入职与未来撤销 320×900 (4.5s)
+✓   7 [chromium] › tests/e2e/first-hire.spec.ts:402:3 › T03 首单入职与未来撤销 320×256 (3.7s)
+✓   8 [chromium] › tests/e2e/personnel.spec.ts:1455:58 › 504 六种弹框与变体 1440 (4.1s)
+✓   9 [chromium] › tests/e2e/personnel.spec.ts:1455:58 › 504 六种弹框与变体 390 (4.6s)
+✓  10 [chromium] › tests/e2e/personnel.spec.ts:1591:1 › 504 共用查看与长表单的视口和原生缩放 (7.4s)
+✓  11 [chromium] › tests/e2e/personnel.spec.ts:1660:1 › 504 受限字段重排、只读遮罩和原行焦点 (3.2s)
+✓  12 [chromium] › tests/e2e/personnel.spec.ts:1714:1 › 504 原文、目录采用与跨栏错误定位后整页保存 (3.0s)
+✓  13 [chromium] › tests/e2e/personnel.spec.ts:1781:1 › 504 证号字段隐藏时可以单独更正签发机关 (2.8s)
+✓  14 [chromium] › tests/e2e/personnel.spec.ts:1882:3 › 504 第二批两栏六个弹框及取消 1440 (3.4s)
+✓  15 [chromium] › tests/e2e/personnel.spec.ts:1882:3 › 504 第二批两栏六个弹框及取消 390 (3.7s)
+✓  16 [chromium] › tests/e2e/personnel.spec.ts:1952:1 › 504 第二批目录选择、错误归焦与跨栏保存 (5.6s)
+✓  17 [chromium] › tests/e2e/personnel.spec.ts:2027:1 › 504 第二批只读和受限家庭明细重排与条数 (3.1s)
+✓  18 [chromium] › tests/e2e/personnel.spec.ts:2080:1 › 504 第二批地址目录控件、五种视口与原生缩放 (11.8s)
+✓  19 [chromium] › tests/e2e/personnel.spec.ts:2144:1 › 504 第二批保存前撤回家庭职务写权保留其余草稿 (2.8s)
+✓  20 [chromium] › tests/e2e/personnel.spec.ts:2189:1 › 504 复核已打开的家庭明细使用当前行和字段权限 (2.6s)
+✓  21 [chromium] › tests/e2e/personnel.spec.ts:2227:1 › 504 复核行内撤权时保留可写输入并应用同一草稿 (2.8s)
+✓  22 [chromium] › tests/e2e/personnel.spec.ts:2271:1 › 504 复核按服务业务日选择同省同名区县 (3.5s)
+✓  23 [chromium] › tests/e2e/personnel.spec.ts:2342:3 › 504 第三批教育凭证录入、弹框与取消 1440 (9.8s)
+✓  24 [chromium] › tests/e2e/personnel.spec.ts:2342:3 › 504 第三批教育凭证录入、弹框与取消 390 (10.4s)
+✓  25 [chromium] › tests/e2e/personnel.spec.ts:2482:1 › 504 第三批学习经历五种视口及原生缩放 (4.9s)
+✓  26 [chromium] › tests/e2e/personnel.spec.ts:2542:3 › 504 第四批银行三态、健康与整页保存取消 1440 (6.0s)
+✓  27 [chromium] › tests/e2e/personnel.spec.ts:2542:3 › 504 第四批银行三态、健康与整页保存取消 390 (6.4s)
+✓  28 [chromium] › tests/e2e/personnel.spec.ts:2655:1 › 504 第四批健康撤权时整页回滚并清理草稿 (2.5s)
+✓  29 [chromium] › tests/e2e/personnel.spec.ts:2690:1 › 504 第四批整页末栏和银行弹框的视口与原生缩放 (3.6s)
+29 passed (2.8m)
+
+处置前备份恢复
+upgrader: migrate completed
+原库副本 到期前正文 12 原来源保全健康正文 1 处置凭据 11
+upgrader: migrate completed
+处置前备份恢复副本 到期前正文 12 原来源保全健康正文 1 处置凭据 11
+恢复副本的 API 隐藏到期账户和健康正文，原提交回到原来源。
+
+正式独立计时九栏联验
+personnel_nine_sections_capacity_test.go:157: setup=11.573010371s customers=1 persons=10000 nine-section samples=20
+personnel_nine_sections_capacity_test.go:255: detail sessions=1 N=200 HTTP=200 errors=0 total=2.154599806s P50=10.374ms P95=13.3742ms P99=15.8541ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: correct-resolve-read sessions=1 N=200 HTTP=600 errors=0 total=8.060588525s P50=39.2338ms P95=48.5578ms P99=52.6274ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:157: setup=18.717074098s customers=1 persons=10000 nine-section samples=20
+personnel_nine_sections_capacity_test.go:255: detail sessions=20 N=200 HTTP=200 errors=0 total=679.122691ms P50=52.326999ms P95=185.128298ms P99=211.961997ms peakLockWaiters=0
+personnel_nine_sections_capacity_test.go:255: correct-resolve-read sessions=20 N=200 HTTP=600 errors=0 total=3.724791153s P50=358.565896ms P95=429.234695ms P99=541.812593ms peakLockWaiters=11
+--- PASS: TestPersonnelNineSectionsCapacity (50.37s)
+ok  	chnhcm.local/chnhcm/tests/integration	50.389s
+
+T01 共用写入回归（与本批四组分开计时）
+personnel_capacity_test.go:250: directory sessions=1 N=200 errors=0 HTTP=400 total=8.963960652s P50=44.270199ms P95=48.896799ms P99=59.9744ms
+personnel_capacity_test.go:250: restricted sessions=1 N=200 errors=0 HTTP=400 total=13.27093512s P50=65.121298ms P95=77.24595ms P99=83.363346ms
+personnel_capacity_test.go:250: oldNumber sessions=1 N=200 errors=0 HTTP=400 total=8.467440228s P50=41.598499ms P95=49.688199ms P99=64.317199ms
+personnel_capacity_test.go:250: detail sessions=1 N=200 errors=0 HTTP=200 total=2.292123187s P50=11.178208ms P95=14.20371ms P99=16.636011ms
+personnel_capacity_test.go:250: source sessions=1 N=200 errors=0 HTTP=200 total=2.236830387s P50=10.988999ms P95=13.6496ms P99=14.7966ms
+personnel_capacity_test.go:250: save sessions=1 N=200 errors=0 HTTP=600 total=7.512158832s P50=36.9753ms P95=43.4303ms P99=45.7458ms
+personnel_capacity_test.go:250: directory sessions=20 N=200 errors=0 HTTP=400 total=1.905951252s P50=177.268924ms P95=287.783939ms P99=341.959646ms
+personnel_capacity_test.go:250: restricted sessions=20 N=200 errors=0 HTTP=400 total=3.480849245s P50=336.701805ms P95=428.296206ms P99=474.878606ms
+personnel_capacity_test.go:250: oldNumber sessions=20 N=200 errors=0 HTTP=400 total=1.714817323s P50=168.893902ms P95=189.844303ms P99=195.608802ms
+personnel_capacity_test.go:250: detail sessions=20 N=200 errors=0 HTTP=200 total=449.916306ms P50=42.2471ms P95=57.407801ms P99=75.027401ms
+personnel_capacity_test.go:250: source sessions=20 N=200 errors=0 HTTP=200 total=408.491742ms P50=40.680894ms P95=47.322894ms P99=49.074993ms
+personnel_capacity_test.go:250: save sessions=20 N=200 errors=0 HTTP=600 total=2.579442436s P50=244.977865ms P95=293.354558ms P99=388.962345ms
+--- PASS: TestPersonnelCapacity (95.39s)
+ok  	chnhcm.local/chnhcm/tests/integration	95.408s
+
+质量检查
+make generate 退出 0。make check 退出 0，含 docs、boundaries、运行脚本测试、Go 单测及 vet、TypeScript 检查及 git diff --check。

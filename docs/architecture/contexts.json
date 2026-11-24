@@ -19,10 +19,10 @@
         "evidence": "docs/verification/500-personnel-registration-trial.md"
       }, {
         "module": "M01", "capability": "personal-profile", "state": "verified_slice",
-        "scope": "同一人员的基本信息、身份证件、联系方式，按字段授权查看并一次更正保存。",
+        "scope": "同一人员的九栏个人资料按人员范围、用途及字段授权查看并一次更正保存。银行账户保留独立身份，健康摘要按客户用途收集。",
         "source": "internal/contexts/personnel/infra/postgres/personal_profile.go",
         "entry": "/personnel/employees", "entry_source": "apps/web/src/features/personnel/api.ts",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/504-personal-profile-fourth-batch.md"
       }]
     },
     {

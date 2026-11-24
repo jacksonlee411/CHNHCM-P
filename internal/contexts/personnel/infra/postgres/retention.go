@@ -21,6 +21,8 @@ func DisposeDue(ctx context.Context, pool *pgxpool.Pool) error {
 		return e
 	}
 	for _, rule := range []struct{ category, relation, expires, item string }{
+		{"bankAccounts", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
+		{"health", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
 		{"education", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
 		{"credentials", "profile_item_payload", "v.evidence_until", "v.item_id::text"},
 		{"addresses", "profile_item_payload", "v.evidence_until", "v.item_id::text"},

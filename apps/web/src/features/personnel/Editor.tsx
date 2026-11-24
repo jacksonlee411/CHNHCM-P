@@ -131,6 +131,8 @@ export function Editor({
           patch.family.length ||
           patch.education.length ||
           patch.credentials.length ||
+          patch.bankAccounts.length ||
+          patch.healthSummary !== undefined ||
           lineDirty
         )
       : nameChanged || documentChanged || evidenceChanged || contactEdits.length > 0;
@@ -147,7 +149,13 @@ export function Editor({
   function finish(r: person.Result) {
     if (r.outcome === 'accepted' || r.outcome === 'no_change') {
       leaving.current = true;
-      saved(r, personal ? groups.find((group) => patch[group].length) || 'basic' : undefined);
+      saved(
+        r,
+        personal
+          ? groups.find((group) => patch[group].length) ||
+              (patch.healthSummary !== undefined ? 'health' : 'basic')
+          : undefined,
+      );
     } else {
       setExistingId(r.existingPersonId || '');
       setNotice({ message: r.outcome === 'not_applied' ? '原提交未执行，可重新保存' : '原提交已拒绝，请重新核对' });
@@ -163,8 +171,8 @@ export function Editor({
   );
   function fail(msg: string, id = '', code?: string) {
     setNotice({ message: msg, field: id, code });
-    if (!/^(documents|contacts|addresses|family|education|credentials)\.\d+\./.test(id))
-      focusObjectField('person-error', 'person-error');
+    if (!/^(documents|contacts|addresses|family|education|credentials|bankAccounts)\.\d+\./.test(id))
+      focusObjectField(id === 'healthSummary' ? id : 'person-error', 'person-error');
   }
   const patchRow = (key: string, change: Partial<Row>) =>
     setRows((v) => v.map((x) => (x.key === key ? { ...x, ...change } : x)));
@@ -232,9 +240,10 @@ export function Editor({
         e instanceof ApiError ? e.code : undefined,
       );
       if (e instanceof ApiError) {
-        const match = /^(documents|contacts|addresses|family|education|credentials)\.(\d+)\.(.+)$/.exec(
-          e.field || '',
-        );
+        const match =
+          /^(documents|contacts|addresses|family|education|credentials|bankAccounts)\.(\d+)\.(.+)$/.exec(
+            e.field || '',
+          );
         if (match) {
           const group = match[1] as Group,
             index = Number(match[2]),
@@ -270,7 +279,7 @@ export function Editor({
         }
         setExistingId(e.existingPersonId || '');
         if (e.status === 403 || e.status === 404) recheck();
-        if (e.code === 'PERSON_CONFLICT' && !creating) {
+        if (e.code === 'PERSON_CONFLICT' && !match && !creating) {
           setConflict(true);
           recheck();
         }
@@ -281,9 +290,13 @@ export function Editor({
   const scope = JSON.stringify([
     fields,
     profile?.readable,
-    ...[profile?.addresses, profile?.family, profile?.education, profile?.credentials].map((rows) =>
-      rows?.map((x) => [x.itemId, x.locked, x.hidden, x.masked, x.canRemove]),
-    ),
+    ...[
+      profile?.addresses,
+      profile?.family,
+      profile?.education,
+      profile?.credentials,
+      profile?.bankAccounts,
+    ].map((rows) => rows?.map((x) => [x.itemId, x.locked, x.hidden, x.masked, x.canRemove])),
     profile?.documents?.map((x) => [x.itemId, x.locked]),
     kinds,
     canDocument,
@@ -319,6 +332,8 @@ export function Editor({
     }
     // Keep unrelated authorized drafts while dropping revoked values and row snapshots.
     const clean = fromProfile(profile);
+    if (fields.includes('healthSummary') && patch.healthSummary !== undefined)
+      clean.healthSummary = patch.healthSummary;
     if (fields.includes('nationality') && (patch.nationalityChoice || 'nationality' in patch.basic))
       clean.nationality = draft.nationality;
     for (const [key, value] of Object.entries(patch.basic))
@@ -488,7 +503,11 @@ export function Editor({
               <>
                 <ProfileSections
                   data={profile}
-                  editing={{ scope, rowError, draft, setDraft, name, setName, disabled, setLineDirty }}
+                  recheck={recheck}
+                  editing={{
+                    scope, rowError, draft, setDraft, name, setName, disabled, setLineDirty,
+                    healthError: field === 'healthSummary' ? error : undefined,
+                  }}
                 />
                 {legacyDocument && canDocument && (
                   <ObjectDetailSection title="主要证件">

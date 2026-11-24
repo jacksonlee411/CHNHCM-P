@@ -91,6 +91,14 @@ export const credentialLabels = {
   validUntil: '有效截止日期',
   indefinite: '长期有效',
 };
+const bankLabels = {
+  bankName: '银行名称',
+  branchName: '开户支行',
+  accountHolder: '户名',
+  accountNumber: '银行账号',
+  currency: '币种',
+  bankPrimary: '主要账户',
+};
 const educationLayout: Record<string, string[]> = {
   学习经历: [
     'educationType',
@@ -127,7 +135,15 @@ export function rowFields(group: Group, fields: Fields): string[] {
 export function isProfileItem(group?: Group) {
   return group !== undefined && group !== 'documents' && group !== 'contacts';
 }
-export const groups = ['documents', 'addresses', 'contacts', 'family', 'education', 'credentials'] as const;
+export const groups = [
+  'documents',
+  'addresses',
+  'contacts',
+  'family',
+  'education',
+  'credentials',
+  'bankAccounts',
+] as const;
 export type Group = (typeof groups)[number];
 export const labelsByGroup: Record<Group, Record<string, string>> = {
   documents: documentLabels,
@@ -136,6 +152,7 @@ export const labelsByGroup: Record<Group, Record<string, string>> = {
   family: familyLabels,
   education: educationLabels,
   credentials: credentialLabels,
+  bankAccounts: bankLabels,
 };
 export const requiredByGroup: Record<Group, string[]> = {
   documents: ['documentKind', 'documentNumber'],
@@ -144,6 +161,7 @@ export const requiredByGroup: Record<Group, string[]> = {
   family: ['familyName', 'relationship'],
   education: ['school', 'educationType'],
   credentials: ['credentialName', 'credentialKind'],
+  bankAccounts: ['bankName', 'accountHolder', 'accountNumber', 'currency'],
 };
 export const itemOptions: Record<string, string[]> = {
   educationType: Object.keys(educationLayout),
@@ -191,10 +209,14 @@ export type Draft = {
   family: Row[];
   education: Row[];
   credentials: Row[];
+  bankAccounts: Row[];
+  healthSummary: string;
 };
 export function fromProfile(p?: Profile): Draft {
   return {
     basic: { ...p?.basic },
+    healthSummary: p?.healthSummary ?? '',
+    bankAccounts: (p?.bankAccounts || []).map(fromItem),
     nationality: p?.nationalityAdoption,
     addresses: (p?.addresses || []).map(fromItem),
     family: (p?.family || []).map(fromItem),
@@ -237,7 +259,10 @@ export function reconcileItem(old: Row | undefined, edited: Row, current: Row, w
   const fields = { ...current.fields },
     places = { ...current.places };
   const canWrite = (key: string) =>
-    writable.includes(key) && !current.locked?.includes(key) && !current.hidden?.includes(key);
+    writable.includes(key) &&
+    !current.locked?.includes(key) &&
+    !current.hidden?.includes(key) &&
+    !current.masked?.includes(key);
   for (const [key, value] of Object.entries(edited.fields)) {
     if (canWrite(key) && value !== (old?.fields[key] || '')) fields[key] = value;
   }
@@ -323,6 +348,8 @@ export function command(p: Profile | undefined, draft: Draft) {
     addresses: itemCommand(draft.addresses, base.addresses),
     family: itemCommand(draft.family, base.family),
     education: itemCommand(draft.education, base.education),
+    healthSummary: draft.healthSummary !== base.healthSummary ? draft.healthSummary : undefined,
+    bankAccounts: itemCommand(draft.bankAccounts, base.bankAccounts),
     credentials: itemCommand(draft.credentials, base.credentials),
     nationalityChoice: changedChoice(base.nationality, draft.nationality),
   };
@@ -331,13 +358,15 @@ export function applyRow(draft: Draft, group: Group, row: Row): Draft {
   const flags =
     group === 'education'
       ? ['highestEducation', 'highestDegree']
-      : group === 'addresses'
-        ? ['addressPrimary']
-        : group === 'documents'
-          ? ['documentPrimary']
-          : group === 'contacts'
-            ? ['contactPrimary']
-            : [];
+      : group === 'bankAccounts'
+        ? ['bankPrimary']
+        : group === 'addresses'
+          ? ['addressPrimary']
+          : group === 'documents'
+            ? ['documentPrimary']
+            : group === 'contacts'
+              ? ['contactPrimary']
+              : [];
   const next = draft[group]
     .filter((x) => x.key !== row.key || !row.removed || x.revision)
     .map((x) => {

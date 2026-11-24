@@ -94,6 +94,8 @@ type Correct struct {
 	Family               []ProfileItemEdit `json:"family,omitempty"`
 	Education            []ProfileItemEdit `json:"education,omitempty"`
 	Credentials          []ProfileItemEdit `json:"credentials,omitempty"`
+	BankAccounts         []ProfileItemEdit `json:"bankAccounts,omitempty"`
+	HealthSummary        *string           `json:"healthSummary,omitempty"`
 	Nationality          *CountryChoice    `json:"nationalityChoice,omitempty"`
 	Basic                map[string]string `json:"basic,omitempty"`
 	Documents            []DocumentEdit    `json:"documents,omitempty"`
@@ -112,6 +114,9 @@ func (v *Correct) UnmarshalJSON(data []byte) error {
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
+	}
+	if string(fields["healthSummary"]) == "null" {
+		return fmt.Errorf("healthSummary requires a string")
 	}
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
@@ -232,6 +237,8 @@ type Detail struct {
 	Family          []ProfileItem     `json:"family,omitempty"`
 	Education       []ProfileItem     `json:"education,omitempty"`
 	Credentials     []ProfileItem     `json:"credentials,omitempty"`
+	BankAccounts    []ProfileItem     `json:"bankAccounts,omitempty"`
+	HealthSummary   *string           `json:"healthSummary,omitempty"`
 	Nationality     *CountryAdoption  `json:"nationalityAdoption,omitempty"`
 	Basic           map[string]string `json:"basic,omitempty"`
 	Documents       []DocumentRow     `json:"documents,omitempty"`
