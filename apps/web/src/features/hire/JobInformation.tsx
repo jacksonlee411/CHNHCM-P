@@ -10,6 +10,7 @@ import {
   UnsavedChangesDialog,
   recordedTime,
 } from '@chnhcm/ui';
+import {ExchangeOriginal} from './ExchangeFields';
 import {managerPurposes} from './LifecycleFields';
 import { useDraftExit } from '../../shared/dated/useDraftExit';
 import { useRead, message } from '../personnel/api';
@@ -25,6 +26,7 @@ import {
 
 type Action = Models['EmploymentAction'];
 type Command =
+  | { kind:'exchange'; input:Models['PositionExchangeCommand'] }
   | { kind:'manager'; input:Models['ActualManagerCommand'] }
   | { kind:'exit'; leave:boolean; input:Models['AssignmentExitCommand'] }
   | { kind: 'grade'; form:'Promotion'|'GradeRecord'|'PromotionTransfer'; action?:string; input:Models['AssignmentPromotionCommand'] }
@@ -109,6 +111,7 @@ export function JobInformation({
   const submit = useRuleSubmission<Command, Models['HireReceipt']>('assignment-location', session, {
     send: async (cmd, key) => {
       const headers = { ...header, 'Idempotency-Key': key };
+      if (cmd.kind==='exchange') return unwrap(await api.POST('/api/v1/assignments/{id}/position-exchanges',{params:{path:{id:assignment},header:headers},body:cmd.input}));
       if (cmd.kind==='manager') return unwrap(await api.POST('/api/v1/assignments/{id}/managers',{params:{path:{id:assignment},header:headers},body:cmd.input}));
       if (cmd.kind==='exit') return unwrap(await api.POST(cmd.leave ? '/api/v1/assignments/{id}/leave' : '/api/v1/assignments/{id}/end',{params:{path:{id:assignment},header:headers},body:cmd.input}));
       if (cmd.kind==='withdraw') return unwrap(await api.POST('/api/v1/employment-actions/{id}/cancel',{
@@ -221,7 +224,8 @@ export function JobInformation({
     const position = after ? after.position : state?.position;
     const next: JobDraft = {
       mode,
-      kind: successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
+      exchange:evidence?.exchange,
+      kind: evidence?.exchange && a ? 'PositionExchange' : successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
       successor,
       grade:evidence?.promotion?.after,originalGrade:evidence?.promotion?.before ?? state?.grade,
       reason:evidence?.promotion?.reason,
@@ -248,6 +252,14 @@ export function JobInformation({
     setDraft(next);
   }
   function save(record: JobDraft) {
+    if(record.kind==='PositionExchange'){
+      const peerAssignment=record.exchange?.peerAssignment ?? record.peer?.assignment;
+      const peerSourceVersion=record.exchange?.peerSourceVersion ?? record.peer?.sourceVersion;
+      if(!peerAssignment || !peerSourceVersion)return;
+      void submit.submit({kind:'exchange',input:{operation:record.action?'Redate':'Add',expectedSourceVersion:record.source,peerAssignment,peerSourceVersion,
+        businessDate:record.day,notice:record.action?undefined:record.notice,action:record.action?{action:record.action.id,revision:record.action.revision}:undefined}});
+      return;
+    }
     if(record.kind==='SetManager'){
       void submit.submit({kind:'manager',input:{businessDate:record.day,expectedSourceVersion:record.source,purpose:record.purpose ?? 'direct',manager:record.endReporting ? undefined : record.manager?.id,lastDay:record.endReporting ? undefined : record.managerLastDay || undefined}});
       return;
@@ -311,6 +323,12 @@ export function JobInformation({
     setError('');
     setNotice('');
     submit.start();
+    const link=original.data?.exchange;
+    if(link){
+      if(link.canDelete && link.peerAssignment && link.peerSourceVersion)void submit.submit({kind:'exchange',input:{
+        operation:'Delete',expectedSourceVersion:data.sourceVersion,peerAssignment:link.peerAssignment,peerSourceVersion:link.peerSourceVersion,action:{action:a.id,revision:a.revision}}});
+      return;
+    }
     void submit.submit({
       kind: 'delete',
       action: a.id,
@@ -427,20 +445,20 @@ export function JobInformation({
                   <OriginalEvidence original={original.data} setRevision={setRevision} />
                   {original.data.action.revision === opened.revision && !source && (
                     <Stack direction="row" gap={1} flexWrap="wrap">
-                      {(opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion) && (
+                      {!original.data.exchange && (opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion) && (
                         <Button onClick={(e) => begin(e.currentTarget, 'correct', opened)}>更正记录</Button>
                       )}
                       {opened.canWithdrawPromotion && <Button onClick={e=>begin(e.currentTarget,'withdraw',opened)}>撤销晋升</Button>}
-                      {opened.kind==='Transfer' && opened.canCorrectTransfer && data.canPromote &&
+                      {!original.data.exchange && opened.kind==='Transfer' && opened.canCorrectTransfer && data.canPromote &&
                         <Button onClick={e=>begin(e.currentTarget,'insert',undefined,opened)}>在本次调动前补录晋升</Button>}
-                      {opened.canMaintain && (
+                      {opened.canMaintain && (!original.data.exchange || original.data.exchange.canRedate) && (
                         <Button onClick={(e) => begin(e.currentTarget, 'redate', opened)}>
-                          调整生效日期
+                          {original.data.exchange ? '调整对调日期' : '调整生效日期'}
                         </Button>
                       )}
-                      {opened.canDelete && (
+                      {opened.canDelete && (!original.data.exchange || original.data.exchange.canDelete) && (
                         <Button disabled={submit.busy} onClick={() => remove(opened)}>
-                          删除记录
+                          {original.data.exchange ? '撤销两岗对调' : '删除记录'}
                         </Button>
                       )}
                     </Stack>
@@ -519,6 +537,7 @@ export function OriginalEvidence({
     <>
       <Typography component="h3">{actionLabel(original.action)}原件</Typography>
       <ObjectDetailField label="生效日期">{original.action.businessDate}</ObjectDetailField>
+      {original.exchange && <ExchangeOriginal key={original.action.revision} link={original.exchange}/>}
       {original.manager && <ObjectDetailField label={managerPurposes[original.manager.purpose]}>{original.manager.manager ? original.manager.name+' · '+original.manager.recordNumber+' 号' : '汇报结束'}</ObjectDetailField>}
       {original.exit && <>
         <ObjectDetailField label={original.exit.meaning==='last-active'?'最后在职日':'首个不在职日'}>{original.exit.date}</ObjectDetailField>

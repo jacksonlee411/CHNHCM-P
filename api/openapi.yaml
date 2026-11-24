@@ -12678,6 +12678,41 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/position-exchanges:
+    post:
+      operationId: exchangeAssignmentPositions
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/PositionExchangeCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/exchange-options:
+    post:
+      operationId: exchangeAssignmentOptions
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/PositionExchangeSearch'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/PositionExchangeOption'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/{id}/transfers:
     post:
       operationId: transferAssignment
@@ -13193,6 +13228,46 @@ components:
         department: {type: string, format: uuid}
         job: {type: string, format: uuid}
         position: {type: string, format: uuid}
+    PositionExchangeCommand:
+      type: object
+      additionalProperties: false
+      required: [operation, expectedSourceVersion, peerSourceVersion, peerAssignment]
+      properties:
+        operation: {type: string, enum: [Add, Redate, Delete]}
+        expectedSourceVersion: {type: string, format: uuid}
+        peerSourceVersion: {type: string, format: uuid}
+        peerAssignment: {type: string, format: uuid}
+        businessDate: {type: string, format: date}
+        notice: {type: string}
+        action: {$ref: '#/components/schemas/EmploymentActionRef'}
+    PositionExchangeSearch:
+      type: object
+      additionalProperties: false
+      required: [businessDate, ref, page]
+      properties:
+        businessDate: {type: string, format: date}
+        ref: {type: string}
+        page: {type: integer, minimum: 1}
+    PositionExchangeOption:
+      type: object
+      required: [assignment, sourceVersion, name, recordNumber, positionName, targetName]
+      properties:
+        assignment: {type: string, format: uuid}
+        sourceVersion: {type: string, format: uuid}
+        name: {type: string}
+        recordNumber: {type: integer}
+        positionName: {type: string}
+        targetName: {type: string}
+    PositionExchangeLink:
+      type: object
+      required: [group, canRedate, canDelete]
+      properties:
+        group: {type: string, format: uuid}
+        peerAssignment: {type: string, format: uuid}
+        peerSourceVersion: {type: string, format: uuid}
+        canRedate: {type: boolean}
+        canDelete: {type: boolean}
+        peerAction: {$ref: '#/components/schemas/EmploymentActionRef'}
     EmploymentRecordMaintenance:
       type: object
       additionalProperties: false
@@ -13593,6 +13668,7 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        exchange: {$ref: '#/components/schemas/PositionExchangeLink'}
         rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
         manager: {$ref: '#/components/schemas/ActualManagerFact'}
         exit: {$ref: '#/components/schemas/AssignmentExitEvidence'}

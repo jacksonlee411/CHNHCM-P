@@ -312,6 +312,16 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 		if !changed {
 			continue
 		}
+		if old != "" && r.Kind == "Transfer" {
+			group, err := u.exchangeFor(ctx, r.ID, old)
+			if err != nil {
+				return out, err
+			}
+			active, _ := ctx.Value(exchangeContext{}).(*exchangePair)
+			if group != nil && (active == nil || active.group != group.group || r.ID != target.ID) {
+				return out, f.Fail(409, "EXCHANGE_REQUIRED", "请从原对调同时处理两份任职")
+			}
+		}
 		if old == "" {
 			e = u.newEmploymentAction(ctx, employmentEntry{id: r.ID, revision: r.Revision, kind: r.Kind, employment: a.Employment, assignment: id, date: r.Day, notice: r.Notice, operation: r.Operation, adoption: recordAdoption(r)})
 		} else {

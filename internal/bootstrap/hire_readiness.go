@@ -105,6 +105,12 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 			return hires.ExitAssignment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.leave, in)
 		}))
 	}
+	mux.HandleFunc("POST /api/v1/assignments/{id}/exchange-options", ruleBody(func(r *http.Request, in h.ExchangeSearch) (any, error) {
+		return hires.ExchangeOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/position-exchanges", ruleBody(func(r *http.Request, in h.ExchangeCommand) (any, error) {
+		return hires.ExchangePositions(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
 	mux.HandleFunc("POST /api/v1/assignments/{id}/managers", ruleBody(func(r *http.Request, in h.ManagerCommand) (any, error) {
 		return hires.SetManager(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
 	}))

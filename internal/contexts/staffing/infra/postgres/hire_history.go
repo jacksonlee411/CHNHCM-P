@@ -271,6 +271,15 @@ func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, 
 		r.Action, r.Employment, r.Assignment = id, a.Employment, a.Assignment
 		r.RecordNumber = &a.RecordNumber
 		r.Revision = revision
+		if a.Kind == "Transfer" {
+			link, e := u.exchangeDisclosure(ctx, a, revision, false)
+			if e != nil {
+				return r, digest, e
+			}
+			if link != nil && link.Original != nil {
+				r.Related = []h.ActionRef{*link.Original}
+			}
+		}
 		if a.Kind == "Promotion" {
 			var other h.ActionRef
 			e := u.tx.QueryRow(ctx, `SELECT transfer,transfer_revision FROM staffing.promotion_transfer WHERE instance_id=$1 AND promotion=$2 AND promotion_revision=$3`, u.store.Instance, id, revision).Scan(&other.Action, &other.Revision)
@@ -602,6 +611,12 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 			if !visible {
 				out.Previous = nil
+			}
+		}
+		if a.Kind == "Transfer" {
+			out.Exchange, e = u.exchangeDisclosure(ctx, a, revision, true)
+			if e != nil {
+				return e
 			}
 		}
 		out.Action = a

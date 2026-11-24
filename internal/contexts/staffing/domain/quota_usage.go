@@ -257,3 +257,35 @@ func ApplicablePolicy(rules []QuotaPolicy, enterprise, category, purpose, day st
 	}
 	return chosen, nil
 }
+
+// CheckExchange compares both published assignments per position. Third-party
+// reservations and appointments enter the final count at every dated boundary.
+func (u QuotaUsage) CheckExchange(before QuotaUsage, q StaffingQuota, first, second string) error {
+	days := append(before.boundaries(), u.boundaries()...)
+	for _, r := range q.Records {
+		days = append(days, r.Date)
+	}
+	occupied := func(e QuotaUsage, id, day string) bool {
+		return slices.ContainsFunc(e.Uses, func(v PositionUse) bool {
+			return v.Owner == "M04" && v.Effect == "occupied" && v.Assignment == id && v.Contains(day)
+		})
+	}
+	slices.Sort(days)
+	for _, day := range slices.Compact(days) {
+		if day == "" || !(occupied(u, first, day) && !occupied(before, first, day) || occupied(u, second, day) && !occupied(before, second, day)) {
+			continue
+		}
+		c := u.At(day)
+		if !c.Known {
+			return usageConflict(day, "岗位用量尚未核齐")
+		}
+		limit := capacity(q, day)
+		if limit < 0 {
+			return usageConflict(day, "没有有效岗位核定数")
+		}
+		if deficit := c.Reserved + c.Occupied - limit; deficit > 0 {
+			return foundation.Fail(409, "M03_QUOTA_SHORTAGE", day+" 起缺 "+strconv.Itoa(deficit)+" 编")
+		}
+	}
+	return nil
+}

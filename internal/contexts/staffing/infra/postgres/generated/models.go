@@ -2106,3 +2106,26 @@ type StaffingStorageContract struct {
 	Singleton bool
 	Contract  string
 }
+
+type StaffingTransferExchange struct {
+	InstanceID       string
+	ID               string
+	FirstAssignment  string
+	SecondAssignment string
+	FirstAction      string
+	SecondAction     string
+	FirstPosition    string
+	SecondPosition   string
+}
+
+type StaffingTransferExchangeRevision struct {
+	InstanceID       string
+	ExchangeID       string
+	Version          string
+	FirstAssignment  string
+	FirstAction      string
+	FirstRevision    string
+	SecondAssignment string
+	SecondAction     string
+	SecondRevision   string
+}
