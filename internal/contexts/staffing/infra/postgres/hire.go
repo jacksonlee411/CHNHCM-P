@@ -193,28 +193,10 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		if err != nil {
 			return "", err
 		}
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment(instance_id,id,employment_id,department_id,job_id,bu_id,location_id,person_id,record_number)
-            VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid,NULLIF($7,'')::uuid,$8,0)`, instance, p.assignment, p.employment, in.Department, in.Job, in.BU, in.Location, in.Person)
-		if err != nil {
-			return "", err
-		}
-		revision, version := f.NewID(), f.NewID()
+		revision := f.NewID()
 		adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
-		err = u.newEmploymentAction(ctx, employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: "Hire", date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption})
-		if err != nil {
-			return "", err
-		}
-		if err = u.startAssignmentSource(ctx, p.assignment, "", version, id, revision); err != nil {
-			return "", err
-		}
-		for _, segment := range p.Adoption.Segments {
-			_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref,department_id,job_id)
-                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8,$9,$10)`, instance, p.assignment, version, segment.From, segment.Until, in.Location, segment, p.location, in.Department, in.Job)
-			if err != nil {
-				return "", err
-			}
-		}
-		if err = u.publishAssignmentSource(ctx, p.assignment, "", version); err != nil {
+		item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: "Hire", date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
+		if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location); err != nil {
 			return "", err
 		}
 		if in.Decision != nil {
@@ -228,6 +210,33 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		FROM (VALUES ('employment',$3::uuid,$4::uuid),('assignment',$4::uuid,$5::uuid)) v(layer,owner,target)`, instance, id, in.Person, p.employment, p.assignment, p.prepared.PrimaryPurpose, p.term.From, p.term.Until)
 		return id, err
 	})
+}
+
+func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hire, number int, term f.Period, segments []staff.AssignmentSegment, location *h.LocationRef) error {
+	instance := u.store.Instance
+	version := f.NewID()
+	_, err := u.tx.Exec(ctx, `INSERT INTO staffing.assignment(instance_id,id,employment_id,department_id,job_id,bu_id,location_id,person_id,record_number,period)
+        VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid,NULLIF($7,'')::uuid,$8,$9,daterange($10::date,nullif($11,'')::date,'[)'))`, instance, item.assignment, item.employment, in.Department, in.Job, in.BU, in.Location, in.Person, number, term.From, term.Until)
+	if err != nil {
+		return err
+	}
+	if err = u.newEmploymentAction(ctx, item); err != nil {
+		return err
+	}
+	if err = u.startAssignmentSource(ctx, item.assignment, "", version, item.id, item.revision); err != nil {
+		return err
+	}
+	for _, segment := range segments {
+		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref,department_id,job_id)
+                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8,$9,$10)`, instance, item.assignment, version, segment.From, segment.Until, in.Location, segment, location, in.Department, in.Job)
+		if err != nil {
+			return err
+		}
+	}
+	if err = u.publishAssignmentSource(ctx, item.assignment, "", version); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (st *Store) EmploymentPurposeUses(ctx context.Context, instance, employer string) ([]staff.PurposeUse, error) {
@@ -272,34 +281,38 @@ func (st *Store) HireEmployers(ctx context.Context, c f.Credentials, in h.Employ
 		if !allowed {
 			return f.Fail(403, "HIRE_DENIED", "没有本次办理权限")
 		}
-		skip := (in.Page - 1) * 20
-		for page := 1; ; page++ {
-			chunk, e := st.HirePurposes.Candidates(dbtx.With(ctx, u.tx), c, org.PurposeCandidates{PurposeCheck: org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}, Search: in.Search, Page: page})
+		return u.employerTargets(ctx, term, in, "hire", &candidates)
+	})
+	return candidates, err
+}
+
+func (u *unit) employerTargets(ctx context.Context, term f.Period, in h.EmployerSearch, permission string, candidates *[]org.EligibleEntity) error {
+	skip := (in.Page - 1) * 20
+	for page := 1; ; page++ {
+		chunk, e := u.store.HirePurposes.Candidates(dbtx.With(ctx, u.tx), u.credentials, org.PurposeCandidates{PurposeCheck: org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}, Search: in.Search, Page: page})
+		if e != nil {
+			return e
+		}
+		for _, v := range chunk {
+			ok, e := u.employmentAllowed(ctx, permission, in.Person, v.ID, in.Department, true)
 			if e != nil {
 				return e
 			}
-			for _, v := range chunk {
-				ok, e := u.employmentAllowed(ctx, "hire", in.Person, v.ID, in.Department, true)
-				if e != nil {
-					return e
+			if ok {
+				if skip > 0 {
+					skip--
+					continue
 				}
-				if ok {
-					if skip > 0 {
-						skip--
-						continue
-					}
-					candidates = append(candidates, v)
-					if len(candidates) == 20 {
-						return nil
-					}
+				*candidates = append(*candidates, v)
+				if len(*candidates) == 20 {
+					return nil
 				}
-			}
-			if len(chunk) < 20 {
-				return nil
 			}
 		}
-	})
-	return candidates, err
+		if len(chunk) < 20 {
+			return nil
+		}
+	}
 }
 
 // HireTargets pages after both the dated source check and the operator's M04

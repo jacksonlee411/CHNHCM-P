@@ -14,7 +14,7 @@ import (
 const assignmentActionSelect = `SELECT a.id,r.revision,a.kind,r.operation,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,
 coalesce(origin.department_id,t.department_id) AS department,coalesce(origin.job_id,t.job_id) AS job,
 r.business_date::text,h.version,r.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
-lower(e.period)::text,coalesce(upper(e.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire')
+lower(t.period)::text,coalesce(upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire')
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
 JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
 `
@@ -62,7 +62,7 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 			return e
 		}
 		for _, a := range actions {
-			if a.Kind == "Hire" && !a.Cancelled {
+			if h.StartsAssignment(a.Kind) && !a.Cancelled {
 				var seats int
 				var department string
 				e = u.tx.QueryRow(ctx, `SELECT department_id,(adoption->>'seats')::int FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND period @> $3::date AND version=$4`, st.Instance, a.Assignment, day, a.SourceVersion).Scan(&department, &seats)
@@ -144,6 +144,16 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if err = u.requireEmployment(ctx, "cancel", a.Person, a.Employer, a.Department); err != nil {
 			return "", err
 		}
+		var parallel bool
+		err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment x JOIN staffing.assignment_head head ON (head.instance_id,head.assignment_id)=(x.instance_id,x.id)
+         JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(head.instance_id,head.assignment_id,head.version) WHERE x.instance_id=$1 AND x.person_id=$2 AND x.id<>$3 AND s.period && daterange($4::date,nullif($5,'')::date,'[)'))`, st.Instance, a.Person, a.Assignment, a.From, a.Until).Scan(&parallel)
+		if err != nil {
+			return "", err
+		}
+		if parallel {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "原期间已有关联任职，请先核对后续安排")
+		}
+
 		tag, err := u.tx.Exec(ctx, "DELETE FROM staffing.employment_primary WHERE instance_id=$1 AND action_id=$2", st.Instance, a.ID)
 		if err != nil {
 			return "", err

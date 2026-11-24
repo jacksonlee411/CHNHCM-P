@@ -12248,7 +12248,7 @@ paths:
       - {in: query, name: businessTo, schema: {type: string, format: date}}
       - {in: query, name: recordedFrom, schema: {type: string, format: date}}
       - {in: query, name: recordedTo, schema: {type: string, format: date}}
-      - {in: query, name: kind, schema: {type: string, enum: [Hire, DataChange, Transfer]}}
+      - {in: query, name: kind, schema: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment]}}
       - {in: query, name: status, schema: {type: string, enum: [effective, future, cancelled, deleted]}}
       - {in: query, name: sort, schema: {type: string, enum: [recordedAt, '-recordedAt', businessDate, '-businessDate']}}
       - {in: query, name: page, schema: {type: integer, minimum: 1, default: 1}}
@@ -12374,6 +12374,41 @@ paths:
       requestBody:
         required: true
         content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentLocationChange'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/additional-options:
+    post:
+      operationId: assignmentSecondaryOptions
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/AdditionalAssignmentOptions'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/EligibleEntity'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/additional-assignments:
+    post:
+      operationId: addSecondaryAssignment
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/AdditionalAssignmentInput'}}}
       responses:
         '200':
           description: Authorized result
@@ -12563,6 +12598,44 @@ components:
         notice: {type: string}
         insert: {type: boolean}
         requires: {$ref: '#/components/schemas/EmploymentRequiredFact'}
+    AdditionalAssignmentInput:
+      type: object
+      additionalProperties: false
+      required: [from, parallel, department, job, notice, expectedSourceVersion]
+      properties:
+        from: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        parallel: {type: boolean}
+        employer: {type: string, format: uuid}
+        department: {type: string, format: uuid}
+        job: {type: string, format: uuid}
+        bu: {type: string, format: uuid}
+        location: {type: string, format: uuid}
+        notice: {type: string}
+        expectedSourceVersion: {type: string, format: uuid}
+    AdditionalAssignmentOptions:
+      type: object
+      additionalProperties: false
+      required: [from, parallel, kind, page]
+      properties:
+        from: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        parallel: {type: boolean}
+        employer: {type: string, format: uuid}
+        department: {type: string, format: uuid}
+        bu: {type: string, format: uuid}
+        location: {type: string, format: uuid}
+        kind: {type: string, enum: [department, job, employer, bu, location]}
+        page: {type: integer, minimum: 1}
+        search: {type: string}
+    SecondaryAssignmentEvidence:
+      type: object
+      additionalProperties: false
+      required: [relationshipPrimary, legal, segments]
+      properties:
+        relationshipPrimary: {type: boolean}
+        legal: {type: array, items: {$ref: '#/components/schemas/LegalAdoption'}}
+        segments: {type: array, items: {$ref: '#/components/schemas/AssignmentSegment'}}
     EmploymentTransferSearch:
       type: object
       additionalProperties: false
@@ -12632,7 +12705,7 @@ components:
         department: {type: string, format: uuid}
         name: {type: string}
         number: {type: string}
-        kind: {type: string, enum: [Hire, DataChange, Transfer]}
+        kind: {type: string, enum: [Hire, DataChange, Transfer, AdditionalAssignment, ParallelEmployment]}
         status: {type: string, enum: [effective, future, cancelled, deleted]}
         businessDate: {type: string, format: date}
         recordedAt: {type: string, format: date-time}
@@ -12718,7 +12791,7 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer]
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canAddSecondary, canAddParallel, relationshipPrimary]
       properties:
         from: {type: string, format: date}
         until: {type: string, format: date}
@@ -12737,6 +12810,9 @@ components:
         actions: {type: array, items: {$ref: '#/components/schemas/EmploymentAction'}}
         canChangeLocation: {type: boolean}
         canTransfer: {type: boolean}
+        canAddSecondary: {type: boolean}
+        canAddParallel: {type: boolean}
+        relationshipPrimary: {type: boolean}
     HireTargetSearch:
       type: object
       additionalProperties: false
@@ -12769,6 +12845,7 @@ components:
       required: [action]
       properties:
         departmentName: {type: string}
+        secondary: {$ref: '#/components/schemas/SecondaryAssignmentEvidence'}
         transfer: {$ref: '#/components/schemas/EmploymentTransferEvidence'}
         requires: {$ref: '#/components/schemas/EmploymentRequiredFact'}
         locationChange: {$ref: '#/components/schemas/EmploymentLocationEvidence'}

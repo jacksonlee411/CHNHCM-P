@@ -85,20 +85,21 @@ type Cancel struct {
 	Reason   string `json:"reason"`
 }
 type Original struct {
-	Transfer          *TransferEvidence `json:"transfer,omitempty"`
-	Requires          *RequiredFact     `json:"requires,omitempty"`
-	DepartmentName    string            `json:"departmentName,omitempty"`
-	Revisions         []Revision        `json:"revisions,omitempty"`
-	LocationChange    *LocationEvidence `json:"locationChange,omitempty"`
-	Appointment       *DecisionOption   `json:"appointment,omitempty"`
-	Action            Action            `json:"action"`
-	Sources           *Adoption         `json:"sources,omitempty"`
-	Reason            string            `json:"reason,omitempty"`
-	State             string            `json:"state,omitempty"`
-	PrimaryPurpose    string            `json:"primaryPurpose,omitempty"`
-	PrimaryEmployment string            `json:"primaryEmployment,omitempty"`
-	PrimaryAssignment string            `json:"primaryAssignment,omitempty"`
-	OriginalRevision  string            `json:"originalRevision,omitempty"`
+	Secondary         *SecondaryEvidence `json:"secondary,omitempty"`
+	Transfer          *TransferEvidence  `json:"transfer,omitempty"`
+	Requires          *RequiredFact      `json:"requires,omitempty"`
+	DepartmentName    string             `json:"departmentName,omitempty"`
+	Revisions         []Revision         `json:"revisions,omitempty"`
+	LocationChange    *LocationEvidence  `json:"locationChange,omitempty"`
+	Appointment       *DecisionOption    `json:"appointment,omitempty"`
+	Action            Action             `json:"action"`
+	Sources           *Adoption          `json:"sources,omitempty"`
+	Reason            string             `json:"reason,omitempty"`
+	State             string             `json:"state,omitempty"`
+	PrimaryPurpose    string             `json:"primaryPurpose,omitempty"`
+	PrimaryEmployment string             `json:"primaryEmployment,omitempty"`
+	PrimaryAssignment string             `json:"primaryAssignment,omitempty"`
+	OriginalRevision  string             `json:"originalRevision,omitempty"`
 }
 type EmployerSearch struct {
 	Person     string `json:"person"`

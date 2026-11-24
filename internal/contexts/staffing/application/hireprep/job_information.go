@@ -49,6 +49,9 @@ type State struct {
 }
 
 type AssignmentView struct {
+	CanAddSecondary     bool `json:"canAddSecondary"`
+	CanAddParallel      bool `json:"canAddParallel"`
+	RelationshipPrimary bool `json:"relationshipPrimary"`
 	f.Period
 	EmployerName      string   `json:"employerName"`
 	Relationship      string   `json:"relationship"`
@@ -125,6 +128,8 @@ type TransferSearch struct {
 	Department   string `json:"department,omitempty"`
 }
 type JobInformation interface {
+	AddSecondary(context.Context, f.Credentials, string, string, Secondary) (Receipt, error)
+	SecondaryOptions(context.Context, f.Credentials, string, SecondaryOption) ([]org.EligibleEntity, error)
 	TransferOptions(context.Context, f.Credentials, string, TransferSearch) ([]org.EligibleEntity, error)
 	MaintainRecord(context.Context, f.Credentials, string, string, string, string, RecordMaintenance) (Receipt, error)
 	CanListRegister(context.Context, f.Credentials) (bool, error)

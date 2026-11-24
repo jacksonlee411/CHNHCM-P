@@ -51,6 +51,11 @@ type AccessEmploymentLocationFixture struct {
 	PrincipalID string
 }
 
+type AccessEmploymentParallelFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessEmploymentRegisterFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1133,6 +1138,7 @@ type StaffingAssignment struct {
 	LocationID   pgtype.UUID
 	PersonID     string
 	RecordNumber int32
+	Period       pgtype.Range[pgtype.Date]
 }
 
 type StaffingAssignmentHead struct {
