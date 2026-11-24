@@ -225,6 +225,11 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 		if edit.action == "" && strings.TrimSpace(edit.Notice) == "" {
 			return out, f.Fail(400, "TRANSFER_NOTICE", "请填写调动依据")
 		}
+		if edit.action != "" && target.Transfer != nil && edit.Department == target.Transfer.Department && edit.Job == target.Transfer.Job &&
+			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) {
+			return out, f.Fail(409, "TRANSFER_UNCHANGED", "部门、职务和调动依据均未改变")
+		}
+
 		if edit.Notice != "" {
 			target.Notice = strings.TrimSpace(edit.Notice)
 		}

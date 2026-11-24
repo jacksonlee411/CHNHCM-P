@@ -90,6 +90,7 @@ async function seed(page: Page, withDocument = true) {
     employer,
     job,
     id: saved.id,
+    buId:bu.id,
     departmentId: dep.id,
     employerId: entity.legalEntityId,
     jobId: positionJob.id,
@@ -443,8 +444,7 @@ async function hireAtLocation(page: Page, sample: Awaited<ReturnType<typeof seed
   expect(hired.status, hired.body.message).toBe(200);
   return { locations, hire: hired.body };
 }
-async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
-  const { locations } = await hireAtLocation(page, sample);
+async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeof seed>>){
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   if (await desktop.isVisible()) {
     await desktop.click();
@@ -467,6 +467,10 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await row.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('tab', { name: '职务信息' })).toHaveAttribute('aria-selected', 'true');
+}
+async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const { locations } = await hireAtLocation(page, sample);
+  await openEmployeeAssignment(page,sample);
   await expect(page.getByText(new RegExp(locations[0].name))).toBeVisible();
   await page.getByRole('button', { name: '新增记录', exact: true }).click();
   const effective = page.getByRole('textbox', { name: /^生效日期/ });
@@ -627,3 +631,66 @@ test('M04 办理记录中的未来首单撤销后原件仍占一行', async ({ p
   await expect(page.getByText('1 笔办理', { exact: true })).toBeVisible();
   await expect(page.getByRole('gridcell', { name: '已撤销', exact: true })).toBeVisible();
 });
+
+async function historyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
+  const {locations}=await hireAtLocation(page,sample);
+  const destination='产品部'+randomUUID().slice(0,6);
+  await apiDepartment(page,sample.buId,{name:destination});
+  const policy=await request(page,'GET','/api/v1/assignment-policies');
+  if(!policy.body.rows.some((r:{purpose:string;category:string})=>r.purpose==='transfer'&&r.category==='Employee')){
+    const change=await request(page,'POST','/api/v1/assignment-policies',{
+      expectedVersion:policy.body.version,row:{id:randomUUID(),category:'Employee',purpose:'transfer',mode:'JobOnly',from:'2027-04-01'},
+    },randomUUID());
+    expect(change.status,change.body.message).toBe(200);
+  }
+  await openEmployeeAssignment(page,sample);
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  async function date(label:string,value:string){
+    const input=page.getByRole('textbox',{name:new RegExp('^'+label)});
+    await input.fill(value);await input.press('Tab');
+  }
+  await button('新增记录').click();
+  await page.getByRole('combobox',{name:/办理类型/}).click();
+  await page.getByRole('option',{name:'调动',exact:true}).click();
+  await date('生效日期','2027-07-01');
+  await page.getByRole('combobox',{name:/调入部门/}).fill(destination);
+  await page.getByRole('option',{name:destination,exact:true}).click();
+  await expect(page.getByRole('combobox',{name:/拟任职务/})).toHaveValue(sample.job);
+  await page.getByLabel(/调动依据/).fill('合成七月跨部门调令');
+  await button('保存').click();
+  await expect(button('调动 · 2027-07-01')).toBeVisible();
+  await button('调动 · 2027-07-01').click();
+  await expect(page.getByRole('heading',{name:'调动原件'})).toBeVisible();
+  await expect(page.getByText('合成七月跨部门调令',{exact:true})).toBeVisible();
+  await button('插入记录').click();
+  await date('生效日期','2027-06-01');
+  await page.getByRole('combobox',{name:/工作地点/}).fill(locations[1].name);
+  await page.getByRole('option',{name:locations[1].name,exact:true}).click();
+  await button('保存').click();
+  await expect(button('数据更改 · 2027-06-01')).toBeVisible();
+  await date('查看业务日','2027-07-01');
+  await expect(page.getByText([destination,sample.job,locations[1].name].join(' · '),{exact:true})).toBeVisible();
+  await date('查看业务日','2027-06-01');
+  await button('数据更改 · 2027-06-01').click();
+  await button('调整生效日期').click();
+  await date('生效日期','2027-06-10');
+  await button('保存').click();
+  await button('数据更改 · 2027-06-10').click();
+  await button('删除记录').click();
+  await expect(page.getByText([sample.department,sample.job,locations[0].name].join(' · '),{exact:true})).toBeVisible();
+  await button('数据更改 · 2027-06-10').click();
+  await expect(page.getByText('已删除',{exact:true})).toBeVisible();
+  await expect(button('删除记录')).toHaveCount(0);
+  await expect(page.getByRole('button',{name:/查看修订/})).toHaveCount(3);
+  await date('查看业务日','2027-07-01');
+  await expect(page.getByText([destination,sample.job,locations[0].name].join(' · '),{exact:true})).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 历史插入与按职务调动 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);
+    await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});
+    await historyJourney(page,sample);
+  });
+}
+test('M04 历史插入与按职务调动 原生200%',async()=>{await native200(historyJourney)});

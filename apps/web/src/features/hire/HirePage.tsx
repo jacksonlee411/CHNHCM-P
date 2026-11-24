@@ -1,3 +1,4 @@
+import { actionLabel } from './AssignmentRecordForm';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, MenuItem, Paper, Stack, Typography } from '@mui/material';
 import { Link, useLocation, useParams } from 'react-router-dom';
@@ -414,7 +415,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
           {!mode && overview.data && (
             <ObjectForm>
               <ObjectDetailSection title="该日任职">
-                {overview.data && !overview.data.actions.some(a=>a.kind==='Hire'&&!a.cancelled) && <Typography>暂无可查看的任职</Typography>}
+                {overview.data && !overview.data.terms.length && <Typography>暂无可查看的任职</Typography>}
                 <ObjectTextField
                   type="date"
                   label="查询日期"
@@ -433,7 +434,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                   <Box key={a.id} sx={{ mb: 1 }}>
                     <Typography>
                       {a.businessDate} ·{' '}
-                      {a.kind === 'DataChange' ? '数据更改' : a.kind === 'CancelHire' ? '撤销入职' : a.cancelled ? '入职（已撤销）' : '入职'} ·{' '}
+                      {a.kind==='Hire'&&a.cancelled ? '入职（已撤销）' : actionLabel(a)} ·{' '}
                       {a.notice || (a.kind==='DataChange'?'工作地点变更':'任用决定')}
                     </Typography>
                     <Typography variant="body2">
