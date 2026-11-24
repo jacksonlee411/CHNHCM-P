@@ -12736,6 +12736,71 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/positions/{id}/replenishment:
+    parameters:
+    - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+    get:
+      operationId: getPositionReplenishment
+      security: [{session: []}]
+      parameters:
+      - {in: query, name: businessAt, schema: {type: string, format: date}}
+      responses:
+        '200':
+          description: Position replenishment decisions and authorized usage at the selected date
+          content: {application/json: {schema: {$ref: '#/components/schemas/ReplenishmentView'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    post:
+      operationId: changePositionReplenishment
+      security: [{session: []}]
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ReplenishmentChange'}}}
+      responses:
+        '200':
+          description: Persisted dated decision
+          content: {application/json: {schema: {$ref: '#/components/schemas/ReplenishmentView'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/positions/{id}/replenishment/submissions/{sub}/resolve:
+    post:
+      operationId: resolveReplenishment
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: path, name: sub, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {type: object, additionalProperties: false}}}
+      responses:
+        '200':
+          description: Private submission outcome
+          content: {application/json: {schema: {$ref: '#/components/schemas/RuleSaved'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/hires/arrangement:
+    post:
+      operationId: getHireArrangement
+      security: [{session: []}]
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/HireArrangementQuery'}}}
+      responses:
+        '200':
+          description: Arrangement fields required by the effective policies
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireArrangementMode'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/hires/targets:
     post:
       operationId: selectHireTargets
@@ -13052,6 +13117,8 @@ components:
       additionalProperties: false
       required: [from, department, job, departmentId, jobId, seats]
       properties:
+        position: {type: string, format: uuid}
+        positionName: {type: string}
         grade: {$ref: '#/components/schemas/AssignmentGrade'}
         departmentId: {type: string, format: uuid}
         jobId: {type: string, format: uuid}
@@ -13193,6 +13260,52 @@ components:
         canAddSecondary: {type: boolean}
         canAddParallel: {type: boolean}
         relationshipPrimary: {type: boolean}
+    ReplenishmentView:
+      type: object
+      required: [covered, canChange, paused, version, records]
+      properties:
+        covered: {type: boolean}
+        canChange: {type: boolean}
+        paused: {type: boolean}
+        version: {type: string}
+        exempt: {type: integer}
+        records:
+          type: array
+          items:
+            type: object
+            required: [date, paused, reason, revision, recordedAt]
+            properties:
+              date: {type: string, format: date}
+              paused: {type: boolean}
+              reason: {type: string}
+              revision: {type: string, format: uuid}
+              recordedAt: {type: string, format: date-time}
+    ReplenishmentChange:
+      type: object
+      additionalProperties: false
+      required: [date, paused, reason, expected]
+      properties:
+        date: {type: string, format: date}
+        paused: {type: boolean}
+        reason: {type: string}
+        expected: {type: string}
+    HireArrangementMode:
+      type: object
+      required: [jobRequired, positionRequired]
+      properties:
+        department: {$ref: '#/components/schemas/EligibleEntity'}
+        job: {$ref: '#/components/schemas/EligibleEntity'}
+        jobRequired: {type: boolean}
+        positionRequired: {type: boolean}
+    HireArrangementQuery:
+      type: object
+      required: [person, arrival]
+      properties:
+        position: {type: string, format: uuid}
+        person: {type: string, format: uuid}
+        arrival: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
     HireTargetSearch:
       type: object
       additionalProperties: false
@@ -13201,7 +13314,7 @@ components:
         rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
         job: {type: string, format: uuid}
         person: {type: string, format: uuid}
-        kind: {type: string, enum: [department, job, bu, location, grade]}
+        kind: {type: string, enum: [department, job, position, bu, location, grade]}
         arrival: {type: string, format: date}
         lastDay: {type: string, format: date}
         employer: {type: string, format: uuid}
@@ -13294,6 +13407,7 @@ components:
       type: object
       required: [person]
       properties:
+        position: {$ref: '#/components/schemas/EligibleEntity'}
         person: {type: string, format: uuid}
         line: {type: string, format: uuid}
         employer: {$ref: '#/components/schemas/EligibleEntity'}
@@ -13353,10 +13467,9 @@ components:
       required:
       - person
       - employer
-      - department
-      - job
       - arrival
       properties:
+        position: {type: string, format: uuid}
         rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
         grade: {type: string, format: uuid}
         trialStart: {type: string, format: date}
@@ -14224,8 +14337,6 @@ components:
       - from
       - category
       - purpose
-      - department
-      - job
       properties:
         adopted:
           type: array
@@ -14265,6 +14376,13 @@ components:
       - position
       - seats
       properties:
+        departmentId: {type: string}
+        jobId: {type: string}
+        positionName: {type: string}
+        positionSource: {type: string}
+        positionRevision: {type: string}
+        replenishmentSource: {type: string}
+        coverageSource: {type: string}
         departmentName: {type: string}
         jobName: {type: string}
         policyVersion:

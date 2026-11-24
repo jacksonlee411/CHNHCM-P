@@ -148,6 +148,30 @@ func (st *Store) HireDecisions(ctx context.Context, c f.Credentials, person stri
 			if err != nil {
 				return err
 			}
+			if ok && opt.Position != nil {
+				ent, e := u.Enterprise(ctx, false)
+				if e != nil {
+					return e
+				}
+				ok, e = u.positionReadable(ctx, ent.ID)
+				if e != nil {
+					return e
+				}
+				if ok {
+					day := opt.Arrival
+					if day == "" {
+						day = u.now.In(f.Shanghai).Format(time.DateOnly)
+					}
+					term, e := hireDates(day, opt.LastDay)
+					if e != nil {
+						return e
+					}
+					ok, e = u.positionEmploymentScope(ctx, opt.Position.ID, term, person, targetID(opt.Employer), permission)
+					if e != nil {
+						return e
+					}
+				}
+			}
 			if ok {
 				out = append(out, opt)
 			}
@@ -171,6 +195,14 @@ func (u *unit) CheckAppointment(ctx context.Context, _ f.Credentials, ref h.Deci
 	if e != nil {
 		return e
 	}
+	for _, seg := range a.Segments {
+		if opt.Department != nil && seg.DepartmentID != "" && opt.Department.ID != seg.DepartmentID || opt.Job != nil && seg.JobID != "" && opt.Job.ID != seg.JobID {
+			return appointmentConflict()
+		}
+	}
+	if opt.Position != nil && opt.Position.ID != a.Position {
+		return appointmentConflict()
+	}
 	if opt.Ref != ref || opt.Employer != nil && opt.Employer.ID != a.Employer || opt.Department != nil && opt.Department.ID != a.Department || opt.Job != nil && opt.Job.ID != a.Job || opt.BU != nil && opt.BU.ID != a.BU || opt.Location != nil && opt.Location.ID != a.Location || opt.Arrival != "" && opt.Arrival != a.From {
 		return appointmentConflict()
 	}
@@ -192,13 +224,13 @@ func (u *unit) previousDecisionHire(ctx context.Context, in h.Hire, term f.Perio
 	err := u.tx.QueryRow(ctx, `SELECT d.action_id, e.person_id=$4 AND e.employer_id=$5 AND a.department_id=$6 AND a.job_id=$7
  AND e.period=daterange($8::date,NULLIF($9,'')::date,'[)') AND a.bu_id IS NOT DISTINCT FROM NULLIF($10,'')::uuid
  AND a.location_id IS NOT DISTINCT FROM NULLIF($11,'')::uuid
- AND coalesce(r.adoption#>>'{sources,grade,id}','')=$12 AND coalesce(r.adoption->>'trialStart','')=$13 AND (r.adoption->'rehireOf') IS NOT DISTINCT FROM $14::jsonb
+ AND coalesce(r.adoption#>>'{sources,grade,id}','')=$12 AND coalesce(r.adoption->>'trialStart','')=$13 AND (r.adoption->'rehireOf') IS NOT DISTINCT FROM $14::jsonb AND coalesce(r.adoption->>'plannedPosition','')=$15
  FROM staffing.hire_decision_use d JOIN staffing.employment_action h ON (h.instance_id,h.id)=(d.instance_id,d.action_id)
  JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(h.instance_id,h.id,h.revision)
  JOIN staffing.employment e ON (e.instance_id,e.id)=(h.instance_id,h.employment_id)
  JOIN staffing.assignment a ON (a.instance_id,a.id)=(h.instance_id,h.assignment_id)
  WHERE d.instance_id=$1 AND d.source=$2 AND d.line_id IS NOT DISTINCT FROM NULLIF($3,'')::uuid`,
-		u.store.Instance, in.Decision.Source, in.Decision.Line, in.Person, in.Employer, in.Department, in.Job, term.From, term.Until, in.BU, in.Location, in.Grade, in.TrialStart, in.RehireOf).Scan(&id, &same)
+		u.store.Instance, in.Decision.Source, in.Decision.Line, in.Person, in.Employer, in.Department, in.Job, term.From, term.Until, in.BU, in.Location, in.Grade, in.TrialStart, in.RehireOf, in.Position).Scan(&id, &same)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return "", nil
 	}

@@ -455,13 +455,33 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if e != nil {
 			return e
 		}
+		if out.Sources != nil {
+			segs := out.Sources.Segments[:0]
+			for _, seg := range out.Sources.Segments {
+				if seg.DepartmentID != "" {
+					ok, err := u.employmentAllowed(ctx, "history", a.Person, a.Employer, seg.DepartmentID, false)
+					if err != nil {
+						return err
+					}
+					if !ok {
+						continue
+					}
+					ok, err = u.employmentAllowed(ctx, "read", a.Person, a.Employer, seg.DepartmentID, false)
+					if err != nil {
+						return err
+					}
+					if !ok {
+						continue
+					}
+				}
+				segs = append(segs, seg)
+			}
+			out.Sources.Segments = segs
+		}
 		e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT adoption->>'departmentName' FROM staffing.assignment_segment
             WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date),'')`, st.Instance, a.Assignment, version, a.BusinessDate).Scan(&out.DepartmentName)
 		if e != nil {
 			return e
-		}
-		if out.Promotion != nil {
-			out.DepartmentName = out.Promotion.DepartmentName
 		}
 		if out.Promotion != nil {
 			out.DepartmentName = out.Promotion.DepartmentName

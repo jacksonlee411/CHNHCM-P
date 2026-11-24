@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"github.com/jackc/pgx/v5"
 
 	f "chnhcm.local/chnhcm/internal/foundation"
 )
@@ -26,6 +27,21 @@ func (u *unit) newEmploymentAction(ctx context.Context, e employmentEntry) error
 }
 
 func (u *unit) startAssignmentSource(ctx context.Context, assignment, previous, version, action, revision string) error {
+	if previous != "" {
+		rows, e := u.tx.Query(ctx, `SELECT DISTINCT adoption->>'position' AS id FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND coalesce(adoption->>'position','')<>'' ORDER BY id`, u.store.Instance, assignment, previous)
+		if e != nil {
+			return e
+		}
+		ids, e := pgx.CollectRows(rows, pgx.RowTo[string])
+		if e != nil {
+			return e
+		}
+		for _, id := range ids {
+			if e = u.LockQuotaTarget(ctx, id); e != nil {
+				return e
+			}
+		}
+	}
 	instance := u.store.Instance
 	_, err := u.tx.Exec(ctx, `INSERT INTO staffing.assignment_source(instance_id,assignment_id,version,previous,action_id,revision)
 		VALUES($1,$2,$3,NULLIF($4,'')::uuid,$5,$6)`, instance, assignment, version, previous, action, revision)

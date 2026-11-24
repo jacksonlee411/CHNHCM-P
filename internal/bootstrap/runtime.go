@@ -38,6 +38,7 @@ type Runtime struct {
 	Hires              hireprep.Hires
 	FirstHireRules     hireprep.Rules
 	LegalPurposes      org.LegalPurposes
+	Replenishments     staffing.Replenishments
 	AssignmentPolicies staffing.AssignmentPolicies
 	Personnel          person.Service
 	Staffing           staffing.Service
@@ -96,6 +97,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	o := &orgdb.Store{Pool: p, Instance: instance, Guard: a.Guard}
 	st := &staffingdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Organization: o, PositionDirectory: o}
 	st.QuotaPolicies = st.PublishedQuotaPolicies
+	st.Usage = st.AssignmentPositionUsage
 	o.Staffing = st
 	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AdoptArea: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]person.CountryAdoption, string, error) {
 		nodes, err := o.AdoptProfileArea(ctx, tx, g, id, date)
@@ -129,7 +131,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 			slog.Warn("revoked staffing selection cleanup failed")
 		}
 	}
-	runtime := &Runtime{Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
+	runtime := &Runtime{Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
 	if e = runtime.Ready(ctx); e != nil {
 		p.Close()
 		return nil, e
@@ -395,9 +397,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,48)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,49)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 47 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 48 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -416,6 +418,7 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                 AND (32=ANY(versions) OR to_regclass('organization.legal_purpose_source') IS NULL)
                 AND to_regclass('organization.legal_purpose_terminal') IS NULL)
           )))
+          AND (NOT (49=ANY(versions)) OR (to_regclass('staffing.position_intake') IS NOT NULL AND to_regclass('staffing.position_replenishment') IS NOT NULL))
           AND (NOT (48=ANY(versions)) OR (to_regclass('staffing.manager_agreement') IS NOT NULL AND to_regclass('staffing.employment_exit') IS NOT NULL AND to_regclass('staffing.assignment_exit') IS NOT NULL AND to_regclass('access.employment_lifecycle_fixture') IS NOT NULL))
           AND (NOT (47=ANY(versions)) OR (to_regclass('staffing.promotion_transfer') IS NOT NULL AND to_regclass('access.employment_promotion_fixture') IS NOT NULL))
           AND (NOT (46=ANY(versions)) OR (to_regclass('staffing.relationship_probation_fact') IS NOT NULL

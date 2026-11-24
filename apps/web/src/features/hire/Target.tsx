@@ -4,9 +4,10 @@ import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
 
-export type TargetKind = 'department' | 'job' | 'employer' | 'bu' | 'location' | 'grade';
+export type TargetKind = 'position' | 'department' | 'job' | 'employer' | 'bu' | 'location' | 'grade';
 export type Option = { id: string; name: string };
 export const labels = {
+  position:'岗位',
   grade:'个人职级',
   department: '部门',
   job: '职务',
@@ -62,7 +63,7 @@ export function Target({
     return unwrap(
       await api.POST('/api/v1/hires/targets', {
         params,
-        body: { ...query, kind, job:kind==='grade'?draft.job:undefined, employer: draft.employer || undefined },
+        body: { ...query, kind, job:kind==='grade'||kind==='position'?draft.job:undefined, employer: draft.employer || undefined },
       }),
     );
   });

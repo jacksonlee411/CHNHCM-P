@@ -123,7 +123,11 @@ func (st *Store) CheckAssignment(ctx context.Context, c f.Credentials, in s.Assi
 		if e != nil {
 			return e
 		}
-		out, e = app.CheckJobAssignment(ctx, u, in, head, rows, locked)
+		if in.Position != "" {
+			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked)
+		} else {
+			out, e = app.CheckJobAssignment(ctx, u, in, head, rows, locked)
+		}
 		if e == nil && in.Adopted != nil && !slices.Equal(in.Adopted, out) {
 			return f.Fail(409, "M03_SOURCE_CHANGED", "部门、职务或任职政策来源已变化，请重新核对")
 		}

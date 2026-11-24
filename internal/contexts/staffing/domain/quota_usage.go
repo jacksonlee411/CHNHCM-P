@@ -21,6 +21,7 @@ type SourceCoverage struct {
 type PositionUse struct {
 	UsageSpan
 	Owner, Source, Policy, Effect string
+	Department, Job               string
 }
 
 // Managed identifies the explicitly taken-over part of this position's timeline.

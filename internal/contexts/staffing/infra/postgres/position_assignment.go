@@ -1,0 +1,190 @@
+package postgres
+
+import (
+	"context"
+	"slices"
+
+	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
+	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
+	s "chnhcm.local/chnhcm/internal/contexts/staffing/public"
+	f "chnhcm.local/chnhcm/internal/foundation"
+	"github.com/jackc/pgx/v5"
+)
+
+func (u *unit) positionReadable(ctx context.Context, enterprise string) (bool, error) {
+	for _, action := range []string{"position.read", "position.history.read"} {
+		decision, e := u.guard.Decide(ctx, access.Intent{EnterpriseID: enterprise, Kind: "position", Action: action})
+		if e != nil {
+			return false, e
+		}
+		if !decision.Allowed {
+			return false, nil
+		}
+		for _, key := range []string{"name", "effectiveDate", "status", "departmentId", "jobId"} {
+			if !slices.Contains(decision.ReadFields, key) {
+				return false, nil
+			}
+		}
+	}
+	return true, nil
+}
+
+func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool) ([]s.AssignmentSegment, error) {
+	if !f.ValidID(in.Position) || !in.Period.Valid() || in.Category == "" || in.Purpose == "" {
+		return nil, f.Fail(400, "M03_INVALID_INPUT", "请核对岗位、任期、人员类别与用途")
+	}
+	visible, e := u.positionReadable(ctx, in.Enterprise)
+	if e != nil {
+		return nil, e
+	}
+	if !visible {
+		return nil, f.Fail(403, "ACCESS_DENIED", "当前权限无法采用岗位安排")
+	}
+	pos, e := u.Load(ctx, d.Position, in.Position, "")
+	if e != nil {
+		return nil, e
+	}
+	if len(pos.Records) == 0 {
+		return nil, f.Fail(404, "POSITION_UNAVAILABLE", "所选岗位不可用")
+	}
+	if locked {
+		previous := pos.Source
+		departments := d.QuotaEligibility(pos).Departments()
+		if e = u.LockQuotaDepartments(ctx, departments); e != nil {
+			return nil, e
+		}
+		if e = u.LockQuotaTarget(ctx, in.Position); e != nil {
+			return nil, e
+		}
+		pos, e = u.Load(ctx, d.Position, in.Position, "")
+		if e != nil {
+			return nil, e
+		}
+		if pos.Source != previous {
+			return nil, f.Fail(409, "M03_SOURCE_CHANGED", "所选岗位已变化，请重新核对")
+		}
+	}
+	evidence, e := u.PositionUsage(ctx, in.Position)
+	if e != nil {
+		return nil, e
+	}
+	settings, e := u.replenishmentRows(ctx, in.Position)
+	if e != nil {
+		return nil, e
+	}
+	rules := app.QuotaPolicies(in.Enterprise, rows)
+	var boundaries []string
+	for _, r := range rules {
+		if r.Purpose == in.Purpose && r.Category == in.Category {
+			boundaries = append(boundaries, r.From, r.Until)
+		}
+	}
+	for _, r := range pos.Records {
+		boundaries = append(boundaries, r.Date, r.End)
+	}
+	for _, c := range evidence.Coverage {
+		boundaries = append(boundaries, c.From, c.Until)
+	}
+	for _, r := range settings {
+		boundaries = append(boundaries, r.Date)
+	}
+	var out []s.AssignmentSegment
+	used := false
+	for _, p := range in.Split(boundaries) {
+		rule, e := d.ApplicablePolicy(rules, in.Enterprise, in.Category, in.Purpose, p.From)
+		if e != nil {
+			return nil, e
+		}
+		targets := in
+		targets.Period = p
+		var source, revision, name, coverage, intake string
+		if rule.Mode == "PositionManaged" {
+			if rule.Consumes {
+				return nil, f.Fail(409, "M03_POSITION_COUNTED_UNAVAILABLE", p.From+" 起需要按岗位占编")
+			}
+			i := d.At(pos, p.From)
+			if i < 0 || !pos.Records[i].Active() {
+				return nil, f.Fail(409, "POSITION_PERIOD", p.From+" 起没有有效岗位")
+			}
+			record := pos.Records[i]
+			targets.Department, targets.Job = record.Data["departmentId"], record.Data["jobId"]
+			if p.From == in.From && (in.Department != "" && targets.Department != in.Department || in.Job != "" && targets.Job != in.Job) {
+				return nil, f.Fail(409, "POSITION_TARGET_CHANGED", "岗位归属与拟任安排不符")
+			}
+			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: "M04"}
+			if _, e = evidence.PlanUse(intent, rules, d.StaffingQuota{}, d.QuotaEligibility(pos)); e != nil {
+				return nil, e
+			}
+			for _, c := range evidence.Coverage {
+				if c.Owner == "M04" && c.Contains(p.From) {
+					coverage = c.Version
+				}
+			}
+			intake = coverage
+			if r := replenishmentAt(settings, p.From); r != nil {
+				intake = r.Revision
+				if r.Paused {
+					return nil, f.Fail(409, "POSITION_PAUSED", p.From+" 起岗位暂停补员")
+				}
+			}
+			source, revision, name = pos.Source, record.Revision, record.Data["name"]
+			used = true
+		} else if !f.ValidID(targets.Department) || !f.ValidID(targets.Job) {
+			return nil, f.Fail(409, "M03_JOB_ARRANGEMENT", p.From+" 起按职务办理，请选部门与职务")
+		}
+		pieces, e := app.AssignmentTargets(ctx, u, targets, head, rule.Version, locked)
+		if e != nil {
+			return nil, e
+		}
+		for _, piece := range pieces {
+			piece.DepartmentID, piece.JobID = targets.Department, targets.Job
+			if source != "" {
+				piece.Position = in.Position
+				piece.PositionSource = source
+				piece.PositionRevision = revision
+				piece.PositionName = name
+				piece.ReplenishmentSource = intake
+				piece.CoverageSource = coverage
+			}
+			out = append(out, piece)
+		}
+	}
+	if !used {
+		return nil, f.Fail(409, "M03_POLICY_CONFLICT", "仅按职务不能指定岗位")
+	}
+	return out, nil
+}
+
+func (u *unit) replenishmentRows(ctx context.Context, id string) ([]s.ReplenishmentRecord, error) {
+	rows, e := u.tx.Query(ctx, `SELECT business_date::text,paused,reason,revision,recorded_at FROM staffing.position_replenishment WHERE instance_id=$1 AND position_id=$2 ORDER BY business_date`, u.store.Instance, id)
+	if e != nil {
+		return nil, e
+	}
+	return pgx.CollectRows(rows, pgx.RowToStructByPos[s.ReplenishmentRecord])
+}
+func replenishmentAt(rows []s.ReplenishmentRecord, day string) *s.ReplenishmentRecord {
+	for i := len(rows) - 1; i >= 0; i-- {
+		if rows[i].Date <= day {
+			return &rows[i]
+		}
+	}
+	return nil
+}
+
+func (u *unit) positionEmploymentScope(ctx context.Context, id string, term f.Period, person, employer, permission string) (bool, error) {
+	pos, e := u.Load(ctx, d.Position, id, "")
+	if e != nil {
+		return false, e
+	}
+	for _, r := range pos.Records {
+		if !r.Active() || !term.Overlaps(f.Period{From: r.Date, Until: r.End}) {
+			continue
+		}
+		ok, e := u.employmentAllowed(ctx, permission, person, employer, r.Data["departmentId"], employer == "")
+		if e != nil || !ok {
+			return false, e
+		}
+	}
+	return pos.ID != "", nil
+}

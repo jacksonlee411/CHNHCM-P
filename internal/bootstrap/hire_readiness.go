@@ -36,6 +36,21 @@ func ruleGet(run func(*http.Request, string) (any, error)) http.HandlerFunc {
 }
 func (a *API) readinessRoutes(mux *http.ServeMux) {
 	hires := a.Runtime.Hires
+	mux.HandleFunc("POST /api/v1/positions/{id}/replenishment/submissions/{sub}/resolve", ruleBody(func(r *http.Request, _ struct{}) (any, error) {
+		return a.Runtime.Replenishments.ResolveReplenishment(r.Context(), credentials(r), r.PathValue("id"), r.PathValue("sub"))
+	}))
+	mux.HandleFunc("GET /api/v1/positions/{id}/replenishment", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "businessAt")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := a.Runtime.Replenishments.Replenishment(r.Context(), credentials(r), r.PathValue("id"), q.Get("businessAt"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/positions/{id}/replenishment", ruleBody(func(r *http.Request, in staff.ReplenishmentChange) (any, error) {
+		return a.Runtime.Replenishments.ChangeReplenishment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
 	mux.HandleFunc("GET /api/v1/assignments/context", func(w http.ResponseWriter, r *http.Request) {
 		if _, e := queryValues(r); e != nil {
 			writeError(w, e)
@@ -138,6 +153,9 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 		result, e := hires.HireDecisions(r.Context(), credentials(r), r.PathValue("id"), ref)
 		respond(w, 200, result, e)
 	})
+	mux.HandleFunc("POST /api/v1/hires/arrangement", ruleBody(func(r *http.Request, in h.ArrangementQuery) (any, error) {
+		return hires.HireArrangement(r.Context(), credentials(r), in)
+	}))
 	mux.HandleFunc("POST /api/v1/hires/targets", ruleBody(func(r *http.Request, in h.TargetSearch) (any, error) {
 		return hires.HireTargets(r.Context(), credentials(r), in)
 	}))

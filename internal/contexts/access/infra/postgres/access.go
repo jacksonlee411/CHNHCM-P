@@ -685,5 +685,16 @@ func initializeDepartmentGrants(ctx context.Context, tx pgx.Tx, instance, enterp
 			}
 		}
 	}
+	if newPrincipal && !readOnly {
+		var intake bool
+		if e := tx.QueryRow(ctx, "SELECT to_regclass('staffing.position_intake') IS NOT NULL").Scan(&intake); e != nil {
+			return e
+		}
+		if intake {
+			if _, e := tx.Exec(ctx, "INSERT INTO access.subject_grant VALUES($1,$2,$3,'enterprise',$4,'replenishment.maintain',ARRAY['rule'],ARRAY['rule'])", instance, foundation.NewID(), subject, enterprise); e != nil {
+				return e
+			}
+		}
+	}
 	return initializeStaffingGrants(ctx, tx, instance, enterprise, subject, readOnly, newPrincipal)
 }

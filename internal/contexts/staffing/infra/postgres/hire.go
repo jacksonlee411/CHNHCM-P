@@ -51,7 +51,7 @@ func hireTerm(in h.Hire) (f.Period, error) {
 	if err != nil {
 		return term, err
 	}
-	if in.Grade != "" && !f.ValidID(in.Grade) || !f.ValidID(in.Person) || !f.ValidID(in.Employer) || !f.ValidID(in.Department) || !f.ValidID(in.Job) || in.BU != "" && !f.ValidID(in.BU) || in.Location != "" && !f.ValidID(in.Location) || utf8.RuneCountInString(in.Notice) > 1000 {
+	if in.Grade != "" && !f.ValidID(in.Grade) || !f.ValidID(in.Person) || !f.ValidID(in.Employer) || in.Position == "" && (!f.ValidID(in.Department) || !f.ValidID(in.Job)) || in.Position != "" && (!f.ValidID(in.Position) || in.Department != "" && !f.ValidID(in.Department) || in.Job != "" && !f.ValidID(in.Job)) || in.BU != "" && !f.ValidID(in.BU) || in.Location != "" && !f.ValidID(in.Location) || utf8.RuneCountInString(in.Notice) > 1000 {
 		return term, f.Fail(400, "HIRE_INPUT", "请核对人员、任用说明、日期和拟任安排")
 	}
 	return term, nil
@@ -62,6 +62,7 @@ type hirePlan struct {
 	prepared               h.Preparation
 	term                   f.Period
 	employment, assignment string
+	department, job        string
 	previousAction         string
 	location               *h.LocationRef
 }
@@ -76,8 +77,12 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	if in.TrialStart != "" && (!f.ValidDate(in.TrialStart) || !term.Includes(in.TrialStart)) {
 		return plan, f.Fail(400, "PROBATION_START", "实际试用开始日须在工作关系期间内")
 	}
-	if err = u.requireEmployment(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, in.Department); err != nil {
-		return plan, err
+	allowed, e := u.employmentAllowed(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, in.Department, in.Position != "")
+	if e != nil {
+		return plan, e
+	}
+	if !allowed {
+		return plan, f.Fail(403, "HIRE_DENIED", "当前权限不允许此办理")
 	}
 	if err = lock(ctx, u.tx, false, "staffing.hire.person", u.store.Instance, in.Person); err != nil {
 		return plan, err
@@ -86,7 +91,7 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		return plan, err
 	}
 	plan.employment, plan.assignment = f.NewID(), f.NewID()
-	request := h.FirstRequest{Appointment: h.Appointment{Person: in.Person, Employer: in.Employer, Department: in.Department, Job: in.Job, BU: in.BU, Location: in.Location, Period: term},
+	request := h.FirstRequest{Appointment: h.Appointment{Person: in.Person, Employer: in.Employer, Department: in.Department, Job: in.Job, Position: in.Position, BU: in.BU, Location: in.Location, Period: term},
 		Basis: h.Basis{Decision: in.Decision, Notice: strings.TrimSpace(in.Notice)}, Relationship: h.Choice{Complete: true, Eligible: []string{plan.employment}},
 		Assignments: map[string]h.Choice{plan.employment: {Complete: true, Eligible: []string{plan.assignment}}}}
 	legal := org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}
@@ -94,7 +99,7 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	if err != nil {
 		return plan, err
 	}
-	job := staff.AssignmentCheck{Period: term, Category: "Employee", Purpose: "hire", Enterprise: ent.ID, Department: in.Department, Job: in.Job}
+	job := staff.AssignmentCheck{Period: term, Category: "Employee", Purpose: "hire", Enterprise: ent.ID, Department: in.Department, Job: in.Job, Position: in.Position}
 	if in.Expected != nil {
 		if !reflect.DeepEqual(in.Decision, in.Expected.Decision) {
 			return plan, appointmentConflict()
@@ -108,6 +113,29 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		job.Adopted = in.Expected.Segments
 	}
 	ctx = dbtx.With(ctx, u.tx)
+	var positionSegments []staff.AssignmentSegment
+	if in.Position != "" {
+		ok, e := u.positionEmploymentScope(ctx, in.Position, term, in.Person, in.Employer, hirePermission(in.RehireOf))
+		if e != nil {
+			return plan, e
+		}
+		if !ok {
+			return plan, f.Fail(403, "HIRE_DENIED", "所选安排超出获权范围")
+		}
+		positionSegments, err = u.store.CheckAssignment(ctx, u.credentials, job)
+		if err != nil {
+			return plan, err
+		}
+		for _, seg := range positionSegments {
+			if err = u.requireEmployment(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, seg.DepartmentID); err != nil {
+				return plan, err
+			}
+		}
+		in.Department, in.Job = positionSegments[0].DepartmentID, positionSegments[0].JobID
+		request.Appointment.Department, request.Appointment.Job = in.Department, in.Job
+		request.Appointment.Segments = positionSegments
+	}
+	plan.department, plan.job = in.Department, in.Job
 	plan.prepared, err = h.PrepareFirst(ctx, h.Sources{Rules: u.store, People: u.store.HirePeople, Decisions: u}, u.credentials, request)
 	if err != nil {
 		return plan, err
@@ -160,12 +188,27 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 			return plan, f.Fail(409, "HIRE_CONTEXT_UNAVAILABLE", "所选业务单元或地点不可用于拟任期间")
 		}
 	}
-	adopt.Segments, err = u.store.CheckAssignment(ctx, u.credentials, job)
+	adopt.Segments = positionSegments
+	if adopt.Segments == nil {
+		adopt.Segments, err = u.store.CheckAssignment(ctx, u.credentials, job)
+	}
 	if err != nil {
 		return plan, err
 	}
 	if in.Grade != "" {
-		adopt.Grade, err = u.gradeForJob(ctx, in.Job, in.Grade, term)
+		for i, seg := range adopt.Segments {
+			id := seg.JobID
+			if id == "" {
+				id = in.Job
+			}
+			grade, e := u.gradeForJob(ctx, id, in.Grade, seg.Period)
+			if e != nil {
+				return plan, e
+			}
+			if i == 0 {
+				adopt.Grade = grade
+			}
+		}
 		if err != nil {
 			return plan, err
 		}
@@ -188,6 +231,7 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		if err != nil {
 			return "", err
 		}
+		in.Department, in.Job = p.department, p.job
 		if len(p.Missing) > 0 {
 			return "", f.Fail(409, "HIRE_IDENTITY", "请先补齐入职所需资料")
 		}
@@ -210,6 +254,9 @@ func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, i
 		}
 		revision := f.NewID()
 		adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
+		if in.Position != "" {
+			adoption["plannedPosition"] = in.Position
+		}
 		if in.TrialStart != "" {
 			adoption["trialStart"] = in.TrialStart
 		}
@@ -251,8 +298,12 @@ func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hi
 		return err
 	}
 	for _, segment := range segments {
+		dept, job := in.Department, in.Job
+		if segment.DepartmentID != "" {
+			dept, job = segment.DepartmentID, segment.JobID
+		}
 		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,adoption,location_ref,department_id,job_id,grade_ref)
-                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8,$9,$10,$11)`, instance, item.assignment, version, segment.From, segment.Until, in.Location, segment, location, in.Department, in.Job, grade)
+                VALUES($1,$2,$3,daterange($4::date,NULLIF($5,'')::date,'[)'),NULLIF($6,'')::uuid,$7,$8,$9,$10,$11)`, instance, item.assignment, version, segment.From, segment.Until, in.Location, segment, location, dept, job, grade)
 		if err != nil {
 			return err
 		}
@@ -357,7 +408,7 @@ func (st *Store) HireTargets(ctx context.Context, c f.Credentials, in h.TargetSe
 	if err != nil {
 		return nil, err
 	}
-	field := map[string]string{"bu": "buId", "location": "locationId", "department": "departmentId", "job": "jobId", "grade": "gradeId"}[in.Kind]
+	field := map[string]string{"bu": "buId", "location": "locationId", "department": "departmentId", "job": "jobId", "grade": "gradeId", "position": "positionId"}[in.Kind]
 	if field == "" || field == "gradeId" && !f.ValidID(in.Job) || !f.ValidID(in.Person) || in.Employer != "" && !f.ValidID(in.Employer) || in.Department != "" && !f.ValidID(in.Department) || in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 {
 		return nil, f.Fail(400, "HIRE_INPUT", "拟任目标查询无效")
 	}
@@ -378,6 +429,9 @@ func (st *Store) HireTargets(ctx context.Context, c f.Credentials, in h.TargetSe
 			if e := u.checkRehireOrigin(ctx, in.Person, in.Arrival, in.RehireOf); e != nil {
 				return e
 			}
+		}
+		if field == "positionId" {
+			return u.hirePositionTargets(ctx, term, in, hirePermission(in.RehireOf), &items)
 		}
 		return u.arrangementTargets(ctx, term, in, field, hirePermission(in.RehireOf), &items)
 	})

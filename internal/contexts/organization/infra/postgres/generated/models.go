@@ -46,6 +46,11 @@ type AccessEmploymentHistoryFixture struct {
 	PrincipalID string
 }
 
+type AccessEmploymentLifecycleFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessEmploymentLocationFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1151,6 +1156,14 @@ type StaffingAssignment struct {
 	Period       pgtype.Range[pgtype.Date]
 }
 
+type StaffingAssignmentExit struct {
+	InstanceID    string
+	AssignmentID  string
+	ActionID      string
+	Revision      string
+	FirstInactive pgtype.Date
+}
+
 type StaffingAssignmentHead struct {
 	InstanceID   string
 	AssignmentID string
@@ -1269,6 +1282,14 @@ type StaffingEmploymentActionRevision struct {
 	RecordedAt       pgtype.Timestamptz
 	Adoption         []byte
 	Operation        string
+}
+
+type StaffingEmploymentExit struct {
+	InstanceID    string
+	EmploymentID  string
+	ActionID      string
+	Revision      string
+	FirstInactive pgtype.Date
 }
 
 type StaffingEmploymentOutbox struct {
@@ -1768,6 +1789,16 @@ type StaffingJobTerminal struct {
 	ClosedAt     pgtype.Timestamptz
 }
 
+type StaffingManagerAgreement struct {
+	InstanceID        string
+	AssignmentID      string
+	ActionID          string
+	Revision          string
+	ManagerAssignment *string
+	Purpose           string
+	Period            pgtype.Range[pgtype.Date]
+}
+
 type StaffingPosition struct {
 	InstanceID   string
 	EnterpriseID string
@@ -1828,6 +1859,13 @@ type StaffingPositionHierarchyVersion struct {
 	SubmissionID string
 }
 
+type StaffingPositionIntake struct {
+	InstanceID string
+	PositionID string
+	SourceID   string
+	Period     pgtype.Range[pgtype.Date]
+}
+
 type StaffingPositionOutbox struct {
 	InstanceID string
 	ObjectID   string
@@ -1846,6 +1884,18 @@ type StaffingPositionRead struct {
 	Active       bool
 	Fact         []byte
 	ValidPeriod  pgtype.Range[pgtype.Date]
+}
+
+type StaffingPositionReplenishment struct {
+	InstanceID   string
+	PositionID   string
+	Revision     string
+	Actor        string
+	BusinessDate pgtype.Date
+	Paused       bool
+	Reason       string
+	Digest       string
+	RecordedAt   pgtype.Timestamptz
 }
 
 type StaffingPositionRevision struct {
