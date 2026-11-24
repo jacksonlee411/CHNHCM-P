@@ -129,6 +129,7 @@ function AssignmentDetail({
   if (listed) personQuery.set('returnTo', 'assignments');
   personQuery.set('assignment', assignment);
   const path = person.path + '/' + id;
+  const secondary=new URLSearchParams(params);if(date||data?.businessAt)secondary.set("assignmentDay",date||data!.businessAt);
   const legacy = new URLSearchParams(params);
   legacy.set('view', 'history');
   return (
@@ -155,9 +156,10 @@ function AssignmentDetail({
           data && (
             <Stack direction="row" flexWrap="wrap" gap={1}>
               <span ref={setActionSlot} />
-              <Button component={Link} to={path + '/employment?' + legacy}>
+              {(data.canAddSecondary||data.canAddParallel)&&<Button component={Link} to={path+'/assignments/'+assignment+'/additional?'+secondary}>新增兼岗</Button>}
+              {data.primaryJob&&<Button component={Link} to={path + '/employment?' + legacy}>
                 办理历史
-              </Button>
+              </Button>}
             </Stack>
           )
         }
@@ -178,6 +180,7 @@ function AssignmentDetail({
               {data.employerName} · {data.relationship === 'Employee' ? '员工关系' : data.relationship} · 自{' '}
               {data.from} 起
             </Typography>
+            {data.relationshipPrimary && !data.primaryJob && <Typography>本工作关系主任职</Typography>}
             <Tabs value="job" aria-label="人员详情" variant="scrollable">
               {profile.data && (
                 <Tab component={Link} to={path + '?' + personQuery} value="person" label="个人资料" />
