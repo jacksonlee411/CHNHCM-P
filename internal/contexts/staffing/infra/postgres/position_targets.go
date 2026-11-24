@@ -100,7 +100,7 @@ func (u *unit) arrangementMode(ctx context.Context, term f.Period, person, emplo
 		if e != nil {
 			return e
 		}
-		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained, assignmentOwner(purpose), prior)
+		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained, assignmentOwner(purpose), prior, false)
 		if e != nil {
 			return e
 		}
@@ -166,40 +166,24 @@ func (u *unit) positionTargets(ctx context.Context, term f.Period, in h.TargetSe
 					return e
 				}
 			}
-			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained, assignmentOwner(purpose), prior)
+			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained, assignmentOwner(purpose), prior, purpose == "transfer")
 			if e != nil {
 				var fault *f.Fault
 				if !errors.As(e, &fault) || fault.Status >= 500 {
 					return e
 				}
-				if fault.Code != "M03_QUOTA_SHORTAGE" || purpose != "transfer" {
-					continue
-				}
-				// Keep an authorized full position selectable. The arrangement
-				// check on selection explains the dated deficit before saving.
-				obj, readErr := u.Load(ctx, d.Position, id, "")
-				if readErr != nil {
-					return readErr
-				}
-				for _, record := range obj.Records {
-					if record.Active() && f.ValidDate(record.Date) && (f.Period{From: record.Date, Until: record.End}).Overlaps(term) && strings.Contains(strings.ToLower(record.Data["name"]), strings.ToLower(in.Search)) {
-						seg = []s.AssignmentSegment{{Position: id, PositionName: record.Data["name"]}}
-						break
-					}
-				}
-				if len(seg) == 0 {
-					continue
-				}
-			}
-			if skip > 0 {
-				skip--
 				continue
 			}
 			for _, p := range seg {
-				if p.Position != "" {
-					*out = append(*out, org.EligibleEntity{ID: id, Name: p.PositionName})
-					break
+				if p.Position == "" || !strings.Contains(strings.ToLower(p.PositionName), strings.ToLower(strings.TrimSpace(in.Search))) {
+					continue
 				}
+				if skip > 0 {
+					skip--
+				} else {
+					*out = append(*out, org.EligibleEntity{ID: id, Name: p.PositionName})
+				}
+				break
 			}
 			if len(*out) == 20 {
 				return nil
