@@ -323,11 +323,12 @@ def execute(args):
         enterprise = config.get("enterprise", dict(EnterpriseCode="LOCAL", EnterpriseName="本地学习企业"))
         temporary = runtime.temporary_profile()
         declaration = dict(Instance=config["instance"], **enterprise, Login=login, Password=password,
-                           ReadOnly=read_only, DevelopmentFixture=temporary, NewAccountFixturesOnly=not enable_hire)
-        if temporary or enable_hire:
-            declaration.update(PersonnelProfile="reader" if read_only else "registrar", PersonalProfileFixture=True)
-            if config.get("first_hire") and not read_only:
-                declaration.update(HireIdentityFixture=True, EmploymentFixture=True)
+                           ReadOnly=read_only, DevelopmentFixture=temporary)
+        if temporary:
+            declaration["NewAccountFixture"] = dict(PersonnelProfile="reader" if read_only else "registrar",
+                                                    FirstHire=bool(config.get("first_hire") and not read_only))
+        if enable_hire and not read_only:
+            declaration.update(HireIdentityFixture=True, EmploymentFixture=True)
         if config.get("first_hire") and not read_only:
             declaration["FirstHireRule"] = dict(Version="T02-employee-1", From="2027-04-01")
         run([str(BIN / "upgrader"), "-mode", "initialize"], env, declaration)

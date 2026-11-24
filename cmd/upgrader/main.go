@@ -72,7 +72,7 @@ func main() {
 		d := json.NewDecoder(os.Stdin)
 		d.DisallowUnknownFields()
 		if err = d.Decode(&in); err == nil {
-			if in.DevelopmentFixture && (os.Getenv("CHNHCM_INSECURE_LOCAL") != "1" || os.Getenv("CHNHCM_TEMPORARY") != "true") {
+			if (in.DevelopmentFixture || in.NewAccountFixture != nil) && (os.Getenv("CHNHCM_INSECURE_LOCAL") != "1" || os.Getenv("CHNHCM_TEMPORARY") != "true") {
 				fail("development fixtures require an explicit temporary local instance")
 			}
 			err = bootstrap.Initialize(ctx, p, in)

@@ -230,8 +230,7 @@ func TestAccess027Public38Upgrade(t *testing.T) {
 	// Replaying the local startup declarations must preserve that zero.
 	must(t, bootstrap.Initialize(ctx, pool, bootstrap.InitInput{
 		Instance: inst, EnterpriseCode: "PUBLIC", EnterpriseName: "公共升级验收", Login: "empty", Password: password,
-		NewAccountFixturesOnly: true, DevelopmentFixture: true, PersonnelProfile: "registrar",
-		PersonalProfileFixture: true, HireIdentityFixture: true, EmploymentFixture: true,
+		DevelopmentFixture: true, NewAccountFixture: &bootstrap.NewAccountFixture{PersonnelProfile: "registrar", FirstHire: true},
 	}))
 	must(t, pool.QueryRow(ctx, `SELECT NOT EXISTS(SELECT FROM access.person_grant)
 		AND NOT EXISTS(SELECT FROM access.employment_grant)

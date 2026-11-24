@@ -262,9 +262,14 @@ type FirstHireRuleInput struct {
 	Version, From, Until string
 }
 
+// NewAccountFixture declares local samples only at the principal's creation.
+type NewAccountFixture struct {
+	PersonnelProfile string
+	FirstHire        bool
+}
+
 type InitInput struct {
-	// Routine startup may seed a new synthetic account, never an existing one.
-	NewAccountFixturesOnly                                           bool
+	NewAccountFixture                                                *NewAccountFixture
 	EmploymentFixture                                                bool
 	FirstHireRule                                                    *FirstHireRuleInput
 	HireIdentityFixture                                              bool
@@ -296,10 +301,15 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 			return e
 		}
 	}
-	if created || !in.NewAccountFixturesOnly {
-		if e = initializeAccountFixtures(ctx, tx, in, subject); e != nil {
-			return e
+	if sample := in.NewAccountFixture; created && sample != nil {
+		in.PersonnelProfile = sample.PersonnelProfile
+		in.PersonalProfileFixture = sample.PersonnelProfile != ""
+		if sample.FirstHire {
+			in.EmploymentFixture, in.HireIdentityFixture = true, true
 		}
+	}
+	if e = initializeAccountFixtures(ctx, tx, in, subject); e != nil {
+		return e
 	}
 	if e = orgdb.InitializeEnterpriseMaintenance(ctx, tx, in.Instance, access.OperatorSnapshot{SubjectID: subject, Login: &in.Login, Kind: "local_account", IdentityEvidence: "controlled_initialization"}); e != nil {
 		return e
