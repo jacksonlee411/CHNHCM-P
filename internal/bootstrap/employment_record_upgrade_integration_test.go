@@ -122,10 +122,22 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	_, e = t50.Exec(ctx, `INSERT INTO recruiting.offer_submission(instance_id,actor,submission_id,digest,offer_id,version) VALUES($1,$2,$3,'旧接受回执',$4,$5)`, instance, actor, sub50, offer50, rev50)
 	must(t, e)
 	must(t, t50.Commit(ctx))
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00051" })))
+	before52 := publications()
+	var exchangeRows int
+	must(t, pool.QueryRow(ctx, "SELECT count(*) FROM staffing.transfer_exchange_revision").Scan(&exchangeRows))
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+	if publications() != before52 {
+		t.Fatal("00052 改变原任期来源")
+	}
+	var afterExchangeRows int
+	must(t, pool.QueryRow(ctx, "SELECT count(*) FROM staffing.transfer_exchange_revision").Scan(&afterExchangeRows))
+	if afterExchangeRows != exchangeRows {
+		t.Fatal("00052 改变既有对调数")
+	}
 	var intact bool
 	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM recruiting.offer_head h JOIN recruiting.offer_revision r USING(instance_id,offer_id,version)
        JOIN recruiting.offer_segment s USING(instance_id,offer_id,version) JOIN recruiting.offer_submission j USING(instance_id,offer_id,version)

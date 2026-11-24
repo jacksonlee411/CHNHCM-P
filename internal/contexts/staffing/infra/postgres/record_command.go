@@ -70,6 +70,9 @@ func (e recordEdit) permission(kind string) string {
 }
 
 func (e recordEdit) validate() error {
+	if e.Incumbent != nil && (e.kind != "Transfer" || e.Position == "" || !f.ValidID(e.Incumbent.Assignment) || !f.ValidID(e.Incumbent.Source)) {
+		return f.Fail(400, "SUCCESSION_INPUT", "请核对接替的任职及来源")
+	}
 	if !f.ValidID(e.ExpectedSource) || (e.action == "" && e.ExpectedRevision != "") || (e.action != "" && (!f.ValidID(e.action) || !f.ValidID(e.ExpectedRevision) || e.Insert)) ||
 		(e.operation != "Delete" && !f.ValidDate(e.BusinessDate)) || (e.operation == "Delete" && (e.action == "" || e.BusinessDate != "")) ||
 		((e.operation == "Redate" || e.operation == "Delete") && (e.Position != "" || e.Department != "" || e.Job != "" || e.Notice != "" || e.Requires != nil)) ||
@@ -179,6 +182,25 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 			}
 		}
 	}
+	if target.Transfer != nil && target.Transfer.Succession != nil {
+		prior := target.Transfer.Succession
+		incumbent, err := u.assignmentIdentity(ctx, prior.Assignment)
+		if err != nil {
+			return out, err
+		}
+		for _, seg := range target.Transfer.Segments {
+			if seg.Handover == "" {
+				continue
+			}
+			allowed, err := u.canArrangeSuccession(ctx, a, incumbent, seg.DepartmentID)
+			if err != nil {
+				return out, err
+			}
+			if !allowed {
+				return out, f.Fail(403, "SUCCESSION_DENIED", "当前权限不能更改原交接安排")
+			}
+		}
+	}
 	if target.Evidence.Transfer != nil {
 		for _, dept := range []string{target.Evidence.Transfer.BeforeDepartment, target.Evidence.Transfer.After.Department} {
 			for _, grant := range []string{"read", permit} {
@@ -236,7 +258,18 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 		if edit.action == "" && strings.TrimSpace(edit.Notice) == "" {
 			return out, f.Fail(400, "TRANSFER_NOTICE", "请填写调动依据")
 		}
-		if edit.action != "" && target.Transfer != nil && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
+		if target.Transfer != nil && target.Transfer.Succession != nil {
+			if e = u.requireEmployment(ctx, "position.handover", a.Person, a.Employer, scope.Department); e != nil {
+				return out, e
+			}
+		}
+		if edit.Incumbent != nil {
+			if e = u.requireEmployment(ctx, "position.handover", a.Person, a.Employer, scope.Department); e != nil {
+				return out, e
+			}
+		}
+		sameIncumbent := target.Transfer != nil && (target.Transfer.Succession == nil && edit.Incumbent == nil || target.Transfer.Succession != nil && edit.Incumbent != nil && target.Transfer.Succession.IncumbentRef == *edit.Incumbent)
+		if sameIncumbent && edit.action != "" && target.Transfer != nil && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
 			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) {
 			return out, f.Fail(409, "TRANSFER_UNCHANGED", "任职安排和调动依据均未改变")
 		}
@@ -245,6 +278,9 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 			target.Notice = strings.TrimSpace(edit.Notice)
 		}
 		target.Transfer = &h.JobTransfer{Department: edit.Department, Job: edit.Job, Position: edit.Position}
+		if edit.Incumbent != nil {
+			target.Transfer.Succession = &h.Succession{IncumbentRef: *edit.Incumbent}
+		}
 		if edit.action == "" && scope.Adoption.Position == edit.Position && (edit.Department == "" || scope.Department == edit.Department) && (edit.Job == "" || scope.Job == edit.Job) {
 			return out, f.Fail(409, "TRANSFER_UNCHANGED", "任职安排未改变")
 		}
@@ -436,7 +472,15 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 				}
 			}
 			check := staff.AssignmentCheck{Period: span, Enterprise: ent.ID, Category: "Employee", Purpose: "transfer", Department: department, Job: job, Position: next.Position}
-			segs, e := u.checkTransferTarget(ctx, a, check)
+			admit := ctx
+			if next.Succession != nil {
+				next.Succession, e = u.adoptSuccession(ctx, a, r.ID, next.Position, span, next.Succession.IncumbentRef)
+				if e != nil {
+					return e
+				}
+				admit = context.WithValue(ctx, successionContext{}, successionAdmission{*next.Succession, a.Assignment, next.Position})
+			}
+			segs, e := u.checkTransferTarget(admit, a, check)
 			if e != nil {
 				return e
 			}

@@ -21,8 +21,8 @@ type SourceCoverage struct {
 
 type PositionUse struct {
 	UsageSpan
-	Owner, Source, Policy, Effect string
-	Department, Job, Assignment   string
+	Owner, Source, Policy, Effect          string
+	Department, Job, Assignment, Incumbent string
 }
 
 // Managed identifies the explicitly taken-over part of this position's timeline.
@@ -34,8 +34,8 @@ type QuotaUsage struct {
 }
 
 type UsageCount struct {
-	Managed, Known             bool
-	Reserved, Occupied, Exempt int
+	Managed, Known                       bool
+	Reserved, Occupied, Exempt, Handover int
 }
 
 func (u QuotaUsage) coveredBy(owner, day string) bool {
@@ -66,6 +66,14 @@ func (u QuotaUsage) At(day string) UsageCount {
 		case use.Owner == "M05" && use.Effect == "none":
 			// A recruitment segment can adopt an exempt rule without reserving a seat.
 			continue
+		case use.Owner == "M04" && use.Effect == "handover":
+			if slices.ContainsFunc(u.Uses, func(orig PositionUse) bool {
+				return orig.Assignment == use.Incumbent && orig.Owner == "M04" && orig.Effect == "occupied" && orig.Contains(day)
+			}) {
+				c.Handover++
+			} else {
+				c.Occupied++
+			}
 		case use.Owner == "M04" && use.Effect == "occupied":
 			c.Occupied++
 		case use.Owner == "M04" && use.Effect == "exempt":
@@ -137,7 +145,7 @@ func (u QuotaUsage) CheckTightening(before, after StaffingQuota, previous, propo
 		if !c.Known {
 			return usageConflict(day, "岗位用量尚未核齐")
 		}
-		if stop && c.Reserved+c.Occupied+c.Exempt > 0 {
+		if stop && c.Reserved+c.Occupied+c.Exempt+c.Handover > 0 {
 			return usageConflict(day, "仍有预留或任职，无法停用岗位")
 		}
 		if next < old && c.Reserved+c.Occupied > max(0, next) {

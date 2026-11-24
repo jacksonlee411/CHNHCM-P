@@ -224,6 +224,8 @@ export function JobInformation({
     const position = after ? after.position : state?.position;
     const next: JobDraft = {
       mode,
+      handover:after?.succession?true:undefined,
+      incumbent:after?.succession?{...after.succession,departmentName:adoptedPosition?.departmentName??'',jobName:adoptedPosition?.jobName??''}:undefined,
       exchange:evidence?.exchange,
       kind: evidence?.exchange && a ? 'PositionExchange' : successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
       successor,
@@ -315,7 +317,7 @@ export function JobInformation({
       void submit.submit({
         kind: 'transfer',
         action,
-        input: { ...changes, position:record.position?.id, department: record.department?.id, job: record.job?.id, notice: record.notice,previous:reference(record.predecessor) },
+        input: { ...changes, incumbent:record.handover&&record.incumbent?{assignment:record.incumbent.assignment,sourceVersion:record.incumbent.sourceVersion}:undefined, position:record.position?.id, department: record.department?.id, job: record.job?.id, notice: record.notice,previous:reference(record.predecessor) },
       });
   }
   function remove(a: Action) {
@@ -394,7 +396,7 @@ export function JobInformation({
                   </ObjectDetailField>
                   {data.managers.map(fact=><ObjectDetailField key={fact.purpose} label={managerPurposes[fact.purpose]}>{fact.name} · {fact.recordNumber} 号</ObjectDetailField>)}
                   {data.lastActive && <ObjectDetailField label="最后任职日">{data.lastActive}</ObjectDetailField>}
-                  {data.state?.positionName && <ObjectDetailField label="岗位">{data.state.positionName} · {data.state.seats ? "占编" : "免占编"}</ObjectDetailField>}
+                  {data.state?.positionName && <ObjectDetailField label="岗位">{data.state.positionName} · {data.state.handover ? "交接占编" : data.state.seats ? "占编" : "免占编"}</ObjectDetailField>}
                   {data.state && <ObjectDetailField label="个人职级">{data.state.grade?.name ?? '未记载'}</ObjectDetailField>}
                   {data.state && data.probation.status !== 'unrecorded' && (
                     <ObjectDetailField label="试用状态">
@@ -593,6 +595,7 @@ export function OriginalEvidence({
         <ObjectDetailField label="任职安排">{[original.secondary.segments[0]?.departmentName,original.secondary.segments[0]?.jobName].filter(Boolean).join(' · ')}</ObjectDetailField>
         <ObjectDetailField label="所属工作关系">{original.secondary.legal[0]?.entityName}{original.secondary.relationshipPrimary?' · 关系主任职':''}</ObjectDetailField>
       </>}
+      {original.transfer?.after.succession && <ObjectDetailField label="接任交接">{original.transfer.after.succession.name} · {original.transfer.after.succession.from} 起交接，{original.transfer.after.succession.until}{original.transfer.after.succession.continues?' 起占常规名额':' 起结束交接'}</ObjectDetailField>}
       {original.transfer?.beforeDepartmentName && (
         <ObjectDetailField label="调出安排">
           {[original.transfer.beforeDepartmentName, original.transfer.beforeJobName, original.transfer.beforePositionName]
@@ -602,7 +605,7 @@ export function OriginalEvidence({
       )}
       {original.transfer?.after.segments?.[0] && (
         <ObjectDetailField label="调入安排">
-          {[original.transfer.after.segments[0].departmentName, original.transfer.after.segments[0].jobName,original.transfer.after.segments[0].positionName, original.transfer.after.segments[0].position ? (original.transfer.after.segments[0].seats ? '占编' : '免占编') : undefined]
+          {[original.transfer.after.segments[0].departmentName, original.transfer.after.segments[0].jobName,original.transfer.after.segments[0].positionName, original.transfer.after.segments[0].position ? (original.transfer.after.segments[0].handoverSource ? '交接占编' : original.transfer.after.segments[0].seats ? '占编' : '免占编') : undefined]
             .filter(Boolean)
             .join(' · ')}
         </ObjectDetailField>

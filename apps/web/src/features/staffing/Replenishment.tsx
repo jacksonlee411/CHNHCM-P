@@ -18,6 +18,7 @@ export function ReplenishmentLink({id,day,back}:{id:string;day:string;back:strin
   if(!view.data)return null;
   return <ObjectDetailSection title="岗位补员">
     <ObjectDetailField label="补员状态">{view.data.paused?'暂停补员':view.data.covered||view.data.records.some(r=>r.date<=day)?'允许补员':'尚未接管'}</ObjectDetailField>
+    {!!view.data.handoverOccupied&&<><ObjectDetailField label="交接实占">{view.data.handoverOccupied}</ObjectDetailField><ObjectDetailField label="实占合计">{view.data.totalOccupied}</ObjectDetailField></>}
     {view.data.exempt!==undefined&&<ObjectDetailField label="免占编任职">{view.data.exempt}</ObjectDetailField>}
     <Button component={Link} to={paths.position+'/'+id+'/replenishment?'+new URLSearchParams({day,back})}>查看补员安排</Button>
   </ObjectDetailSection>;
@@ -62,7 +63,8 @@ export function PositionReplenishment({session}:{session:Models['Principal']}) {
           {view.data?.quota!==undefined&&<ObjectDetailField label="核定编制">{view.data.quota}</ObjectDetailField>}
           {view.data?.available!==undefined&&<ObjectDetailField label="可用编制">{view.data.available}</ObjectDetailField>}
           {!!view.data?.excess&&<ObjectDetailField label="实占超编">{view.data.excess}</ObjectDetailField>}
-          {view.data?.exempt!==undefined&&<ObjectDetailField label="免占编任职">{view.data.exempt}</ObjectDetailField>}
+          {!!view.data?.handoverOccupied&&<><ObjectDetailField label="交接实占">{view.data.handoverOccupied}</ObjectDetailField><ObjectDetailField label="实占合计">{view.data.totalOccupied}</ObjectDetailField></>}
+    {view.data?.exempt!==undefined&&<ObjectDetailField label="免占编任职">{view.data.exempt}</ObjectDetailField>}
           {view.data?.reserved!==undefined&&<ObjectDetailField label="招聘预留">{view.data.reserved}</ObjectDetailField>}
           {view.data?.occupied!==undefined&&<ObjectDetailField label="常规实占">{view.data.occupied}</ObjectDetailField>}
           {view.data?.canChange&&(editing?<><ObjectTextField autoFocus required label="补员原因" value={reason} onChange={e=>setReason(e.target.value)}/>

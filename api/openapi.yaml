@@ -12696,6 +12696,23 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/succession-options:
+    post:
+      operationId: assignmentSuccessionOptions
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/SuccessionSearch'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/SuccessionOption'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/{id}/exchange-options:
     post:
       operationId: exchangeAssignmentOptions
@@ -13228,6 +13245,45 @@ components:
         department: {type: string, format: uuid}
         job: {type: string, format: uuid}
         position: {type: string, format: uuid}
+    IncumbentRef:
+      type: object
+      required: [assignment, sourceVersion]
+      additionalProperties: false
+      properties:
+        assignment: {type: string, format: uuid}
+        sourceVersion: {type: string, format: uuid}
+    SuccessionSearch:
+      type: object
+      required: [position, businessDate, page]
+      properties:
+        position: {type: string, format: uuid}
+        businessDate: {type: string, format: date}
+        ref: {type: string, format: uuid}
+        page: {type: integer, minimum: 1}
+    SuccessionOption:
+      type: object
+      required: [assignment, sourceVersion, name, recordNumber, until, departmentName, jobName, continues]
+      properties:
+        continues: {type: boolean}
+        assignment: {type: string, format: uuid}
+        sourceVersion: {type: string, format: uuid}
+        name: {type: string}
+        recordNumber: {type: integer}
+        until: {type: string, format: date}
+        departmentName: {type: string}
+        jobName: {type: string}
+    SuccessionEvidence:
+      type: object
+      required: [assignment, sourceVersion, name, from, until, id, recordNumber, continues]
+      properties:
+        continues: {type: boolean}
+        recordNumber: {type: integer}
+        assignment: {type: string, format: uuid}
+        sourceVersion: {type: string, format: uuid}
+        name: {type: string}
+        from: {type: string, format: date}
+        until: {type: string, format: date}
+        id: {type: string, format: uuid}
     PositionExchangeCommand:
       type: object
       additionalProperties: false
@@ -13273,6 +13329,7 @@ components:
       additionalProperties: false
       required: [expectedSourceVersion]
       properties:
+        incumbent: {$ref: '#/components/schemas/IncumbentRef'}
         previous: {$ref: '#/components/schemas/EmploymentActionRef'}
         expectedSourceVersion: {type: string, format: uuid}
         expectedRevision: {type: string, format: uuid}
@@ -13397,6 +13454,7 @@ components:
         after:
           type: object
           properties:
+            succession: {$ref: '#/components/schemas/SuccessionEvidence'}
             department: {type: string, format: uuid}
             position: {type: string, format: uuid}
             job: {type: string, format: uuid}
@@ -13425,6 +13483,7 @@ components:
       additionalProperties: false
       required: [from, department, job, departmentId, jobId, seats]
       properties:
+        handover: {type: boolean}
         position: {type: string, format: uuid}
         positionName: {type: string}
         grade: {$ref: '#/components/schemas/AssignmentGrade'}
@@ -13536,8 +13595,9 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
       properties:
+        canHandover: {type: boolean}
         lastActive: {type: string, format: date}
         managers: {type: array, items: {$ref: '#/components/schemas/ActualManagerFact'}}
         canSetManager: {type: boolean}
@@ -13572,6 +13632,8 @@ components:
       type: object
       required: [covered, canChange, paused, version, records]
       properties:
+        handoverOccupied: {type: integer}
+        totalOccupied: {type: integer}
         quota: {type: integer}
         available: {type: integer}
         excess: {type: integer}
@@ -14705,6 +14767,7 @@ components:
       - position
       - seats
       properties:
+        handoverSource: {type: string, format: uuid}
         quotaSource: {type: string, format: uuid}
         quotaRevision: {type: string, format: uuid}
         recruitingCoverage: {type: string, format: uuid}
