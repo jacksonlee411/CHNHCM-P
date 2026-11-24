@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -128,7 +129,8 @@ func TestExchangeValidatesEachDestinationAndFutureCommitment(t *testing.T) {
 		after.Uses = append(after.Uses, PositionUse{UsageSpan: UsageSpan{From: "2027-05-01", Until: "2027-05-15"}, Owner: "M04", Source: "incoming", Policy: "exempt", Effect: "exempt", Assignment: "second"},
 			PositionUse{UsageSpan: UsageSpan{From: "2027-05-15"}, Owner: "M04", Source: "incoming", Policy: "counted", Effect: "occupied", Assignment: "second"})
 		e := after.CheckExchange(before, quota, "first", "second")
-		if e == nil || !strings.Contains(e.Error(), "2027-05-15 起缺 1 编") {
+		var fault *foundation.Fault
+		if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" || !strings.Contains(fault.Message, "2027-05-15 起缺 1 编") {
 			t.Fatal(third, e)
 		}
 	}
