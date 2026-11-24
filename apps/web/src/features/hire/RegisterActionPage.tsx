@@ -6,7 +6,7 @@ import { ObjectForm, RecordBackButton, RecordControl } from '@chnhcm/ui';
 import { usePageTitle } from '../../shared/navigation';
 import * as person from '../personnel/api';
 import { EmployeeHire, employment } from './HirePage';
-import { actionLabel } from './AssignmentRecordForm';
+import { actionLabel, relationAction } from './AssignmentRecordForm';
 import { JobInformation, OriginalEvidence } from './JobInformation';
 import { registerPath } from './EmploymentRegister';
 
@@ -109,7 +109,10 @@ export function RegisterActionPage({
         {a && (
           <>
             <Typography component="h1" variant="h5">
-              {actionLabel(a)} · {a.recordNumber} 号{a.primaryJob ? '主岗' : '兼岗'}
+              {actionLabel(a)} ·{' '}
+              {relationAction(a.kind)
+                ? '工作关系'
+                : a.recordNumber + ' 号' + (a.primaryJob ? '主岗' : '兼岗')}
             </Typography>
             {cancel && overview.data && !current?.canCancel && (
               <Alert severity="info">当前不可撤销这笔办理。</Alert>

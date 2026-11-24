@@ -35,7 +35,7 @@ func validRegisterQuery(q h.RegisterQuery) bool {
 		}
 	}
 	return (q.BusinessTo == "" || q.BusinessFrom <= q.BusinessTo) && (q.RecordedTo == "" || q.RecordedFrom <= q.RecordedTo) &&
-		slices.Contains([]string{"", "Hire", "DataChange", "Transfer", "AdditionalAssignment", "ParallelEmployment"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
+		slices.Contains([]string{"", "Hire", "DataChange", "Transfer", "AdditionalAssignment", "ParallelEmployment", "ProbationStart", "ConfirmEmployment"}, q.Kind) && slices.Contains([]string{"", "effective", "future", "cancelled", "deleted"}, q.Status) &&
 		slices.Contains([]string{"", "recordedAt", "-recordedAt", "businessDate", "-businessDate"}, q.Sort) &&
 		q.Page >= 1 && q.Page <= 1000000 && slices.Contains([]int{20, 50, 100}, q.PageSize)
 }
@@ -94,65 +94,116 @@ func (s *Store) ListRegister(ctx context.Context, c f.Credentials, q h.RegisterQ
 		var ids []string
 		today := u.now.In(f.Shanghai).Format(time.DateOnly)
 		for _, r := range candidates {
-			type side struct {
-				id, name  string
-				direction string
-			}
-			sides := []side{{r.Department, r.DepartmentName, ""}}
-			if r.Kind == "Transfer" {
-				sides = []side{{r.FromDepartment, r.FromDepartmentName, "from"}, {r.ToDepartment, r.ToDepartmentName, "to"}}
-			}
-			r.Department, r.DepartmentName, r.FromDepartment, r.FromDepartmentName, r.ToDepartment, r.ToDepartmentName = "", "", "", "", "", ""
-			granted, showOperator := false, false
-			for _, side := range sides {
-				if side.id == "" {
+			// Relation rows have one canonical business ID even when the operator can
+			// follow that decision through more than one authorized assignment.
+			if h.RelationAction(r.Kind) {
+				a, e := u.action(ctx, r.ID)
+				if e != nil {
+					return e
+				}
+				scoped, visible, e := u.relationVisibleAssignment(ctx, a, "register.read")
+				if e != nil {
+					return e
+				}
+				if !visible {
 					continue
 				}
-				visible := func(action string, fields ...string) (bool, error) {
-					return u.employmentAllowed(ctx, action, r.Person, r.employer, side.id, false, fields...)
-				}
-				entry, e := visible("register.read")
+				r.Relation, e = u.relationshipSummary(ctx, a, scoped, false)
 				if e != nil {
 					return e
 				}
-				read, e := visible("read")
+
+				r.Assignment, r.RecordNumber, r.Source = scoped.Assignment, scoped.RecordNumber, scoped.SourceVersion
+				_, r.CanHistory, e = u.relationVisibleAssignment(ctx, a, "history")
 				if e != nil {
 					return e
 				}
-				if !entry || !read {
+				showOperator, e := u.employmentAllowed(ctx, "register.read", r.Person, r.employer, scoped.Department, false, "operator")
+				if e != nil {
+					return e
+				}
+				if !showOperator {
+					r.Operator, r.actor = "", ""
+				}
+				e = u.tx.QueryRow(ctx, `SELECT coalesce(adoption#>>'{probation,department}',''),coalesce(adoption#>>'{probation,departmentName}','') FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3`, s.Instance, r.ID, r.Revision).Scan(&r.Department, &r.DepartmentName)
+				if e != nil {
+					return e
+				}
+				if r.Department != "" {
+					read, e := u.employmentAllowed(ctx, "read", r.Person, r.employer, r.Department, false)
+					if e != nil {
+						return e
+					}
+					field, e := u.employmentAllowed(ctx, "register.read", r.Person, r.employer, r.Department, false, "department")
+					if e != nil {
+						return e
+					}
+					if !read || !field {
+						r.Department, r.DepartmentName = "", ""
+					}
+				}
+			} else {
+
+				type side struct {
+					id, name  string
+					direction string
+				}
+				sides := []side{{r.Department, r.DepartmentName, ""}}
+				if r.Kind == "Transfer" {
+					sides = []side{{r.FromDepartment, r.FromDepartmentName, "from"}, {r.ToDepartment, r.ToDepartmentName, "to"}}
+				}
+				r.Department, r.DepartmentName, r.FromDepartment, r.FromDepartmentName, r.ToDepartment, r.ToDepartmentName = "", "", "", "", "", ""
+				granted, showOperator := false, false
+				for _, side := range sides {
+					if side.id == "" {
+						continue
+					}
+					visible := func(action string, fields ...string) (bool, error) {
+						return u.employmentAllowed(ctx, action, r.Person, r.employer, side.id, false, fields...)
+					}
+					entry, e := visible("register.read")
+					if e != nil {
+						return e
+					}
+					read, e := visible("read")
+					if e != nil {
+						return e
+					}
+					if !entry || !read {
+						continue
+					}
+					granted = true
+					history, e := visible("history")
+					if e != nil {
+						return e
+					}
+					r.CanHistory = r.CanHistory || history
+					operator, e := visible("register.read", "operator")
+					if e != nil {
+						return e
+					}
+					showOperator = showOperator || operator
+					dept, e := visible("register.read", "department")
+					if e != nil {
+						return e
+					}
+					if !dept {
+						continue
+					}
+					r.Department, r.DepartmentName = side.id, side.name
+					switch side.direction {
+					case "from":
+						r.FromDepartment, r.FromDepartmentName = side.id, side.name
+					case "to":
+						r.ToDepartment, r.ToDepartmentName = side.id, side.name
+					}
+				}
+				if !granted {
 					continue
 				}
-				granted = true
-				history, e := visible("history")
-				if e != nil {
-					return e
+				if !showOperator {
+					r.Operator, r.actor = "", ""
 				}
-				r.CanHistory = r.CanHistory || history
-				operator, e := visible("register.read", "operator")
-				if e != nil {
-					return e
-				}
-				showOperator = showOperator || operator
-				dept, e := visible("register.read", "department")
-				if e != nil {
-					return e
-				}
-				if !dept {
-					continue
-				}
-				r.Department, r.DepartmentName = side.id, side.name
-				switch side.direction {
-				case "from":
-					r.FromDepartment, r.FromDepartmentName = side.id, side.name
-				case "to":
-					r.ToDepartment, r.ToDepartmentName = side.id, side.name
-				}
-			}
-			if !granted {
-				continue
-			}
-			if !showOperator {
-				r.Operator, r.actor = "", ""
 			}
 			r.Status = "effective"
 			if r.removed {

@@ -5146,6 +5146,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/probation-departments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["probationDepartments"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/trial-start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["startRelationshipProbation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/confirm-employment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["confirmEmployment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/transfer-options": {
         parameters: {
             query?: never;
@@ -5316,6 +5364,54 @@ export interface components {
             insert?: boolean;
             requires?: components["schemas"]["EmploymentRequiredFact"];
         };
+        EmploymentRelationSummary: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            until?: string;
+            employerName: string;
+            terms: {
+                /** Format: uuid */
+                assignment: string;
+                recordNumber: number;
+                /** Format: date */
+                from: string;
+            }[];
+        };
+        ProbationCommand: {
+            /** Format: date */
+            businessDate: string;
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            notice: string;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            afterAction?: string;
+            /** Format: uuid */
+            afterRevision?: string;
+        };
+        ProbationState: {
+            /** @enum {string} */
+            status: "unrecorded" | "probation" | "confirmed";
+            /** Format: date */
+            start?: string;
+            /** Format: date */
+            confirmed?: string;
+        };
+        ProbationEvidence: {
+            /** Format: date */
+            start: string;
+            /** @enum {string} */
+            attribution: "relationship" | "notice" | "relationship-primary" | "primary-unavailable" | "same-day-order-undetermined" | "preceding-transfer";
+            /** Format: uuid */
+            department?: string;
+            departmentName?: string;
+            /** Format: uuid */
+            afterAction?: string;
+            /** Format: uuid */
+            afterRevision?: string;
+        };
         AdditionalAssignmentInput: {
             /** Format: date */
             from: string;
@@ -5416,6 +5512,7 @@ export interface components {
             seats: number;
         };
         EmploymentRegisterRow: {
+            relation?: components["schemas"]["EmploymentRelationSummary"];
             /** Format: uuid */
             id: string;
             /** Format: uuid */
@@ -5433,7 +5530,7 @@ export interface components {
             name: string;
             number: string;
             /** @enum {string} */
-            kind: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment";
+            kind: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment";
             /** @enum {string} */
             status: "effective" | "future" | "cancelled" | "deleted";
             /** Format: date */
@@ -5563,6 +5660,9 @@ export interface components {
             actions: components["schemas"]["EmploymentAction"][];
             canChangeLocation: boolean;
             canTransfer: boolean;
+            canStartProbation: boolean;
+            canConfirm: boolean;
+            probation: components["schemas"]["ProbationState"];
             canAddSecondary: boolean;
             canAddParallel: boolean;
             relationshipPrimary: boolean;
@@ -5600,7 +5700,11 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            relation?: components["schemas"]["EmploymentRelationSummary"];
             departmentName?: string;
+            probation?: components["schemas"]["ProbationEvidence"];
+            /** Format: date */
+            trialStart?: string;
             secondary?: components["schemas"]["SecondaryAssignmentEvidence"];
             transfer?: components["schemas"]["EmploymentTransferEvidence"];
             requires?: components["schemas"]["EmploymentRequiredFact"];
@@ -5684,6 +5788,8 @@ export interface components {
             segments: components["schemas"]["AssignmentSegment"][];
         };
         HireInput: {
+            /** Format: date */
+            trialStart?: string;
             decision?: components["schemas"]["DecisionRef"];
             /** Format: uuid */
             person: string;
@@ -23094,7 +23200,7 @@ export interface operations {
                 businessTo?: string;
                 recordedFrom?: string;
                 recordedTo?: string;
-                kind?: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment";
+                kind?: "Hire" | "DataChange" | "Transfer" | "AdditionalAssignment" | "ParallelEmployment" | "ProbationStart" | "ConfirmEmployment";
                 status?: "effective" | "future" | "cancelled" | "deleted";
                 sort?: "recordedAt" | "-recordedAt" | "businessDate" | "-businessDate";
                 page?: number;
@@ -23456,6 +23562,119 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["AdditionalAssignmentInput"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    probationDepartments: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentLocationSearch"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    startRelationshipProbation: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProbationCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    confirmEmployment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProbationCommand"];
             };
         };
         responses: {

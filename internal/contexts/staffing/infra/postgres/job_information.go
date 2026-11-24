@@ -138,6 +138,24 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		} else if !errors.Is(e, pgx.ErrNoRows) {
 			return e
 		}
+		if out.Probation, e = u.probationAt(ctx, a, version, day); e != nil {
+			return e
+		}
+		if !a.Cancelled && version == a.SourceVersion && out.State != nil {
+			if out.Probation.Start == "" {
+				out.CanStartProbation, e = u.employmentAllowed(ctx, "probation.start", a.Person, a.Employer, a.Department, false)
+				if e != nil {
+					return e
+				}
+			}
+			if out.Probation.Start != "" && out.Probation.Confirmed == "" {
+				out.CanConfirm, e = u.employmentAllowed(ctx, "probation.confirm", a.Person, a.Employer, "", true)
+				if e != nil {
+					return e
+				}
+			}
+		}
+
 		e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment_primary WHERE instance_id=$1 AND layer='assignment' AND owner_id=$2 AND target_id=$3 AND period @> $4::date)`, st.Instance, a.Employment, id, day).Scan(&out.RelationshipPrimary)
 		if e != nil {
 			return e
@@ -160,7 +178,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 				return e
 			}
 		}
-		rows, e := u.tx.Query(ctx, assignmentActionAtSourceSQL+" WHERE a.instance_id=$1 AND a.assignment_id=$2 ORDER BY r.business_date DESC,a.recorded_at DESC,a.id", st.Instance, id, version)
+		rows, e := u.tx.Query(ctx, assignmentActionSelect+` JOIN staffing.assignment_publication h ON h.instance_id=a.instance_id AND h.assignment_id=$2 AND h.version=$3 `+assignmentRevisionJoin+" WHERE a.instance_id=$1 ORDER BY r.business_date DESC,a.recorded_at DESC,a.id", st.Instance, id, version)
 		if e != nil {
 			return e
 		}
@@ -169,6 +187,13 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			return e
 		}
 		for _, item := range items {
+			if h.RelationAction(item.Kind) {
+				item.Assignment, item.RecordNumber, item.PrimaryJob, item.Department, item.Job = id, a.RecordNumber, a.PrimaryJob, a.Department, a.Job
+				item.CanHistory = history
+				out.Actions = append(out.Actions, item)
+				continue
+			}
+
 			read, e := u.actionDisclosure(ctx, item, false)
 			if e != nil {
 				return e

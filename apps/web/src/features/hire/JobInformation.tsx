@@ -14,10 +14,17 @@ import { useDraftExit } from '../../shared/dated/useDraftExit';
 import { useRead, message } from '../personnel/api';
 import { useRuleSubmission } from '../readiness/useRuleSubmission';
 
-import { AssignmentRecordForm, actionLabel, draftChanged, type JobDraft } from './AssignmentRecordForm';
+import {
+  AssignmentRecordForm,
+  actionLabel,
+  availableRecordTypes,
+  draftChanged,
+  type JobDraft,
+} from './AssignmentRecordForm';
 
 type Action = Models['EmploymentAction'];
 type Command =
+  | { kind: 'probation'; confirm: boolean; input: Models['ProbationCommand'] }
   | { kind: 'location'; action?: string; input: Models['EmploymentLocationChange'] }
   | { kind: 'transfer' | 'redate' | 'delete'; action?: string; input: Models['EmploymentRecordMaintenance'] };
 
@@ -71,9 +78,7 @@ export function JobInformation({
           ? draft.kind === 'Transfer'
             ? a?.canCorrectTransfer
             : a?.canCorrectLocation
-          : draft.kind === 'Transfer'
-            ? data.canTransfer
-            : data.canChangeLocation;
+          : availableRecordTypes(data).includes(draft.kind);
     if (!allowed) {
       setDraft(undefined);
       setOpened(undefined);
@@ -99,6 +104,12 @@ export function JobInformation({
   const submit = useRuleSubmission<Command, Models['HireReceipt']>('assignment-location', session, {
     send: async (cmd, key) => {
       const headers = { ...header, 'Idempotency-Key': key };
+      if (cmd.kind === 'probation') {
+        const params = { path: { id: assignment }, header: headers };
+        return cmd.confirm
+          ? unwrap(await api.POST('/api/v1/assignments/{id}/confirm-employment', { params, body: cmd.input }))
+          : unwrap(await api.POST('/api/v1/assignments/{id}/trial-start', { params, body: cmd.input }));
+      }
       if (cmd.kind !== 'location') {
         const input = cmd.input;
         if (cmd.kind === 'transfer' && !cmd.action)
@@ -191,7 +202,7 @@ export function JobInformation({
     const job = after?.job ?? state?.jobId;
     const next: JobDraft = {
       mode,
-      kind: a?.kind === 'Transfer' || (!a && !data.canChangeLocation) ? 'Transfer' : 'DataChange',
+      kind: a ? (a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
       action: a,
       day: a?.businessDate ?? day,
       source: data.sourceVersion,
@@ -215,6 +226,21 @@ export function JobInformation({
     };
     if (record.mode === 'redate') {
       void submit.submit({ kind: 'redate', action, input });
+      return;
+    }
+    if (record.kind === 'ConfirmEmployment' || record.kind === 'ProbationStart') {
+      void submit.submit({
+        kind: 'probation',
+        confirm: record.kind === 'ConfirmEmployment',
+        input: {
+          businessDate: record.day,
+          expectedSourceVersion: record.source,
+          notice: record.notice,
+          department: record.occurrence?.id,
+          afterAction: record.predecessor?.id,
+          afterRevision: record.predecessor?.revision,
+        },
+      });
       return;
     }
     const changes = { ...input, insert: record.mode === 'insert' || undefined, requires: record.requires };
@@ -295,6 +321,11 @@ export function JobInformation({
                           .join(' · ')
                       : '该日无有效任职'}
                   </ObjectDetailField>
+                  {data.state && data.probation.status !== 'unrecorded' && (
+                    <ObjectDetailField label="试用状态">
+                      {data.probation.status === 'confirmed' ? '已转正' : '试用中'}
+                    </ObjectDetailField>
+                  )}
                   <Typography component="h3">当日办理</Typography>
                   <Stack direction="row" flexWrap="wrap" gap={1}>
                     {at.map((a) =>
@@ -314,7 +345,7 @@ export function JobInformation({
                     )}
                     {!at.length && <Typography>没有当日办理</Typography>}
                   </Stack>
-                  {(data.canChangeLocation || data.canTransfer) &&
+                  {availableRecordTypes(data).length > 0 &&
                     actionSlot &&
                     createPortal(
                       <Stack direction="row" gap={1} flexWrap="wrap">
@@ -409,6 +440,41 @@ export function OriginalEvidence({
     <>
       <Typography component="h3">{actionLabel(original.action)}原件</Typography>
       <ObjectDetailField label="生效日期">{original.action.businessDate}</ObjectDetailField>
+      {original.relation && (
+        <>
+          <ObjectDetailField label="所属工作关系">
+            {original.relation.employerName} · {original.relation.from}
+            {original.relation.until && ' 至 ' + original.relation.until + '（不含）'}
+          </ObjectDetailField>
+          {original.relation.terms.length > 0 && (
+            <ObjectDetailField label="相关任职">
+              {original.relation.terms
+                .map((t) => t.recordNumber + ' 号' + (t.recordNumber === 0 ? '主岗' : '兼岗'))
+                .join('、')}
+            </ObjectDetailField>
+          )}
+        </>
+      )}
+      {original.trialStart && (
+        <ObjectDetailField label="实际试用开始日">{original.trialStart}</ObjectDetailField>
+      )}
+      {original.probation && (
+        <>
+          <ObjectDetailField label="实际试用开始日">{original.probation.start}</ObjectDetailField>
+          {original.probation.departmentName && (
+            <ObjectDetailField label="发生部门">{original.probation.departmentName}</ObjectDetailField>
+          )}
+          {['same-day-order-undetermined', 'primary-unavailable'].includes(
+            original.probation.attribution,
+          ) && (
+            <ObjectDetailField label="发生部门">
+              {original.probation.attribution === 'same-day-order-undetermined'
+                ? '未确定 · 同日调动与转正的实际先后未载明'
+                : '未确定 · 缺少当日关系主任职归属'}
+            </ObjectDetailField>
+          )}
+        </>
+      )}
       {original.action.operation === 'Delete' && (
         <ObjectDetailField label="办理状态">已删除</ObjectDetailField>
       )}

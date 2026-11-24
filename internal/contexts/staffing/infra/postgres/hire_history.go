@@ -62,6 +62,22 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 			return e
 		}
 		for _, a := range actions {
+			if h.RelationAction(a.Kind) {
+				scoped, visible, e := u.relationVisibleAssignment(ctx, a, "read")
+				if e != nil {
+					return e
+				}
+				if !visible {
+					continue
+				}
+				_, scoped.CanHistory, e = u.relationVisibleAssignment(ctx, a, "history")
+				if e != nil {
+					return e
+				}
+				out.Actions = append(out.Actions, scoped)
+				continue
+			}
+
 			if h.StartsAssignment(a.Kind) && !a.Cancelled {
 				var seats int
 				var department string
@@ -194,6 +210,18 @@ func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, 
 	if err != nil {
 		return r, digest, err
 	}
+	if h.RelationAction(a.Kind) {
+		scoped, visible, e := u.relationVisibleAssignment(ctx, a, "read")
+		if e != nil {
+			return r, digest, e
+		}
+		if visible {
+			r.Action, r.Revision, r.Assignment, r.Employment = id, revision, scoped.Assignment, a.Employment
+			r.RecordNumber = &scoped.RecordNumber
+		}
+		return r, digest, nil
+	}
+
 	visible, err := u.actionDisclosure(ctx, a, false)
 	if visible.from || visible.to {
 		r.Action, r.Employment, r.Assignment = id, a.Employment, a.Assignment
@@ -303,6 +331,11 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if e != nil {
 			return e
 		}
+		if h.RelationAction(a.Kind) {
+			out, e = u.relationOriginal(ctx, a, revision)
+			return e
+		}
+
 		current, e := u.actionDisclosure(ctx, a, true)
 		if e != nil {
 			return e
