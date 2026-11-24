@@ -25,6 +25,8 @@ const kinds = {
   ParallelEmployment: '并行关系聘任',
   ProbationStart: '试用开始',
   ConfirmEmployment: '转正',
+  GradeRecord:'补录实际职级',
+  Promotion:'晋升',
 } as const;
 const statuses = { effective: '已生效', future: '尚未生效', cancelled: '已撤销', deleted: '已删除' } as const;
 const dates = {

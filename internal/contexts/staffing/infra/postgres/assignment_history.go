@@ -83,6 +83,9 @@ func (u *unit) appendRecordRevision(ctx context.Context, assignment string, r sa
 
 func recordAdoption(r savedRecord) map[string]any {
 	fields := map[string]any{}
+	if r.Evidence.NoticeRef != nil {
+		fields["noticeRef"] = r.Evidence.NoticeRef
+	}
 	if r.Evidence.Promotion != nil {
 		fields["promotion"] = r.Evidence.Promotion
 	}
@@ -157,7 +160,7 @@ type actionDisclosure struct {
 
 func (u *unit) actionDisclosure(ctx context.Context, a h.Action, history bool) (v actionDisclosure, err error) {
 	allowed := func(dept string) (bool, error) {
-		if dept == "" {
+		if dept == "" && a.Kind != "Promotion" {
 			return false, nil
 		}
 		ok, e := u.employmentAllowed(ctx, "read", a.Person, a.Employer, dept, false)

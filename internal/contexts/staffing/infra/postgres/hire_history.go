@@ -12,7 +12,7 @@ import (
 )
 
 const assignmentActionSelect = `SELECT a.id,r.revision,a.kind,r.operation,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,
-coalesce(nullif(r.adoption#>>'{promotion,department}','')::uuid,origin.department_id,t.department_id) AS department,coalesce(origin.job_id,t.job_id) AS job,
+coalesce(r.adoption#>>'{promotion,department}',origin.department_id::text,t.department_id::text) AS department,coalesce(origin.job_id,t.job_id) AS job,
 r.business_date::text,h.version,r.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
 lower(t.period)::text,coalesce(upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),r.adoption->'previous'
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
@@ -131,8 +131,8 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 }
 
 func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, original string, in h.Cancel) (h.Receipt, error) {
-	if in.ExpectedSource != "" || in.Notice != "" {
-		return st.RecordPromotion(ctx, c, "", original, "withdraw", submission, h.PromotionCommand{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.Revision, Reason: in.Reason, Notice: in.Notice})
+	if in.ExpectedSource != "" || in.Notice != "" || in.Basis != nil {
+		return st.RecordPromotion(ctx, c, "", original, "withdraw", submission, h.PromotionCommand{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.Revision, Reason: in.Reason, Notice: in.Notice, Basis: in.Basis})
 	}
 	return st.hireCommand(ctx, c, submission, []any{"CancelHire", original, in}, func(u *unit) (string, error) {
 		if !f.ValidID(original) || !f.ValidID(in.Revision) || strings.TrimSpace(in.Reason) == "" || utf8.RuneCountInString(in.Reason) > 1000 {
@@ -415,14 +415,39 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if e != nil {
 			return e
 		}
+		if out.Promotion != nil {
+			out.DepartmentName = out.Promotion.DepartmentName
+		}
+		if out.Promotion != nil {
+			out.DepartmentName = out.Promotion.DepartmentName
+		}
 		if out.Transfer != nil {
 			transfer := out.Transfer
+			if out.Promotion != nil {
+				disclosure.from = true
+				disclosure.to, e = u.employmentAllowed(ctx, "history", a.Person, a.Employer, transfer.After.Department, false)
+				if e != nil {
+					return e
+				}
+				read, e := u.employmentAllowed(ctx, "read", a.Person, a.Employer, transfer.After.Department, false)
+				if e != nil {
+					return e
+				}
+				disclosure.to = disclosure.to && read
+			}
 			if !disclosure.to {
 				a.Department, a.Job = transfer.BeforeDepartment, transfer.BeforeJob
 				out.DepartmentName = transfer.BeforeDepartmentName
 				transfer.After = h.JobTransfer{}
+				transfer.AfterGrade = nil
+				if out.Promotion != nil {
+					out.Promotion.After.Job = ""
+					out.Promotion.After.JobRevision = ""
+					out.Promotion.After.JobSource = ""
+				}
 			}
 			if !disclosure.from {
+				transfer.BeforeGrade = nil
 				transfer.BeforeDepartment, transfer.BeforeJob, transfer.BeforeDepartmentName, transfer.BeforeJobName = "", "", "", ""
 			}
 		}
@@ -447,6 +472,33 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 			if !visible {
 				out.Requires = nil
+			}
+		}
+		if ref := out.NoticeRef; ref != nil && ref.Action != a.ID {
+			prior, e := u.action(ctx, ref.Action)
+			if e != nil {
+				return e
+			}
+			ok, e := u.revisionVisible(ctx, prior, ref.Revision)
+			if e != nil {
+				return e
+			}
+			if !ok {
+				out.NoticeRef = nil
+			}
+		}
+		if out.Promotion != nil && out.Promotion.WithdrawalBasis != nil {
+			ref := out.Promotion.WithdrawalBasis
+			prior, e := u.action(ctx, ref.Action)
+			if e != nil {
+				return e
+			}
+			ok, e := u.revisionVisible(ctx, prior, ref.Revision)
+			if e != nil {
+				return e
+			}
+			if !ok {
+				out.Promotion.WithdrawalBasis = nil
 			}
 		}
 		if ref := out.Previous; ref != nil {

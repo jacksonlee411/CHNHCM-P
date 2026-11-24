@@ -4,9 +4,10 @@ import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
 
-export type TargetKind = 'department' | 'job' | 'employer' | 'bu' | 'location';
+export type TargetKind = 'department' | 'job' | 'employer' | 'bu' | 'location' | 'grade';
 export type Option = { id: string; name: string };
 export const labels = {
+  grade:'个人职级',
   department: '部门',
   job: '职务',
   employer: '用人单位',
@@ -28,13 +29,14 @@ export function Target({
   session: Models['Principal'];
 }) {
   const [search, setSearch] = useState('');
-  const enabled = !!draft.arrival;
+  const enabled = !!draft.arrival && (kind !== 'grade' || !!draft.job);
   const key = [
     kind,
     search,
     draft.arrival,
     draft.lastDay,
     draft.department,
+    draft.job,
     draft.employer,
     draft.bu,
     draft.location,
@@ -60,11 +62,11 @@ export function Target({
     return unwrap(
       await api.POST('/api/v1/hires/targets', {
         params,
-        body: { ...query, kind, employer: draft.employer || undefined },
+        body: { ...query, kind, job:kind==='grade'?draft.job:undefined, employer: draft.employer || undefined },
       }),
     );
   });
-  const required = kind !== 'bu' && kind !== 'location';
+  const required = kind !== 'bu' && kind !== 'location' && kind !== 'grade';
   return (
     <ObjectDetailField label={labels[kind]} inputId={'hire-' + kind} required={required}>
       <Autocomplete

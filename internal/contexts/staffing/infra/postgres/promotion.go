@@ -54,14 +54,14 @@ func (st *Store) RecordPromotion(ctx context.Context, c f.Credentials, id, actio
 func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.PromotionCommand) (out employmentResult, err error) {
 	notice, reason := strings.TrimSpace(in.Notice), strings.TrimSpace(in.Reason)
 	withdraw := kind == "withdraw"
-	if !in.Previous.Valid() || !in.Precedes.Valid() || !f.ValidID(in.ExpectedSource) || action != "" && (!f.ValidID(action) || !f.ValidID(in.ExpectedRevision)) ||
+	if !in.Basis.Valid() || !withdraw && in.Basis != nil || !in.Previous.Valid() || !in.Precedes.Valid() || !f.ValidID(in.ExpectedSource) || action != "" && (!f.ValidID(action) || !f.ValidID(in.ExpectedRevision)) ||
 		action == "" && in.ExpectedRevision != "" || !withdraw && (!f.ValidDate(in.BusinessDate) || !f.ValidID(in.Grade)) ||
 		(in.Job != "") != (in.Department != "") || in.Job != "" && (!f.ValidID(in.Job) || !f.ValidID(in.Department)) ||
 		in.TransferNotice != "" && kind != "pair" || kind == "pair" && in.Job == "" ||
 		kind == "grade" && (in.Job != "" || in.Precedes != nil) || utf8.RuneCountInString(notice) > 1000 || utf8.RuneCountInString(reason) > 1000 || utf8.RuneCountInString(in.TransferNotice) > 1000 {
 		return out, f.Fail(400, "PROMOTION_INPUT", "请核对任期、生效日期、职级与依据")
 	}
-	if withdraw && (action == "" || reason == "" && notice == "" || in.Grade != "" || in.BusinessDate != "" || in.Job != "" || in.Previous != nil || in.Precedes != nil) {
+	if withdraw && (action == "" || reason == "" && notice == "" && in.Basis == nil || in.Grade != "" || in.BusinessDate != "" || in.Job != "" || in.Previous != nil || in.Precedes != nil) {
 		return out, f.Fail(400, "PROMOTION_WITHDRAW", "请引用原通知或简述误录原因")
 	}
 	var a h.Action
@@ -161,6 +161,21 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 		target.Operation = "Withdraw"
 		target.Removed = true
 		ev := *target.Evidence.Promotion
+		ev.PriorSource = a.SourceVersion
+		if in.Basis != nil {
+			if e = u.validatePreceding(ctx, a, day, in.Basis); e != nil {
+				return out, e
+			}
+			original, e := u.action(ctx, in.Basis.Action)
+			if e != nil {
+				return out, e
+			}
+			if original.Notice == "" {
+				return out, f.Fail(409, "PROMOTION_BASIS", "所选办理缺少可引用通知")
+			}
+			ev.WithdrawalBasis = in.Basis
+			notice = original.Notice
+		}
 		ev.Withdrawal = reason
 		if ev.Withdrawal == "" {
 			ev.Withdrawal = notice
@@ -178,6 +193,9 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 		return out, f.Fail(400, "PROMOTION_NOTICE", "请填写原任用依据")
 	}
 	if notice != "" {
+		if old.ID == "" || old.Notice != notice {
+			target.Evidence.NoticeRef = &h.ActionRef{Action: target.ID, Revision: target.Revision}
+		}
 		target.Notice = notice
 	}
 	if reason == "" {
@@ -252,6 +270,10 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 			companion.Day = day
 			companion.ID = f.NewID()
 			companion.Revision = f.NewID()
+			companion.Evidence.NoticeRef = target.Evidence.NoticeRef
+			if strings.TrimSpace(in.TransferNotice) != "" {
+				companion.Evidence.NoticeRef = &h.ActionRef{Action: companion.ID, Revision: companion.Revision}
+			}
 			companion.Transfer = transfer
 			companion.Previous = &h.ActionRef{Action: target.ID, Revision: target.Revision}
 			pair = companion.ID

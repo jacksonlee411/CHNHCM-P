@@ -12796,6 +12796,8 @@ components:
       additionalProperties: false
       required: [after, department, departmentName, reason]
       properties:
+        priorSource: {type: string, format: uuid}
+        withdrawalBasis: {$ref: '#/components/schemas/EmploymentActionRef'}
         before: {$ref: '#/components/schemas/AssignmentGrade'}
         after: {$ref: '#/components/schemas/AssignmentGrade'}
         department: {type: string, format: uuid}
@@ -13099,8 +13101,9 @@ components:
       additionalProperties: false
       required: [person, kind, arrival, page]
       properties:
+        job: {type: string, format: uuid}
         person: {type: string, format: uuid}
-        kind: {type: string, enum: [department, job, bu, location]}
+        kind: {type: string, enum: [department, job, bu, location, grade]}
         arrival: {type: string, format: date}
         lastDay: {type: string, format: date}
         employer: {type: string, format: uuid}
@@ -13125,6 +13128,7 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        noticeRef: {$ref: '#/components/schemas/EmploymentActionRef'}
         promotion: {$ref: '#/components/schemas/PromotionEvidence'}
         previous: {$ref: '#/components/schemas/EmploymentActionRef'}
         relation: {$ref: '#/components/schemas/EmploymentRelationSummary'}
@@ -13227,6 +13231,7 @@ components:
       - legal
       - segments
       properties:
+        grade: {$ref: '#/components/schemas/AssignmentGrade'}
         decision: {$ref: '#/components/schemas/DecisionRef'}
         identity:
           $ref: '#/components/schemas/HireIdentity'
@@ -13250,6 +13255,7 @@ components:
       - job
       - arrival
       properties:
+        grade: {type: string, format: uuid}
         trialStart: {type: string, format: date}
         decision: {$ref: '#/components/schemas/DecisionRef'}
         person:
@@ -13326,6 +13332,7 @@ components:
       required:
       - revision
       properties:
+        basis: {$ref: '#/components/schemas/EmploymentActionRef'}
         expectedSourceVersion: {type: string, format: uuid}
         notice: {type: string}
         revision:

@@ -5482,6 +5482,9 @@ export interface components {
             precedes?: components["schemas"]["EmploymentActionRef"];
         };
         PromotionEvidence: {
+            /** Format: uuid */
+            priorSource?: string;
+            withdrawalBasis?: components["schemas"]["EmploymentActionRef"];
             before?: components["schemas"]["AssignmentGrade"];
             after: components["schemas"]["AssignmentGrade"];
             /** Format: uuid */
@@ -5828,9 +5831,11 @@ export interface components {
         };
         HireTargetSearch: {
             /** Format: uuid */
+            job?: string;
+            /** Format: uuid */
             person: string;
             /** @enum {string} */
-            kind: "department" | "job" | "bu" | "location";
+            kind: "department" | "job" | "bu" | "location" | "grade";
             /** Format: date */
             arrival: string;
             /** Format: date */
@@ -5859,6 +5864,7 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            noticeRef?: components["schemas"]["EmploymentActionRef"];
             promotion?: components["schemas"]["PromotionEvidence"];
             previous?: components["schemas"]["EmploymentActionRef"];
             relation?: components["schemas"]["EmploymentRelationSummary"];
@@ -5942,6 +5948,7 @@ export interface components {
             rows: components["schemas"]["DecisionRow"][];
         };
         HireAdoption: {
+            grade?: components["schemas"]["AssignmentGrade"];
             decision?: components["schemas"]["DecisionRef"];
             identity: components["schemas"]["HireIdentity"];
             rule: string;
@@ -5949,6 +5956,8 @@ export interface components {
             segments: components["schemas"]["AssignmentSegment"][];
         };
         HireInput: {
+            /** Format: uuid */
+            grade?: string;
             /** Format: date */
             trialStart?: string;
             decision?: components["schemas"]["DecisionRef"];
@@ -5992,6 +6001,7 @@ export interface components {
             recordNumber?: number;
         };
         HireCancel: {
+            basis?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
             expectedSourceVersion?: string;
             notice?: string;

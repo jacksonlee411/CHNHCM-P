@@ -469,6 +469,27 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 				ev := *r.Evidence.Promotion
 				ev.Before = change.Before.Grade
 				ev.Department, ev.DepartmentName = change.Before.Department, change.Before.Adoption.DepartmentName
+				if other := change.Alternate; other != nil {
+					if other.Job != change.Before.Job {
+						for _, v := range []struct{ job, grade string }{{other.Job, ev.Before.ID}, {change.Before.Job, ev.After.ID}} {
+							if _, e := u.gradeForJob(ctx, v.job, v.grade, oneDay(r.Day)); e != nil {
+								return nil, f.Fail(409, "PROMOTION_ORDER", "请核对晋升与调动的先后，确认当时适用的任职资格")
+							}
+						}
+					}
+					if change.Before.Department != other.Department {
+						for _, right := range []string{"read", "promotion", permit} {
+							ok, e := u.employmentAllowed(ctx, right, a.Person, a.Employer, "", false)
+							if e != nil {
+								return nil, e
+							}
+							if !ok {
+								return nil, f.Fail(409, "PROMOTION_ORDER", "请核对晋升与调动的先后，以确定本次办理范围")
+							}
+						}
+						ev.Department, ev.DepartmentName = "", "未确定"
+					}
+				}
 				r.Evidence.Promotion = &ev
 			}
 			if r.Requires != nil {
