@@ -97,6 +97,9 @@ type RelationSummary struct {
 	Terms        []TermLink `json:"terms"`
 }
 type Original struct {
+	Manager           *ManagerFact       `json:"manager,omitempty"`
+	Exit              *ExitEvidence      `json:"exit,omitempty"`
+	RehireOf          *ActionRef         `json:"rehireOf,omitempty"`
 	Promotion         *PromotionEvidence `json:"promotion,omitempty"`
 	Previous          *ActionRef         `json:"previous,omitempty"`
 	Relation          *RelationSummary   `json:"relation,omitempty"`

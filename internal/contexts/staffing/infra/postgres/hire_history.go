@@ -14,7 +14,7 @@ import (
 const assignmentActionSelect = `SELECT a.id,r.revision,a.kind,r.operation,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,
 coalesce(nullif(r.adoption#>>'{promotion,department}','')::uuid,origin.department_id,t.department_id) AS department,coalesce(origin.job_id,t.job_id) AS job,
 r.business_date::text,h.version,r.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
-lower(t.period)::text,coalesce(upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),r.adoption->'previous'
+lower(t.period)::text,coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member xm USING(instance_id,assignment_id,action_id,revision) WHERE x.instance_id=t.instance_id AND x.assignment_id=t.id AND xm.version=h.version),upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),r.adoption->'previous'
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
 JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
 `
@@ -396,6 +396,15 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			return e
 		}
 		e = u.tx.QueryRow(ctx, "SELECT adoption FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3", st.Instance, id, a.Revision).Scan(&out)
+		if e == nil && out.Manager != nil && out.Manager.Manager != "" {
+			ok, err := u.discloseManager(ctx, out.Manager, a.BusinessDate)
+			if err != nil {
+				return err
+			}
+			if !ok {
+				out.Manager = nil
+			}
+		}
 		if e == nil && out.Sources != nil && out.Sources.Decision != nil {
 			ref := out.Sources.Decision
 			opt, err := scanDecision(u.tx.QueryRow(ctx, `WITH versions AS (SELECT * FROM staffing.appointment_version WHERE instance_id=$1 AND source=$3 AND version=$4) `+memberSelect, st.Instance, a.Person, ref.Source, ref.Version))

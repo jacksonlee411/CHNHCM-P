@@ -53,4 +53,6 @@ func (p ProbationState) CanRecord(kind, day string, term f.Period) error {
 	}
 	return nil
 }
-func RelationAction(kind string) bool { return kind == "ProbationStart" || kind == "ConfirmEmployment" }
+func RelationAction(kind string) bool {
+	return kind == "ProbationStart" || kind == "ConfirmEmployment" || kind == "Leave"
+}

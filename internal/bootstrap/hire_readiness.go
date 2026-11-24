@@ -79,6 +79,17 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-options", ruleBody(func(r *http.Request, in h.SecondaryOption) (any, error) {
 		return hires.SecondaryOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
+	for _, op := range []struct {
+		path  string
+		leave bool
+	}{{"end", false}, {"leave", true}} {
+		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.ExitCommand) (any, error) {
+			return hires.ExitAssignment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.leave, in)
+		}))
+	}
+	mux.HandleFunc("POST /api/v1/assignments/{id}/managers", ruleBody(func(r *http.Request, in h.ManagerCommand) (any, error) {
+		return hires.SetManager(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
 	mux.HandleFunc("POST /api/v1/assignments/{id}/grade-options", ruleBody(func(r *http.Request, in h.GradeSearch) (any, error) {
 		return hires.GradeOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))

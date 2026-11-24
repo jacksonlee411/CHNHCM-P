@@ -176,7 +176,7 @@ func (st *Store) RecordProbation(ctx context.Context, c f.Credentials, id, key, 
 			return "", assignmentConflict()
 		}
 		var term f.Period
-		if e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,'') FROM staffing.employment WHERE instance_id=$1 AND id=$2`, st.Instance, a.Employment).Scan(&term.From, &term.Until); e != nil {
+		if e = u.tx.QueryRow(ctx, `SELECT lower(e.period)::text,coalesce(x.first_inactive::text,upper(e.period)::text,'') FROM staffing.employment e LEFT JOIN staffing.employment_exit x ON (x.instance_id,x.employment_id)=(e.instance_id,e.id) WHERE e.instance_id=$1 AND e.id=$2`, st.Instance, a.Employment).Scan(&term.From, &term.Until); e != nil {
 			return "", e
 		}
 		prior, e := u.probationAt(ctx, a, a.SourceVersion, in.BusinessDate)
@@ -315,7 +315,7 @@ func (u *unit) relationOriginal(ctx context.Context, a h.Action, revision string
 	if e != nil {
 		return out, e
 	}
-	if ev.Probation.Department != "" {
+	if ev.Probation != nil && ev.Probation.Department != "" {
 		allowed, e := u.employmentAllowed(ctx, "read", a.Person, a.Employer, ev.Probation.Department, false)
 		if e != nil {
 			return out, e
