@@ -314,6 +314,14 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 			out.Appointment = &opt
 		}
+		if e != nil {
+			return e
+		}
+		e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT adoption->>'departmentName' FROM staffing.assignment_segment
+            WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date),'')`, st.Instance, a.Assignment, version, a.BusinessDate).Scan(&out.DepartmentName)
+		if e != nil {
+			return e
+		}
 		a.CanHistory = true
 		out.Revisions = revisions
 		out.Action = a

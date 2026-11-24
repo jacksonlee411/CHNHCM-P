@@ -38,6 +38,8 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	hires := a.Runtime.Hires
 	mux.HandleFunc("GET /api/v1/assignments/context",func(w http.ResponseWriter,r *http.Request){if _,e:=queryValues(r);e!=nil{writeError(w,e);return};allowed,e:=hires.CanListAssignments(r.Context(),credentials(r));respond(w,200,map[string]bool{"canList":allowed},e)})
 	mux.HandleFunc("POST /api/v1/assignments/query",ruleBody(func(r *http.Request,in h.AssignmentQuery)(any,error){return hires.ListAssignments(r.Context(),credentials(r),in)}))
+	mux.HandleFunc("GET /api/v1/employment-actions", a.listEmploymentRegister)
+	mux.HandleFunc("GET /api/v1/employment-actions/context", a.employmentRegisterContext)
 	mux.HandleFunc("GET /api/v1/employment-actions/{id}", func(w http.ResponseWriter, r *http.Request) {
 		q, e := queryValues(r, "adoptedRef")
 		if e != nil {

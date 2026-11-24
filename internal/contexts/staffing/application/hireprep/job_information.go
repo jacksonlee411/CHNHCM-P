@@ -113,6 +113,8 @@ type EmployeeDirectory struct {
 	Keyword     string               `json:"keyword"`
 }
 type JobInformation interface {
+	CanListRegister(context.Context, f.Credentials) (bool, error)
+	ListRegister(context.Context, f.Credentials, RegisterQuery) (RegisterResult, error)
 	CanListAssignments(context.Context, f.Credentials) (bool, error)
 	ListAssignments(context.Context, f.Credentials, AssignmentQuery) (EmployeeDirectory, error)
 	AssignmentInfo(context.Context, f.Credentials, string, string, string) (AssignmentView, error)

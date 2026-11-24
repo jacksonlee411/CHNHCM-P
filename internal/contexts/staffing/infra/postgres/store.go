@@ -34,7 +34,7 @@ type Store struct {
 		CheckHirePerson(context.Context, foundation.Credentials, string) error
 	}
 	HirePurposes      org.LegalPurposes
-	EmploymentAllowed func(context.Context, pgx.Tx, string, string, string, string, string, bool) (bool, error)
+	EmploymentAllowed func(context.Context, pgx.Tx, string, string, string, string, string, bool, ...string) (bool, error)
 	QuotaPolicies     func(context.Context, d.UsageIntent) ([]d.QuotaPolicy, error)
 	Usage             func(context.Context, string, string) (d.QuotaUsage, error)
 	Pool              *pgxpool.Pool

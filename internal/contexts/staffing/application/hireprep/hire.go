@@ -75,6 +75,7 @@ type Cancel struct {
 	Reason   string `json:"reason"`
 }
 type Original struct {
+	DepartmentName    string            `json:"departmentName,omitempty"`
 	Revisions         []Revision        `json:"revisions,omitempty"`
 	LocationChange    *LocationEvidence `json:"locationChange,omitempty"`
 	Appointment       *DecisionOption   `json:"appointment,omitempty"`

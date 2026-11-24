@@ -4970,6 +4970,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/employment-actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listEmploymentRegister"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/employment-actions/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["employmentRegisterContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/employment-actions/{id}": {
         parameters: {
             query?: never;
@@ -5169,6 +5201,61 @@ export interface components {
             location?: components["schemas"]["EmploymentLocationRef"];
             seats: number;
         };
+        EmploymentRegisterRow: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            /** Format: uuid */
+            employment: string;
+            /** Format: uuid */
+            assignment: string;
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            department?: string;
+            name: string;
+            number: string;
+            /** @enum {string} */
+            kind: "Hire" | "DataChange";
+            /** @enum {string} */
+            status: "effective" | "future" | "cancelled";
+            /** Format: date */
+            businessDate: string;
+            /** Format: date-time */
+            recordedAt: string;
+            recordNumber: number;
+            operator?: string;
+            departmentName?: string;
+            canHistory: boolean;
+        };
+        EmploymentRegister: {
+            rows: components["schemas"]["EmploymentRegisterRow"][];
+            departments: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            }[];
+            fromDepartments: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            }[];
+            toDepartments: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            }[];
+            operators: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            }[];
+            total: number;
+            keyword: string;
+        };
         EmployeeAssignmentQuery: {
             /** Format: uuid */
             anchor?: string;
@@ -5289,6 +5376,7 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            departmentName?: string;
             locationChange?: components["schemas"]["EmploymentLocationEvidence"];
             revisions?: components["schemas"]["EmploymentRevision"][];
             appointment?: components["schemas"]["DecisionOption"];
@@ -22745,6 +22833,81 @@ export interface operations {
                 };
             };
             /** @description Rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listEmploymentRegister: {
+        parameters: {
+            query?: {
+                ref?: string;
+                department?: string;
+                fromDepartment?: string;
+                toDepartment?: string;
+                operator?: string;
+                businessFrom?: string;
+                businessTo?: string;
+                recordedFrom?: string;
+                recordedTo?: string;
+                kind?: "Hire" | "DataChange";
+                status?: "effective" | "future" | "cancelled";
+                sort?: "recordedAt" | "-recordedAt" | "businessDate" | "-businessDate";
+                page?: number;
+                pageSize?: 20 | 50 | 100;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized base actions counted once */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmploymentRegister"];
+                };
+            };
+            /** @description Invalid query or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    employmentRegisterContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authority to search across personnel */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        canList: boolean;
+                    };
+                };
+            };
+            /** @description Invalid query or unavailable */
             default: {
                 headers: {
                     [name: string]: unknown;
