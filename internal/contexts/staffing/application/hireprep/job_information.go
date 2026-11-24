@@ -67,6 +67,7 @@ type LocationSearch struct {
 	Page         int    `json:"page"`
 }
 type AssignmentQuery struct {
+	Anchor     string `json:"anchor,omitempty"`
 	BusinessAt string `json:"businessAt,omitempty"`
 	Department string `json:"department,omitempty"`
 	Person     string `json:"person,omitempty"`
@@ -93,7 +94,17 @@ type EmployeeDepartment struct {
 	Name   string `json:"name"`
 	Parent string `json:"parent,omitempty"`
 }
+type AssignmentLink struct {
+	Person     string `json:"person"`
+	Assignment string `json:"assignment"`
+}
+type AssignmentNav struct {
+	Position int             `json:"position"`
+	Previous *AssignmentLink `json:"previous,omitempty"`
+	Next     *AssignmentLink `json:"next,omitempty"`
+}
 type EmployeeDirectory struct {
+	Navigation  *AssignmentNav       `json:"navigation,omitempty"`
 	Rows        []EmployeeRow        `json:"rows"`
 	Departments []EmployeeDepartment `json:"departments"`
 	People      int                  `json:"people"`

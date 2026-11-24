@@ -9,7 +9,7 @@ import { useListReturn, usePageTitle } from '../../shared/navigation';
 import * as person from './api';
 type Row = Models['PersonSummary'];
 export function PersonList({ session }: { session: person.Principal }) {
-  usePageTitle('员工');
+  usePageTitle('人员档案');
   const [params, setParams] = useSearchParams(),
     query = person.parse(params),
     navigate = useNavigate();
@@ -166,7 +166,7 @@ export function PersonList({ session }: { session: person.Principal }) {
         </Alert>
       )}
       {access.data && !access.data.canRead && (
-        <ListControl title="员工" action={button}>
+        <ListControl title="人员档案" action={button}>
           {!button && '没有人员名录权限'}
         </ListControl>
       )}
@@ -220,7 +220,7 @@ export function PersonList({ session }: { session: person.Principal }) {
           }
           toolbar={
             <ListControl
-              title="员工"
+              title="人员档案"
               action={button}
               more={
                 compact && (

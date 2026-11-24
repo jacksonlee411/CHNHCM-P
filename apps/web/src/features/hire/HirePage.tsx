@@ -282,9 +282,9 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
               {details.data.name} · {details.data.number}
             </Typography>
           )}
-          {(error || details.error || overview.error) && (
+          {(error || (mode==='hire' && details.error) || overview.error) && (
             <Alert ref={failure} tabIndex={-1} severity="error">
-              {error || details.error || overview.error}
+              {error || (mode==='hire' && details.error) || overview.error}
             </Alert>
           )}
           {notice && <Alert severity="success">{notice}</Alert>}
@@ -410,9 +410,10 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
               </ObjectForm>
             </Box>
           )}
-          {!mode && details.data && (
+          {!mode && overview.data && (
             <ObjectForm>
               <ObjectDetailSection title="该日任职">
+                {overview.data && !overview.data.actions.some(a=>a.kind==='Hire'&&!a.cancelled) && <Typography>暂无可查看的任职</Typography>}
                 <ObjectTextField
                   type="date"
                   label="查询日期"
@@ -430,9 +431,9 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                 {overview.data?.actions.map((a) => (
                   <Box key={a.id} sx={{ mb: 1 }}>
                     <Typography>
-                      {a.from} ·{' '}
-                      {a.kind === 'CancelHire' ? '撤销入职' : a.cancelled ? '入职（已撤销）' : '入职'} ·{' '}
-                      {a.notice || '任用决定'}
+                      {a.businessDate} ·{' '}
+                      {a.kind === 'DataChange' ? '数据更改' : a.kind === 'CancelHire' ? '撤销入职' : a.cancelled ? '入职（已撤销）' : '入职'} ·{' '}
+                      {a.notice || (a.kind==='DataChange'?'工作地点变更':'任用决定')}
                     </Typography>
                     <Typography variant="body2">
                       雇用记录 {a.recordNumber} 号 · {a.primaryJob ? '主岗' : '兼岗'}
@@ -449,6 +450,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                       <Box sx={{ overflowWrap: 'anywhere' }}>
                         <Typography>工作关系 {a.employment}</Typography>
                         <Typography>首任职 {a.assignment}</Typography>
+                        {source.data.locationChange&&<Typography>工作地点 {source.data.locationChange.before?.name??'—'} → {source.data.locationChange.after.name}</Typography>}
                         {source.data.sources && (
                           <>
                             {source.data.sources.legal.map((v) => (

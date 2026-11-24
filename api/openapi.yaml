@@ -12444,6 +12444,7 @@ components:
       additionalProperties: false
       required: [page, pageSize]
       properties:
+        anchor: {type: string, format: uuid}
         businessAt: {type: string, format: date}
         department: {type: string, format: uuid}
         person: {type: string, format: uuid}
@@ -12467,10 +12468,23 @@ components:
         jobName: {type: string}
         from: {type: string, format: date}
         until: {type: string, format: date}
+    EmployeeAssignmentLink:
+      type: object
+      required: [person, assignment]
+      properties:
+        person: {type: string, format: uuid}
+        assignment: {type: string, format: uuid}
     EmployeeAssignmentDirectory:
       type: object
       required: [rows, departments, people, total, businessAt, keyword]
       properties:
+        navigation:
+          type: object
+          required: [position]
+          properties:
+            position: {type: integer}
+            previous: {$ref: '#/components/schemas/EmployeeAssignmentLink'}
+            next: {$ref: '#/components/schemas/EmployeeAssignmentLink'}
         rows: {type: array, items: {$ref: '#/components/schemas/EmployeeAssignmentRow'}}
         departments:
           type: array

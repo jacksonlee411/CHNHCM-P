@@ -24,7 +24,7 @@ func (s *Store) CanListAssignments(ctx context.Context, c f.Credentials) (yes bo
 }
 
 func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.AssignmentQuery) (out h.EmployeeDirectory, err error) {
-	if q.BusinessAt != "" && !f.ValidDate(q.BusinessAt) || q.Department != "" && !f.ValidID(q.Department) || q.Person != "" && !f.ValidID(q.Person) || q.Page < 1 || q.Page > 1000000 || !slices.Contains([]int{20, 50, 100}, q.PageSize) || !slices.Contains([]string{"", "name", "-name", "number", "-number"}, q.Sort) {
+	if q.Anchor != "" && !f.ValidID(q.Anchor) || q.BusinessAt != "" && !f.ValidDate(q.BusinessAt) || q.Department != "" && !f.ValidID(q.Department) || q.Person != "" && !f.ValidID(q.Person) || q.Page < 1 || q.Page > 1000000 || !slices.Contains([]int{20, 50, 100}, q.PageSize) || !slices.Contains([]string{"", "name", "-name", "number", "-number"}, q.Sort) {
 		return out, f.Fail(400, "EMPLOYEE_QUERY", "请核对日期、部门及页码")
 	}
 	out.Rows = []h.EmployeeRow{}
@@ -173,6 +173,24 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 			return cmp.Or(order, cmp.Compare(a.Person, b.Person), cmp.Compare(a.RecordNumber, b.RecordNumber), cmp.Compare(a.ID, b.ID))
 		})
 		out.People, out.Total = len(count), len(kept)
+		if q.Anchor != "" {
+			for index, row := range kept {
+				if row.ID != q.Anchor {
+					continue
+				}
+				nav := h.AssignmentNav{Position: index + 1}
+				if index > 0 {
+					r := kept[index-1]
+					nav.Previous = &h.AssignmentLink{Person: r.Person, Assignment: r.ID}
+				}
+				if index+1 < len(kept) {
+					r := kept[index+1]
+					nav.Next = &h.AssignmentLink{Person: r.Person, Assignment: r.ID}
+				}
+				out.Navigation = &nav
+				break
+			}
+		}
 		from := min((q.Page-1)*q.PageSize, len(kept))
 		out.Rows = append(out.Rows, kept[from:min(from+q.PageSize, len(kept))]...)
 		return nil

@@ -5170,6 +5170,8 @@ export interface components {
             seats: number;
         };
         EmployeeAssignmentQuery: {
+            /** Format: uuid */
+            anchor?: string;
             /** Format: date */
             businessAt?: string;
             /** Format: uuid */
@@ -5203,7 +5205,18 @@ export interface components {
             /** Format: date */
             until?: string;
         };
+        EmployeeAssignmentLink: {
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            assignment: string;
+        };
         EmployeeAssignmentDirectory: {
+            navigation?: {
+                position: number;
+                previous?: components["schemas"]["EmployeeAssignmentLink"];
+                next?: components["schemas"]["EmployeeAssignmentLink"];
+            };
             rows: components["schemas"]["EmployeeAssignmentRow"][];
             departments: {
                 /** Format: uuid */

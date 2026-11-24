@@ -1,6 +1,7 @@
 import { AssignmentPolicyPage, PurposePage, policyPath } from '../features/readiness/RulesPages';
 import { PersonList } from "../features/personnel/List";
-import { HirePage } from "../features/hire/HirePage";
+import { EmploymentEntry, AssignmentPage } from '../features/hire/AssignmentPage';
+import { EmployeeDirectory, employees } from '../features/hire/EmployeeDirectory';
 import { PersonDetail } from "../features/personnel/Detail";
 import { PersonRecovery } from "../features/personnel/Submission";
 import * as person from "../features/personnel/api";
@@ -53,7 +54,7 @@ const settingsApp: NavigationApp = { id: "settings", label: "设置", sections: 
   { label: "职务配置", items: [{ label: "职类", path: staffingPaths.jobfunction }, { label: "职务系列", path: staffingPaths.jobfamily }, { label: "职务", path: staffingPaths.job }, { label: "职级", path: staffingPaths.grade }, { label: "职级阶梯", path: staffingPaths.gradeladder }, { label: "岗位", path: staffingPaths.position }, { label: "部门编制分配", path: quotaPath }, {label:"任职与占编规则",path:policyPath}] },
   { label: "基础资料", items: [{ label: "国家/地区", path: COUNTRY_PATH }, { label: "行政区划", path: GEOAREA_PATH }] },
 ] };
-const personnelApp: NavigationApp = { id: "personnel", label: "人员", path: person.path, sections: [] };
+
 const navigationApps = [departmentApp, settingsApp];
 
 export function App() {
@@ -61,12 +62,15 @@ export function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const departmentPage = location.pathname === DEPARTMENT_PATH || location.pathname.startsWith(`${DEPARTMENT_PATH}/`);
-  const personPage = location.pathname === person.path || location.pathname.startsWith(person.path + "/");
-  const activeApp = personPage ? personnelApp : departmentPage ? departmentApp : settingsApp;
-  const activeSection = location.pathname.startsWith("/settings/staffing/") ? "职务配置" : departmentPage || personPage ? undefined : (location.pathname.startsWith(GEOAREA_PATH) || location.pathname.startsWith(COUNTRY_PATH)) ? "基础资料" : "组织配置";
+  const personPage = location.pathname === person.path || location.pathname.startsWith(person.path + "/") || location.pathname===employees;
   const desktop = useMediaQuery("(min-width:900px)");
   const [session, setSession] = useState<Models["Principal"] | null>(null);
   const personAccess = person.useRead(session ? session.instanceId + session.subjectId : undefined, person.entry);
+  const directoryAccess = person.useRead(session ? session.instanceId + session.subjectId : undefined,async()=>unwrap(await api.GET('/api/v1/assignments/context')));
+  const directoryAvailable=!!personAccess.data?.canRead && !!directoryAccess.data?.canList;
+  const personnelApp: NavigationApp={id:'personnel',label:'人员',path:directoryAvailable?undefined:person.path,sections:directoryAvailable?[{label:'员工',items:[...(directoryAvailable?[{label:'员工列表',path:employees}]:[]),{label:'人员档案',path:person.path}]}]:[]};
+  const activeApp = personPage ? personnelApp : departmentPage ? departmentApp : settingsApp;
+  const activeSection = personPage ? '员工' : location.pathname.startsWith("/settings/staffing/") ? "职务配置" : departmentPage ? undefined : (location.pathname.startsWith(GEOAREA_PATH) || location.pathname.startsWith(COUNTRY_PATH)) ? "基础资料" : "组织配置";
   const apps = personAccess.data?.canRead || personAccess.data?.canRegister ? [departmentApp, personnelApp, settingsApp] : navigationApps;
   useEffect(() => {
     if (!session) document.title = "登录 · CHNHCM";
@@ -183,7 +187,7 @@ export function App() {
   return (
     <SessionRecoveryContext.Provider value={Boolean(session && (loading || sessionError))}>
     <AppShell
-      navigation={session ? <AppNavigation apps={apps} activeApp={activeApp} activeSection={activeSection} activePath={personPage?person.path:location.pathname===policyPath?policyPath:location.pathname.startsWith(quotaPath)?quotaPath:location.pathname===hierarchyPath||location.pathname.startsWith(staffingPaths.position)?staffingPaths.position:location.pathname.startsWith(staffingPaths.gradeladder)?staffingPaths.gradeladder:location.pathname.startsWith(staffingPaths.grade)?staffingPaths.grade:location.pathname.startsWith(staffingPaths.jobfunction)?staffingPaths.jobfunction:location.pathname.startsWith(staffingPaths.jobfamily)?staffingPaths.jobfamily:location.pathname.startsWith(staffingPaths.job)?staffingPaths.job:location.pathname.startsWith(LEGAL_ENTITY_PATH)?LEGAL_ENTITY_PATH:location.pathname.startsWith(ENTERPRISE_PATH)?ENTERPRISE_PATH:location.pathname.startsWith(LOCATION_PATH)?LOCATION_PATH:location.pathname.startsWith(GEOAREA_PATH)?GEOAREA_PATH:location.pathname.startsWith(COUNTRY_PATH) ? COUNTRY_PATH : departmentPage ? DEPARTMENT_PATH : BU_PATH} desktop={desktop} go={navigate} /> : undefined}
+      navigation={session ? <AppNavigation apps={apps} activeApp={activeApp} activeSection={activeSection} activePath={personPage?(location.pathname===employees?employees:person.path):location.pathname===policyPath?policyPath:location.pathname.startsWith(quotaPath)?quotaPath:location.pathname===hierarchyPath||location.pathname.startsWith(staffingPaths.position)?staffingPaths.position:location.pathname.startsWith(staffingPaths.gradeladder)?staffingPaths.gradeladder:location.pathname.startsWith(staffingPaths.grade)?staffingPaths.grade:location.pathname.startsWith(staffingPaths.jobfunction)?staffingPaths.jobfunction:location.pathname.startsWith(staffingPaths.jobfamily)?staffingPaths.jobfamily:location.pathname.startsWith(staffingPaths.job)?staffingPaths.job:location.pathname.startsWith(LEGAL_ENTITY_PATH)?LEGAL_ENTITY_PATH:location.pathname.startsWith(ENTERPRISE_PATH)?ENTERPRISE_PATH:location.pathname.startsWith(LOCATION_PATH)?LOCATION_PATH:location.pathname.startsWith(GEOAREA_PATH)?GEOAREA_PATH:location.pathname.startsWith(COUNTRY_PATH) ? COUNTRY_PATH : departmentPage ? DEPARTMENT_PATH : BU_PATH} desktop={desktop} go={navigate} /> : undefined}
       account={session && <><Typography className="app-account-name">{session.login}</Typography><Button color="inherit" onClick={() => void exit()}>退出</Button></>}
       notices={session && <>{loading && <Alert severity="info">正在恢复登录状态…</Alert>}{sessionError && <Alert severity="error" action={<Button disabled={loading} onClick={() => void refresh()}>重试</Button>}>{sessionError}</Alert>}{error && <Alert severity="error">{error}</Alert>}<QuotaRecovery key={session.instanceId+session.subjectId} session={session}/><StaffingRecovery session={session}/><Recovery key={`recovery:${session.instanceId}:${session.subjectId}`} session={session} /><GeoAreaRecovery key={`geoarea-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LegalEntityRecovery key={`legalentity-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><EnterpriseRecovery key={`enterprise-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LocationRecovery key={`location-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><CountryRecovery key={`country-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><PersonRecovery key={`person-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><DepartmentRecovery key={`department-recovery:${session.instanceId}:${session.subjectId}`} session={session} /></>}
     >
@@ -227,9 +231,11 @@ export function App() {
       ) : (
         <>
           <Routes key={`routes:${session.instanceId}:${session.subjectId}`}>
+            <Route path={employees} element={<EmployeeDirectory session={session}/>}/>
+            <Route path={person.path+"/:id/assignments/:assignment"} element={<AssignmentPage session={session}/>}/>
             <Route path={person.path} element={<PersonList session={session} />}/>
             <Route path={person.path+"/new"} element={<PersonDetail session={session} creating />}/>
-            <Route path={person.path+"/:id/employment"} element={<HirePage session={session}/>}/>
+            <Route path={person.path+"/:id/employment"} element={<EmploymentEntry session={session}/>}/>
             <Route path={person.path+"/:id"} element={<PersonDetail session={session} />}/>
             <Route path={quotaPath} element={<QuotaList/>}/><Route path={quotaPath+'/departments/:id'} element={<QuotaDepartment session={session}/>}/><Route path={staffingPaths.position+'/:id/quota'} element={<QuotaDetail session={session}/>}/>
             <Route path={hierarchyPath} element={invalidHierarchyLink ? missingPage : <HierarchyPage session={session}/>}/>

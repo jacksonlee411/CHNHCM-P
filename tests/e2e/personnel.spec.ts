@@ -79,8 +79,16 @@ async function menu(page: Page) {
   } else {
     await mobile.click();
     await page.getByRole('button', { name: '人员', exact: true }).click();
+    const archive=page.getByRole('button',{name:'人员档案',exact:true});
+    const heading=page.getByRole('heading',{name:'人员档案',exact:true});
+    await expect(archive.or(heading).first()).toBeVisible();
+    if(await archive.isVisible())await archive.click();
   }
-  await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
+  const archive=page.getByRole('link',{name:'人员档案',exact:true});
+  const heading=page.getByRole('heading',{name:'人员档案',exact:true});
+  await expect(archive.or(heading).first()).toBeVisible();
+  if(await archive.isVisible())await archive.click();
+  await expect(page.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
 }
 async function select(page: Page, label: string, choice: string) {
   await page.getByRole('combobox', { name: label, exact: true }).click();
@@ -890,7 +898,7 @@ test('人事试办：同名两人、两人同时登记同一证号、同一张�
     const wonNumber = (await winner.locator('.object-identity-summary').innerText()).trim();
     await button(loser, '取消').click();
     await button(loser, '放弃修改').click();
-    await expect(loser.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
+    await expect(loser.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
     // The losing clerk already returned to the directory when discarding the form.
     if (winner === page) await menu(page);
     await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees');
