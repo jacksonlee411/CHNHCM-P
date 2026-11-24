@@ -1,5 +1,7 @@
 # 验证记录
 
+按岗位免占编首单的办理、并发与验收方案已完成[404 多轮评审](404-position-exempt-first-hire-review.md)。原决定按职务首单的产品证据见[400 第 13 节](400-first-hire-integration.md#13-公共-e-从已有任用决定办理首单)。
+
 T03 已在共同版本复验两类同号旧库，106 已在首批范围采纳，首单等待 Personnel 的入职核对接口。[首笔直接入职的开工核对](400-first-hire-integration.md)
 
 M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合同已记录实际验证范围。[T02 实施及交接](400-hire-simplification.md#t02-results) · [实施复评与修复](400-hire-simplification.md#t02-implementation-review) · [办理负担复核](400-hire-simplification.md) · [原四轮评审](400-hire-readiness-review.md)

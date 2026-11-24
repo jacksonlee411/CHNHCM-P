@@ -2785,6 +2785,36 @@
       "archive": null
     },
     {
+      "id": "CHNHCM-404",
+      "title": "T03 按岗位免占编首次入职实施方案",
+      "path": "docs/plans/404-position-exempt-first-hire.md",
+      "owner_branch": "wt-dev-e",
+      "owner_role": "人事业务与 Staffing 维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "M04",
+        "M03",
+        "M02",
+        "M01",
+        "X03"
+      ],
+      "scope": "承接原决定首单和公共分片基线，规划从员工详情选择岗位、全期免占编保存及真实业务验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理顺序评审与定稿复核",
+        "scope": "已有决定与岗位办理、补员及真实免占使用、共享事务与恢复、业务验收和公共分片实际时长。",
+        "result": "accepted",
+        "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+      },
+      "execution_status": "not_started",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
       "id": "CHNHCM-500",
       "title": "人员模块实施路线图",
       "path": "docs/plans/500-personnel-roadmap.md",
@@ -22449,6 +22479,62 @@
           "4次最大根更正和单次路径全选均非P95；选择、混合及成本边界保持。",
           "地点D08、区划D09与法律实体L2/L3保持；本批无新浏览器、远程CI或固定环境更新。",
           "当前查询原判据及长期判据仍有失败，125整体P1保持；本批未提交或推送。"
+        ]
+      },
+      {
+        "path": "docs/verification/404-position-exempt-first-hire-review.md",
+        "related_documents": [
+          "CHNHCM-404",
+          "CHNHCM-400",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-313",
+          "CHNHCM-106",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "eb5948bc137e236100b67e88ed150cb9a8c89912",
+        "working_tree": "dirty",
+        "change_description": "新增 404 方案及三轮意见与定稿复核，更新 400、入口及登记。",
+        "environment": "公共 wt-dev-e 固定树，Git、Python 标准库及 GitHub Actions 只读作业。",
+        "scope": "按岗位免占编首次入职的业务、事务及验收方案评审。",
+        "results": [
+          {
+            "check": "首轮审阅发现接管依据、原单岗位及派生授权缺口",
+            "result": "failed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "第二轮发现反向竞争与异岗重办缺口",
+            "result": "failed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "第三轮发现撤销计数、分片和升级验收缺口",
+            "result": "failed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "定稿逐项反例、日历复算与实际 Actions 作业复核",
+            "result": "passed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "仓库文档与边界、链接、CI 影响预览和差异空白检查",
+            "result": "passed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "新按岗业务的真实库、API、浏览器与 4496 更新",
+            "result": "not_run",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          }
+        ],
+        "limitations": [
+          "本次为同一主代理顺序文档评审。产品执行尚未开始。"
         ]
       }
     ]

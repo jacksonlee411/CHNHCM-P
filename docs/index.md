@@ -59,7 +59,7 @@ M03 岗位核编和部门调剂都可在 `wt-dev-d` 的 4486 验收。管理员�
 本批法律实体基础维护及实际验证见[法律实体第一阶段实施](verification/206-legal-entity-implementation.md)；用途/组织绑定和M04消费者后续接续。
 法律实体首阶段：[206实施计划](plans/206-legal-entity-implementation.md)、[207对象合同](specs/m02/207-legal-entity-design.md)、[计划评审](verification/206-legal-entity-plan-review.md)。
 
-M04 直接入职沿用人员原档，可引用任用决定或说明无编号通知。先交付按职务路径，再接入按岗位免占和占编。[400 实施方案](plans/400-hire-readiness.md) · [401 业务验收](specs/m04/401-direct-hire-requirements.md) · [402 办理页面](specs/m04/402-hire-interactions.md) · [403 事务与来源](specs/m04/403-hire-technical-contract.md) · [办理负担复核](verification/400-hire-simplification.md) · [T03 开工与实测](verification/400-first-hire-integration.md)
+M04 直接入职沿用人员原档，可引用任用决定或说明无编号通知。先交付按职务路径，再接入按岗位免占和占编。[400 实施方案](plans/400-hire-readiness.md) · [401 业务验收](specs/m04/401-direct-hire-requirements.md) · [402 办理页面](specs/m04/402-hire-interactions.md) · [403 事务与来源](specs/m04/403-hire-technical-contract.md) · [办理负担复核](verification/400-hire-simplification.md) · [T03 开工与实测](verification/400-first-hire-integration.md) · [404 按岗位免占编首单方案](plans/404-position-exempt-first-hire.md)
 
 2026-11-15 G4/G5集成接续：[性能及集成记录](verification/205-g5-publication.md)登记20会话14组中的6组达标、8组超标，D08/D09及125其他容量P1保持；用户授权提交、同步main、push/PR及最终三项CI成功后合并。已同步e359f741并补齐地点302导航，3个DB/API根及26条浏览器同轮通过；PR #16最终三项CI已通过并合入d810757b；随后按用户要求更新4383，原38表与全部历史保持，147项API及双角色8组导航通过，见[运行更新](verification/205-g5-publication.md#7-合并构建的4383运行更新)。
 
