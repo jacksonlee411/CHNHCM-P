@@ -48,7 +48,7 @@ test('保存校验直达原因字段，撤回一方权限后不显示办理入�
 test('只有两项启停权限仍可从菜单插入，取消焦点回到触发按钮',async({page})=>{
  await open(page);await create(page);
  await withPolicy(page,async(where,mutate)=>{
-  mutate(`UPDATE access.subject_grant SET write_fields=ARRAY[]::text[] WHERE ${where} AND action NOT IN ('bu.deactivate','bu.reactivate')`);await page.reload();await openMoreActions(page);await expect(page.getByRole('menuitem',{name:'更正记录',exact:true})).toHaveCount(0);await page.getByRole('menuitem',{name:'插入停用与重新启用',exact:true}).click();const d=page.getByRole('dialog',{name:'插入停用与重新启用',exact:true});await d.getByRole('button',{name:'取消',exact:true}).click();await expect(page.getByRole('button',{name:'更多操作',exact:true})).toBeFocused();
+  mutate(`UPDATE access.subject_grant SET write_fields=ARRAY[]::text[] WHERE ${where} AND action LIKE 'bu.%' AND action NOT IN ('bu.deactivate','bu.reactivate')`);await page.reload();await openMoreActions(page);await expect(page.getByRole('menuitem',{name:'更正记录',exact:true})).toHaveCount(0);await page.getByRole('menuitem',{name:'插入停用与重新启用',exact:true}).click();const d=page.getByRole('dialog',{name:'插入停用与重新启用',exact:true});await d.getByRole('button',{name:'取消',exact:true}).click();await expect(page.getByRole('button',{name:'更多操作',exact:true})).toBeFocused();
   const again=await insert(page);await fill(again,page);await submit(page,again);expect((await read(page)).timeline).toHaveLength(3);
  });
 });

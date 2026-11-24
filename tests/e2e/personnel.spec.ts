@@ -636,6 +636,7 @@ test('T01 变更日志跨页、筛选、查看敏感差异与撤权', async ({ p
   await trigger.click({ modifiers: ['Control'] });
   const originalTab = await popup;
   try {
+    await originalTab.waitForURL(firstURL.href, { waitUntil: 'load' });
     await expect(originalTab.getByRole('heading', { name: prefix, exact: true })).toBeVisible();
     await expect(originalTab.getByRole('button', { name: '返回当前资料', exact: true })).toBeVisible();
     await expect(page).toHaveURL(logURL);
@@ -1590,6 +1591,7 @@ test('504 第二批保存前撤回家庭职务写权保留其余草稿', async (
     await expect(page.getByRole('dialog')).not.toContainText('已撤权草稿');
     await expect(page.locator('#row-employer')).toHaveValue('获权单位');
     await page.keyboard.press('Escape');
+    await expect(page.locator('#person-error')).toContainText('没有本次办理权限');
     await btn('保存').click();
     await expect(btn('更正资料')).toBeVisible();
     const result = (await request(page, 'GET', path)).body;

@@ -17,7 +17,7 @@ for(const facet of ['名称','日期','分类'] as const)test(`TL299 只有${fac
  await open(page);await create(page,'2025-12-01','Initial');await add(page,'2026-01-01','甲','Alpha');const before=await read(page);
  await withPolicy(page,async(where,mutate)=>{
   const action=facet==='名称'?'bu.record.correct':facet==='日期'?'bu.record.redate':'bu.record.reclassify';const fields=facet==='名称'?"ARRAY['name','nameEn']":facet==='日期'?"ARRAY['effectiveDate']":"ARRAY['operationType','operationReason']";
-  mutate(`DELETE FROM access.subject_grant WHERE ${where} AND action='bu.timeline.revise';UPDATE access.subject_grant SET write_fields='{}' WHERE ${where};UPDATE access.subject_grant SET write_fields=${fields} WHERE ${where} AND action='${action}'`);
+  mutate(`DELETE FROM access.subject_grant WHERE ${where} AND action='bu.timeline.revise';UPDATE access.subject_grant SET write_fields='{}' WHERE ${where} AND action LIKE 'bu.%';UPDATE access.subject_grant SET write_fields=${fields} WHERE ${where} AND action='${action}'`);
   await page.reload();await edit(page);const name=page.getByRole('textbox',{name:'中文名称',exact:true}),date=page.getByLabel('生效日期').and(page.locator('input'));
   await expectSingleClassification(page);
   await expect(page.getByRole('button',{name:'添加关联操作',exact:true})).toHaveCount(0);

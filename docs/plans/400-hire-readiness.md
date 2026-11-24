@@ -98,3 +98,5 @@ f 的 `50ae8582` 提供 Personnel／X03 的入职用途核对。e 接入客户�
 已补验成功回执落库失败的整单回滚，按原号查回为未执行。系统内已有任用决定的原单、人员行及版本引用仍待权威来源接通。[回执故障与合并前复验](../verification/400-first-hire-integration.md#9-提交回执故障与合并前复验)
 
 首单、用人规则及新增人员入口的菜单顺序与键盘焦点已在 `2b312881` 完成限定复验。本地与远程的 113 个不同浏览器用例逐片一致，计入企业前置共执行 128 次，均通过。浏览器按 137 默认在本地验证，远程按明确要求派发。首次失败、漏测原因、复跑入口及当时的正式 PR 门禁见[限定 CI 与菜单复验](../verification/400-first-hire-integration.md#t03-limited-browser-evidence)。
+
+CHNHCM-P 公开后自动运行所需的远程浏览器分片。首次全量检查覆盖了首单切换窄屏菜单、业务单元授权夹具及人员资料回归。[公开仓库首轮结果与复验](../verification/400-first-hire-integration.md#public-browser-regressions)

@@ -87,9 +87,8 @@ async function seed(page: Page, withDocument = true) {
   return { name, department, employer, job, id: saved.id };
 }
 async function openPerson(page: Page, name: string) {
-  const desktop = page.getByRole('button', { name: '切换应用', exact: true });
-  if (await desktop.isVisible()) {
-    await desktop.click();
+  if (await page.evaluate(() => matchMedia('(min-width:900px)').matches)) {
+    await page.getByRole('button', { name: '切换应用', exact: true }).click();
     await page.getByRole('menuitem', { name: '人员', exact: true }).click();
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
