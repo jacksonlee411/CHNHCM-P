@@ -5,6 +5,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import { localConnection } from '../../scripts/local-runtime.mjs';
 import { test, expect, type Page } from './fixtures';
 import { request, apiBU, apiDepartment } from './dated-object-support';
+import { database } from './community-list-support.mjs';
 import { seed308 } from './staffing308-support';
 
 async function signIn(page: Page, login = 'admin') {
@@ -694,3 +695,161 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 历史插入与按职务调动 原生200%',async()=>{await native200(historyJourney)});
+
+async function concurrentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const { hire } = await hireAtLocation(page, sample);
+  const policy = await request(page, 'GET', '/api/v1/assignment-policies');
+  if (
+    !policy.body.rows.some(
+      (r: { purpose: string; category: string }) => r.purpose === 'secondary' && r.category === 'Employee',
+    )
+  ) {
+    const saved = await request(
+      page,
+      'POST',
+      '/api/v1/assignment-policies',
+      {
+        expectedVersion: policy.body.version,
+        row: {
+          id: randomUUID(),
+          category: 'Employee',
+          purpose: 'secondary',
+          mode: 'JobOnly',
+          from: '2027-04-01',
+        },
+      },
+      randomUUID(),
+    );
+    expect(saved.status, saved.body.message).toBe(200);
+  }
+  const newDept = '培训部' + randomUUID().slice(0, 5);
+  const training = await apiDepartment(page, sample.buId, { name: newDept });
+  const employerName = '培训公司' + randomUUID().slice(0, 6);
+  const countries = await request(page, 'GET', '/api/v1/country-regions?q=CN');
+  const country = countries.body.items.find((r: { code: string }) => r.code === 'CN');
+  const entity = await request(
+    page,
+    'POST',
+    '/api/v1/legal-entities',
+    {
+      code: 'P' + randomUUID().slice(0, 7),
+      name: employerName,
+      countryRegionId: country.id,
+      subjectType: 'legal_person',
+      registrationType: '登记证',
+      registrationNumber: 'PAR-' + randomUUID().slice(0, 8),
+      operationType: 'CREATE',
+      operationReason: 'NEW_LEGAL_ENTITY',
+    },
+    randomUUID(),
+  );
+  expect(entity.status, entity.body.message).toBe(201);
+  const purpose = await request(
+    page,
+    'POST',
+    '/api/v1/legal-entities/' + entity.body.legalEntityId + '/purposes',
+    {
+      expectedVersion: '',
+      row: {
+        id: randomUUID(),
+        role: 'employer',
+        kind: 'declaration',
+        basis: '培训公司独立聘任资格',
+        from: '2027-04-01',
+      },
+    },
+    randomUUID(),
+  );
+  expect(purpose.status, purpose.body.message).toBe(200);
+  await openEmployeeAssignment(page, sample);
+  const button = (name: string) => page.getByRole('button', { name, exact: true });
+  const go = async (name: string) => page.getByRole('link', { name, exact: true }).click();
+  const choose = async (label: string, target: string) => {
+    await page.getByRole('combobox', { name: new RegExp('^' + label) }).fill(target);
+    await page.getByRole('option', { name: target, exact: true }).click();
+  };
+  await go('新增兼岗');
+  await page.getByLabel(/任用依据/).fill('放弃本次草稿');
+  await go('取消');
+  await button('放弃修改').click();
+  await expect(page.getByRole('heading', { name: new RegExp('0 号主岗') })).toBeVisible();
+  await go('新增兼岗');
+  await choose('部门', sample.department);
+  await choose('职务', sample.job);
+  await page.getByLabel(/任用依据/).fill('兼任部门评审员');
+  await button('保存').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: new RegExp('1 号兼岗') })).toBeVisible();
+  await expect(page.getByRole('tab', { name: '个人资料' })).toHaveCount(0);
+  await expect(page.getByRole('tab', { name: /个人日志/ })).toHaveCount(0);
+  await go('新增兼岗');
+  await page.getByRole('combobox', { name: /所属关系/ }).click();
+  await page.getByRole('option', { name: '新增并行工作关系', exact: true }).click();
+  await choose('用人单位', employerName);
+  await choose('部门', newDept);
+  await choose('职务', sample.job);
+  await page.getByLabel(/任用依据/).fill('培训关系独立聘任');
+  await button('保存').click();
+  await expect(page.getByRole('heading', { name: new RegExp('2 号兼岗') })).toBeVisible();
+  await expect(page.getByText('本工作关系主任职', { exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: '个人资料' })).toHaveCount(0);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+    .toBe(true);
+  const link = page.getByRole('link', { name: /返回/ }).first();
+  await link.click();
+  await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
+  await expect(page.locator('a[data-object-link]').filter({ hasText: sample.name })).toHaveCount(3);
+  return { department: training.id, primary: hire.assignment };
+}
+for (const [width, height] of [
+  [1440, 900],
+  [1440, 540],
+  [390, 844],
+  [320, 900],
+  [320, 256],
+]) {
+  test(`M04 新增兼岗与并行工作关系 ${width}x${height}`, async ({ page }) => {
+    test.setTimeout(180000);
+    await signIn(page);
+    const sample = await seed(page);
+    await page.setViewportSize({ width, height });
+    await concurrentJourney(page, sample);
+  });
+}
+test('M04 新增兼岗与并行工作关系 原生200%', async () => {
+  await native200(async (page, sample) => {
+    await concurrentJourney(page, sample);
+  });
+});
+
+test('M04 仅见兼岗的读者从员工目录直达获权职务信息', async ({ page, browser }) => {
+  test.setTimeout(150000);
+  await signIn(page);
+  const sample = await seed(page);
+  const issued = await concurrentJourney(page, sample);
+  const sql = database(),
+    grants = ['directory', 'read', 'history'].map((action) => ({ id: randomUUID(), action }));
+  const reader = await browser.newContext({ baseURL: localConnection().webOrigin });
+  try {
+    for (const grant of grants)
+      sql(`INSERT INTO access.employment_grant(instance_id,principal_id,grant_id,action,person_id,department_id,fields)
+      SELECT instance_id,principal_id,'${grant.id}','${grant.action}','${sample.id}','${issued.department}',ARRAY['arrangement','basis','location']
+      FROM access.principal WHERE login='reader'`);
+    const screen = await reader.newPage();
+    await signIn(screen, 'reader');
+    await openEmployeeAssignment(screen, sample);
+    await expect(screen.getByRole('heading', { name: /2 号兼岗/ })).toBeVisible();
+    await expect(screen.getByRole('tab', { name: '个人资料' })).toHaveCount(0);
+    await expect(screen.getByRole('link', { name: '新增兼岗' })).toHaveCount(0);
+    const hidden = await request(
+      screen,
+      'GET',
+      '/api/v1/assignments/' + issued.primary + '?businessAt=2027-04-01',
+    );
+    expect(hidden.status).toBe(403);
+  } finally {
+    for (const grant of grants) sql(`DELETE FROM access.employment_grant WHERE grant_id='${grant.id}'`);
+    await reader.close();
+  }
+});
