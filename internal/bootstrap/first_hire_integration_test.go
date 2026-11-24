@@ -228,7 +228,7 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	if n := h.f.scalar("SELECT count(*) FROM staffing.employment_primary"); n != 2 {
 		t.Fatal(n)
 	}
-	if n := h.f.scalar("SELECT count(*) FROM staffing.employment_action WHERE adoption->'sources'->'identity'->>'personVersion'=$1 AND adoption->'sources'->>'rule'='T02-employee-1'", p["sourceVersion"]); n != 1 {
+	if n := h.f.scalar("SELECT count(*) FROM staffing.employment_action_revision WHERE adoption->'sources'->'identity'->>'personVersion'=$1 AND adoption->'sources'->>'rule'='T02-employee-1'", p["sourceVersion"]); n != 1 {
 		t.Fatal("missing immutable adoption")
 	}
 	b.call("POST", "/api/v1/employment-actions/"+action["id"].(string)+"/cancel", M{"revision": action["revision"], "reason": "任用通知于到岗前撤回"}, f.NewID(), 200)

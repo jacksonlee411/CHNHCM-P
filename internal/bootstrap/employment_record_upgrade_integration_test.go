@@ -52,26 +52,38 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	must(t, tx.Commit(ctx))
 	// Compare each original tuple, including the immutable notice, version, time and line.
 	tables := []string{"employment", "assignment", "assignment_segment", "employment_action", "hire_terminal", "employment_primary", "employment_outbox", "hire_decision_use", "appointment_version", "appointment_outbox"}
-	snapshot := func(table string) string {
+	snapshot := func(table string, upgraded bool) string {
 		t.Helper()
 		expression := "to_jsonb(t)"
 		if table == "assignment" {
 			expression += " - 'person_id' - 'record_number'"
 		}
+		from := "staffing." + table + " t"
+		if upgraded {
+			switch table {
+			case "assignment_segment":
+				expression += " - 'location_id' - 'location_ref' - 'version'"
+			case "hire_terminal", "employment_outbox":
+				expression += " - 'revision'"
+			case "employment_action":
+				from += " JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(t.instance_id,t.id,t.revision)"
+				expression += " || jsonb_build_object('business_date',r.business_date,'notice',r.notice,'adoption',r.adoption)"
+			}
+		}
 		var data string
-		must(t, pool.QueryRow(ctx, "SELECT jsonb_agg(row_data ORDER BY row_data)::text FROM (SELECT "+expression+" AS row_data FROM staffing."+table+" t) rows").Scan(&data))
+		must(t, pool.QueryRow(ctx, "SELECT jsonb_agg(row_data ORDER BY row_data)::text FROM (SELECT "+expression+" AS row_data FROM "+from+") rows").Scan(&data))
 		return data
 	}
 	before := map[string]string{}
 	for _, table := range tables {
-		before[table] = snapshot(table)
+		before[table] = snapshot(table, false)
 	}
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
 	for _, table := range tables {
-		if snapshot(table) != before[table] {
+		if snapshot(table, true) != before[table] {
 			t.Fatalf("升级改变了旧数据 %s", table)
 		}
 	}

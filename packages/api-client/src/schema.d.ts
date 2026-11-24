@@ -4986,6 +4986,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["employeeDirectoryContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["listEmployeeAssignments"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["readAssignmentInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/location-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assignmentLocationOptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/location-changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["changeAssignmentLocation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/location-changes/{action}/correct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["correctAssignmentLocation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hires/targets": {
         parameters: {
             query?: never;
@@ -5022,6 +5118,131 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        EmploymentLocationRef: {
+            /** Format: uuid */
+            id: string;
+            name?: string;
+            /** Format: uuid */
+            sourceVersion?: string;
+            /** Format: uuid */
+            revision?: string;
+        };
+        EmploymentLocationSearch: {
+            /** Format: date */
+            businessDate: string;
+            search?: string;
+            page: number;
+        };
+        EmploymentLocationChange: {
+            /** Format: date */
+            businessDate: string;
+            /** Format: uuid */
+            location: string;
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            /** Format: uuid */
+            expectedRevision?: string;
+        };
+        EmploymentLocationEvidence: {
+            reason: string;
+            before?: components["schemas"]["EmploymentLocationRef"];
+            replaced?: components["schemas"]["EmploymentLocationRef"];
+            after: components["schemas"]["EmploymentLocationRef"];
+            legal: components["schemas"]["LegalAdoption"][];
+        };
+        EmploymentRevision: {
+            operator: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            actor: string;
+            /** Format: date-time */
+            recordedAt: string;
+        };
+        AssignmentDayState: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            until?: string;
+            department: string;
+            job: string;
+            location?: components["schemas"]["EmploymentLocationRef"];
+            seats: number;
+        };
+        EmployeeAssignmentQuery: {
+            /** Format: date */
+            businessAt?: string;
+            /** Format: uuid */
+            department?: string;
+            /** Format: uuid */
+            person?: string;
+            /** Format: uuid */
+            ref?: string;
+            page: number;
+            /** @enum {integer} */
+            pageSize: 20 | 50 | 100;
+            sort?: string;
+        };
+        EmployeeAssignmentRow: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            employment: string;
+            name: string;
+            number: string;
+            recordNumber: number;
+            primaryJob: boolean;
+            /** Format: uuid */
+            department: string;
+            departmentName: string;
+            jobName: string;
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            until?: string;
+        };
+        EmployeeAssignmentDirectory: {
+            rows: components["schemas"]["EmployeeAssignmentRow"][];
+            departments: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                /** Format: uuid */
+                parent?: string;
+            }[];
+            people: number;
+            total: number;
+            /** Format: date */
+            businessAt: string;
+            keyword: string;
+        };
+        AssignmentView: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            until?: string;
+            employerName: string;
+            relationship: string;
+            name: string;
+            number: string;
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            assignment: string;
+            /** Format: uuid */
+            employment: string;
+            recordNumber: number;
+            primaryJob: boolean;
+            /** Format: uuid */
+            sourceVersion: string;
+            /** Format: date */
+            businessAt: string;
+            state?: components["schemas"]["AssignmentDayState"];
+            actions: components["schemas"]["EmploymentAction"][];
+            canChangeLocation: boolean;
+        };
         HireTargetSearch: {
             /** Format: uuid */
             person: string;
@@ -5055,6 +5276,8 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            locationChange?: components["schemas"]["EmploymentLocationEvidence"];
+            revisions?: components["schemas"]["EmploymentRevision"][];
             appointment?: components["schemas"]["DecisionOption"];
             action: components["schemas"]["EmploymentAction"];
             sources?: components["schemas"]["HireAdoption"];
@@ -5159,6 +5382,8 @@ export interface components {
         };
         HireReceipt: {
             /** Format: uuid */
+            revision?: string;
+            /** Format: uuid */
             submissionId: string;
             /** @enum {string} */
             outcome: "accepted" | "rejected" | "not_applied";
@@ -5176,6 +5401,11 @@ export interface components {
             reason: string;
         };
         EmploymentAction: {
+            /** Format: date */
+            businessDate: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            canCorrectLocation: boolean;
             /** Format: uuid */
             id: string;
             /** Format: uuid */
@@ -22514,7 +22744,9 @@ export interface operations {
     };
     readEmploymentAction: {
         parameters: {
-            query?: never;
+            query?: {
+                adoptedRef?: string;
+            };
             header?: never;
             path: {
                 id: string;
@@ -22530,6 +22762,220 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HireOriginal"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    employeeDirectoryContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current employee directory authority */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        canList: boolean;
+                    };
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listEmployeeAssignments: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmployeeAssignmentQuery"];
+            };
+        };
+        responses: {
+            /** @description Authorized dated assignments and distinct employees */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmployeeAssignmentDirectory"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    readAssignmentInfo: {
+        parameters: {
+            query?: {
+                businessAt?: string;
+                sourceVersion?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentView"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentLocationOptions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentLocationSearch"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmploymentLocationRef"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    changeAssignmentLocation: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentLocationChange"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    correctAssignmentLocation: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+                action: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentLocationChange"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
                 };
             };
             /** @description Unavailable */

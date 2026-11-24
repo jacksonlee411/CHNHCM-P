@@ -41,6 +41,11 @@ type AccessEmploymentGrant struct {
 	ExpiresAt    pgtype.Timestamptz
 }
 
+type AccessEmploymentLocationFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessHireIdentityFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1120,6 +1125,20 @@ type StaffingAssignment struct {
 	RecordNumber int32
 }
 
+type StaffingAssignmentHead struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+}
+
+type StaffingAssignmentMember struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+	ActionID     string
+	Revision     string
+}
+
 type StaffingAssignmentPolicyMember struct {
 	InstanceID string
 	OwnerID    string
@@ -1162,11 +1181,29 @@ type StaffingAssignmentPolicyTerminal struct {
 	RecordedAt     pgtype.Timestamptz
 }
 
+type StaffingAssignmentPublication struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+}
+
 type StaffingAssignmentSegment struct {
 	InstanceID   string
 	AssignmentID string
 	Period       pgtype.Range[pgtype.Date]
 	Adoption     []byte
+	Version      string
+	LocationID   *string
+	LocationRef  []byte
+}
+
+type StaffingAssignmentSource struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+	Previous     *string
+	ActionID     string
+	Revision     string
 }
 
 type StaffingEmployment struct {
@@ -1186,17 +1223,29 @@ type StaffingEmploymentAction struct {
 	EmploymentID string
 	AssignmentID string
 	OriginalID   *string
-	BusinessDate pgtype.Date
 	Actor        string
 	RecordedAt   pgtype.Timestamptz
-	Notice       string
-	Adoption     []byte
+}
+
+type StaffingEmploymentActionRevision struct {
+	InstanceID       string
+	AssignmentID     string
+	ActionID         string
+	Revision         string
+	PreviousRevision *string
+	BusinessDate     pgtype.Date
+	Notice           string
+	Actor            string
+	OperatorSnapshot []byte
+	RecordedAt       pgtype.Timestamptz
+	Adoption         []byte
 }
 
 type StaffingEmploymentOutbox struct {
 	InstanceID string
 	EventID    string
 	ActionID   string
+	Revision   string
 }
 
 type StaffingEmploymentPrimary struct {
@@ -1420,6 +1469,7 @@ type StaffingHireTerminal struct {
 	Digest       string
 	Outcome      string
 	ActionID     *string
+	Revision     *string
 }
 
 type StaffingJob struct {

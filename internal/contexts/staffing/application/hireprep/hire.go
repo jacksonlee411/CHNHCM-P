@@ -32,6 +32,7 @@ type Preview struct {
 	Missing  []string  `json:"missing,omitempty"`
 }
 type Receipt struct {
+	Revision     string `json:"revision,omitempty"`
 	Submission   string `json:"submissionId"`
 	Outcome      string `json:"outcome"`
 	Action       string `json:"action,omitempty"`
@@ -40,20 +41,23 @@ type Receipt struct {
 	RecordNumber *int   `json:"recordNumber,omitempty"`
 }
 type Action struct {
-	ID           string `json:"id"`
-	Revision     string `json:"revision"`
-	Kind         string `json:"kind"`
-	Employment   string `json:"employment"`
-	Assignment   string `json:"assignment"`
-	RecordNumber int    `json:"recordNumber"`
-	PrimaryJob   bool   `json:"primaryJob"`
-	Person       string `json:"person"`
-	Employer     string `json:"employer"`
-	Department   string `json:"department"`
-	Job          string `json:"job"`
-	Notice       string `json:"notice"`
-	RecordedAt   string `json:"recordedAt"`
-	Original     string `json:"original,omitempty"`
+	CanCorrectLocation bool   `json:"canCorrectLocation"`
+	BusinessDate       string `json:"businessDate"`
+	SourceVersion      string `json:"sourceVersion"`
+	ID                 string `json:"id"`
+	Revision           string `json:"revision"`
+	Kind               string `json:"kind"`
+	Employment         string `json:"employment"`
+	Assignment         string `json:"assignment"`
+	RecordNumber       int    `json:"recordNumber"`
+	PrimaryJob         bool   `json:"primaryJob"`
+	Person             string `json:"person"`
+	Employer           string `json:"employer"`
+	Department         string `json:"department"`
+	Job                string `json:"job"`
+	Notice             string `json:"notice"`
+	RecordedAt         string `json:"recordedAt"`
+	Original           string `json:"original,omitempty"`
 	f.Period
 	Cancelled  bool `json:"cancelled"`
 	CanCancel  bool `json:"canCancel"`
@@ -71,15 +75,17 @@ type Cancel struct {
 	Reason   string `json:"reason"`
 }
 type Original struct {
-	Appointment       *DecisionOption `json:"appointment,omitempty"`
-	Action            Action          `json:"action"`
-	Sources           *Adoption       `json:"sources,omitempty"`
-	Reason            string          `json:"reason,omitempty"`
-	State             string          `json:"state,omitempty"`
-	PrimaryPurpose    string          `json:"primaryPurpose,omitempty"`
-	PrimaryEmployment string          `json:"primaryEmployment,omitempty"`
-	PrimaryAssignment string          `json:"primaryAssignment,omitempty"`
-	OriginalRevision  string          `json:"originalRevision,omitempty"`
+	Revisions         []Revision        `json:"revisions,omitempty"`
+	LocationChange    *LocationEvidence `json:"locationChange,omitempty"`
+	Appointment       *DecisionOption   `json:"appointment,omitempty"`
+	Action            Action            `json:"action"`
+	Sources           *Adoption         `json:"sources,omitempty"`
+	Reason            string            `json:"reason,omitempty"`
+	State             string            `json:"state,omitempty"`
+	PrimaryPurpose    string            `json:"primaryPurpose,omitempty"`
+	PrimaryEmployment string            `json:"primaryEmployment,omitempty"`
+	PrimaryAssignment string            `json:"primaryAssignment,omitempty"`
+	OriginalRevision  string            `json:"originalRevision,omitempty"`
 }
 type EmployerSearch struct {
 	Person     string `json:"person"`
@@ -102,11 +108,12 @@ type TargetSearch struct {
 	Page       int    `json:"page"`
 }
 type Hires interface {
+	JobInformation
 	PublishDecision(context.Context, f.Credentials, string, DecisionPublication) (DecisionEdition, error)
 	HireDecisions(context.Context, f.Credentials, string) ([]DecisionOption, error)
 	HireTargets(context.Context, f.Credentials, TargetSearch) ([]org.EligibleEntity, error)
 	HireEmployers(context.Context, f.Credentials, EmployerSearch) ([]org.EligibleEntity, error)
-	OriginalAction(context.Context, f.Credentials, string) (Original, error)
+	OriginalAction(context.Context, f.Credentials, string, string) (Original, error)
 	PreviewHire(context.Context, f.Credentials, Hire) (Preview, error)
 	Hire(context.Context, f.Credentials, string, Hire) (Receipt, error)
 	CancelHire(context.Context, f.Credentials, string, string, Cancel) (Receipt, error)
