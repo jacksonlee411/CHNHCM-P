@@ -106,41 +106,41 @@ class CoverageTests(unittest.TestCase):
         with patch.object(policy, 'git', return_value='base head'), patch.object(policy, 'selection_for', return_value=candidate):
             self.assertEqual(policy.find_reuse(dict(self.plan, checkout='merged'), self.api), '30')
         # A later failed partial rerun invalidates the prior success at the gate.
-        self.api.jobs[10].append(dict(self.job(10, 'browser shard 2/11'), run_attempt=2, conclusion='failure'))
+        self.api.jobs[10].append(dict(self.job(10, 'browser shard 2/16'), run_attempt=2, conclusion='failure'))
         with self.assertRaisesRegex(ValueError, 'prior|previous'):
             coverage.verify_carried(self.api, candidate, self.units)
 
     def test_failed_cancelled_unallocated_and_changed_shards_run_on_new_candidate(self):
         self.add_source(20)
-        self.job(20, 'browser shard 1/11')['conclusion'] = 'failure'
-        self.job(20, 'browser shard 2/11')['conclusion'] = 'cancelled'
-        self.job(20, 'integration shard 6/8')['runner_id'] = None
+        self.job(20, 'browser shard 1/16')['conclusion'] = 'failure'
+        self.job(20, 'browser shard 2/16')['conclusion'] = 'cancelled'
+        self.job(20, 'integration shard 2/2')['runner_id'] = None
         self.delta[20] = dict(browser_files=['case3.spec.ts'], browser_shards=1, integration_shards=0)
         self.api.records[20]['inventories']['browser'][4] = coverage.inventory_part(['old-id'], ['case4.spec.ts'])
-        expected = {'browser shard 1/11', 'browser shard 2/11', 'browser shard 3/11',
-                    'browser shard 4/11', 'integration shard 6/8'}
+        expected = {'browser shard 1/16', 'browser shard 2/16', 'browser shard 3/16',
+                    'browser shard 4/16', 'integration shard 2/2'}
         carried = self.credits()
         self.assertEqual(set(self.units) - carried.keys(), expected)
         output = policy.plan_outputs(dict(self.plan, carried=carried), {'pull_request': {'head': {}}}, {})
         self.assertEqual([r['shard'] for r in output['browser_matrix']], [1, 2, 3, 4])
-        self.assertEqual([r['shard'] for r in output['integration_matrix']], [6])
+        self.assertEqual([r['shard'] for r in output['integration_matrix']], [2])
         self.assertFalse(output['run_preflight'])
 
     def test_inherited_slots_bind_to_the_actual_run_that_executed_them(self):
         self.add_source(20)
-        self.api.jobs[20] = [self.job(20, 'quality'), self.job(20, 'browser shard 4/11')]
+        self.api.jobs[20] = [self.job(20, 'quality'), self.job(20, 'browser shard 4/16')]
         self.delta[10] = dict(browser_files=[], browser_shards=0, integration_shards=4, integration_filter='^Test1$')
         got = self.credits()
-        self.assertNotIn('integration shard 1/8', got)
-        self.assertEqual(got['browser shard 4/11']['run'], 20)
-        self.assertEqual(got['browser shard 1/11']['run'], 10)
+        self.assertNotIn('integration shard 1/2', got)
+        self.assertEqual(got['browser shard 4/16']['run'], 20)
+        self.assertEqual(got['browser shard 1/16']['run'], 10)
         self.assertEqual(got['preflight']['run'], 10)
 
     def test_newer_failure_from_a_different_partition_reopens_its_layer(self):
         self.add_source(20)
         self.api.jobs[20] = [self.job(20, 'quality'),
-                             dict(self.job(20, 'browser shard 1/11'), name='browser shard 1/2', conclusion='failure')]
-        self.assertEqual(set(self.credits()), {f'integration shard {n}/8' for n in range(1, 9)})
+                             dict(self.job(20, 'browser shard 1/16'), name='browser shard 1/2', conclusion='failure')]
+        self.assertEqual(set(self.credits()), {f'integration shard {n}/2' for n in range(1, 3)})
 
     def test_other_pr_fork_contract_missing_jobs_and_diagnostic_have_no_credit(self):
         for field, value in [('pr', 2), ('contract', 'changed'), ('scope', 'selected'), ('ref', 'refs/heads/main')]:
@@ -194,7 +194,7 @@ class CoverageTests(unittest.TestCase):
                                       dict(RUNNER_TEMP=folder, GITHUB_RUN_ATTEMPT='1',
                                            CI_FULL_PR_HEAD=self.plan['head']), self.api)
         self.assertFalse(outputs['plan']['carried'])
-        self.assertEqual((len(outputs['integration_matrix']), len(outputs['browser_matrix'])), (8, 11))
+        self.assertEqual((len(outputs['integration_matrix']), len(outputs['browser_matrix'])), (2, 16))
         self.assertTrue(outputs['run_preflight'])
 
     def test_browser_approval_does_not_hold_integration_or_preflight(self):
@@ -204,20 +204,20 @@ class CoverageTests(unittest.TestCase):
                 Path(folder, f'ci-{kind}.json').write_text(json.dumps(parts))
             env = dict(RUNNER_TEMP=folder, GITHUB_RUN_ATTEMPT='1', CI_FULL_PR_HEAD='older-head')
             # Approval for the browser suite must preserve verified DB work.
-            db_job = 'integration shard 1/8'
+            db_job = 'integration shard 1/2'
             with patch.object(coverage, 'find_carried', return_value={db_job: self.job(10, db_job)}):
                 result = policy.schedule(self.plan, event, dict(env, CI_FULL_BROWSER_HEAD=self.plan['head']), self.api)
                 self.assertTrue(result['run_browser'])
-                self.assertEqual(len(result['integration_matrix']), 7)
+                self.assertEqual(len(result['integration_matrix']), 1)
             for carried in ({}, {'preflight': self.job(10, 'preflight')},
-                            {'integration shard 1/8': self.job(10, 'integration shard 1/8')},
-                            {'browser shard 1/11': self.job(10, 'browser shard 1/11')}):
+                            {'integration shard 1/2': self.job(10, 'integration shard 1/2')},
+                            {'browser shard 1/16': self.job(10, 'browser shard 1/16')}):
                 with self.subTest(carried=carried), patch.object(coverage, 'find_carried', return_value=carried):
                     result = policy.schedule(dict(self.plan, remote_browser=False), event, env, self.api)
                     self.assertTrue(result['run_integration'])
                     self.assertEqual(result['run_preflight'], 'preflight' not in carried)
                     self.assertFalse(result['run_browser'])
-                    self.assertEqual(len(result['integration_matrix']), 8 - int('integration shard 1/8' in carried))
+                    self.assertEqual(len(result['integration_matrix']), 2 - int('integration shard 1/2' in carried))
 
     def test_db_only_preflight_cannot_cover_requested_chromium(self):
         self.api.records[10]['plan']['remote_browser'] = False

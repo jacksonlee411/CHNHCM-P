@@ -138,3 +138,20 @@ python3 scripts/ci_usage.py --repo jacksonlee411/CHNHCM \
 2026-11-23，PR #31 的首个候选 `a22c3668` 基于 `45a4c227`，GitHub 测试的合并树为 `fb78693e`。本次修改了 `.github/workflows/ci.yml`，quality 选择全量。同一 PR 可沿用的原作业为 0，前置、8 个 DB/API 分片、11 个浏览器分片、quality 和两个汇总门禁共 23 个作业，首次均通过。[正式运行](https://github.com/jacksonlee411/CHNHCM/actions/runs/45140253998) · [quality 调度记录](https://github.com/jacksonlee411/CHNHCM/actions/runs/45140253998/job/137576182679)
 
 从触发到最后一个已分配作业结束共 45 分 35 秒。23 个作业均使用 GitHub 托管 runner，按各作业运行时长分别向上取整，合计 302 托管分钟。本条验证记录构成同一 PR 的纯文档跟进，后续候选和主线的实际用量汇总在 PR 说明中。[PR #31 交付记录](https://github.com/jacksonlee411/CHNHCM/pull/31)
+
+<a id="shard-duration"></a>
+## 7 公共仓按实测时长分片
+
+2026-11-24 读取公共仓当日正式 PR 的 Actions 作业和逐例日志。下表给出已分配的分片从启动到完成的最短、中位和最长时间。runner 分钟逐作业向上取整，整轮等待从运行创建算起。两个文档候选只做轻检查，未进入分片样本。
+
+| 公共运行 | DB/API 分钟，短／中／长 | 浏览器分钟，短／中／长 | 整轮结果 |
+| --- | --- | --- | --- |
+| [PR #1](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45315256108) | 本轮未选 | 16.3／21.4／33.9 | 仅选浏览器层，11 片全过，整轮 252 runner 分钟、36 分 27 秒 |
+| [PR #4](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45329751096) | 3.5／4.0／6.7 | 12.8／22.2／35.5 | 全量 8＋11 片全过，整轮 295 runner 分钟、45 分 10 秒 |
+| [PR #5 调整前](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45343698495) | 3.8／5.2／7.0 | 以原运行完成记录为准 | DB/API 8 片均通过，共 44 runner 分钟 |
+
+浏览器按两轮成功日志中的业务用例时间归集到 73 个实际入口，采用两个样本的中位数。本批新扩充的首次入职文件使用 PR #5 已完成分片实测的 9 项。整文件保留，职务、职系等重文件分开，16 片的预计业务时长为 9.6–10.8 分钟。再计入常见的约 4 分钟准备、企业前置和回收。PR #4 部分 runner 的 Ubuntu 镜像下载使这部分升至 10–11 分钟；全量托管分片可以使用同轮前置已下载的 Ubuntu 软件包，各片照常按自己的 APT 索引安装，并实际验证 Chromium 和原生缩放。仅沿用包文件，有效期一天。
+
+DB/API 采用 PR #4 和本批已完成分片的根耗时，原本分散的短根合并为两片。不同运行的测试根净时长分别约 30 和 36 分钟，预期每片约 15–18 分钟，另计环境准备。新增根及入口总是由真实发现结果纳入。旧岗位备份、显式容量开关等条件用例继续按各自前置跳过。按当次选中的范围提早结束的片照实报告。
+
+新完整清单含 393 个 Go 根。两个旧库前置后的两片分别为 196 和 195 根。浏览器含 667 个不同 Playwright 用例。含前置共执行 747 项，其中允许重复的为企业依赖项目。旧 11 片与新 16 片清单使用不同的验证合同。首轮候选运行、各片实测及总分钟在[本次交付 PR](https://github.com/jacksonlee411/CHNHCM-P/pull/5)记录。[耗时权重](../../.github/ci-shard-seconds.json) · [当前分片规则](../governance/137-actions-and-validation.md#7-分片缓存与运行资源)

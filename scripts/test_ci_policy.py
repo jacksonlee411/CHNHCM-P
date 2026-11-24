@@ -205,7 +205,7 @@ class CandidateTests(unittest.TestCase):
         limited = ci.build_plan(event, env, API(), self.root)
         outputs = ci.schedule(limited, event, env, API())
         self.assertTrue(outputs['run_browser'])
-        self.assertEqual(len(outputs['browser_matrix']), 4)
+        self.assertEqual(len(outputs['browser_matrix']), 2)
         event = {'inputs': {'suite': 'browser-full'}}
         payload = self.root / 'event.json'
         payload.write_text(json.dumps(event))
@@ -224,7 +224,7 @@ class CandidateTests(unittest.TestCase):
 
     def test_browser_only_full_selection_still_requires_approval(self):
         plan, env, pr = self.candidate(lambda: self.write('packages/ui/src/example.tsx', 'export default 1'))
-        self.assertEqual((plan['scope'], plan['browser_shards'], plan['integration_shards']), ('selected', 11, 0))
+        self.assertEqual((plan['scope'], plan['browser_shards'], plan['integration_shards']), ('selected', 16, 0))
         outputs = ci.schedule(plan, {'pull_request': pr}, env, API())
         self.assertFalse(outputs['run_browser'])
         self.assertFalse(outputs['run_integration'])
@@ -239,7 +239,7 @@ class CandidateTests(unittest.TestCase):
             self.write('tests/e2e/first-hire.spec.ts', 'changed scenario')
         plan, env, pr = self.candidate(change)
         outputs = ci.schedule(plan, {'pull_request': pr}, env, API())
-        self.assertEqual(len(outputs['integration_matrix']), 8)
+        self.assertEqual(len(outputs['integration_matrix']), 2)
         self.assertTrue(outputs['run_integration'])
         self.assertEqual(plan['browser_files'], ['first-hire.spec.ts'])
         self.assertFalse(outputs['run_browser'])
@@ -373,17 +373,17 @@ class SelectionAndGateTests(unittest.TestCase):
             self.assertIn('self-hosted', ci.shard_routes(main, event, 'browser', '1')[0]['runner'])
         unknown = dict(plan, event='workflow_run', ref='refs/heads/main')
         self.assertEqual(ci.shard_routes(unknown, event, 'browser', '11'), hosted)
-        for setting in ['12', '-1', 'ubuntu-24.04', '1.5']:
+        for setting in ['17', '-1', 'ubuntu-24.04', '1.5']:
             with self.assertRaises(ValueError):
                 ci.shard_routes(plan, event, 'browser', setting)
 
     def test_plan_records_effective_routes_before_any_shard_starts(self):
         repo = dict(private=True, full_name='owner/repo')
         event = dict(repository=repo, pull_request=dict(head=dict(repo=repo)))
-        plan = dict(remote_browser=True, repo='owner/repo', event='pull_request', scope='full', browser_shards=11, integration_shards=8)
-        env = dict(CI_BROWSER_SELF_HOSTED_SHARDS='11', CI_INTEGRATION_SELF_HOSTED_SHARDS='3')
+        plan = dict(remote_browser=True, repo='owner/repo', event='pull_request', scope='full', browser_shards=16, integration_shards=2)
+        env = dict(CI_BROWSER_SELF_HOSTED_SHARDS='16', CI_INTEGRATION_SELF_HOSTED_SHARDS='8')
         for candidate, source, expected in [
-                (plan, event, (11, 3)),
+                (plan, event, (16, 2)),
                 (dict(plan, scope='selected', browser_shards=2, integration_shards=0), event, (2, 0)),
                 (plan, dict(event, repository=dict(repo, private=False)), (0, 0))]:
             outputs = ci.plan_outputs(candidate, source, env)
