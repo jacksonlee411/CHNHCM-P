@@ -1444,8 +1444,9 @@ async function dutyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
   await button('新增记录').click();await select('办理类型','调动');
   await page.getByRole('combobox',{name:/调入岗位/}).fill(store.name);
   await page.getByRole('option',{name:store.name,exact:true}).click();
-  await page.getByLabel(/调动依据/).fill('常规拟调入');await button('保存').click();
+  await page.getByLabel(/调动依据/).fill('常规拟调入');
   await expect(page.getByText(new RegExp(store.name+'.*缺 1 编')).last()).toBeVisible();
+  await expect(button('保存')).toBeDisabled();
   await button('取消').click();await page.getByRole('dialog').getByRole('button',{name:/放弃/}).click();
   const enter=async()=>{
     await button('新增记录').click();await select('办理类型','补录实际履职');await select('履职资料','登记出勤原件');
