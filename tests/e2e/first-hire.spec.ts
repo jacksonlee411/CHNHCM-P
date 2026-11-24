@@ -1431,7 +1431,7 @@ async function dutyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
   }
   const hire=(person:string,position:string)=>send('hires',{person,employer:sample.employerId,position,arrival:entry,lastDay:'2026-04-30',notice:'四月正式在岗通知'});
   for(const name of ['早班','中班','晚班']){
-    const id=(await send('persons',{submissionId:randomUUID(),name:name+sample.name,primaryDocument:{kind:'passport',number:randomUUID()}})).id;
+    const id=(await send('persons',{submissionId:randomUUID(),name:name+randomUUID().slice(0,8),primaryDocument:{kind:'passport',number:randomUUID()}})).id;
     await hire(id,store.id);
   }
   await hire(sample.id,home.id);
