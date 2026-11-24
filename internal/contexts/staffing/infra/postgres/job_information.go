@@ -227,6 +227,14 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 					return e
 				}
 			}
+			out.CanRecordDuty, e = u.employmentAllowed(ctx, "duty.correct", a.Person, a.Employer, a.Department, false)
+			if e != nil {
+				return e
+			}
+			out.CanVerifyDuty, e = u.employmentAllowed(ctx, "duty.verify", a.Person, a.Employer, a.Department, false)
+			if e != nil {
+				return e
+			}
 			out.CanHandover, e = u.employmentAllowed(ctx, "position.handover", a.Person, a.Employer, a.Department, false)
 			if e != nil {
 				return e
@@ -292,6 +300,19 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 						return ok, e
 					}
 					return u.employmentAllowed(ctx, permission, item.Person, item.Employer, read.before, false)
+				}
+				var duty bool
+				if item.Kind == "Transfer" {
+					if e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM staffing.duty_application WHERE instance_id=$1 AND action_id=$2)`, st.Instance, item.ID).Scan(&duty); e != nil {
+						return e
+					}
+				}
+				if duty {
+					if item.CanCorrectDuty, e = permitted("duty.correct"); e != nil {
+						return e
+					}
+					out.Actions = append(out.Actions, item)
+					continue
 				}
 				if item.CanMaintain, e = permitted("record.redate"); e != nil {
 					return e

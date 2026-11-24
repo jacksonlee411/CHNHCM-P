@@ -5370,6 +5370,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/duty-sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["assignmentDutySources"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/duty-observations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["verifyDutyObservation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/actual-duty": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recordActualDuty"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/position-exchanges": {
         parameters: {
             query?: never;
@@ -5927,6 +5975,54 @@ export interface components {
             /** Format: uuid */
             sourceVersion: string;
         };
+        DutyRef: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            version: string;
+        };
+        DutyObservation: {
+            dispatch: components["schemas"]["DecisionRef"];
+            issuer: string;
+            number: string;
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            observedThrough: string;
+            /** Format: date */
+            lastDay?: string;
+            previous?: components["schemas"]["DutyRef"];
+        };
+        DutyEvidence: {
+            dispatch: components["schemas"]["DecisionRef"];
+            issuer: string;
+            number: string;
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            observedThrough: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            version: string;
+            /** Format: date */
+            until?: string;
+            dispatchNumber: string;
+            /** Format: uuid */
+            position: string;
+            positionName: string;
+        };
+        DutySources: {
+            decisions: components["schemas"]["DecisionOption"][];
+            observations: components["schemas"]["DutyEvidence"][];
+        };
+        DutyCommand: {
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            action?: components["schemas"]["EmploymentActionRef"];
+            paper?: components["schemas"]["DutyObservation"];
+            observation?: components["schemas"]["DutyRef"];
+        };
         SuccessionSearch: {
             /** Format: uuid */
             position: string;
@@ -6147,6 +6243,7 @@ export interface components {
             beforePositionName?: string;
             beforeJobName?: string;
             after: {
+                duty?: components["schemas"]["DutyEvidence"];
                 succession?: components["schemas"]["SuccessionEvidence"];
                 /** Format: uuid */
                 department?: string;
@@ -6317,6 +6414,8 @@ export interface components {
             keyword: string;
         };
         AssignmentView: {
+            canRecordDuty: boolean;
+            canVerifyDuty: boolean;
             canHandover: boolean;
             /** Format: date */
             lastActive?: string;
@@ -6622,6 +6721,7 @@ export interface components {
             operation: "Add" | "Insert" | "Correct" | "Redate" | "Delete" | "Rebase" | "Withdraw";
             canMaintain: boolean;
             canDelete: boolean;
+            canCorrectDuty?: boolean;
             canCorrectTransfer: boolean;
             /** Format: date */
             businessDate: string;
@@ -24898,6 +24998,113 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentDutySources: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DutySources"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    verifyDutyObservation: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DutyObservation"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DutyEvidence"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    recordActualDuty: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DutyCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
                 };
             };
             /** @description Unavailable */

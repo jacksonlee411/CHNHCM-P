@@ -16,7 +16,7 @@ async function signIn(page: Page, login = 'admin') {
   await page.getByRole('button', { name: '登录', exact: true }).click();
   await expect(page.getByRole('button', { name: '退出', exact: true })).toBeVisible();
 }
-async function seed(page: Page, withDocument = true) {
+async function seed(page: Page, withDocument = true, employerFrom='2027-04-01') {
   const suffix = randomUUID().slice(0, 8),
     name = '入职试办' + suffix,
     department = '研发' + suffix,
@@ -57,7 +57,7 @@ async function seed(page: Page, withDocument = true) {
         role: 'employer',
         kind: 'declaration',
         basis: '设立及用工资格',
-        from: '2027-04-01',
+        from: employerFrom,
       },
     },
     200,
@@ -335,7 +335,7 @@ for (const [width, height] of [
     await journey(page, sample, width === 1440 && height === 540, width <= 390);
   });
 }
-async function native200(run: (page: Page, sample: Awaited<ReturnType<typeof seed>>) => Promise<void>) {
+async function native200(run: (page: Page, sample: Awaited<ReturnType<typeof seed>>) => Promise<void>,prepare:(page:Page)=>ReturnType<typeof seed>=seed) {
   test.setTimeout(140000);
   let display = 5800 + (process.pid % 1000);
   while (existsSync('/tmp/.X11-unix/X' + display) || existsSync('/tmp/.X' + display + '-lock')) display++;
@@ -373,7 +373,7 @@ async function native200(run: (page: Page, sample: Awaited<ReturnType<typeof see
     });
     const page = await ctx.newPage();
     await signIn(page);
-    const sample = await seed(page);
+    const sample = await prepare(page);
     const cdp = await ctx.newCDPSession(page),
       win = await cdp.send('Browser.getWindowForTarget');
     const size = await page.evaluate(() => ({ w: innerWidth, h: innerHeight }));
@@ -446,7 +446,7 @@ async function hireAtLocation(page: Page, sample: Awaited<ReturnType<typeof seed
   expect(hired.status, hired.body.message).toBe(200);
   return { locations, hire: hired.body };
 }
-async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeof seed>>){
+async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeof seed>>,businessAt='2027-04-01'){
   const desktop = page.getByRole('button', { name: '切换应用', exact: true });
   if (await desktop.isVisible()) {
     await desktop.click();
@@ -459,7 +459,7 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
   }
   await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
   const date = page.getByRole('textbox', { name: /^业务日期/ });
-  await date.fill('2027-04-01');
+  await date.fill(businessAt);
   await date.press('Tab');
   const search = page.getByRole('textbox', { name: '姓名或人员编号' });
   await search.fill(sample.name);
@@ -1412,3 +1412,63 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 内部接任十天交接 原生200%',async()=>{await native200(successionJourney)});
+
+async function dutyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
+  const entry='2026-04-01', first='2026-04-05', last='2026-04-07', after='2026-04-08';
+  const send=async(path:string,body:object,status=200)=>{
+    const r=await request(page,'POST','/api/v1/'+path,body,randomUUID());expect(r.status,r.body.message).toBe(status);return r.body;
+  };
+  for(const purpose of ['hire','transfer']){
+    const rules=(await request(page,'GET','/api/v1/assignment-policies')).body;
+    const prior=rules.rows.find((r:{category:string;purpose:string;from:string})=>r.category==='Employee'&&r.purpose===purpose&&r.from===entry);
+    if(prior){expect(prior.mode).toBe('PositionCounted');continue}
+    await send('assignment-policies',{expectedVersion:rules.version,row:{id:randomUUID(),purpose,category:'Employee',mode:'PositionCounted',from:entry,until:'2026-05-01'}});
+  }
+  const family=await seed308(page,'jobfamily');
+  const store=await seedPosition(page,'position',family.id),home=await seedPosition(page,'position',family.id);
+  for(const [p,n] of [[store,3],[home,1]] as const){
+    await send('staffing-quotas',{positionId:p.id,effectiveDate:entry,quota:n,reason:'四月门店核编'});
+  }
+  const hire=(person:string,position:string)=>send('hires',{person,employer:sample.employerId,position,arrival:entry,lastDay:'2026-04-30',notice:'四月正式在岗通知'});
+  for(const name of ['早班','中班','晚班']){
+    const id=(await send('persons',{submissionId:randomUUID(),name:name+sample.name,primaryDocument:{kind:'passport',number:randomUUID()}})).id;
+    await hire(id,store.id);
+  }
+  await hire(sample.id,home.id);
+  const number='门店已执行派令'+sample.name;
+  await send('appointment-decisions',{source:randomUUID(),number,roster:false,rows:[{person:sample.id,employer:{id:sample.employerId,name:sample.employer},position:{id:store.id,name:store.name},arrival:first}]});
+  await openEmployeeAssignment(page,sample,first);
+  const button=(name:string)=>page.getByRole('button',{name,exact:true});
+  const select=async(label:string,choice:string)=>{await page.getByRole('combobox',{name:new RegExp(label)}).click();await page.getByRole('option',{name:choice,exact:true}).click()};
+  const date=async(label:string,date:string)=>{const field=page.getByRole('textbox',{name:new RegExp('^'+label)});await field.fill(date);await field.press('Tab')};
+  await button('新增记录').click();await select('办理类型','调动');
+  await page.getByRole('combobox',{name:/调入岗位/}).fill(store.name);
+  await page.getByRole('option',{name:store.name,exact:true}).click();
+  await page.getByLabel(/调动依据/).fill('常规拟调入');await button('保存').click();
+  await expect(page.getByText(new RegExp(store.name+'.*缺 1 编')).last()).toBeVisible();
+  await button('取消').click();await page.getByRole('dialog').getByRole('button',{name:/放弃/}).click();
+  const enter=async()=>{
+    await button('新增记录').click();await select('办理类型','补录实际履职');await select('履职资料','登记出勤原件');
+    await select('派岗决定',number+' · '+store.name);
+    await page.getByLabel(/出勤出具方/).fill('门店考勤');await page.getByLabel(/出勤原件编号/).fill('考勤'+sample.name);
+    await date('最后履职日',last);await date('出勤核实至',after);
+  };
+  await enter();await button('取消').click();await page.getByRole('dialog').getByRole('button',{name:/放弃/}).click();
+  const usage=async(day:string)=>(await request(page,'GET','/api/v1/positions/'+store.id+'/replenishment?businessAt='+day)).body;
+  expect((await usage(first)).occupied).toBe(3);
+  await enter();await button('保存').focus();await page.keyboard.press('Enter');
+  await expect(page.getByText('核定 3 · 实占 4 · 超编 1',{exact:true})).toBeVisible();
+  await button('调动 · '+first).click();
+  await expect(page.getByText('门店考勤 · 考勤'+sample.name,{exact:true})).toBeVisible();
+  await expect(page.getByText(first+' 至 '+last,{exact:true})).toBeVisible();
+  for(const day of [first,'2026-04-06',last,after]){const v=await usage(day);expect([v.quota,v.occupied,v.excess]).toEqual(day===after?[3,3,0]:[3,4,1])}
+  await date('查看业务日',after);await expect(page.getByText(home.name+' · 占编',{exact:true})).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+}
+const seedDuty=(page:Page)=>seed(page,true,'2026-04-01');
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 满编门店的三天实况补录 ${width}x${height}`,async({page})=>{
+    test.setTimeout(150000);await signIn(page);const sample=await seedDuty(page);await page.setViewportSize({width,height});await dutyJourney(page,sample);
+  });
+}
+test('M04 满编门店的三天实况补录 原生200%',async()=>{await native200(dutyJourney,seedDuty)});

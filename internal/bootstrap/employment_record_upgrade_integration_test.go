@@ -126,10 +126,19 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	before52 := publications()
 	var exchangeRows int
 	must(t, pool.QueryRow(ctx, "SELECT count(*) FROM staffing.transfer_exchange_revision").Scan(&exchangeRows))
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00052" })))
+	beforeDuty := publications()
+	var proofSources string
+	must(t, pool.QueryRow(ctx, `SELECT jsonb_agg(to_jsonb(v) ORDER BY v.source,v.version)::text FROM staffing.appointment_version v`).Scan(&proofSources))
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+	var surviving string
+	must(t, pool.QueryRow(ctx, `SELECT jsonb_agg(to_jsonb(v) ORDER BY v.source,v.version)::text FROM staffing.appointment_version v`).Scan(&surviving))
+	if proofSources != surviving || beforeDuty != publications() {
+		t.Fatal("履职资料升级改变原派岗或任期来源")
+	}
 	if publications() != before52 {
 		t.Fatal("00052 改变原任期来源")
 	}

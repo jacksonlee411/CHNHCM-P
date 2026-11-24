@@ -52,6 +52,7 @@ type Action struct {
 	CanCorrectPromotion  bool       `json:"canCorrectPromotion"`
 	CanWithdrawPromotion bool       `json:"canWithdrawPromotion"`
 	Operation            string     `json:"operation"`
+	CanCorrectDuty       bool       `json:"canCorrectDuty"`
 	CanCorrectTransfer   bool       `json:"canCorrectTransfer"`
 	CanMaintain          bool       `json:"canMaintain"`
 	CanDelete            bool       `json:"canDelete"`

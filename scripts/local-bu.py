@@ -317,7 +317,7 @@ def execute(args):
             dict(Instance=config["instance"], **enterprise,
                  Login=login, Password=password, ReadOnly=read_only, PersonnelProfile="reader" if read_only else "registrar", PersonalProfileFixture=True,
                  SensitiveProfileFixture=bool(config.get("sensitive_profile")) and not read_only,
-                 **(dict(HireIdentityFixture=True, EmploymentFixture=True, FirstHireRule=dict(Version="T02-employee-1", From="2027-04-01")) if config.get("first_hire") and not read_only else {})))
+                 **(dict(HireIdentityFixture=True, EmploymentFixture=True, FirstHireRule=dict(Version="T02-employee-1", From="2027-04-01", HistoricalFixtureFrom="2026-01-01")) if config.get("first_hire") and not read_only else {})))
     run([str(BIN / "upgrader"), "-mode", "country-catalog"], env,
         dict(login=config["login"], password=config["password"]))
     run([str(BIN / "upgrader"), "-mode", "geoarea-catalog"], env,

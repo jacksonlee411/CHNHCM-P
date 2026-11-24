@@ -24,6 +24,11 @@ type AccessCredential struct {
 	UpdatedAt        pgtype.Timestamptz
 }
 
+type AccessDutyFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessEmploymentFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -1336,6 +1341,39 @@ type StaffingAssignmentSource struct {
 	Previous     pgtype.UUID
 	ActionID     string
 	Revision     string
+}
+
+type StaffingDutyApplication struct {
+	InstanceID    string
+	ObservationID string
+	ActionID      string
+}
+
+type StaffingDutyObservation struct {
+	InstanceID   string
+	ID           string
+	AssignmentID string
+	Issuer       string
+	Number       string
+}
+
+type StaffingDutyObservationHead struct {
+	InstanceID    string
+	ObservationID string
+	Version       string
+}
+
+type StaffingDutyObservationRevision struct {
+	InstanceID      string
+	ObservationID   string
+	Version         string
+	Previous        pgtype.UUID
+	Actor           string
+	RecordedAt      pgtype.Timestamptz
+	Digest          string
+	Dispatch        string
+	DispatchVersion string
+	Fact            []byte
 }
 
 type StaffingEmployment struct {

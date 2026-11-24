@@ -37,6 +37,7 @@ type SuccessionOption struct {
 	Job        string `json:"jobName"`
 }
 type JobTransfer struct {
+	Duty       *DutyEvidence             `json:"duty,omitempty"`
 	Succession *Succession               `json:"succession,omitempty"`
 	Position   string                    `json:"position,omitempty"`
 	Department string                    `json:"department,omitempty"`
@@ -116,7 +117,7 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 			}
 		}
 	}
-	var activeTransfer *JobTransfer
+	var activeTransfer, actualTransfer *JobTransfer
 	var activeLocation *LocationRef
 	var activeGrade *GradeRef
 	for _, span := range term.Split(days) {
@@ -135,6 +136,15 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 				}
 				last := result.Segments[len(result.Segments)-1]
 				state.Department, state.Job, state.Adoption = last.Department, last.Job, last.Adoption
+			}
+		}
+		if actualTransfer != nil {
+			if actualTransfer.Duty.Includes(day) {
+				if e := applyTransfer(&state, actualTransfer, day); e != nil {
+					return result, e
+				}
+			} else {
+				actualTransfer = nil
 			}
 		}
 		if activeLocation != nil {
@@ -197,7 +207,14 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 					return result, historyConflict("同日的调动存在冲突")
 				}
 				transfer = true
-				activeTransfer = r.Transfer
+				if actualTransfer != nil {
+					return result, historyConflict("所选日期已有实际履职记录，请从原笔核对重叠期间")
+				}
+				if r.Transfer.Duty != nil {
+					actualTransfer = r.Transfer
+				} else {
+					activeTransfer = r.Transfer
+				}
 				if e := applyTransfer(&state, r.Transfer, day); e != nil {
 					return result, e
 				}

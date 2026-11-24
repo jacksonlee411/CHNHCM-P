@@ -53,6 +53,8 @@ type State struct {
 }
 
 type AssignmentView struct {
+	CanRecordDuty       bool           `json:"canRecordDuty"`
+	CanVerifyDuty       bool           `json:"canVerifyDuty"`
 	CanHandover         bool           `json:"canHandover"`
 	LastActive          string         `json:"lastActive,omitempty"`
 	CanEnd              bool           `json:"canEnd"`
@@ -148,6 +150,9 @@ type TransferSearch struct {
 	Department   string `json:"department,omitempty"`
 }
 type JobInformation interface {
+	DutySources(context.Context, f.Credentials, string) (DutySources, error)
+	ReceiveDuty(context.Context, f.Credentials, string, string, DutyObservation) (DutyEvidence, error)
+	RecordDuty(context.Context, f.Credentials, string, string, DutyCommand) (Receipt, error)
 	SuccessionOptions(context.Context, f.Credentials, string, SuccessionSearch) ([]SuccessionOption, error)
 	TransferArrangement(context.Context, f.Credentials, string, TransferArrangementQuery) (ArrangementMode, error)
 	ExitAssignment(context.Context, f.Credentials, string, string, bool, ExitCommand) (Receipt, error)

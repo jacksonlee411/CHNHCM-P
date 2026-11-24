@@ -12678,6 +12678,55 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/duty-sources:
+    get:
+      operationId: assignmentDutySources
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/DutySources'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/duty-observations:
+    post:
+      operationId: verifyDutyObservation
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/DutyObservation'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/DutyEvidence'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/actual-duty:
+    post:
+      operationId: recordActualDuty
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/DutyCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/{id}/position-exchanges:
     post:
       operationId: exchangeAssignmentPositions
@@ -13252,6 +13301,52 @@ components:
       properties:
         assignment: {type: string, format: uuid}
         sourceVersion: {type: string, format: uuid}
+    DutyRef:
+      type: object
+      required: [id, version]
+      properties:
+        id: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+    DutyObservation:
+      type: object
+      required: [dispatch, issuer, number, from, observedThrough]
+      properties:
+        dispatch: {$ref: '#/components/schemas/DecisionRef'}
+        issuer: {type: string}
+        number: {type: string}
+        from: {type: string, format: date}
+        observedThrough: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        previous: {$ref: '#/components/schemas/DutyRef'}
+    DutyEvidence:
+      type: object
+      required: [id, version, dispatch, issuer, number, from, observedThrough, dispatchNumber, position, positionName]
+      properties:
+        dispatch: {$ref: '#/components/schemas/DecisionRef'}
+        issuer: {type: string}
+        number: {type: string}
+        from: {type: string, format: date}
+        observedThrough: {type: string, format: date}
+        id: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+        until: {type: string, format: date}
+        dispatchNumber: {type: string}
+        position: {type: string, format: uuid}
+        positionName: {type: string}
+    DutySources:
+      type: object
+      required: [decisions, observations]
+      properties:
+        decisions: {type: array, items: {$ref: '#/components/schemas/DecisionOption'}}
+        observations: {type: array, items: {$ref: '#/components/schemas/DutyEvidence'}}
+    DutyCommand:
+      type: object
+      required: [expectedSourceVersion]
+      properties:
+        expectedSourceVersion: {type: string, format: uuid}
+        action: {$ref: '#/components/schemas/EmploymentActionRef'}
+        paper: {$ref: '#/components/schemas/DutyObservation'}
+        observation: {$ref: '#/components/schemas/DutyRef'}
     SuccessionSearch:
       type: object
       required: [position, businessDate, page]
@@ -13454,6 +13549,7 @@ components:
         after:
           type: object
           properties:
+            duty: {$ref: '#/components/schemas/DutyEvidence'}
             succession: {$ref: '#/components/schemas/SuccessionEvidence'}
             department: {type: string, format: uuid}
             position: {type: string, format: uuid}
@@ -13595,8 +13691,10 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canRecordDuty, canVerifyDuty, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
       properties:
+        canRecordDuty: {type: boolean}
+        canVerifyDuty: {type: boolean}
         canHandover: {type: boolean}
         lastActive: {type: string, format: date}
         managers: {type: array, items: {$ref: '#/components/schemas/ActualManagerFact'}}
@@ -13985,6 +14083,7 @@ components:
         operation: {type: string, enum: [Add, Insert, Correct, Redate, Delete, Rebase, Withdraw]}
         canMaintain: {type: boolean}
         canDelete: {type: boolean}
+        canCorrectDuty: {type: boolean}
         canCorrectTransfer: {type: boolean}
         businessDate: {type: string, format: date}
         sourceVersion: {type: string, format: uuid}
