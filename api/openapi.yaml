@@ -12241,6 +12241,7 @@ paths:
       operationId: listEmploymentRegister
       security: [{session: []}]
       parameters:
+      - {in: query, name: anchor, schema: {type: string, format: uuid}}
       - {in: query, name: ref, schema: {type: string, format: uuid}}
       - {in: query, name: department, schema: {type: string, format: uuid}}
       - {in: query, name: fromDepartment, schema: {type: string, format: uuid}}
@@ -12452,6 +12453,20 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/probation-predecessors:
+    get:
+      operationId: probationPredecessors
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: businessAt, required: true, schema: {type: string, format: date}}
+      responses:
+        '200':
+          description: Authorized same-day decisions of the relationship's personnel-management assignment
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/ProbationPredecessor'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/{id}/grade-options:
     post:
       operationId: assignmentGradeOptions
@@ -12466,6 +12481,21 @@ paths:
         '200':
           description: Authorized result
           content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/AssignmentGrade'}}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/assignments/{id}/leave-impact:
+    get:
+      operationId: assignmentLeaveImpact
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: date, required: true, schema: {type: string, format: date}}
+      - {in: query, name: meaning, required: true, schema: {type: string, enum: [last-active, first-inactive]}}
+      responses:
+        '200':
+          description: Authorized assignments and contracts affected by the employment exit
+          content: {application/json: {schema: {$ref: '#/components/schemas/EmploymentLeaveImpact'}}}
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
@@ -13659,6 +13689,28 @@ components:
               assignment: {type: string, format: uuid}
               recordNumber: {type: integer}
               from: {type: string, format: date}
+    EmploymentLeaveImpact:
+      allOf:
+      - {$ref: '#/components/schemas/EmploymentRelationSummary'}
+      - type: object
+        properties:
+          canManageContracts: {type: boolean}
+          contracts:
+            type: array
+            items:
+              allOf:
+              - {$ref: '#/components/schemas/ContractRef'}
+              - {type: object, required: [number], properties: {number: {type: string}}}
+    ProbationPredecessor:
+      type: object
+      additionalProperties: false
+      required: [id, revision, kind, notice, businessDate]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        kind: {type: string, enum: [Transfer, Promotion]}
+        notice: {type: string}
+        businessDate: {type: string, format: date}
     ProbationCommand:
       type: object
       additionalProperties: false
@@ -13683,7 +13735,7 @@ components:
       required: [start, attribution]
       properties:
         start: {type: string, format: date}
-        attribution: {type: string, enum: [relationship, notice, relationship-primary, primary-unavailable, same-day-order-undetermined, preceding-transfer]}
+        attribution: {type: string, enum: [relationship, notice, relationship-primary, primary-unavailable, same-day-order-undetermined, preceding-transfer, preceding-action]}
         departmentSource: {type: string, format: uuid}
         departmentRevision: {type: string, format: uuid}
         department: {type: string, format: uuid}
@@ -13847,6 +13899,13 @@ components:
       type: object
       required: [rows, departments, fromDepartments, toDepartments, operators, total, keyword]
       properties:
+        navigation:
+          type: object
+          required: [position]
+          properties:
+            position: {type: integer, minimum: 1}
+            previous: {type: string, format: uuid}
+            next: {type: string, format: uuid}
         rows: {type: array, items: {$ref: '#/components/schemas/EmploymentRegisterRow'}}
         departments: {type: array, items: {type: object, required: [id, name], properties: {id: {type: string, format: uuid}, name: {type: string}}}}
         fromDepartments: {type: array, items: {type: object, required: [id, name], properties: {id: {type: string, format: uuid}, name: {type: string}}}}
@@ -13918,8 +13977,10 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canReadContracts, canRecordDuty, canVerifyDuty, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave]
+      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canReadContracts, canRecordDuty, canVerifyDuty, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave, canAddRecord, canInsertRecord]
       properties:
+        canAddRecord: {type: boolean}
+        canInsertRecord: {type: boolean}
         canReadContracts: {type: boolean}
         canRecordDuty: {type: boolean}
         canVerifyDuty: {type: boolean}
@@ -14057,6 +14118,13 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        initialRecordPosition:
+          type: object
+          additionalProperties: false
+          required: [recorded]
+          properties:
+            recorded: {type: string, enum: [Add, Insert]}
+            effective: {type: string, enum: [Add, Insert]}
         exchange: {$ref: '#/components/schemas/PositionExchangeLink'}
         rehireOf: {$ref: '#/components/schemas/EmploymentActionRef'}
         manager: {$ref: '#/components/schemas/ActualManagerFact'}
@@ -15097,6 +15165,7 @@ components:
       - seats
       properties:
         handoverSource: {type: string, format: uuid}
+        successionSource: {type: string, format: uuid}
         quotaSource: {type: string, format: uuid}
         quotaRevision: {type: string, format: uuid}
         recruitingCoverage: {type: string, format: uuid}

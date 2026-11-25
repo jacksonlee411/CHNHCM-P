@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { Alert, Box, Button, MenuItem, Stack, Typography, useMediaQuery } from '@mui/material';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import { useGridApiRef, type GridColDef } from '@mui/x-data-grid';
+import { Link, useLocation, useNavigationType, useSearchParams } from 'react-router-dom';
+import { useGridApiRef, type GridColDef, type GridSortModel } from '@mui/x-data-grid';
 import { api, sessionGuard, unwrap, type Models } from '@chnhcm/api-client';
 import { DataGridPage, ListControl, ListPager, ObjectTextField, SearchControl } from '@chnhcm/ui';
 import { useListReturn, usePageTitle } from '../../shared/navigation';
@@ -16,14 +16,14 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   const compact = useMediaQuery('(max-width:899px)');
   const [searching, setSearching] = useState(false);
   const [params, setParams] = useSearchParams(),
-    route = useLocation();
+    route = useLocation(), navigation = useNavigationType();
   const query = {
     ...person.parse(params),
     businessAt: params.get('businessAt') ?? undefined,
     department: params.get('department') ?? undefined,
     person: params.get('person') ?? undefined,
   };
-  const listing = person.useRead(JSON.stringify(query), async () =>
+  const listing = person.useRead(JSON.stringify([route.key, query]), async () =>
     unwrap(
       await api.POST('/api/v1/assignments/query', {
         params: { header: { 'X-CSRF-Token': session.csrf } },
@@ -32,6 +32,16 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
     ),
   );
   const data = searching ? undefined : listing.data;
+  const countKey = JSON.stringify({ ...query, page: undefined });
+  const lastCount = useRef<{ key: string; total: number } | undefined>(undefined);
+  useLayoutEffect(() => {
+    if (listing.error) lastCount.current = undefined;
+    else if (data) lastCount.current = {key: countKey, total: data.total};
+  }, [countKey, data, listing.error]);
+  const rowCount = data?.total ?? (!listing.error && lastCount.current?.key === countKey ? lastCount.current.total : undefined);
+  const sortModel = useMemo<GridSortModel>(() => [
+    { field: query.sort.replace(/^-/, ''), sort: query.sort.startsWith('-') ? 'desc' : 'asc' },
+  ], [query.sort]);
   const apiRef = useGridApiRef(),
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
@@ -46,12 +56,37 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   const readyRef = useRef<string | undefined>(undefined),
     request = useRef(0),
     edit = useRef(0);
-  useEffect(() => {
+  const waitingForRef = useRef<string | undefined>(undefined);
+  const localSearch = useRef<string | undefined>(undefined);
+  useLayoutEffect(() => {
+    const local = navigation !== 'POP' && localSearch.current === route.search;
+    localSearch.current = undefined;
+    if (!local) {
+      request.current++;
+      waitingForRef.current = undefined;
+      readyRef.current = undefined;
+      setSearching(false);
+      setDraft('');
+      setError('');
+    }
+  }, [route.key, route.search, navigation]);
+  useLayoutEffect(() => {
+    if (waitingForRef.current && waitingForRef.current === query.ref && (listing.data || listing.error)) {
+      waitingForRef.current = undefined;
+      setSearching(false);
+    }
+    if (listing.status === 401 || listing.status === 403) {
+      request.current++;
+      readyRef.current = undefined;
+      setSearching(false);
+      setDraft('');
+      return;
+    }
     if (data && readyRef.current !== (query.ref ?? '')) {
       setDraft(data.keyword);
       readyRef.current = query.ref ?? '';
     }
-  }, [data, query.ref]);
+  }, [data, query.ref, listing.data, listing.error, listing.status]);
   useEffect(
     () => () => {
       request.current++;
@@ -83,7 +118,9 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
       if (v) next.set(k, v);
       else next.delete(k);
     }
+    if (next.toString() === appliedParams.current.toString()) return;
     appliedParams.current = next;
+    localSearch.current = '?' + next;
     setParams(next);
   }
   async function search() {
@@ -91,18 +128,31 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
       revision = edit.current,
       current = sessionGuard();
     setSearching(true);
+    waitingForRef.current = undefined;
     try {
       const { ref } = await person.queryRef(session, draft);
       if (token === request.current && current()) {
         setError('');
         if (revision !== edit.current) readyRef.current = ref;
+        waitingForRef.current = ref;
         update({ ref, page: '1' });
       }
     } catch (e) {
       if (token === request.current && current()) setError(person.message(e));
     } finally {
-      if (token === request.current && current()) setSearching(false);
+      if (token === request.current && current() && !waitingForRef.current) setSearching(false);
     }
+  }
+  const visibleRows = useRef<Set<string>>(new Set());
+  useLayoutEffect(() => {
+    visibleRows.current = new Set(data?.rows.map(row => row.id));
+  }, [data]);
+  function openRow(event: MouseEvent<HTMLAnchorElement>, row: Row) {
+    if (new URLSearchParams(window.location.search).toString() !== params.toString() || !visibleRows.current.has(row.id)) {
+      event.preventDefault();
+      return;
+    }
+    returned.rememberRow(row.id);
   }
   const columns = useMemo<GridColDef<Row>[]>(() => {
     const link = (r: Row) => {
@@ -114,7 +164,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
         <Link
           data-object-link
           className="object-name-link"
-          onClick={() => returned.rememberRow(r.id)}
+          onClick={event => openRow(event, r)}
           to={person.path + '/' + r.person + '/assignments/' + r.id + '?' + next}
         >
           {r.name}
@@ -171,7 +221,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
             <Link
               data-object-link
               to={person.path + '/' + row.person + '/assignments/' + row.id + '?' + q}
-              onClick={() => returned.rememberRow(row.id)}
+              onClick={event => openRow(event, row)}
             >
               {row.name} · {row.recordNumber} 号{row.primaryJob ? '主岗' : '兼岗'}
             </Link>
@@ -213,16 +263,15 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
         columns={columns}
         summaryColumn={summary}
         paginationModel={{ page: query.page - 1, pageSize: query.pageSize }}
-        rowCount={data?.total ?? 0}
-        onPaginationModelChange={(m) =>
+        rowCount={rowCount}
+        onPaginationModelChange={(m) => {
+          if (!data || (m.page === query.page - 1 && m.pageSize === query.pageSize)) return;
           update({
             page: String(m.pageSize === query.pageSize ? m.page + 1 : 1),
             pageSize: String(m.pageSize),
-          })
-        }
-        sortModel={[
-          { field: query.sort.replace(/^-/, ''), sort: query.sort.startsWith('-') ? 'desc' : 'asc' },
-        ]}
+          });
+        }}
+        sortModel={sortModel}
         onSortModelChange={(m) => {
           const sort = (m[0]?.sort === 'desc' ? '-' : '') + (m[0]?.field ?? 'number');
           if (sort !== query.sort) update({ sort, page: '1' });

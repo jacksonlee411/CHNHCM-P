@@ -108,6 +108,15 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 			return hires.ExitAssignment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.leave, in)
 		}))
 	}
+	mux.HandleFunc("GET /api/v1/assignments/{id}/leave-impact", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "date", "meaning")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.LeaveImpact(r.Context(), credentials(r), r.PathValue("id"), q.Get("date"), q.Get("meaning"))
+		respond(w, 200, v, e)
+	})
 	mux.HandleFunc("GET /api/v1/recruiting/offers/{id}/hire-handoff", func(w http.ResponseWriter, r *http.Request) {
 		q, e := queryValues(r, "sourceVersion")
 		if e != nil {
@@ -169,6 +178,15 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/probation-departments", ruleBody(func(r *http.Request, in h.LocationSearch) (any, error) {
 		return hires.ProbationDepartments(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))
+	mux.HandleFunc("GET /api/v1/assignments/{id}/probation-predecessors", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "businessAt")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.ProbationPredecessors(r.Context(), credentials(r), r.PathValue("id"), q.Get("businessAt"))
+		respond(w, 200, v, e)
+	})
 	for _, op := range []struct{ path, kind string }{{"trial-start", "ProbationStart"}, {"confirm-employment", "ConfirmEmployment"}} {
 		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.ProbationCommand) (any, error) {
 			return hires.RecordProbation(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.kind, in)

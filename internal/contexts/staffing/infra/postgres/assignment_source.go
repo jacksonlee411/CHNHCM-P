@@ -13,7 +13,35 @@ type employmentEntry struct {
 	adoption                                                                      any
 }
 
+// A relation decision may have been published to an assignment that had
+// already ended. Use only the effective nodes belonging to the chosen term.
+const activeRecordMembers = ` FROM staffing.assignment_member m
+	JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
+	JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(m.instance_id,m.action_id,m.revision)
+	WHERE r.operation NOT IN ('Delete','Withdraw') AND a.kind<>'CancelHire'
+	AND (a.kind NOT IN ('ProbationStart','ConfirmEmployment') OR EXISTS(SELECT FROM staffing.assignment_segment seg
+		WHERE (seg.instance_id,seg.assignment_id,seg.version)=(m.instance_id,m.assignment_id,m.version) AND seg.period @> r.business_date)) `
+
+func (u *unit) newRecordOperation(ctx context.Context, assignment, day string) (string, error) {
+	var later bool
+	err := u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT`+activeRecordMembers+`
+		AND m.instance_id=$1 AND m.assignment_id=$2 AND r.business_date>$3::date
+		AND m.version=(SELECT version FROM staffing.assignment_head WHERE instance_id=$1 AND assignment_id=$2))`,
+		u.store.Instance, assignment, day).Scan(&later)
+	if later {
+		return "Insert", err
+	}
+	return "Add", err
+}
+
 func (u *unit) newEmploymentAction(ctx context.Context, e employmentEntry) error {
+	if e.operation == "" && !h.StartsAssignment(e.kind) && e.kind != "CancelHire" {
+		op, err := u.newRecordOperation(ctx, e.assignment, e.date)
+		if err != nil {
+			return err
+		}
+		e.operation = op
+	}
 	operator, err := u.guard.OperatorSnapshot(ctx)
 	if err != nil {
 		return err

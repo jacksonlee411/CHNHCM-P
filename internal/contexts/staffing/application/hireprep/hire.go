@@ -136,32 +136,38 @@ type ExchangeLink struct {
 	Peer       string     `json:"peerAssignment,omitempty"`
 	Original   *ActionRef `json:"peerAction,omitempty"`
 }
+type InitialRecordPosition struct {
+	Recorded  string `json:"recorded"`
+	Effective string `json:"effective,omitempty"`
+}
+
 type Original struct {
-	Exchange          *ExchangeLink      `json:"exchange,omitempty"`
-	Manager           *ManagerFact       `json:"manager,omitempty"`
-	Exit              *ExitEvidence      `json:"exit,omitempty"`
-	RehireOf          *ActionRef         `json:"rehireOf,omitempty"`
-	NoticeRef         *ActionRef         `json:"noticeRef,omitempty"`
-	Promotion         *PromotionEvidence `json:"promotion,omitempty"`
-	Previous          *ActionRef         `json:"previous,omitempty"`
-	Relation          *RelationSummary   `json:"relation,omitempty"`
-	TrialStart        string             `json:"trialStart,omitempty"`
-	Probation         *ProbationEvidence `json:"probation,omitempty"`
-	Secondary         *SecondaryEvidence `json:"secondary,omitempty"`
-	Transfer          *TransferEvidence  `json:"transfer,omitempty"`
-	Requires          *RequiredFact      `json:"requires,omitempty"`
-	DepartmentName    string             `json:"departmentName,omitempty"`
-	Revisions         []Revision         `json:"revisions,omitempty"`
-	LocationChange    *LocationEvidence  `json:"locationChange,omitempty"`
-	Appointment       *DecisionOption    `json:"appointment,omitempty"`
-	Action            Action             `json:"action"`
-	Sources           *Adoption          `json:"sources,omitempty"`
-	Reason            string             `json:"reason,omitempty"`
-	State             string             `json:"state,omitempty"`
-	PrimaryPurpose    string             `json:"primaryPurpose,omitempty"`
-	PrimaryEmployment string             `json:"primaryEmployment,omitempty"`
-	PrimaryAssignment string             `json:"primaryAssignment,omitempty"`
-	OriginalRevision  string             `json:"originalRevision,omitempty"`
+	InitialPosition   *InitialRecordPosition `json:"initialRecordPosition,omitempty"`
+	Exchange          *ExchangeLink          `json:"exchange,omitempty"`
+	Manager           *ManagerFact           `json:"manager,omitempty"`
+	Exit              *ExitEvidence          `json:"exit,omitempty"`
+	RehireOf          *ActionRef             `json:"rehireOf,omitempty"`
+	NoticeRef         *ActionRef             `json:"noticeRef,omitempty"`
+	Promotion         *PromotionEvidence     `json:"promotion,omitempty"`
+	Previous          *ActionRef             `json:"previous,omitempty"`
+	Relation          *RelationSummary       `json:"relation,omitempty"`
+	TrialStart        string                 `json:"trialStart,omitempty"`
+	Probation         *ProbationEvidence     `json:"probation,omitempty"`
+	Secondary         *SecondaryEvidence     `json:"secondary,omitempty"`
+	Transfer          *TransferEvidence      `json:"transfer,omitempty"`
+	Requires          *RequiredFact          `json:"requires,omitempty"`
+	DepartmentName    string                 `json:"departmentName,omitempty"`
+	Revisions         []Revision             `json:"revisions,omitempty"`
+	LocationChange    *LocationEvidence      `json:"locationChange,omitempty"`
+	Appointment       *DecisionOption        `json:"appointment,omitempty"`
+	Action            Action                 `json:"action"`
+	Sources           *Adoption              `json:"sources,omitempty"`
+	Reason            string                 `json:"reason,omitempty"`
+	State             string                 `json:"state,omitempty"`
+	PrimaryPurpose    string                 `json:"primaryPurpose,omitempty"`
+	PrimaryEmployment string                 `json:"primaryEmployment,omitempty"`
+	PrimaryAssignment string                 `json:"primaryAssignment,omitempty"`
+	OriginalRevision  string                 `json:"originalRevision,omitempty"`
 }
 type EmployerSearch struct {
 	RehireOf   *ActionRef `json:"rehireOf,omitempty"`

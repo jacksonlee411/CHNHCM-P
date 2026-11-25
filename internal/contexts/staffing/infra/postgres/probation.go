@@ -102,11 +102,9 @@ func (u *unit) probationAttribution(ctx context.Context, a h.Action, in h.Probat
 		return ev, e
 	}
 	primary := map[string]string{}
-	var main string
 	for _, v := range departments {
 		if v.Primary {
 			primary[v.ID] = v.Name
-			main = v.Assignment
 		}
 		if in.Department != "" && v.ID == in.Department {
 			ev.Department, ev.DepartmentName, ev.Attribution = v.ID, v.Name, "notice"
@@ -121,25 +119,8 @@ func (u *unit) probationAttribution(ctx context.Context, a h.Action, in h.Probat
 		}
 	}
 	if in.AfterAction != "" {
-		act, e := u.action(ctx, in.AfterAction)
-		if e != nil {
-			return ev, e
-		}
-		if act.Assignment != main || act.Kind != "Transfer" || act.Revision != in.AfterRevision || act.Operation == "Delete" || act.BusinessDate != in.BusinessDate {
-			return ev, f.Fail(409, "PROBATION_ORDER", "所引调动与关系主任职、日期或修订不符")
-		}
-		visible, e := u.actionDisclosure(ctx, act, true)
-		if e != nil {
-			return ev, e
-		}
-		if !visible.to {
-			return ev, f.Fail(403, "HIRE_DENIED", "当前权限不可采用所引原件")
-		}
-		if in.Department == "" {
-			ev.Department, ev.DepartmentName, ev.Attribution = act.Department, primary[act.Department], "preceding-transfer"
-		}
-		ev.AfterAction, ev.AfterRevision = act.ID, act.Revision
-		return ev, nil
+		err = u.applyProbationPredecessor(ctx, a, in, &ev)
+		return ev, err
 	}
 	if in.Department != "" {
 		return ev, nil
@@ -396,11 +377,13 @@ func (u *unit) relationOriginal(ctx context.Context, a h.Action, revision string
 		return out, f.Fail(403, "HIRE_DENIED", "当前权限不允许读取这份关系修订")
 	}
 	if ev.Probation != nil && ev.Probation.AfterAction != "" {
-		prior, err := u.action(ctx, ev.Probation.AfterAction)
+		var evidence h.Original
+		err := u.tx.QueryRow(ctx, `SELECT adoption FROM staffing.employment_action_revision
+			WHERE instance_id=$1 AND action_id=$2 AND revision=$3`, u.store.Instance, ev.Probation.AfterAction, ev.Probation.AfterRevision).Scan(&evidence)
 		if err != nil {
 			return out, err
 		}
-		visible, err := u.revisionVisible(ctx, prior, ev.Probation.AfterRevision)
+		visible, err := u.canReadProbationPredecessor(ctx, a, evidence)
 		if err != nil {
 			return out, err
 		}
@@ -502,9 +485,16 @@ func (u *unit) relationshipSummary(ctx context.Context, a, scoped h.Action, incl
 	if e != nil || !includeTerms {
 		return out, e
 	}
+	out.Terms, e = u.relationshipTerms(ctx, a, false)
+	return out, e
+}
+
+func (u *unit) relationshipTerms(ctx context.Context, a h.Action, onlyOpen bool) ([]h.TermLink, error) {
 	rows, e := u.tx.Query(ctx, `SELECT t.id,t.record_number,lower(t.period)::text,s.department_id FROM staffing.assignment t JOIN staffing.assignment_head head ON (head.instance_id,head.assignment_id)=(t.instance_id,t.id)
        JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(head.instance_id,head.assignment_id,head.version)
-       WHERE t.instance_id=$1 AND t.employment_id=$2 AND s.period @> $3::date ORDER BY t.record_number`, u.store.Instance, a.Employment, a.BusinessDate)
+       WHERE t.instance_id=$1 AND t.employment_id=$2 AND s.period @> $3::date
+       AND (NOT $4 OR NOT EXISTS (SELECT FROM staffing.assignment_exit x WHERE (x.instance_id,x.assignment_id)=(t.instance_id,t.id)))
+       ORDER BY t.record_number`, u.store.Instance, a.Employment, a.BusinessDate, onlyOpen)
 	if e != nil {
 		return nil, e
 	}
@@ -517,14 +507,15 @@ func (u *unit) relationshipSummary(ctx context.Context, a, scoped h.Action, incl
 	if e != nil {
 		return nil, e
 	}
+	terms := []h.TermLink{}
 	for _, v := range available {
 		ok, e := u.employmentAllowed(ctx, "read", a.Person, a.Employer, v.Department, false)
 		if e != nil {
 			return nil, e
 		}
 		if ok {
-			out.Terms = append(out.Terms, h.TermLink{Assignment: v.ID, RecordNumber: v.Number, From: v.From})
+			terms = append(terms, h.TermLink{Assignment: v.ID, RecordNumber: v.Number, From: v.From})
 		}
 	}
-	return out, nil
+	return terms, nil
 }

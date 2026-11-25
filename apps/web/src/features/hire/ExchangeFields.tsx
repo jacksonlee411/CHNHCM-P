@@ -35,8 +35,8 @@ export function ExchangeFields({draft,update,assignment,csrf}:{
   </>;
 }
 
-export function ExchangeOriginal({link}:{link:Models['PositionExchangeLink']}) {
-  const [expanded,setExpanded]=useState(false);
+export function ExchangeOriginal({link, initiallyOpen=false}:{link:Models['PositionExchangeLink']; initiallyOpen?:boolean}) {
+  const [expanded,setExpanded]=useState(initiallyOpen);
   const ref=link.peerAction;
   const peer=useRead(expanded&&ref?JSON.stringify([ref.action,ref.revision]):undefined,
     async()=>unwrap(await api.GET('/api/v1/employment-actions/{id}',{params:{path:{id:ref!.action},query:{adoptedRef:ref!.revision}}})));

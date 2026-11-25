@@ -161,7 +161,22 @@ func TestConfirmationRepeatFromOtherAssignment(t *testing.T) {
 		x.h.f.scalar("SELECT count(*) FROM staffing.assignment_source") != before || x.h.f.scalar("SELECT count(*) FROM staffing.employment_outbox") != events {
 		t.Fatal("跨任职同单恢复", result, reg)
 	}
+	checkOriginalTerm := func(want string) {
+		t.Helper()
+		path := "/api/v1/employment-actions/" + first["action"].(string) + "?adoptedRef=" + first["revision"].(string)
+		ref := b.call("GET", path, nil, "", 200)["action"].(M)
+		view := b.call("GET", "/api/v1/assignments/"+ref["assignment"].(string)+"?businessAt="+ref["businessDate"].(string)+"&sourceVersion="+ref["sourceVersion"].(string), nil, "", 200)
+		for _, entry := range view["actions"].([]any) {
+			row := entry.(M)
+			if view["assignment"] == want && view["sourceVersion"] == ref["sourceVersion"] && row["id"] == first["action"] && row["revision"] == first["revision"] {
+				return
+			}
+		}
+		t.Fatal("所选关系修订的获权任职和来源没有配对", ref, view)
+	}
+	checkOriginalTerm(root)
 	x.h.policy("UPDATE access.employment_grant SET department_id=$2 WHERE principal_id=$1 AND action IN ('read','history')", b.subject, training)
+	checkOriginalTerm(secondary)
 	key := f.NewID()
 	result = b.call("POST", "/api/v1/assignments/"+secondary+"/confirm-employment", repeat, key, 200)
 	resolved := b.call("POST", "/api/v1/employment-actions/submissions/"+key+"/resolve", nil, "", 200)

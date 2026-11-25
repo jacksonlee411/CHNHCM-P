@@ -79,6 +79,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 	if day != "" && !f.ValidDate(day) || version != "" && !f.ValidID(version) {
 		return out, f.Fail(400, "ASSIGNMENT_INPUT", "业务日或来源无效")
 	}
+	pinned := version != ""
 	err = st.within(ctx, c, false, true, func(u *unit) error {
 		today := u.now.In(f.Shanghai).Format(time.DateOnly)
 		if day == "" {
@@ -131,7 +132,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		out.Name, out.Number = recognized[0].Name, recognized[0].Number
 		out.Period = a.Period
 		if version != a.SourceVersion {
-			if e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member m USING(instance_id,assignment_id,action_id,revision) WHERE x.instance_id=$1 AND x.assignment_id=$2 AND m.version=$3),upper(period)::text,'') FROM staffing.assignment WHERE instance_id=$1 AND id=$2`, st.Instance, id, version).Scan(&out.Until); e != nil {
+			if e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member m USING(instance_id,assignment_id,action_id) WHERE x.instance_id=$1 AND x.assignment_id=$2 AND m.version=$3),upper(period)::text,'') FROM staffing.assignment WHERE instance_id=$1 AND id=$2`, st.Instance, id, version).Scan(&out.Until); e != nil {
 				return e
 			}
 		}
@@ -262,6 +263,13 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			out.CanChangeLocation, e = u.employmentAllowed(ctx, "location.change", a.Person, a.Employer, a.Department, false)
 			if e != nil {
 				return e
+			}
+			if !pinned && out.State != nil && (out.CanChangeLocation || out.CanTransfer || out.CanRecordDuty || out.CanStartProbation || out.CanConfirm || out.CanRecordGrade || out.CanPromote || out.CanSetManager || out.CanEnd || out.CanLeave) {
+				op, err := u.newRecordOperation(ctx, id, day)
+				if err != nil {
+					return err
+				}
+				out.CanAddRecord, out.CanInsertRecord = op == "Add", op == "Insert"
 			}
 		}
 		rows, e := u.tx.Query(ctx, assignmentActionSelect+` JOIN staffing.assignment_publication h ON h.instance_id=a.instance_id AND h.assignment_id=$2 AND h.version=$3 `+assignmentRevisionJoin+" WHERE a.instance_id=$1 ORDER BY r.business_date DESC,a.recorded_at DESC,a.id", st.Instance, id, version)

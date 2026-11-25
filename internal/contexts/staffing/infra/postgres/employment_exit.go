@@ -98,9 +98,16 @@ func (st *Store) ExitAssignment(ctx context.Context, c f.Credentials, id, key st
 			if e = u.requireEmployment(ctx, permit, state.Person, state.Employer, state.Department); e != nil {
 				return "", e
 			}
+			if clipped, err := u.exitConflictsWithDuty(ctx, term.ID, exit.FirstInactive); err != nil {
+				return "", err
+			} else if clipped {
+				return "", f.Fail(409, "EXIT_DUTY", "退出日期与已核实的履职日冲突，请核对退出日期或更正出勤原件")
+			}
 			var successor bool
 			if e = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_member m JOIN staffing.employment_action_revision r USING(instance_id,action_id,revision)
-      WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND r.business_date >= $4::date AND r.operation NOT IN ('Delete','Withdraw'))`, st.Instance, term.ID, term.Version, exit.FirstInactive).Scan(&successor); e != nil {
+      JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
+      WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND r.business_date >= $4::date AND r.operation NOT IN ('Delete','Withdraw')
+      AND ($5 OR a.kind NOT IN ('ProbationStart','ConfirmEmployment')))`, st.Instance, term.ID, term.Version, exit.FirstInactive, leave).Scan(&successor); e != nil {
 				return "", e
 			}
 			if successor {
@@ -157,17 +164,19 @@ func (st *Store) ExitAssignment(ctx context.Context, c f.Credentials, id, key st
 
 func (u *unit) closeReporting(ctx context.Context, closing []string, day string, cause employmentEntry) error {
 	var future bool
-	if err := u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.manager_agreement WHERE instance_id=$1 AND manager_assignment=ANY($2::uuid[]) AND lower(period)>=$3::date)`, u.store.Instance, closing, day).Scan(&future); err != nil {
+	if err := u.tx.QueryRow(ctx, currentReporting+`SELECT EXISTS(SELECT FROM reporting g JOIN staffing.assignment_head hd USING(instance_id,assignment_id)
+        JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
+        WHERE g.manager_assignment=ANY($2::uuid[]) AND lower(g.period)>=$3::date AND g.effective && s.period)`, u.store.Instance, closing, day).Scan(&future); err != nil {
 		return err
 	}
 	if future {
 		return f.Fail(409, "MANAGER_SUCCESSOR", "经理退出后仍有已确定的汇报，请先核对接替安排")
 	}
-	rows, e := u.tx.Query(ctx, `SELECT assignment_id,purpose FROM (SELECT DISTINCT ON (assignment_id,purpose) * FROM staffing.manager_agreement WHERE instance_id=$1 AND lower(period)<$3::date ORDER BY assignment_id,purpose,lower(period) DESC) g
+	rows, e := u.tx.Query(ctx, currentReporting+`SELECT g.assignment_id,g.purpose FROM reporting g
  JOIN staffing.assignment_head h USING(instance_id,assignment_id)
- WHERE manager_assignment=ANY($2::uuid[]) AND NOT(assignment_id=ANY($2::uuid[])) AND period @> $3::date
+ WHERE g.manager_assignment=ANY($2::uuid[]) AND NOT(g.assignment_id=ANY($2::uuid[])) AND g.effective @> $3::date
  AND EXISTS(SELECT FROM staffing.assignment_segment s WHERE (s.instance_id,s.assignment_id,s.version)=(h.instance_id,h.assignment_id,h.version) AND s.period @> $3::date)
- AND NOT EXISTS(SELECT FROM staffing.manager_agreement next WHERE (next.instance_id,next.assignment_id,next.purpose)=(g.instance_id,g.assignment_id,g.purpose) AND lower(next.period)=$3::date)`, u.store.Instance, closing, day)
+ ORDER BY g.assignment_id,g.purpose`, u.store.Instance, closing, day)
 	if e != nil {
 		return e
 	}
@@ -187,7 +196,7 @@ func (u *unit) closeReporting(ctx context.Context, closing []string, day string,
 		if e != nil {
 			return e
 		}
-		_, e = u.storeManagerFact(ctx, a, h.ManagerFact{Period: f.Period{From: day}, Purpose: edge.Purpose}, "经理任职结束", &h.ActionRef{Action: cause.id, Revision: cause.revision})
+		_, e = u.storeManagerFact(ctx, a, h.ManagerFact{Period: f.Period{From: day}, Purpose: edge.Purpose}, "经理任职结束", &h.ActionRef{Action: cause.id, Revision: cause.revision}, nil)
 		if e != nil {
 			return e
 		}

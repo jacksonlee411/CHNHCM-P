@@ -17,6 +17,11 @@ func TestActualDutyPreservesFullPositionAndThreeDayExcess(t *testing.T) {
 	x := setupDatedAssignment(t, "2027-03-01", "第四名员工")
 	b, db := x.h.b, x.h.f
 	const entry, first, last, after = "2027-03-01", "2027-04-01", "2027-04-03", "2027-04-04"
+	concurrent := (lifecycleSample{x}).hirePerson("出勤与退出并发样本", "")
+	concurrentID := concurrent["assignment"].(string)
+	concurrentBase := "/api/v1/assignments/" + concurrentID
+	concurrentView := b.call("GET", concurrentBase+"?businessAt=2027-04-03", nil, "", 200)
+
 	db.runtime.Staffing.(app.Service).Store.(*pg.Store).Clock = func() time.Time { return time.Date(2027, 4, 4, 12, 0, 0, 0, f.Shanghai) }
 	for _, purpose := range []string{"hire", "transfer", "recruit"} {
 		rules := b.call("GET", "/api/v1/assignment-policies", nil, "", 200)
@@ -109,6 +114,9 @@ func TestActualDutyPreservesFullPositionAndThreeDayExcess(t *testing.T) {
 	}
 	action := saved["action"].(string)
 	original := b.call("GET", "/api/v1/employment-actions/"+action, nil, "", 200)
+	if original["action"].(M)["operation"] != "Add" {
+		t.Fatal("任期末端补录已履职，初次登记操作应为新增", original)
+	}
 	fact := original["transfer"].(M)["after"].(M)["duty"].(M)
 	if fact["number"] != "K53" || fact["until"] != after || fact["dispatchNumber"] != "门店已执行派令" {
 		t.Fatal(original)
@@ -123,5 +131,68 @@ func TestActualDutyPreservesFullPositionAndThreeDayExcess(t *testing.T) {
 	old := b.call("GET", "/api/v1/employment-actions/"+action+"?adoptedRef="+saved["revision"].(string), nil, "", 200)
 	if old["transfer"].(M)["after"].(M)["duty"].(M)["from"] != first {
 		t.Fatal(old)
+	}
+
+	exit := func(day string, status int) M {
+		return b.call("POST", base+"/leave", M{"date": day, "meaning": "first-inactive", "notice": "核对退出日", "expectedSourceVersion": view(last)["sourceVersion"]}, f.NewID(), status)
+	}
+	beforeExit := view(last)["sourceVersion"]
+	if refused := exit(first, 409); refused["code"] != "EXIT_DUTY" {
+		t.Fatal("未来的已核实出勤被当作普通后继", refused)
+	}
+	if refused := exit(last, 409); refused["code"] != "EXIT_DUTY" || view(last)["sourceVersion"] != beforeExit || usage(last)["occupied"] != 4. || usage(after)["occupied"] != 3. {
+		t.Fatal("退出截断有限履职或产生部分写入", refused)
+	}
+	// The latest verified day bounds a continuing observation. Its open
+	// assignment period permits a later, independently documented departure.
+	fact = b.call("GET", "/api/v1/employment-actions/"+action, nil, "", 200)["transfer"].(M)["after"].(M)["duty"].(M)
+	paper["previous"] = M{"id": fact["id"], "version": fact["version"]}
+	paper["observedThrough"] = last
+	delete(paper, "lastDay")
+	continued := b.call("POST", base+"/actual-duty", M{"expectedSourceVersion": beforeExit, "action": M{"action": action, "revision": revised["revision"]}, "paper": paper}, f.NewID(), 200)
+	if continued["revision"] == revised["revision"] {
+		t.Fatal("开放履职修订未保存")
+	}
+	if refused := exit(last, 409); refused["code"] != "EXIT_DUTY" {
+		t.Fatal(refused)
+	}
+	exit(after, 200)
+	if usage(last)["occupied"] != 4. || usage(after)["occupied"] != 3. || view(after)["state"] != nil {
+		t.Fatal("合法退出损失已核实出勤或未终结任期")
+	}
+	paper["number"] = "退出后追加的出勤"
+	paper["observedThrough"] = after
+	delete(paper, "previous")
+	if denied := b.call("POST", base+"/duty-observations", paper, f.NewID(), 409); denied["code"] != "DUTY_TERM" {
+		t.Fatal("退出后开放出勤越过任期", denied)
+	}
+	otherSource := f.NewID()
+	otherDispatch := b.call("POST", "/api/v1/appointment-decisions", M{"source": otherSource, "number": "并发核实", "roster": false, "rows": []M{{"person": concurrentView["person"], "position": M{"id": pos, "name": "门店值班岗"}, "arrival": first}}}, f.NewID(), 200)
+	conflictingPaper := M{"from": first, "lastDay": last, "observedThrough": after, "dispatch": M{"source": otherSource, "version": otherDispatch["version"]}, "number": "并发核实", "issuer": "门店核实"}
+	// These commands have different submission guards. The common person guard
+	// decides whether the verified paper or the incompatible departure can commit.
+	type outcome struct {
+		code int
+		body M
+		err  error
+	}
+	done := make(chan outcome, 2)
+	send := func(path string, input M) {
+		code, body, err := b.response("POST", concurrentBase+path, input, f.NewID())
+		done <- outcome{code, body, err}
+	}
+	go send("/duty-observations", conflictingPaper)
+	go send("/leave", M{"date": last, "meaning": "first-inactive", "notice": "三号开始离职", "expectedSourceVersion": concurrentView["sourceVersion"]})
+	counts := map[int]int{}
+	for range 2 {
+		res := <-done
+		must(t, res.err)
+		counts[res.code]++
+		if res.code == 409 && res.body["code"] != "DUTY_TERM" && res.body["code"] != "EXIT_DUTY" {
+			t.Fatal(res)
+		}
+	}
+	if counts[200] != 1 || counts[409] != 1 {
+		t.Fatal("出勤与退出并发仍产生矛盾事实", counts)
 	}
 }

@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import {Link} from 'react-router-dom';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { api, ApiError, unwrap, type Models } from '@chnhcm/api-client';
 import {
   EffectiveDates,
+  HistoryNotice,
   ObjectDetailField,
   ObjectDetailSection,
   ObjectTextField,
@@ -12,6 +13,7 @@ import {
   recordedTime,
 } from '@chnhcm/ui';
 import { RelationshipContracts } from './RelationshipContracts';
+import { adoptedOfferURL } from './jobLinks';
 import { DutyOriginal, DutyUsage, lastDutyDay } from './ActualDutyFields';
 import {ExchangeOriginal} from './ExchangeFields';
 import {managerPurposes} from './LifecycleFields';
@@ -24,10 +26,12 @@ import {
   actionLabel,
   availableRecordTypes,
   draftChanged,
+  relationAction,
   type JobDraft,
 } from './AssignmentRecordForm';
 
 type Action = Models['EmploymentAction'];
+export type JobPageMode = 'browse' | 'editing' | 'history';
 type Command =
   | { kind:'duty'; input:Models['DutyCommand'] }
   | { kind:'exchange'; input:Models['PositionExchangeCommand'] }
@@ -44,10 +48,11 @@ export function JobInformation({
   current,
   assignment,
   day,
-  onDay,
   session,
   onSave,
   actionSlot,
+  historySlot,
+  onModeChange,
   selectedAction,
 }: {
   assignment: string;
@@ -56,26 +61,45 @@ export function JobInformation({
   session: Models['Principal'];
   onSave: () => void;
   actionSlot: HTMLElement | null;
+  historySlot?: HTMLElement | null;
+  onModeChange?: (mode: JobPageMode) => void;
   enabled?: boolean;
   current?: ReturnType<typeof useRead<Models['AssignmentView']>>;
   selectedAction?: string;
 }) {
-  const [source, setSource] = useState('');
+  const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
+  const route = useLocation();
+  const { id: personId } = useParams();
+  const source = params.get('sourceVersion') || '';
+  const revision = params.get('adoptedRef') || '';
+  const chosenId = selectedAction || params.get('action');
+  function select(values: Record<string, string | undefined>, replace = false) {
+    const next = new URLSearchParams(params);
+    for (const [key, value] of Object.entries(values)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
+    setParams(next, {replace});
+  }
   const [dayInput, setDayInput] = useState(day);
   useEffect(() => setDayInput(day), [day]);
   const [contractDraft,setContractDraft]=useState<Models['EmploymentContractCommand']>();
   const contractInitial=useRef<Models['EmploymentContractCommand']|undefined>(undefined);
   const [draft, setDraft] = useState<JobDraft>();
   const initial = useRef<JobDraft | undefined>(undefined);
-  const [chosen, setOpened] = useState<Action>();
-  const [revision, setRevision] = useState('');
+  const [menu, setMenu] = useState<HTMLElement | null>(null);
+  const [removal, setRemoval] = useState<{action: Action; source: string; exchange?: Models['PositionExchangeLink']}>();
+  const [conflict, setConflict] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const errorRef = useRef<HTMLDivElement>(null);
-  const opener = useRef<HTMLButtonElement | null>(null);
+  const controlId = useId();
+  const focusTarget = useRef('');
+  const restoredLocation = useRef('');
   const saved = useRef(false);
   const header = { 'X-CSRF-Token': session.csrf };
-  const lookup = useRead(enabled && (!current || source) ? JSON.stringify([assignment, day, source]) : undefined, async () =>
+  const lookup = useRead(enabled && !current ? JSON.stringify([assignment, day, source]) : undefined, async () =>
     unwrap(
       await api.GET('/api/v1/assignments/{id}', {
         params: {
@@ -85,9 +109,10 @@ export function JobInformation({
       }),
     ),
   );
-  const state = current && !source ? current : lookup;
+  const state = current ?? lookup;
   const data = state.data;
-  const opened = data?.actions.find(a => a.id === (selectedAction ?? chosen?.id) && a.canHistory);
+  const opened = data?.actions.find(a => a.id === chosenId && a.canHistory);
+  const historical = !!source || !!revision && !draft && (!opened || revision !== opened.revision);
   useEffect(() => {
     if (!data || !draft) return;
     const a = data.actions.find((v) => v.id === draft.action?.id);
@@ -101,24 +126,58 @@ export function JobInformation({
           : availableRecordTypes(data).includes(draft.kind);
     if (!allowed) {
       setDraft(undefined);
-      setOpened(undefined);
       setError('已重新核对权限，当前不可办理。');
     }
   }, [data, draft]);
+  const displayedRevision = !draft && revision || opened?.revision;
   const original = useRead(
-    opened ? JSON.stringify([opened.id, revision || opened.revision]) : undefined,
+    opened ? JSON.stringify([opened.id, displayedRevision]) : undefined,
     async () =>
       unwrap(
         await api.GET('/api/v1/employment-actions/{id}', {
-          params: { path: { id: opened!.id }, query: { adoptedRef: revision || opened!.revision } },
+          params: { path: { id: opened!.id }, query: { adoptedRef: displayedRevision } },
         }),
       ),
   );
+  const unavailable = !!chosenId && !!data && (!opened || original.status === 403 || original.status === 404);
+  const mode: JobPageMode = historical || unavailable ? 'history' : draft || removal || contractDraft ? 'editing' : 'browse';
+  useLayoutEffect(() => { onModeChange?.(mode); }, [mode, onModeChange]);
+  useLayoutEffect(() => {
+    if (!route.state?.focusJobOriginal || restoredLocation.current === route.key || historical || !data || opened && !original.data && !original.error) return;
+    if (!selectedAction && unavailable) {
+      const next = new URLSearchParams(params);
+      next.delete('action');
+      setParams(next, {replace:true, state:route.state});
+      return;
+    }
+    const target = document.getElementById(controlId + '-record') ?? document.getElementById(controlId + '-original') ??
+      document.getElementById(controlId + '-add') ?? document.getElementById(controlId + '-insert');
+    if (target) {
+      target.focus();
+      restoredLocation.current = route.key;
+    }
+  }, [route, historical, data, opened, original.data, original.error, controlId, selectedAction, unavailable, params, setParams]);
+  useEffect(() => {
+    if (removal && data && (!opened?.canDelete || original.data?.exchange && !original.data.exchange.canDelete)) {
+      setRemoval(undefined);
+      setError('已重新核对权限，当前不可处置这笔办理。');
+    }
+  }, [removal, data, opened, original.data]);
+  const review = useRead(conflict && draft?.day ? JSON.stringify([assignment, draft.day]) : undefined, () =>
+    api.GET('/api/v1/assignments/{id}', {params:{path:{id:assignment},query:{businessAt:draft!.day}}}).then(unwrap), 'fresh');
+  const reviewTarget = draft?.action || draft?.successor;
+  const reviewedAction = reviewTarget && review.data?.actions.find(a => a.id === reviewTarget.id && a.canHistory);
+  const aligned = !reviewTarget || !!reviewedAction && original.data?.action.revision === reviewedAction.revision;
   const close = () => {
     setContractDraft(undefined);
     setDraft(undefined);
+    setRemoval(undefined);
+    setConflict(false);
     setError('');
-    requestAnimationFrame(() => opener.current?.focus());
+    requestAnimationFrame(() => {
+      const target = document.getElementById(focusTarget.current) ?? document.getElementById(controlId + '-record');
+      target?.focus();
+    });
   };
   const dirty = !!draft && !!initial.current && draftChanged(draft, initial.current) || !!contractDraft && JSON.stringify(contractDraft)!==JSON.stringify(contractInitial.current);
   const exit = useDraftExit(dirty, () => saved.current, close);
@@ -192,10 +251,13 @@ export function JobInformation({
       }
       if (recovery !== 'other') {
         saved.current = true;
-        if (draft) onDay(draft.day);
         close();
-        setOpened(undefined);
-        setRevision('');
+        select({
+          assignmentDay: selectedAction ? params.get('assignmentDay') || undefined : draft?.day || day,
+          action: selectedAction ? undefined : r.action,
+          adoptedRef: undefined,
+          sourceVersion: undefined,
+        }, true);
         setNotice(recovery ? '已查回原办理。' : '职务信息已保存。');
       }
       state.invalidate();
@@ -203,9 +265,18 @@ export function JobInformation({
     },
     failed: (e) => {
       setError(message(e));
+      if (e instanceof ApiError && e.status === 409 &&
+          (e.code === 'ASSIGNMENT_CHANGED' || e.code === 'CONTRACT_SOURCE' && draft?.kind === 'Leave')) {
+        setConflict(!!draft);
+        setRemoval(undefined);
+        original.invalidate();
+        state.invalidate();
+      }
       if (e instanceof ApiError && [401, 403, 404].includes(e.status)) {
         setDraft(undefined);
-        setOpened(undefined);
+        setRemoval(undefined);
+        setConflict(false);
+        original.invalidate();
         state.invalidate();
       }
     },
@@ -217,19 +288,14 @@ export function JobInformation({
     if (error) errorRef.current?.focus();
   }, [error]);
   useEffect(() => {
-    if (state.status === 403 || state.status === 404) {
+    if ([state.status, original.status, review.status].some(s => s === 401 || s === 403 || s === 404)) {
       setDraft(undefined);
-      setOpened(undefined);
-      setRevision('');
+      setRemoval(undefined);
+      setConflict(false);
     }
-  }, [state.status]);
-  function begin(button: HTMLButtonElement, mode: JobDraft['mode'], a?: Action, successor?:Action) {
+  }, [state.status, original.status, review.status]);
+  function makeDraft(mode: JobDraft['mode'], a?: Action, successor?: Action, data = state.data): JobDraft | undefined {
     if (!data) return;
-    opener.current = button;
-    saved.current = false;
-    setError('');
-    setNotice('');
-    submit.start();
     const evidence = a || successor ? original.data : undefined;
     const after = evidence?.transfer?.after;
     const state = data.state;
@@ -267,8 +333,38 @@ export function JobInformation({
       next.job=prior.beforeJob ? {id:prior.beforeJob,name:prior.beforeJobName ?? ''}:undefined;
       next.originalGrade=prior.beforeGrade;next.notice='';
     }
+    return next;
+  }
+  function begin(target: string, mode: JobDraft['mode'], a?: Action, successor?: Action) {
+    const next = makeDraft(mode, a, successor);
+    if (!next || historical) return;
+    focusTarget.current = controlId + '-' + target;
+    setMenu(null);
+    saved.current = false;
+    setError('');
+    setNotice('');
+    setConflict(false);
+    submit.start();
     initial.current = next;
     setDraft(next);
+  }
+  function acceptCurrent() {
+    if (!draft || !initial.current || !review.data || !aligned) return;
+    const latestView = review.data;
+    const target = draft.action && latestView.actions.find(a => a.id === draft.action?.id);
+    const successor = draft.successor && latestView.actions.find(a => a.id === draft.successor?.id);
+    if (draft.action && !target || draft.successor && !successor) return;
+    const latestMode = !draft.action && !draft.successor ? latestView.canInsertRecord ? 'insert' : 'add' : draft.mode;
+    const latest = makeDraft(latestMode, target, successor, latestView);
+    if (!latest) return;
+    const edited = Object.entries(draft).filter(([key, value]) =>
+      !['mode', 'source', 'action', 'successor', 'exchange', 'originalDuty', 'originalGrade'].includes(key) &&
+      (key !== 'paper' || latestView.canVerifyDuty) && (!['handover', 'incumbent'].includes(key) || latestView.canHandover) &&
+      JSON.stringify(value) !== JSON.stringify(initial.current?.[key as keyof JobDraft]));
+    initial.current = latest;
+    setDraft({...latest, ...Object.fromEntries(edited)});
+    setConflict(false);
+    setError('');
   }
   function save(record: JobDraft) {
     if(record.kind==='ActualDuty'){
@@ -305,7 +401,7 @@ export function JobInformation({
         revision:record.action.revision,reason:record.withdrawal?.trim(),basis:record.basis?{action:record.basis.id,revision:record.basis.revision}:undefined}});
       return;
     }
-    const reference=(a:Action|undefined)=>a?{action:a.id,revision:a.revision}:undefined;
+    const reference=(a:Pick<Action, 'id' | 'revision'>|undefined)=>a?{action:a.id,revision:a.revision}:undefined;
     if(record.kind==='GradeRecord'||record.kind==='Promotion'||record.kind==='PromotionTransfer'){
       const changing=record.kind==='PromotionTransfer'||record.kind==='Promotion' &&
         (record.position?.id!==initial.current?.position?.id || record.job?.id!==initial.current?.job?.id || record.department?.id!==initial.current?.department?.id);
@@ -335,7 +431,7 @@ export function JobInformation({
       });
       return;
     }
-    const changes = { ...input, insert: record.mode === 'insert' || undefined, requires: record.requires };
+    const changes = { ...input, insert: record.mode === 'insert' ? true : record.mode === 'add' ? false : undefined, requires: record.requires };
     if (record.kind === 'DataChange' && record.value)
       void submit.submit({ kind: 'location', action, input: { ...changes, location: record.value.id } });
     if (record.kind === 'Transfer')
@@ -345,27 +441,61 @@ export function JobInformation({
         input: { ...changes, incumbent:record.handover&&record.incumbent?{assignment:record.incumbent.assignment,sourceVersion:record.incumbent.sourceVersion}:undefined, position:record.position?.id, department: record.department?.id, job: record.job?.id, notice: record.notice,previous:reference(record.predecessor) },
       });
   }
-  function remove(a: Action) {
-    if (!data || !a.canDelete) return;
+  function confirmRemoval() {
+    if (!removal || !opened?.canDelete || historical || !data || submit.busy) return;
+    const a = removal.action;
     setError('');
     setNotice('');
-    submit.start();
-    const link=original.data?.exchange;
+    const link=removal.exchange;
     if(link){
       if(link.canDelete && link.peerAssignment && link.peerSourceVersion)void submit.submit({kind:'exchange',input:{
-        operation:'Delete',expectedSourceVersion:data.sourceVersion,peerAssignment:link.peerAssignment,peerSourceVersion:link.peerSourceVersion,action:{action:a.id,revision:a.revision}}});
+        operation:'Delete',expectedSourceVersion:removal.source,peerAssignment:link.peerAssignment,peerSourceVersion:link.peerSourceVersion,action:{action:a.id,revision:a.revision}}});
       return;
     }
     void submit.submit({
       kind: 'delete',
       action: a.id,
-      input: { expectedSourceVersion: data.sourceVersion, expectedRevision: a.revision },
+      input: { expectedSourceVersion: removal.source, expectedRevision: a.revision },
     });
+  }
+  function returnCurrent() {
+    const entry = params.get('sourceEntry');
+    state.invalidate();
+    original.invalidate();
+    if (!current) onSave();
+    const next = new URLSearchParams(params);
+    for (const key of ['sourceVersion', 'adoptedRef', 'sourceEntry']) next.delete(key);
+    if (!selectedAction && unavailable && !source) next.delete('action');
+    const options = {state:{...route.state, focusJobOriginal:true}};
+    if (entry && personId && entry !== assignment && /^[a-f\d-]{36}$/i.test(entry)) {
+      navigate('/personnel/employees/' + personId + '/assignments/' + entry + '?' + next, options);
+    } else setParams(next, options);
   }
   const at = data?.actions.filter((a) => a.businessDate === day) ?? [];
   const availableDays = Array.from(new Set(data?.actions.map((a) => a.businessDate) ?? []));
+  const historyNotice = <HistoryNotice onReturn={returnCurrent} label="返回当前职务信息" />;
+  function changeDay(value: string) {
+    select({assignmentDay:value, action:undefined, adoptedRef:undefined});
+  }
+  const evidence = original.data;
+  const canCorrect = opened && !evidence?.exchange && (opened.canCorrectDuty || opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion);
+  const canRedate = opened?.canMaintain && (!evidence?.exchange || evidence.exchange.canRedate);
+  const canDelete = opened?.canDelete && (!evidence?.exchange || evidence.exchange.canDelete);
+  const canInsertBefore = opened?.canCorrectPromotion && data?.canConfirm || opened?.kind === 'Transfer' && opened.canCorrectTransfer && data?.canPromote && !evidence?.exchange;
+  const canMaintain = canCorrect || canRedate || canDelete || opened?.canWithdrawPromotion || canInsertBefore;
+  function originalSourceURL(target: Action) {
+    const next = new URLSearchParams(params);
+    next.set('sourceVersion', target.sourceVersion);
+    next.set('assignmentDay', target.businessDate);
+    next.set('action', target.id);
+    next.set('adoptedRef', target.revision);
+    if (assignment !== target.assignment) next.set('sourceEntry', assignment);
+    return '/personnel/employees/' + target.person + '/assignments/' + target.assignment + '?' + next;
+  }
   return (
     <ObjectDetailSection title={selectedAction ? '办理明细' : '职务信息'}>
+      {historical && (historySlot ? createPortal(historyNotice, historySlot) : actionSlot ? createPortal(historyNotice, actionSlot) : historyNotice)}
+      {data && chosenId && !opened && <Alert severity="info" action={!selectedAction && !historical && <Button onClick={returnCurrent}>返回当前职务信息</Button>}>该办理或来源当前不可用。</Alert>}
       {state.error && (
         <Alert severity="error" action={<Button onClick={state.refresh}>重试</Button>}>
           {state.error}
@@ -376,18 +506,41 @@ export function JobInformation({
           <ObjectDetailField label="雇用记录编号">
             {data.recordNumber} · {data.primaryJob ? '主岗' : '兼岗'}
           </ObjectDetailField>
-          {draft ? (
+          {removal && opened?.canDelete && evidence ? <>
+            <Typography component="h3">{removal.exchange ? '撤销两岗对调' : '删除记录'}</Typography>
+            <ObjectDetailField label="处置目标">{actionLabel(opened)} · {opened.businessDate} · {data.recordNumber} 号{data.primaryJob ? '主岗' : '兼岗'}</ObjectDetailField>
+            {removal.exchange && <ObjectDetailField label="影响范围">双方的岗位调动将一并撤销</ObjectDetailField>}
+            {evidence.locationChange && <ObjectDetailField label="影响范围">移除本次地点变更。办理前地点为{evidence.locationChange.before?.name || '未记载'}。</ObjectDetailField>}
+            {!removal.exchange && evidence.transfer && <ObjectDetailField label="影响范围">移除该任职的本次调动，按剩余办理重算任职安排。</ObjectDetailField>}
+            <OriginalEvidence original={evidence} showExchangePeer={!!removal.exchange}/>
+            {actionSlot && createPortal(<Stack direction="row" gap={1}>
+              <Button color="error" variant="contained" disabled={submit.busy} onClick={confirmRemoval}>
+                {removal.exchange ? '确认撤销两岗对调' : '确认删除'}
+              </Button>
+              <Button onClick={close}>取消</Button>
+            </Stack>, actionSlot)}
+          </> : draft ? (<>
+            {conflict && <Box>
+              <Alert severity="warning">任职或原办理已更新。请对照当前资料和本次输入，再继续办理。</Alert>
+              {review.data && <ObjectDetailField label="当前任职">{[review.data.state?.department, review.data.state?.job, review.data.state?.location?.name].filter(Boolean).join(' · ') || '该日无有效任职'}</ObjectDetailField>}
+              {review.error && <Alert severity="error" action={<Button onClick={review.refresh}>重试</Button>}>{review.error}</Alert>}
+              {reviewTarget && evidence && <OriginalEvidence original={evidence} />}
+              {review.data && reviewTarget && !aligned && (original.error || evidence) &&
+                <Button onClick={()=>{review.invalidate(); original.invalidate(); state.invalidate();}}>重新读取当前办理</Button>}
+              <Button disabled={!review.data || !aligned} onClick={acceptCurrent}>采用当前来源继续办理</Button>
+            </Box>}
             <AssignmentRecordForm
               draft={draft}
               update={setDraft}
               view={data}
               csrf={session.csrf}
-              busy={submit.busy}
+              busy={submit.busy || conflict}
               dirty={dirty}
               close={() => exit.request(close)}
               save={save}
+              actionSlot={actionSlot}
             />
-          ) : (
+          </>) : (
             <>
               {!contractDraft && (!selectedAction || source) && (
                 <>
@@ -395,11 +548,7 @@ export function JobInformation({
                     <EffectiveDates
                       dates={availableDays}
                       selected={day}
-                      onSelect={(value) => {
-                        onDay(value);
-                        setOpened(undefined);
-                        setRevision('');
-                      }}
+                      onSelect={changeDay}
                     />
                   )}
                   <ObjectTextField
@@ -409,9 +558,7 @@ export function JobInformation({
                     onChange={(e) => {
                       setDayInput(e.target.value);
                       if (e.target.value.length !== 10 || !e.target.validity.valid) return;
-                      onDay(e.target.value);
-                      setOpened(undefined);
-                      setRevision('');
+                      changeDay(e.target.value);
                     }}
                   />
                   <ObjectDetailField label="该日任职">
@@ -424,7 +571,7 @@ export function JobInformation({
                   {data.managers.map(fact=><ObjectDetailField key={fact.purpose} label={managerPurposes[fact.purpose]}>{fact.name} · {fact.recordNumber} 号</ObjectDetailField>)}
                   {data.lastActive && <ObjectDetailField label="最后任职日">{data.lastActive}</ObjectDetailField>}
                   {data.state?.positionName && <ObjectDetailField label="岗位">{data.state.positionName} · {data.state.handover ? "交接占编" : data.state.seats ? "占编" : "免占编"}</ObjectDetailField>}
-                  {data.state?.position && !source && <DutyUsage position={data.state.position} day={day} version={data.sourceVersion}/>}
+                  {data.state?.position && !historical && <DutyUsage position={data.state.position} day={day} version={data.sourceVersion}/>}
                   {data.state && <ObjectDetailField label="个人职级">{data.state.grade?.name ?? '未记载'}</ObjectDetailField>}
                   {data.state && data.probation.status !== 'unrecorded' && (
                     <ObjectDetailField label="试用状态">
@@ -437,10 +584,8 @@ export function JobInformation({
                       a.canHistory ? (
                         <Button
                           key={a.id}
-                          onClick={() => {
-                            setOpened(a);
-                            setRevision('');
-                          }}
+                          id={chosenId === a.id ? controlId + '-record' : undefined}
+                          onClick={() => select({action:a.id, assignmentDay:a.businessDate, adoptedRef:undefined})}
                         >
                           {actionLabel(a)} · {a.businessDate}
                         </Button>
@@ -450,15 +595,15 @@ export function JobInformation({
                     )}
                     {!at.length && <Typography>没有当日办理</Typography>}
                   </Stack>
-                  {availableRecordTypes(data).length > 0 &&
+                  {mode === 'browse' && availableRecordTypes(data).length > 0 &&
                     actionSlot &&
                     createPortal(
                       <Stack direction="row" gap={1} flexWrap="wrap">
-                        <Button variant="contained" onClick={(e) => begin(e.currentTarget, 'add')}>
+                        {data.canAddRecord && <Button id={controlId+'-add'} variant="contained" onClick={() => begin('add', 'add')}>
                           新增记录
-                        </Button>
-                        {data.actions.some((a) => a.kind !== 'Hire' && a.operation !== 'Delete') && (
-                          <Button onClick={(e) => begin(e.currentTarget, 'insert')}>插入记录</Button>
+                        </Button>}
+                        {data.canInsertRecord && (
+                          <Button id={controlId+'-insert'} onClick={() => begin('insert', 'insert')}>插入记录</Button>
                         )}
                       </Stack>,
                       actionSlot,
@@ -471,54 +616,37 @@ export function JobInformation({
                 </Alert>
               )}
               {!contractDraft && opened && original.data && (
-                <Box>
-                  <OriginalEvidence original={original.data} setRevision={setRevision} />
-                  {original.data.action.revision === opened.revision && !source && (
-                    <Stack direction="row" gap={1} flexWrap="wrap">
-                      {!original.data.exchange && (opened.canCorrectDuty || opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion) && (
-                        <Button onClick={(e) => begin(e.currentTarget, 'correct', opened)}>更正记录</Button>
-                      )}
-                      {opened.canCorrectPromotion && data.canConfirm &&
-                        <Button onClick={e => begin(e.currentTarget, 'insert', undefined, opened)}>在本次晋升前补录转正</Button>}
-                      {opened.canWithdrawPromotion && <Button onClick={e=>begin(e.currentTarget,'withdraw',opened)}>撤销晋升</Button>}
-                      {!original.data.exchange && opened.kind==='Transfer' && opened.canCorrectTransfer && data.canPromote &&
-                        <Button onClick={e=>begin(e.currentTarget,'insert',undefined,opened)}>在本次调动前补录晋升</Button>}
-                      {opened.canMaintain && (!original.data.exchange || original.data.exchange.canRedate) && (
-                        <Button onClick={(e) => begin(e.currentTarget, 'redate', opened)}>
-                          {original.data.exchange ? '调整对调日期' : '调整生效日期'}
-                        </Button>
-                      )}
-                      {opened.canDelete && (!original.data.exchange || original.data.exchange.canDelete) && (
-                        <Button disabled={submit.busy} onClick={() => remove(opened)}>
-                          {original.data.exchange ? '撤销两岗对调' : '删除记录'}
-                        </Button>
-                      )}
-                    </Stack>
-                  )}
-                  {!source && original.data.promotion?.priorSource && <Button onClick={()=>{
-                    setSource(original.data!.promotion!.priorSource!);setRevision('');setOpened(undefined);
-                  }}>查看撤销前来源</Button>}
-                  {!selectedAction && original.data.action.sourceVersion !== data.sourceVersion && (
-                    <Button
-                      onClick={() => {
-                        setSource(original.data!.action.sourceVersion);
-                        setOpened(undefined);
-                      }}
-                    >
-                      查看当次任职
-                    </Button>
-                  )}
+                <Box id={controlId + '-original'} tabIndex={-1}>
+                  <OriginalEvidence original={original.data} setRevision={value => {
+                    if (!source && historical && value === opened.revision) returnCurrent();
+                    else select({adoptedRef:value});
+                  }} />
+                  {!historical && original.data.action.revision === opened.revision && canMaintain && <>
+                    <Button id={controlId + '-more'} aria-haspopup="menu" aria-expanded={!!menu} onClick={e => setMenu(e.currentTarget)}>更多操作</Button>
+                    <Menu anchorEl={menu} open={!!menu} onClose={() => setMenu(null)}>
+                      {canCorrect && <MenuItem onClick={() => begin('more', 'correct', opened)}>更正记录</MenuItem>}
+                      {canInsertBefore && <MenuItem onClick={() => begin('more', 'insert', undefined, opened)}>
+                        {opened.kind === 'Promotion' ? '在本次晋升前补录转正' : '在本次调动前补录晋升'}
+                      </MenuItem>}
+                      {opened.canWithdrawPromotion && <MenuItem onClick={() => begin('more', 'withdraw', opened)}>撤销晋升</MenuItem>}
+                      {canRedate && <MenuItem onClick={() => begin('more', 'redate', opened)}>
+                        {original.data.exchange ? '调整对调日期' : '调整生效日期'}
+                      </MenuItem>}
+                      {canDelete && <MenuItem disabled={submit.busy} onClick={() => {
+                        focusTarget.current = controlId + '-more';
+                        setMenu(null);
+                        setNotice('');
+                        setError('');
+                        submit.start();
+                        setRemoval({action:opened, source:data.sourceVersion, exchange:original.data?.exchange});
+                      }}>{original.data.exchange ? '撤销两岗对调' : '删除记录'}</MenuItem>}
+                    </Menu>
+                  </>}
+                  {!source && original.data.promotion?.priorSource && <Button onClick={() =>
+                    select({sourceVersion:original.data!.promotion!.priorSource, adoptedRef:undefined, assignmentDay:opened.businessDate})}>查看撤销前来源</Button>}
+                  {!source && !selectedAction && (original.data.action.sourceVersion !== data.sourceVersion || relationAction(opened.kind)) &&
+                    <Button component={Link} to={originalSourceURL(original.data.action)}>查看当次任职</Button>}
                 </Box>
-              )}
-              {source && (
-                <Button
-                  onClick={() => {
-                    setSource('');setRevision('');
-                    setOpened(undefined);
-                  }}
-                >
-                  返回当前职务信息
-                </Button>
               )}
             </>
           )}
@@ -530,9 +658,9 @@ export function JobInformation({
         </Alert>
       )}
       {notice && <Alert severity="success">{notice}</Alert>}
-      {data?.canReadContracts && !draft && !selectedAction && !source && <RelationshipContracts view={data} session={session} draft={contractDraft} update={setContractDraft}
-        begin={(cmd,b)=>{opener.current=b;saved.current=false;contractInitial.current=cmd;setContractDraft(cmd)}} cancel={()=>exit.request(close)} finish={()=>{saved.current=true;close()}}/>}
-      {submit.pending.map((ref) => (
+      {data?.canReadContracts && !draft && !removal && !selectedAction && !historical && !unavailable && <RelationshipContracts view={data} session={session} draft={contractDraft} update={setContractDraft}
+        begin={(cmd,b)=>{if (!b.id) b.id=controlId+'-contract';focusTarget.current=b.id;saved.current=false;contractInitial.current=cmd;setContractDraft(cmd)}} cancel={()=>exit.request(close)} finish={()=>{saved.current=true;close()}}/>}
+      {!historical && submit.pending.map((ref) => (
         <Button key={ref.submissionId} onClick={() => void submit.recover(ref)}>
           查回职务信息提交
         </Button>
@@ -562,10 +690,13 @@ function NoticeSource({ reference, label }: { reference: Models['EmploymentActio
 export function OriginalEvidence({
   original,
   setRevision,
+  showExchangePeer,
 }: {
   original: Models['HireOriginal'];
-  setRevision: (id: string) => void;
+  setRevision?: (id: string) => void;
+  showExchangePeer?: boolean;
 }) {
+  const route = useLocation();
   const order = original.previous ?? (original.probation?.afterAction && original.probation.afterRevision
     ? {action: original.probation.afterAction, revision: original.probation.afterRevision} : undefined);
   const operator = original.revisions?.find((r) => r.id === original.action.revision)?.operator;
@@ -573,7 +704,13 @@ export function OriginalEvidence({
     <>
       <Typography component="h3">{actionLabel(original.action)}原件</Typography>
       <ObjectDetailField label="生效日期">{original.action.businessDate}</ObjectDetailField>
-      {original.exchange && <ExchangeOriginal key={original.action.revision} link={original.exchange}/>}
+      {original.initialRecordPosition && <>
+        <ObjectDetailField label="原登记操作">{original.initialRecordPosition.recorded === 'Add' ? '新增记录' : '插入记录'}</ObjectDetailField>
+        <ObjectDetailField label="当时履历位置">{original.initialRecordPosition.effective
+          ? (original.initialRecordPosition.effective === 'Add' ? '末端新增' : '历史插入')
+          : '待核对当时的办理原件'}</ObjectDetailField>
+      </>}
+      {original.exchange && <ExchangeOriginal key={original.action.revision} link={original.exchange} initiallyOpen={showExchangePeer}/>}
       {original.manager && <ObjectDetailField label={managerPurposes[original.manager.purpose]}>{original.manager.manager ? original.manager.name+' · '+original.manager.recordNumber+' 号' : '汇报结束'}</ObjectDetailField>}
       {original.exit && <>
         <ObjectDetailField label={original.exit.meaning==='last-active'?'最后在职日':'首个不在职日'}>{original.exit.date}</ObjectDetailField>
@@ -601,7 +738,7 @@ export function OriginalEvidence({
           )}
         </>
       )}
-      {original.sources?.offer && <ObjectDetailField label="采用的招聘录用"><Link to={'/recruiting/offers/'+original.sources.offer.offer+'?sourceVersion='+original.sources.offer.version}>{original.sources.offer.number}</Link></ObjectDetailField>}
+      {original.sources?.offer && <ObjectDetailField label="采用的招聘录用"><Link to={adoptedOfferURL(original.sources.offer.offer, original.sources.offer.version, route.pathname + route.search)}>{original.sources.offer.number}</Link></ObjectDetailField>}
       {original.sources?.grade && <ObjectDetailField label="首任职级">{original.sources.grade.name}</ObjectDetailField>}
       {original.trialStart && (
         <ObjectDetailField label="实际试用开始日">{original.trialStart}</ObjectDetailField>
@@ -667,7 +804,7 @@ export function OriginalEvidence({
       {order && <NoticeSource key={order.revision} reference={order} label="查看前序办理" />}
       {original.noticeRef && <NoticeSource key={original.noticeRef.revision} reference={original.noticeRef} label="查看通知来源" />}
       {original.promotion?.withdrawalBasis && <NoticeSource key={original.promotion.withdrawalBasis.revision} reference={original.promotion.withdrawalBasis} label="查看撤销依据来源" />}
-      {original.revisions?.map((r) => (
+      {setRevision && original.revisions?.map((r) => (
         <Button key={r.id} onClick={() => setRevision(r.id)} aria-pressed={r.id === original.action.revision}>
           查看修订 · {recordedTime(r.recordedAt)}
         </Button>

@@ -18,6 +18,7 @@ import (
 type recordEdit struct {
 	h.RecordMaintenance
 	duty                              *h.DutyEvidence
+	checkRecordOperation              bool
 	kind, operation, location, action string
 }
 
@@ -29,7 +30,7 @@ func (st *Store) ChangeLocation(ctx context.Context, c f.Credentials, key, id, a
 	if action != "" {
 		op = "Correct"
 	}
-	edit := recordEdit{RecordMaintenance: h.RecordMaintenance{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.ExpectedRevision, BusinessDate: in.BusinessDate, Requires: in.Requires, Insert: in.Insert}, kind: "DataChange", operation: op, location: in.Location, action: action}
+	edit := recordEdit{RecordMaintenance: h.RecordMaintenance{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.ExpectedRevision, BusinessDate: in.BusinessDate, Requires: in.Requires, Insert: in.Insert}, kind: "DataChange", operation: op, location: in.Location, action: action, checkRecordOperation: action == ""}
 	return st.employmentCommand(ctx, c, key, []any{"DataChange", id, action, in}, func(u *unit) (employmentResult, error) { return u.editRecord(ctx, id, edit) })
 }
 
@@ -38,6 +39,7 @@ func (st *Store) MaintainRecord(ctx context.Context, c f.Credentials, id, action
 	switch command {
 	case "transfer":
 		edit.kind, edit.operation = "Transfer", "Add"
+		edit.checkRecordOperation = action == ""
 		if in.Insert {
 			edit.operation = "Insert"
 		}
@@ -171,6 +173,16 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 	if !a.Includes(day) {
 		return out, f.Fail(409, "RECORD_PERIOD", "请选择实际任期内的业务日期")
 	}
+	if edit.action == "" {
+		op, err := u.newRecordOperation(ctx, id, day)
+		if err != nil {
+			return out, err
+		}
+		if edit.checkRecordOperation && op != edit.operation {
+			return out, f.Fail(409, "RECORD_POSITION", "请从所选日期的履历位置办理新增或插入")
+		}
+		edit.operation = op
+	}
 	scope, e := u.assignmentPlacement(ctx, a, day)
 	if e != nil {
 		return out, e
@@ -279,8 +291,8 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 			}
 		}
 		sameIncumbent := target.Transfer != nil && (target.Transfer.Succession == nil && edit.Incumbent == nil || target.Transfer.Succession != nil && edit.Incumbent != nil && target.Transfer.Succession.IncumbentRef == *edit.Incumbent)
-		if sameIncumbent && target.Transfer != nil && reflect.DeepEqual(target.Transfer.Duty, edit.duty) && edit.action != "" && target.Transfer != nil && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
-			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) {
+		if sameIncumbent && reflect.DeepEqual(target.Transfer.Duty, edit.duty) && edit.action != "" && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
+			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) && reflect.DeepEqual(target.Previous, originals[edit.action].Previous) {
 			return out, f.Fail(409, "TRANSFER_UNCHANGED", "任职安排和调动依据均未改变")
 		}
 

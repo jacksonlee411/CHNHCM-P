@@ -7,10 +7,17 @@ type ProbationCommand struct {
 	ExpectedSource string `json:"expectedSourceVersion"`
 	Notice         string `json:"notice"`
 	Department     string `json:"department,omitempty"`
-	// An actual same-day transfer named in the notice as an earlier fact.
+	// The primary assignment's same-day decision named in the notice.
 	AfterAction   string     `json:"afterAction,omitempty"`
 	AfterRevision string     `json:"afterRevision,omitempty"`
 	Precedes      *ActionRef `json:"precedes,omitempty"`
+}
+type PrecedingOption struct {
+	ID           string `json:"id"`
+	Revision     string `json:"revision"`
+	Kind         string `json:"kind"`
+	Notice       string `json:"notice"`
+	BusinessDate string `json:"businessDate"`
 }
 type ProbationEvidence struct {
 	DepartmentSource   string `json:"departmentSource,omitempty"`

@@ -66,11 +66,11 @@ type hirePlan struct {
 	term                   f.Period
 	employment, assignment string
 	department, job        string
-	previousAction         string
+	original               employmentResult
 	location               *h.LocationRef
 }
 
-func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
+func (u *unit) prepareHire(ctx context.Context, in h.Hire, showOriginalSources bool) (hirePlan, error) {
 	var plan hirePlan
 	term, err := hireTerm(in)
 	if err != nil {
@@ -89,6 +89,12 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	}
 	if err = lock(ctx, u.tx, false, "staffing.hire.person", u.store.Instance, in.Person); err != nil {
 		return plan, err
+	}
+	ctx = dbtx.With(ctx, u.tx)
+	if in.Decision != nil {
+		if err = u.findDecisionHire(ctx, in, &plan, showOriginalSources); err != nil || plan.original.reused {
+			return plan, err
+		}
 	}
 	if err = u.checkRehireOrigin(ctx, in.Person, term.From, in.RehireOf); err != nil {
 		return plan, err
@@ -115,7 +121,6 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		legal.Adopted = in.Expected.Legal
 		job.Adopted = in.Expected.Segments
 	}
-	ctx = dbtx.With(ctx, u.tx)
 	var positionSegments []staff.AssignmentSegment
 	if in.Position != "" {
 		ok, e := u.positionEmploymentScope(ctx, in.Position, term, in.Person, in.Employer, hirePermission(in.RehireOf), "hire")
@@ -147,21 +152,15 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 		plan.Missing = plan.prepared.Identity.Missing
 		return plan, nil
 	}
-	if in.Decision != nil {
-		plan.previousAction, err = u.previousDecisionHire(ctx, in, term)
-		if err != nil {
-			return plan, err
-		}
-	}
 	var existing bool
 	err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.employment e WHERE e.instance_id=$1 AND e.person_id=$2
-	AND (e.period * daterange(NULL,(SELECT x.first_inactive FROM staffing.employment_exit x WHERE (x.instance_id,x.employment_id)=(e.instance_id,e.id)),'[)')) && daterange($3::date,NULLIF($4,'')::date,'[)') AND NOT EXISTS(SELECT FROM staffing.employment_action c
-	WHERE c.instance_id=e.instance_id AND c.employment_id=e.id AND c.kind='CancelHire'))`, u.store.Instance, in.Person, term.From, term.Until).Scan(&existing)
+	AND (($5 AND EXISTS(SELECT FROM staffing.assignment t WHERE (t.instance_id,t.employment_id)=(e.instance_id,e.id) AND t.record_number=0)) OR (e.period * daterange(NULL,(SELECT x.first_inactive FROM staffing.employment_exit x WHERE (x.instance_id,x.employment_id)=(e.instance_id,e.id)),'[)')) && daterange($3::date,NULLIF($4,'')::date,'[)')) AND NOT EXISTS(SELECT FROM staffing.employment_action c
+	WHERE c.instance_id=e.instance_id AND c.employment_id=e.id AND c.kind='CancelHire'))`, u.store.Instance, in.Person, term.From, term.Until, in.RehireOf == nil).Scan(&existing)
 	if err != nil {
 		return plan, err
 	}
-	if existing && plan.previousAction == "" {
-		return plan, f.Fail(409, "HIRE_EXISTING", "当前无法按首笔入职办理，请由获权人核对工作安排")
+	if existing {
+		return plan, f.Fail(409, "HIRE_EXISTING", "请核对既有工作关系。已任职人员再次到岗时，应从原离职办理再聘")
 	}
 	adopt := h.Adoption{Decision: in.Decision, Rule: plan.prepared.RuleVersion, Identity: plan.prepared.Identity.Source}
 	adopt.Legal, err = u.store.HirePurposes.CheckPurpose(ctx, u.credentials, in.Employer, legal)
@@ -229,47 +228,44 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 }
 
 func (st *Store) PreviewHire(ctx context.Context, c f.Credentials, in h.Hire) (out h.Preview, err error) {
-	err = st.within(ctx, c, false, false, func(u *unit) error { p, e := u.prepareHire(ctx, in); out = p.Preview; return e })
+	err = st.within(ctx, c, false, false, func(u *unit) error { p, e := u.prepareHire(ctx, in, true); out = p.Preview; return e })
 	return
 }
 
 func (st *Store) Hire(ctx context.Context, c f.Credentials, submission string, in h.Hire) (h.Receipt, error) {
-	return st.hireCommand(ctx, c, submission, []any{"Hire", in}, func(u *unit) (string, error) {
+	return st.employmentCommand(ctx, c, submission, []any{"Hire", in}, func(u *unit) (employmentResult, error) {
 		return u.createHire(ctx, in)
 	})
 }
 
-func (u *unit) createHire(ctx context.Context, in h.Hire) (string, error) {
-	p, err := u.prepareHire(ctx, in)
-	if err != nil {
-		return "", err
+func (u *unit) createHire(ctx context.Context, in h.Hire) (employmentResult, error) {
+	p, err := u.prepareHire(ctx, in, false)
+	if err != nil || p.original.reused {
+		return p.original, err
 	}
 	in.Department, in.Job = p.department, p.job
 	if proof, ok := ctx.Value(offerContext{}).(offerAdmission); ok && len(p.Missing) == 0 {
 		if err = checkOfferHire(proof.offer, in, p); err != nil {
-			return "", err
+			return employmentResult{}, err
 		}
 		p.Adoption.Offer = &proof.ref
 	}
 	if len(p.Missing) > 0 {
-		return "", f.Fail(409, "HIRE_IDENTITY", "请先补齐入职所需资料")
+		return employmentResult{}, f.Fail(409, "HIRE_IDENTITY", "请先补齐入职所需资料")
 	}
 	if err = u.requireEmployment(ctx, hirePermission(in.RehireOf), in.Person, in.Employer, in.Department); err != nil {
-		return "", err
-	}
-	if p.previousAction != "" {
-		return p.previousAction, nil
+		return employmentResult{}, err
 	}
 	id := f.NewID()
 	instance := u.store.Instance
 	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment VALUES($1,$2,$3,$4,'Employee',daterange($5::date,NULLIF($6,'')::date,'[)'))`, instance, p.employment, in.Person, in.Employer, p.term.From, p.term.Until)
 	if err != nil {
-		return "", err
+		return employmentResult{}, err
 	}
 	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_record(instance_id,person_id,record_number) VALUES($1,$2,0)
             ON CONFLICT(instance_id,person_id,record_number) DO NOTHING`, instance, in.Person)
 	if err != nil {
-		return "", err
+		return employmentResult{}, err
 	}
 	revision := f.NewID()
 	adoption := map[string]any{"sources": p.Adoption, "reason": p.prepared.Reason, "state": p.prepared.InitialState, "primaryPurpose": p.prepared.PrimaryPurpose, "primaryEmployment": p.employment, "primaryAssignment": p.assignment}
@@ -287,18 +283,18 @@ func (u *unit) createHire(ctx context.Context, in h.Hire) (string, error) {
 	}
 	item := employmentEntry{id: id, revision: revision, employment: p.employment, assignment: p.assignment, kind: kind, date: in.Arrival, notice: p.prepared.Basis.Notice, adoption: adoption}
 	if err = u.openAssignment(ctx, item, in, 0, p.term, p.Adoption.Segments, p.location, p.Adoption.Grade); err != nil {
-		return "", err
+		return employmentResult{}, err
 	}
 	if in.Decision != nil {
 		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.hire_decision_use(instance_id,source,version,line_id,action_id) VALUES($1,$2,$3,NULLIF($4,'')::uuid,$5)`, instance, in.Decision.Source, in.Decision.Version, in.Decision.Line, id)
 		if err != nil {
-			return "", err
+			return employmentResult{}, err
 		}
 	}
 	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_primary
 		SELECT $1::uuid,$2::uuid,v.layer,v.owner,v.target,$6,daterange($7::date,NULLIF($8,'')::date,'[)')
 		FROM (VALUES ('employment',$3::uuid,$4::uuid),('assignment',$4::uuid,$5::uuid)) v(layer,owner,target)`, instance, id, in.Person, p.employment, p.assignment, p.prepared.PrimaryPurpose, p.term.From, p.term.Until)
-	return id, err
+	return employmentResult{action: id, revision: revision}, err
 }
 
 func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hire, number int, term f.Period, segments []staff.AssignmentSegment, location *h.LocationRef, grade *h.GradeRef) error {

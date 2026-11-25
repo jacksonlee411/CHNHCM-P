@@ -132,6 +132,9 @@ func (st *Store) SuccessionOptions(ctx context.Context, c f.Credentials, id stri
 			if !continues {
 				end = term.Until
 			}
+			if successionClaimed(usage, v.Assignment, id, f.Period{From: in.BusinessDate, Until: end}) {
+				continue
+			}
 			o := h.SuccessionOption{Continues: continues, IncumbentRef: h.IncumbentRef{Assignment: v.Assignment, Source: v.Source}, Number: other.RecordNumber, Until: end, Department: p.Adoption.DepartmentName, Job: p.Adoption.JobName}
 			candidates = append(candidates, candidate{o, other.Person})
 			people = append(people, other.Person)
@@ -158,6 +161,12 @@ func (st *Store) SuccessionOptions(ctx context.Context, c f.Credentials, id stri
 		return nil
 	})
 	return
+}
+
+func successionClaimed(usage d.QuotaUsage, incumbent, applicant string, term f.Period) bool {
+	return slices.ContainsFunc(usage.Uses, func(v d.PositionUse) bool {
+		return v.Incumbent == incumbent && v.Assignment != applicant && (f.Period{From: v.From, Until: v.Until}).Overlaps(term)
+	})
 }
 
 // Caller already holds the locks for both transfer positions. The immutable
@@ -199,9 +208,9 @@ func (u *unit) adoptSuccession(ctx context.Context, a h.Action, action, position
 				return nil, f.Fail(403, "SUCCESSION_DENIED", "当前权限不能覆盖全部交接期间")
 			}
 		}
-		if v.Incumbent == other.Assignment && v.Assignment != a.Assignment && (f.Period{From: v.From, Until: v.Until}).Overlaps(term) {
-			return nil, f.Fail(409, "SUCCESSION_ASSIGNED", "原任在该期间已有接替安排")
-		}
+	}
+	if successionClaimed(usage, other.Assignment, a.Assignment, term) {
+		return nil, f.Fail(409, "SUCCESSION_ASSIGNED", "原任在该期间已有接替安排")
 	}
 	names, _, e := u.store.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), u.credentials, []string{other.Person}, "")
 	if e != nil {

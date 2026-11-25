@@ -181,6 +181,14 @@ func (st *Store) ReceiveDuty(ctx context.Context, c f.Credentials, id, key strin
 	})
 	return
 }
+func (u *unit) lockDutyAssignment(ctx context.Context, id string) error {
+	a, err := u.assignmentIdentity(ctx, id)
+	if err != nil {
+		return err
+	}
+	return lock(ctx, u.tx, false, "staffing.hire.person", u.store.Instance, a.Person)
+}
+
 func (u *unit) receiveDuty(ctx context.Context, id, key string, in h.DutyObservation) (out h.DutyEvidence, err error) {
 	in.Issuer, in.Number = strings.TrimSpace(in.Issuer), strings.TrimSpace(in.Number)
 	if !f.ValidID(key) || !f.ValidID(id) || in.Issuer == "" || in.Number == "" || utf8.RuneCountInString(in.Issuer) > 160 || utf8.RuneCountInString(in.Number) > 160 || in.Previous != nil && (!f.ValidID(in.Previous.ID) || !f.ValidID(in.Previous.Version)) {
@@ -194,11 +202,18 @@ func (u *unit) receiveDuty(ctx context.Context, id, key string, in h.DutyObserva
 	if !f.ValidDate(in.ObservedThrough) || in.ObservedThrough < in.From || in.ObservedThrough > today || in.LastDay != "" && in.LastDay > in.ObservedThrough {
 		return out, f.Fail(409, "DUTY_NOT_OBSERVED", "只能依据已核实的实际到岗及出勤记录办理")
 	}
+	if e := u.lockDutyAssignment(ctx, id); e != nil {
+		return out, e
+	}
 	a, e := u.assignmentAt(ctx, id, in.From, "")
 	if e != nil {
 		return out, e
 	}
-	if !a.Includes(in.From) || a.Cancelled || in.LastDay != "" && !a.Includes(in.LastDay) {
+	verifiedEnd := in.LastDay
+	if verifiedEnd == "" {
+		verifiedEnd = in.ObservedThrough
+	}
+	if !a.Includes(in.From) || a.Cancelled || !a.Includes(verifiedEnd) {
 		return out, f.Fail(409, "DUTY_TERM", "实际履职须在该任期内")
 	}
 	if e = u.requireEmployment(ctx, "duty.verify", a.Person, a.Employer, a.Department); e != nil {
@@ -292,6 +307,9 @@ func (st *Store) RecordDuty(ctx context.Context, c f.Credentials, id, key string
 			if !f.ValidID(in.Observation.ID) || !f.ValidID(in.Observation.Version) {
 				return out, assignmentConflict()
 			}
+			if err = u.lockDutyAssignment(ctx, id); err != nil {
+				return out, err
+			}
 			err = u.tx.QueryRow(ctx, `SELECT r.fact FROM staffing.duty_observation o JOIN staffing.duty_observation_head x ON (o.instance_id,o.id)=(x.instance_id,x.observation_id) JOIN staffing.duty_observation_revision r ON (r.instance_id,r.observation_id,r.version)=(x.instance_id,x.observation_id,x.version)
        WHERE o.instance_id=$1 AND o.assignment_id=$2 AND o.id=$3 AND x.version=$4 FOR SHARE OF x`, u.store.Instance, id, in.Observation.ID, in.Observation.Version).Scan(&proof)
 			if errors.Is(err, pgx.ErrNoRows) {
@@ -314,7 +332,7 @@ func (st *Store) RecordDuty(ctx context.Context, c f.Credentials, id, key string
 		if _, e = u.dutyDecision(ctx, a, proof.Dispatch); e != nil {
 			return out, e
 		}
-		edit := recordEdit{kind: "Transfer", operation: "Insert", duty: &proof, RecordMaintenance: h.RecordMaintenance{ExpectedSource: in.Expected, BusinessDate: proof.From, Position: proof.Position, Notice: "派岗决定及核实的实际出勤原件"}}
+		edit := recordEdit{kind: "Transfer", duty: &proof, RecordMaintenance: h.RecordMaintenance{ExpectedSource: in.Expected, BusinessDate: proof.From, Position: proof.Position, Notice: "派岗决定及核实的实际出勤原件"}}
 		if in.Action != nil {
 			edit.action = in.Action.Action
 			edit.ExpectedRevision = in.Action.Revision

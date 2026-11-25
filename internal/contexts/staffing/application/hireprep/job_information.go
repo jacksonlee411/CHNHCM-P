@@ -14,6 +14,17 @@ type LocationRef struct {
 	Revision string `json:"revision,omitempty"`
 }
 
+type LeaveImpact struct {
+	RelationSummary
+	Contracts          []LeaveContract `json:"contracts,omitempty"`
+	CanManageContracts bool            `json:"canManageContracts,omitempty"`
+}
+
+type LeaveContract struct {
+	ContractRef
+	Number string `json:"number"`
+}
+
 type LocationChange struct {
 	BusinessDate     string        `json:"businessDate"`
 	Location         string        `json:"location"`
@@ -53,6 +64,8 @@ type State struct {
 }
 
 type AssignmentView struct {
+	CanAddRecord        bool           `json:"canAddRecord"`
+	CanInsertRecord     bool           `json:"canInsertRecord"`
 	FutureTerm          bool           `json:"futureTerm,omitempty"`
 	CanReadContracts    bool           `json:"canReadContracts"`
 	CanRecordDuty       bool           `json:"canRecordDuty"`
@@ -159,12 +172,15 @@ type JobInformation interface {
 	SuccessionOptions(context.Context, f.Credentials, string, SuccessionSearch) ([]SuccessionOption, error)
 	TransferArrangement(context.Context, f.Credentials, string, TransferArrangementQuery) (ArrangementMode, error)
 	ExitAssignment(context.Context, f.Credentials, string, string, bool, ExitCommand) (Receipt, error)
+	LeaveImpact(context.Context, f.Credentials, string, string, string) (LeaveImpact, error)
 	SetManager(context.Context, f.Credentials, string, string, ManagerCommand) (Receipt, error)
 	RecordPromotion(context.Context, f.Credentials, string, string, string, string, PromotionCommand) (Receipt, error)
 	GradeOptions(context.Context, f.Credentials, string, GradeSearch) ([]GradeRef, error)
 	ReconcileProbation(context.Context, f.Credentials, bool) (ProbationRepairReport, error)
+	ReconcileT04(context.Context, f.Credentials, bool) (ProbationRepairReport, error)
 	RecordProbation(context.Context, f.Credentials, string, string, string, ProbationCommand) (Receipt, error)
 	ProbationDepartments(context.Context, f.Credentials, string, LocationSearch) ([]org.EligibleEntity, error)
+	ProbationPredecessors(context.Context, f.Credentials, string, string) ([]PrecedingOption, error)
 	AddSecondary(context.Context, f.Credentials, string, string, Secondary) (Receipt, error)
 	SecondaryArrangement(context.Context, f.Credentials, string, SecondaryArrangementQuery) (ArrangementMode, error)
 	SecondaryOptions(context.Context, f.Credentials, string, SecondaryOption) ([]org.EligibleEntity, error)

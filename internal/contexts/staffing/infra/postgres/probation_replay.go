@@ -93,6 +93,11 @@ func (u *unit) replayAttribution(ctx context.Context, a h.Action, r *savedRecord
 			ev.Department, ev.DepartmentName, ev.Attribution = "", "", "same-day-order-undetermined"
 		} else if ev.AfterAction != "" {
 			ev.Attribution = "preceding-transfer"
+			for _, row := range records {
+				if row.ID == ev.AfterAction && row.Kind == "Promotion" && row.Transfer == nil {
+					ev.Attribution = "preceding-action"
+				}
+			}
 		}
 		if err := u.adoptConfirmationDepartment(ctx, a, r, old, &ev, change.Before); err != nil {
 			return err

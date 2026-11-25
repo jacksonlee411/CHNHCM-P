@@ -14,19 +14,20 @@ import (
 )
 
 func main() {
-	mode := flag.String("mode", "migrate", "migrate, initialize, runtime-roles, access-change, local-password, country-catalog, geoarea-catalog, personnel-retention, probation-reconcile; inputs are JSON on stdin")
-	apply := flag.Bool("apply", false, "apply the verified probation reconciliation; defaults to preview")
+	mode := flag.String("mode", "migrate", "migrate, initialize, runtime-roles, access-change, local-password, country-catalog, geoarea-catalog, personnel-retention, probation-reconcile, t04-reconcile; inputs are JSON on stdin")
+	apply := flag.Bool("apply", false, "apply the selected reconciliation; defaults to preview")
 	flag.Parse()
-	if *apply && *mode != "probation-reconcile" {
-		fail("-apply requires probation-reconcile")
+	reconcile := *mode == "probation-reconcile" || *mode == "t04-reconcile"
+	if *apply && !reconcile {
+		fail("-apply requires a reconciliation mode")
 	}
 	budget := time.Minute
-	if *mode == "country-catalog" || *mode == "geoarea-catalog" || *mode == "probation-reconcile" {
+	if *mode == "country-catalog" || *mode == "geoarea-catalog" || reconcile {
 		budget = 20 * time.Minute
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), budget)
 	defer cancel()
-	if *mode == "country-catalog" || *mode == "geoarea-catalog" || *mode == "probation-reconcile" {
+	if *mode == "country-catalog" || *mode == "geoarea-catalog" || reconcile {
 		var input access.LoginInput
 		decoder := json.NewDecoder(os.Stdin)
 		decoder.DisallowUnknownFields()
@@ -38,8 +39,12 @@ func main() {
 			fail(err.Error())
 		}
 		defer runtime.Close()
-		if *mode == "probation-reconcile" {
-			report, err := runtime.ReconcileProbation(ctx, input, *apply)
+		if reconcile {
+			run := runtime.ReconcileProbation
+			if *mode == "t04-reconcile" {
+				run = runtime.ReconcileT04
+			}
+			report, err := run(ctx, input, *apply)
 			if err != nil {
 				fail(err.Error())
 			}
@@ -47,7 +52,7 @@ func main() {
 				fail(err.Error())
 			}
 			if report.Unresolved+report.Failed > 0 {
-				fail("probation reconciliation requires follow-up")
+				fail(*mode + " requires follow-up")
 			}
 			return
 		}

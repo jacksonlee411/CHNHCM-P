@@ -1,8 +1,9 @@
+import { employmentHistoryReturn, personnelReturn, registerListParams } from './jobLinks';
 import { actionLabel } from './AssignmentRecordForm';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, MenuItem, Paper, Stack, Typography } from '@mui/material';
-import { Link, useLocation, useParams } from 'react-router-dom';
-import { api, ApiError, unwrap, type Models } from '@chnhcm/api-client';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { api, ApiError, sessionGuard, unwrap, type Models } from '@chnhcm/api-client';
 import {
   ObjectDetailField,
   ObjectDetailSection,
@@ -39,17 +40,22 @@ export function HirePage({ session }: { session: Models['Principal'] }) {
   return <EmployeeHire key={session.instanceId + session.subjectId + id} id={id} session={session} />;
 }
 export function EmployeeHire({ id, session, cancellation }: { id: string; session: Models['Principal']; cancellation?: {action:Models['EmploymentAction']; returnTo:string; done:()=>void} }) {
-  const route = useLocation(),
+  const navigate = useNavigate(), route = useLocation(),
     params = new URLSearchParams(route.search),
     origin = params.get('rehireAction') && params.get('rehireRevision') ? {action:params.get('rehireAction')!,revision:params.get('rehireRevision')!} : undefined,
-    back = cancellation?.returnTo ?? (route.state?.fromAction?.startsWith('/personnel/actions/') ? route.state.fromAction : person.path + '/' + id + route.search);
+    from = params.get('returnTo') || route.state?.fromAction,
+    returnTo = personnelReturn(from) || employmentHistoryReturn(from, id),
+    back = cancellation?.returnTo ?? returnTo ?? person.path + '/' + id + route.search;
+  const pendingKey = ['chnhcm-rehire',session.instanceId,session.subjectId].join('.');
+  const activePage = useRef(true);
+  useEffect(()=>{activePage.current=true; return ()=>{activePage.current=false;};},[]);
   const [day, setDay] = useState(''),
     [mode, setMode] = useState<'hire' | 'cancel' | ''>(cancellation ? 'cancel' : (origin || route.state?.hire) ? 'hire' : '');
   const [draft, setDraft] = useState<Models['HireInput']>(() => ({...empty(id),rehireOf:origin})),
     [choices, setChoices] = useState<Partial<Record<TargetKind, Option>>>({});
   const [reason, setReason] = useState(''),
     [action, setAction] = useState<Models['EmploymentAction'] | undefined>(cancellation?.action),
-    [original, setOriginal] = useState('');
+    [original, setOriginal] = useState(params.get('action') || '');
   const [notice, setNotice] = useState(''),
     [error, setError] = useState(''),
     [generation, newPreview] = useState(0);
@@ -118,8 +124,9 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     close,
   );
   const send = useRuleSubmission<Command, Models['HireReceipt']>('employee-hire', session, {
-    send: async (cmd, key) =>
-      'hire' in cmd
+    send: async (cmd, key) => {
+      if ('hire' in cmd && cmd.hire.rehireOf) sessionStorage.setItem(pendingKey + '.' + key, '1');
+      return 'hire' in cmd
         ? unwrap(
             await api.POST('/api/v1/hires', {
               params: { header: { ...header, 'Idempotency-Key': key } },
@@ -131,23 +138,57 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
               params: { path: { id: cmd.cancel }, header: { ...header, 'Idempotency-Key': key } },
               body: { revision: cmd.revision, reason: cmd.reason },
             }),
-          ),
+          );
+    },
     resolve: async (sub) =>
       unwrap(
         await api.POST('/api/v1/hires/submissions/{sub}/resolve', { params: { path: { sub }, header } }),
       ),
-    finished: (r, recovered) => {
-      if (r.outcome === 'accepted') {
-        if (recovered !== 'other') {
-          saved.current = true;
-          if (draft.arrival) setDay(draft.arrival);
-          close();
-        }
-        overview.invalidate();
-        setNotice(recovered ? '已查回原办理。' : '已保存。');
-      } else {
+    finished: async (r, recovered) => {
+      const pending = pendingKey + '.' + r.submissionId;
+      const ownRehire = sessionStorage.getItem(pending) === '1';
+      if (ownRehire) sessionStorage.removeItem(pending);
+      if (r.outcome !== 'accepted') {
         setError(r.outcome === 'rejected' ? '原提交已拒绝。' : '原号已确认未执行。');
+        return;
       }
+      const currentSubmission = recovered !== 'other';
+      const restoredDraft = ownRehire && !!origin && !draft.arrival &&
+        JSON.stringify({...draft,rehireOf:undefined}) === JSON.stringify(empty(id));
+      const own = currentSubmission || restoredDraft;
+      if (own && ownRehire && r.recordNumber === 0 && r.action && r.assignment && r.employment && r.revision) {
+        const current = sessionGuard(), address = location.href;
+        try {
+          const original = unwrap(await api.GET('/api/v1/employment-actions/{id}', {params:{path:{id:r.action},query:{adoptedRef:r.revision}}}));
+          if (!activePage.current || !current() || address !== location.href) return;
+          const a = original.action, basis = draft.rehireOf || origin;
+          if (a.kind === 'Rehire' && a.person === id && a.employment === r.employment && a.assignment === r.assignment &&
+              (!basis || original.rehireOf?.action === basis.action && original.rehireOf?.revision === basis.revision)) {
+            const prior = returnTo ? new URL(returnTo,location.origin) : undefined;
+            const query = prior ? registerListParams(prior.searchParams) : new URLSearchParams();
+            if (prior?.pathname.startsWith('/personnel/actions/')) {
+              query.set('returnAction',prior.pathname.split('/').pop()!);
+              query.set('returnTo',returnTo!);
+              if (prior.searchParams.has('fromRegister')) query.set('fromRegister','1');
+            } else if (employmentHistoryReturn(returnTo, id)) {
+              query.set('returnTo', returnTo!);
+            }
+            query.set('assignmentDay',a.businessDate);
+            query.set('action',a.id);
+            query.set('adoptedRef',a.revision);
+            saved.current = true;
+            navigate(person.path + '/' + id + '/assignments/' + a.assignment + '?' + query,{replace:true});
+            return;
+          }
+        } catch { if (!activePage.current || !current() || address !== location.href) return; }
+      }
+      if (currentSubmission) {
+        saved.current = true;
+        if (draft.arrival) setDay(draft.arrival);
+        close();
+      }
+      overview.invalidate();
+      setNotice(recovered ? '已查回原办理。' : '已保存。');
     },
     failed: (e) => {
       if (e instanceof ApiError && [401, 403, 404].includes(e.status)) {
@@ -233,12 +274,34 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   const begin = (next: 'hire' | 'cancel', row?: Models['EmploymentAction']) => {
     saved.current = false;
     setAction(row);
-    if(next==='hire') setDraft({...empty(id),rehireOf:row ? {action:row.id,revision:row.revision}:overview.data?.rehireFrom});
+    if (next === 'hire') {
+      const rehireOf = row ? {action:row.id,revision:row.revision} : overview.data?.rehireFrom;
+      setDraft({...empty(id),rehireOf});
+      if (rehireOf) {
+        const history = new URLSearchParams(params);
+        history.set('view','history');
+        history.set('action',rehireOf.action);
+        const backToHistory = employmentHistoryReturn(route.pathname + '?' + history, id);
+        const command = new URLSearchParams(params);
+        command.set('rehireAction',rehireOf.action);
+        command.set('rehireRevision',rehireOf.revision);
+        if (backToHistory) command.set('returnTo',backToHistory);
+        navigate(route.pathname + '?' + command, {replace:true, state:route.state});
+      }
+    }
     setReason('');
     setMode(next);
     setNotice('');
     setError('');
     send.start();
+  };
+  const cancelForm = () => {
+    close();
+    if (origin && returnTo) {
+      saved.current = true;
+      setOriginal(origin.action);
+      navigate(returnTo, {replace:true});
+    }
   };
   const submit = async () => {
     setError('');
@@ -427,7 +490,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                   >
                     保存
                   </Button>
-                  <Button onClick={() => leave.request(close)}>取消</Button>
+                  <Button onClick={() => leave.request(cancelForm)}>取消</Button>
                   {(error || decisions.error || preview.error || preview.data?.missing?.length) &&
                     mode === 'hire' && (
                       <Button

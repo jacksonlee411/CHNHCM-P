@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Autocomplete, MenuItem, TextField } from '@mui/material';
+import { Alert, Autocomplete, Button, MenuItem, TextField } from '@mui/material';
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField, ObjectTextField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
 import type { JobDraft } from './AssignmentRecordForm';
 
 export const managerPurposes = { direct: '直属汇报', functional: '专业汇报' };
-export function LifecycleFields({ draft, update, view, csrf }: {draft: JobDraft; update: (draft: JobDraft) => void; view: Models['AssignmentView']; csrf: string}) {
+export function LifecycleFields({ draft, update, view, csrf, impact, contractsConfirmed }: {draft: JobDraft; update: (draft: JobDraft) => void; view: Models['AssignmentView']; csrf: string; impact: ReturnType<typeof useRead<Models['EmploymentLeaveImpact']>>; contractsConfirmed: boolean}) {
   const [search,setSearch]=useState('');
   const manager=draft.kind==='SetManager';
   const matches=useRead(manager && !draft.endReporting && draft.day && search.trim() ? JSON.stringify([draft.day,search]) : undefined, async()=>{
@@ -15,18 +15,25 @@ export function LifecycleFields({ draft, update, view, csrf }: {draft: JobDraft;
     const result=unwrap(await api.POST('/api/v1/assignments/query',{params:{header},body:{businessAt:draft.day,ref:query.ref,page:1,pageSize:50}}));
     return result.rows.filter(r=>r.id!==view.assignment).map(r=>({id:r.id,name:r.name+' · '+r.recordNumber+' 号 · '+r.departmentName+' · '+r.jobName}));
   });
-  const contracts=useRead(view.canReadContracts && draft.kind==='Leave' && draft.day ? JSON.stringify([view.assignment,draft.day,draft.meaning]):undefined,
-    async()=>unwrap(await api.GET('/api/v1/assignments/{id}/contracts',{params:{path:{id:view.assignment},query:{businessAt:view.businessAt,exitDate:draft.day,meaning:draft.meaning??'last-active'}}})));
-  const required=contracts.data?.required??[];
+  const required = impact.data?.contracts ?? [];
   if (!manager) return <>
+    {draft.kind === 'Leave' && <>
+      {impact.data && <>
+        <ObjectDetailField label="所属工作关系">{impact.data.employerName} · 自 {impact.data.from} 起</ObjectDetailField>
+        <ObjectDetailField label="本次离职将结束的任职">{impact.data.terms.map(term =>
+          term.recordNumber + ' 号' + (term.recordNumber === 0 ? '主岗' : '兼岗')).join('、')}</ObjectDetailField>
+      </>}
+      {impact.error && <Alert severity="error" action={<Button onClick={impact.refresh}>重试</Button>}>{impact.error}</Alert>}
+    </>}
+    {draft.kind === 'EndAssignment' && <ObjectDetailField label="本次结束的任职">{view.recordNumber} 号兼岗 · {view.employerName}</ObjectDetailField>}
     <ObjectTextField select label="原通知日期含义" value={draft.meaning ?? 'last-active'} onChange={e=>update({...draft,meaning:e.target.value as JobDraft['meaning'],contracts:undefined})}>
       <MenuItem value="last-active">最后在职日（含当日）</MenuItem><MenuItem value="first-inactive">首个不在职日</MenuItem>
     </ObjectTextField>
     {required.length>0 && <>
-      <ObjectDetailField label="涉及的合同">{required.map(ref=>contracts.data?.items.find(r=>r.id===ref.id)?.number).join('、')}</ObjectDetailField>
-      {contracts.data?.canManage && <ObjectTextField select label="合同处置" value={draft.contracts?.length?'end':''} onChange={e=>update({...draft,contracts:e.target.value==='end'?required:undefined})}>
+      <ObjectDetailField label="涉及的合同">{required.map(contract => contract.number).join('、')}</ObjectDetailField>
+      {impact.data?.canManageContracts ? <ObjectTextField select required label="合同处置" value={contractsConfirmed?'end':''} onChange={e=>update({...draft,contracts:e.target.value==='end'?required.map(({id,version})=>({id,version})):undefined})}>
         <MenuItem value="">请选择</MenuItem><MenuItem value="end">按离职通知终结上述合同</MenuItem>
-      </ObjectTextField>}
+      </ObjectTextField> : <Alert severity="warning">请由有合同处置权限的经办人办理离职。</Alert>}
     </>}
     <ObjectTextField required label="退出依据" value={draft.notice} onChange={e=>update({...draft,notice:e.target.value})}/>
   </>;

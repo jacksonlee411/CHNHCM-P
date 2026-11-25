@@ -24,7 +24,7 @@ func (s *Store) CanListRegister(ctx context.Context, c f.Credentials) (yes bool,
 }
 
 func validRegisterQuery(q h.RegisterQuery) bool {
-	for _, v := range []string{q.Ref, q.Department, q.FromDepartment, q.ToDepartment, q.Operator} {
+	for _, v := range []string{q.Anchor, q.Ref, q.Department, q.FromDepartment, q.ToDepartment, q.Operator} {
 		if v != "" && !f.ValidID(v) {
 			return false
 		}
@@ -48,22 +48,23 @@ type registerCandidate struct {
 }
 
 const exitDepartmentJoin = `    LEFT JOIN LATERAL (
-      SELECT s.adoption->>'departmentName' AS name FROM staffing.assignment_source src
+      SELECT s.adoption->>'departmentName' AS name,s.adoption->>'departmentSource' AS source,s.adoption->>'departmentRevision' AS revision
+      FROM staffing.assignment_source src
       JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id)=(src.instance_id,src.assignment_id)
         AND s.version IN (src.version,src.previous)
       WHERE (src.instance_id,src.assignment_id,src.version)=(issued.instance_id,issued.assignment_id,issued.version)
         AND s.department_id=(r.adoption->>'department')::uuid AND s.period @> ((r.adoption#>>'{exit,firstInactive}')::date-1)
-      ORDER BY (s.version=src.version) DESC LIMIT 1) exit_department ON a.kind='Leave'`
+      ORDER BY (s.version=src.version) DESC LIMIT 1) exit_department ON a.kind IN ('Leave','EndAssignment')`
 
 // The current source selects the adopted revision. The source which published that
 // revision supplies the department as recorded then, even if the hire was cancelled later.
 const registerSQL = `SELECT a.id,r.revision,issued.version,a.kind,r.business_date::text,a.recorded_at,
     e.id,t.id,t.record_number,e.person_id,e.employer_id,
-    CASE a.kind WHEN 'Leave' THEN coalesce(r.adoption->>'department','')
-      WHEN 'ConfirmEmployment' THEN coalesce(r.adoption#>>'{probation,department}','') WHEN 'ProbationStart' THEN ''
+    CASE WHEN a.kind IN ('Leave','EndAssignment') THEN coalesce(r.adoption->>'department','')
+      WHEN a.kind='ConfirmEmployment' THEN coalesce(r.adoption#>>'{probation,department}','') WHEN a.kind='ProbationStart' THEN ''
       ELSE coalesce(r.adoption#>>'{promotion,department}',origin.department_id::text,t.department_id::text) END,
-    CASE a.kind WHEN 'Leave' THEN coalesce(exit_department.name,'')
-      WHEN 'ConfirmEmployment' THEN coalesce(r.adoption#>>'{probation,departmentName}','') WHEN 'ProbationStart' THEN ''
+    CASE WHEN a.kind IN ('Leave','EndAssignment') THEN coalesce(exit_department.name,'')
+      WHEN a.kind='ConfirmEmployment' THEN coalesce(r.adoption#>>'{probation,departmentName}','') WHEN a.kind='ProbationStart' THEN ''
       ELSE coalesce(r.adoption#>>'{promotion,departmentName}',origin.adoption->>'departmentName','') END,a.actor,
     coalesce(nullif(first.operator_snapshot->>'displayName',''),nullif(first.operator_snapshot->>'login',''),a.actor::text),
     EXISTS (SELECT FROM staffing.employment_action cancelled WHERE cancelled.instance_id=a.instance_id AND cancelled.original_id=a.id AND cancelled.kind='CancelHire') OR r.operation='Withdraw',
@@ -293,6 +294,22 @@ func (s *Store) ListRegister(ctx context.Context, c f.Credentials, q h.RegisterQ
 			}
 			return cmp.Or(order, cmp.Compare(a.ID, b.ID))
 		})
+		if q.Anchor != "" {
+			for i, row := range matched {
+				if row.ID != q.Anchor || !row.CanHistory {
+					continue
+				}
+				nav := &h.RegisterNavigation{Position: i + 1}
+				if i > 0 && matched[i-1].CanHistory {
+					nav.Previous = matched[i-1].ID
+				}
+				if i+1 < len(matched) && matched[i+1].CanHistory {
+					nav.Next = matched[i+1].ID
+				}
+				out.Navigation = nav
+				break
+			}
+		}
 		out.Total = len(matched)
 		start := min((q.Page-1)*q.PageSize, out.Total)
 		out.Rows = append(out.Rows, matched[start:min(start+q.PageSize, out.Total)]...)

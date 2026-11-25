@@ -117,6 +117,13 @@ func (u *unit) saveReplayedSource(ctx context.Context, a h.Action, version strin
 	for _, r := range records {
 		refs = append(refs, h.ActionRef{Action: r.ID, Revision: r.Revision})
 	}
+	exit, err := u.reconcileExitDepartment(ctx, a.Assignment, segments, true)
+	if err != nil {
+		return err
+	}
+	if exit != nil {
+		refs = append(refs, *exit)
+	}
 	e := u.startSourceReplacing(ctx, a.Assignment, a.SourceVersion, version, target.ID, target.Revision, refs)
 	if e != nil {
 		return e

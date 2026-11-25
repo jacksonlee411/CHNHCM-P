@@ -1,3 +1,4 @@
+import { personnelReturn } from '../hire/jobLinks';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Box, Button, Paper, Stack, Typography } from '@mui/material';
 import { useGridApiRef, type GridColDef } from '@mui/x-data-grid';
@@ -198,14 +199,22 @@ export function OfferDetail({
   creating?: boolean;
 }) {
   const { id = '' } = useParams(),
-    [params] = useSearchParams(),
+    [params,setParams] = useSearchParams(),
     navigate = useNavigate();
   const person = params.get('person') ?? '',
     header = { 'X-CSRF-Token': session.csrf };
-  const [revision, setRevision] = useState(params.get('sourceVersion') ?? ''),
-    [op, setOp] = useState<Operation | undefined>(
-      creating ? 'issue' : undefined,
-    );
+  const revision = params.get('sourceVersion') ?? '';
+  function setRevision(version: string) {
+    const next = new URLSearchParams(params);
+    if (version) next.set('sourceVersion', version);
+    else next.delete('sourceVersion');
+    if (next.toString() !== params.toString()) setParams(next);
+  }
+  const [requestedOperation,setOp] = useState<Operation | undefined>(creating ? 'issue' : undefined);
+  const op = revision ? undefined : requestedOperation;
+  useEffect(() => {
+    if (revision) setOp(undefined);
+  }, [revision]);
   const [day, setDay] = useState(''),
     [basis, setBasis] = useState(''),
     [number, setNumber] = useState(''),
@@ -332,7 +341,9 @@ export function OfferDetail({
   usePageTitle(title);
   const backParams = new URLSearchParams(params);
   backParams.delete('sourceVersion');
-  const back = offerPath + '?' + backParams.toString();
+  const fromPersonnel = personnelReturn(backParams.get('returnTo'));
+  backParams.delete('returnTo');
+  const back = fromPersonnel ?? offerPath + '?' + backParams.toString();
   const ready =
     !!op &&
     !!day &&
@@ -402,7 +413,7 @@ export function OfferDetail({
         navigation={null}
         identity={
           <>
-            <RecordBackButton component={Link} to={back} />
+            <RecordBackButton component={Link} to={back} label={fromPersonnel ? (fromPersonnel.startsWith('/personnel/actions/') ? '返回办理明细' : '返回任职') : undefined} />
             招聘录用
           </>
         }

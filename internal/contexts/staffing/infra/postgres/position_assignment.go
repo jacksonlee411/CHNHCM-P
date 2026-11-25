@@ -160,7 +160,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		}
 		targets := in
 		targets.Period = p
-		var source, revision, name, coverage, intake, recruiting, quotaRevision, handover string
+		var source, revision, name, coverage, intake, recruiting, quotaRevision, handover, successionID string
 		fulfilling := slices.ContainsFunc(promised, func(v f.Period) bool { return v.Includes(p.From) })
 		if converting && rule.Consumes && !fulfilling {
 			return nil, f.Fail(409, "OFFER_RESERVATION", p.From+" 起缺少该录用的有效预留，请从原录用核对")
@@ -174,8 +174,8 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		if actual && rule.Mode != "PositionManaged" {
 			return nil, f.Fail(409, "DUTY_POLICY", p.From+" 起没有可采用的按岗位任职规则")
 		}
-		dedicated := hasSuccession && succession.source.Includes(p.From)
-		if dedicated && !rule.Consumes {
+		overlap := hasSuccession && succession.source.Includes(p.From)
+		if overlap && !rule.Consumes {
 			return nil, f.Fail(409, "SUCCESSION_POLICY", p.From+" 起不适用交接占编")
 		}
 		seats := 0
@@ -186,20 +186,27 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			}
 			record := pos.Records[i]
 			targets.Department, targets.Job = record.Data["departmentId"], record.Data["jobId"]
-			if !jobRequired && p.From == in.From && (in.Department != "" && targets.Department != in.Department || in.Job != "" && targets.Job != in.Job) {
+			if !jobRequired && p.From == in.From && positionTargetsConflict(in.Department, in.Job, targets.Department, targets.Job) {
 				return nil, f.Fail(409, "POSITION_TARGET_CHANGED", "岗位归属与拟任安排不符")
 			}
 			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: owner}
-			admission := evidence
-			if dedicated {
-				// Only this incumbent's regular seat can be credited in the overlap.
-				admission.Uses = slices.DeleteFunc(slices.Clone(evidence.Uses), func(v d.PositionUse) bool {
-					return v.Owner == "M04" && v.Assignment == succession.source.Assignment && v.Effect == "occupied"
-				})
-				handover = succession.source.ID
+			if overlap {
+				successionID = succession.source.ID
 			}
-			if _, e = admission.PlanUse(intent, rules, quota, d.QuotaEligibility(pos)); e != nil {
-				var fault *f.Fault
+			_, e = evidence.PlanUse(intent, rules, quota, d.QuotaEligibility(pos))
+			var fault *f.Fault
+			if e != nil && overlap && errors.As(e, &fault) && fault.Code == "M03_QUOTA_SHORTAGE" {
+				// The dedicated place belongs only to this incumbent, on this segment.
+				admission := evidence
+				admission.Uses = slices.DeleteFunc(slices.Clone(evidence.Uses), func(v d.PositionUse) bool {
+					return v.Owner == "M04" && v.Assignment == succession.source.Assignment && v.Effect == "occupied" && v.Contains(p.From)
+				})
+				_, e = admission.PlanUse(intent, rules, quota, d.QuotaEligibility(pos))
+				if e == nil {
+					handover = successionID
+				}
+			}
+			if e != nil {
 				if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" {
 					return nil, e
 				}
@@ -249,6 +256,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 				if rule.Consumes {
 					piece.RecruitingCoverage = recruiting
 					piece.Handover = handover
+					piece.Succession = successionID
 					piece.QuotaSource = quota.Source
 					piece.QuotaRevision = quotaRevision
 					piece.Seats = seats
@@ -310,4 +318,8 @@ func (u *unit) positionEmploymentScope(ctx context.Context, id string, term f.Pe
 		}
 	}
 	return pos.ID != "", nil
+}
+
+func positionTargetsConflict(department, job, actualDepartment, actualJob string) bool {
+	return department != "" && actualDepartment != department || job != "" && actualJob != job
 }

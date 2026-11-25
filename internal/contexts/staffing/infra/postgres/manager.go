@@ -153,35 +153,34 @@ func (st *Store) SetManager(ctx context.Context, c f.Credentials, id, key string
 				fact.Until = until
 			}
 		}
-		rows, e := u.tx.Query(ctx, `SELECT g.assignment_id,coalesce(g.manager_assignment::text,''),lower(g.period)::text,coalesce(upper(g.period)::text,'')
-		FROM staffing.manager_agreement g JOIN staffing.assignment_head h USING(instance_id,assignment_id)
-		JOIN staffing.assignment_member m ON (m.instance_id,m.assignment_id,m.version,m.action_id,m.revision)=(h.instance_id,h.assignment_id,h.version,g.action_id,g.revision)
-		WHERE g.instance_id=$1 AND g.purpose=$2`, st.Instance, in.Purpose)
+		decisions, e := u.managerDecisions(ctx, in.Purpose)
 		if e != nil {
 			return "", e
 		}
-		edges, e := pgx.CollectRows(rows, pgx.RowToStructByPos[h.ManagerEdge])
-		if e != nil {
-			return "", e
-		}
-		if e = h.ValidateManagers(append(edges, h.ManagerEdge{Child: id, Parent: in.Manager, From: fact.From, Until: fact.Until})); e != nil {
-			return "", e
-		}
+		edges, obsolete := reportingChanges(decisions, id, &fact)
 		if in.Manager == "" {
-			var active bool
-			e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT manager_assignment IS NOT NULL AND period @> $4::date FROM staffing.manager_agreement WHERE instance_id=$1 AND assignment_id=$2 AND purpose=$3 AND lower(period)<=$4::date ORDER BY lower(period) DESC LIMIT 1),false)`, st.Instance, id, in.Purpose, term.From).Scan(&active)
-			if e != nil {
-				return "", e
+			var latest h.ManagerEdge
+			for _, edge := range edges {
+				if edge.Child == id && edge.From <= fact.From && edge.From > latest.From {
+					latest = edge
+				}
 			}
-			if !active {
+			if latest.Parent == "" || latest.Until != "" && latest.Until <= fact.From {
 				return "", f.Fail(409, "MANAGER_ABSENT", "该用途没有需结束的实际汇报")
 			}
 		}
-		return u.storeManagerFact(ctx, a, fact, "", nil)
+		if e = h.ValidateManagers(append(edges, h.ManagerEdge{Child: id, Parent: fact.Manager, From: fact.From, Until: fact.Until})); e != nil {
+			return "", e
+		}
+		refs, e := u.withdrawManagerEnds(ctx, obsolete)
+		if e != nil {
+			return "", e
+		}
+		return u.storeManagerFact(ctx, a, fact, "", nil, refs)
 	})
 }
 
-func (u *unit) storeManagerFact(ctx context.Context, a h.Action, fact h.ManagerFact, notice string, basis *h.ActionRef) (string, error) {
+func (u *unit) storeManagerFact(ctx context.Context, a h.Action, fact h.ManagerFact, notice string, basis *h.ActionRef, changed []h.ActionRef) (string, error) {
 	item := employmentEntry{id: f.NewID(), revision: f.NewID(), kind: "SetManager", employment: a.Employment, assignment: a.Assignment, date: fact.From, notice: notice, adoption: map[string]any{"manager": fact, "managerExit": basis}}
 	if e := u.newEmploymentAction(ctx, item); e != nil {
 		return "", e
@@ -190,5 +189,6 @@ func (u *unit) storeManagerFact(ctx context.Context, a h.Action, fact h.ManagerF
 	if e != nil {
 		return "", e
 	}
-	return item.id, u.lifecycleSource(ctx, a.Assignment, a.SourceVersion, item.id, item.revision, "")
+	changed = append(changed, h.ActionRef{Action: item.id, Revision: item.revision})
+	return item.id, u.cloneAssignmentSource(ctx, a.Assignment, a.SourceVersion, item.id, item.revision, "", changed)
 }

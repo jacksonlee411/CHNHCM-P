@@ -111,6 +111,8 @@ Personnel 的 `CheckIdentity` 从当前会话取客户，依本人、入职用�
 
 同日对产品合并 `dfd49554` 的后续复核发现六项缺陷，其中历史调动后转正归属错误、有据可查的同日顺序无法完整办理，均影响整体验收。上述发现使原版本暂缓接受。508 六项修复及交叉回归现已通过，固定 f 的 4386 已更新，第 6.3 节在本地修复候选上重新验收通过。[修复版本与原库复验](../verification/508-job-information-implementation.md) · [修复次序与验收用例](508-job-information-remediation.md) · [复核事实](../verification/508-job-information-remediation-review.md)
 
+包含 508 的提交 `39660e7` 经七轮独立评审确认 27 项问题，其中 P1 有 11 项，P2 有 16 项，末轮无新增。该提交当时暂缓接受。509 方案经多轮独立评审修订后实施，经理接任、退出与再聘、兼岗与占编、同日办理及原件交互等 27 项现均已关闭。第 6.3 节已在本地 509 候选和固定 f 的 4386 原库重新验收通过。[原反例及阶段 7 专查](../verification/500-t04-implementation-rereview.md#stage-seven-verdict) · [509 分批实施](509-t04-remediation.md#delivery-order) · [独立方案评审](../verification/509-t04-remediation-review.md) · [产品复验与 4386 交接](../verification/509-t04-remediation-implementation.md#fixed-environment)
+
 #### 6.3.1 先交付一份按职务任职的日常维护
 
 | 顺序 | 从哪里接手、要交付什么 | 正常菜单验收及交给下一步的结果 |
