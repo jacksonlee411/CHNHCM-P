@@ -94,8 +94,9 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		return nil, e
 	}
 	if prior != "" {
+		peer := exchangePeer(ctx, owner, prior, in.Position)
 		evidence.Uses = slices.DeleteFunc(evidence.Uses, func(v d.PositionUse) bool {
-			return v.Owner == owner && (owner == "M04" && v.Assignment == prior || owner == "M05" && v.Source == prior)
+			return v.Owner == owner && (owner == "M04" && (v.Assignment == prior || peer != "" && v.Assignment == peer) || owner == "M05" && v.Source == prior)
 		})
 	}
 	settings, e := u.replenishmentRows(ctx, in.Position)

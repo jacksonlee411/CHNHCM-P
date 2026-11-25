@@ -103,7 +103,38 @@ type RelationSummary struct {
 	EmployerName string     `json:"employerName"`
 	Terms        []TermLink `json:"terms"`
 }
+type ExchangeSearch struct {
+	Ref          string `json:"ref"`
+	BusinessDate string `json:"businessDate"`
+	Page         int    `json:"page"`
+}
+type ExchangeOption struct {
+	Assignment   string `json:"assignment"`
+	Source       string `json:"sourceVersion"`
+	Name         string `json:"name"`
+	RecordNumber int    `json:"recordNumber"`
+	Position     string `json:"positionName"`
+	Target       string `json:"targetName"`
+}
+type ExchangeCommand struct {
+	Operation    string     `json:"operation"`
+	Expected     string     `json:"expectedSourceVersion"`
+	PeerExpected string     `json:"peerSourceVersion"`
+	Peer         string     `json:"peerAssignment"`
+	BusinessDate string     `json:"businessDate,omitempty"`
+	Notice       string     `json:"notice,omitempty"`
+	Action       *ActionRef `json:"action,omitempty"`
+}
+type ExchangeLink struct {
+	PeerSource string     `json:"peerSourceVersion,omitempty"`
+	CanRedate  bool       `json:"canRedate"`
+	CanDelete  bool       `json:"canDelete"`
+	Group      string     `json:"group"`
+	Peer       string     `json:"peerAssignment,omitempty"`
+	Original   *ActionRef `json:"peerAction,omitempty"`
+}
 type Original struct {
+	Exchange          *ExchangeLink      `json:"exchange,omitempty"`
 	Manager           *ManagerFact       `json:"manager,omitempty"`
 	Exit              *ExitEvidence      `json:"exit,omitempty"`
 	RehireOf          *ActionRef         `json:"rehireOf,omitempty"`
@@ -166,6 +197,8 @@ type ArrangementMode struct {
 	PositionRequired bool                `json:"positionRequired"`
 }
 type Hires interface {
+	ExchangeOptions(context.Context, f.Credentials, string, ExchangeSearch) ([]ExchangeOption, error)
+	ExchangePositions(context.Context, f.Credentials, string, string, ExchangeCommand) (Receipt, error)
 	HireArrangement(context.Context, f.Credentials, ArrangementQuery) (ArrangementMode, error)
 	JobInformation
 	PublishDecision(context.Context, f.Credentials, string, DecisionPublication) (DecisionEdition, error)

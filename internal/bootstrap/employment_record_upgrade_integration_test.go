@@ -105,10 +105,35 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	_, err = old.Exec(ctx, `INSERT INTO staffing.position_intake VALUES($1,$2,$3,daterange('2027-04-01',NULL,'[)'))`, instance, previousPosition, source49)
 	must(t, err)
 	must(t, old.Commit(ctx))
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00050" })))
+	offer50, rev50, sub50 := f.NewID(), f.NewID(), f.NewID()
+	t50, e := pool.Begin(ctx)
+	must(t, e)
+	defer t50.Rollback(ctx)
+	_, e = t50.Exec(ctx, `INSERT INTO recruiting.offer(instance_id,id,number,person_id,employer_id,department_id,job_id,arrival,reserve_from,terms) VALUES($1,$2,'旧接受通知',$3,$4,$5,$6,'2027-05-01','2027-04-01','{}')`, instance, offer50, person, employer, department, job)
+	must(t, e)
+	issue50 := f.NewID()
+	_, e = t50.Exec(ctx, `INSERT INTO recruiting.offer_revision(instance_id,offer_id,version,previous,operation,status,business_date,basis,actor) VALUES($1,$2,$3,NULL,'issue','issued','2027-04-01','旧签发人',$5),($1,$2,$4,$3,'accept','accepted','2027-04-03','本人接受',$5)`, instance, offer50, issue50, rev50, actor)
+	must(t, e)
+	_, e = t50.Exec(ctx, `INSERT INTO recruiting.offer_head VALUES($1,$2,$3)`, instance, offer50, rev50)
+	must(t, e)
+	_, e = t50.Exec(ctx, `INSERT INTO recruiting.offer_segment VALUES($1,$2,$3,daterange('2027-04-01',NULL,'[)'),NULL,'none','{}')`, instance, offer50, rev50)
+	must(t, e)
+	_, e = t50.Exec(ctx, `INSERT INTO recruiting.offer_submission(instance_id,actor,submission_id,digest,offer_id,version) VALUES($1,$2,$3,'旧接受回执',$4,$5)`, instance, actor, sub50, offer50, rev50)
+	must(t, e)
+	must(t, t50.Commit(ctx))
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+	var intact bool
+	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM recruiting.offer_head h JOIN recruiting.offer_revision r USING(instance_id,offer_id,version)
+       JOIN recruiting.offer_segment s USING(instance_id,offer_id,version) JOIN recruiting.offer_submission j USING(instance_id,offer_id,version)
+       WHERE h.instance_id=$1 AND h.offer_id=$2 AND r.version=$3 AND r.previous=$4 AND r.status='accepted' AND s.effect='none' AND j.submission_id=$5 AND j.digest='旧接受回执')
+       AND NOT EXISTS(SELECT FROM staffing.transfer_exchange WHERE instance_id=$1)`, instance, offer50, rev50, issue50, sub50).Scan(&intact))
+	if !intact {
+		t.Fatal("00050 原录用、采用和回执在升级后发生变化")
+	}
 	var sameIntake, hasOfferingSource bool
 	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.position_intake WHERE instance_id=$1 AND position_id=$2 AND source_id=$3),
       EXISTS(SELECT FROM recruiting.position_intake WHERE instance_id=$1 AND position_id=$2)`, instance, previousPosition, source49).Scan(&sameIntake, &hasOfferingSource))

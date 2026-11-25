@@ -146,7 +146,7 @@ func (u *unit) restoredPositions(ctx context.Context, a h.Action, segments []h.P
 			if a.Kind == "AdditionalAssignment" || a.Kind == "ParallelEmployment" {
 				purpose = "secondary"
 			}
-			adopted, e := u.store.CheckAssignment(dbtx.With(ctx, u.tx), u.credentials, s.AssignmentCheck{Period: span, Enterprise: u.enterprise.ID, Category: "Employee", Purpose: purpose, Department: seg.Department, Job: seg.Job, Position: seg.Adoption.Position})
+			adopted, e := u.store.checkOwnerAssignment(dbtx.With(ctx, u.tx), u.credentials, s.AssignmentCheck{Period: span, Enterprise: u.enterprise.ID, Category: "Employee", Purpose: purpose, Department: seg.Department, Job: seg.Job, Position: seg.Adoption.Position}, nil, "M04", a.Assignment, nil)
 			if e != nil {
 				return nil, e
 			}

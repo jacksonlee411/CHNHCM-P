@@ -5370,6 +5370,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/position-exchanges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["exchangeAssignmentPositions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/exchange-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["exchangeAssignmentOptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/transfers": {
         parameters: {
             query?: never;
@@ -5873,6 +5905,47 @@ export interface components {
             /** Format: uuid */
             position?: string;
         };
+        PositionExchangeCommand: {
+            /** @enum {string} */
+            operation: "Add" | "Redate" | "Delete";
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            /** Format: uuid */
+            peerSourceVersion: string;
+            /** Format: uuid */
+            peerAssignment: string;
+            /** Format: date */
+            businessDate?: string;
+            notice?: string;
+            action?: components["schemas"]["EmploymentActionRef"];
+        };
+        PositionExchangeSearch: {
+            /** Format: date */
+            businessDate: string;
+            ref: string;
+            page: number;
+        };
+        PositionExchangeOption: {
+            /** Format: uuid */
+            assignment: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            name: string;
+            recordNumber: number;
+            positionName: string;
+            targetName: string;
+        };
+        PositionExchangeLink: {
+            /** Format: uuid */
+            group: string;
+            /** Format: uuid */
+            peerAssignment?: string;
+            /** Format: uuid */
+            peerSourceVersion?: string;
+            canRedate: boolean;
+            canDelete: boolean;
+            peerAction?: components["schemas"]["EmploymentActionRef"];
+        };
         EmploymentRecordMaintenance: {
             previous?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
@@ -6323,6 +6396,7 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            exchange?: components["schemas"]["PositionExchangeLink"];
             rehireOf?: components["schemas"]["EmploymentActionRef"];
             manager?: components["schemas"]["ActualManagerFact"];
             exit?: components["schemas"]["AssignmentExitEvidence"];
@@ -24757,6 +24831,81 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EligibleEntity"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    exchangeAssignmentPositions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionExchangeCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    exchangeAssignmentOptions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionExchangeSearch"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionExchangeOption"][];
                 };
             };
             /** @description Unavailable */

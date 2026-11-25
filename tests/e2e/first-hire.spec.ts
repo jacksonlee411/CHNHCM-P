@@ -1314,3 +1314,67 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 占编岗位晋升与调动 原生200%',async()=>{await native200(countedPromotionJourney)});
+
+async function exchangeJourney(page: Page, first: Awaited<ReturnType<typeof seed>>) {
+  const second=await seed(page);
+  const family=await seed308(page,'jobfamily');
+  const a=await seedPosition(page,'position',family.id);
+  const b=await seedPosition(page,'position',family.id);
+  const policy='/api/v1/assignment-policies', from='2027-04-01';
+  const altered:{id:string; prior:string;revision:string}[]=[];
+  try {
+    for(const purpose of ['hire','transfer']){
+      const current=await request(page,'GET',policy);
+      const old=current.body.rows.find((r:{category:string;purpose:string;from:string})=>r.category==='Employee'&&r.purpose===purpose&&r.from===from);
+      const rule=old??{id:randomUUID(),purpose,category:'Employee',from};
+      if(rule.mode==='PositionCounted')continue;
+      const applied=await request(page,'POST',policy,{expectedVersion:current.body.version,row:{...rule,mode:'PositionCounted'}},randomUUID());
+      expect(applied.status,applied.body.message).toBe(200);
+      const read=await request(page,'GET',policy);
+      altered.push({id:rule.id,prior:old?.mode??'JobOnly',revision:read.body.rows.find((v:{id:string})=>v.id===rule.id).revision});
+    }
+    for(const [i,p] of [a,b].entries()){
+      const quota=await request(page,'POST','/api/v1/staffing-quotas',{positionId:p.id,effectiveDate:from,quota:1,reason:'两岗各核一编'},randomUUID());
+      expect(quota.status,quota.body.message).toBe(200);
+      const employee=[first,second][i];
+      const hire=await request(page,'POST','/api/v1/hires',{person:employee.id,employer:employee.employerId,position:p.id,arrival:from,notice:'正式在岗通知'},randomUUID());
+      expect(hire.status,hire.body.message).toBe(200);
+    }
+    await openEmployeeAssignment(page,first);
+    const button=(name:string)=>page.getByRole('button',{name,exact:true});
+    const day=page.getByRole('textbox',{name:/^生效日期/});
+    await button('新增记录').click();await page.getByRole('combobox',{name:/办理类型/}).click();
+    await page.getByRole('option',{name:'同日对调',exact:true}).click();
+    await day.fill('2027-05-01');await day.press('Tab');
+    await page.getByRole('combobox',{name:/对调员工任职/}).fill(second.name);
+    await page.getByRole('option',{name:new RegExp(second.name)}).click();
+    await expect(page.getByText(a.name,{exact:true}).last()).toBeVisible();
+    await expect(page.getByText(b.name,{exact:true}).last()).toBeVisible();
+    await page.getByLabel(/对调依据/).fill('双方同日互换岗位');
+    await button('保存').focus();await page.keyboard.press('Enter');
+    await expect(page.getByText(b.name+' · 占编',{exact:true})).toBeVisible();
+    await button('调动 · 2027-05-01').click();
+    await button('查看另一份调动原件').click();
+    await expect(page.getByText(['2027-05-01',b.name,a.name,'双方同日互换岗位'].join(' · '),{exact:true})).toBeVisible();
+    await button('调整对调日期').click();await day.fill('2027-06-01');await day.press('Tab');
+    await button('保存').click();await button('调动 · 2027-06-01').click();
+    await button('撤销两岗对调').click();
+    await expect(page.getByText(a.name+' · 占编',{exact:true})).toBeVisible();
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  } finally {
+    for(const prev of altered.reverse()){
+      const current=await request(page,'GET',policy);
+      const r=current.body.rows.find((v:{id:string})=>v.id===prev.id);
+      if(r?.revision!==prev.revision)continue;
+      const saved=await request(page,'POST',policy,{expectedVersion:current.body.version,row:{...r,mode:prev.prior}},randomUUID());
+      expect(saved.status,saved.body.message).toBe(200);
+    }
+  }
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 同日对调两个满编岗 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await exchangeJourney(page,sample);
+  });
+}
+test('M04 同日对调两个满编岗 原生200%',async()=>{await native200(exchangeJourney)});
