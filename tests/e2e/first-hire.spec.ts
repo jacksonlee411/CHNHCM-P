@@ -1315,11 +1315,7 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
 }
 test('M04 占编岗位晋升与调动 原生200%',async()=>{await native200(countedPromotionJourney)});
 
-async function exchangeJourney(page: Page, first: Awaited<ReturnType<typeof seed>>) {
-  const second=await seed(page);
-  const family=await seed308(page,'jobfamily');
-  const a=await seedPosition(page,'position',family.id);
-  const b=await seedPosition(page,'position',family.id);
+async function withCountedPolicies(page:Page,run:()=>Promise<void>){
   const policy='/api/v1/assignment-policies', from='2027-04-01';
   const altered:{id:string; prior:string;revision:string}[]=[];
   try {
@@ -1333,6 +1329,24 @@ async function exchangeJourney(page: Page, first: Awaited<ReturnType<typeof seed
       const read=await request(page,'GET',policy);
       altered.push({id:rule.id,prior:old?.mode??'JobOnly',revision:read.body.rows.find((v:{id:string})=>v.id===rule.id).revision});
     }
+    await run();
+  } finally {
+    for(const prev of altered.reverse()){
+      const current=await request(page,'GET',policy);
+      const r=current.body.rows.find((v:{id:string})=>v.id===prev.id);
+      if(r?.revision!==prev.revision)continue;
+      const saved=await request(page,'POST',policy,{expectedVersion:current.body.version,row:{...r,mode:prev.prior}},randomUUID());
+      expect(saved.status,saved.body.message).toBe(200);
+    }
+  }
+}
+async function exchangeJourney(page: Page, first: Awaited<ReturnType<typeof seed>>) {
+  const second=await seed(page);
+  const family=await seed308(page,'jobfamily');
+  const a=await seedPosition(page,'position',family.id);
+  const b=await seedPosition(page,'position',family.id);
+  const from='2027-04-01';
+  await withCountedPolicies(page,async()=>{
     for(const [i,p] of [a,b].entries()){
       const quota=await request(page,'POST','/api/v1/staffing-quotas',{positionId:p.id,effectiveDate:from,quota:1,reason:'两岗各核一编'},randomUUID());
       expect(quota.status,quota.body.message).toBe(200);
@@ -1361,16 +1375,9 @@ async function exchangeJourney(page: Page, first: Awaited<ReturnType<typeof seed
     await button('撤销两岗对调').click();
     await expect(page.getByText(a.name+' · 占编',{exact:true})).toBeVisible();
     await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-  } finally {
-    for(const prev of altered.reverse()){
-      const current=await request(page,'GET',policy);
-      const r=current.body.rows.find((v:{id:string})=>v.id===prev.id);
-      if(r?.revision!==prev.revision)continue;
-      const saved=await request(page,'POST',policy,{expectedVersion:current.body.version,row:{...r,mode:prev.prior}},randomUUID());
-      expect(saved.status,saved.body.message).toBe(200);
-    }
-  }
+  });
 }
+
 for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
   test(`M04 同日对调两个满编岗 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);await signIn(page);const sample=await seed(page);
@@ -1378,3 +1385,44 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
   });
 }
 test('M04 同日对调两个满编岗 原生200%',async()=>{await native200(exchangeJourney)});
+
+async function successionJourney(page:Page, successor:Awaited<ReturnType<typeof seed>>){
+  const outgoing=await seed(page), family=await seed308(page,'jobfamily');
+  const a=await seedPosition(page,'position',family.id), b=await seedPosition(page,'position',family.id);
+  await withCountedPolicies(page,async()=>{
+    for(const [i,target] of [a,b].entries()){
+      const p=[successor,outgoing][i];
+      const quota=await request(page,'POST','/api/v1/staffing-quotas',{positionId:target.id,effectiveDate:'2027-04-01',quota:1,reason:'常规一人'},randomUUID());
+      expect(quota.status,quota.body.message).toBe(200);
+      const original=await request(page,'POST','/api/v1/hires',{person:p.id,employer:p.employerId,position:target.id,arrival:'2027-04-01',lastDay:i===1?'2027-04-10':undefined,notice:'原在岗安排'},randomUUID());
+      expect(original.status,original.body.message).toBe(200);
+    }
+    await openEmployeeAssignment(page,successor);
+    const button=(name:string)=>page.getByRole('button',{name,exact:true});
+    const select=async(label:string,value:string)=>{await page.getByRole('combobox',{name:new RegExp(label)}).click();await page.getByRole('option',{name:value,exact:true}).click()};
+    await button('新增记录').click();await select('办理类型','调动');
+    await select('调动方式','内部接任');
+    await page.getByRole('combobox',{name:/调入岗位/}).fill(b.name);
+    await page.getByRole('option',{name:b.name,exact:true}).click();
+    await page.getByRole('combobox',{name:/被接替任职/}).fill(outgoing.name);
+    await page.getByRole('option',{name:new RegExp(outgoing.name)}).click();
+    await expect(page.getByText('2027-04-01 起占交接名额，2027-04-11 起占常规名额')).toBeVisible();
+    await page.getByLabel(/调动依据/).fill('已确定十日交接，十一日起接任');
+    await button('保存').focus();await page.keyboard.press('Enter');
+    await expect(page.getByText(b.name+' · 交接占编',{exact:true})).toBeVisible();
+    await button('调动 · 2027-04-01').click();
+    await expect(page.getByText(outgoing.name+' · 2027-04-01 起交接，2027-04-11 起占常规名额',{exact:true})).toBeVisible();
+    const date=page.getByRole('textbox',{name:'查看业务日'});await date.fill('2027-04-11');await date.press('Tab');
+    await expect(page.getByText(b.name+' · 占编',{exact:true})).toBeVisible();
+    const usage=await request(page,'GET','/api/v1/positions/'+b.id+'/replenishment?businessAt=2027-04-10');
+    expect([usage.body.occupied,usage.body.handoverOccupied,usage.body.totalOccupied,usage.body.reserved]).toEqual([1,1,2,0]);
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  });
+}
+for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+  test(`M04 内部接任十天交接 ${width}x${height}`,async({page})=>{
+    test.setTimeout(160000);await signIn(page);const sample=await seed(page);
+    await page.setViewportSize({width,height});await successionJourney(page,sample);
+  });
+}
+test('M04 内部接任十天交接 原生200%',async()=>{await native200(successionJourney)});

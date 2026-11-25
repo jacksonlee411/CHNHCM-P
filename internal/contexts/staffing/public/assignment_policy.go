@@ -25,6 +25,7 @@ type AssignmentCheck struct {
 	Expected          string `json:"expectedVersion,omitempty"`
 }
 type AssignmentSegment struct {
+	Handover            string `json:"handoverSource,omitempty"`
 	QuotaSource         string `json:"quotaSource,omitempty"`
 	QuotaRevision       string `json:"quotaRevision,omitempty"`
 	RecruitingCoverage  string `json:"recruitingCoverage,omitempty"`

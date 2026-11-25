@@ -5386,6 +5386,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/succession-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assignmentSuccessionOptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/exchange-options": {
         parameters: {
             query?: never;
@@ -5905,6 +5921,49 @@ export interface components {
             /** Format: uuid */
             position?: string;
         };
+        IncumbentRef: {
+            /** Format: uuid */
+            assignment: string;
+            /** Format: uuid */
+            sourceVersion: string;
+        };
+        SuccessionSearch: {
+            /** Format: uuid */
+            position: string;
+            /** Format: date */
+            businessDate: string;
+            /** Format: uuid */
+            ref?: string;
+            page: number;
+        };
+        SuccessionOption: {
+            continues: boolean;
+            /** Format: uuid */
+            assignment: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            name: string;
+            recordNumber: number;
+            /** Format: date */
+            until: string;
+            departmentName: string;
+            jobName: string;
+        };
+        SuccessionEvidence: {
+            continues: boolean;
+            recordNumber: number;
+            /** Format: uuid */
+            assignment: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            name: string;
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            until: string;
+            /** Format: uuid */
+            id: string;
+        };
         PositionExchangeCommand: {
             /** @enum {string} */
             operation: "Add" | "Redate" | "Delete";
@@ -5947,6 +6006,7 @@ export interface components {
             peerAction?: components["schemas"]["EmploymentActionRef"];
         };
         EmploymentRecordMaintenance: {
+            incumbent?: components["schemas"]["IncumbentRef"];
             previous?: components["schemas"]["EmploymentActionRef"];
             /** Format: uuid */
             expectedSourceVersion: string;
@@ -6087,6 +6147,7 @@ export interface components {
             beforePositionName?: string;
             beforeJobName?: string;
             after: {
+                succession?: components["schemas"]["SuccessionEvidence"];
                 /** Format: uuid */
                 department?: string;
                 /** Format: uuid */
@@ -6113,6 +6174,7 @@ export interface components {
             recordedAt: string;
         };
         AssignmentDayState: {
+            handover?: boolean;
             /** Format: uuid */
             position?: string;
             positionName?: string;
@@ -6255,6 +6317,7 @@ export interface components {
             keyword: string;
         };
         AssignmentView: {
+            canHandover: boolean;
             /** Format: date */
             lastActive?: string;
             managers: components["schemas"]["ActualManagerFact"][];
@@ -6295,6 +6358,8 @@ export interface components {
             relationshipPrimary: boolean;
         };
         ReplenishmentView: {
+            handoverOccupied?: number;
+            totalOccupied?: number;
             quota?: number;
             available?: number;
             excess?: number;
@@ -6981,6 +7046,8 @@ export interface components {
             until?: string;
         };
         AssignmentSegment: {
+            /** Format: uuid */
+            handoverSource?: string;
             /** Format: uuid */
             quotaSource?: string;
             /** Format: uuid */
@@ -24869,6 +24936,43 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentSuccessionOptions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuccessionSearch"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessionOption"][];
                 };
             };
             /** @description Unavailable */

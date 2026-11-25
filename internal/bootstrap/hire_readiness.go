@@ -105,6 +105,9 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 			return hires.ExitAssignment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.leave, in)
 		}))
 	}
+	mux.HandleFunc("POST /api/v1/assignments/{id}/succession-options", ruleBody(func(r *http.Request, in h.SuccessionSearch) (any, error) {
+		return hires.SuccessionOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
 	mux.HandleFunc("POST /api/v1/assignments/{id}/exchange-options", ruleBody(func(r *http.Request, in h.ExchangeSearch) (any, error) {
 		return hires.ExchangeOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))

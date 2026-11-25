@@ -3,6 +3,7 @@ import { Autocomplete, Box, Button, MenuItem, Stack, TextField, Typography } fro
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField, ObjectTextField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
+import {SuccessionFields} from './SuccessionFields';
 import { ExchangeFields } from './ExchangeFields';
 import { LifecycleFields } from './LifecycleFields';
 import { EarlierAction, PromotionFields } from './PromotionFields';
@@ -15,6 +16,8 @@ export type JobDraft = {
   kind: 'PositionExchange' | 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment' | 'GradeRecord' | 'Promotion' | 'PromotionTransfer' | 'SetManager' | 'EndAssignment' | 'Leave';
   purpose?: 'direct' | 'functional';
   manager?: Option;
+  handover?: boolean;
+  incumbent?: Models['SuccessionOption'];
   peer?: Models['PositionExchangeOption'];
   exchange?: Models['PositionExchangeLink'];
   endReporting?: boolean;
@@ -75,7 +78,7 @@ const operations = { add: '新增记录', insert: '插入记录', correct: '更�
 export function draftChanged(draft: JobDraft, initial: JobDraft) {
   return (
     draft.day !== initial.day ||
-    draft.kind !== initial.kind || draft.peer?.assignment!==initial.peer?.assignment || draft.manager?.id!==initial.manager?.id ||
+    draft.handover !== initial.handover || draft.incumbent?.assignment!==initial.incumbent?.assignment || draft.kind !== initial.kind || draft.peer?.assignment!==initial.peer?.assignment || draft.manager?.id!==initial.manager?.id ||
     draft.purpose!==initial.purpose || draft.endReporting!==initial.endReporting ||
     draft.meaning!==initial.meaning || draft.managerLastDay!==initial.managerLastDay ||
     draft.grade?.id !== initial.grade?.id ||
@@ -215,11 +218,11 @@ export function AssignmentRecordForm({
   const promotionMove = (draft.kind === 'Promotion' || draft.kind === 'PromotionTransfer') && draft.mode !== 'withdraw' && view.canTransfer;
   const mode = useRead((transfer || promotionMove) && draft.day ? JSON.stringify([view.assignment, draft.day]) : undefined, () => readMode());
   const targets = mode.data;
-  const derived = useRead((transfer || promotionMove) && targets?.positionRequired && !targets.jobRequired && draft.position ?
+  const derived = useRead((transfer || promotionMove) && !draft.handover && targets?.positionRequired && !targets.jobRequired && draft.position ?
     JSON.stringify([view.assignment,draft.day,draft.position.id]) : undefined, () => readMode(draft.position?.id));
   const targetReady = !!targets && (!targets.positionRequired || !!draft.position) &&
     (!targets.jobRequired || !!draft.department && !!draft.job) &&
-    (targets.jobRequired || !!derived.data?.department && !!derived.data.job);
+    (draft.handover ? !!draft.incumbent : targets.jobRequired || !!derived.data?.department && !!derived.data.job);
   const options = availableRecordTypes(view);
   const valid =
     !!draft.day &&
@@ -265,7 +268,7 @@ export function AssignmentRecordForm({
             select
             label="办理类型"
             value={draft.kind}
-            onChange={(e) => update({ ...draft, kind: e.target.value as JobDraft['kind'] })}
+            onChange={(e) => update({ ...draft, kind: e.target.value as JobDraft['kind'], handover:undefined, incumbent:undefined })}
           >
             {options.map((kind) => (
               <MenuItem key={kind} value={kind}>
@@ -280,7 +283,7 @@ export function AssignmentRecordForm({
           value={draft.day}
           required
           disabled={draft.mode === 'correct' || draft.mode==='withdraw' || !!draft.successor}
-          onChange={(e) => update({ ...draft, day: e.target.value, peer:undefined })}
+          onChange={(e) => update({ ...draft, day: e.target.value, peer:undefined, incumbent:undefined })}
         />
         {draft.mode !== 'redate' &&
           (draft.kind==='PositionExchange' ? <ExchangeFields draft={draft} update={update} assignment={view.assignment} csrf={csrf}/> : lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} mode={targets} derived={derived.data} arrangementError={derived.error} /> : relation ? (
@@ -338,8 +341,13 @@ export function AssignmentRecordForm({
                 change={(v) => update({ ...draft, job: v })}
               />
               </>}
+              {targets?.positionRequired && view.canHandover && <ObjectTextField select label="调动方式" value={draft.handover?'handover':'regular'}
+                onChange={e=>update({...draft,handover:e.target.value==='handover',incumbent:undefined})}>
+                <MenuItem value="regular">普通调入</MenuItem><MenuItem value="handover">内部接任</MenuItem>
+              </ObjectTextField>}
               {targets?.positionRequired && <TransferTarget kind="position" mixed={targets.jobRequired} draft={draft} assignment={view.assignment} csrf={csrf}
-                change={(position) => update({ ...draft, position })}/>}
+                change={(position) => update({ ...draft, position,incumbent:undefined })}/>}
+              {draft.handover && draft.position && <SuccessionFields draft={draft} assignment={view.assignment} csrf={csrf} update={update}/>}
               {derived.data?.department && <ObjectDetailField label="岗位所属部门">{derived.data.department.name}</ObjectDetailField>}
               {derived.data?.job && <ObjectDetailField label="岗位对应职务">{derived.data.job.name}</ObjectDetailField>}
               {(mode.error || derived.error) && <Typography role="alert" color="error">{mode.error || derived.error}</Typography>}

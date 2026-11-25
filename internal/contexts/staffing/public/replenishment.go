@@ -20,17 +20,19 @@ type ReplenishmentChange struct {
 	Expected string `json:"expected"`
 }
 type ReplenishmentView struct {
-	Quota     *int                  `json:"quota,omitempty"`
-	Available *int                  `json:"available,omitempty"`
-	Excess    *int                  `json:"excess,omitempty"`
-	Reserved  *int                  `json:"reserved,omitempty"`
-	Occupied  *int                  `json:"occupied,omitempty"`
-	Covered   bool                  `json:"covered"`
-	CanChange bool                  `json:"canChange"`
-	Paused    bool                  `json:"paused"`
-	Version   string                `json:"version"`
-	Exempt    *int                  `json:"exempt,omitempty"`
-	Records   []ReplenishmentRecord `json:"records"`
+	Handover      *int                  `json:"handoverOccupied,omitempty"`
+	TotalOccupied *int                  `json:"totalOccupied,omitempty"`
+	Quota         *int                  `json:"quota,omitempty"`
+	Available     *int                  `json:"available,omitempty"`
+	Excess        *int                  `json:"excess,omitempty"`
+	Reserved      *int                  `json:"reserved,omitempty"`
+	Occupied      *int                  `json:"occupied,omitempty"`
+	Covered       bool                  `json:"covered"`
+	CanChange     bool                  `json:"canChange"`
+	Paused        bool                  `json:"paused"`
+	Version       string                `json:"version"`
+	Exempt        *int                  `json:"exempt,omitempty"`
+	Records       []ReplenishmentRecord `json:"records"`
 }
 type Replenishments interface {
 	ResolveReplenishment(context.Context, f.Credentials, string, string) (f.RuleReceipt, error)

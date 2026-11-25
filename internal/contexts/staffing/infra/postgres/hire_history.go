@@ -519,6 +519,23 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 				}
 				disclosure.to = disclosure.to && read
 			}
+			if successor := transfer.After.Succession; successor != nil {
+				incumbent, err := u.assignmentIdentity(ctx, successor.Assignment)
+				if err != nil {
+					return err
+				}
+				allowed := disclosure.to
+				for _, grant := range []string{"read", "history"} {
+					ok, err := u.employmentAllowed(ctx, grant, incumbent.Person, incumbent.Employer, transfer.After.Department, false)
+					if err != nil {
+						return err
+					}
+					allowed = allowed && ok
+				}
+				if !allowed {
+					transfer.After.Succession = nil
+				}
+			}
 			if !disclosure.to {
 				a.Department, a.Job = transfer.BeforeDepartment, transfer.BeforeJob
 				out.DepartmentName = transfer.BeforeDepartmentName

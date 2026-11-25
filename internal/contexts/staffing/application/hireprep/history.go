@@ -9,7 +9,35 @@ import (
 
 // A transfer defines the two target identifiers and adopts the applicable M03
 // segments. A separate location action changes only location.
+type IncumbentRef struct {
+	Assignment string `json:"assignment"`
+	Source     string `json:"sourceVersion"`
+}
+type Succession struct {
+	Continues bool `json:"continues"`
+	Number    int  `json:"recordNumber"`
+	IncumbentRef
+	f.Period
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+type SuccessionSearch struct {
+	BusinessDate string `json:"businessDate"`
+	Position     string `json:"position"`
+	Ref          string `json:"ref,omitempty"`
+	Page         int    `json:"page"`
+}
+type SuccessionOption struct {
+	Continues bool `json:"continues"`
+	IncumbentRef
+	Name       string `json:"name"`
+	Number     int    `json:"recordNumber"`
+	Until      string `json:"until"`
+	Department string `json:"departmentName"`
+	Job        string `json:"jobName"`
+}
 type JobTransfer struct {
+	Succession *Succession               `json:"succession,omitempty"`
 	Position   string                    `json:"position,omitempty"`
 	Department string                    `json:"department,omitempty"`
 	Job        string                    `json:"job,omitempty"`
@@ -241,6 +269,7 @@ func applyTransfer(state *Placement, transfer *JobTransfer, day string) error {
 // RecordMaintenance applies an operation to the original business identity.
 // Requires identifies a fact explicitly cited by the decision.
 type RecordMaintenance struct {
+	Incumbent        *IncumbentRef `json:"incumbent,omitempty"`
 	Position         string        `json:"position,omitempty"`
 	ExpectedSource   string        `json:"expectedSourceVersion"`
 	ExpectedRevision string        `json:"expectedRevision,omitempty"`

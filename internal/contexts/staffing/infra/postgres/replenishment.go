@@ -90,6 +90,8 @@ func (u *unit) replenishmentView(ctx context.Context, id, day string) (out s.Rep
 		}
 		out.Exempt = &n
 		if use := evidence.At(day); use.Known {
+			total := use.Occupied + use.Handover
+			out.TotalOccupied, out.Handover = &total, &use.Handover
 			out.Reserved, out.Occupied = &use.Reserved, &use.Occupied
 			if out.Quota != nil {
 				available := max(0, *out.Quota-use.Occupied-use.Reserved)

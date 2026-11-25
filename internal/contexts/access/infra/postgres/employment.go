@@ -75,6 +75,17 @@ func InitializeEmployment(ctx context.Context, tx pgx.Tx, instance, actor string
 	if err != nil {
 		return err
 	}
+	var succession bool
+	if err = tx.QueryRow(ctx, "SELECT to_regclass('access.employment_succession_fixture') IS NOT NULL").Scan(&succession); err != nil {
+		return err
+	}
+	if succession {
+		_, err = tx.Exec(ctx, `WITH first AS (INSERT INTO access.employment_succession_fixture VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING *)
+        INSERT INTO access.employment_grant(instance_id,principal_id,action,fields) SELECT instance_id,principal_id,'position.handover',ARRAY['arrangement','basis'] FROM first`, instance, actor)
+		if err != nil {
+			return err
+		}
+	}
 	var ready bool
 	if err = tx.QueryRow(ctx, "SELECT to_regclass('access.offer_fixture') IS NOT NULL").Scan(&ready); err != nil || !ready {
 		return err

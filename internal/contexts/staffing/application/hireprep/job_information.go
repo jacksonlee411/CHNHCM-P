@@ -39,6 +39,7 @@ type Revision struct {
 }
 
 type State struct {
+	Handover     bool      `json:"handover,omitempty"`
 	Position     string    `json:"position,omitempty"`
 	PositionName string    `json:"positionName,omitempty"`
 	Grade        *GradeRef `json:"grade,omitempty"`
@@ -52,6 +53,7 @@ type State struct {
 }
 
 type AssignmentView struct {
+	CanHandover         bool           `json:"canHandover"`
 	LastActive          string         `json:"lastActive,omitempty"`
 	CanEnd              bool           `json:"canEnd"`
 	CanLeave            bool           `json:"canLeave"`
@@ -146,6 +148,7 @@ type TransferSearch struct {
 	Department   string `json:"department,omitempty"`
 }
 type JobInformation interface {
+	SuccessionOptions(context.Context, f.Credentials, string, SuccessionSearch) ([]SuccessionOption, error)
 	TransferArrangement(context.Context, f.Credentials, string, TransferArrangementQuery) (ArrangementMode, error)
 	ExitAssignment(context.Context, f.Credentials, string, string, bool, ExitCommand) (Receipt, error)
 	SetManager(context.Context, f.Credentials, string, string, ManagerCommand) (Receipt, error)

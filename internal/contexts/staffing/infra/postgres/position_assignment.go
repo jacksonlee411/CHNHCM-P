@@ -103,6 +103,11 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	if e != nil {
 		return nil, e
 	}
+	succession, hasSuccession := ctx.Value(successionContext{}).(successionAdmission)
+	hasSuccession = hasSuccession && owner == "M04" && succession.recipient == prior && succession.position == in.Position
+	if hasSuccession {
+		boundaries = append(boundaries, succession.source.From, succession.source.Until)
+	}
 	var quota d.StaffingQuota
 	if quotaRequired {
 		quota, e = u.LoadPositionQuota(ctx, in.Position, "")
@@ -136,7 +141,11 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		}
 		targets := in
 		targets.Period = p
-		var source, revision, name, coverage, intake, recruiting, quotaRevision string
+		var source, revision, name, coverage, intake, recruiting, quotaRevision, handover string
+		dedicated := hasSuccession && succession.source.Includes(p.From)
+		if dedicated && !rule.Consumes {
+			return nil, f.Fail(409, "SUCCESSION_POLICY", p.From+" 起不适用交接占编")
+		}
 		seats := 0
 		if rule.Mode == "PositionManaged" {
 			i := d.At(pos, p.From)
@@ -149,7 +158,15 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 				return nil, f.Fail(409, "POSITION_TARGET_CHANGED", "岗位归属与拟任安排不符")
 			}
 			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: owner}
-			if _, e = evidence.PlanUse(intent, rules, quota, d.QuotaEligibility(pos)); e != nil {
+			admission := evidence
+			if dedicated {
+				// Only this incumbent's regular seat can be credited in the overlap.
+				admission.Uses = slices.DeleteFunc(slices.Clone(evidence.Uses), func(v d.PositionUse) bool {
+					return v.Owner == "M04" && v.Assignment == succession.source.Assignment && v.Effect == "occupied"
+				})
+				handover = succession.source.ID
+			}
+			if _, e = admission.PlanUse(intent, rules, quota, d.QuotaEligibility(pos)); e != nil {
 				var fault *f.Fault
 				if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" {
 					return nil, e
@@ -199,6 +216,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 				piece.CoverageSource = coverage
 				if rule.Consumes {
 					piece.RecruitingCoverage = recruiting
+					piece.Handover = handover
 					piece.QuotaSource = quota.Source
 					piece.QuotaRevision = quotaRevision
 					piece.Seats = seats

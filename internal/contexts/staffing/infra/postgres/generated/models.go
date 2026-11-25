@@ -76,6 +76,11 @@ type AccessEmploymentRegisterFixture struct {
 	PrincipalID string
 }
 
+type AccessEmploymentSuccessionFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessHireIdentityFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -2024,6 +2029,17 @@ type StaffingPositionSource struct {
 	Operation    []byte
 	Operator     []byte
 	RecordedAt   pgtype.Timestamptz
+}
+
+type StaffingPositionSuccession struct {
+	InstanceID      string
+	ID              string
+	PositionID      string
+	AssignmentID    string
+	ActionID        string
+	Incumbent       string
+	IncumbentSource string
+	Period          pgtype.Range[pgtype.Date]
 }
 
 type StaffingPositionTerminal struct {

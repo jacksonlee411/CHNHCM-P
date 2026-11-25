@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"slices"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -128,8 +129,8 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		}
 		var state h.State
 		var location string
-		e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption->>'departmentName',adoption->>'jobName',coalesce(adoption->>'position',''),coalesce(adoption->>'positionName',''),coalesce(location_id::text,''),location_ref,grade_ref,(adoption->>'seats')::int
-			FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`, st.Instance, id, version, day).Scan(&state.From, &state.Until, &state.DepartmentID, &state.JobID, &state.Department, &state.Job, &state.Position, &state.PositionName, &location, &state.Location, &state.Grade, &state.Seats)
+		e = u.tx.QueryRow(ctx, `SELECT lower(period)::text,coalesce(upper(period)::text,''),department_id,job_id,adoption->>'departmentName',adoption->>'jobName',coalesce(adoption->>'position',''),coalesce(adoption->>'positionName',''),coalesce(location_id::text,''),location_ref,grade_ref,(adoption->>'seats')::int,coalesce(adoption->>'handoverSource','')<>''
+			FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date`, st.Instance, id, version, day).Scan(&state.From, &state.Until, &state.DepartmentID, &state.JobID, &state.Department, &state.Job, &state.Position, &state.PositionName, &location, &state.Location, &state.Grade, &state.Seats, &state.Handover)
 		if e == nil {
 			if state.Location == nil && location != "" {
 				// The original 00037 hire stored only the location identity.
@@ -142,6 +143,21 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			}
 			if e != nil {
 				return e
+			}
+			if state.Handover && version == a.SourceVersion {
+				usage, err := u.PositionUsage(ctx, state.Position)
+				if err != nil {
+					return err
+				}
+				state.Handover = false
+				for _, v := range usage.Uses {
+					if v.Assignment == a.Assignment && v.Effect == "handover" && v.Contains(day) {
+						state.Handover = slices.ContainsFunc(usage.Uses, func(orig d.PositionUse) bool {
+							return orig.Owner == "M04" && orig.Assignment == v.Incumbent && orig.Effect == "occupied" && orig.Contains(day)
+						})
+						break
+					}
+				}
 			}
 			out.State = &state
 		} else if !errors.Is(e, pgx.ErrNoRows) {
@@ -210,6 +226,10 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 				if out.CanAddParallel, e = u.employmentAllowed(ctx, "employment.parallel", a.Person, a.Employer, a.Department, false); e != nil {
 					return e
 				}
+			}
+			out.CanHandover, e = u.employmentAllowed(ctx, "position.handover", a.Person, a.Employer, a.Department, false)
+			if e != nil {
+				return e
 			}
 			out.CanTransfer, e = u.employmentAllowed(ctx, "transfer", a.Person, a.Employer, a.Department, false)
 			if e != nil {
