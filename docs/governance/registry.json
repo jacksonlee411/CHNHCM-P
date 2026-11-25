@@ -3080,7 +3080,7 @@
           {"check": "固定原库 00057、原样本及 24 项菜单、36 张业务表和四张授权表全行比对", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
           {"check": "文档、边界、Go、前端类型、OpenAPI 客户端一致性及差异检查", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"}
         ],
-        "limitations": ["本地工作树和固定 f 验收。原生 400% 沿用 508 已确认范围，本次未执行。远程 CI、合并与发布未执行。"]
+        "limitations": ["2026-11-25 的实测覆盖本地工作树和固定 f。原生 400% 沿用 508 已确认范围，本次未执行。主线集成以随后 PR 的正式检查为准。"]
       },
       {
         "path": "docs/verification/509-t04-remediation-review.md",

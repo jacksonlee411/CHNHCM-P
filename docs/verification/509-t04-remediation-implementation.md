@@ -70,6 +70,8 @@
 
 `make docs`、`make boundaries` 和 `make check` 通过，覆盖 180 项运行工具测试、Go 单元测试与 vet、前端类型及差异空白检查。从 OpenAPI 另行生成的客户端声明与仓内逐字节相同。复核原记录、方案、产品结果三张表，01 至 27 在每张表各出现一次。[仓内检查入口](../../Makefile) · [接口合同](../../api/openapi.yaml) · [客户端声明](../../packages/api-client/src/schema.d.ts)
 
+2026-11-26，508 与 509 一起准备合入主线。`make ci-ready` 首轮在生成物比对处发现三个 sqlc 模型缺少 00056 的转正回执任职表声明。按仓内 `make generate` 重建，Access、Organization 和 Staffing 的生成模型分别补入同一个四字段结构。Go 业务代码未引用该类型。[00056 迁移](../../db/migrations/00056_probation_receipt_assignment.sql) · [生成的 Staffing 模型](../../internal/contexts/staffing/infra/postgres/generated/models.go)
+
 <a id="fixed-environment"></a>
 ## 7 固定 f 原库与验收入口
 
@@ -89,4 +91,4 @@
 
 沿用 508 的管理员和只读角色回查原样本。旧脚本首跑 23/24，在双岗样本打开原件后，原断言要求浏览器后退一次即到员工列表。现在原件有独立地址，后退一次回到原 1 号任职，此处点击「返回列表」可回到双岗查询。按这个过程补验原行焦点，接着核 5 月只剩一岗。保全旧脚本后，把这一项改为现行导航预期，完整 24 项重新执行，24/24 通过，耗时 2.2 分钟。所有固定菜单结束后，再核 36 张业务表，行数和全行内容与更新前逐表一致。[历史与返回规范](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-history) · [办理记录及任职的相互定位](../specs/m04/507-job-information-tab.md)
 
-固定 f 保留 `m01-profile-f` 供用户验收，验收结束或下次更新时复查。本次交付为固定 f 上的本地工作树构建，远程 CI、合并与发布未执行。[4386 员工列表](http://127.0.0.1:4386/personnel/assignments) · [4386 办理记录](http://127.0.0.1:4386/personnel/actions)
+固定 f 保留 `m01-profile-f` 供用户验收，验收结束或下次更新时复查。以上结果对应 2026-11-25 在固定 f 验收的本地工作树构建，主线集成结果由后续 PR 的正式检查记录。[4386 员工列表](http://127.0.0.1:4386/personnel/assignments) · [4386 办理记录](http://127.0.0.1:4386/personnel/actions)
