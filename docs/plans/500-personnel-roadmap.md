@@ -107,7 +107,7 @@ Personnel 的 `CheckIdentity` 从当前会话取客户，依本人、入职用�
 <a id="job-information-delivery"></a>
 ### 6.3 从直接入职接入职务信息
 
-截至 2026-11-24，人员九栏、按职务首次入职、按日读取、原件及未来撤销均有产品实测。f 的 `3771272` 仍从按人名录进入本人档案和首单，已有 API 可读单笔办理。e 的 `ec4572a` 定稿了 404 按岗位免占编首单方案，产品实施待执行。下列步骤均为拟交付增量。Staffing 负责办理、存储和查询，Personnel 与体验负责人员菜单及返回，Access 随每个入口交付其权限。[九栏交接](../verification/504-personal-profile-fourth-batch.md) · [按职务首单实测](../verification/400-first-hire-integration.md#decision-first-hire) · [分模式准入](400-hire-readiness.md#hire-gates) · [本次步骤评审](../verification/500-job-information-delivery-review.md)
+2026-11-25，本节十个阶段已合入 main，并在固定 f 的 4386 环境从正常菜单验收。本轮沿用 f 的 `3771272` 已交付的人员九栏、按职务首聘及未来撤销，按 e 的 `ec4572a` 实施 404 岗位方案。Staffing 负责办理、存储和查询，Personnel 与体验负责人员菜单及返回，Access 随每个入口交付其权限。[阶段提交、主线检查与操作样本](../verification/500-job-information-delivery-review.md#stage-delivery-results) · [九栏交接](../verification/504-personal-profile-fourth-batch.md) · [按职务首单实测](../verification/400-first-hire-integration.md#decision-first-hire) · [分模式准入](400-hire-readiness.md#hire-gates)
 
 #### 6.3.1 先交付一份按职务任职的日常维护
 

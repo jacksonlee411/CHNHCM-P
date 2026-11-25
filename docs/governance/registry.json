@@ -2804,9 +2804,9 @@
       "scope": "人员名录与登记、用工任职、跨员工办理记录及招聘交接的交付顺序、页面继承、事实归属及独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-24",
+        "date": "2026-11-25",
         "reviewer": "Codex 主代理文档复核",
-        "scope": "复核按职务首单到首笔变更的实施次序、可并行的后续办理、106 汇合场景及按岗、合同和招聘的真实依赖。",
+        "scope": "复核第 6.3 节十阶段的产品范围、106 同日来源、岗位及录用衔接、4386 操作样本与最终候选和主线结果。",
         "result": "accepted",
         "evidence": "docs/verification/500-job-information-delivery-review.md"
       },
@@ -3019,20 +3019,23 @@
         "related_documents": ["CHNHCM-106", "CHNHCM-313", "CHNHCM-400", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
         "format": "numbered",
         "status": "final",
-        "date": "2026-11-24",
-        "base_commit": "37712728874cf89fccc15187a4c23361be436569",
-        "working_tree": "dirty",
-        "change_description": "重排职务信息实施步骤，补齐首单升级、可独立交付的办理及跨模块衔接。",
-        "environment": "wt-dev-f 本地文档工作区，参照固定 e 分支的 404 定稿。",
-        "scope": "实施顺序、真实前置、正常菜单、交付结果及组合样本的承接。",
+        "date": "2026-11-25",
+        "base_commit": "dfd495542ac60a610dacb0d71dc30340976a3951",
+        "working_tree": "clean",
+        "change_description": "500 第 6.3 节由方案复核接续到十阶段实施，登记各阶段最终候选、合并及主线验证。",
+        "environment": "独立 PostgreSQL、API 与浏览器。固定 f 的 m01-profile-f，Web 4386、API 8386、DB 54376。",
+        "scope": "实施顺序、旧库前向升级、正常办理、撤权、重送、并发回滚、跨模块样本与原验收库交接。",
         "results": [
           {"check": "比对现有首单约束、单笔接口和 404 交接，逐项对照实施步骤与业务样本", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
           {"check": "核对依赖图无环，分别移去后续能力复核查询、共同办理及组合联验能否独立交付", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
           {"check": "首轮仓库检查发现三个四级标题缺少编号", "result": "failed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
           {"check": "补齐编号后文档治理、仓库资料、领域边界、改写链接及差异空白复验", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
-          {"check": "T04 产品升级、接口、数据库及正常菜单实施验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+          {"check": "方案复核当日的 T04 产品升级、接口、数据库及正常菜单实施验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"},
+          {"check": "十阶段真实办理、旧库升级、数据库约束、API 及权限恢复场景", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "五种常规视口及关键原生 200% 的正常菜单和固定 4386 原库样本", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "各阶段最终候选三项汇总、必要分片、实际合并树及主线三项验证", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"}
         ],
-        "limitations": ["本次交付为实施方案修订，各产品增量随实际开发验证。"]
+        "limitations": ["范围为 500 第 6.3 节，其他路线图项目按各自专项推进。"]
       },
       {
         "path": "docs/verification/506-job-information-direct-entry-review.md",

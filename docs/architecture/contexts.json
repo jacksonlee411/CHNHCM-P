@@ -193,7 +193,7 @@
           "module": "M03",
           "capability": "岗位核编",
           "state": "verified_slice",
-          "scope": "岗位按日核编、部门额度与调剂、历史和准确来源。招聘预留与任职占编随 M05、M04 接管。",
+          "scope": "岗位按日核编、部门额度与调剂、历史和准确来源。M05 记录招聘预留，M04 记录任职期间的实际占用。",
           "entry": "/settings/staffing/quotas",
           "entry_source": "apps/web/src/features/staffing/quotaApi.ts",
           "source": "internal/contexts/staffing/application/quota_commands.go",
@@ -203,7 +203,7 @@
           "module": "M03",
           "capability": "任职与占编规则",
           "state": "verified_slice",
-          "scope": "企业分段政策维护及历史。仅按职务的部门、职务全期及零占编已验。按岗位办理待补员与使用来源。",
+          "scope": "企业分段政策维护及历史。仅按职务的部门、职务全期及零占编已验。按岗位办理的补员与使用来源见 M04 任职及 M05 录用切片。",
           "entry": "/settings/staffing/assignment-policies",
           "entry_source": "apps/web/src/features/readiness/RulesPages.tsx",
           "source": "internal/contexts/staffing/application/assignment_policy.go",
@@ -218,6 +218,26 @@
           "entry_source": "internal/bootstrap/hire_readiness.go",
           "source": "internal/contexts/staffing/infra/postgres/hire.go",
           "evidence": "docs/verification/400-first-hire-integration.md"
+        },
+        {
+          "module": "M04",
+          "capability": "职务信息与任职办理",
+          "state": "verified_slice",
+          "scope": "本人任职与日状态、历史维护、关系转正、晋升调动、兼岗、实际汇报、退出再聘、按岗占用及工作关系合同。",
+          "entry": "/personnel/assignments",
+          "entry_source": "apps/web/src/features/hire/EmployeeDirectory.tsx",
+          "source": "internal/contexts/staffing/infra/postgres/job_information.go",
+          "evidence": "docs/verification/500-job-information-delivery-review.md"
+        },
+        {
+          "module": "M04",
+          "capability": "人事事务办理记录",
+          "state": "verified_slice",
+          "scope": "按当前人员、任职及部门权限检索真实办理，定位准确原件与历次修订，从原笔维护后返回原筛选。",
+          "entry": "/personnel/actions",
+          "entry_source": "apps/web/src/features/hire/EmploymentRegister.tsx",
+          "source": "internal/contexts/staffing/infra/postgres/employment_register.go",
+          "evidence": "docs/verification/500-job-information-delivery-review.md"
         }
       ]
     },
@@ -230,7 +250,7 @@
       "state": "partially_implemented",
       "slices": [{
         "module": "M05", "capability": "招聘录用与岗位预留", "state": "verified_slice",
-        "scope": "向已有人员发出录用，绑定本人、到岗日和逐段岗位预留；登记接受、放弃、释放及重新预留，按授权查历次原件。",
+        "scope": "向已有人员发出录用，绑定本人、到岗日和逐段岗位预留。接受、放弃、释放及重新预留均按授权查历次原件。转入职仅转换该接受版本对应的预留，未来撤销后可查原转换。",
         "entry": "/recruiting/offers", "entry_source": "apps/web/src/features/recruiting/Offers.tsx",
         "source": "internal/contexts/recruiting/infra/postgres/store.go",
         "evidence": "docs/verification/500-job-information-delivery-review.md"

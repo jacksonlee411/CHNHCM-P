@@ -4,7 +4,7 @@
 
 ## 1 目标与上下文归属
 
-17 个上下文及其领域责任见[上下文登记](contexts.json)。Organization、Access 和 Staffing 已接入组合根。登记中的每个切片分别列出所属模块、实际入口和签收范围。Staffing 的 M03 已接入[岗位核编首批](../verification/313-quota-implementation.md)。M04 人事动作与任职仍待实施。
+17 个上下文及其领域责任见[上下文登记](contexts.json)。Organization、Access 和 Staffing 已接入组合根。登记中的每个切片分别列出所属模块、实际入口和签收范围。Staffing 的 M03 已接入[岗位核编首批](../verification/313-quota-implementation.md)。M04 已接入按职务或按岗首聘、任职维护和人事事务办理记录，M05 已接入招聘录用及预留。各入口及合成样本见[分阶段验收](../verification/500-job-information-delivery-review.md#stage-delivery-results)。
 
 ## 2 目录组织
 

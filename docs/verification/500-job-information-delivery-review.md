@@ -1,5 +1,7 @@
 # CHNHCM-500 职务信息实施步骤与依赖复核
 
+500 第 6.3 节的十个阶段已合入 main。固定 f 在 `dfd49554` 使用原库复验。第 1、2 节保留开工时的方案复核，第 3 至 21 节记录各阶段的业务结果。[最终候选、主线和 4386 操作样本](#stage-delivery-results)
+
 2026-11-24，Codex 以 wt-dev-f 的 `37712728874cf89fccc15187a4c23361be436569` 核对 500 路线图、403 写入合同和 506、507 的正常菜单样本。该基线已能从本人档案办理按职务首单、读原件并撤销未来入职。固定 e 分支的 `ec4572a` 已定稿 404，按岗位免占编首单仍待开发。[首单实测](400-first-hire-integration.md#decision-first-hire) · [现有人员路由](../../apps/web/src/app/App.tsx) · [上一轮直接办理复核](506-job-information-direct-entry-review.md)
 
 ## 1 阶段拆分与修订
@@ -23,16 +25,16 @@
 
 | 阶段 | 直接依赖 | 状态 | 产品提交 / PR | 菜单业务结果 |
 | --- | --- | --- | --- | --- |
-| 1 首单接入与地点更改 | 已交付按职务首单、旧库连续升级 | 已合入 main `5026276` | `5e1de52`、`1f84246`、`a99c0cd`、`ad0efab` · [PR #8](https://github.com/jacksonlee411/CHNHCM-P/pull/8) | 旧首任期接入 0 号，两笔地点变更、原笔纠错与恢复已过实库及 API |
-| 2 历史维护与调动 | 1，沿用阶段 3 的原件入口 | 已合入 main `4f7ec3c` | `87d2b8b`、`9493327` · [PR #10](https://github.com/jacksonlee411/CHNHCM-P/pull/10) | 补录、改日和合法删除保留七月调动，缺少必要先行事实时整笔回滚 |
-| 3 办理记录 | 1 | 已合入 main `82ca54b` | `41d5a6b`、`58d1f5a` · [PR #9](https://github.com/jacksonlee411/CHNHCM-P/pull/9) | 两人跨日期登记、原笔修订、发生部门与撤权后笔数已验 |
-| 4 兼岗与并行关系 | 1 | 已合入 main `4251585` | `8d5e473`、`d524a1f`、`20d8a52` · [PR #11](https://github.com/jacksonlee411/CHNHCM-P/pull/11) | 0、1 同部门两行一人，2 号并行关系内为主任职，并发取 3、4；[按岗位兼岗 #24](https://github.com/jacksonlee411/CHNHCM-P/pull/24) 的两岗占两编及一岗免占已复验 |
-| 5 实际试用与转正 | 1、真实试用起点 | 已合入 main `39dd962` | `2100be0`、`f931489`、`52462ab` · [PR #12](https://github.com/jacksonlee411/CHNHCM-P/pull/12) | 原试用日期补录、关系一次转正、通知或主任职归属、受限部门计数与恢复已验 |
-| 6 晋升及同日办理 | 1、M03 职级，联验另需 2 至 5 | 已合入 main `0b97f54` | `ae02979`、`f3d880d` · [PR #13](https://github.com/jacksonlee411/CHNHCM-P/pull/13) | 同日正序、反序、共同保存与独立通知，两人四笔、撤销前职级、必要后继拒绝均已实测 |
-| 7 实际汇报、退出与再聘 | 1，两份有效任职，局部退出另需 4 | 已合入 main `32f930d` | `6b3f356`、`e944fd7`、`c1b1533` · [PR #14](https://github.com/jacksonlee411/CHNHCM-P/pull/14) | 并发无环、局部退出、准确原件，离职间隔后沿 0 号再聘且下份兼岗取 3 |
-| 8 按岗位免占编 | 404 真实首单、M03 岗位使用 | 固定环境、实库与六种视口已验 | `0f93528`、`6ee9659` · [前置 #15](https://github.com/jacksonlee411/CHNHCM-P/pull/15)；`43ee28f`、`12ed081` · [调入 #16](https://github.com/jacksonlee411/CHNHCM-P/pull/16) | 免占首聘、同部门同职务换岗位、原件更正及两岗释放和接管已验 |
-| 9 占编与实况 | T03 占编模式、定额和用量来源 | 任职占编、按岗晋升与招聘争额已实测 | [前置 #17](https://github.com/jacksonlee411/CHNHCM-P/pull/17)；`23f5c4e`、`489d6d6` · [#18](https://github.com/jacksonlee411/CHNHCM-P/pull/18) | 从两侧争最后一编只成一份；[两岗对调 #19](https://github.com/jacksonlee411/CHNHCM-P/pull/19) 已验；[内部接任 #20](https://github.com/jacksonlee411/CHNHCM-P/pull/20) 已验；[三天实况 #21](https://github.com/jacksonlee411/CHNHCM-P/pull/21) 已验 |
-| 10 合同、录用与联验 | 真实关系、已接受录用及适用预留 | 合同、招聘转入职在固定环境、实库及六种视口已验 | `1797b93`、`6c5e909` · [合同 #22](https://github.com/jacksonlee411/CHNHCM-P/pull/22)，`7a76787` · [录用转入职 #23](https://github.com/jacksonlee411/CHNHCM-P/pull/23) | 双关系合同独立、按原录用改期再接受、转换本人预留、未来撤销和原单重送均已实测 |
+| 1 首单接入与地点更改 | 已交付按职务首单、旧库连续升级 | 已合入 main `dfd49554` | `5e1de52`、`1f84246`、`a99c0cd`、`ad0efab` · [PR #8](https://github.com/jacksonlee411/CHNHCM-P/pull/8) · [#25](https://github.com/jacksonlee411/CHNHCM-P/pull/25) | 旧首任期接入 0 号，两笔地点变更、原笔纠错与恢复已过实库及 API |
+| 2 历史维护与调动 | 1，沿用阶段 3 的原件入口 | 已合入 main `4f7ec3cc` | `87d2b8b`、`9493327` · [PR #10](https://github.com/jacksonlee411/CHNHCM-P/pull/10) | 补录、改日和合法删除保留七月调动，缺少必要先行事实时整笔回滚 |
+| 3 办理记录 | 1 | 已合入 main `82ca54b5` | `41d5a6b`、`58d1f5a` · [PR #9](https://github.com/jacksonlee411/CHNHCM-P/pull/9) | 两人跨日期登记、原笔修订、发生部门与撤权后笔数已验 |
+| 4 兼岗与并行关系 | 1 | 已合入 main `dfd49554` | `8d5e473`、`d524a1f`、`20d8a52` · [PR #11](https://github.com/jacksonlee411/CHNHCM-P/pull/11) · [#25](https://github.com/jacksonlee411/CHNHCM-P/pull/25) | 0、1 同部门两行一人，2 号并行关系内为主任职，并发取 3、4；[按岗位兼岗 #24](https://github.com/jacksonlee411/CHNHCM-P/pull/24) 的两岗占两编及一岗免占已复验。从本人档案选择任职，主岗页签切换后可返回原行。 |
+| 5 实际试用与转正 | 1、真实试用起点 | 已合入 main `39dd9623` | `2100be0`、`f931489`、`52462ab` · [PR #12](https://github.com/jacksonlee411/CHNHCM-P/pull/12) | 原试用日期补录、关系一次转正、通知或主任职归属、受限部门计数与恢复已验 |
+| 6 晋升及同日办理 | 1、M03 职级，联验另需 2 至 5 | 已合入 main `0b97f54e` | `ae02979`、`f3d880d` · [PR #13](https://github.com/jacksonlee411/CHNHCM-P/pull/13) | 同日正序、反序、共同保存与独立通知，两人四笔、撤销前职级、必要后继拒绝均已实测 |
+| 7 实际汇报、退出与再聘 | 1，两份有效任职，局部退出另需 4 | 已合入 main `32f930d5` | `6b3f356`、`e944fd7`、`c1b1533` · [PR #14](https://github.com/jacksonlee411/CHNHCM-P/pull/14) | 并发无环、局部退出、准确原件，离职间隔后沿 0 号再聘且下份兼岗取 3 |
+| 8 按岗位免占编 | 404 真实首单、M03 岗位使用 | 已合入 main `4d3b2c3d` | `0f93528`、`6ee9659` · [前置 #15](https://github.com/jacksonlee411/CHNHCM-P/pull/15)；`43ee28f`、`12ed081` · [调入 #16](https://github.com/jacksonlee411/CHNHCM-P/pull/16) | 免占首聘、同部门同职务换岗位、原件更正及两岗释放和接管已验 |
+| 9 占编与实况 | T03 占编模式、定额和用量来源 | 已合入 main `2a988171` | [前置 #17](https://github.com/jacksonlee411/CHNHCM-P/pull/17)；`23f5c4e`、`489d6d6` · [#18](https://github.com/jacksonlee411/CHNHCM-P/pull/18) · [#24](https://github.com/jacksonlee411/CHNHCM-P/pull/24) | 从两侧争最后一编只成一份；[两岗对调 #19](https://github.com/jacksonlee411/CHNHCM-P/pull/19) 已验；[内部接任 #20](https://github.com/jacksonlee411/CHNHCM-P/pull/20) 已验；[三天实况 #21](https://github.com/jacksonlee411/CHNHCM-P/pull/21) 已验 |
+| 10 合同、录用与联验 | 真实关系、已接受录用及适用预留 | 已合入 main `91950796` | `1797b93`、`6c5e909` · [合同 #22](https://github.com/jacksonlee411/CHNHCM-P/pull/22)，`7a76787` · [录用转入职 #23](https://github.com/jacksonlee411/CHNHCM-P/pull/23) · [#17](https://github.com/jacksonlee411/CHNHCM-P/pull/17) | 双关系合同独立、按原录用改期再接受、转换本人预留、未来撤销和原单重送均已实测 |
 
 ## 4 阶段 1 首任期与地点办理
 
@@ -197,3 +199,51 @@ PR #8 候选 `63becef` 的第 7 个浏览器分片发现，双经办人第二次
 - 修正后完整菜单复验中，日期框的延迟应答和键盘场景已过。一次 320×900 在从菜单加载人员档案时显示「网络连接失败，请重试」，当轮 128/129 通过。脱敏截图保留了该提示和重试按钮。在同一 4386 构建的独立浏览器里让人员档案入口的首个实际读请求断线，点击「重试」后可重新查到原人、打开任职并按业务日选出两岗（4.8 秒）。
 - 按实际测试发现清单核对两个 Go 集成包共 421 个顶层用例。早期候选的全量联验有两项首败：仅按职务的首聘准备、从 00039 升级的版本断言。合入 #15 修正后两个包均通过，399 项执行成功，22 项按配置跳过，均有终态。通用集成包 168 项通过、3 项跳过，耗时 53.4 分钟；组合根 231 项通过、19 项跳过，耗时 81.3 分钟。跳过项使用专属容量、跨日时钟、诊断或仓外备份输入。两次菜单修正之间 Go、迁移和接口文件一致，各阶段的旧库升级另见 §4 至 §19。
 - 在同一固定前端、独立空库和一个浏览器工作进程再次运行完整首聘、职务信息、合同和录用菜单。保留本轮请求路径与耗时，含企业前置共 129 项全部通过，用时 16.3 分钟。
+
+<a id="stage-delivery-results"></a>
+## 22 最终候选、主线与手工环境
+
+2026-11-25 以合并后的 `dfd49554` 在原库完成固定环境复查。表中候选和合并分别是 PR 的最终 head 与 main 的实际合并提交。每次合并均已核对 base、受测合并引用、文件树、阻断性评审及 quality、integration、browser 三项汇总，表内链接可查看实际运行。
+
+| 阶段与办理 | 最终候选 / 合并 | 最终候选检查 | 主线验证 | 固定环境业务结果 |
+| --- | --- | --- | --- | --- |
+| 1 首单与地点更改 [#8](https://github.com/jacksonlee411/CHNHCM-P/pull/8) | `d7aa8909` / `5026276c` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45450493673)，数据库 1 片实跑、1 片按 137 复用，浏览器 1 片实跑、15 片按 137 复用 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45455599566) | 原 0 号、两笔地点更改及首次修订 · [4386](http://127.0.0.1:4386) |
+| 3 人事事务办理列表 [#9](https://github.com/jacksonlee411/CHNHCM-P/pull/9) | `8fbef98e` / `82ca54b5` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45456018169)，数据库 2 片按 137 复用，浏览器 1 片实跑、15 片按 137 复用 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45459284258) | 同笔更正从两处查看，限制字段后重算笔数 · [4386](http://127.0.0.1:4386) |
+| 2 历史维护与调动 [#10](https://github.com/jacksonlee411/CHNHCM-P/pull/10) | `0646e352` / `4f7ec3cc` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45459998669)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45465034287) | 补六月、改日、合法删除后七月调动继续 · [4386](http://127.0.0.1:4386) |
+| 4 兼岗与并行关系 [#11](https://github.com/jacksonlee411/CHNHCM-P/pull/11) | `55b66f31` / `4251585b` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45465265943)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45470029796) | 同人三份任职、两层主任职与并发取号 · [4386](http://127.0.0.1:4386) |
+| 5 实际试用与关系转正 [#12](https://github.com/jacksonlee411/CHNHCM-P/pull/12) | `50660bde` / `39dd9623` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45470292664)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45476761095) | 同一关系一笔转正，发生部门按通知或原主任职 · [4386](http://127.0.0.1:4386) |
+| 6 晋升与同日办理 [#13](https://github.com/jacksonlee411/CHNHCM-P/pull/13) | `ae4f4c7b` / `0b97f54e` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45476904228)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45483265689) | 两人四笔，撤销后当前 P5、旧来源 P6 · [4386](http://127.0.0.1:4386) |
+| 7 汇报、退出与再聘 [#14](https://github.com/jacksonlee411/CHNHCM-P/pull/14) | `67eb8e55` / `32f930d5` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45483426162)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45490102288) | 互设经理无环、局部终止、旧 0 号再聘、新兼岗取 3 · [4386](http://127.0.0.1:4386) |
+| 8 免占编首单前置 [#15](https://github.com/jacksonlee411/CHNHCM-P/pull/15) | `b059557c` / `b7d40722` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45496302589)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45501864844) | 按岗位首聘，免占在岗 1、常规增量 0 · [4386](http://127.0.0.1:4386) |
+| 8 免占编调入 [#16](https://github.com/jacksonlee411/CHNHCM-P/pull/16) | `f2e866c2` / `4d3b2c3d` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45502040995)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45509389775) | 更正跨部门调令，保留前次岗位及来源 · [4386](http://127.0.0.1:4386) |
+| 9、10 招聘录用与预留 [#17](https://github.com/jacksonlee411/CHNHCM-P/pull/17) | `948671e3` / `3a4169ed` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45509653802)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45514433737) | 真实录用先预留后接受、解除后再取名额 · [4386](http://127.0.0.1:4386) |
+| 9 竞争与按岗晋升 [#18](https://github.com/jacksonlee411/CHNHCM-P/pull/18) | `5086d46c` / `e320ffc2` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45514770396)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45519425672) | 争最后一编一成一拒，P6 新岗与晋升共同生效 · [4386](http://127.0.0.1:4386) |
+| 9 两岗对调 [#19](https://github.com/jacksonlee411/CHNHCM-P/pull/19) | `6169f63a` / `6b254193` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45519753474)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45524833776) | 各核一编的两岗互换，改日、原件及整组撤销 · [4386](http://127.0.0.1:4386) |
+| 9 内部接任 [#20](https://github.com/jacksonlee411/CHNHCM-P/pull/20) | `f46ea23a` / `a2a579cf` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45525173073)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45532653003) | 交接期两份实际占用，次日起恢复常规一份 · [4386](http://127.0.0.1:4386) |
+| 9 已实际履职 [#21](https://github.com/jacksonlee411/CHNHCM-P/pull/21) | `42e95451` / `202dce78` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45532966741)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45537316575) | 拟调入缺 1 编，已履职三天实 4／核 3，次日实 3 · [4386](http://127.0.0.1:4386) |
+| 10 工作关系合同 [#22](https://github.com/jacksonlee411/CHNHCM-P/pull/22) | `16a6a3de` / `77095a96` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45537647958)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45542461522) | 订立、续订，两段关系的合同独立处置 · [4386](http://127.0.0.1:4386) |
+| 10 录用转入职 [#23](https://github.com/jacksonlee411/CHNHCM-P/pull/23) | `443a0461` / `91950796` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45542760060)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45547000278) | 改期并接受、转换本人预留、未来撤销及重新预留 · [4386](http://127.0.0.1:4386) |
+| 4、9 按岗位新增兼岗 [#24](https://github.com/jacksonlee411/CHNHCM-P/pull/24) | `11b4e4a3` / `2a988171` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45547351885)，数据库 2 片实跑，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45551724195) | 同一人两岗均占编合计 2，其中一岗免占合计 1 · [4386](http://127.0.0.1:4386) |
+| 1、4 按任职切换及授权 [#25](https://github.com/jacksonlee411/CHNHCM-P/pull/25) | `41ce5a48` / `dfd49554` | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45552030966)，数据库按范围未选分片，浏览器 16 片实跑 | [三项通过](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45556852471) | 按本人选行、主岗页签返回、撤权与撤销原单 · [4386](http://127.0.0.1:4386) |
+
+### 22.1 从合同查到业务证据
+
+| 计划与验收条款 | 样本和可核对的结果 | 本记录中的验收位置 |
+| --- | --- | --- |
+| 500 §6.3.1、403 §8、506 AC-010、011、015 | 旧 0 号与原回执继续可查。甲改乙、原笔纠错为丙，补六月后七月调动仍然有效。误删必要先行事实会整笔拒绝。断线重送取回原笔。 | §4、§6，原记录与回执实库、菜单五种常规视口和关键原生 200% |
+| 500 §6.3.2，506 AC-012 至 014，507 AC-016 | 同一关系从兼岗办理转正计一次，部门按原通知或主任职确定。三岗一人，受限读者只见获权的兼岗。同人从档案选任职后可返回原行。0 号的资料、职务信息和日志各按现权打开。离职间隔后沿原 0 号再聘，新增兼岗取 3。 | §7、§8、§10、§20、§21 |
+| 506 SCN-017 至 019、AC-019，507 AC-017、018，ADR 106 | 两人四笔有各自的生效日和办理时刻，列表与原件指向同一份办理。同日三步按准确来源查回。误录晋升撤销后当前 P5，原来源仍为 P6。调入岗位要求 P6 时共同提交，单撤晋升被拒。 | §5、§9、§14 |
+| 500 §6.3.3，404、506 §5.3、507 实况补录 | 按岗免占时有真实任职、增加零编。竞逐最后一编只成一份。内部接任和两岗对调各保留原件。拟调第 4 人缺 1 编，有权补录三天实况后核 3 实 4，次日实 3，保留原定额及他人预留。 | §11 至 §17、§20 |
+| 500 §6.3.3 的 T05、T06 | 同一人两段工作关系的合同独立。录用从准确接受版本转入职，仅转换本单对应名额，未来撤销保留原转换和历史，经重新取得预留才可再使用。 | §18、§19 |
+
+本轮采用正式员工在首聘、调动、兼岗和招聘用途下实际生效的政策，并按具体岗位的使用和接管区间保护历史。工作关系分别订立合同，续订在同一关系保存新合同及签订日，并可双向定位原合同和续订合同。招聘采用实际接受的录用版本，预留转换、撤销及重送保留各自原件和回执。审批待办、年资、调薪及工资采用按 500 归对应专项。
+
+### 22.2 操作样本与运行观察
+
+- PR #16 的浏览器第 4 分片首轮有 40 项通过，一项原职级恢复表单在保存后未按时关闭。同一候选、独立实库及相同限时下连续三次通过。重跑失败项后，该分片在第二次执行通过。其余必要分片在首轮通过。[候选运行](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45502040995)
+- PR #20 的浏览器第 16 分片首轮有 152 项通过，BU 新建取消后的一项滚动位置断言预期 288、实测 1。同一候选在独立实库和固定前端连续三次通过，具体触发时序未复现。该分片第二次执行通过，其余必要分片首轮通过。[候选运行](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45525173073)
+- 固定 f 继续承接用户验收。profile `m01-profile-f` 使用 Web 4386、API 8386、DB 54376，当前构建 `dfd49554`。原库转储、目录、SHA-256 摘要及原构建均保留在仓外。转储目录含 213 项表数据，摘要复核通过。合并后在同一原库复核 21 项，全部通过，用时 54.8 秒。[打开人员](http://127.0.0.1:4386)
+- 从「人员 → 员工 → 人员档案」查「岗位兼任验收2b0f55fa」，打开「工作关系与任职」，业务日选 2027-04-01。0 号和 1 号为两份任职、一人。0 号按权切换个人资料、职务信息和变更日志，1 号查看本任职。原档 P00000001 可复核九栏及读者权限。「人事事务 → 办理记录」可从同一原笔查看更正和旧修订。合同、招聘转换和三天实况的可查人员与通知见 §17 至 §20。
+- 本地实库两个包有 421 个顶层用例，399 项执行通过，22 项依各自的外部备份、容量、跨日时钟或诊断配置跳过。两包分别耗时 53.4 和 81.3 分钟。完整回归所用的产品文件与最终产品合并版本逐路径相同。按用户确认，页面覆盖五种 100% 视口与关键原生 200%。各阶段的首败和复验保留在上文。
+- 性能观察取自本机单浏览器工作进程、独立实库和固定前端的 129 项完整菜单回归，整组用时 16.3 分钟。五种常规视口的本人选行与主岗页签用例各为 7.6 至 8.3 秒，办理记录查询及原笔更正各为 4.8 至 5.8 秒。用例耗时包含准备样本、交互和核对结果。
+- 专用可丢弃数据库及浏览器环境已回收。4386 保留供用户验收，由固定 f 在下次更新或验收结束时复查。本节十阶段均有产品与主线结果，当前无待补的外部业务事实。
