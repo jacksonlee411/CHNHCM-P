@@ -5114,6 +5114,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/additional-arrangement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assignmentSecondaryArrangement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/additional-options": {
         parameters: {
             query?: never;
@@ -6358,13 +6374,17 @@ export interface components {
             /** Format: uuid */
             employer?: string;
             /** Format: uuid */
-            department: string;
+            department?: string;
             /** Format: uuid */
-            job: string;
+            job?: string;
+            /** Format: uuid */
+            position?: string;
             /** Format: uuid */
             bu?: string;
             /** Format: uuid */
             location?: string;
+            /** Format: uuid */
+            grade?: string;
             notice: string;
             /** Format: uuid */
             expectedSourceVersion: string;
@@ -6380,15 +6400,31 @@ export interface components {
             /** Format: uuid */
             department?: string;
             /** Format: uuid */
+            position?: string;
+            /** Format: uuid */
             bu?: string;
             /** Format: uuid */
             location?: string;
+            /** Format: uuid */
+            job?: string;
             /** @enum {string} */
-            kind: "department" | "job" | "employer" | "bu" | "location";
+            kind: "department" | "job" | "employer" | "bu" | "location" | "position" | "grade";
             page: number;
             search?: string;
         };
+        AdditionalArrangementQuery: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            lastDay?: string;
+            parallel: boolean;
+            /** Format: uuid */
+            employer?: string;
+            /** Format: uuid */
+            position?: string;
+        };
         SecondaryAssignmentEvidence: {
+            grade?: components["schemas"]["AssignmentGrade"];
             relationshipPrimary: boolean;
             legal: components["schemas"]["LegalAdoption"][];
             segments: components["schemas"]["AssignmentSegment"][];
@@ -6563,6 +6599,7 @@ export interface components {
             department: string;
             departmentName: string;
             jobName: string;
+            positionName?: string;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -24582,6 +24619,43 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentSecondaryArrangement: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdditionalArrangementQuery"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireArrangementMode"];
                 };
             };
             /** @description Unavailable */

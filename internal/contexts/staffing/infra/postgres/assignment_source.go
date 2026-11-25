@@ -56,6 +56,22 @@ func (u *unit) startAssignmentSource(ctx context.Context, assignment, previous, 
 }
 
 func (u *unit) publishAssignmentSource(ctx context.Context, assignment, previous, version string) error {
+	// The caller holds the person's arrangement lock. Check the newly published
+	// periods against other current terms of the same working relationship.
+	var overlapping bool
+	if err := u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment a
+      JOIN staffing.assignment_segment proposed ON proposed.instance_id=a.instance_id AND proposed.assignment_id=a.id
+      JOIN staffing.assignment other ON other.instance_id=a.instance_id AND other.employment_id=a.employment_id AND other.id<>a.id
+      JOIN staffing.assignment_head current ON current.instance_id=other.instance_id AND current.assignment_id=other.id
+      JOIN staffing.assignment_segment active ON (active.instance_id,active.assignment_id,active.version)=(current.instance_id,current.assignment_id,current.version)
+      WHERE a.instance_id=$1 AND a.id=$2 AND proposed.version=$3 AND proposed.period && active.period
+      AND proposed.adoption->>'position'<>'' AND proposed.adoption->>'position'=active.adoption->>'position')`,
+		u.store.Instance, assignment, version).Scan(&overlapping); err != nil {
+		return err
+	}
+	if overlapping {
+		return f.Fail(409, "ASSIGNMENT_OVERLAP", "同一工作关系在该期间已有此岗位任职")
+	}
 	_, err := u.tx.Exec(ctx, `INSERT INTO staffing.assignment_publication VALUES($1,$2,$3)`, u.store.Instance, assignment, version)
 	if err != nil {
 		return err

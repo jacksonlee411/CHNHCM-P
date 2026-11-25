@@ -94,6 +94,9 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-assignments", ruleBody(func(r *http.Request, in h.Secondary) (any, error) {
 		return hires.AddSecondary(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
 	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-arrangement", ruleBody(func(r *http.Request, in h.SecondaryArrangementQuery) (any, error) {
+		return hires.SecondaryArrangement(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
 	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-options", ruleBody(func(r *http.Request, in h.SecondaryOption) (any, error) {
 		return hires.SecondaryOptions(r.Context(), credentials(r), r.PathValue("id"), in)
 	}))

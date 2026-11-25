@@ -52,11 +52,22 @@ func (st *Store) AddSecondary(ctx context.Context, c f.Credentials, id, key stri
 		if in.Parallel {
 			employer, employment, kind = in.Employer, f.NewID(), "ParallelEmployment"
 		}
-		if e = u.requireEmployment(ctx, permit, a.Person, employer, in.Department); e != nil {
-			return "", e
-		}
-		if e = u.requireEmployment(ctx, "read", a.Person, employer, in.Department); e != nil {
-			return "", e
+		if in.Position != "" {
+			ok, e := u.positionEmploymentScope(ctx, in.Position, term, a.Person, employer, permit, "secondary")
+			if e != nil {
+				return "", e
+			}
+			if !ok {
+				return "", f.Fail(403, "SECONDARY_DENIED", "所选岗位不在兼岗授权范围内")
+			}
+		} else {
+			if e = u.requireEmployment(ctx, permit, a.Person, employer, in.Department); e != nil {
+				return "", e
+			}
+			if e = u.requireEmployment(ctx, "read", a.Person, employer, in.Department); e != nil {
+				return "", e
+			}
+
 		}
 
 		var covered bool
@@ -106,9 +117,40 @@ func (st *Store) AddSecondary(ctx context.Context, c f.Credentials, id, key stri
 		if e != nil {
 			return "", e
 		}
-		segments, e := st.CheckAssignment(sourceCtx, c, staff.AssignmentCheck{Period: term, Enterprise: ent.ID, Category: "Employee", Purpose: "secondary", Department: in.Department, Job: in.Job})
+		segments, e := st.CheckAssignment(sourceCtx, c, staff.AssignmentCheck{Period: term, Enterprise: ent.ID, Category: "Employee", Purpose: "secondary", Department: in.Department, Job: in.Job, Position: in.Position})
 		if e != nil {
 			return "", e
+		}
+		if len(segments) == 0 {
+			return "", f.Fail(409, "SECONDARY_PERIOD", "所选期间缺少可用任职安排")
+		}
+		var adoptedGrade *h.GradeRef
+		for i, seg := range segments {
+			dept, job := in.Department, in.Job
+			if seg.DepartmentID != "" {
+				dept, job = seg.DepartmentID, seg.JobID
+			}
+			if e = u.requireEmployment(ctx, permit, a.Person, employer, dept); e != nil {
+				return "", e
+			}
+			if e = u.requireEmployment(ctx, "read", a.Person, employer, dept); e != nil {
+				return "", e
+			}
+			if e = u.checkPlacementGrade(ctx, seg, in.Grade); e != nil {
+				return "", e
+			}
+			if in.Grade != "" {
+				grade, e := u.gradeForJob(ctx, job, in.Grade, seg.Period)
+				if e != nil {
+					return "", e
+				}
+				if i == 0 {
+					adoptedGrade = grade
+				}
+			}
+		}
+		if segments[0].DepartmentID != "" {
+			in.Department, in.Job = segments[0].DepartmentID, segments[0].JobID
 		}
 		if in.Parallel {
 			_, e = u.tx.Exec(ctx, `INSERT INTO staffing.employment(instance_id,id,person_id,employer_id,relationship,period) VALUES($1,$2,$3,$4,'Employee',daterange($5::date,nullif($6,'')::date,'[)'))`, st.Instance, employment, a.Person, employer, term.From, term.Until)
@@ -123,9 +165,9 @@ func (st *Store) AddSecondary(ctx context.Context, c f.Credentials, id, key stri
 			return "", e
 		}
 		item := employmentEntry{id: f.NewID(), revision: f.NewID(), kind: kind, employment: employment, assignment: f.NewID(), date: term.From, notice: strings.TrimSpace(in.Notice),
-			adoption: map[string]any{"secondary": h.SecondaryEvidence{RelationshipPrimary: in.Parallel, Legal: legal, Segments: segments}}}
+			adoption: map[string]any{"secondary": h.SecondaryEvidence{Grade: adoptedGrade, RelationshipPrimary: in.Parallel, Legal: legal, Segments: segments}}}
 		input := h.Hire{Person: a.Person, Department: in.Department, Job: in.Job, BU: in.BU, Location: in.Location}
-		if e = u.openAssignment(ctx, item, input, number, term, segments, adoptedLocation, nil); e != nil {
+		if e = u.openAssignment(ctx, item, input, number, term, segments, adoptedLocation, adoptedGrade); e != nil {
 			return "", e
 		}
 		if in.Parallel {
@@ -147,8 +189,8 @@ func (st *Store) SecondaryOptions(ctx context.Context, c f.Credentials, id strin
 	if e != nil {
 		return nil, e
 	}
-	field := map[string]string{"employer": "employer", "department": "departmentId", "job": "jobId", "location": "locationId", "bu": "buId"}[in.Kind]
-	if field == "" || (field == "employer" && !in.Parallel) || in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 || in.Department != "" && !f.ValidID(in.Department) || in.Employer != "" && !f.ValidID(in.Employer) {
+	field := map[string]string{"position": "positionId", "grade": "gradeId", "employer": "employer", "department": "departmentId", "job": "jobId", "location": "locationId", "bu": "buId"}[in.Kind]
+	if field == "" || field == "gradeId" && !f.ValidID(in.Job) || (field == "employer" && !in.Parallel) || in.Page < 1 || in.Page > 1000000 || utf8.RuneCountInString(in.Search) > 400 || in.Department != "" && !f.ValidID(in.Department) || in.Employer != "" && !f.ValidID(in.Employer) {
 		return nil, f.Fail(400, "SECONDARY_INPUT", "请核对候选查询")
 	}
 	out = []org.EligibleEntity{}
@@ -178,7 +220,37 @@ func (st *Store) SecondaryOptions(ctx context.Context, c f.Credentials, id strin
 		if !allowed {
 			return f.Fail(403, "SECONDARY_DENIED", "当前安排不在授权范围内")
 		}
-		return u.arrangementTargets(ctx, term, h.TargetSearch{Person: a.Person, Department: in.Department, Employer: employer, Page: in.Page, Search: in.Search}, field, permission, &out)
+		query := h.TargetSearch{Person: a.Person, Department: in.Department, Job: in.Job, Employer: employer, Page: in.Page, Search: in.Search}
+		if field == "positionId" {
+			return u.positionTargets(ctx, term, query, permission, "secondary", nil, &out)
+		}
+		return u.arrangementTargets(ctx, term, query, field, permission, &out)
+	})
+	return
+}
+
+func (st *Store) SecondaryArrangement(ctx context.Context, c f.Credentials, id string, in h.SecondaryArrangementQuery) (out h.ArrangementMode, err error) {
+	term, e := hireDates(in.From, in.LastDay)
+	if e != nil {
+		return out, e
+	}
+	err = st.within(ctx, c, false, true, func(u *unit) error {
+		a, e := u.assignmentAt(ctx, id, term.From, "")
+		if e != nil {
+			return e
+		}
+		if a.Cancelled || !a.Includes(term.From) {
+			return f.Fail(409, "SECONDARY_PERIOD", "所属任职在开始日无效")
+		}
+		permission := secondaryPermission(in.Parallel)
+		if e = u.requireEmployment(ctx, permission, a.Person, a.Employer, a.Department); e != nil {
+			return e
+		}
+		employer := a.Employer
+		if in.Parallel {
+			employer = in.Employer
+		}
+		return u.arrangementMode(ctx, term, a.Person, employer, in.Position, permission, "secondary", nil, &out)
 	})
 	return
 }

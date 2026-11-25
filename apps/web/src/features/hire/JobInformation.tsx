@@ -613,7 +613,8 @@ export function OriginalEvidence({
         <ObjectDetailField label="办理状态">已删除</ObjectDetailField>
       )}
       {original.secondary && <>
-        <ObjectDetailField label="任职安排">{[original.secondary.segments[0]?.departmentName,original.secondary.segments[0]?.jobName].filter(Boolean).join(' · ')}</ObjectDetailField>
+        <ObjectDetailField label="任职安排">{[original.secondary.segments[0]?.departmentName,original.secondary.segments[0]?.jobName,original.secondary.segments[0]?.positionName].filter(Boolean).join(' · ')}</ObjectDetailField>
+        {original.secondary.grade && <ObjectDetailField label="个人职级">{original.secondary.grade.name}</ObjectDetailField>}
         <ObjectDetailField label="所属工作关系">{original.secondary.legal[0]?.entityName}{original.secondary.relationshipPrimary?' · 关系主任职':''}</ObjectDetailField>
       </>}
       {original.transfer?.after.duty && <DutyOriginal evidence={original.transfer.after.duty}/>}
