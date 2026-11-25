@@ -75,13 +75,9 @@ func staffingMigrationPreservesPriorFacts(t *testing.T, prior int) {
 	}
 	db := stdlib.OpenDBFromPool(pool)
 	defer db.Close()
-	exclude := []string{"00019_grade_ladder.sql", "00020_staffing_member_reference_checks.sql", "00021_position.sql", "00022_position_hierarchy.sql", "00023_geoarea_macau.sql", "00024_job_function.sql", "00025_job_function_adoption.sql", "00026_position_reporting.sql", "00027_position_quota.sql", "00028_staffing_quota_convergence.sql", "00029_persons.sql", "00030_person_primary_document.sql", "00031_person_profile.sql", "00032_hire_readiness.sql", "00033_hire_rule_receipts.sql", "00034_person_address_family.sql", "00035_first_hire_rule.sql", "00036_hire_identity.sql", "00037_employee_hire.sql", "00038_person_education_credentials.sql", "00039_appointment_decision.sql", "00040_person_bank_health.sql", "00041_employment_record.sql", "00042_job_information_sources.sql", "00043_employment_register.sql", "00044_assignment_history.sql", "00045_parallel_assignments.sql", "00046_relationship_probation.sql", "00047_assignment_promotion.sql", "00048_assignment_lifecycle.sql", "00049_position_intake.sql", "00050_recruiting_offers.sql", "00051_position_exchange.sql", "00052_internal_succession.sql", "00053_actual_duty.sql", "00054_employment_contract.sql", "00055_offer_hire_handoff.sql", "00056_probation_receipt_assignment.sql"}
-	if prior == 17 {
-		exclude = append(exclude, "00018_grade.sql")
-	}
-	old, e := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files, goose.WithExcludeNames(exclude))
+	migrations, e := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files)
 	must(e)
-	_, e = old.Up(ctx)
+	_, e = migrations.UpTo(ctx, int64(min(prior, 18)))
 	must(e)
 
 	instance, enterprise, subject := foundation.NewID(), foundation.NewID(), foundation.NewID()
@@ -141,13 +137,7 @@ func staffingMigrationPreservesPriorFacts(t *testing.T, prior int) {
 	}
 
 	if prior >= 20 {
-		exclude := []string{"00022_position_hierarchy.sql", "00023_geoarea_macau.sql", "00024_job_function.sql", "00025_job_function_adoption.sql", "00026_position_reporting.sql", "00027_position_quota.sql", "00028_staffing_quota_convergence.sql", "00029_persons.sql", "00030_person_primary_document.sql", "00031_person_profile.sql", "00032_hire_readiness.sql", "00033_hire_rule_receipts.sql", "00034_person_address_family.sql", "00035_first_hire_rule.sql", "00036_hire_identity.sql", "00037_employee_hire.sql", "00038_person_education_credentials.sql", "00039_appointment_decision.sql", "00040_person_bank_health.sql", "00041_employment_record.sql", "00042_job_information_sources.sql", "00043_employment_register.sql", "00044_assignment_history.sql", "00045_parallel_assignments.sql", "00046_relationship_probation.sql", "00047_assignment_promotion.sql", "00048_assignment_lifecycle.sql", "00049_position_intake.sql", "00050_recruiting_offers.sql", "00051_position_exchange.sql", "00052_internal_succession.sql", "00053_actual_duty.sql", "00054_employment_contract.sql", "00055_offer_hire_handoff.sql", "00056_probation_receipt_assignment.sql"}
-		if prior == 20 {
-			exclude = append(exclude, "00021_position.sql")
-		}
-		g2, err := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files, goose.WithExcludeNames(exclude))
-		must(err)
-		_, err = g2.Up(ctx)
+		_, err := migrations.UpTo(ctx, int64(prior))
 		must(err)
 	}
 	if prior == 21 {
@@ -255,9 +245,9 @@ func TestReportingOnlyMigration(t *testing.T) {
 			ctx := t.Context()
 			db := stdlib.OpenDBFromPool(pool)
 			defer db.Close()
-			old, err := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files, goose.WithExcludeNames([]string{"00026_position_reporting.sql", "00027_position_quota.sql", "00028_staffing_quota_convergence.sql", "00029_persons.sql", "00030_person_primary_document.sql", "00031_person_profile.sql", "00032_hire_readiness.sql", "00033_hire_rule_receipts.sql", "00034_person_address_family.sql", "00035_first_hire_rule.sql", "00036_hire_identity.sql", "00037_employee_hire.sql", "00038_person_education_credentials.sql", "00039_appointment_decision.sql", "00040_person_bank_health.sql", "00041_employment_record.sql", "00042_job_information_sources.sql", "00043_employment_register.sql", "00044_assignment_history.sql", "00045_parallel_assignments.sql", "00046_relationship_probation.sql", "00047_assignment_promotion.sql", "00048_assignment_lifecycle.sql", "00049_position_intake.sql", "00050_recruiting_offers.sql", "00051_position_exchange.sql", "00052_internal_succession.sql", "00053_actual_duty.sql", "00054_employment_contract.sql", "00055_offer_hire_handoff.sql", "00056_probation_receipt_assignment.sql"}))
+			old, err := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files)
 			must(t, err)
-			_, err = old.Up(ctx)
+			_, err = old.UpTo(ctx, 25)
 			must(t, err)
 			instance, enterprise, root, source, key := foundation.NewID(), foundation.NewID(), foundation.NewID(), foundation.NewID(), foundation.NewID()
 			purpose := scenario
@@ -315,9 +305,9 @@ func TestStaffing315AllocationPredecessor(t *testing.T) {
 	ctx := t.Context()
 	db := stdlib.OpenDBFromPool(pool)
 	defer db.Close()
-	prefix, err := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files, goose.WithExcludeNames([]string{"00026_position_reporting.sql", "00027_position_quota.sql", "00028_staffing_quota_convergence.sql", "00029_persons.sql", "00030_person_primary_document.sql", "00031_person_profile.sql", "00032_hire_readiness.sql", "00033_hire_rule_receipts.sql", "00034_person_address_family.sql", "00035_first_hire_rule.sql", "00036_hire_identity.sql", "00037_employee_hire.sql", "00038_person_education_credentials.sql", "00039_appointment_decision.sql", "00040_person_bank_health.sql", "00041_employment_record.sql", "00042_job_information_sources.sql", "00043_employment_register.sql", "00044_assignment_history.sql", "00045_parallel_assignments.sql", "00046_relationship_probation.sql", "00047_assignment_promotion.sql", "00048_assignment_lifecycle.sql", "00049_position_intake.sql", "00050_recruiting_offers.sql", "00051_position_exchange.sql", "00052_internal_succession.sql", "00053_actual_duty.sql", "00054_employment_contract.sql", "00055_offer_hire_handoff.sql", "00056_probation_receipt_assignment.sql"}))
+	prefix, err := goose.NewProvider(goose.DialectPostgres, db, migrationfiles.Files)
 	must(t, err)
-	_, err = prefix.Up(ctx)
+	_, err = prefix.UpTo(ctx, 25)
 	must(t, err)
 	raw, err := os.ReadFile("testdata/00026_staffing_quota.sql")
 	must(t, err)

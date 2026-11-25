@@ -30,14 +30,27 @@ func staffingReleaseDump(t *testing.T, commit, env, test string, files ...string
 	}
 	top, err := exec.Command("git", "rev-parse", "--show-toplevel").Output()
 	if err != nil || exec.Command("git", "cat-file", "-e", commit+"^{tree}").Run() != nil {
-		t.Skipf("requires original Git tree %s or %s", commit, env)
+		t.Fatalf("旧库升级测试需要原版 Git 提交 %s 或通过 %s 提供其样本", commit, env)
 	}
+	root := strings.TrimSpace(string(top))
 	dir := t.TempDir()
 	src := filepath.Join(dir, "source")
 	must(t, os.Mkdir(src, 0700))
 	archive := filepath.Join(dir, "source.tar")
-	must(t, exec.Command("git", "-C", strings.TrimSpace(string(top)), "archive", "--output", archive, commit).Run())
+	must(t, exec.Command("git", "-C", root, "archive", "--output", archive, commit).Run())
 	must(t, exec.Command("tar", "-xf", archive, "-C", src).Run())
+	// Match the runner's registry while retaining the archived PostgreSQL version and digest.
+	lock := filepath.Join("deploy", "local", "postgres-image.txt")
+	current, err := os.ReadFile(filepath.Join(root, lock))
+	must(t, err)
+	original, err := os.ReadFile(filepath.Join(src, lock))
+	must(t, err)
+	registry, _, currentOK := strings.Cut(strings.TrimSpace(string(current)), "/")
+	_, image, originalOK := strings.Cut(strings.TrimSpace(string(original)), "/")
+	if !currentOK || !originalOK || !strings.Contains(image, "@sha256:") {
+		t.Fatal("缺少 PostgreSQL 镜像仓库或原版摘要")
+	}
+	must(t, os.WriteFile(filepath.Join(src, lock), []byte(registry+"/"+image+"\n"), 0600))
 	for _, file := range files {
 		body, err := os.ReadFile(file)
 		must(t, err)

@@ -72,6 +72,8 @@
 
 2026-11-26，508 与 509 一起准备合入主线。`make ci-ready` 首轮在生成物比对处发现三个 sqlc 模型缺少 00056 的转正回执任职表声明。按仓内 `make generate` 重建，Access、Organization 和 Staffing 的生成模型分别补入同一个四字段结构。Go 业务代码未引用该类型。[00056 迁移](../../db/migrations/00056_probation_receipt_assignment.sql) · [生成的 Staffing 模型](../../internal/contexts/staffing/infra/postgres/generated/models.go)
 
+第二次预检通过了生成物比对。国家地区旧库试件重建 00009 时仍留有 00056、00057 的登记，统一升级器按设计拒绝这一不连续的模型。补全一次性测试库的还原步骤，并用 Goose 的目标版本准备地点和岗位的历史库。集成分片检出完整 Git 历史，确保 00055 和 00056 的原版写样测试在 PR 中实际执行。写样沿用测试机选定的镜像仓库，保留原版 PostgreSQL 的版本与摘要。[旧库准备](../../internal/bootstrap/legal_entity206_acceptance_integration_test.go) · [按原版写样](../../internal/bootstrap/probation_restore_integration_test.go) · [正式分片](../../.github/workflows/ci.yml)
+
 <a id="fixed-environment"></a>
 ## 7 固定 f 原库与验收入口
 
