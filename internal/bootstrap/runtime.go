@@ -132,6 +132,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 		}
 		return found[0].Name, nil
 	}, Arrangement: st.CheckOfferArrangement, LockPosition: st.LockUsagePosition}
+	st.OfferHandoffs = recruitment
 	st.OfferAllowed = a.OfferAllowed
 	st.PositionOpened = recruitment.PositionOpened
 	st.Usage = func(ctx context.Context, inst, position string) (sd.QuotaUsage, error) {
@@ -440,9 +441,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,54)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,55)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 53 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 54 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -461,6 +462,7 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                 AND (32=ANY(versions) OR to_regclass('organization.legal_purpose_source') IS NULL)
                 AND to_regclass('organization.legal_purpose_terminal') IS NULL)
           )))
+          AND (NOT (55=ANY(versions)) OR (to_regclass('staffing.hired_offer') IS NOT NULL AND to_regclass('recruiting.hire_handoff') IS NOT NULL AND to_regclass('recruiting.offer_revised_terms') IS NOT NULL AND to_regclass('recruiting.handoff_cancellation') IS NOT NULL))
           AND (NOT (54=ANY(versions)) OR (to_regclass('staffing.employment_contract') IS NOT NULL AND to_regclass('staffing.contract_process') IS NOT NULL AND to_regclass('access.contract_fixture') IS NOT NULL))
           AND (NOT (53=ANY(versions)) OR (to_regclass('staffing.duty_application') IS NOT NULL AND to_regclass('staffing.duty_observation_revision') IS NOT NULL AND to_regclass('access.duty_fixture') IS NOT NULL))
           AND (NOT (52=ANY(versions)) OR (to_regclass('staffing.position_succession') IS NOT NULL AND to_regclass('access.employment_succession_fixture') IS NOT NULL))

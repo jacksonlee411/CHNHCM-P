@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	"context"
 	"errors"
 	"slices"
@@ -93,6 +94,19 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	if e != nil {
 		return nil, e
 	}
+	// Credit exactly this accepted commitment. Other offers keep their seats.
+	var promised []f.Period
+	offer, converting := ctx.Value(offerContext{}).(offerAdmission)
+	converting = converting && owner == "M04" && in.Purpose == "hire" && offer.offer.Position == in.Position
+	if converting {
+		evidence.Uses = slices.DeleteFunc(slices.Clone(evidence.Uses), func(v d.PositionUse) bool {
+			if v.Owner == "M05" && v.Source == offer.ref.Version && v.Effect == "reserved" {
+				promised = append(promised, f.Period{From: v.From, Until: v.Until})
+				return true
+			}
+			return false
+		})
+	}
 	if prior != "" {
 		peer := exchangePeer(ctx, owner, prior, in.Position)
 		evidence.Uses = slices.DeleteFunc(evidence.Uses, func(v d.PositionUse) bool {
@@ -110,6 +124,9 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	}
 	proof, hasDuty := ctx.Value(dutyContext{}).(dutyAdmission)
 	hasDuty = hasDuty && owner == "M04" && prior == proof.assignment && in.Position == proof.evidence.Position && in.Purpose == "transfer"
+	for _, p := range promised {
+		boundaries = append(boundaries, p.From, p.Until)
+	}
 	var quota d.StaffingQuota
 	if quotaRequired {
 		quota, e = u.LoadPositionQuota(ctx, in.Position, "")
@@ -144,6 +161,15 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		targets := in
 		targets.Period = p
 		var source, revision, name, coverage, intake, recruiting, quotaRevision, handover string
+		fulfilling := slices.ContainsFunc(promised, func(v f.Period) bool { return v.Includes(p.From) })
+		if converting && rule.Consumes && !fulfilling {
+			return nil, f.Fail(409, "OFFER_RESERVATION", p.From+" 起缺少该录用的有效预留，请从原录用核对")
+		}
+		if converting && !rule.Consumes {
+			fulfilling = slices.ContainsFunc(offer.offer.Segments, func(s recruit.AssignmentSegment) bool {
+				return s.Seats == 0 && s.Position == in.Position && s.Includes(p.From)
+			})
+		}
 		actual := hasDuty && proof.evidence.Includes(p.From)
 		if actual && rule.Mode != "PositionManaged" {
 			return nil, f.Fail(409, "DUTY_POLICY", p.From+" 起没有可采用的按岗位任职规则")
@@ -177,7 +203,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 				if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" {
 					return nil, e
 				}
-				if !listFull && !actual {
+				if !listFull && !actual && !fulfilling {
 					return nil, f.Fail(409, fault.Code, record.Data["name"]+"："+fault.Message)
 				}
 			}
@@ -199,7 +225,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			intake = coverage
 			if r := replenishmentAt(settings, p.From); r != nil {
 				intake = r.Revision
-				if r.Paused && !actual && !slices.ContainsFunc(retained, func(v f.Period) bool { return v.Includes(p.From) }) {
+				if r.Paused && !actual && !fulfilling && !slices.ContainsFunc(retained, func(v f.Period) bool { return v.Includes(p.From) }) {
 					return nil, f.Fail(409, "POSITION_PAUSED", p.From+" 起岗位暂停补员")
 				}
 			}

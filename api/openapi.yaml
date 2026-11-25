@@ -12740,6 +12740,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/recruiting/offers/{id}/hire-handoff:
+    get:
+      operationId: getOfferHireHandoff
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: sourceVersion, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/OfferHireState'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/recruiting/offers/{id}/hire:
+    post:
+      operationId: hireFromAcceptedOffer
+      security: [{session: []}]
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/OfferHireCommand'}}}
+      responses:
+        '200':
+          description: Authorized result
+          content: {application/json: {schema: {$ref: '#/components/schemas/HireReceipt'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/{id}/duty-sources:
     get:
       operationId: assignmentDutySources
@@ -13160,9 +13192,16 @@ components:
       type: object
       required: [operation, businessDate, basis]
       properties:
-        operation: {type: string, enum: [issue, accept, decline, release, reserve]}
+        operation: {type: string, enum: [issue, accept, decline, release, reserve, reschedule]}
         businessDate: {type: string, format: date}
         basis: {type: string}
+        dates:
+          type: object
+          required: [arrival, reserveFrom]
+          properties:
+            arrival: {type: string, format: date}
+            reserveFrom: {type: string, format: date}
+            lastDay: {type: string, format: date}
         expected: {type: string, format: uuid}
         terms: {$ref: '#/components/schemas/OfferTerms'}
     OfferRevision:
@@ -13424,6 +13463,35 @@ components:
         outcome: {type: string, enum: [accepted, not_applied]}
         id: {type: string, format: uuid}
         version: {type: string, format: uuid}
+    OfferHireRef:
+      type: object
+      required: [offer, version, number]
+      properties:
+        offer: {type: string, format: uuid}
+        version: {type: string, format: uuid}
+        number: {type: string}
+    OfferHireCommand:
+      type: object
+      required: [version, person, employer, arrival, department, job]
+      properties:
+        version: {type: string, format: uuid}
+        person: {type: string, format: uuid}
+        employer: {type: string, format: uuid}
+        arrival: {type: string, format: date}
+        lastDay: {type: string, format: date}
+        department: {type: string, format: uuid}
+        job: {type: string, format: uuid}
+        position: {type: string, format: uuid}
+        expected: {$ref: '#/components/schemas/HireAdoption'}
+    OfferHireState:
+      type: object
+      required: [canHire]
+      properties:
+        canHire: {type: boolean}
+        binding: {$ref: '#/components/schemas/OfferHireCommand'}
+        missing: {type: array, items: {type: string}}
+        result: {$ref: '#/components/schemas/EmploymentActionRef'}
+        assignment: {type: string, format: uuid}
     DutyRef:
       type: object
       required: [id, version]
@@ -14060,6 +14128,7 @@ components:
       - legal
       - segments
       properties:
+        offer: {$ref: '#/components/schemas/OfferHireRef'}
         grade: {$ref: '#/components/schemas/AssignmentGrade'}
         decision: {$ref: '#/components/schemas/DecisionRef'}
         identity:

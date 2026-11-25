@@ -10,6 +10,7 @@ import (
 
 	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	f "chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -218,6 +219,10 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if slices.ContainsFunc(contracts, func(c h.Contract) bool { return c.RemainsAt(a.From) }) {
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "本工作关系已签订合同，请先核对合同处置")
 		}
+		id, revision, version := f.NewID(), f.NewID(), f.NewID()
+		if err = u.cancelAdoptedOffer(ctx, a.ID, id, revision, today); err != nil {
+			return "", err
+		}
 		if err = u.lockExitingPositions(ctx, []string{a.Assignment}, a.From); err != nil {
 			return "", err
 		}
@@ -235,7 +240,6 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if hasDependent {
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "该任职已有后续办理，请先核对")
 		}
-		id, revision, version := f.NewID(), f.NewID(), f.NewID()
 		err = u.newEmploymentAction(ctx, employmentEntry{id: id, revision: revision, kind: "CancelHire", employment: a.Employment, assignment: a.Assignment, original: a.ID, date: a.From, notice: strings.TrimSpace(in.Reason), adoption: map[string]string{"originalRevision": a.Revision}})
 		if err != nil {
 			return "", err
@@ -460,6 +464,16 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 			if !ok {
 				out.Manager = nil
+			}
+		}
+		if e == nil && out.Sources != nil && out.Sources.Offer != nil {
+			ref := out.Sources.Offer
+			_, readErr := st.OfferHandoffs.OfferForHire(dbtx.With(ctx, u.tx), c, ref.Offer, ref.Version, false)
+			var fault *f.Fault
+			if errors.As(readErr, &fault) && (fault.Status == 403 || fault.Status == 404) {
+				out.Sources.Offer = nil
+			} else if readErr != nil {
+				return readErr
 			}
 		}
 		if e == nil && out.Sources != nil && out.Sources.Decision != nil {

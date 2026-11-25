@@ -5402,6 +5402,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/recruiting/offers/{id}/hire-handoff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getOfferHireHandoff"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recruiting/offers/{id}/hire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hireFromAcceptedOffer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/duty-sources": {
         parameters: {
             query?: never;
@@ -5781,10 +5813,18 @@ export interface components {
         };
         OfferChange: {
             /** @enum {string} */
-            operation: "issue" | "accept" | "decline" | "release" | "reserve";
+            operation: "issue" | "accept" | "decline" | "release" | "reserve" | "reschedule";
             /** Format: date */
             businessDate: string;
             basis: string;
+            dates?: {
+                /** Format: date */
+                arrival: string;
+                /** Format: date */
+                reserveFrom: string;
+                /** Format: date */
+                lastDay?: string;
+            };
             /** Format: uuid */
             expected?: string;
             terms?: components["schemas"]["OfferTerms"];
@@ -6081,6 +6121,40 @@ export interface components {
             id?: string;
             /** Format: uuid */
             version?: string;
+        };
+        OfferHireRef: {
+            /** Format: uuid */
+            offer: string;
+            /** Format: uuid */
+            version: string;
+            number: string;
+        };
+        OfferHireCommand: {
+            /** Format: uuid */
+            version: string;
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            employer: string;
+            /** Format: date */
+            arrival: string;
+            /** Format: date */
+            lastDay?: string;
+            /** Format: uuid */
+            department: string;
+            /** Format: uuid */
+            job: string;
+            /** Format: uuid */
+            position?: string;
+            expected?: components["schemas"]["HireAdoption"];
+        };
+        OfferHireState: {
+            canHire: boolean;
+            binding?: components["schemas"]["OfferHireCommand"];
+            missing?: string[];
+            result?: components["schemas"]["EmploymentActionRef"];
+            /** Format: uuid */
+            assignment?: string;
         };
         DutyRef: {
             /** Format: uuid */
@@ -6757,6 +6831,7 @@ export interface components {
             rows: components["schemas"]["DecisionRow"][];
         };
         HireAdoption: {
+            offer?: components["schemas"]["OfferHireRef"];
             grade?: components["schemas"]["AssignmentGrade"];
             decision?: components["schemas"]["DecisionRef"];
             identity: components["schemas"]["HireIdentity"];
@@ -25215,6 +25290,77 @@ export interface operations {
                 };
             };
             /** @description Rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getOfferHireHandoff: {
+        parameters: {
+            query: {
+                sourceVersion: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferHireState"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    hireFromAcceptedOffer: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferHireCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HireReceipt"];
+                };
+            };
+            /** @description Unavailable */
             default: {
                 headers: {
                     [name: string]: unknown;
