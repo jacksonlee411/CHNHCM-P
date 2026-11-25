@@ -1658,3 +1658,147 @@ test('M04 员工列表首次默认日期延迟时保留已输入的业务日和�
   await expect(page.getByText('1 份任职，1 人',{exact:true})).toBeVisible();
   await expect(page.getByRole('textbox',{name:/^业务日期/})).toHaveValue('2027-04-01');
 });
+
+test('M04 从本人范围聚焦日期后收到默认日仍可按键盘选任职', async ({ page }) => {
+  test.setTimeout(90000);
+  await signIn(page);
+  const sample = await seed(page);
+  await hireAtLocation(page, sample);
+  await page.setViewportSize({ width: 320, height: 900 });
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => { release = resolve; });
+  await page.route('**/api/v1/assignments/query', async (route) => {
+    if (!route.request().postDataJSON().businessAt) await pending;
+    await route.continue();
+  });
+  const day = page.getByRole('textbox', { name: /^业务日期/ });
+  try {
+    await page.goto('/personnel/assignments?person=' + sample.id);
+    await day.focus();
+    await day.press('ControlOrMeta+a');
+  } finally {
+    release();
+  }
+  await expect(page.getByText(/^\d+ 份任职，\d+ 人$/)).toBeVisible();
+  await expect(day).toHaveValue('');
+  await page.keyboard.insertText('2027-04-01');
+  await day.press('Tab');
+  await expect(page).toHaveURL((url) =>
+    url.searchParams.get('person') === sample.id && url.searchParams.get('businessAt') === '2027-04-01',
+  );
+  await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible();
+  await expect(page.locator('a[data-object-link]').filter({ hasText: sample.name })).toHaveCount(1);
+});
+
+async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  await concurrentJourney(page, sample);
+  await openPerson(page, sample.name);
+  await page.getByRole('link', { name: '工作关系与任职', exact: true }).click();
+  await expect(page).toHaveURL((url) =>
+    url.pathname === '/personnel/assignments' && url.searchParams.get('person') === sample.id,
+  );
+  const day = page.getByRole('textbox', { name: /^业务日期/ });
+  await day.fill('2027-04-01');
+  await day.press('Tab');
+  await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
+  const rows = page.locator('a[data-object-link]').filter({ hasText: sample.name });
+  await expect(rows).toHaveCount(3);
+  const primary = rows.first();
+  await primary.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: /0 号主岗/ })).toBeVisible();
+  const tab = (name: string) => page.getByRole('tab', { name, exact: true });
+  await tab('个人资料').click();
+  await expect(tab('个人资料')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab('职务信息')).toBeVisible();
+  await tab('变更日志').focus();
+  await page.keyboard.press('Enter');
+  await expect(tab('变更日志')).toHaveAttribute('aria-selected', 'true');
+  await tab('职务信息').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: /0 号主岗/ })).toBeVisible();
+  await expect(tab('职务信息')).toHaveAttribute('aria-selected', 'true');
+  await page.getByRole('link', { name: /返回/ }).first().click();
+  await expect(primary).toBeFocused();
+  await expect(day).toHaveValue('2027-04-01');
+  await rows.nth(1).click();
+  await expect(page.getByRole('heading', { name: /1 号兼岗/ })).toBeVisible();
+  await expect(page.getByRole('tab')).toHaveCount(1);
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+}
+
+for (const [width, height] of [[1440, 900], [1440, 540], [390, 844], [320, 900], [320, 256]]) {
+  test(`M04 从人员档案选择本人任职并切换主岗页签 ${width}x${height}`, async ({ page }) => {
+    test.setTimeout(180000);
+    await signIn(page);
+    const sample = await seed(page);
+    await page.setViewportSize({ width, height });
+    await assignmentTabsJourney(page, sample);
+  });
+}
+test('M04 从人员档案选择本人任职并切换主岗页签 原生200%', async () => {
+  await native200(assignmentTabsJourney);
+});
+
+test('M04 主岗、个人日志和撤销原单各按当前授权重新读取', async ({ page, browser }) => {
+  test.setTimeout(150000);
+  await signIn(page);
+  const sample = await seed(page);
+  const { hire } = await hireAtLocation(page, sample);
+  const reader = await browser.newContext({ baseURL: localConnection().webOrigin });
+  const sql = database();
+  const denied = randomUUID();
+  const grants = ['directory', 'read', 'history'].map((action) => ({ id: randomUUID(), action }));
+  function allowJob() {
+    for (const grant of grants) {
+      sql(`INSERT INTO access.employment_grant(instance_id,principal_id,grant_id,action,person_id,fields)
+        SELECT instance_id,principal_id,'${grant.id}','${grant.action}','${sample.id}',ARRAY['arrangement','basis','location']
+        FROM access.principal WHERE login='reader'`);
+    }
+  }
+  function removeJob() {
+    for (const grant of grants) sql(`DELETE FROM access.employment_grant WHERE grant_id='${grant.id}'`);
+  }
+  try {
+    allowJob();
+    sql(`INSERT INTO access.person_grant(instance_id,principal_id,grant_id,action,purpose,person_ids,fields,denied)
+      SELECT instance_id,principal_id,'${denied}','history.read','history',ARRAY['${sample.id}'::uuid],ARRAY['name','number'],true
+      FROM access.principal WHERE login='reader'`);
+    const screen = await reader.newPage();
+    await signIn(screen, 'reader');
+    await openEmployeeAssignment(screen, sample);
+    const assignmentURL = screen.url();
+    const tab = (name: string) => screen.getByRole('tab', { name, exact: true });
+    await tab('个人资料').click();
+    await expect(tab('职务信息')).toBeVisible();
+    await expect(tab('变更日志')).toHaveCount(0);
+    const profileURL = screen.url();
+    removeJob();
+    sql(`DELETE FROM access.person_grant WHERE grant_id='${denied}'`);
+    await screen.reload();
+    await tab('变更日志').click();
+    await expect(tab('变更日志')).toHaveAttribute('aria-selected', 'true');
+    await expect(tab('职务信息')).toHaveCount(0);
+    await screen.goto(assignmentURL);
+    await expect(screen.getByRole('alert')).toBeVisible();
+    await expect(tab('职务信息')).toHaveCount(0);
+    await screen.goBack();
+    await expect(tab('变更日志')).toHaveAttribute('aria-selected', 'true');
+    await expect(tab('职务信息')).toHaveCount(0);
+
+    allowJob();
+    const cancelled = await request(page, 'POST', '/api/v1/employment-actions/' + hire.action + '/cancel',
+      { revision: hire.revision, reason: '原通知在到岗前已撤回' }, randomUUID());
+    expect(cancelled.status, cancelled.body.message).toBe(200);
+    await screen.goto(profileURL);
+    await screen.getByRole('link', { name: '工作关系与任职', exact: true }).click();
+    await expect(screen.getByText('暂无可查看的任职', { exact: true })).toBeVisible();
+    await expect(screen.getByText(/入职（已撤销）/)).toBeVisible();
+    await screen.getByRole('button', { name: '查看原办理', exact: true }).first().click();
+    await expect(screen.getByText('首任职 ' + hire.assignment, { exact: true })).toBeVisible();
+  } finally {
+    removeJob();
+    sql(`DELETE FROM access.person_grant WHERE grant_id='${denied}'`);
+    await reader.close();
+  }
+});
