@@ -36,6 +36,29 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	if !f.ValidID(in.Position) || !in.Period.Valid() || in.Category == "" || in.Purpose == "" {
 		return nil, f.Fail(400, "M03_INVALID_INPUT", "请核对岗位、任期、人员类别与用途")
 	}
+	rules := app.QuotaPolicies(in.Enterprise, rows)
+	var boundaries []string
+	for _, r := range rules {
+		if r.Purpose == in.Purpose && r.Category == in.Category {
+			boundaries = append(boundaries, r.From, r.Until)
+		}
+	}
+	jobRequired, positionRequired, quotaRequired := false, false, false
+	for _, span := range in.Split(boundaries) {
+		rule, e := d.ApplicablePolicy(rules, in.Enterprise, in.Category, in.Purpose, span.From)
+		if e != nil {
+			return nil, e
+		}
+		quotaRequired = quotaRequired || rule.Consumes
+		if rule.Mode == "JobOnly" {
+			jobRequired = true
+		} else if rule.Mode == "PositionManaged" {
+			positionRequired = true
+		}
+	}
+	if !positionRequired {
+		return nil, f.Fail(409, "M03_POLICY_CONFLICT", "仅按职务不能指定岗位")
+	}
 	visible, e := u.positionReadable(ctx, in.Enterprise)
 	if e != nil {
 		return nil, e
@@ -94,13 +117,6 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	if e != nil {
 		return nil, e
 	}
-	rules := app.QuotaPolicies(in.Enterprise, rows)
-	var boundaries []string
-	for _, r := range rules {
-		if r.Purpose == in.Purpose && r.Category == in.Category {
-			boundaries = append(boundaries, r.From, r.Until)
-		}
-	}
 	succession, hasSuccession := ctx.Value(successionContext{}).(successionAdmission)
 	hasSuccession = hasSuccession && owner == "M04" && succession.recipient == prior && succession.position == in.Position
 	if hasSuccession {
@@ -112,20 +128,10 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		boundaries = append(boundaries, p.From, p.Until)
 	}
 	var quota d.StaffingQuota
-	jobRequired := false
-	for _, span := range in.Split(boundaries) {
-		rule, e := d.ApplicablePolicy(rules, in.Enterprise, in.Category, in.Purpose, span.From)
+	if quotaRequired {
+		quota, e = u.LoadPositionQuota(ctx, in.Position, "")
 		if e != nil {
 			return nil, e
-		}
-		if rule.Consumes && quota.ID == "" {
-			quota, e = u.LoadPositionQuota(ctx, in.Position, "")
-			if e != nil {
-				return nil, e
-			}
-		}
-		if rule.Mode == "JobOnly" {
-			jobRequired = true
 		}
 	}
 	for _, r := range pos.Records {
@@ -147,7 +153,6 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		boundaries = append(boundaries, r.Date)
 	}
 	var out []s.AssignmentSegment
-	used := false
 	for _, p := range in.Split(boundaries) {
 		rule, e := d.ApplicablePolicy(rules, in.Enterprise, in.Category, in.Purpose, p.From)
 		if e != nil {
@@ -225,7 +230,6 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 				}
 			}
 			source, revision, name = pos.Source, record.Revision, record.Data["name"]
-			used = true
 		} else if !f.ValidID(targets.Department) || !f.ValidID(targets.Job) {
 			return nil, f.Fail(409, "M03_JOB_ARRANGEMENT", p.From+" 起按职务办理，请选部门与职务")
 		}
@@ -252,9 +256,6 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			}
 			out = append(out, piece)
 		}
-	}
-	if !used {
-		return nil, f.Fail(409, "M03_POLICY_CONFLICT", "仅按职务不能指定岗位")
 	}
 	return out, nil
 }
