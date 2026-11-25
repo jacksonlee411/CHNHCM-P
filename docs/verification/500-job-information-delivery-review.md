@@ -26,7 +26,7 @@
 | 1 首单接入与地点更改 | 已交付按职务首单、旧库连续升级 | 已合入 main `5026276` | `5e1de52`、`1f84246`、`a99c0cd`、`ad0efab` · [PR #8](https://github.com/jacksonlee411/CHNHCM-P/pull/8) | 旧首任期接入 0 号，两笔地点变更、原笔纠错与恢复已过实库及 API |
 | 2 历史维护与调动 | 1，沿用阶段 3 的原件入口 | 已合入 main `4f7ec3c` | `87d2b8b`、`9493327` · [PR #10](https://github.com/jacksonlee411/CHNHCM-P/pull/10) | 补录、改日和合法删除保留七月调动，缺少必要先行事实时整笔回滚 |
 | 3 办理记录 | 1 | 已合入 main `82ca54b` | `41d5a6b`、`58d1f5a` · [PR #9](https://github.com/jacksonlee411/CHNHCM-P/pull/9) | 两人跨日期登记、原笔修订、发生部门与撤权后笔数已验 |
-| 4 兼岗与并行关系 | 1 | 已合入 main `4251585` | `8d5e473`、`d524a1f`、`20d8a52` · [PR #11](https://github.com/jacksonlee411/CHNHCM-P/pull/11) | 0、1 同部门两行一人，2 号并行关系内为主任职，并发取 3、4；[按岗位兼岗 #24](https://github.com/jacksonlee411/CHNHCM-P/pull/24) 的两岗占两编及一岗免占已复验；[本人选行与主岗页签 #25](https://github.com/jacksonlee411/CHNHCM-P/pull/25) 已从人员档案验至原行 |
+| 4 兼岗与并行关系 | 1 | 已合入 main `4251585` | `8d5e473`、`d524a1f`、`20d8a52` · [PR #11](https://github.com/jacksonlee411/CHNHCM-P/pull/11) | 0、1 同部门两行一人，2 号并行关系内为主任职，并发取 3、4；[按岗位兼岗 #24](https://github.com/jacksonlee411/CHNHCM-P/pull/24) 的两岗占两编及一岗免占已复验 |
 | 5 实际试用与转正 | 1、真实试用起点 | 已合入 main `39dd962` | `2100be0`、`f931489`、`52462ab` · [PR #12](https://github.com/jacksonlee411/CHNHCM-P/pull/12) | 原试用日期补录、关系一次转正、通知或主任职归属、受限部门计数与恢复已验 |
 | 6 晋升及同日办理 | 1、M03 职级，联验另需 2 至 5 | 已合入 main `0b97f54` | `ae02979`、`f3d880d` · [PR #13](https://github.com/jacksonlee411/CHNHCM-P/pull/13) | 同日正序、反序、共同保存与独立通知，两人四笔、撤销前职级、必要后继拒绝均已实测 |
 | 7 实际汇报、退出与再聘 | 1，两份有效任职，局部退出另需 4 | 已合入 main `32f930d` | `6b3f356`、`e944fd7`、`c1b1533` · [PR #14](https://github.com/jacksonlee411/CHNHCM-P/pull/14) | 并发无环、局部退出、准确原件，离职间隔后沿 0 号再聘且下份兼岗取 3 |
