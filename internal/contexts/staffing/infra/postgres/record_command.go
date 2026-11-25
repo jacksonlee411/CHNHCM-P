@@ -17,6 +17,7 @@ import (
 
 type recordEdit struct {
 	h.RecordMaintenance
+	duty                              *h.DutyEvidence
 	kind, operation, location, action string
 }
 
@@ -54,6 +55,9 @@ func (st *Store) MaintainRecord(ctx context.Context, c f.Credentials, id, action
 }
 
 func (e recordEdit) permission(kind string) string {
+	if e.duty != nil {
+		return "duty.correct"
+	}
 	switch e.operation {
 	case "Delete":
 		return "record.delete"
@@ -145,7 +149,13 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 		if target.Removed || target.Revision != edit.ExpectedRevision || (edit.kind != "" && target.Kind != edit.kind) {
 			return out, assignmentConflict()
 		}
-		if edit.operation == "Correct" && edit.BusinessDate != target.Day {
+		if (target.Transfer != nil && target.Transfer.Duty != nil) != (edit.duty != nil) {
+			return out, f.Fail(409, "DUTY_OPERATION", "实际履职请凭原出勤材料更正")
+		}
+		if edit.duty != nil && target.Transfer.Duty.ID != edit.duty.ID {
+			return out, f.Fail(409, "DUTY_EVIDENCE", "请使用原出勤材料的准确修订")
+		}
+		if edit.operation == "Correct" && edit.duty == nil && edit.BusinessDate != target.Day {
 			return out, f.Fail(409, "RECORD_REDATE", "请从原办理调整生效日期")
 		}
 
@@ -269,7 +279,7 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 			}
 		}
 		sameIncumbent := target.Transfer != nil && (target.Transfer.Succession == nil && edit.Incumbent == nil || target.Transfer.Succession != nil && edit.Incumbent != nil && target.Transfer.Succession.IncumbentRef == *edit.Incumbent)
-		if sameIncumbent && edit.action != "" && target.Transfer != nil && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
+		if sameIncumbent && target.Transfer != nil && reflect.DeepEqual(target.Transfer.Duty, edit.duty) && edit.action != "" && target.Transfer != nil && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
 			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) {
 			return out, f.Fail(409, "TRANSFER_UNCHANGED", "任职安排和调动依据均未改变")
 		}
@@ -277,7 +287,7 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 		if edit.Notice != "" {
 			target.Notice = strings.TrimSpace(edit.Notice)
 		}
-		target.Transfer = &h.JobTransfer{Department: edit.Department, Job: edit.Job, Position: edit.Position}
+		target.Transfer = &h.JobTransfer{Duty: edit.duty, Department: edit.Department, Job: edit.Job, Position: edit.Position}
 		if edit.Incumbent != nil {
 			target.Transfer.Succession = &h.Succession{IncumbentRef: *edit.Incumbent}
 		}
@@ -303,6 +313,18 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 		target.Location = loc
 		target.Evidence.LocationChange = &locEvidence
 		records[index] = target
+	}
+	if edit.duty != nil {
+		if _, e = u.tx.Exec(ctx, `INSERT INTO staffing.duty_application VALUES($1,$2,$3) ON CONFLICT(instance_id,observation_id) DO NOTHING`, u.store.Instance, edit.duty.ID, target.ID); e != nil {
+			return out, e
+		}
+		var applied string
+		if e = u.tx.QueryRow(ctx, `SELECT action_id FROM staffing.duty_application WHERE instance_id=$1 AND observation_id=$2`, u.store.Instance, edit.duty.ID).Scan(&applied); e != nil {
+			return out, e
+		}
+		if applied != target.ID {
+			return out, f.Fail(409, "DUTY_ALREADY_APPLIED", "这份出勤原件已有办理，请从原笔更正")
+		}
 	}
 	return u.publishRecordEdit(ctx, a, initial, records, originals, index, permit, "")
 }
@@ -392,7 +414,7 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 func recordPeriod(term f.Period, records []savedRecord, kind, day string) f.Period {
 	period := f.Period{From: day, Until: term.Until}
 	for _, r := range records {
-		if !r.Removed && (r.Kind == kind || kind == "Transfer" && r.Transfer != nil) && r.Day > day && (period.Until == "" || r.Day < period.Until) {
+		if !r.Removed && !(kind == "Transfer" && r.Transfer != nil && r.Transfer.Duty != nil) && (r.Kind == kind || kind == "Transfer" && r.Transfer != nil) && r.Day > day && (period.Until == "" || r.Day < period.Until) {
 			period.Until = r.Day
 		}
 	}
@@ -441,9 +463,21 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 		if exists {
 			oldSpan = f.Period{From: orig.Day, Until: a.Until}
 			for _, after := range originals {
-				if !after.Removed && (after.Kind == orig.Kind || kind == "Transfer" && after.Transfer != nil) && after.Day > orig.Day && (oldSpan.Until == "" || after.Day < oldSpan.Until) {
+				if !after.Removed && !(kind == "Transfer" && after.Transfer != nil && after.Transfer.Duty != nil) && (after.Kind == orig.Kind || kind == "Transfer" && after.Transfer != nil) && after.Day > orig.Day && (oldSpan.Until == "" || after.Day < oldSpan.Until) {
 					oldSpan.Until = after.Day
 				}
+			}
+		}
+		if r.Transfer != nil && r.Transfer.Duty != nil {
+			span = r.Transfer.Duty.Period
+			if span.From != r.Day || a.Until != "" && span.Until != "" && span.Until > a.Until {
+				return f.Fail(409, "DUTY_TERM", "出勤原件超出该任期")
+			}
+			if span.Until == "" {
+				span.Until = a.Until
+			}
+			if exists && orig.Transfer != nil && orig.Transfer.Duty != nil {
+				oldSpan = orig.Transfer.Duty.Period
 			}
 		}
 		if r.ID != target && oldSpan.From == span.From && (oldSpan.Until == "" || (span.Until != "" && span.Until <= oldSpan.Until)) {
@@ -452,8 +486,12 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 		switch kind {
 		case "Transfer":
 			next := *r.Transfer
+			permission := "transfer"
+			if next.Duty != nil {
+				permission = "duty.correct"
+			}
 			if next.Position != "" {
-				allowed, e := u.positionEmploymentScope(ctx, next.Position, span, a.Person, a.Employer, "transfer", "transfer")
+				allowed, e := u.positionEmploymentScope(ctx, next.Position, span, a.Person, a.Employer, permission, "transfer")
 				if e != nil {
 					return e
 				}
@@ -473,6 +511,9 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 			}
 			check := staff.AssignmentCheck{Period: span, Enterprise: ent.ID, Category: "Employee", Purpose: "transfer", Department: department, Job: job, Position: next.Position}
 			admit := ctx
+			if next.Duty != nil {
+				admit = context.WithValue(ctx, dutyContext{}, dutyAdmission{a.Assignment, *next.Duty})
+			}
 			if next.Succession != nil {
 				next.Succession, e = u.adoptSuccession(ctx, a, r.ID, next.Position, span, next.Succession.IncumbentRef)
 				if e != nil {
@@ -492,7 +533,7 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 				if dept == "" {
 					dept = next.Department
 				}
-				for _, right := range []string{"read", "transfer"} {
+				for _, right := range []string{"read", permission} {
 					if e = u.requireEmployment(ctx, right, a.Person, a.Employer, dept); e != nil {
 						return e
 					}

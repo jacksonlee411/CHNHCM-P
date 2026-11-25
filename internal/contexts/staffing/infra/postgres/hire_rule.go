@@ -11,10 +11,16 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// HistoricalFixtureRule identifies the controlled local sample before the existing fixture rule.
+const HistoricalFixtureRule = "T02-employee-historical-fixture"
+
 // InitializeFirstHireRule runs only for an explicitly configured customer.
 // The controlled initializer and the customer configuration commit together.
 func InitializeFirstHireRule(ctx context.Context, tx pgx.Tx, customer, subject, version string, period f.Period) error {
 	rule := hireprep.DirectEmployeeSample()
+	if version == HistoricalFixtureRule && period.Until != "" {
+		rule.Version = version
+	}
 	if version != rule.Version {
 		return errors.New("unknown first hire rule")
 	}

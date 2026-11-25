@@ -111,13 +111,16 @@ func (u *unit) checkTransferTarget(ctx context.Context, a h.Action, in s.Assignm
 func (u *unit) restoredPositions(ctx context.Context, a h.Action, segments []h.Placement, records []savedRecord) ([]h.Placement, error) {
 	first := ""
 	for _, r := range records {
-		if !r.Removed && r.Transfer != nil && (first == "" || r.Day < first) {
+		if !r.Removed && r.Transfer != nil && r.Transfer.Duty == nil && (first == "" || r.Day < first) {
 			first = r.Day
 		}
 	}
 	var out []h.Placement
 	for _, seg := range segments {
-		if seg.Adoption.Position == "" || first != "" && seg.From >= first {
+		actual := slices.ContainsFunc(records, func(r savedRecord) bool {
+			return !r.Removed && r.Transfer != nil && r.Transfer.Duty != nil && r.Transfer.Duty.Includes(seg.From)
+		})
+		if actual || seg.Adoption.Position == "" || first != "" && seg.From >= first {
 			out = append(out, seg)
 			continue
 		}

@@ -10,6 +10,7 @@ import {
   UnsavedChangesDialog,
   recordedTime,
 } from '@chnhcm/ui';
+import { DutyOriginal, DutyUsage, lastDutyDay } from './ActualDutyFields';
 import {ExchangeOriginal} from './ExchangeFields';
 import {managerPurposes} from './LifecycleFields';
 import { useDraftExit } from '../../shared/dated/useDraftExit';
@@ -26,6 +27,7 @@ import {
 
 type Action = Models['EmploymentAction'];
 type Command =
+  | { kind:'duty'; input:Models['DutyCommand'] }
   | { kind:'exchange'; input:Models['PositionExchangeCommand'] }
   | { kind:'manager'; input:Models['ActualManagerCommand'] }
   | { kind:'exit'; leave:boolean; input:Models['AssignmentExitCommand'] }
@@ -82,7 +84,7 @@ export function JobInformation({
       draft.mode==='withdraw' ? a?.canWithdrawPromotion : draft.mode === 'redate'
         ? a?.canMaintain
         : draft.action
-          ? draft.kind === 'Promotion' ? a?.canCorrectPromotion : draft.kind === 'Transfer'
+          ? draft.kind === 'ActualDuty' ? a?.canCorrectDuty : draft.kind === 'Promotion' ? a?.canCorrectPromotion : draft.kind === 'Transfer'
             ? a?.canCorrectTransfer
             : a?.canCorrectLocation
           : availableRecordTypes(data).includes(draft.kind);
@@ -111,6 +113,7 @@ export function JobInformation({
   const submit = useRuleSubmission<Command, Models['HireReceipt']>('assignment-location', session, {
     send: async (cmd, key) => {
       const headers = { ...header, 'Idempotency-Key': key };
+      if (cmd.kind==='duty') return unwrap(await api.POST('/api/v1/assignments/{id}/actual-duty',{params:{path:{id:assignment},header:headers},body:cmd.input}));
       if (cmd.kind==='exchange') return unwrap(await api.POST('/api/v1/assignments/{id}/position-exchanges',{params:{path:{id:assignment},header:headers},body:cmd.input}));
       if (cmd.kind==='manager') return unwrap(await api.POST('/api/v1/assignments/{id}/managers',{params:{path:{id:assignment},header:headers},body:cmd.input}));
       if (cmd.kind==='exit') return unwrap(await api.POST(cmd.leave ? '/api/v1/assignments/{id}/leave' : '/api/v1/assignments/{id}/end',{params:{path:{id:assignment},header:headers},body:cmd.input}));
@@ -224,10 +227,12 @@ export function JobInformation({
     const position = after ? after.position : state?.position;
     const next: JobDraft = {
       mode,
+      originalDuty:after?.duty,
+      paper:after?.duty && data.canVerifyDuty ? {dispatch:after.duty.dispatch,issuer:after.duty.issuer,number:after.duty.number,from:after.duty.from,lastDay:lastDutyDay(after.duty.until)||undefined,observedThrough:after.duty.observedThrough,previous:{id:after.duty.id,version:after.duty.version}}:undefined,
       handover:after?.succession?true:undefined,
       incumbent:after?.succession?{...after.succession,departmentName:adoptedPosition?.departmentName??'',jobName:adoptedPosition?.jobName??''}:undefined,
       exchange:evidence?.exchange,
-      kind: evidence?.exchange && a ? 'PositionExchange' : successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
+      kind: after?.duty && a ? 'ActualDuty' : evidence?.exchange && a ? 'PositionExchange' : successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
       successor,
       grade:evidence?.promotion?.after,originalGrade:evidence?.promotion?.before ?? state?.grade,
       reason:evidence?.promotion?.reason,
@@ -254,6 +259,13 @@ export function JobInformation({
     setDraft(next);
   }
   function save(record: JobDraft) {
+    if(record.kind==='ActualDuty'){
+      const p=record.paper;
+      const paper=p?.dispatch && p.from && p.observedThrough && p.issuer && p.number ? {dispatch:p.dispatch,issuer:p.issuer,number:p.number,from:p.from,observedThrough:p.observedThrough,lastDay:p.lastDay||undefined,previous:p.previous}:undefined;
+      const o=record.observation;
+      void submit.submit({kind:'duty',input:{expectedSourceVersion:record.source,action:record.action?{action:record.action.id,revision:record.action.revision}:undefined,observation:o?{id:o.id,version:o.version}:undefined,paper}});
+      return;
+    }
     if(record.kind==='PositionExchange'){
       const peerAssignment=record.exchange?.peerAssignment ?? record.peer?.assignment;
       const peerSourceVersion=record.exchange?.peerSourceVersion ?? record.peer?.sourceVersion;
@@ -397,6 +409,7 @@ export function JobInformation({
                   {data.managers.map(fact=><ObjectDetailField key={fact.purpose} label={managerPurposes[fact.purpose]}>{fact.name} · {fact.recordNumber} 号</ObjectDetailField>)}
                   {data.lastActive && <ObjectDetailField label="最后任职日">{data.lastActive}</ObjectDetailField>}
                   {data.state?.positionName && <ObjectDetailField label="岗位">{data.state.positionName} · {data.state.handover ? "交接占编" : data.state.seats ? "占编" : "免占编"}</ObjectDetailField>}
+                  {data.state?.position && !source && <DutyUsage position={data.state.position} day={day} version={data.sourceVersion}/>}
                   {data.state && <ObjectDetailField label="个人职级">{data.state.grade?.name ?? '未记载'}</ObjectDetailField>}
                   {data.state && data.probation.status !== 'unrecorded' && (
                     <ObjectDetailField label="试用状态">
@@ -447,7 +460,7 @@ export function JobInformation({
                   <OriginalEvidence original={original.data} setRevision={setRevision} />
                   {original.data.action.revision === opened.revision && !source && (
                     <Stack direction="row" gap={1} flexWrap="wrap">
-                      {!original.data.exchange && (opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion) && (
+                      {!original.data.exchange && (opened.canCorrectDuty || opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion) && (
                         <Button onClick={(e) => begin(e.currentTarget, 'correct', opened)}>更正记录</Button>
                       )}
                       {opened.canWithdrawPromotion && <Button onClick={e=>begin(e.currentTarget,'withdraw',opened)}>撤销晋升</Button>}
@@ -595,6 +608,7 @@ export function OriginalEvidence({
         <ObjectDetailField label="任职安排">{[original.secondary.segments[0]?.departmentName,original.secondary.segments[0]?.jobName].filter(Boolean).join(' · ')}</ObjectDetailField>
         <ObjectDetailField label="所属工作关系">{original.secondary.legal[0]?.entityName}{original.secondary.relationshipPrimary?' · 关系主任职':''}</ObjectDetailField>
       </>}
+      {original.transfer?.after.duty && <DutyOriginal evidence={original.transfer.after.duty}/>}
       {original.transfer?.after.succession && <ObjectDetailField label="接任交接">{original.transfer.after.succession.name} · {original.transfer.after.succession.from} 起交接，{original.transfer.after.succession.until}{original.transfer.after.succession.continues?' 起占常规名额':' 起结束交接'}</ObjectDetailField>}
       {original.transfer?.beforeDepartmentName && (
         <ObjectDetailField label="调出安排">

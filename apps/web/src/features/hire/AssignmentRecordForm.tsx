@@ -3,6 +3,7 @@ import { Autocomplete, Box, Button, MenuItem, Stack, TextField, Typography } fro
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField, ObjectTextField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
+import { ActualDutyFields } from './ActualDutyFields';
 import {SuccessionFields} from './SuccessionFields';
 import { ExchangeFields } from './ExchangeFields';
 import { LifecycleFields } from './LifecycleFields';
@@ -13,9 +14,12 @@ import type { Option } from './Target';
 type Action = Models['EmploymentAction'];
 export type JobDraft = {
   mode: 'add' | 'insert' | 'correct' | 'redate' | 'withdraw';
-  kind: 'PositionExchange' | 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment' | 'GradeRecord' | 'Promotion' | 'PromotionTransfer' | 'SetManager' | 'EndAssignment' | 'Leave';
+  kind: 'ActualDuty' | 'PositionExchange' | 'DataChange' | 'Transfer' | 'ProbationStart' | 'ConfirmEmployment' | 'GradeRecord' | 'Promotion' | 'PromotionTransfer' | 'SetManager' | 'EndAssignment' | 'Leave';
   purpose?: 'direct' | 'functional';
   manager?: Option;
+  originalDuty?: Models['DutyEvidence'];
+  observation?: Models['DutyEvidence'];
+  paper?: Partial<Models['DutyObservation']>;
   handover?: boolean;
   incumbent?: Models['SuccessionOption'];
   peer?: Models['PositionExchangeOption'];
@@ -44,7 +48,7 @@ export type JobDraft = {
 };
 
 const names = {
-  PositionExchange: '同日对调', Hire: '入职', SetManager: '实际汇报', EndAssignment:'结束任职', Leave:'离职', Rehire:'再聘',
+  ActualDuty:'补录实际履职', PositionExchange: '同日对调', Hire: '入职', SetManager: '实际汇报', EndAssignment:'结束任职', Leave:'离职', Rehire:'再聘',
   Promotion: '晋升',
   PromotionTransfer: '晋升并调动',
   GradeRecord: '补录实际职级',
@@ -62,6 +66,7 @@ export function availableRecordTypes(view: Models['AssignmentView']): JobDraft['
   if (view.canChangeLocation) result.push('DataChange');
   if (view.canTransfer) result.push('Transfer');
   if (view.canTransfer && view.state?.position) result.push('PositionExchange');
+  if (view.canRecordDuty) result.push('ActualDuty');
   if (view.canStartProbation) result.push('ProbationStart');
   if (view.canConfirm) result.push('ConfirmEmployment');
   if (view.canRecordGrade) result.push('GradeRecord');
@@ -77,6 +82,7 @@ const operations = { add: '新增记录', insert: '插入记录', correct: '更�
 
 export function draftChanged(draft: JobDraft, initial: JobDraft) {
   return (
+    draft.observation?.version !== initial.observation?.version || JSON.stringify(draft.paper)!==JSON.stringify(initial.paper) ||
     draft.day !== initial.day ||
     draft.handover !== initial.handover || draft.incumbent?.assignment!==initial.incumbent?.assignment || draft.kind !== initial.kind || draft.peer?.assignment!==initial.peer?.assignment || draft.manager?.id!==initial.manager?.id ||
     draft.purpose!==initial.purpose || draft.endReporting!==initial.endReporting ||
@@ -224,9 +230,12 @@ export function AssignmentRecordForm({
     (!targets.jobRequired || !!draft.department && !!draft.job) &&
     (draft.handover ? !!draft.incumbent : targets.jobRequired || !!derived.data?.department && !!derived.data.job);
   const options = availableRecordTypes(view);
+  const duty=draft.kind==='ActualDuty';
+  const proof=draft.paper;
+  const actualReady=!!draft.observation || !!(proof?.dispatch && proof.from && proof.observedThrough && proof.issuer?.trim() && proof.number?.trim());
   const valid =
     !!draft.day &&
-    (draft.kind==='PositionExchange' ? (draft.mode==='redate' ? !!draft.exchange?.peerSourceVersion : !!draft.peer && !!draft.notice.trim()) : lifecycle ? (draft.kind === 'SetManager' ? !!draft.manager || !!draft.endReporting : !!draft.notice.trim()) : draft.mode === 'withdraw' ? !!draft.basis || !!draft.withdrawal?.trim() : draft.mode === 'redate' ||
+    (duty ? actualReady : draft.kind==='PositionExchange' ? (draft.mode==='redate' ? !!draft.exchange?.peerSourceVersion : !!draft.peer && !!draft.notice.trim()) : lifecycle ? (draft.kind === 'SetManager' ? !!draft.manager || !!draft.endReporting : !!draft.notice.trim()) : draft.mode === 'withdraw' ? !!draft.basis || !!draft.withdrawal?.trim() : draft.mode === 'redate' ||
       ((grade ? !!draft.grade && !!draft.notice.trim() && (draft.kind!=='PromotionTransfer'||targetReady) : relation
         ? !!draft.notice.trim()
         : location
@@ -268,7 +277,7 @@ export function AssignmentRecordForm({
             select
             label="办理类型"
             value={draft.kind}
-            onChange={(e) => update({ ...draft, kind: e.target.value as JobDraft['kind'], handover:undefined, incumbent:undefined })}
+            onChange={(e) => update({ ...draft, kind: e.target.value as JobDraft['kind'], handover:undefined, incumbent:undefined, paper:undefined, observation:undefined })}
           >
             {options.map((kind) => (
               <MenuItem key={kind} value={kind}>
@@ -277,16 +286,16 @@ export function AssignmentRecordForm({
             ))}
           </ObjectTextField>
         )}
-        <ObjectTextField
+        {!duty && <ObjectTextField
           type="date"
           label={draft.kind==='Leave'||draft.kind==='EndAssignment' ? '原通知日期' : '生效日期'}
           value={draft.day}
           required
           disabled={draft.mode === 'correct' || draft.mode==='withdraw' || !!draft.successor}
           onChange={(e) => update({ ...draft, day: e.target.value, peer:undefined, incumbent:undefined })}
-        />
+        />}
         {draft.mode !== 'redate' &&
-          (draft.kind==='PositionExchange' ? <ExchangeFields draft={draft} update={update} assignment={view.assignment} csrf={csrf}/> : lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} mode={targets} derived={derived.data} arrangementError={derived.error} /> : relation ? (
+          (duty ? <ActualDutyFields draft={draft} update={update} view={view}/> : draft.kind==='PositionExchange' ? <ExchangeFields draft={draft} update={update} assignment={view.assignment} csrf={csrf}/> : lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} mode={targets} derived={derived.data} arrangementError={derived.error} /> : relation ? (
             <ProbationFields view={view} draft={draft} csrf={csrf} update={update} />
           ) : location ? (
             <>

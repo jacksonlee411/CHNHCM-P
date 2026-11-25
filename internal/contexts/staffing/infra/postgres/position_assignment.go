@@ -108,6 +108,8 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 	if hasSuccession {
 		boundaries = append(boundaries, succession.source.From, succession.source.Until)
 	}
+	proof, hasDuty := ctx.Value(dutyContext{}).(dutyAdmission)
+	hasDuty = hasDuty && owner == "M04" && prior == proof.assignment && in.Position == proof.evidence.Position && in.Purpose == "transfer"
 	var quota d.StaffingQuota
 	if quotaRequired {
 		quota, e = u.LoadPositionQuota(ctx, in.Position, "")
@@ -142,6 +144,10 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		targets := in
 		targets.Period = p
 		var source, revision, name, coverage, intake, recruiting, quotaRevision, handover string
+		actual := hasDuty && proof.evidence.Includes(p.From)
+		if actual && rule.Mode != "PositionManaged" {
+			return nil, f.Fail(409, "DUTY_POLICY", p.From+" 起没有可采用的按岗位任职规则")
+		}
 		dedicated := hasSuccession && succession.source.Includes(p.From)
 		if dedicated && !rule.Consumes {
 			return nil, f.Fail(409, "SUCCESSION_POLICY", p.From+" 起不适用交接占编")
@@ -171,7 +177,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 				if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" {
 					return nil, e
 				}
-				if !listFull {
+				if !listFull && !actual {
 					return nil, f.Fail(409, fault.Code, record.Data["name"]+"："+fault.Message)
 				}
 			}
@@ -193,7 +199,7 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			intake = coverage
 			if r := replenishmentAt(settings, p.From); r != nil {
 				intake = r.Revision
-				if r.Paused && !slices.ContainsFunc(retained, func(v f.Period) bool { return v.Includes(p.From) }) {
+				if r.Paused && !actual && !slices.ContainsFunc(retained, func(v f.Period) bool { return v.Includes(p.From) }) {
 					return nil, f.Fail(409, "POSITION_PAUSED", p.From+" 起岗位暂停补员")
 				}
 			}
