@@ -211,6 +211,9 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "原期间已有关联任职，请先核对后续安排")
 		}
 
+		if err = u.lockExitingPositions(ctx, []string{a.Assignment}, a.From); err != nil {
+			return "", err
+		}
 		tag, err := u.tx.Exec(ctx, "DELETE FROM staffing.employment_primary WHERE instance_id=$1 AND action_id=$2", st.Instance, a.ID)
 		if err != nil {
 			return "", err

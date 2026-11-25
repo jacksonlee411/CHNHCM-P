@@ -20,6 +20,9 @@ type ReplenishmentChange struct {
 	Expected string `json:"expected"`
 }
 type ReplenishmentView struct {
+	Quota     *int                  `json:"quota,omitempty"`
+	Available *int                  `json:"available,omitempty"`
+	Excess    *int                  `json:"excess,omitempty"`
 	Reserved  *int                  `json:"reserved,omitempty"`
 	Occupied  *int                  `json:"occupied,omitempty"`
 	Covered   bool                  `json:"covered"`

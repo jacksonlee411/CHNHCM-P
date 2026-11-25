@@ -92,13 +92,15 @@ func (u *unit) arrangementMode(ctx context.Context, term f.Period, person, emplo
 			return f.Fail(403, "HIRE_DENIED", "所选安排超出获权范围")
 		}
 		var retained []f.Period
+		prior := ""
 		if assignment != nil {
+			prior = assignment.Assignment
 			retained, e = u.retainedPosition(ctx, *assignment, position)
 		}
 		if e != nil {
 			return e
 		}
-		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained, assignmentOwner(purpose), "")
+		segments, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: position}, head, policies, false, retained, assignmentOwner(purpose), prior, false)
 		if e != nil {
 			return e
 		}
@@ -156,29 +158,32 @@ func (u *unit) positionTargets(ctx context.Context, term f.Period, in h.TargetSe
 				continue
 			}
 			var retained []f.Period
+			prior := ""
 			if assignment != nil {
+				prior = assignment.Assignment
 				retained, e = u.retainedPosition(ctx, *assignment, id)
 				if e != nil {
 					return e
 				}
 			}
-			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained, assignmentOwner(purpose), "")
+			seg, e := u.checkPositionAssignment(ctx, s.AssignmentCheck{Period: term, Enterprise: ent, Category: "Employee", Purpose: purpose, Position: id, Job: in.Job, Department: in.Department}, head, policies, false, retained, assignmentOwner(purpose), prior, purpose == "transfer")
 			if e != nil {
 				var fault *f.Fault
-				if errors.As(e, &fault) && fault.Status < 500 {
-					continue
+				if !errors.As(e, &fault) || fault.Status >= 500 {
+					return e
 				}
-				return e
-			}
-			if skip > 0 {
-				skip--
 				continue
 			}
 			for _, p := range seg {
-				if p.Position != "" {
-					*out = append(*out, org.EligibleEntity{ID: id, Name: p.PositionName})
-					break
+				if p.Position == "" || !strings.Contains(strings.ToLower(p.PositionName), strings.ToLower(strings.TrimSpace(in.Search))) {
+					continue
 				}
+				if skip > 0 {
+					skip--
+				} else {
+					*out = append(*out, org.EligibleEntity{ID: id, Name: p.PositionName})
+				}
+				break
 			}
 			if len(*out) == 20 {
 				return nil

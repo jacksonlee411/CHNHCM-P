@@ -13112,6 +13112,7 @@ components:
       required: [businessDate, page]
       properties:
         businessDate: {type: string, format: date}
+        position: {type: string, format: uuid}
         job: {type: string, format: uuid}
         search: {type: string}
         page: {type: integer, minimum: 1}
@@ -13161,6 +13162,7 @@ components:
         businessDate: {type: string, format: date}
         grade: {type: string, format: uuid}
         department: {type: string, format: uuid}
+        position: {type: string, format: uuid}
         job: {type: string, format: uuid}
         notice: {type: string}
         transferNotice: {type: string}
@@ -13495,6 +13497,9 @@ components:
       type: object
       required: [covered, canChange, paused, version, records]
       properties:
+        quota: {type: integer}
+        available: {type: integer}
+        excess: {type: integer}
         reserved: {type: integer}
         occupied: {type: integer}
         covered: {type: boolean}

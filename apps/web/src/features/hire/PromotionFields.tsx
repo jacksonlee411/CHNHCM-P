@@ -40,19 +40,22 @@ export function EarlierAction({ draft, view, update }: Omit<Props, 'csrf'>) {
   );
 }
 
-export function PromotionFields({ draft, view, csrf, update }: Props) {
+export function PromotionFields({ draft, view, csrf, update, mode, derived, arrangementError }: Props & {
+    mode?: Models['HireArrangementMode']; derived?: Models['HireArrangementMode']; arrangementError?:string
+}) {
   const [search, setSearch] = useState('');
   const withdraw = draft.mode === 'withdraw';
   const initial = draft.kind === 'GradeRecord';
   const pair = draft.kind === 'PromotionTransfer';
-  const job = draft.job?.id;
+  const position = mode?.positionRequired ? draft.position?.id : undefined;
+  const job = position && !mode?.jobRequired ? derived?.job?.id : draft.job?.id;
   const grades = useRead(
-    !withdraw && draft.day ? JSON.stringify([view.assignment, draft.day, job, search]) : undefined,
+    !withdraw && draft.day ? JSON.stringify([view.assignment, draft.day, job, position, search]) : undefined,
     async () =>
       unwrap(
         await api.POST('/api/v1/assignments/{id}/grade-options', {
           params: { path: { id: view.assignment }, header: { 'X-CSRF-Token': csrf } },
-          body: { businessDate: draft.day, job, search, page: 1 },
+          body: { businessDate: draft.day, job, position, search, page: 1 },
         }),
       ),
   );
@@ -95,7 +98,7 @@ export function PromotionFields({ draft, view, csrf, update }: Props) {
       {!initial && (
         <ObjectDetailField label="原任职级">{draft.originalGrade?.name ?? '未记载'}</ObjectDetailField>
       )}
-      {!initial && view.canTransfer && (
+      {!initial && view.canTransfer && mode?.jobRequired && (
         <>
           <TransferTarget
             kind="department"
@@ -113,6 +116,13 @@ export function PromotionFields({ draft, view, csrf, update }: Props) {
           />
         </>
       )}
+      {!initial && view.canTransfer && mode?.positionRequired && <>
+        <TransferTarget kind="position" mixed={mode.jobRequired} draft={draft} assignment={view.assignment} csrf={csrf}
+          change={position => update({...draft, position, grade: undefined})}/>
+        {derived?.department && <ObjectDetailField label="岗位所属部门">{derived.department.name}</ObjectDetailField>}
+        {derived?.job && <ObjectDetailField label="岗位对应职务">{derived.job.name}</ObjectDetailField>}
+        {arrangementError && <span role="alert">{arrangementError}</span>}
+      </>}
       <ObjectDetailField label={initial ? '实际任职级' : '拟任职级'} inputId="assignment-grade" required>
         <Autocomplete
           fullWidth

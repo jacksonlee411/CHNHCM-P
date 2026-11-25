@@ -44,7 +44,7 @@ func (st *Store) AssignmentPositionUsage(ctx context.Context, instance, position
 	if e != nil {
 		return out, e
 	}
-	rows, e = tx.Query(ctx, `SELECT lower(s.period)::text,coalesce(upper(s.period)::text,''),s.version,s.adoption->>'policy',CASE WHEN (s.adoption->>'seats')::int>0 THEN 'occupied' ELSE 'exempt' END,s.department_id,s.job_id
+	rows, e = tx.Query(ctx, `SELECT lower(s.period)::text,coalesce(upper(s.period)::text,''),s.version,s.adoption->>'policy',CASE WHEN (s.adoption->>'seats')::int>0 THEN 'occupied' ELSE 'exempt' END,s.department_id,s.job_id,s.assignment_id
  FROM staffing.assignment_head h JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
  WHERE s.instance_id=$1 AND s.adoption->>'position'=$2`, instance, position)
 	if e != nil {
@@ -52,7 +52,7 @@ func (st *Store) AssignmentPositionUsage(ctx context.Context, instance, position
 	}
 	out.Uses, e = pgx.CollectRows(rows, func(r pgx.CollectableRow) (v d.PositionUse, err error) {
 		v.Owner = "M04"
-		err = r.Scan(&v.From, &v.Until, &v.Source, &v.Policy, &v.Effect, &v.Department, &v.Job)
+		err = r.Scan(&v.From, &v.Until, &v.Source, &v.Policy, &v.Effect, &v.Department, &v.Job, &v.Assignment)
 		return
 	})
 	for _, v := range out.Uses {

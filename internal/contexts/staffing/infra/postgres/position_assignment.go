@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"slices"
 
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
@@ -30,7 +31,7 @@ func (u *unit) positionReadable(ctx context.Context, enterprise string) (bool, e
 	return true, nil
 }
 
-func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool, retained []f.Period, owner, prior string) ([]s.AssignmentSegment, error) {
+func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck, head string, rows []s.AssignmentPolicy, locked bool, retained []f.Period, owner, prior string, listFull bool) ([]s.AssignmentSegment, error) {
 	if !f.ValidID(in.Position) || !in.Period.Valid() || in.Category == "" || in.Purpose == "" {
 		return nil, f.Fail(400, "M03_INVALID_INPUT", "请核对岗位、任期、人员类别与用途")
 	}
@@ -93,14 +94,16 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		return nil, e
 	}
 	if prior != "" {
-		evidence.Uses = slices.DeleteFunc(evidence.Uses, func(v d.PositionUse) bool { return v.Owner == owner && v.Source == prior })
+		evidence.Uses = slices.DeleteFunc(evidence.Uses, func(v d.PositionUse) bool {
+			return v.Owner == owner && (owner == "M04" && v.Assignment == prior || owner == "M05" && v.Source == prior)
+		})
 	}
 	settings, e := u.replenishmentRows(ctx, in.Position)
 	if e != nil {
 		return nil, e
 	}
 	var quota d.StaffingQuota
-	if owner == "M05" && quotaRequired {
+	if quotaRequired {
 		quota, e = u.LoadPositionQuota(ctx, in.Position, "")
 		if e != nil {
 			return nil, e
@@ -135,9 +138,6 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 		var source, revision, name, coverage, intake, recruiting, quotaRevision string
 		seats := 0
 		if rule.Mode == "PositionManaged" {
-			if rule.Consumes && owner != "M05" {
-				return nil, f.Fail(409, "M03_POSITION_COUNTED_UNAVAILABLE", p.From+" 起需要按岗位占编")
-			}
 			i := d.At(pos, p.From)
 			if i < 0 || !pos.Records[i].Active() {
 				return nil, f.Fail(409, "POSITION_PERIOD", p.From+" 起没有有效岗位")
@@ -149,7 +149,13 @@ func (u *unit) checkPositionAssignment(ctx context.Context, in s.AssignmentCheck
 			}
 			intent := d.UsageIntent{UsageSpan: d.UsageSpan{From: p.From, Until: p.Until}, Enterprise: in.Enterprise, Category: in.Category, Purpose: in.Purpose, Owner: owner}
 			if _, e = evidence.PlanUse(intent, rules, quota, d.QuotaEligibility(pos)); e != nil {
-				return nil, e
+				var fault *f.Fault
+				if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" {
+					return nil, e
+				}
+				if !listFull {
+					return nil, f.Fail(409, fault.Code, record.Data["name"]+"："+fault.Message)
+				}
 			}
 			for _, c := range evidence.Coverage {
 				if c.Owner == "M05" && c.Contains(p.From) {

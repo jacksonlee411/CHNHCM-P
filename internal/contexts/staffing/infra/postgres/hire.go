@@ -198,6 +198,11 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire) (hirePlan, error) {
 	if err != nil {
 		return plan, err
 	}
+	for _, seg := range adopt.Segments {
+		if err = u.checkPlacementGrade(ctx, seg, in.Grade); err != nil {
+			return plan, err
+		}
+	}
 	if in.Grade != "" {
 		for i, seg := range adopt.Segments {
 			id := seg.JobID
