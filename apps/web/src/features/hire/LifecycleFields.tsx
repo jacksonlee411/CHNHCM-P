@@ -15,10 +15,19 @@ export function LifecycleFields({ draft, update, view, csrf }: {draft: JobDraft;
     const result=unwrap(await api.POST('/api/v1/assignments/query',{params:{header},body:{businessAt:draft.day,ref:query.ref,page:1,pageSize:50}}));
     return result.rows.filter(r=>r.id!==view.assignment).map(r=>({id:r.id,name:r.name+' · '+r.recordNumber+' 号 · '+r.departmentName+' · '+r.jobName}));
   });
+  const contracts=useRead(view.canReadContracts && draft.kind==='Leave' && draft.day ? JSON.stringify([view.assignment,draft.day,draft.meaning]):undefined,
+    async()=>unwrap(await api.GET('/api/v1/assignments/{id}/contracts',{params:{path:{id:view.assignment},query:{businessAt:view.businessAt,exitDate:draft.day,meaning:draft.meaning??'last-active'}}})));
+  const required=contracts.data?.required??[];
   if (!manager) return <>
-    <ObjectTextField select label="原通知日期含义" value={draft.meaning ?? 'last-active'} onChange={e=>update({...draft,meaning:e.target.value as JobDraft['meaning']})}>
+    <ObjectTextField select label="原通知日期含义" value={draft.meaning ?? 'last-active'} onChange={e=>update({...draft,meaning:e.target.value as JobDraft['meaning'],contracts:undefined})}>
       <MenuItem value="last-active">最后在职日（含当日）</MenuItem><MenuItem value="first-inactive">首个不在职日</MenuItem>
     </ObjectTextField>
+    {required.length>0 && <>
+      <ObjectDetailField label="涉及的合同">{required.map(ref=>contracts.data?.items.find(r=>r.id===ref.id)?.number).join('、')}</ObjectDetailField>
+      {contracts.data?.canManage && <ObjectTextField select label="合同处置" value={draft.contracts?.length?'end':''} onChange={e=>update({...draft,contracts:e.target.value==='end'?required:undefined})}>
+        <MenuItem value="">请选择</MenuItem><MenuItem value="end">按离职通知终结上述合同</MenuItem>
+      </ObjectTextField>}
+    </>}
     <ObjectTextField required label="退出依据" value={draft.notice} onChange={e=>update({...draft,notice:e.target.value})}/>
   </>;
   return <>

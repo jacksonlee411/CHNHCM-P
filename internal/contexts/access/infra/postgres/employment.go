@@ -86,6 +86,17 @@ func InitializeEmployment(ctx context.Context, tx pgx.Tx, instance, actor string
 			return err
 		}
 	}
+	var contracts bool
+	if err = tx.QueryRow(ctx, "SELECT to_regclass('access.contract_fixture') IS NOT NULL").Scan(&contracts); err != nil {
+		return err
+	}
+	if contracts {
+		_, err = tx.Exec(ctx, `WITH first AS (INSERT INTO access.contract_fixture VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING *)
+        INSERT INTO access.employment_grant(instance_id,principal_id,action,fields) SELECT instance_id,principal_id,right_name,ARRAY['arrangement','basis'] FROM first CROSS JOIN unnest(ARRAY['contract.read','contract.manage']) right_name`, instance, actor)
+		if err != nil {
+			return err
+		}
+	}
 	var succession bool
 	if err = tx.QueryRow(ctx, "SELECT to_regclass('access.employment_succession_fixture') IS NOT NULL").Scan(&succession); err != nil {
 		return err

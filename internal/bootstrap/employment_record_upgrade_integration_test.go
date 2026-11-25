@@ -130,10 +130,23 @@ func TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires(t *testing
 	beforeDuty := publications()
 	var proofSources string
 	must(t, pool.QueryRow(ctx, `SELECT jsonb_agg(to_jsonb(v) ORDER BY v.source,v.version)::text FROM staffing.appointment_version v`).Scan(&proofSources))
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00053" })))
+	dutyPaper, paperVersion := f.NewID(), f.NewID()
+	_, err = pool.Exec(ctx, `INSERT INTO staffing.duty_observation SELECT $1,$2,t.id,'门店','原出勤' FROM staffing.assignment t WHERE t.instance_id=$1 LIMIT 1`, instance, dutyPaper)
+	must(t, err)
+	_, err = pool.Exec(ctx, `INSERT INTO staffing.duty_observation_revision(instance_id,observation_id,version,actor,digest,dispatch,dispatch_version,fact) VALUES($1,$2,$3,$4,'原资料',$5,$6,jsonb_build_object('number','原出勤','from','2027-04-01','until','2027-04-04'))`, instance, dutyPaper, paperVersion, actor, source, version)
+	must(t, err)
+	_, err = pool.Exec(ctx, `INSERT INTO staffing.duty_observation_head VALUES($1,$2,$3)`, instance, dutyPaper, paperVersion)
+	must(t, err)
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+	var retainedPaper bool
+	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.duty_observation_head h JOIN staffing.duty_observation_revision r USING(instance_id,observation_id,version) WHERE h.instance_id=$1 AND h.observation_id=$2 AND h.version=$3 AND r.dispatch_version=$4 AND r.fact->>'number'='原出勤')`, instance, dutyPaper, paperVersion, version).Scan(&retainedPaper))
+	if !retainedPaper {
+		t.Fatal("合同升级丢失原出勤资料")
+	}
 	var surviving string
 	must(t, pool.QueryRow(ctx, `SELECT jsonb_agg(to_jsonb(v) ORDER BY v.source,v.version)::text FROM staffing.appointment_version v`).Scan(&surviving))
 	if proofSources != surviving || beforeDuty != publications() {

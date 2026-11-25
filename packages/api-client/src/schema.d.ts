@@ -5370,6 +5370,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/contracts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEmploymentContracts"];
+        put?: never;
+        post: operations["recordEmploymentContract"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/employment-contracts/submissions/{sub}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolveEmploymentContract"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/duty-sources": {
         parameters: {
             query?: never;
@@ -5906,6 +5938,7 @@ export interface components {
             name?: string;
         };
         AssignmentExitCommand: {
+            contracts?: components["schemas"]["ContractRef"][];
             /** Format: date */
             date: string;
             /** @enum {string} */
@@ -5974,6 +6007,80 @@ export interface components {
             assignment: string;
             /** Format: uuid */
             sourceVersion: string;
+        };
+        ContractRef: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            version: string;
+        };
+        ContractProcess: {
+            /** Format: uuid */
+            version: string;
+            /** @enum {string} */
+            operation: "sign" | "renew" | "end";
+            /** Format: date */
+            businessDate: string;
+            operator: string;
+            /** Format: date-time */
+            recordedAt: string;
+            basis: string;
+            /** Format: uuid */
+            leaveAction?: string;
+        };
+        EmploymentContract: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            version: string;
+            /** Format: uuid */
+            employment: string;
+            number: string;
+            /** Format: date */
+            signed: string;
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            until?: string;
+            /** Format: uuid */
+            previous?: string;
+            /** Format: uuid */
+            next?: string;
+            /** Format: date */
+            firstInactive?: string;
+            processes: components["schemas"]["ContractProcess"][];
+        };
+        EmploymentContracts: {
+            required?: components["schemas"]["ContractRef"][];
+            canManage: boolean;
+            items: components["schemas"]["EmploymentContract"][];
+        };
+        EmploymentContractCommand: {
+            /** @enum {string} */
+            operation: "sign" | "renew" | "end";
+            /** Format: uuid */
+            expectedSourceVersion: string;
+            number?: string;
+            /** Format: date */
+            signed?: string;
+            /** Format: date */
+            from?: string;
+            /** Format: date */
+            lastDay?: string;
+            ref?: components["schemas"]["ContractRef"];
+            /** Format: date */
+            firstInactive?: string;
+            basis?: string;
+        };
+        ContractReceipt: {
+            /** Format: uuid */
+            submissionId: string;
+            /** @enum {string} */
+            outcome: "accepted" | "not_applied";
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            version?: string;
         };
         DutyRef: {
             /** Format: uuid */
@@ -6414,6 +6521,7 @@ export interface components {
             keyword: string;
         };
         AssignmentView: {
+            canReadContracts: boolean;
             canRecordDuty: boolean;
             canVerifyDuty: boolean;
             canHandover: boolean;
@@ -25001,6 +25109,112 @@ export interface operations {
                 };
             };
             /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getEmploymentContracts: {
+        parameters: {
+            query?: {
+                businessAt?: string;
+                exitDate?: string;
+                meaning?: "last-active" | "first-inactive";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmploymentContracts"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    recordEmploymentContract: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmploymentContractCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContractReceipt"];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    resolveEmploymentContract: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                sub: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContractReceipt"];
+                };
+            };
+            /** @description Rejected or unavailable */
             default: {
                 headers: {
                     [name: string]: unknown;

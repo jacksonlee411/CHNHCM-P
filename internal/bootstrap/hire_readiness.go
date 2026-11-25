@@ -105,6 +105,22 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 			return hires.ExitAssignment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.leave, in)
 		}))
 	}
+	mux.HandleFunc("GET /api/v1/assignments/{id}/contracts", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "businessAt", "exitDate", "meaning")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.Contracts(r.Context(), credentials(r), r.PathValue("id"), q.Get("businessAt"), q.Get("exitDate"), q.Get("meaning"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/assignments/{id}/contracts", ruleBody(func(r *http.Request, in h.ContractCommand) (any, error) {
+		return hires.RecordContract(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/employment-contracts/submissions/{sub}/resolve", func(w http.ResponseWriter, r *http.Request) {
+		v, e := hires.ResolveContract(r.Context(), credentials(r), r.PathValue("sub"))
+		respond(w, 200, v, e)
+	})
 	mux.HandleFunc("GET /api/v1/assignments/{id}/duty-sources", func(w http.ResponseWriter, r *http.Request) {
 		v, e := hires.DutySources(r.Context(), credentials(r), r.PathValue("id"))
 		respond(w, 200, v, e)

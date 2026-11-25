@@ -53,6 +53,7 @@ type State struct {
 }
 
 type AssignmentView struct {
+	CanReadContracts    bool           `json:"canReadContracts"`
 	CanRecordDuty       bool           `json:"canRecordDuty"`
 	CanVerifyDuty       bool           `json:"canVerifyDuty"`
 	CanHandover         bool           `json:"canHandover"`

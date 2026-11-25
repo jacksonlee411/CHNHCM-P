@@ -211,6 +211,13 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "原期间已有关联任职，请先核对后续安排")
 		}
 
+		contracts, err := u.contractRows(ctx, a.Employment)
+		if err != nil {
+			return "", err
+		}
+		if slices.ContainsFunc(contracts, func(c h.Contract) bool { return c.RemainsAt(a.From) }) {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "本工作关系已签订合同，请先核对合同处置")
+		}
 		if err = u.lockExitingPositions(ctx, []string{a.Assignment}, a.From); err != nil {
 			return "", err
 		}

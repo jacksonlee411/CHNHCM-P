@@ -13,6 +13,11 @@ type AccessAppointmentIssuerFixture struct {
 	PrincipalID string
 }
 
+type AccessContractFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessCredential struct {
 	InstanceID       string
 	PrincipalID      string
@@ -1343,6 +1348,35 @@ type StaffingAssignmentSource struct {
 	Revision     string
 }
 
+type StaffingContractOutbox struct {
+	InstanceID string
+	ContractID string
+	Version    string
+}
+
+type StaffingContractProcess struct {
+	InstanceID   string
+	ContractID   string
+	Version      string
+	Operation    string
+	BusinessDate pgtype.Date
+	Actor        string
+	OperatorName string
+	RecordedAt   pgtype.Timestamptz
+	Basis        string
+	LeaveAction  *string
+}
+
+type StaffingContractSubmission struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	Digest       string
+	AssignmentID *string
+	ContractID   *string
+	Version      *string
+}
+
 type StaffingDutyApplication struct {
 	InstanceID    string
 	ObservationID string
@@ -1410,6 +1444,16 @@ type StaffingEmploymentActionRevision struct {
 	RecordedAt       pgtype.Timestamptz
 	Adoption         []byte
 	Operation        string
+}
+
+type StaffingEmploymentContract struct {
+	InstanceID   string
+	ID           string
+	EmploymentID string
+	Number       string
+	Signed       pgtype.Date
+	Period       pgtype.Range[pgtype.Date]
+	Predecessor  *string
 }
 
 type StaffingEmploymentExit struct {

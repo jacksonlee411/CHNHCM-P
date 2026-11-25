@@ -112,6 +112,10 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		if len(recognized) != 1 {
 			return unknownAssignment()
 		}
+		out.CanReadContracts, e = u.employmentAllowed(ctx, "contract.read", a.Person, a.Employer, a.Department, false)
+		if e != nil {
+			return e
+		}
 		out.Name, out.Number = recognized[0].Name, recognized[0].Number
 		out.Period = a.Period
 		if version != a.SourceVersion {

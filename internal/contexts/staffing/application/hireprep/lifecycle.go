@@ -22,10 +22,11 @@ type ManagerFact struct {
 	Purpose string `json:"purpose"`
 }
 type ExitCommand struct {
-	Date     string `json:"date"`
-	Meaning  string `json:"meaning"`
-	Expected string `json:"expectedSourceVersion"`
-	Notice   string `json:"notice"`
+	Contracts []ContractRef `json:"contracts,omitempty"`
+	Date      string        `json:"date"`
+	Meaning   string        `json:"meaning"`
+	Expected  string        `json:"expectedSourceVersion"`
+	Notice    string        `json:"notice"`
 }
 type ExitEvidence struct {
 	Date          string `json:"date"`
