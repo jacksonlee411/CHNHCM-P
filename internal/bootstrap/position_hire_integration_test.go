@@ -15,9 +15,19 @@ func TestExemptPositionFirstHireAndReplenishment(t *testing.T) {
 	b := x.h.b
 	policy := b.call("GET", "/api/v1/assignment-policies", nil, "", 200)
 	row := policy["rows"].([]any)[0].(M)
-	row["mode"] = "PositionExempt"
-	b.call("POST", "/api/v1/assignment-policies", M{"expectedVersion": policy["version"], "row": row}, f.NewID(), 200)
+	policyPath := "/api/v1/assignment-policies"
+	for _, other := range []M{
+		{"id": f.NewID(), "category": "访客", "purpose": "hire", "mode": "PositionExempt", "from": "2027-04-01"},
+		{"id": f.NewID(), "category": "Employee", "purpose": "培训报名", "mode": "PositionExempt", "from": "2027-04-01"},
+	} {
+		b.call("POST", policyPath, M{"expectedVersion": policy["version"], "row": other}, f.NewID(), 200)
+		policy = b.call("GET", policyPath, nil, "", 200)
+	}
 	pos := b.call("POST", "/api/v1/positions", M{"code": "P404", "name": "研发计划岗", "effectiveDate": "2027-04-01", "operationType": "CREATE", "operationReason": "NEW_POSITION", "departmentId": x.dep, "jobId": x.job, "locationId": x.locations[0]}, f.NewID(), 201)["objectId"].(string)
+	quota := b.call("POST", "/api/v1/staffing-quotas", M{"positionId": pos, "effectiveDate": "2027-04-01", "quota": 6, "reason": "独立设岗核编"}, f.NewID(), 200)
+	b.call("POST", "/api/v1/staffing-quotas/"+quota["objectId"].(string)+"/adjust", M{"expectedSourceVersion": quota["sourceVersion"], "effectiveDate": "2027-05-01", "quota": 5, "reason": "调回一编"}, f.NewID(), 200)
+	row["mode"] = "PositionExempt"
+	b.call("POST", policyPath, M{"expectedVersion": policy["version"], "row": row}, f.NewID(), 200)
 	path := "/api/v1/positions/" + pos + "/replenishment"
 	status := func(day string) M { return b.call("GET", path+"?businessAt="+day, nil, "", 200) }
 	start := status("2027-04-01")
