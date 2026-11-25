@@ -27,15 +27,7 @@ export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
   if (!overview.data) return null;
   const terms = overview.data.terms;
   if (terms.length === 1)
-    return (
-      <AssignmentDetail
-        key={terms[0].assignment}
-        id={id}
-        assignment={terms[0].assignment}
-        day={params.get('businessAt') ?? terms[0].from}
-        session={session}
-      />
-    );
+    return <Navigate replace to={person.path + '/' + id + '/assignments/' + terms[0].assignment + route.search} state={route.state} />;
   if (terms.length > 1) {
     const selection = new URLSearchParams({ person: id });
     const businessAt = params.get('businessAt');
@@ -71,8 +63,14 @@ function AssignmentDetail({
   usePageTitle('职务信息');
   const navigate = useNavigate();
   const [actionSlot, setActionSlot] = useState<HTMLSpanElement | null>(null);
-  const [params] = useSearchParams(),
-    [date, setDate] = useState(day);
+  const [params, setParams] = useSearchParams();
+  function applyDay(value: string) {
+    setParams(previous => {
+      const next = new URLSearchParams(previous);
+      next.set('assignmentDay', value);
+      return next;
+    }, { replace: true });
+  }
   const view = person.useRead(JSON.stringify([assignment, day]), async () =>
     unwrap(
       await api.GET('/api/v1/assignments/{id}', {
@@ -128,7 +126,7 @@ function AssignmentDetail({
   personQuery.delete('from');
   if (listed) personQuery.set('returnTo', 'assignments');
   personQuery.set('assignment', assignment);
-  const selectedDay = date || data?.businessAt;
+  const selectedDay = day || data?.businessAt;
   if (selectedDay) personQuery.set('assignmentDay', selectedDay);
   const path = person.path + '/' + id;
   const secondary = new URLSearchParams(params);
@@ -156,15 +154,13 @@ function AssignmentDetail({
           )
         }
         actions={
-          data && (
-            <Stack direction="row" flexWrap="wrap" gap={1}>
-              <span ref={setActionSlot} />
-              {(data.canAddSecondary||data.canAddParallel)&&<Button component={Link} to={path+'/assignments/'+assignment+'/additional?'+secondary}>新增兼岗</Button>}
-              {data.primaryJob&&<Button component={Link} to={path + '/employment?' + legacy}>
-                办理历史
-              </Button>}
-            </Stack>
-          )
+          <Stack direction="row" flexWrap="wrap" gap={1}>
+            <span ref={setActionSlot} />
+            {(data?.canAddSecondary||data?.canAddParallel)&&<Button component={Link} to={path+'/assignments/'+assignment+'/additional?'+secondary}>新增兼岗</Button>}
+            {data?.primaryJob&&<Button component={Link} to={path + '/employment?' + legacy}>
+              办理历史
+            </Button>}
+          </Stack>
         }
       />
       <Box className="page-scroll" data-page-scroll role="region" aria-label="任职详情" tabIndex={0}>
@@ -183,6 +179,7 @@ function AssignmentDetail({
               {data.employerName} · {data.relationship === 'Employee' ? '员工关系' : data.relationship} · 自{' '}
               {data.from} 起
             </Typography>
+            {data.futureTerm && <Typography>尚未生效</Typography>}
             {data.relationshipPrimary && !data.primaryJob && <Typography>本工作关系主任职</Typography>}
             {otherTerms && otherTerms.length>0 && <Stack direction="row" flexWrap="wrap" alignItems="center">
               <Typography>同号任期</Typography>
@@ -205,20 +202,22 @@ function AssignmentDetail({
                 />
               )}
             </Tabs>
-            <Stack component="section" role="tabpanel">
-              <ObjectForm>
-                <JobInformation
-                  assignment={assignment}
-                  day={date || data.businessAt}
-                  onDay={setDate}
-                  session={session}
-                  actionSlot={actionSlot}
-                  onSave={view.refresh}
-                />
-              </ObjectForm>
-            </Stack>
           </>
         )}
+        <Stack component="section" role="tabpanel" sx={{display: data ? undefined : 'none'}}>
+          <ObjectForm>
+            <JobInformation
+              enabled={!!data}
+              current={{...view, data}}
+              assignment={assignment}
+              day={day || data?.businessAt || ''}
+              onDay={applyDay}
+              session={session}
+              actionSlot={actionSlot}
+              onSave={view.refresh}
+            />
+          </ObjectForm>
+        </Stack>
       </Box>
     </Box>
   );

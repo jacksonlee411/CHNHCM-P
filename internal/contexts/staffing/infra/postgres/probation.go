@@ -43,7 +43,7 @@ func (u *unit) relationDepartments(ctx context.Context, employment, day string) 
       JOIN staffing.assignment_member m ON (m.instance_id,m.assignment_id,m.version)=($1,d.id,d.version)
       JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
       JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(m.instance_id,m.action_id,m.revision)
-      WHERE a.kind='Transfer' AND r.operation<>'Delete' AND r.business_date=$3::date ORDER BY 2,1`, u.store.Instance, employment, day)
+      WHERE r.adoption ? 'transfer' AND r.operation NOT IN ('Delete','Withdraw') AND r.business_date=$3::date ORDER BY 2,1`, u.store.Instance, employment, day)
 	if e != nil {
 		return nil, e
 	}
@@ -119,7 +119,6 @@ func (u *unit) probationAttribution(ctx context.Context, a h.Action, in h.Probat
 		if e = u.requireEmployment(ctx, "read", a.Person, a.Employer, ev.Department); e != nil {
 			return ev, e
 		}
-		return ev, nil
 	}
 	if in.AfterAction != "" {
 		act, e := u.action(ctx, in.AfterAction)
@@ -136,8 +135,13 @@ func (u *unit) probationAttribution(ctx context.Context, a h.Action, in h.Probat
 		if !visible.to {
 			return ev, f.Fail(403, "HIRE_DENIED", "当前权限不可采用所引原件")
 		}
-		ev.Department, ev.DepartmentName, ev.Attribution = act.Department, primary[act.Department], "preceding-transfer"
+		if in.Department == "" {
+			ev.Department, ev.DepartmentName, ev.Attribution = act.Department, primary[act.Department], "preceding-transfer"
+		}
 		ev.AfterAction, ev.AfterRevision = act.ID, act.Revision
+		return ev, nil
+	}
+	if in.Department != "" {
 		return ev, nil
 	}
 	if len(primary) == 1 {
@@ -153,98 +157,160 @@ func (u *unit) probationAttribution(ctx context.Context, a h.Action, in h.Probat
 }
 
 func (st *Store) RecordProbation(ctx context.Context, c f.Credentials, id, key, kind string, in h.ProbationCommand) (h.Receipt, error) {
-	return st.hireCommand(ctx, c, key, []any{kind, id, in}, func(u *unit) (string, error) {
+	return st.employmentCommand(ctx, c, key, []any{kind, id, in}, func(u *unit) (result employmentResult, err error) {
 		if !f.ValidDate(in.BusinessDate) || !f.ValidID(in.ExpectedSource) || strings.TrimSpace(in.Notice) == "" || utf8.RuneCountInString(in.Notice) > 1000 || in.Department != "" && !f.ValidID(in.Department) ||
-			(in.AfterAction == "") != (in.AfterRevision == "") || in.AfterAction != "" && (!f.ValidID(in.AfterAction) || !f.ValidID(in.AfterRevision) || in.Department != "") || kind == "ProbationStart" && (in.Department != "" || in.AfterAction != "") {
-			return "", f.Fail(400, "PROBATION_INPUT", "请核对实际日期、所属关系和通知依据")
+			(in.AfterAction == "") != (in.AfterRevision == "") || in.AfterAction != "" && (!f.ValidID(in.AfterAction) || !f.ValidID(in.AfterRevision)) || !in.Precedes.Valid() || kind == "ProbationStart" && (in.Department != "" || in.AfterAction != "" || in.Precedes != nil) {
+			return result, f.Fail(400, "PROBATION_INPUT", "请核对实际日期、所属关系和通知依据")
 		}
 		a, e := u.assignmentIdentity(ctx, id)
 		if e != nil {
-			return "", e
+			return result, e
 		}
 		if e = lock(ctx, u.tx, false, "staffing.hire.person", st.Instance, a.Person); e != nil {
-			return "", e
+			return result, e
 		}
 		// A late-entered trial can predate the assignment through which its
 		// relationship is reached. Authority is checked against a real arrangement.
 		anchorDay := max(in.BusinessDate, a.From)
 		a, e = u.assignmentAt(ctx, id, anchorDay, "")
 		if e != nil {
-			return "", e
+			return result, e
 		}
 		if a.Cancelled || !a.Includes(anchorDay) || a.SourceVersion != in.ExpectedSource {
-			return "", assignmentConflict()
+			return result, assignmentConflict()
 		}
 		var term f.Period
 		if e = u.tx.QueryRow(ctx, `SELECT lower(e.period)::text,coalesce(x.first_inactive::text,upper(e.period)::text,'') FROM staffing.employment e LEFT JOIN staffing.employment_exit x ON (x.instance_id,x.employment_id)=(e.instance_id,e.id) WHERE e.instance_id=$1 AND e.id=$2`, st.Instance, a.Employment).Scan(&term.From, &term.Until); e != nil {
-			return "", e
+			return result, e
 		}
 		prior, e := u.probationAt(ctx, a, a.SourceVersion, in.BusinessDate)
 		if e != nil {
-			return "", e
+			return result, e
 		}
 		permission := "probation.start"
 		if kind == "ConfirmEmployment" {
 			permission = "probation.confirm"
 		}
-		global, e := u.employmentAllowed(ctx, permission, a.Person, a.Employer, "", false)
-		if e != nil {
-			return "", e
-		}
 		hasGrant, e := u.employmentAllowed(ctx, permission, a.Person, a.Employer, "", true)
 		if e != nil {
-			return "", e
+			return result, e
 		}
 		if !hasGrant {
-			return "", f.Fail(403, "HIRE_DENIED", "没有该关系的办理权限")
+			return result, f.Fail(403, "HIRE_DENIED", "没有该关系的办理权限")
 		}
 		ev := h.ProbationEvidence{Start: in.BusinessDate, Attribution: "relationship"}
 		if kind == "ConfirmEmployment" {
 			ev, e = u.probationAttribution(ctx, a, in)
 			if e != nil {
-				return "", e
+				return result, e
 			}
 			ev.Start = prior.Start
-			if !global && ev.Department == "" {
-				return "", f.Fail(409, "PROBATION_SCOPE", "办理授权需要核定发生部门，请补足通知或实际先后")
-			}
-			if e = u.requireEmployment(ctx, permission, a.Person, a.Employer, ev.Department); e != nil {
-				return "", e
-			}
 		} else if e = u.requireEmployment(ctx, permission, a.Person, a.Employer, a.Department); e != nil {
-			return "", e
+			return result, e
+		}
+		if kind == "ConfirmEmployment" && prior.Confirmed != "" {
+			existing, err := u.currentConfirmation(ctx, a)
+			if err != nil {
+				return result, err
+			}
+			if existing.ID != "" && existing.Day == in.BusinessDate && existing.Notice == strings.TrimSpace(in.Notice) &&
+				existing.Evidence.Probation.Start == prior.Start && existing.Evidence.Probation.AfterAction == in.AfterAction &&
+				(existing.Evidence.Probation.Attribution == "notice") == (in.Department != "") && (in.Department == "" || existing.Evidence.Probation.Department == in.Department) {
+				if err = u.confirmScope(ctx, a, existing.Evidence.Probation.Department); err != nil {
+					return result, err
+				}
+				var namedSuccessor string
+				err = u.tx.QueryRow(ctx, `SELECT coalesce((
+					SELECT pr.action_id::text FROM staffing.employment_action act
+					JOIN staffing.employment_action_revision first ON (first.instance_id,first.action_id,first.revision)=(act.instance_id,act.id,act.revision)
+					JOIN staffing.employment_revision_publication issued ON (issued.instance_id,issued.action_id,issued.revision)=(act.instance_id,act.id,act.revision)
+					JOIN staffing.assignment_member m ON (m.instance_id,m.assignment_id,m.version)=(issued.instance_id,issued.assignment_id,issued.version)
+					JOIN staffing.employment_action_revision pr ON (pr.instance_id,pr.action_id,pr.revision)=(m.instance_id,m.action_id,m.revision)
+					WHERE act.instance_id=$1 AND act.id=$2 AND first.operation='Insert' AND pr.adoption#>>'{previous,action}'=act.id::text), '')`, st.Instance, existing.ID).Scan(&namedSuccessor)
+				if err != nil {
+					return result, err
+				}
+				if (in.Precedes == nil) != (namedSuccessor == "") || in.Precedes != nil && in.Precedes.Action != namedSuccessor {
+					return result, f.Fail(409, "ALREADY_CONFIRMED", "通知载明的后续办理与原转正安排不同")
+				}
+				if in.Precedes != nil {
+					successor, err := u.action(ctx, in.Precedes.Action)
+					if err != nil {
+						return result, err
+					}
+					anchor := a
+					anchor.Assignment = successor.Assignment
+					if err = u.validatePreceding(ctx, anchor, in.BusinessDate, in.Precedes); err != nil {
+						return result, err
+					}
+					if successor.Kind != "Promotion" || successor.Previous == nil || successor.Previous.Action != existing.ID || successor.Previous.Revision != existing.Revision {
+						return result, assignmentConflict()
+					}
+				}
+				return employmentResult{action: existing.ID, revision: existing.Revision, entry: id, reused: true}, nil
+			}
+			return result, f.Fail(409, "ALREADY_CONFIRMED", "转正通知或安排与已办记录不同，请从本关系的转正办理核对")
 		}
 		if e = prior.CanRecord(kind, in.BusinessDate, term); e != nil {
-			return "", e
+			return result, e
+		}
+		if in.Precedes != nil {
+			if e = u.validatePreceding(ctx, a, in.BusinessDate, in.Precedes); e != nil {
+				return result, e
+			}
+			result, e = u.insertConfirmation(ctx, a, in, ev)
+			result.entry = id
+			return result, e
+		}
+		if kind == "ConfirmEmployment" {
+			if e = u.confirmScope(ctx, a, ev.Department); e != nil {
+				return result, e
+			}
 		}
 		item := employmentEntry{id: f.NewID(), revision: f.NewID(), kind: kind, employment: a.Employment, assignment: id, date: in.BusinessDate, notice: strings.TrimSpace(in.Notice), adoption: map[string]any{"probation": ev}}
 		if e = u.newEmploymentAction(ctx, item); e != nil {
-			return "", e
+			return result, e
 		}
-		rows, e := u.tx.Query(ctx, `SELECT t.id,h.version FROM staffing.assignment t JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(t.instance_id,t.id) WHERE t.instance_id=$1 AND t.employment_id=$2`, st.Instance, a.Employment)
-		if e != nil {
-			return "", e
+		if e = u.publishRelationMembers(ctx, a, item.id, item.revision, ""); e != nil {
+			return result, e
 		}
-		terms, e := pgx.CollectRows(rows, pgx.RowToStructByPos[struct{ ID, Version string }])
-		if e != nil {
-			return "", e
-		}
-		for _, t := range terms {
-			version := f.NewID()
-			if e = u.startAssignmentSource(ctx, t.ID, t.Version, version, item.id, item.revision); e != nil {
-				return "", e
-			}
-			_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,location_ref,adoption,department_id,job_id,grade_ref)
-              SELECT instance_id,assignment_id,$4,period,location_id,location_ref,adoption,department_id,job_id,grade_ref FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3`, st.Instance, t.ID, t.Version, version)
-			if e != nil {
-				return "", e
-			}
-			if e = u.publishAssignmentSource(ctx, t.ID, t.Version, version); e != nil {
-				return "", e
-			}
-		}
-		return item.id, nil
+		return employmentResult{action: item.id, revision: item.revision, entry: id}, nil
 	})
+}
+
+func (u *unit) insertConfirmation(ctx context.Context, a h.Action, in h.ProbationCommand, ev h.ProbationEvidence) (out employmentResult, err error) {
+	initial, rows, err := u.historyRows(ctx, a)
+	if err != nil {
+		return out, err
+	}
+	originals := map[string]savedRecord{}
+	target := savedRecord{HistoryEntry: h.HistoryEntry{ID: f.NewID(), Revision: f.NewID(), Day: in.BusinessDate, Kind: "ConfirmEmployment"}, Owner: a.Assignment, Operation: "Insert", Notice: strings.TrimSpace(in.Notice), Evidence: h.Original{Probation: &ev}}
+	if in.AfterAction != "" {
+		target.Previous = &h.ActionRef{Action: in.AfterAction, Revision: in.AfterRevision}
+	}
+	found := false
+	for i, row := range rows {
+		originals[row.ID] = row
+		if row.ID != in.Precedes.Action {
+			continue
+		}
+		if row.Kind != "Promotion" || row.Removed || row.Day != target.Day || row.Revision != in.Precedes.Revision {
+			return out, assignmentConflict()
+		}
+		if row.Previous != nil {
+			if target.Previous != nil && *target.Previous != *row.Previous {
+				return out, assignmentConflict()
+			}
+			target.Previous = row.Previous
+		}
+		rows[i].Previous = &h.ActionRef{Action: target.ID, Revision: target.Revision}
+		found = true
+	}
+	if !found {
+		return out, assignmentConflict()
+	}
+	rows = append(rows, target)
+	return u.publishRecordEdit(ctx, a, initial, rows, originals, len(rows)-1, "probation.confirm", "")
 }
 
 func (u *unit) relationVisibleAssignment(ctx context.Context, a h.Action, required string) (h.Action, bool, error) {
@@ -306,7 +372,7 @@ func (u *unit) relationOriginal(ctx context.Context, a h.Action, revision string
 	if revision == "" {
 		revision = a.Revision
 	}
-	scoped, ok, e := u.relationVisibleAssignment(ctx, a, "history")
+	_, ok, e := u.relationVisibleAssignment(ctx, a, "history")
 	if e != nil {
 		return out, e
 	}
@@ -314,12 +380,46 @@ func (u *unit) relationOriginal(ctx context.Context, a h.Action, revision string
 		return out, f.Fail(403, "HIRE_DENIED", "当前权限不允许读取关系原件")
 	}
 	var ev h.Original
-	e = u.tx.QueryRow(ctx, `SELECT adoption FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3`, u.store.Instance, a.ID, revision).Scan(&ev)
+	e = u.tx.QueryRow(ctx, `SELECT adoption,operation,notice FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3`, u.store.Instance, a.ID, revision).Scan(&ev, &a.Operation, &a.Notice)
 	if errors.Is(e, pgx.ErrNoRows) {
 		return out, f.Fail(404, "ACTION_REVISION_UNAVAILABLE", "所选修订不可用")
 	}
 	if e != nil {
 		return out, e
+	}
+	a.Revision = revision
+	scoped, ok, e := u.relationVisibleAssignment(ctx, a, "history")
+	if e != nil {
+		return out, e
+	}
+	if !ok {
+		return out, f.Fail(403, "HIRE_DENIED", "当前权限不允许读取这份关系修订")
+	}
+	if ev.Probation != nil && ev.Probation.AfterAction != "" {
+		prior, err := u.action(ctx, ev.Probation.AfterAction)
+		if err != nil {
+			return out, err
+		}
+		visible, err := u.revisionVisible(ctx, prior, ev.Probation.AfterRevision)
+		if err != nil {
+			return out, err
+		}
+		if !visible {
+			ev.Probation.AfterAction, ev.Probation.AfterRevision = "", ""
+		}
+	}
+	if ev.Previous != nil {
+		prior, err := u.action(ctx, ev.Previous.Action)
+		if err != nil {
+			return out, err
+		}
+		visible, err := u.revisionVisible(ctx, prior, ev.Previous.Revision)
+		if err != nil {
+			return out, err
+		}
+		if !visible {
+			ev.Previous = nil
+		}
 	}
 	if ev.Probation != nil && ev.Probation.Department != "" {
 		allowed, e := u.employmentAllowed(ctx, "read", a.Person, a.Employer, ev.Probation.Department, false)
@@ -328,21 +428,64 @@ func (u *unit) relationOriginal(ctx context.Context, a h.Action, revision string
 		}
 		if !allowed {
 			ev.Probation.Department, ev.Probation.DepartmentName, ev.Probation.AfterAction, ev.Probation.AfterRevision = "", "", "", ""
+			ev.Probation.DepartmentSource, ev.Probation.DepartmentRevision = "", ""
 		}
 	}
 	scoped.CanHistory = true
 	ev.Action = scoped
-	var rev h.Revision
-	e = u.tx.QueryRow(ctx, `SELECT revision,actor,coalesce(nullif(operator_snapshot->>'displayName',''),operator_snapshot->>'login',actor::text),to_char(recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3`, u.store.Instance, a.ID, revision).Scan(&rev.ID, &rev.Actor, &rev.Operator, &rev.RecordedAt)
-	if e != nil {
-		return ev, e
+	if a.Kind == "Leave" {
+		var department, name string
+		e = u.tx.QueryRow(ctx, `SELECT coalesce(r.adoption->>'department',''),coalesce(exit_department.name,'')
+			FROM staffing.employment_action a JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id)=(a.instance_id,a.id)
+			JOIN staffing.employment_revision_publication issued ON (issued.instance_id,issued.action_id,issued.revision)=(r.instance_id,r.action_id,r.revision) `+exitDepartmentJoin+`
+			WHERE a.instance_id=$1 AND a.id=$2 AND r.revision=$3`, u.store.Instance, a.ID, revision).Scan(&department, &name)
+		if e != nil {
+			return out, e
+		}
+		ev.Action.Department = ""
+		if department != "" {
+			visible, err := u.employmentAllowed(ctx, "history", a.Person, a.Employer, department, false)
+			if err != nil {
+				return out, err
+			}
+			read, err := u.employmentAllowed(ctx, "read", a.Person, a.Employer, department, false)
+			if err != nil {
+				return out, err
+			}
+			if read && visible {
+				ev.Action.Department = department
+				ev.DepartmentName = name
+			}
+		}
 	}
+	rows, e := u.tx.Query(ctx, `SELECT coalesce(nullif(operator_snapshot->>'displayName',''),operator_snapshot->>'login',actor::text),revision,actor,to_char(recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 ORDER BY recorded_at DESC`, u.store.Instance, a.ID)
+	if e != nil {
+		return out, e
+	}
+	revisions, e := pgx.CollectRows(rows, pgx.RowToStructByPos[h.Revision])
+	if e != nil {
+		return out, e
+	}
+	for _, rev := range revisions {
+		if rev.ID != revision {
+			other := a
+			other.Revision = rev.ID
+			_, visible, err := u.relationVisibleAssignment(ctx, other, "history")
+			if err != nil {
+				return out, err
+			}
+			if !visible {
+				continue
+			}
+		}
+		ev.Revisions = append(ev.Revisions, rev)
+	}
+
 	ev.Relation, e = u.relationshipSummary(ctx, a, scoped, true)
 	if e == nil && ev.Exit != nil {
 		ev.Relation.Until = ev.Exit.FirstInactive
 	}
 
-	ev.Revisions = []h.Revision{rev}
 	return ev, e
 }
 

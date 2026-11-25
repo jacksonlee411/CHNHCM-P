@@ -326,9 +326,12 @@ func (u *unit) openAssignment(ctx context.Context, item employmentEntry, in h.Hi
 			return err
 		}
 	}
-	// Later assignments inherit relationship facts already issued, with their exact original revisions.
+	// A later assignment adopts the relationship revisions current on admission.
 	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_member(instance_id,assignment_id,version,action_id,revision)
-        SELECT a.instance_id,$2,$3,a.id,a.revision FROM staffing.employment_action a WHERE a.instance_id=$1 AND a.employment_id=$4 AND a.kind IN ('ProbationStart','ConfirmEmployment')`, instance, item.assignment, version, item.employment)
+        SELECT a.instance_id,$2,$3,a.id,m.revision FROM staffing.employment_action a
+        JOIN staffing.assignment_head hd ON (hd.instance_id,hd.assignment_id)=(a.instance_id,a.assignment_id)
+        JOIN staffing.assignment_member m ON (m.instance_id,m.assignment_id,m.version,m.action_id)=(hd.instance_id,hd.assignment_id,hd.version,a.id)
+        WHERE a.instance_id=$1 AND a.employment_id=$4 AND a.kind IN ('ProbationStart','ConfirmEmployment')`, instance, item.assignment, version, item.employment)
 	if err != nil {
 		return err
 	}

@@ -217,7 +217,8 @@ export function OfferDetail({
     [message, setMessage] = useState('');
   const saved = useRef(false),
     failure = useRef<HTMLDivElement>(null),
-    opener = useRef<HTMLButtonElement | null>(null);
+    opener = useRef<HTMLButtonElement | null>(null),
+    lastOperation = useRef('');
   const entry = useRead(creating ? person : undefined, () =>
     offerAccess(person),
   );
@@ -484,20 +485,14 @@ export function OfferDetail({
                   ))}
                 </ObjectDetailSection>
               )}
-              {!op && (
-                <OfferHireHandoff
-                  item={item}
-                  session={session}
-                  historical={!!revision}
-                  refresh={view.refresh}
-                />
-              )}
               {!op && !revision && (
                 <Stack direction="row" gap={1} flexWrap="wrap">
                   {item.actions?.map((action) => (
                     <Button
                       key={action}
+                      ref={node => { if (action === lastOperation.current) opener.current = node; }}
                       onClick={(e) => {
+                        lastOperation.current = action;
                         opener.current = e.currentTarget;
                         saved.current = false;
                         setOp(action as Operation);
@@ -517,6 +512,14 @@ export function OfferDetail({
                     </Button>
                   ))}
                 </Stack>
+              )}
+              {!op && (
+                <OfferHireHandoff
+                  item={item}
+                  session={session}
+                  historical={!!revision}
+                  refresh={view.refresh}
+                />
               )}
               {!op && (
                 <ObjectDetailSection title="办理历史">

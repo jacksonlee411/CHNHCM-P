@@ -11,6 +11,7 @@ import (
 
 type savedRecord struct {
 	h.HistoryEntry
+	Owner     string
 	Operation string
 	Notice    string
 	Evidence  h.Original
@@ -83,13 +84,19 @@ func (u *unit) appendRecordRevision(ctx context.Context, assignment string, r sa
 
 func recordAdoption(r savedRecord) map[string]any {
 	fields := map[string]any{}
+	if r.Evidence.Probation != nil {
+		fields["probation"] = r.Evidence.Probation
+	}
+	if r.Evidence.Reason != "" {
+		fields["reason"] = r.Evidence.Reason
+	}
 	if r.Evidence.NoticeRef != nil {
 		fields["noticeRef"] = r.Evidence.NoticeRef
 	}
 	if r.Evidence.Promotion != nil {
 		fields["promotion"] = r.Evidence.Promotion
 	}
-	if r.Previous != nil {
+	if r.Previous != nil && (r.Evidence.Probation == nil || r.Evidence.Probation.AfterAction == "") {
 		fields["previous"] = r.Previous
 	}
 	if r.Evidence.LocationChange != nil {
@@ -106,23 +113,13 @@ func recordAdoption(r savedRecord) map[string]any {
 
 func (u *unit) saveReplayedSource(ctx context.Context, a h.Action, version string, target savedRecord, records []savedRecord, segments []h.Placement) error {
 	instance := u.store.Instance
-	_, e := u.tx.Exec(ctx, `INSERT INTO staffing.assignment_source(instance_id,assignment_id,version,previous,action_id,revision) VALUES($1,$2,$3,$4,$5,$6)`,
-		instance, a.Assignment, version, a.SourceVersion, target.ID, target.Revision)
-	if e != nil {
-		return e
-	}
-	_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_member SELECT m.instance_id,m.assignment_id,$4::uuid,m.action_id,m.revision FROM staffing.assignment_member m
-        JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
-        WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND a.kind NOT IN ('DataChange','Transfer','GradeRecord','Promotion')`, instance, a.Assignment, a.SourceVersion, version)
-	if e != nil {
-		return e
-	}
+	refs := make([]h.ActionRef, 0, len(records))
 	for _, r := range records {
-		_, e = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_member(instance_id,assignment_id,version,action_id,revision) VALUES($1,$2,$3,$4,$5)`,
-			instance, a.Assignment, version, r.ID, r.Revision)
-		if e != nil {
-			return e
-		}
+		refs = append(refs, h.ActionRef{Action: r.ID, Revision: r.Revision})
+	}
+	e := u.startSourceReplacing(ctx, a.Assignment, a.SourceVersion, version, target.ID, target.Revision, refs)
+	if e != nil {
+		return e
 	}
 	for _, s := range segments {
 		id := ""

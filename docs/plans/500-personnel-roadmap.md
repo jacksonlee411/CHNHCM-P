@@ -109,6 +109,8 @@ Personnel 的 `CheckIdentity` 从当前会话取客户，依本人、入职用�
 
 2026-11-25，本节十个阶段已合入 main，并在固定 f 的 4386 环境从正常菜单验收。本轮沿用 f 的 `3771272` 已交付的人员九栏、按职务首聘及未来撤销，按 e 的 `ec4572a` 实施 404 岗位方案。Staffing 负责办理、存储和查询，Personnel 与体验负责人员菜单及返回，Access 随每个入口交付其权限。[阶段提交、主线检查与操作样本](../verification/500-job-information-delivery-review.md#stage-delivery-results) · [九栏交接](../verification/504-personal-profile-fourth-batch.md) · [按职务首单实测](../verification/400-first-hire-integration.md#decision-first-hire) · [分模式准入](400-hire-readiness.md#hire-gates)
 
+同日对产品合并 `dfd49554` 的后续复核发现六项缺陷，其中历史调动后转正归属错误、有据可查的同日顺序无法完整办理，均影响整体验收。上述发现使原版本暂缓接受。508 六项修复及交叉回归现已通过，固定 f 的 4386 已更新，第 6.3 节在本地修复候选上重新验收通过。[修复版本与原库复验](../verification/508-job-information-implementation.md) · [修复次序与验收用例](508-job-information-remediation.md) · [复核事实](../verification/508-job-information-remediation-review.md)
+
 #### 6.3.1 先交付一份按职务任职的日常维护
 
 | 顺序 | 从哪里接手、要交付什么 | 正常菜单验收及交给下一步的结果 |

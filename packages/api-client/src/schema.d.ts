@@ -6343,6 +6343,7 @@ export interface components {
             afterAction?: string;
             /** Format: uuid */
             afterRevision?: string;
+            precedes?: components["schemas"]["EmploymentActionRef"];
         };
         ProbationState: {
             /** @enum {string} */
@@ -6357,6 +6358,10 @@ export interface components {
             start: string;
             /** @enum {string} */
             attribution: "relationship" | "notice" | "relationship-primary" | "primary-unavailable" | "same-day-order-undetermined" | "preceding-transfer";
+            /** Format: uuid */
+            departmentSource?: string;
+            /** Format: uuid */
+            departmentRevision?: string;
             /** Format: uuid */
             department?: string;
             departmentName?: string;
@@ -6638,6 +6643,7 @@ export interface components {
             canHandover: boolean;
             /** Format: date */
             lastActive?: string;
+            futureTerm?: boolean;
             managers: components["schemas"]["ActualManagerFact"][];
             canSetManager: boolean;
             canEnd: boolean;

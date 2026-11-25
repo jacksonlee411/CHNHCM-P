@@ -198,7 +198,7 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 				activeLocation = r.Location
 				state.Location = r.Location
 				after.Location = r.Location
-			case "GradeRecord":
+			case "GradeRecord", "ConfirmEmployment":
 			case "Promotion", "Transfer":
 				if r.Kind == "Promotion" && r.Transfer == nil {
 					break
@@ -227,20 +227,26 @@ func ProjectHistory(term f.Period, initial []Placement, history []HistoryEntry) 
 		}
 		// An unlinked promotion and transfer can have two lawful before-images.
 		// Preserve that distinction for authorization, qualification and reporting.
-		var promotion, move HistoryEntry
+		var promotion, confirmation, move HistoryEntry
 		for _, r := range ordered {
 			if r.Kind == "Promotion" {
 				promotion = r
 			}
-			if r.Kind == "Transfer" {
+			if r.Kind == "ConfirmEmployment" {
+				confirmation = r
+			}
+			if r.Transfer != nil {
 				move = r
 			}
 		}
-		if promotion.ID != "" && move.ID != "" && !follows(promotion, move.ID, entries) && !follows(move, promotion.ID, entries) {
+		for _, observer := range []HistoryEntry{promotion, confirmation} {
+			if observer.ID == "" || move.ID == "" || observer.ID == move.ID || follows(observer, move.ID, entries) || follows(move, observer.ID, entries) {
+				continue
+			}
 			alternative := result.Changes[move.ID].After
-			change := result.Changes[promotion.ID]
+			change := result.Changes[observer.ID]
 			change.Alternate = &alternative
-			result.Changes[promotion.ID] = change
+			result.Changes[observer.ID] = change
 		}
 		state.Period = span
 		result.Segments = append(result.Segments, state)

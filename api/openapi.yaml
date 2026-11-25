@@ -13670,6 +13670,7 @@ components:
         department: {type: string, format: uuid}
         afterAction: {type: string, format: uuid}
         afterRevision: {type: string, format: uuid}
+        precedes: {$ref: '#/components/schemas/EmploymentActionRef'}
     ProbationState:
       type: object
       required: [status]
@@ -13683,6 +13684,8 @@ components:
       properties:
         start: {type: string, format: date}
         attribution: {type: string, enum: [relationship, notice, relationship-primary, primary-unavailable, same-day-order-undetermined, preceding-transfer]}
+        departmentSource: {type: string, format: uuid}
+        departmentRevision: {type: string, format: uuid}
         department: {type: string, format: uuid}
         departmentName: {type: string}
         afterAction: {type: string, format: uuid}
@@ -13922,6 +13925,7 @@ components:
         canVerifyDuty: {type: boolean}
         canHandover: {type: boolean}
         lastActive: {type: string, format: date}
+        futureTerm: {type: boolean}
         managers: {type: array, items: {$ref: '#/components/schemas/ActualManagerFact'}}
         canSetManager: {type: boolean}
         canEnd: {type: boolean}

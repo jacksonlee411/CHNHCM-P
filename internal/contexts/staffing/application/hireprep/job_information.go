@@ -53,6 +53,7 @@ type State struct {
 }
 
 type AssignmentView struct {
+	FutureTerm          bool           `json:"futureTerm,omitempty"`
 	CanReadContracts    bool           `json:"canReadContracts"`
 	CanRecordDuty       bool           `json:"canRecordDuty"`
 	CanVerifyDuty       bool           `json:"canVerifyDuty"`
@@ -161,6 +162,7 @@ type JobInformation interface {
 	SetManager(context.Context, f.Credentials, string, string, ManagerCommand) (Receipt, error)
 	RecordPromotion(context.Context, f.Credentials, string, string, string, string, PromotionCommand) (Receipt, error)
 	GradeOptions(context.Context, f.Credentials, string, GradeSearch) ([]GradeRef, error)
+	ReconcileProbation(context.Context, f.Credentials, bool) (ProbationRepairReport, error)
 	RecordProbation(context.Context, f.Credentials, string, string, string, ProbationCommand) (Receipt, error)
 	ProbationDepartments(context.Context, f.Credentials, string, LocationSearch) ([]org.EligibleEntity, error)
 	AddSecondary(context.Context, f.Credentials, string, string, Secondary) (Receipt, error)

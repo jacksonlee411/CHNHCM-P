@@ -3000,6 +3000,30 @@
       "superseded_by": [],
       "closure": null,
       "archive": null
+    },
+    {
+      "id": "CHNHCM-508",
+      "title": "人员职务信息评审问题修复实施方案",
+      "path": "docs/plans/508-job-information-remediation.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing、Personnel、Recruiting、体验及验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": ["M04", "M01", "M05", "X03"],
+      "scope": "500 第 6.3 节六项实测问题的修复次序、旧数据及授权保护、正常菜单与实库重新验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-25",
+        "reviewer": "Codex 主代理起草后进行语义评审及修订复审",
+        "scope": "对照六项反例和现行实现，核对同日引用、历史重算与旧库处置、回执与现权、查询及菜单验收。",
+        "result": "accepted",
+        "evidence": "docs/verification/508-job-information-remediation-review.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {"date": "2026-11-25", "reason": "六项修复及相关回归已通过，固定 f 原库完成 00056 升级和 24 项菜单复验。"},
+      "archive": null
     }
   ],
   "first_slice": {
@@ -3014,6 +3038,78 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/508-job-information-implementation.md",
+        "related_documents": [
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-508"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "d981fed840d374837f1797001af444fe94c2db6f",
+        "working_tree": "dirty",
+        "change_description": "实施六项修复、00056 回执返回任职、关系核对升级器和实库及菜单回归。",
+        "environment": "隔离 PostgreSQL 18.6 与真实 API、Chromium 五种视口及原生 200%，固定 m01-profile-f（4386/8386/54376）原库 00056。",
+        "scope": "508 六项原反例、当前及旧来源、现权、双连接、前向升级与固定 f 交接。",
+        "results": [
+          {
+            "check": "原产品实库四组及固定库三项只读反例",
+            "result": "failed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "首轮全菜单双岗点击超时及样本政策冲突（120 通过、16 失败）",
+            "result": "failed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "30 个受影响实库顶层用例，含回执和两种旧库恢复",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "最终 136 项菜单与五种视口及原生 200%",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "原固定环境 24 项和 29 张表的前后内容摘要",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "可重复生成、文档、代码边界、质量及空白检查",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          }
+        ],
+        "limitations": [
+          "本验收对应 d981fed8 加工作区修复候选和固定 f。原生 400% 已由用户取消，数据库回归按改动范围实测。"
+        ]
+      },
+      {
+        "path": "docs/verification/508-job-information-remediation-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "d981fed840d374837f1797001af444fe94c2db6f",
+        "working_tree": "dirty",
+        "change_description": "新增 508 实施方案和方案评审记录，并在文档索引与 500 第 6.3 节接续原交付。",
+        "environment": "固定 f 本地文档工作区、d981fed8 产品源码与上轮同版实库和菜单的复核证据。",
+        "scope": "六项产品反例的根因、实施可行性、已有数据处置、复验判据和业务交接。",
+        "results": [
+          {"check": "六项原反例、业务合同和当前代码逐项对照", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
+          {"check": "首轮方案意见修订、六种登记顺序及归属与授权计数复算", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
+          {"check": "文档治理、源码边界、变更链接锚点及空白检查", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
+          {"check": "修复版本的数据库、API 和菜单验收", "result": "not_run", "evidence": "docs/plans/508-job-information-remediation.md"}
+        ],
+        "limitations": ["本次交付实施方案及其文档评审。新实现、旧库纠正和产品重新验收随实施执行。"]
+      },
       {
         "path": "docs/verification/500-job-information-delivery-review.md",
         "related_documents": ["CHNHCM-106", "CHNHCM-313", "CHNHCM-400", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],

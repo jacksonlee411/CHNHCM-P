@@ -17,8 +17,11 @@ func (u *unit) lockReporting(ctx context.Context) error {
 }
 
 func (u *unit) lifecycleSource(ctx context.Context, assignment, old, action, revision, cutoff string) error {
+	return u.cloneAssignmentSource(ctx, assignment, old, action, revision, cutoff, []h.ActionRef{{Action: action, Revision: revision}})
+}
+func (u *unit) cloneAssignmentSource(ctx context.Context, assignment, old, action, revision, cutoff string, refs []h.ActionRef) error {
 	version := f.NewID()
-	if err := u.startAssignmentSource(ctx, assignment, old, version, action, revision); err != nil {
+	if err := u.startSourceReplacing(ctx, assignment, old, version, action, revision, refs); err != nil {
 		return err
 	}
 	_, err := u.tx.Exec(ctx, `INSERT INTO staffing.assignment_segment(instance_id,assignment_id,version,period,location_id,location_ref,adoption,department_id,job_id,grade_ref)

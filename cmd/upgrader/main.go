@@ -14,26 +14,43 @@ import (
 )
 
 func main() {
-	mode := flag.String("mode", "migrate", "migrate, initialize, runtime-roles, access-change, local-password, country-catalog, geoarea-catalog, personnel-retention; inputs are JSON on stdin")
+	mode := flag.String("mode", "migrate", "migrate, initialize, runtime-roles, access-change, local-password, country-catalog, geoarea-catalog, personnel-retention, probation-reconcile; inputs are JSON on stdin")
+	apply := flag.Bool("apply", false, "apply the verified probation reconciliation; defaults to preview")
 	flag.Parse()
+	if *apply && *mode != "probation-reconcile" {
+		fail("-apply requires probation-reconcile")
+	}
 	budget := time.Minute
-	if *mode == "country-catalog" || *mode == "geoarea-catalog" {
+	if *mode == "country-catalog" || *mode == "geoarea-catalog" || *mode == "probation-reconcile" {
 		budget = 20 * time.Minute
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), budget)
 	defer cancel()
-	if *mode == "country-catalog" || *mode == "geoarea-catalog" {
+	if *mode == "country-catalog" || *mode == "geoarea-catalog" || *mode == "probation-reconcile" {
 		var input access.LoginInput
 		decoder := json.NewDecoder(os.Stdin)
 		decoder.DisallowUnknownFields()
 		if err := decoder.Decode(&input); err != nil {
-			fail("invalid catalog login input")
+			fail("invalid operator login input")
 		}
 		runtime, err := bootstrap.Open(ctx, os.Getenv("CHNHCM_DATABASE_URL"), os.Getenv("CHNHCM_INSTANCE_ID"))
 		if err != nil {
 			fail(err.Error())
 		}
 		defer runtime.Close()
+		if *mode == "probation-reconcile" {
+			report, err := runtime.ReconcileProbation(ctx, input, *apply)
+			if err != nil {
+				fail(err.Error())
+			}
+			if err = json.NewEncoder(os.Stdout).Encode(report); err != nil {
+				fail(err.Error())
+			}
+			if report.Unresolved+report.Failed > 0 {
+				fail("probation reconciliation requires follow-up")
+			}
+			return
+		}
 		if *mode == "geoarea-catalog" {
 			err = runtime.InitializeGeoAreaCatalog(ctx, input)
 		} else {

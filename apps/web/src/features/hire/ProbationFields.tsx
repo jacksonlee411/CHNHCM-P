@@ -50,7 +50,7 @@ export function ProbationFields({
               onInputChange={(_, v, r) => {
                 if (r === 'clear' || r === 'input') setSearch(v);
               }}
-              onChange={(_, v) => update({ ...draft, occurrence: v ?? undefined, predecessor: undefined })}
+              onChange={(_, v) => update({ ...draft, occurrence: v ?? undefined })}
               noOptionsText={departments.error ?? '没有匹配的部门'}
               renderInput={(props) => (
                 <TextField
@@ -62,7 +62,8 @@ export function ProbationFields({
               )}
             />
           </ObjectDetailField>
-          {!draft.occurrence && earlier.length > 0 && (
+          {draft.successor && <ObjectDetailField label="后续晋升">{draft.successor.notice}</ObjectDetailField>}
+          {earlier.length > 0 && (
             <ObjectTextField
               select
               label="通知明确在转正前生效的调动"

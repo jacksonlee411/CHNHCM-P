@@ -40,6 +40,8 @@ type Command =
   | { kind: 'transfer' | 'redate' | 'delete'; action?: string; input: Models['EmploymentRecordMaintenance'] };
 
 export function JobInformation({
+  enabled = true,
+  current,
   assignment,
   day,
   onDay,
@@ -54,9 +56,13 @@ export function JobInformation({
   session: Models['Principal'];
   onSave: () => void;
   actionSlot: HTMLElement | null;
+  enabled?: boolean;
+  current?: ReturnType<typeof useRead<Models['AssignmentView']>>;
   selectedAction?: string;
 }) {
   const [source, setSource] = useState('');
+  const [dayInput, setDayInput] = useState(day);
+  useEffect(() => setDayInput(day), [day]);
   const [contractDraft,setContractDraft]=useState<Models['EmploymentContractCommand']>();
   const contractInitial=useRef<Models['EmploymentContractCommand']|undefined>(undefined);
   const [draft, setDraft] = useState<JobDraft>();
@@ -69,7 +75,7 @@ export function JobInformation({
   const opener = useRef<HTMLButtonElement | null>(null);
   const saved = useRef(false);
   const header = { 'X-CSRF-Token': session.csrf };
-  const state = useRead(JSON.stringify([assignment, day, source]), async () =>
+  const lookup = useRead(enabled && (!current || source) ? JSON.stringify([assignment, day, source]) : undefined, async () =>
     unwrap(
       await api.GET('/api/v1/assignments/{id}', {
         params: {
@@ -79,8 +85,9 @@ export function JobInformation({
       }),
     ),
   );
+  const state = current && !source ? current : lookup;
   const data = state.data;
-  const opened = selectedAction ? data?.actions.find((a) => a.id === selectedAction && a.canHistory) : chosen;
+  const opened = data?.actions.find(a => a.id === (selectedAction ?? chosen?.id) && a.canHistory);
   useEffect(() => {
     if (!data || !draft) return;
     const a = data.actions.find((v) => v.id === draft.action?.id);
@@ -192,7 +199,7 @@ export function JobInformation({
         setNotice(recovery ? '已查回原办理。' : '职务信息已保存。');
       }
       state.invalidate();
-      onSave();
+      if (state !== current) onSave();
     },
     failed: (e) => {
       setError(message(e));
@@ -237,13 +244,13 @@ export function JobInformation({
       handover:after?.succession?true:undefined,
       incumbent:after?.succession?{...after.succession,departmentName:adoptedPosition?.departmentName??'',jobName:adoptedPosition?.jobName??''}:undefined,
       exchange:evidence?.exchange,
-      kind: after?.duty && a ? 'ActualDuty' : evidence?.exchange && a ? 'PositionExchange' : successor ? 'Promotion' : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
+      kind: after?.duty && a ? 'ActualDuty' : evidence?.exchange && a ? 'PositionExchange' : successor ? (successor.kind === 'Promotion' ? 'ConfirmEmployment' : 'Promotion') : a ? (a.kind==='Promotion'?'Promotion':a.kind === 'Transfer' ? 'Transfer' : 'DataChange') : availableRecordTypes(data)[0],
       successor,
       grade:evidence?.promotion?.after,originalGrade:evidence?.promotion?.before ?? state?.grade,
       reason:evidence?.promotion?.reason,
-      predecessor:data.actions.find(item=>item.id===evidence?.previous?.action),
+      predecessor:data.actions.find(item=>item.id===evidence?.previous?.action && (successor?.kind !== 'Promotion' || item.kind === 'Transfer')),
       action: a,
-      day: a?.businessDate ?? day,
+      day: a?.businessDate ?? successor?.businessDate ?? day,
       source: data.sourceVersion,
       value: a ? evidence?.locationChange?.after : state?.location,
       department: department
@@ -251,7 +258,7 @@ export function JobInformation({
         : undefined,
       position: position ? {id: position, name: adoptedPosition?.positionName ?? state?.positionName ?? position} : undefined,
       job: job ? { id: job, name: after?.segments?.[0]?.jobName ?? state?.job ?? '' } : undefined,
-      notice: evidence?.action.notice ?? '',
+      notice: successor ? '' : evidence?.action.notice ?? '',
       requires: evidence?.requires,
     };
     if(successor && evidence?.transfer){
@@ -323,6 +330,7 @@ export function JobInformation({
           department: record.occurrence?.id,
           afterAction: record.predecessor?.id,
           afterRevision: record.predecessor?.revision,
+          precedes: reference(record.successor),
         },
       });
       return;
@@ -397,8 +405,10 @@ export function JobInformation({
                   <ObjectTextField
                     type="date"
                     label="查看业务日"
-                    value={day}
+                    value={dayInput}
                     onChange={(e) => {
+                      setDayInput(e.target.value);
+                      if (e.target.value.length !== 10 || !e.target.validity.valid) return;
                       onDay(e.target.value);
                       setOpened(undefined);
                       setRevision('');
@@ -468,6 +478,8 @@ export function JobInformation({
                       {!original.data.exchange && (opened.canCorrectDuty || opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion) && (
                         <Button onClick={(e) => begin(e.currentTarget, 'correct', opened)}>更正记录</Button>
                       )}
+                      {opened.canCorrectPromotion && data.canConfirm &&
+                        <Button onClick={e => begin(e.currentTarget, 'insert', undefined, opened)}>在本次晋升前补录转正</Button>}
                       {opened.canWithdrawPromotion && <Button onClick={e=>begin(e.currentTarget,'withdraw',opened)}>撤销晋升</Button>}
                       {!original.data.exchange && opened.kind==='Transfer' && opened.canCorrectTransfer && data.canPromote &&
                         <Button onClick={e=>begin(e.currentTarget,'insert',undefined,opened)}>在本次调动前补录晋升</Button>}
@@ -554,6 +566,8 @@ export function OriginalEvidence({
   original: Models['HireOriginal'];
   setRevision: (id: string) => void;
 }) {
+  const order = original.previous ?? (original.probation?.afterAction && original.probation.afterRevision
+    ? {action: original.probation.afterAction, revision: original.probation.afterRevision} : undefined);
   const operator = original.revisions?.find((r) => r.id === original.action.revision)?.operator;
   return (
     <>
@@ -649,6 +663,8 @@ export function OriginalEvidence({
       {original.action.notice && (
         <ObjectDetailField label="人事依据">{original.action.notice}</ObjectDetailField>
       )}
+      {original.probation && original.reason && <ObjectDetailField label="修订原因">{original.reason}</ObjectDetailField>}
+      {order && <NoticeSource key={order.revision} reference={order} label="查看前序办理" />}
       {original.noticeRef && <NoticeSource key={original.noticeRef.revision} reference={original.noticeRef} label="查看通知来源" />}
       {original.promotion?.withdrawalBasis && <NoticeSource key={original.promotion.withdrawalBasis.revision} reference={original.promotion.withdrawalBasis} label="查看撤销依据来源" />}
       {original.revisions?.map((r) => (

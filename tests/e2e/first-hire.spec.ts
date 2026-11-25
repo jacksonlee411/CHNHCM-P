@@ -956,8 +956,10 @@ async function promotionJourney(page: Page, sample: Awaited<ReturnType<typeof se
   await add('试用开始','2027-04-02');
   await page.getByLabel(/试用依据/).fill('试用通知');await button('保存').click();
   await expect(page.getByText('试用中',{exact:true})).toBeVisible();
-  await add('转正',date);await page.getByLabel(/转正依据/).fill('本关系转正通知');
-  await button('保存').click();await expect(page.getByText('已转正',{exact:true})).toBeVisible();
+  if (mode !== 'reverse') {
+    await add('转正',date);await page.getByLabel(/转正依据/).fill('本关系转正通知');
+    await button('保存').click();await expect(page.getByText('已转正',{exact:true})).toBeVisible();
+  }
   if (mode !== 'forward') {
     const family = await seed308(page,'jobfamily');
     const job = await seed308(page,'job',family.id,{name:'产品专员' + suffix,gradeIds:mode === 'pair' ? [p6.id] : [p5.id,p6.id]});
@@ -966,7 +968,7 @@ async function promotionJourney(page: Page, sample: Awaited<ReturnType<typeof se
     await choose('调入部门',dest);
     await choose('拟任职务',job.name);
     await page.getByLabel(pair ? /晋升依据/ : /调动依据/).fill(pair ? '晋升及调动共同通知' : '独立调动通知');
-    await prior('转正 · 本关系转正通知');
+    if (pair) await prior('转正 · 本关系转正通知');
     if (pair) await choose('拟任职级',p6.name);
     await button('保存').click();
     await button('调动 · '+date).click();
@@ -984,7 +986,14 @@ async function promotionJourney(page: Page, sample: Awaited<ReturnType<typeof se
       await page.getByLabel(/晋升依据/).fill('研发晋升通知');
       await button('保存').click();
       await button('晋升 · '+date).click();
+      await button('在本次晋升前补录转正').click();
+      await expect(page.getByLabel(/^生效日期/)).toHaveValue(date);
+      await page.getByLabel(/转正依据/).fill('本关系转正通知');
+      await button('保存').click();
+      await expect(page.getByText('已转正',{exact:true})).toBeVisible();
+      await button('转正 · '+date).click();
       await expect(page.getByText(sample.department,{exact:true}).first()).toBeVisible();
+      await button('晋升 · '+date).click();
       await button('撤销晋升').click();
       await page.getByRole('combobox',{name:'引用通知'}).click();
       await page.getByRole('option',{name:'调动 · 独立调动通知',exact:true}).click();
@@ -1582,6 +1591,44 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
 }
 test('T06 已接受录用转入职与未来撤销 原生200%',async()=>{await native200(offerHireJourney)});
 
+async function openAdditionalAssignment(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  const link = page.getByRole('link', { name: '新增兼岗', exact: true });
+  if (page.viewportSize()?.width !== 1440 || page.viewportSize()?.height !== 900) {
+    await openEmployeeAssignment(page, sample);
+    await link.click();
+    return;
+  }
+
+  const routePattern = /\/api\/v1\/assignments\/[0-9a-f-]{36}(?:\?|$)/;
+  let release!: () => void;
+  const held = new Promise<void>(resolve => { release = resolve; });
+  let reads = 0;
+  await page.route(routePattern, async route => {
+    if (route.request().method() !== 'GET' || ++reads !== 2) return route.continue();
+    const response = await route.fetch();
+    await held;
+    await route.fulfill({ response });
+  });
+  try {
+    await openEmployeeAssignment(page, sample);
+    await link.scrollIntoViewIfNeeded();
+    const box = await link.boundingBox();
+    expect(box).not.toBeNull();
+    const point = { x: box!.x + box!.width / 2, y: box!.y + box!.height / 2 };
+    await page.mouse.move(point.x, point.y);
+    await page.mouse.down();
+    release();
+    await expect(page.getByRole('button', { name: '新增记录', exact: true })).toBeVisible();
+    const hit = await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.closest('a,button')?.textContent, point);
+    expect(hit).toBe('新增兼岗');
+    await page.mouse.up();
+    await expect(page).toHaveURL(url => url.pathname.endsWith('/additional'));
+  } finally {
+    release();
+    await page.unroute(routePattern);
+  }
+}
+
 async function secondaryPositionJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>) {
   const first='2027-04-01', policy='/api/v1/assignment-policies';
   const previous:{id:string;mode:string;revision:string}[]=[];
@@ -1605,7 +1652,7 @@ async function secondaryPositionJourney(page:Page,sample:Awaited<ReturnType<type
     }
     const hire=await request(page,'POST','/api/v1/hires',{person:sample.id,employer:sample.employerId,position:main.id,arrival:first,notice:'主岗聘任'},randomUUID());
     expect(hire.status,hire.body.message).toBe(200);
-    await openEmployeeAssignment(page,sample);await page.getByRole('link',{name:'新增兼岗'}).click();
+    await openAdditionalAssignment(page, sample);
     const positions=page.getByRole('combobox',{name:/^岗位/});
     await positions.fill(second.name);await page.getByRole('option',{name:second.name,exact:true}).click();
     await expect(page.getByText(second.department,{exact:true})).toBeVisible();await expect(page.getByText(second.job.name,{exact:true})).toBeVisible();
@@ -1801,4 +1848,148 @@ test('M04 主岗、个人日志和撤销原单各按当前授权重新读取', a
     sql(`DELETE FROM access.person_grant WHERE grant_id='${denied}'`);
     await reader.close();
   }
+});
+
+test('M05 交接应答在按下和松开之间到达时仍打开改期', async ({ page }) => {
+  test.setTimeout(90000);
+  await signIn(page);
+  const person = await seed(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await withCountedPolicies(page, async () => {
+    const { position } = await recruitingJourney(page, person);
+    const button = (name: string) => page.getByRole('button', { name, exact: true });
+    const offerId = new URL(page.url()).pathname.split('/').pop();
+    const offerPath = '/api/v1/recruiting/offers/' + offerId;
+    const seats = async () => {
+      const usage = await request(page, 'GET', '/api/v1/positions/' + position.id + '/replenishment?businessAt=2027-05-01');
+      expect(usage.status).toBe(200);
+      return [usage.body.reserved, usage.body.occupied];
+    };
+    const current = await request(page, 'GET', offerPath);
+    expect(await seats()).toEqual([1, 0]);
+    await expect(button('按录用办理入职')).toBeVisible();
+    await button('2027-04-01 · 发出录用').click();
+    await expect(page.getByText('已发出', { exact: true })).toBeVisible();
+
+    let responseReady!: () => void;
+    let deliverResponse!: () => void;
+    const received = new Promise<void>(resolve => { responseReady = resolve; });
+    const held = new Promise<void>(resolve => { deliverResponse = resolve; });
+    await page.route('**/hire-handoff?*', async route => {
+      if (new URL(route.request().url()).searchParams.get('sourceVersion') !== current.body.version) {
+        await route.continue();
+        return;
+      }
+      const response = await route.fetch();
+      responseReady();
+      await held;
+      await route.fulfill({ response });
+    });
+    await button('返回当前录用').click();
+    await expect(page.getByText('已接受', { exact: true })).toBeVisible();
+    await received;
+    const reschedule = button('调整录用日期');
+    await reschedule.scrollIntoViewIfNeeded();
+    const box = await reschedule.boundingBox();
+    expect(box).not.toBeNull();
+    const x = box!.x + box!.width / 2, y = box!.y + box!.height / 2;
+    const hit = () => page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest('button')?.textContent, [x, y]);
+    expect(await hit()).toBe('调整录用日期');
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    deliverResponse();
+    await expect(button('按录用办理入职')).toBeVisible();
+    expect(await hit()).toBe('调整录用日期');
+    await page.mouse.up();
+
+    const arrival = page.getByRole('textbox', { name: /^约定到岗日/ });
+    await expect(arrival).toHaveValue('2027-05-01');
+    await button('取消').click();
+    await expect(reschedule).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(arrival).toHaveValue('2027-05-01');
+    await button('取消').click();
+    const after = await request(page, 'GET', offerPath);
+    expect(after.body.version).toBe(current.body.version);
+    expect(await seats()).toEqual([1, 0]);
+    await expect(button('按录用办理入职')).toBeVisible();
+  }, ['hire']);
+});
+
+async function profileAssignmentDateJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>) {
+  const post = async (path:string, input:object) => {
+    const r = await request(page,'POST','/api/v1/'+path,input,randomUUID());
+    expect(r.status,r.body.message).toBe(200);
+    return r.body;
+  };
+  type Rule = {id:string; purpose:string; category:string; mode:string; from:string; until?:string; revision:string};
+  const policyPath = 'assignment-policies';
+  const policies = async () => (await request(page, 'GET', '/api/v1/'+policyPath)).body as {version:string; rows:Rule[]};
+  const restored: { rule:Rule; revision:string }[] = [];
+  try {
+    for (const [purpose, at] of [['hire','2026-04-01'], ['transfer','2026-07-01']]) {
+      const rows = (await policies()).rows
+        .filter(row => row.purpose === purpose && row.category === 'Employee' && (!row.until || row.until > at))
+        .sort((a,b) => a.from.localeCompare(b.from));
+      const fillGap = async (from:string, until?:string) => {
+        await post(policyPath, {expectedVersion:(await policies()).version,
+          row:{id:randomUUID(), category:'Employee', purpose, from, until, mode:'JobOnly'}});
+      };
+      // An open-ended hire and its subsequent transfer each need a continuous
+      // policy. Other journeys may have adopted an April-only counted policy.
+      let from: string | undefined = at;
+      for (const rule of rows) {
+        if (from && from < rule.from) await fillGap(from, rule.from);
+        if (rule.mode !== 'JobOnly') {
+          await post(policyPath, {expectedVersion:(await policies()).version, row:{...rule, mode:'JobOnly'}});
+          const written = (await policies()).rows.find(r => r.id === rule.id)!;
+          restored.push({rule, revision:written.revision});
+        }
+        from = rule.until;
+      }
+      if (from) await fillGap(from);
+    }
+    const hire = await post('hires',{person:sample.id,employer:sample.employerId,department:sample.departmentId,job:sample.jobId,arrival:'2026-04-01',notice:'档案日期样本'});
+    const path = 'assignments/'+hire.assignment;
+    const term = async () => (await request(page,'GET','/api/v1/'+path)).body;
+    const destinationName = '七月调入'+randomUUID().slice(0,8);
+    const dest = await apiDepartment(page,sample.buId,{name:destinationName});
+    await post(path+'/transfers',{expectedSourceVersion:(await term()).sourceVersion,businessDate:'2026-07-01',department:dest.id,job:sample.jobId,notice:'七月调动'});
+    const current = await term();
+    expect(current.state.departmentId).toBe(dest.id);
+    await openPerson(page,sample.name);
+    await page.getByRole('link',{name:'工作关系与任职',exact:true}).click();
+    const day=page.getByRole('textbox',{name:'查看业务日',exact:true});
+    await expect(day).toHaveValue(current.businessAt);
+    await expect(page.getByText(destinationName+' · '+sample.job,{exact:true})).toBeVisible();
+    await day.fill('2026-04');
+    await expect(day).toHaveValue('2026-04');
+    await day.fill('2026-04-05');
+    await expect(page).toHaveURL(url=>url.searchParams.get('assignmentDay')==='2026-04-05' && !url.searchParams.has('businessAt'));
+    await page.reload();
+    await expect(day).toHaveValue('2026-04-05');
+    await expect(page.getByText(sample.department+' · '+sample.job,{exact:true})).toBeVisible();
+  } finally {
+    for (const {rule,revision} of restored.reverse()) {
+      const policy = await policies();
+      const current = policy.rows.find(r => r.id === rule.id);
+      if (current?.revision === revision) {
+        await post(policyPath, {expectedVersion:policy.version, row:{...current, mode:rule.mode}});
+      }
+    }
+  }
+}
+
+for (const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+  test(`M04 档案唯一任职的初入日与刷新 ${width}x${height}`, async ({page}) => {
+    test.setTimeout(100000);
+    await signIn(page);
+    const sample=await seed(page,true,'2026-01-01');
+    await page.setViewportSize({width,height});
+    await profileAssignmentDateJourney(page,sample);
+  });
+}
+test('M04 档案唯一任职的初入日与刷新 原生200%',async()=>{
+  await native200(profileAssignmentDateJourney,page=>seed(page,true,'2026-01-01'));
 });
