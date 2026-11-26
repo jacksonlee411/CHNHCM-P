@@ -33,6 +33,9 @@ def run(args):
     assert not args.output.exists()
     assert not (args.continue_http_errors and args.observe), 'keep exhaustive HTTP results separate from detailed diagnosis'
     container = resource(private)
+    # The caller verified ownership of this disposable benchmark database.
+    if sql(container, "SELECT to_regclass('access.subject_grant') IS NULL") == "t":
+        sql(container, (ROOT / "tests/fixtures/access/policy.sql").read_text())
     case.BIN = args.binary.resolve()
     day = datetime.now(ZoneInfo('Asia/Shanghai')).strftime('%Y-%m-%d')
     oracle, _ = expected(args.shape, private, day)

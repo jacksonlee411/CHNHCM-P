@@ -43,7 +43,12 @@ func query131PlanRead(t *testing.T, f *fixture, b *browser, q history.Query131In
 
 func query131Grant(t *testing.T, f *fixture, b *browser, kind, id, action string, fields []string) {
 	t.Helper()
-	_, e := f.admin.Exec(f.ctx, `INSERT INTO access.subject_grant(instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields) VALUES($1,gen_random_uuid(),$2,$3,$4,$5,$6,ARRAY[]::text[]) ON CONFLICT(instance_id,principal_id,scope_kind,scope_id,action) DO UPDATE SET read_fields=EXCLUDED.read_fields`, f.instance, b.subject, kind, id, action, fields)
+	tag, e := f.admin.Exec(f.ctx, `UPDATE access.subject_grant SET read_fields=$6 WHERE instance_id=$1 AND principal_id=$2 AND scope_kind=$3 AND scope_id=$4 AND action=$5`, f.instance, b.subject, kind, id, action, fields)
+	must(t, e)
+	if tag.RowsAffected() > 0 {
+		return
+	}
+	_, e = f.admin.Exec(f.ctx, `INSERT INTO access.subject_grant(instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields) VALUES($1,gen_random_uuid(),$2,$3,$4,$5,$6,ARRAY[]::text[])`, f.instance, b.subject, kind, id, action, fields)
 	must(t, e)
 }
 

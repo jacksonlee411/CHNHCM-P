@@ -32,6 +32,9 @@ def sparse_reads(private, session, allowed, label, container=None):
         p=subprocess.run(['docker','exec','-i',container,'psql','-U','postgres','-d',database,'-X','-Atq','-v','ON_ERROR_STOP=1'],input=statement,text=True,capture_output=True)
         if p.returncode:raise RuntimeError('private sparse fixture SQL failed')
         return p.stdout.strip()
+    # The caller verified ownership of this disposable benchmark database.
+    if sql("SELECT to_regclass('access.subject_grant') IS NULL") == "t":
+        sql((ROOT / "tests/fixtures/access/policy.sql").read_text())
     instance,subject=str(uuid.UUID(session['instanceId'])),str(uuid.UUID(session['subjectId']))
     where=f"instance_id='{instance}' AND principal_id='{subject}'"
     snapshot=sql("SELECT json_agg(g) FROM access.subject_grant g WHERE "+where+" AND action='department.read'")

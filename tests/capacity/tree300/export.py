@@ -34,6 +34,9 @@ def run(args):
         value=subprocess.run(['docker','exec','-i',container,'psql','-U','postgres','-d',database,'-X','-Atq','-v','ON_ERROR_STOP=1'],input=statement,text=True,capture_output=True)
         if value.returncode:raise RuntimeError('owned fixture SQL failed; raw output intentionally withheld')
         return value.stdout.strip()
+    # The caller verified ownership of this disposable benchmark database.
+    if sql("SELECT to_regclass('access.subject_grant') IS NULL") == "t":
+        sql((ROOT / "tests/fixtures/access/policy.sql").read_text())
     business_digest=lambda:sql("SELECT md5(string_agg(md5(to_jsonb(h)::text),'' ORDER BY md5(to_jsonb(h)::text))) FROM organization.department_history h")
     before=business_digest();source=Oracle(private)
     result=dict(completed=False,passed=False,cases=[],readerDefaultExportDenied=None,businessHistoryUnchanged=None)
