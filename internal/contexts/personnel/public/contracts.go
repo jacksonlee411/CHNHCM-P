@@ -2,6 +2,7 @@ package public
 
 import (
 	"chnhcm.local/chnhcm/internal/foundation"
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -186,6 +187,15 @@ type DirectoryKey struct {
 	Person, ID string
 	Order      int
 }
+
+// DirectoryLookup holds a single authorized query in the caller's database
+// transaction. Both projections use the same retention and grant cutoff.
+type DirectoryLookup interface {
+	Renew(context.Context) error
+	Candidates(ids []string) ([]Summary, string, error)
+	Page(keys []DirectoryKey, anchor string) (IndexedDirectory, error)
+}
+
 type IndexedPerson struct {
 	Summary
 	Key string

@@ -18,7 +18,7 @@ import { employment } from './HirePage';
 import PersonIcon from '@mui/icons-material/Person';
 import { PersonTabs } from '../personnel/PersonTabs';
 import { JobInformation, type JobPageMode } from './JobInformation';
-import { employmentHistoryReturn, personnelReturn } from './jobLinks';
+import { employmentHistoryReturn, personnelReturn, profileReturn } from './jobLinks';
 
 export function AssignmentPage({ session }: { session: Models['Principal'] }) {
   const { id = '', assignment = '' } = useParams(),
@@ -104,7 +104,7 @@ function AssignmentDetail({
   const historyOrigin = employmentHistoryReturn(params.get('returnTo'), id);
   const back = returnAction
     ? registerOrigin || '/personnel/actions/' + returnAction + '?' + registerQuery
-    : historyOrigin || (listed ? person.path + '?' + backQuery : person.path + '/' + id + '?' + backQuery);
+    : historyOrigin || profileReturn(params.get('returnTo'), id) || (listed ? person.path + '?' + backQuery : person.path + '/' + id + '?' + backQuery);
   const personQuery = person.directoryParams(params);
   if (listed) personQuery.set('from', 'directory');
   personQuery.set('assignment', assignment);

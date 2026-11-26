@@ -338,6 +338,14 @@ export function OfferDetail({
   useEffect(() => {
     if (error) failure.current?.focus();
   }, [error]);
+  const deniedDraft = !!op && !creating && ([401,403,404].includes(view.status ?? 0) || !!item && !item.actions?.includes(op));
+  useEffect(() => {
+    if (!deniedDraft) return;
+    setOp(undefined);
+    setDay(''); setBasis(''); setArrival(''); setStart(''); setLast('');
+    openedOffer.current=undefined;
+    setError('已重新核对权限和录用状态，当前不可办理。');
+  },[deniedDraft]);
   const staleDraft=!!op && !creating && !!item && openedOffer.current?.version !== item.version;
   const title = creating ? '发出录用' : (item?.number ?? '招聘录用');
   usePageTitle(title);
@@ -347,7 +355,7 @@ export function OfferDetail({
   backParams.delete('returnTo');
   const back = fromPersonnel ?? offerPath + '?' + backParams.toString();
   const ready =
-    !!op &&
+    !!op && !deniedDraft &&
     !!day &&
     !!basis.trim() &&
     (op !== 'reschedule' || (!!arrival && !!start && scheduleChanged)) &&
@@ -419,7 +427,7 @@ export function OfferDetail({
             招聘录用
           </>
         }
-        actions={op && (!creating || entry.data?.canIssue) && (
+        actions={op && !deniedDraft && (!creating || entry.data?.canIssue) && (
                 <Stack direction="row" gap={1}>
                   <Button
                     type="submit" form="offer-record-form"
@@ -581,7 +589,7 @@ export function OfferDetail({
             </ObjectForm>
           )}
           {staleDraft && <Alert severity="warning">这份录用已被修改。请取消草稿，核对当前录用后重新办理。</Alert>}
-          {op && (!creating || entry.data?.canIssue) && (
+          {op && !deniedDraft && (!creating || entry.data?.canIssue) && (
             <Box
               id="offer-record-form" component="form"
               onSubmit={(e) => {

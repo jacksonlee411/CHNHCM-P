@@ -65,6 +65,8 @@ export function personnelReturn(target?: string | null) {
     'adoptedRef',
     'sourceVersion',
     'sourceEntry',
+    'returnDay',
+    'returnJobAction',
     'from',
     'view',
     'person',

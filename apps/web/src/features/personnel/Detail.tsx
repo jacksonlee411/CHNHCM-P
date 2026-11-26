@@ -182,7 +182,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const jobParams=person.directoryParams(params);
   if(listed)jobParams.set('from','directory');
   if(assignment && assignment===params.get('assignment') && params.has('assignmentDay'))jobParams.set('assignmentDay',params.get('assignmentDay')!);
-  const hireParams=new URLSearchParams({returnTo:profilePath});
+  const hireParams=new URLSearchParams({returnTo:profilePath+(selected==='history'?'&tab=history':'')});
   const historyParams=new URLSearchParams(hireParams);
   historyParams.set('view','history');
   const rehireParams=new URLSearchParams(hireParams);

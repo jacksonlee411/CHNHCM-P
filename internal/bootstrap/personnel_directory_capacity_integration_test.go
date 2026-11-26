@@ -3,7 +3,12 @@
 package bootstrap_test
 
 import (
+	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
+	foundation "chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
+	"context"
 	"fmt"
+	"github.com/jackc/pgx/v5"
 	"maps"
 	"slices"
 	"sync"
@@ -121,5 +126,46 @@ func measureMixedDirectory(t *testing.T, x assignmentFixture, first, next, bare 
 				t.Errorf("%s P95 超过 %v", group.label, limit)
 			}
 		}
+	}
+}
+
+// Expiry between candidate recognition and paging must not split the
+// permission snapshot. The very next directory read must observe expiry.
+func TestPersonnelDirectoryRetentionBoundary(t *testing.T) {
+	x := setupAssignment(t)
+	f := x.h.f
+	creds := geoCredentials203(t, f, "admin", f.password)
+	tx, err := f.admin.BeginTx(f.ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+	must(t, err)
+	defer tx.Rollback(f.ctx)
+	var cutoff time.Time
+	err = tx.QueryRow(f.ctx, `update personnel.person set ordinary_until=clock_timestamp()+interval '800 milliseconds' where instance_id=$1 and person_id=$2 returning ordinary_until`, f.instance, x.person).Scan(&cutoff)
+	must(t, err)
+	service := f.runtime.Personnel.(interface {
+		OpenDirectory(context.Context, foundation.Credentials, person.Query) (person.DirectoryLookup, error)
+	})
+	query := person.Query{Page: 1, Size: 20}
+	ctx := dbtx.With(f.ctx, tx)
+	lookup, err := service.OpenDirectory(ctx, creds, query)
+	must(t, err)
+	recognized, _, err := lookup.Candidates([]string{x.person})
+	must(t, err)
+	if len(recognized) != 1 {
+		t.Fatal("到期前无法识别人")
+	}
+	_, err = tx.Exec(ctx, `select pg_sleep(greatest(0,extract(epoch from ($1::timestamptz-clock_timestamp()))))`, cutoff)
+	must(t, err)
+	keys := []person.DirectoryKey{{Person: x.person, ID: x.hire["assignment"].(string)}}
+	before, err := lookup.Page(keys, keys[0].ID)
+	must(t, err)
+	if before.Total != 1 || before.Nav.Position != 1 {
+		t.Fatal("一次查询的行与导航发生变化", before)
+	}
+	fresh, err := service.OpenDirectory(ctx, creds, query)
+	must(t, err)
+	after, err := fresh.Page(keys, keys[0].ID)
+	must(t, err)
+	if after.Total != 0 || after.Nav.Position != 0 {
+		t.Fatal("新查询泄露过期身份", after)
 	}
 }

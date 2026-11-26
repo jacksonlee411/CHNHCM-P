@@ -50,11 +50,7 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 	if q.Anchor != "" && !f.ValidID(q.Anchor) || q.BusinessAt != "" && !f.ValidDate(q.BusinessAt) || q.Department != "" && !f.ValidID(q.Department) || q.Person != "" && !f.ValidID(q.Person) || q.Page < 1 || q.Page > 1000000 || !slices.Contains([]int{20, 50, 100}, q.PageSize) || !slices.Contains([]string{"", "name", "-name", "number", "-number"}, q.Sort) {
 		return out, f.Fail(400, "EMPLOYEE_QUERY", "请核对日期、部门及页码")
 	}
-	if personnel && q.Ref != "" {
-		if e := s.HirePeople.RenewDirectoryQuery(ctx, c, q.Ref); e != nil {
-			return out, e
-		}
-	}
+	var lookup person.DirectoryLookup
 	out.Rows = []h.EmployeeRow{}
 	out.Departments = []h.EmployeeDepartment{}
 	err = s.within(ctx, c, false, true, func(u *unit) error {
@@ -127,20 +123,11 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 			allowed = append(allowed, r.EmployeeRow)
 			ids = append(ids, r.Person)
 		}
-		// When there are no visible assignment rows to merge, PostgreSQL can count
-		// and page the scoped people directly, including old-number matches.
-		if personnel && len(allowed) == 0 && primary == "" && q.Department == "" && q.Anchor == "" {
-			page, err := s.HirePeople.DirectoryPage(dbtx.With(ctx, u.tx), c, person.Query{Ref: q.Ref, Page: q.Page, Size: q.PageSize, Sort: q.Sort})
-			if err != nil {
-				return err
-			}
-			out.People, out.Total, out.Keyword = page.Total, page.Total, page.Keyword
-			for _, p := range page.Rows {
-				out.Rows = append(out.Rows, h.EmployeeRow{ID: p.ID, Person: p.ID, Name: p.Name, Number: p.Number, Historical: p.Historical})
-			}
-			return nil
+		lookup, e = s.HirePeople.OpenDirectory(dbtx.With(ctx, u.tx), c, person.Query{Ref: q.Ref, Page: q.Page, Size: q.PageSize, Sort: q.Sort})
+		if e != nil {
+			return e
 		}
-		people, k, e := s.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, ids, q.Ref)
+		people, k, e := lookup.Candidates(ids)
 		if e != nil {
 			return e
 		}
@@ -164,7 +151,10 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 		for id := range departments {
 			deptIDs = append(deptIDs, id)
 		}
-		sources, e := u.PositionSources(ctx, "departmentId", deptIDs, false)
+		var sources []app.PositionSource
+		if len(deptIDs) > 0 {
+			sources, e = u.PositionSources(ctx, "departmentId", deptIDs, false)
+		}
 		if e != nil {
 			return e
 		}
@@ -238,7 +228,7 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 				keys = append(keys, person.DirectoryKey{Person: r.Person, ID: r.ID, Order: r.RecordNumber})
 				assignments[r.ID] = r
 			}
-			page, err := s.HirePeople.IndexedDirectory(dbtx.With(ctx, u.tx), c, person.Query{Ref: q.Ref, Page: q.Page, Size: q.PageSize, Sort: q.Sort}, keys, q.Anchor)
+			page, err := lookup.Page(keys, q.Anchor)
 			if err != nil {
 				return err
 			}
@@ -297,6 +287,9 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 		out.Rows = append(out.Rows, kept[from:min(from+q.PageSize, len(kept))]...)
 		return nil
 	})
+	if err == nil && personnel && q.Ref != "" {
+		err = lookup.Renew(ctx)
+	}
 	return
 }
 

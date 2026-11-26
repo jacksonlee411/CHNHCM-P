@@ -169,7 +169,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
               query.set('returnAction',prior.pathname.split('/').pop()!);
               query.set('returnTo',returnTo!);
               if (prior.searchParams.has('fromRegister')) query.set('fromRegister','1');
-            } else if (employmentHistoryReturn(returnTo, id)) {
+            } else if (profileReturn(returnTo,id) || employmentHistoryReturn(returnTo, id)) {
               query.set('returnTo', returnTo!);
             }
             query.set('assignmentDay',a.businessDate);
@@ -535,7 +535,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                     )}
                     {a.canHistory && original === a.id && source.data && (
                       <Box sx={{ overflowWrap: 'anywhere' }}>
-                        <Typography>工作关系 {a.employment}</Typography>
+                        {source.data.relation ? <Typography>工作关系 {source.data.relation.employerName} · {source.data.relation.from} 起{source.data.relation.until && '，'+source.data.relation.until+' 起不在该关系'}</Typography> : <Typography>工作关系 {a.employment}</Typography>}
                         {!relationAction(a.kind) && <Typography>{['Hire','Rehire','CancelHire'].includes(a.kind)?'首任职':'任职'} {a.assignment}</Typography>}
                         {source.data.locationChange&&<Typography>工作地点 {source.data.locationChange.before?.name??'—'} → {source.data.locationChange.after.name}</Typography>}
                         {source.data.sources && (

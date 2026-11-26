@@ -4,6 +4,7 @@ package bootstrap_test
 
 import (
 	f "chnhcm.local/chnhcm/internal/foundation"
+	"slices"
 	"testing"
 )
 
@@ -90,6 +91,15 @@ func TestEarlierAssignmentEditRetainsRealLaterTransfer(t *testing.T) {
 			t.Fatal("单侧部门或筛选泄漏", listed)
 		}
 		original := b.call("GET", transferOriginal, nil, "", 200)
+		if original["personNumber"] == nil || original["personName"] == nil {
+			t.Fatal("单侧原件缺少独立获权身份", original)
+		}
+		if side.atJuly == 0 {
+			v := state("2027-04-01")
+			if slices.Contains(v["effectiveDates"].([]any), any("2027-07-01")) {
+				t.Fatal("日期节点泄露调入部门", v["effectiveDates"])
+			}
+		}
 		evidence := original["transfer"].(M)
 		if side.atJuly == 0 && evidence["after"].(M)["department"] != nil || side.atJuly == 1 && evidence["beforeDepartment"] != nil {
 			t.Fatal("原件单侧裁剪", evidence)
@@ -99,6 +109,13 @@ func TestEarlierAssignmentEditRetainsRealLaterTransfer(t *testing.T) {
 			t.Fatal("调动后的可见任职人数", personView)
 		}
 	}
+	fixture.h.policy("UPDATE access.employment_grant SET department_id=NULL WHERE principal_id=$1 AND action='read'", b.subject)
+	fixture.h.policy("UPDATE access.employment_grant SET department_id=$2 WHERE principal_id=$1 AND action='history'", b.subject, fixture.dep)
+	oldScope := b.call("GET", base+"?businessAt=2027-04-01&sourceVersion="+prior.(string), nil, "", 200)
+	if slices.Contains(oldScope["effectiveDates"].([]any), any("2027-07-01")) {
+		t.Fatal("旧来源日期必须按历史授权裁剪")
+	}
+	b.call("GET", base+"?businessAt=2027-07-01&sourceVersion="+prior.(string), nil, "", 403)
 	fixture.h.policy("DELETE FROM access.employment_grant WHERE principal_id=$1 AND action='history'", b.subject)
 	b.call("GET", transferOriginal+"?adoptedRef="+transfer["revision"].(string), nil, "", 403)
 

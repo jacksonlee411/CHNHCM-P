@@ -632,6 +632,12 @@ test('M04 地点补录与原笔改日遇到真实并发后采用最新来源', a
   await expect(button('数据更改 · 2027-05-03')).toBeVisible();
   const proof = await request(page,'GET','/api/v1/employment-actions/'+action.id+'?adoptedRef='+edited.body.revision);
   expect(proof.body.action.businessDate).toBe('2027-05-02');
+  await button('数据更改 · 2027-05-03').click();
+  await page.getByRole('button',{name:/查看修订/}).nth(1).click();
+  await button('数据更改 · 2027-05-02').click();
+  await button('返回当前职务信息').click();
+  await expect(button('数据更改 · 2027-05-03')).toBeVisible();
+  await expect(page).toHaveURL(url=>url.searchParams.get('assignmentDay')==='2027-05-03');
   await other.close();
 });
 
@@ -961,7 +967,7 @@ async function concurrentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await page.getByLabel(/任用依据/).fill('培训关系独立聘任');
   await button('保存').click();
   await expect(page.locator('.object-detail-identity').filter({hasText:'2 号兼岗'})).toBeVisible();
-  await expect(page.getByText('本工作关系主任职', { exact: true })).toBeVisible();
+  await expect(page.locator('.object-detail-identity')).toContainText('本工作关系主任职');
   await expect(page.getByRole('tab', { name: '个人资料' })).toHaveCount(0);
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))

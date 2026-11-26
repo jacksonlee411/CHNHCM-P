@@ -468,7 +468,13 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if !disclosure.from && !disclosure.to {
 			return f.Fail(403, "HIRE_DENIED", "当前权限不允许读取本次修订")
 		}
-		rows, e := u.tx.Query(ctx, `SELECT coalesce(nullif(operator_snapshot->>'displayName',''),operator_snapshot->>'login',actor::text),revision,actor,to_char(recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 ORDER BY recorded_at DESC`, st.Instance, id)
+		rows, e := u.tx.Query(ctx, `WITH RECURSIVE revisions AS (
+ SELECT r.*, 1 AS depth FROM staffing.employment_action_revision r
+ WHERE r.instance_id=$1 AND r.action_id=$2 AND r.previous_revision IS NULL
+ UNION ALL SELECT r.*, prev.depth+1 FROM revisions prev
+ JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.previous_revision)=(prev.instance_id,prev.action_id,prev.revision))
+ SELECT coalesce(nullif(operator_snapshot->>'displayName',''),operator_snapshot->>'login',actor::text),revision,actor,
+ to_char(recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM revisions ORDER BY depth DESC,recorded_at DESC,revision`, st.Instance, id)
 		if e != nil {
 			return e
 		}

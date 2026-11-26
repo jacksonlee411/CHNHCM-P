@@ -407,7 +407,7 @@ func (u *unit) assignmentView(ctx context.Context, c f.Credentials, id, day, ver
 			out.Actions = append(out.Actions, item)
 		}
 
-		out.EffectiveDates, e = u.effectiveDates(ctx, a, version, out.Actions)
+		out.EffectiveDates, e = u.effectiveDates(ctx, a, version, pinned, out.Actions)
 		if e != nil {
 			return e
 		}
@@ -419,7 +419,7 @@ func (u *unit) assignmentView(ctx context.Context, c f.Credentials, id, day, ver
 
 // A real arrangement boundary can exist without a new action, for example the
 // first normal day after a finite duty period. Scope the segment before exposing its date.
-func (u *unit) effectiveDates(ctx context.Context, a h.Action, version string, actions []h.Action) ([]string, error) {
+func (u *unit) effectiveDates(ctx context.Context, a h.Action, version string, pinned bool, actions []h.Action) ([]string, error) {
 	source, err := u.assignmentIdentity(ctx, a.Assignment)
 	if err != nil {
 		return nil, err
@@ -450,6 +450,12 @@ func (u *unit) effectiveDates(ctx context.Context, a h.Action, version string, a
 			allowed, err = u.employmentAllowed(ctx, "read", a.Person, a.Employer, s.Department, false)
 			if err != nil {
 				return nil, err
+			}
+			if allowed && pinned {
+				allowed, err = u.employmentAllowed(ctx, "history", a.Person, a.Employer, s.Department, false)
+				if err != nil {
+					return nil, err
+				}
 			}
 			permissions[s.Department] = allowed
 		}

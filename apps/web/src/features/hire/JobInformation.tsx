@@ -465,7 +465,9 @@ export function JobInformation({
     original.invalidate();
     if (!current) onSave();
     const next = new URLSearchParams(params);
-    for (const key of ['sourceVersion', 'adoptedRef', 'sourceEntry']) next.delete(key);
+    for (const key of ['sourceVersion', 'adoptedRef', 'sourceEntry','returnDay','returnJobAction']) next.delete(key);
+    if (params.has('returnDay')) next.set('assignmentDay',params.get('returnDay')!);
+    if (params.has('returnJobAction')) next.set('action',params.get('returnJobAction')!);
     if (!selectedAction && unavailable && !source) next.delete('action');
     const options = {state:{...route.state, focusJobOriginal:true}};
     if (entry && personId && entry !== assignment && /^[a-f\d-]{36}$/i.test(entry)) {
@@ -486,7 +488,9 @@ export function JobInformation({
     next.set('assignmentDay', target.businessDate);
     next.set('action', target.id);
     next.set('adoptedRef', target.revision);
-    if (assignment !== target.assignment) next.set('sourceEntry', assignment);
+    if (!next.has('returnDay') && day) next.set('returnDay',day);
+    if (!next.has('returnJobAction') && chosenId) next.set('returnJobAction',chosenId);
+    if (assignment !== target.assignment && !next.has('sourceEntry')) next.set('sourceEntry', assignment);
     return '/personnel/employees/' + target.person + '/assignments/' + target.assignment + '?' + next;
   }
   return (
@@ -570,7 +574,8 @@ export function JobInformation({
                         <Button
                           key={a.id}
                           id={chosenId === a.id ? controlId + '-record' : undefined}
-                          onClick={() => select({action:a.id, assignmentDay:a.businessDate, adoptedRef:historical?a.revision:undefined, sourceVersion:historical?facts?.sourceVersion:undefined})}
+                          onClick={() => select({action:a.id, assignmentDay:a.businessDate, adoptedRef:historical?a.revision:undefined, sourceVersion:historical?facts?.sourceVersion:undefined,
+                            returnDay:historical?(params.get('returnDay')||day):undefined,returnJobAction:historical?(params.get('returnJobAction')||chosenId||undefined):undefined})}
                         >
                           {actionLabel(a)}{a.operation==='Withdraw'?'（已撤销）':a.operation==='Delete'?'（已删除）':''} · {a.businessDate}
                         </Button>

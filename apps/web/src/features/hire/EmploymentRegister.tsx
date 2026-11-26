@@ -197,16 +197,31 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
   const data = listing.data,
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
-  useEffect(()=>{
-    if(!data) return;
-    const choices={department:data.departments,fromDepartment:data.fromDepartments,toDepartment:data.toDepartments,operator:data.operators};
-    const next=new URLSearchParams(params);
-    for(const [name,options] of Object.entries(choices)){
-      const value=next.get(name);
-      if(value && !options?.some(option=>option.id===value)) next.delete(name);
+  // A name, type or date filter can legitimately have no intersection with
+  // a selected department. Check the authorized scope on its own before
+  // removing an applied selection or discarding its display name.
+  const scopeFields = {department:'departments',fromDepartment:'fromDepartments',toDepartment:'toDepartments',operator:'operators'} as const;
+  const missingScopes = (Object.keys(scopeFields) as (keyof typeof scopeFields)[]).filter(name =>
+    data && params.has(name) && !data[scopeFields[name]]?.some(o=>o.id===params.get(name)));
+  const scopeQuery = person.useRead(missingScopes.length ? JSON.stringify([route.key, query]) : undefined, () =>
+    api.GET('/api/v1/employment-actions',{params:{query:{page:1,pageSize:20}}}).then(unwrap), 'fresh');
+  const filterData = data && {...data};
+  if (filterData && scopeQuery.data) {
+    for (const name of missingScopes) {
+      const field=scopeFields[name];
+      const option=scopeQuery.data[field]?.find(o=>o.id===params.get(name));
+      if (option) filterData[field]=[...(filterData[field]??[]),option];
     }
-    if(next.toString()!==params.toString()){next.delete('selected');next.set('page','1');setParams(next,{replace:true});}
-  },[data,params,setParams]);
+  }
+  const unavailable = missingScopes.filter(name =>
+    scopeQuery.data && !scopeQuery.data[scopeFields[name]]?.some(option=>option.id===params.get(name))).join(',');
+  useEffect(()=>{
+    if (!unavailable) return;
+    const next=new URLSearchParams(params);
+    for(const name of unavailable.split(',')) next.delete(name);
+    next.delete('selected'); next.set('page','1');
+    setParams(next,{replace:true});
+  },[unavailable,params,setParams]);
   const countKey=JSON.stringify({...query,page:undefined});
   const lastCount=useRef<{key:string;total:number} | undefined>(undefined);
   useEffect(()=>{if(data)lastCount.current={key:countKey,total:data.total};},[countKey,data]);
@@ -432,7 +447,7 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
               />
             }
           >
-            {!denied && <Filters params={params} data={data} apply={(values) => void apply(values)} />}
+            {!denied && <Filters params={params} data={filterData} apply={(values) => void apply(values)} />}
             {data && draft.trim() !== data.keyword && <Typography role="status" variant="body2">姓名或人员编号已修改，查询后生效。</Typography>}
             {data && <Typography>{data.total} 笔办理</Typography>}
           </ListControl>
