@@ -82,7 +82,7 @@
 | 切片 | 当前进展与接续 |
 | --- | --- |
 | T01 | 已确定甲乙 BU、甲部门两岗、账号管理归属、可委派动作与字段、首位引导和恢复责任。[职责与入口](../specs/x03/028-local-account-and-authorization.md#11-t01-隔离实例的职责与办理入口) |
-| T02 | 公共 00058 将实际持有的授权迁为固定角色、范围、字段版本及独立授予。Go 在同一业务事务内处理重叠、撤销、停用和到期，人员、入职规则及首单入职沿用各自的权限入口。[公共主线 00039 升级实测](../verification/027-public-main-grant-upgrade.md) · [00038 首轮实测](../verification/027-public-grant-cutover.md) · [原仓 00029 验证](../verification/027-x03-grant-cutover.md) |
+| T02 | 公共 00058 将实际持有的授权迁为固定角色、范围、字段版本及独立授予。Go 在同一业务事务内处理重叠、撤销、停用和到期，人员、入职规则及首单入职沿用各自的权限入口。[00057 → 00058 验证](../verification/027-public-00058-grant-upgrade.md) · [公共主线 00039 升级实测](../verification/027-public-main-grant-upgrade.md) · [00038 首轮实测](../verification/027-public-grant-cutover.md) · [原仓 00029 验证](../verification/027-x03-grant-cutover.md) |
 | T03 | 部门沿 `Guard.Decide`、`DecideReads`、`ReadPlanner` 接续对象、字段、固定选择和 CSV。核编通过相同守卫检查岗位及实际写入字段，继续验正常菜单、历史与可见小计，并复查[部门上下文晚于定位输入](../verification/027-public-main-grant-upgrade.md#3-合流回归)时的查询。 |
 | T04 | 在同库管理事务内使用 `LockManagement`、`PublishVersion`、`ChangeAssignment` 和 `DisableVersion`。接入管理动作目录、账号管理归属、真实管理会话、委派上限及全体受影响引用检查，再交付受控引导／恢复和管理回执。 |
 | T05 | 页面撤尽原账号默认读权、重走实际启动、重新登录及三组正常菜单全程验收待执行。 |
