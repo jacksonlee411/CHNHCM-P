@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check actual Playwright inventories before running an admitted CI shard."""
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 import hashlib
 import json
 import os
@@ -11,7 +11,7 @@ import subprocess
 
 from ci_policy import ROOT, POLICY, browser_files, validate_plan
 from ci_coverage import inventory_part
-from ci_shards import FULL_BROWSER, balanced_groups, browser_seconds, selected_browser_count
+from ci_shards import FULL_BROWSER, SECONDS, balanced_groups, browser_seconds, selected_browser_count
 
 
 PREFLIGHT_CASES = (
@@ -30,7 +30,7 @@ def title_args(titles):
     return ['--grep', '(?:' + '|'.join(re.escape(title) for title in titles) + ')$']
 
 
-def inventory(report, expected_titles=()):
+def inventory(report, expected_titles=(), locations=None):
     if report.get('errors'):
         raise ValueError('Playwright discovery errors')
     found = {}
@@ -53,6 +53,10 @@ def inventory(report, expected_titles=()):
                 if key in found:
                     raise ValueError('duplicate discovered test')
                 found[key] = owner or entry_path(spec['file'])
+                if locations is not None and owner in SECONDS['browser_halves'] and test['projectName'] == 'chromium':
+                    if entry_path(spec['file']) != owner:
+                        raise ValueError(f'cannot select shared declarations by line in {owner}')
+                    locations[owner][spec['line']] += 1
                 if expected_titles and test['projectName'] == 'chromium':
                     titles.append(spec['title'])
         for child in suite.get('suites', []):
@@ -81,26 +85,51 @@ def selected_files(scope, root=ROOT):
 
 
 def arguments(files):
-    return ['(?:^|/)' + re.escape(p) + '$' for p in files]
+    filters = []
+    for selector in files:
+        path, separator, line = selector.partition(':')
+        filters.append('(?:^|/)' + re.escape(path) + '$' + separator + line)
+    return filters
 
 
-def shard_files(selected, total, dependencies):
+def shard_files(selected, total, dependencies, locations=None):
     entries = sorted({owner for key, owner in selected.items() if key[0] not in dependencies})
     if not entries and total == 1:
         return [sorted(set(selected.values()))]
-    return balanced_groups(entries, total, browser_seconds)
+    weights = {}
+    for entry in entries:
+        seconds = browser_seconds(entry)
+        if entry not in SECONDS['browser_halves']:
+            weights[(entry,)] = seconds
+            continue
+        # Keep parameterized cases on the same declaration together, in source order.
+        counts = locations[entry]
+        lines = sorted(counts)
+        if len(lines) < 2:
+            raise ValueError(f'{entry} needs two distinct declarations')
+        seen, count = 0, counts.total()
+        for index, line in enumerate(lines[:-1], 1):
+            seen += counts[line]
+            if seen * 2 >= count:
+                break
+        for section in [lines[:index], lines[index:]]:
+            selectors = tuple(f'{entry}:{line}' for line in section)
+            weights[selectors] = seconds * sum(counts[line] for line in section) / count
+    return [[selector for unit in group for selector in unit]
+            for group in balanced_groups(list(weights), total, weights.__getitem__)]
 
 
-def discover(args, expected_titles=()):
+def discover(args, expected_titles=(), locations=None):
     result = subprocess.check_output(['corepack', 'pnpm', 'exec', 'playwright', 'test',
                                      '--config', 'tests/e2e/playwright.config.ts',
                                      '--list', '--reporter=json', *args], cwd=ROOT)
-    return inventory(json.loads(result), expected_titles)
+    return inventory(json.loads(result), expected_titles, locations)
 
 
 def check_inventory(files, total, split=False, coverage_output=None):
     dependencies = json.loads((ROOT / POLICY).read_text())['dependency_projects']
-    whole = discover([])
+    locations = defaultdict(Counter)
+    whole = discover([], locations=locations)
     selected = discover(arguments(files)) if files else whole
     expected = {key for key, owner in whole.items() if not files or owner in files or key[0] in dependencies}
     if set(selected) != expected or not set(files) <= set(selected.values()):
@@ -109,7 +138,7 @@ def check_inventory(files, total, split=False, coverage_output=None):
     shards = [discover(early, PREFLIGHT_TITLES)] if split else []
     remaining = ['--grep-invert', early[1]] if split else []
     shards.extend(discover(arguments(group) + remaining)
-                  for group in shard_files(selected, total, dependencies))
+                  for group in shard_files(selected, total, dependencies, locations))
     result = verify_partition(selected, shards, dependencies)
     if split and coverage_output:
         parts = [inventory_part([(*key, owner) for key, owner in shard.items()], shard.values())
@@ -154,7 +183,9 @@ def main():
             if not 1 <= args.shard <= total:
                 parser.error('invalid browser shard')
             dependencies = json.loads((ROOT / POLICY).read_text())['dependency_projects']
-            groups = shard_files(discover(arguments(files)), total, dependencies)
+            locations = defaultdict(Counter)
+            selected = discover(arguments(files), locations=locations)
+            groups = shard_files(selected, total, dependencies, locations)
             selected_args = arguments(groups[args.shard - 1]) + remaining
         selected = discover(selected_args, PREFLIGHT_TITLES if args.command == 'preflight' else ())
         print(json.dumps({'phase': args.command, 'shard': args.shard, 'total': total, 'tests': sorted(selected)}), flush=True)

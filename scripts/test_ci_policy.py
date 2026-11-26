@@ -205,7 +205,7 @@ class CandidateTests(unittest.TestCase):
         limited = ci.build_plan(event, env, API(), self.root)
         outputs = ci.schedule(limited, event, env, API())
         self.assertTrue(outputs['run_browser'])
-        self.assertEqual(len(outputs['browser_matrix']), 2)
+        self.assertEqual(len(outputs['browser_matrix']), limited['browser_shards'])
         event = {'inputs': {'suite': 'browser-full'}}
         payload = self.root / 'event.json'
         payload.write_text(json.dumps(event))
@@ -239,7 +239,7 @@ class CandidateTests(unittest.TestCase):
             self.write('tests/e2e/first-hire.spec.ts', 'changed scenario')
         plan, env, pr = self.candidate(change)
         outputs = ci.schedule(plan, {'pull_request': pr}, env, API())
-        self.assertEqual(len(outputs['integration_matrix']), 2)
+        self.assertEqual(len(outputs['integration_matrix']), 4)
         self.assertTrue(outputs['run_integration'])
         self.assertEqual(plan['browser_files'], ['first-hire.spec.ts'])
         self.assertFalse(outputs['run_browser'])

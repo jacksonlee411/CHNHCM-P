@@ -136,7 +136,7 @@ class ImpactTests(unittest.TestCase):
         self.assertEqual((browser['integration_shards'], browser['browser_shards']), (0, 1))
         self.assertEqual(browser['browser_files'], ['department-journeys.spec.ts'])
         integration = self.select('tests/integration/department_contract_test.go')
-        self.assertEqual((integration['integration_shards'], integration['browser_shards']), (2, 0))
+        self.assertEqual((integration['integration_shards'], integration['browser_shards']), (4, 0))
         unit = self.select('internal/contexts/organization/domain/department/path_test.go')
         self.assertEqual((unit['scope'], unit['integration_shards'], unit['browser_shards']), ('selected', 0, 0))
 
@@ -151,7 +151,7 @@ class ImpactTests(unittest.TestCase):
                      'tests/e2e/fixtures.ts', 'api/openapi.yaml', 'unknown.file']:
             with self.subTest(path=path):
                 p = self.select(path)
-                self.assertEqual((p['scope'], p['integration_shards'], p['browser_shards']), ('full', 2, 16))
+                self.assertEqual((p['scope'], p['integration_shards'], p['browser_shards']), ('full', 4, 16))
         self.assertEqual(impact.select(['docs/README.md'], self.policy, False, ci.ROOT)['scope'], 'full')
 
     def test_deleted_frontend_keeps_consumer_tests_and_unknown_test_delete_widens(self):
