@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)。
 适用范围：X03授权判定、M02业务终态与读取、详情关系/路径跳转及其共享链路、万科固定验证案例，以及相同机制的后续对象接入。
-上游依据：用户要求将调查与解决举措文档化，并“彻底去除没有必要的过度设计”；[025全新实施](025-greenfield-implementation-policy.md)、[126原方案](../plans/126-compact-history-storage-research.md)、[127万科验证](../plans/127-vanke-full-history-verification.md)。调查原件及本批检查见[128报告](../verification/128-authorization-evidence-investigation.md)。
+上游依据：用户要求将调查与解决举措文档化，并“彻底去除没有必要的过度设计”；[025全新实施](025-greenfield-implementation-policy.md)、[126原方案](../archive/plans/126-compact-history-storage-research.md)、[127万科验证](../archive/plans/127-vanke-full-history-verification.md)。调查原件及本批检查见[128报告](../verification/128-authorization-evidence-investigation.md)。
 
 本决定初始文档及评审已提交`b33df10`。用户随后授权实施，删除实施及独立候选验证已完成，容量未通过项及实际结果见[128实施记录](../verification/128-implementation.md)；原调查/评审报告保留各自范围。用户已取消200MB硬性目标；本次不另设50MB、200MB或其他未经测量的整库承诺。旧实现、旧报告和固定验证库分别保留其实际状态。
 

@@ -1,6 +1,6 @@
 # CHNHCM-100 b运行隔离验证
 
-登记信息：[registry.json](../governance/registry.json) 的同路径验证记录。适用范围：[100 的 T01](../plans/100-ui-experience-improvement.md#ui100-runtime-isolation)，操作方法由 [017](../guides/017-local-bu-development.md) 持有。本次完成 b 独立运行及其必要反例验证；a/b 同时在线未运行，留 T05 补验。
+登记信息：[registry.json](../governance/registry.json) 的同路径验证记录。适用范围：[100 的 T01](../archive/plans/100-ui-experience-improvement.md#ui100-runtime-isolation)，操作方法由 [017](../guides/017-local-bu-development.md) 持有。本次完成 b 独立运行及其必要反例验证；a/b 同时在线未运行，留 T05 补验。
 
 ## 1 验证对象与受测基线
 

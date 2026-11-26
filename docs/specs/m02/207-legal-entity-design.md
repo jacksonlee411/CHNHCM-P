@@ -1,12 +1,12 @@
 # CHNHCM-207 法律实体基础维护合同
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：LegalEntity基础资料的首阶段真实接入；推进及验收由[206](../../plans/206-legal-entity-implementation.md)持有。依据[009](../../adr/009-mainland-organization-terms.md)、[M02目标](../../architecture/target/modules/m02.md)、[120](120-dated-maintenance-technical-contract.md)、[121](121-dated-object-admission-matrix.md)和[124](../../guides/124-dated-object-admission-and-capacity.md)。本合同不新增各地区法律资格政策。
+本合同规定法律实体基础资料的维护、验收，以及组织用途和真实人事办理的职责。基础维护按第 6.1 节的 15 项条件验收，办理入职时按第 7 节核对主体资格及其实际采用。各地区的法律资格按当地适用政策判定。[登记表](../../governance/registry.json) · [大陆组织角色](../../adr/009-mainland-organization-terms.md) · [按日维护](120-dated-maintenance-technical-contract.md) · [对象接入](121-dated-object-admission-matrix.md) · [容量指南](../../guides/124-dated-object-admission-and-capacity.md)
 
 ## 1 对象、角色与正常任务
 
 LegalEntity是企业内独立组织主体，稳定UUID及企业内唯一编码，不复用BU/部门/地点身份。组织管理员从“设置 → 组织配置 → 法律实体”创建、查询、维护及追溯；查询者可读取及导出获权资料。首条默认1900-01-01，仅为配置初始默认，不表示成立、登记或法律关系起点。企业有效下界及用户明确日期按202处理。
 
-基础资料不推导用人单位、用工单位、付款、扣缴、参缴或成本角色；分支与非法人组织可单独登记。用途及具体人员关系由009分责，后续用途声明、真实组织绑定和M04采用另立专项。编码不能被更正为另一主体，不按名称或登记号码合并对象。
+分支与非法人组织可单独登记。基础资料记载主体身份，允许用途由 M02 按期间声明，具体人员关系由 M04 按办理依据记录。付款、扣缴、参缴及成本由相应业务域确定。编码不能被更正为另一主体，不按名称或登记号码合并对象。[主体用途与真实采用](#legal-entity-purpose-handoff)
 
 ## 2 强类型资料及接入差异
 
@@ -59,7 +59,7 @@ LegalEntity是企业内独立组织主体，稳定UUID及企业内唯一编码�
 
 独立legal_entity身份、history、dictionary、shape、read、terminal及selection表组，沿用模型5/read-segment-4/query-seal /3的既有紧凑存储机制。集成后追加迁移00015（原分支00014在与企业维护合并时重编号）；无破坏性down。对象锁、提交锁、封套类型和事件为LegalEntity独立命名空间，来源/修订/记录UUID完整，准确历史不可变。与其他对象共用企业身份但不共享业务来源表。法律实体写入与企业首条日期修改共同锁定企业行，并在锁内重新读取日期下界；企业后移首条日期不得越过已有法律实体首条日期。企业停用期间不追加法律实体有效期间限制。
 
-HTTP前缀`/api/v1/legal-entities`，类型为LegalEntityContext/Record/Detail/Result等；入口包含context、operation-reasons、reference-context、列表、详情、changes、navigation、selection/start/resolve/cancel、export、创建、records及correct/delete/redate、deactivate/reactivate、lifecycle-pairs/insert/maintain/delete、preview和submissions/{id}/resolve。输入只接收本类型合同；用途/BU/地点/人员字段拒绝。
+HTTP前缀`/api/v1/legal-entities`，类型为LegalEntityContext/Record/Detail/Result等；入口包含context、operation-reasons、reference-context、列表、详情、changes、navigation、selection/start/resolve/cancel、export、创建、records及correct/delete/redate、deactivate/reactivate、lifecycle-pairs/insert/maintain/delete、preview和submissions/{id}/resolve。基础资料命令拒绝用途、BU、地点或人员字段。用途及必要的组织绑定按第 7 节在「用途与绑定」入口办理。
 
 X03动作前缀legalentity，read/history.read/export/create/record.add/record.correct/record.delete/record.redate/deactivate/reactivate/lifecycle.pair。scope_kind为enterprise；读取和各动作写字段分别裁决，客户端不得指定另一企业扩大授权。查询者获得read/history.read/export；管理员获得完整动作。身份/动作先于目标诊断，显式要求与最终差异均核验。
 
@@ -79,4 +79,38 @@ CSV固定十列：编码、名称、英文名称、国家/地区、主体类别�
 
 使用既有主题、列表详情、时间线、日志与共享日期组件；创建/更正直接呈现获权字段，主体类别下拉，国家候选标注Go返回的可用结果。更正默认原值，实际变化自动计算；停止记录资料只读继承。前端不实施时间线/资格/登记成对业务判定，错误由Go定位。
 
-独立预期覆盖分支/非法人、全球国家、登记半对与清空、国家竞态/旧证据、字段权限、完整维护、固定选择、丢响应及重启；具体矩阵、规模和完成门槛见206第6节。资产采用仅随真实本对象结果登记，已有地点通过不能直接当法律实体通过。L2必须另外定义用途区间、资格依据和绑定/引用保护，L3用真实M04关系检验，不预造采用回执。
+<a id="legal-entity-l1-acceptance"></a>
+
+### 6.1 法律实体基础维护的验收条件
+
+沿用 206 的 L1-V01 至 L1-V15。Organization、Access、体验及验证维护者按改动选择受影响项，用法律实体自己的菜单、接口和实库样本核对独立预期，并记录受测版本、首次失败、复验及限制。[原批实施记录](../../verification/206-legal-entity-implementation.md) · [归档交接](../../verification/136-206-plan-archive.md#legal-entity-closeout)
+
+| 原编号 | 操作与独立预期 |
+| --- | --- |
+| L1-V01 | 管理员从正常菜单创建，查询者只读。无权者从菜单或直接请求 HTTP 均无法办理。 |
+| L1-V02 | 身份 UUID 和编码与 BU、部门、地点相互独立。跨类型可同码，同企业同类型重码被拒，跨企业访问被拒。 |
+| L1-V03 | 验首次默认 1900-01-01、显式日期、企业日期下界和未来首条。校验名称、类别、登记类型与号码成对填写、清空和控制字符。 |
+| L1-V04 | 对既有时间线追加、插入、更正、改分类、改日和单条删除。首条受保护，独立后继资料保持原值，原来源原样可查。 |
+| L1-V05 | 停用继承前序，恢复具有独立资料。固定两条记录的插入、维护、删除须原子提交，非法候选整笔拒绝。 |
+| L1-V06 | 新建、换国家、改日及恢复按第 3 节在相应日期采用国家。仅改名称或登记资料时保留原采用。基础资料可采用全球国家目录。 |
+| L1-V07 | 以真实事务验证国家停用、锁内更名与保存竞争。多国家按固定顺序加锁，取消或超过预算后释放。 |
+| L1-V08 | 在当前资料、旧来源、日志、预览和回执分别验字段权限。显式输入和隐式差异均核写权，准确国家标签依当前读权裁剪。 |
+| L1-V09 | 今日列表组合关键词、单列条件、国家条件及排序。详情当前位置、总数、前后导航和返回沿用完整条件。 |
+| L1-V10 | 验固定身份选择、跨页排除、增删成员、变更条件后重选。CSV 完整输出获权选择。入选成员失权时整笔拒绝导出，已排除成员失权时仍可导出其余获权成员。 |
+| L1-V11 | 同号原请求重送取回原结果，异摘要冲突。分别验丢响应、结果未知、`not_applied`、撤权及换账号隔离，数据库重启后按原号查回原终态。 |
+| L1-V12 | 核对独立表、不可变历史、终态和封套、只增前缀、其他对象原来源保护及正确的事件类型。 |
+| L1-V13 | 双角色从正常菜单走完整旅程，验未保存输入和迟到候选。原批含桌面、窄屏、短屏及缩放。后续改页按 012 的现行视口矩阵对照布局、滚动、键盘及缩放。[现行视口口径](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) |
+| L1-V14 | 核对 `make check`、`make build`、生成一致性、真实 DB/API 和受影响共用浏览器流程，分别记录首败及复验。 |
+| L1-V15 | 设 1,000 个背景主体，另设 20 个各有 20 条记录的主体。以 1 和 20 个会话分别对列表、详情、保存及查回每组至少运行 100 次真实 HTTP 请求，逐组核对 P95 及业务结果。重启后查验原历史与保存回执。 |
+
+V15 的背景覆盖四种主体类别、CN/HK/MO/TW 及其他国家，每个受测主体的 20 条记录是容量样本规模。单会话列表和详情的 P95 上限为 300 ms，保存和查回为 500 ms，20 会话四项的 P95 上限均为 500 ms。测量时错开自有构建及其他重负载，记录现场条件。原批决定将时延超标如实登记为非阻断项，HTTP、业务语义、授权、历史与恢复须通过。容量输入、原批结果与后续同口径复测分别留证。[容量指南](../../guides/124-dated-object-admission-and-capacity.md#6-法律实体接入实例) · [容量用例](../../../internal/bootstrap/legal_entity206_capacity_integration_test.go)
+
+<a id="legal-entity-purpose-handoff"></a>
+
+## 7 主体用途、组织绑定与真实采用
+
+| 业务触发 | 维护角色与可核对的结果 |
+| --- | --- |
+| 直接入职需要用人资格及 BU／地点限定 | M02 在法律实体的「用途与绑定」维护分段用途、资格依据及实际需要的绑定。M04 在保存真实入职的同一事务内重核整段任期，登记采用的主体、声明及必要绑定的准确来源。先收窄资格，再办原入职时整笔拒绝。先办成入职时，与既有关系冲突的收窄被拒，原采用可追溯。当前权限决定历史可见范围。[入职资格](../m04/401-direct-hire-requirements.md#m04-br-004) · [源域端口](../m04/403-hire-technical-contract.md#hire-ports) · [事务保护](../m04/403-hire-technical-contract.md#hire-transaction) |
+| 业务首次要求表达真实设立单位、委托签约、派遣接收方或其他组织绑定 | Organization 与实际消费域以真实业务依据确定关联主体、允许用途、覆盖期间、同日及重叠规则和失效后的引用保护。人员关系由 M04 记录用人、用工或其他实际角色。基础资料中的设立单位说明保留原文。该业务接入时分别验先改资格及先办理的顺序、撤权后的读取和原采用。[组织用途与绑定](../../architecture/target/modules/m02.md) · [关系与组织角色](../../adr/009-mainland-organization-terms.md#3-工作关系与-entityid) |
+| 计薪、扣缴、参缴、付款或成本业务首次采用主体 | M02 提供对应日期的允许用途及来源。M10 维护计薪上下文，M11、M12、M14 分别维护扣缴、参缴及付款运营事实，M15 维护成本分摊。各业务在首次真实采用时验证所属主体、期间、权限与历史。[计薪](../../architecture/target/modules/m10.md) · [扣缴](../../architecture/target/modules/m11.md) · [参缴](../../architecture/target/modules/m12.md) · [付款](../../architecture/target/modules/m14.md) · [成本](../../architecture/target/modules/m15.md) |

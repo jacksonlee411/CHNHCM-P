@@ -235,7 +235,18 @@ def validate_governance(root, registry):
         require(path_value not in registered_paths, f'duplicate document path: {path_value}')
         registered_paths[path_value] = doc
         require(bool(re.fullmatch(label[-3:] + r'-[a-z0-9]+(?:-[a-z0-9]+)*\.md', path.name)), f'{label}: filename must use its number and a lowercase slug')
+        execution = doc.get('execution_status')
+        closed = status in ('superseded', 'retired', 'cancelled') or (
+            kind == 'plan' and execution in ('completed', 'cancelled'))
         archive = doc.get('archive')
+        deferral = doc.get('archive_deferral')
+        if closed and path.is_file() and archive is None:
+            require(isinstance(deferral, dict), f'{label}: physical archive or substantive handoff deferral required')
+        if deferral is not None:
+            require(closed and path.is_file() and archive is None, f'{label}: deferral applies only to an unarchived closed document')
+            require(isinstance(deferral, dict) and deferral.get('kind') in ('rules_pending', 'handoff_pending')
+                    and all(nonempty(deferral.get(key)) for key in ('reason', 'owner_role', 'recheck')),
+                    f'{label}: deferral requires a pending rule or handoff, reason, owner and recheck')
         if archive is None:
             require(isinstance(kind, str) and kind in TYPE_DIRECTORIES and path_value.startswith(TYPE_DIRECTORIES[kind]), f'{label}: path does not match document type')
         else:
@@ -249,13 +260,13 @@ def validate_governance(root, registry):
                         and previous.startswith(TYPE_DIRECTORIES[kind])
                         and bool(re.fullmatch(label[-3:] + r'-[a-z0-9]+(?:-[a-z0-9]+)*\.md', previous_file.name)),
                         f'{label}: invalid archive previous_path')
-                if isinstance(kind, str) and kind in TYPE_DIRECTORIES and is_date(archive.get('date')):
-                    category = PurePosixPath(TYPE_DIRECTORIES[kind]).parts[1]
-                    require(path_value.startswith(f'docs/archive/{archive["date"][:4]}/{category}/'),
-                            f'{label}: archive path must match archive year and original category')
+                if previous_file is not None and previous.startswith('docs/'):
+                    require(path_value == 'docs/archive/' + previous.removeprefix('docs/'),
+                            f'{label}: archive path must mirror the full original path below docs/')
+                    require(not previous_file.exists() and not previous_file.is_symlink(),
+                            f'{label}: original file still exists after physical archival')
             require(path_value.startswith('docs/archive/'), f'{label}: archived document must be in docs/archive/')
-            require(status in ('superseded', 'retired', 'cancelled') or (kind == 'plan' and doc.get('execution_status') in ('completed', 'cancelled')),
-                    f'{label}: effective specification cannot be archived')
+            require(closed, f'{label}: effective specification cannot be archived')
         if status == 'planned':
             require(not path.exists(), f'{label}: planned document must not have a file')
         elif status != 'cancelled':
@@ -276,13 +287,12 @@ def validate_governance(root, registry):
                 existing_file(review.get('evidence'), f'{label} review')
         if status == 'active':
             require(isinstance(review, dict) and review.get('result') == 'accepted', f'{label}: active document requires accepted review')
-        execution = doc.get('execution_status')
         require(execution in ('not_started', 'in_progress', 'completed', 'cancelled') if kind == 'plan' else execution is None,
                 f'{label}: invalid execution_status for type')
         closure = doc.get('closure')
         if closure is not None:
             require(isinstance(closure, dict) and is_date(closure.get('date')) and nonempty(closure.get('reason')), f'{label}: invalid closure')
-        if status in ('superseded', 'retired', 'cancelled') or (kind == 'plan' and execution in ('completed', 'cancelled')):
+        if closed:
             require(isinstance(closure, dict), f'{label}: closure required')
         replacements = doc.get('superseded_by')
         require(strings(replacements) and len(replacements) == len(set(replacements)), f'{label}: superseded_by must be a unique ID array')

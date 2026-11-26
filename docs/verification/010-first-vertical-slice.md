@@ -1,6 +1,6 @@
 # CHNHCM-010 BU首个垂直实施批次验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围为 BU 创建/查询首个垂直批次，依据 [010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)和 [016](../adr/016-m02-effective-record-history.md)。运行见 [017](../guides/017-local-bu-development.md)。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围为 BU 创建/查询首个垂直批次，依据 [010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)和 [016](../archive/adr/016-m02-effective-record-history.md)。运行见 [017](../guides/017-local-bu-development.md)。
 
 ## 1 验证对象与受测基线
 

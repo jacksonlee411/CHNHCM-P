@@ -9,7 +9,7 @@
 | PeopleSoft HCM 9.2.055 | 官方 Job Data 资料以人员和任职记录号区分并行工作，在 Job Actions Summary 按权限处理所选行。CHNHCM 采用独立任职与生效记录。同日动作按本项目的业务前序解释，普通保存走直接办理。[任职记录编号](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/employment-record-numbers.html) · [行操作](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/fluid-updating-job-data.html) · [同日动作](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/changing-job-data.html) |
 | 本地 Bugs-And-Blossoms | 在提交 `a76db79227fdc4a0805fcd6e37fe22898d8b02ea` 核对 899 §10、894 §2.4 和 §21、1113 §4.42，留存三份文档的 SHA-256。采用记录操作与业务处理方式的绑定，借鉴一主两兼和受限读者样本。本仓原人独立登记，未来首单在生效前符合既有业务条件时可整笔撤销，沿用 401 的原办理与后继校验。[来源定位](../reference/506-job-information-sources.json) · [原办理与未来撤销](../specs/m04/401-direct-hire-requirements.md#m04-br-007) |
 | Odoo 19 与 CHNHCM 参考页 | 核对 19.0 固定提交员工表单的身份区、Work 页签、工作与地点分组。以本仓员工详情、职务详情、BU 表单、横向日期轴和正常菜单返回作为实现时的直接参照。[Odoo 员工表单](https://github.com/odoo/odoo/blob/74d39b2fdaa8cd60885943fa58a08bff62e53207/addons/hr/views/hr_employee_views.xml#L149-L168) · [507 继承表](../specs/m04/507-job-information-tab.md#4-页面继承与适用差异) |
-| 现行合同与实现 | 核对 106 第 8 节、401–403、500、502、505、012 与 121，以及人员详情、首单查询、00037 和名单采用的实际实现。e 的 404 在 `ec4572a27c791d6c5194c40f6c17ade2b2b3ab5e` 定稿，按岗位免占编产品验收留待其实施。接入页签时须承接已办首单及其链接。[按职务首单实测](400-first-hire-integration.md#decision-first-hire) · [数据库起点](../../db/migrations/00037_employee_hire.sql) · [批次衔接](../plans/500-personnel-roadmap.md#job-information-delivery) |
+| 现行合同与实现 | 核对 106 第 8 节、401–403、500、502、505、012 与 121，以及人员详情、首单查询、00037 和名单采用的实际实现。e 的 404 在 `ec4572a27c791d6c5194c40f6c17ade2b2b3ab5e` 定稿，按岗位免占编产品验收留待其实施。接入页签时须承接已办首单及其链接。[按职务首单实测](400-first-hire-integration.md#decision-first-hire) · [数据库起点](../../db/migrations/00037_employee_hire.sql) · [批次衔接](../archive/plans/500-personnel-roadmap.md#job-information-delivery) |
 
 ## 2 沿业务问题核对文稿
 
@@ -24,7 +24,7 @@
 
 本次运行 `make docs`，180 项文档与检查脚本回归通过，仓库资料检查通过。`make boundaries` 核对 706 个 Go 文件和 114 份静态 SQL 来源，通过。`git diff --check`、新文件空白与末行检查通过。逐项核验两份规格的登记、三份本地 B&B 原件摘要以及体验、业务和验证三类设计采用状态。补充的逐链接检查首轮因重复读取文件清单主动中止，改为一次读取清单后，105 处新增或改写文句中的仓内链接及其锚点均通过。
 
-以上为设计与实现基线的对读。旧首单、Bugs-And-Blossoms 的菜单实测各保留原受测范围。新页签、多动作与多任职的 Go、DB/API、正常菜单和视口验收均待对应批次实施。[500 交付表](../plans/500-personnel-roadmap.md#job-information-delivery)
+以上为设计与实现基线的对读。旧首单、Bugs-And-Blossoms 的菜单实测各保留原受测范围。新页签、多动作与多任职的 Go、DB/API、正常菜单和视口验收均待对应批次实施。[500 交付表](../archive/plans/500-personnel-roadmap.md#job-information-delivery)
 
 <a id="job-record-number-review"></a>
 ## 4 主兼岗编号与任职行复核

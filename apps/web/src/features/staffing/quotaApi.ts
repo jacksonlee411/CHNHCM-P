@@ -201,7 +201,7 @@ export function quotaLabel(record: RecordView, target: keyof typeof quotaAmountF
 
 export function quotaSavedNotice(result: Result) {
   if (result.outcome === 'no_change') return '没有修改内容。';
-  return result.action === 'delete' ? '已删除。' : '已保存。';
+  return result.action?.toLowerCase() === 'delete' ? '已删除。' : '已保存。';
 }
 export const period = (r: RecordView) =>
   !r.effectiveDate

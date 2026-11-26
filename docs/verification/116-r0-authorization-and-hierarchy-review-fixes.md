@@ -1,6 +1,6 @@
 # CHNHCM-116 R0授权与层级合同评审修订
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：用户采纳的未生效授权归属、有效父边/历史采用及启停路径具体方案，以及相应更正/恢复分类继承一致性。上游为[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[117](../adr/117-m02-dated-maintenance-and-department-boundary.md)及[118—121入口](../specs/README.md)。本轮只调整文档和独立预期，不启动产品实现。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：用户采纳的未生效授权归属、有效父边/历史采用及启停路径具体方案，以及相应更正/恢复分类继承一致性。上游为[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[117](../adr/117-m02-dated-maintenance-and-department-boundary.md)及[118—121入口](../specs/README.md)。本轮只调整文档和独立预期，不启动产品实现。
 
 ## 1 验证对象与受测基线
 

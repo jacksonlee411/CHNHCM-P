@@ -1,6 +1,6 @@
 # CHNHCM-102 BU维护日志与专用表单验证
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：用户采纳的四项维护体验修订。上游依据：[102计划](../plans/102-bu-maintenance-usability.md)、[012现行交互](../specs/m02/012-m02-functional-and-interaction-design.md)、[101直接保存](../adr/101-direct-save-and-form-assistance.md)。
+登记信息：[registry.json](../governance/registry.json)。适用范围：用户采纳的四项维护体验修订。上游依据：[102计划](../archive/plans/102-bu-maintenance-usability.md)、[012现行交互](../specs/m02/012-m02-functional-and-interaction-design.md)、[101直接保存](../adr/101-direct-save-and-form-assistance.md)。
 
 ## 1 验证对象与受测基线
 

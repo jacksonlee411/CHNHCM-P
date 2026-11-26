@@ -103,6 +103,14 @@ type Directory struct {
 	CanIssue bool    `json:"canIssue"`
 	Offers   []Offer `json:"offers"`
 }
+
+// PositionReservations publishes recruiting's coverage and dated offer segments.
+// Both methods participate in the transaction that owns the position guard.
+type PositionReservations interface {
+	PositionOpened(ctx context.Context, instance, position, source, day string) error
+	Usage(ctx context.Context, instance, position string) (Usage, error)
+}
+
 type Usage struct {
 	Coverage string
 	From     string

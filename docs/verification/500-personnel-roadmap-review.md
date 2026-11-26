@@ -1,6 +1,6 @@
 # CHNHCM-500 人员模块实施路线图评审
 
-2026-11-22，Codex 主代理顺序审阅五稿，前四稿各有需要修订的事项，第五稿通过路线图评审。评审范围包括首批独立签收、页面标准继承、领域写入责任和后续联验。第一项执行任务是 T00 的 M01 专项规格。[路线图](../plans/500-personnel-roadmap.md) · [登记表](../governance/registry.json)
+2026-11-22，Codex 主代理顺序审阅五稿，前四稿各有需要修订的事项，第五稿通过路线图评审。评审范围包括首批独立签收、页面标准继承、领域写入责任和后续联验。第一项执行任务是 T00 的 M01 专项规格。[路线图](../archive/plans/500-personnel-roadmap.md) · [登记表](../governance/registry.json)
 
 ## 1 基线与依据
 
@@ -8,7 +8,7 @@
 
 | 依据 | 实际核对与取舍 |
 | --- | --- |
-| 本仓 M01、M04、004、X03、206、313 与 106 | 用模块合同核对人员登记、编号、用工与实际任职，用 206 区分主体资料与用途资格，用 313 核对职务/岗位模式、整数名额及录用转换。106 登记为草案，路线图把采纳及专项范围列进 M04 开工前置。[M01](../architecture/target/modules/m01.md) · [M04](../architecture/target/modules/m04.md) · [004 目录与端口](../architecture/004-repository-layout.md) · [206 分批](../plans/206-legal-entity-implementation.md) · [313](../specs/m03/313-position-capacity-contract.md) · [106](../adr/106-same-day-personnel-actions-and-daily-state.md) |
+| 本仓 M01、M04、004、X03、206、313 与 106 | 用模块合同核对人员登记、编号、用工与实际任职，用 206 区分主体资料与用途资格，用 313 核对职务/岗位模式、整数名额及录用转换。106 登记为草案，路线图把采纳及专项范围列进 M04 开工前置。[M01](../architecture/target/modules/m01.md) · [M04](../architecture/target/modules/m04.md) · [004 目录与端口](../architecture/004-repository-layout.md) · [206 分批](../archive/plans/206-legal-entity-implementation.md) · [313](../specs/m03/313-position-capacity-contract.md) · [106](../adr/106-same-day-personnel-actions-and-daily-state.md) |
 | 已交付页面和当前前端接线 | 对照 012、121、124 及 308 逐页继承表，核对 BU／职务的列表、表单、详情、操作、日志、草稿及提交恢复代码。回查已记录的 308 实测范围。本轮的人员页面检查对象是路线图里的任务和预期。[012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression) · [121](../specs/m02/121-dated-object-admission-matrix.md) · [124 页面准入](../guides/124-dated-object-admission-and-capacity.md#page-standard-admission) · [308 整改与验收](308-job-page-standard-implementation.md) |
 | 本地 CubeBox 工作树 `074fe044ab41c80abbab41a74aadd2a97b66efcf` | `apps/prototype/src/operations/staffing-list.tsx` 的行键取 assignmentId，部门计数按 personId 去重。核对了员工列表及任职时间轴留存图面、`docs/dev-plans/ui-ux/203-employee-personal-information.md` 的多值资料及 `apps/prototype/src/domain/staffing-multiple.test.ts` 的跨关系样本。三文件 SHA-256 前 12 位依次为 `901ea143a709`、`9d92ad1b5dcc`、`6d1fc9848091`。这些是本机只读观察，项目初始来源包另固定在 2deaf927。[项目来源基线](../reference/README.md) |
 | 本地 Fusion/FSCR 资料及 Oracle 产品说明 | 核对 FSCR `d88c993` 保留的概念映射、来源索引 O02–O04 及 Oracle 原文。Fusion 的 Person 通常随工作或联系人关系建立，任职有独立访问范围，再聘匹配原人并建立新关系。本仓采用 M01 独立登记和 M04 按用途的两层主选择。此次参考限资料、源码及留存图面，未操作 Fusion 租户。[本地映射](../architecture/target/07-concept-mapping.md) · [本地来源索引](../architecture/target/data/oracle-release-check.json) · [Person Records](https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/person-records.html) · [Assignments](https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/assignments.html) · [Rehire a Worker](https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/rehire-a-worker.html) |
@@ -27,12 +27,12 @@
 
 | 反例 | 验明的路线图要求 |
 | --- | --- |
-| 能看同一人的 A 任职，B 才是主任职；另一人的 A 任职可读，但该人档案无权 | A 不被改标成主，隐藏的关系和数量不外露。按 A 筛选人员名录时，任职命中甲、乙，人员范围只有甲，最终列表、位置、计数均只含甲。再从页末进入详情、跨页、返回，查询和焦点有可复验的落点。[页面继承](../plans/500-personnel-roadmap.md#personnel-pages) · [兼岗样本](../plans/500-personnel-roadmap.md#m04-scn-002) |
-| 同一表单在长屏可保存，但短屏无法退出历史、撤权后原回执仍显示号码 | 七种视口及原生缩放按角色验。过去的生效记录与明确打开的来源原件分别处理。未提交草稿与已提交未知按不同路径恢复，字段失权时清理正文、日志和回执。[资料与权限](../plans/500-personnel-roadmap.md#m01-scn-002) · [012 视口标准](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) |
-| 存量岗无使用来源，或用人单位只完成 L1 登记 | 依赖未齐时可单独交付人员登记。M04 产品开工以 106 采纳及专项范围为前置。直接入职需有效主体资格和真实任职政策。岗位名额用量未知时不能据空表放行，已知最后一编并发只成立一份任职。[直接入职样本](../plans/500-personnel-roadmap.md#m04-scn-001) · [313 直接入职竞争](../specs/m03/313-position-capacity-contract.md#m03-ac-071) |
-| 只实现仅按职务入职或基本合同续订 | T03 仅按职务可先验；最后一编竞争属于按岗分支，兼岗计数由 T04 承接。T05 用一段真实关系先验续订和合同链，再与 T04 联验多关系和退出。执行结果按实际分支登记。[合同续订样本](../plans/500-personnel-roadmap.md#m04-scn-004) |
-| 同日两件独立人事动作，误撤其中一项 | A/G1 先后形成独立的调部门和调职级，撤职级后当日为 B/G1，仍可查看动作和撤销依据。有必要依赖时，后继须另作合法处置。人事、岗位和后续薪酬各域保有自己的事实。[同日样本](../plans/500-personnel-roadmap.md#m04-scn-006) · [架构反例](../architecture/target/10-ddd-and-state-contracts.md#ac03) |
-| 先预留后转换，生效前撤销，招聘重新预留，旧请求迟到 | 看原入职日的（预留，已占），依次应为（1，0）、（0，1）、（0，0）、（1，0）。两份旧办理各重送一次，仍为（1，0）。原转换可查。登记重送另按原提交号和内容核对，改号后的旧号永久定位原人。[录用样本](../plans/500-personnel-roadmap.md#m04-scn-005) · [313 原样本](../specs/m03/313-position-capacity-contract.md#m03-ac-097) · [登记样本](../plans/500-personnel-roadmap.md#m01-scn-001) |
+| 能看同一人的 A 任职，B 才是主任职；另一人的 A 任职可读，但该人档案无权 | A 不被改标成主，隐藏的关系和数量不外露。按 A 筛选人员名录时，任职命中甲、乙，人员范围只有甲，最终列表、位置、计数均只含甲。再从页末进入详情、跨页、返回，查询和焦点有可复验的落点。[页面继承](../archive/plans/500-personnel-roadmap.md#personnel-pages) · [兼岗样本](../archive/plans/500-personnel-roadmap.md#m04-scn-002) |
+| 同一表单在长屏可保存，但短屏无法退出历史、撤权后原回执仍显示号码 | 七种视口及原生缩放按角色验。过去的生效记录与明确打开的来源原件分别处理。未提交草稿与已提交未知按不同路径恢复，字段失权时清理正文、日志和回执。[资料与权限](../archive/plans/500-personnel-roadmap.md#m01-scn-002) · [012 视口标准](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) |
+| 存量岗无使用来源，或用人单位只完成 L1 登记 | 依赖未齐时可单独交付人员登记。M04 产品开工以 106 采纳及专项范围为前置。直接入职需有效主体资格和真实任职政策。岗位名额用量未知时不能据空表放行，已知最后一编并发只成立一份任职。[直接入职样本](../archive/plans/500-personnel-roadmap.md#m04-scn-001) · [313 直接入职竞争](../specs/m03/313-position-capacity-contract.md#m03-ac-071) |
+| 只实现仅按职务入职或基本合同续订 | T03 仅按职务可先验；最后一编竞争属于按岗分支，兼岗计数由 T04 承接。T05 用一段真实关系先验续订和合同链，再与 T04 联验多关系和退出。执行结果按实际分支登记。[合同续订样本](../archive/plans/500-personnel-roadmap.md#m04-scn-004) |
+| 同日两件独立人事动作，误撤其中一项 | A/G1 先后形成独立的调部门和调职级，撤职级后当日为 B/G1，仍可查看动作和撤销依据。有必要依赖时，后继须另作合法处置。人事、岗位和后续薪酬各域保有自己的事实。[同日样本](../archive/plans/500-personnel-roadmap.md#m04-scn-006) · [架构反例](../architecture/target/10-ddd-and-state-contracts.md#ac03) |
+| 先预留后转换，生效前撤销，招聘重新预留，旧请求迟到 | 看原入职日的（预留，已占），依次应为（1，0）、（0，1）、（0，0）、（1，0）。两份旧办理各重送一次，仍为（1，0）。原转换可查。登记重送另按原提交号和内容核对，改号后的旧号永久定位原人。[录用样本](../archive/plans/500-personnel-roadmap.md#m04-scn-005) · [313 原样本](../specs/m03/313-position-capacity-contract.md#m03-ac-097) · [登记样本](../archive/plans/500-personnel-roadmap.md#m01-scn-001) |
 
 ## 4 检查、材料与限制
 
@@ -40,4 +40,4 @@
 - Go 1.26.0 下运行 `make boundaries`，625 个既有 Go 文件的导入边界检查通过。`go test ./scripts/check-boundaries -count=1` 通过。数据库事务所有权和实际页面交互由各产品批次另验。
 - Python 3.14.4 下运行 `make docs`，137 项脚本测试通过，仓库检查覆盖 418 份 Markdown、13,186 处本地链接和 231 项保留资产。与 HEAD 比对登记表，原有 87 份文档、248 条验证记录及其他登记内容一致，本次各新增一项。用任务临时 Git 索引把新增材料纳入 `git diff --check`，六个变更文件全部通过。
 
-本轮结论限于路线图文档。M01/M04 产品实现、真实 DB/API、人员菜单浏览器验收及人工业务签收均未执行。T00 冻结首批资料及无任职者的核对范围，T02 接续 M04 专项决定和前置能力。后续报告按实际构建记录业务事实和首错复验。[批次及责任](../plans/500-personnel-roadmap.md)
+本轮结论限于路线图文档。M01/M04 产品实现、真实 DB/API、人员菜单浏览器验收及人工业务签收均未执行。T00 冻结首批资料及无任职者的核对范围，T02 接续 M04 专项决定和前置能力。后续报告按实际构建记录业务事实和首错复验。[批次及责任](../archive/plans/500-personnel-roadmap.md)

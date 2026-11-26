@@ -313,7 +313,11 @@ func (r *request) resolveCountry(c p.CountryChoice) (*p.CountryAdoption, string,
 	if !f.ValidID(c.ID) || !f.ValidID(c.SourceVersion) {
 		return nil, "", d.Invalid("country", "请选择有效的国家/地区")
 	}
-	return r.adoptCountry(r.ctx, r.tx, r.guard, c.ID, c.SourceVersion, r.a.At.In(f.Shanghai).Format("2006-01-02"))
+	v, err := r.profileCatalog.AdoptCountry(r.ctx, r.credentials, c.ID, c.SourceVersion, r.a.At.In(f.Shanghai).Format("2006-01-02"))
+	if err != nil {
+		return nil, "", err
+	}
+	return &p.CountryAdoption{ID: v.ID, SourceVersion: v.SourceVersion, RecordID: v.RecordID, Revision: v.Revision, Date: v.Date}, v.Name, nil
 }
 
 func rowInputError(group string, index int, field string, err error) error {

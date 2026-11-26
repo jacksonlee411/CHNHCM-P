@@ -43,4 +43,4 @@ Repository maintainer 负责来源保存及台账结构；目标领域维护者�
 
 来源包、逐项摘要、台账及新证据链接通过 `make docs` 检查其结构与保存关系；该检查不证明体验、金额或业务行为正确。实际验收仍遵循 [003](../adr/003-implementation-stages.md) 和具体切片合同。
 
-M02 资产扩充及差异提炼由 [008](../plans/008-next-steps.md) 组织，011—013 的正文入口见[规格入口](../specs/README.md)。本轮文档流程完善不改变 inventory 中任何资产的 implemented/verified 状态。
+M02 资产扩充及差异提炼由 [008](../archive/plans/008-next-steps.md) 组织，011—013 的正文入口见[规格入口](../specs/README.md)。本轮文档流程完善不改变 inventory 中任何资产的 implemented/verified 状态。

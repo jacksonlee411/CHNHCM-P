@@ -21,7 +21,7 @@
 | 对象继承合同 | [308第10节](../specs/m03/308-job-foundation-contract.md#m03-page-inheritance)：11项逐页映射，区分现有公共原语、M02耦合参照及M03待接线；覆盖列表、详情、表单、日期、操作、历史与返回 |
 | 业务差异及偏差 | [308第11节](../specs/m03/308-job-foundation-contract.md#m03-page-differences)：6项有依据的差异和7项待整改偏差；不存在独立领域整体豁免 |
 | 独立验收 | [308第12—13节](../specs/m03/308-job-foundation-contract.md#m03-page-acceptance)：6组手工样本、10个新增场景、14项新增验收；两对象×两角色×七组条件共28单元，另有权限专项 |
-| 原交付边界 | [307接续](../plans/307-m03-job-foundation.md#7-进度与后续交接)保留原首批completed及原报告；新增页面清单未运行，文档完成不冒充产品修复 |
+| 原交付边界 | [307接续](../archive/plans/307-m03-job-foundation.md#7-进度与后续交接)保留原首批completed及原报告；新增页面清单未运行，文档完成不冒充产品修复 |
 
 308现行合同合计14条规则／18场景／30项验收，其中本轮新增1条页面规则、10场景和14项验收。原13规则／8场景／16验收的报告与输入不改写。本轮验收覆盖登记为被动清单：[acceptance-status.json](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/308-job-page-admission-contract/acceptance-status.json)，不是自动测试，也没有执行成功记录。
 

@@ -1,13 +1,13 @@
 # CHNHCM-017 BU首批本地运行与验证
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：本地创建、查询、资料新增/普通更正、停用/重新启用、分类删除、改日及有限联合修订/首条通用维护/分类纠错。依据[010](../plans/010-m02-scope-and-plan.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)和[025全新实施](../adr/025-greenfield-implementation-policy.md)。当前启停证据见[T04报告](../verification/021-lifecycle-implementation.md)，资料维护证据见[第一批报告](../verification/010-first-record-maintenance.md)；[018多轮评审](../verification/018-multiround-review.md)和[018旧升级记录](../verification/018-source-history-simplification.md)保留原范围。
+登记信息：[registry.json](../governance/registry.json)。适用范围：本地创建、查询、资料新增/普通更正、停用/重新启用、分类删除、改日及有限联合修订/首条通用维护/分类纠错。依据[010](../archive/plans/010-m02-scope-and-plan.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)和[025全新实施](../adr/025-greenfield-implementation-policy.md)。当前启停证据见[T04报告](../verification/021-lifecycle-implementation.md)，资料维护证据见[第一批报告](../verification/010-first-record-maintenance.md)；[018多轮评审](../verification/018-multiround-review.md)和[018旧升级记录](../verification/018-source-history-simplification.md)保留原范围。
 
 当前交互依[101](../adr/101-direct-save-and-form-assistance.md)取消全部手动预览，以下第5节历史环境记录仍保留原时点。
 
 wt-dev-b当前日常开发与手工验证基准为[4390](http://127.0.0.1:4390)，采用模型5、profile `m02-current-vanke5-b`；2026-11-14最新模型5固定构建及维护边界见第22节。跨主机独立环境与共同基线见[134](134-parallel-development-baseline.md)。操作时显式指定profile。其余日期段中的环境状态保留为历史记录。
 
 
-当前[103位置新增/插入](../adr/103-positioned-record-addition.md)已由[105](../plans/105-positioned-addition-and-coverage.md)接线：按所选记录决定新增或插入，带出该位置的资料及默认日期；无可插入日期只禁用按钮。分层验证见[105报告](../verification/105-positioned-addition-and-coverage.md)，第5节历史环境记录保留原时点。
+当前[103位置新增/插入](../adr/103-positioned-record-addition.md)已由[105](../archive/plans/105-positioned-addition-and-coverage.md)接线：按所选记录决定新增或插入，带出该位置的资料及默认日期；无可插入日期只禁用按钮。分层验证见[105报告](../verification/105-positioned-addition-and-coverage.md)，第5节历史环境记录保留原时点。
 
 ## 1 任务与可用能力
 
@@ -25,7 +25,7 @@ wt-dev-b当前日常开发与手工验证基准为[4390](http://127.0.0.1:4390)�
 
 日常开发每个工作树通常复用一个当前模型的持久profile；普通代码修改不逐批新建环境。`make smoke`默认新建独占临时profile、自动选择端口、启动当前模型空库和Web/API，验收结束后回收；不使用当前手工验证库。特定故障或容量现场确需留存时才另建持久profile。既有环境保持原分类，临时属性不能用于将已有持久库改成可删除。
 
-当前按[128决定](../adr/128-authorization-evidence-removal.md)和[130方案](../plans/130-department-storage-optimization.md)安装00001身份及必要认证/安全事件、00002 BU紧凑历史、00003 BU导出授权、00004账号身份、00005部门紧凑历史及关系、00006字典引用侧索引、00007由Go生成的确切来源分段读取索引；00008增加选择草稿。当前API要求m02-compact-5/read-segment-4/query-seal /3及完整[1,2,3,4,5,6,7,8]履历；新开发环境使用当前迁移空库。4390已用00008，但已应用00002未重跑，不能将其原DDL视为新环境当前迁移的逐字副本。同模型完整前缀仅由显式upgrader推进，不同模型、空洞与未知版本拒绝；既有m02-compact-1、m02-department-1、m02-timeline-7等库保留原数据和匹配程序，不自动升级或清空。历史迁移过程保留在原报告与Git；126原结果见[126实施报告](../verification/126-compact-history-implementation.md)，当前删除授权档案和独立候选验证见[128实施记录](../verification/128-implementation.md)。
+当前按[128决定](../adr/128-authorization-evidence-removal.md)和[130方案](../archive/plans/130-department-storage-optimization.md)安装00001身份及必要认证/安全事件、00002 BU紧凑历史、00003 BU导出授权、00004账号身份、00005部门紧凑历史及关系、00006字典引用侧索引、00007由Go生成的确切来源分段读取索引；00008增加选择草稿。当前API要求m02-compact-5/read-segment-4/query-seal /3及完整[1,2,3,4,5,6,7,8]履历；新开发环境使用当前迁移空库。4390已用00008，但已应用00002未重跑，不能将其原DDL视为新环境当前迁移的逐字副本。同模型完整前缀仅由显式upgrader推进，不同模型、空洞与未知版本拒绝；既有m02-compact-1、m02-department-1、m02-timeline-7等库保留原数据和匹配程序，不自动升级或清空。历史迁移过程保留在原报告与Git；126原结果见[126实施报告](../verification/126-compact-history-implementation.md)，当前删除授权档案和独立候选验证见[128实施记录](../verification/128-implementation.md)。
 
 ## 3 启动与操作
 
@@ -235,7 +235,7 @@ node tests/scenarios/t07-recovery/tl174.mjs
 
 2026-11-02统一更正实施及验证见[104报告](../verification/104-unified-record-correction.md)。该104批次未实施103位置新增，后由105接线；联合入口/历史停用对入口保持。4382原库保留，测试采用独立profile，不以测试数据库替换用户环境。
 
-当前103产品接线由[105计划](../plans/105-positioned-addition-and-coverage.md)实施：选最大生效日记录显示新增记录，其他当前成员显示插入记录；默认带出所选名称与位置日期，类型固定资料变更、原因留空。插入限定相邻日期之间，无可用日期仅禁用按钮。日期手填及保存仍由Go重验，初始带值可直接取消。实际分层结果见[105验证](../verification/105-positioned-addition-and-coverage.md)，原运行记录保留。
+当前103产品接线由[105计划](../archive/plans/105-positioned-addition-and-coverage.md)实施：选最大生效日记录显示新增记录，其他当前成员显示插入记录；默认带出所选名称与位置日期，类型固定资料变更、原因留空。插入限定相邻日期之间，无可用日期仅禁用按钮。日期手填及保存仍由Go重验，初始带值可直接取消。实际分层结果见[105验证](../verification/105-positioned-addition-and-coverage.md)，原运行记录保留。
 
 首条维护当前按[107](../adr/107-first-record-maintenance.md)办理：例如6月乙先更正为1月甲；确需6月起乙，再另次新增/插入6月乙。两次来源各自保留；107当时保留的其他联合入口现由109退出；本批验证见[107报告](../verification/107-first-record-maintenance.md)。
 
@@ -273,7 +273,7 @@ python3 scripts/local-bu.py down
 
 ## 10 全查询结果选择与所选CSV
 
-按[114](../adr/114-bu-query-selection-and-export.md)及[115](../plans/115-bu-query-selection-and-export.md)，列表最左侧表头直接选择服务端当日和已应用条件下全部获权BU，覆盖所有页；翻页、20/50/100及仅排序保持选择。取消某行形成全局排除，工具条显示服务端核对数量，可取消或导出所选。搜索草稿不应用，排序若同时应用了不同草稿则按查询范围变化清空。详情返回高亮独立，不自动勾选；刷新、同标签离开及历史再进入清空。
+按[114](../adr/114-bu-query-selection-and-export.md)及[115](../archive/plans/115-bu-query-selection-and-export.md)，列表最左侧表头直接选择服务端当日和已应用条件下全部获权BU，覆盖所有页；翻页、20/50/100及仅排序保持选择。取消某行形成全局排除，工具条显示服务端核对数量，可取消或导出所选。搜索草稿不应用，排序若同时应用了不同草稿则按查询范围变化清空。详情返回高亮独立，不自动勾选；刷新、同标签离开及历史再进入清空。
 
 CSV只包含获权编码、名称、状态、生效日期四列。admin经受控初始化显式具bu.export，reader默认只有读权，可以全选但导出禁用；不按角色显示名放权。成员/资料/读取授权变化后提示重新选择，导出前重验且不输出部分文件。一次导出完成前不要把核对中数量当成最终结果，系统不要求额外确认。
 
@@ -303,6 +303,21 @@ VANKE_CASE="$HOME/.local/state/chnhcm/219715d544d5/vanke127"
 python3 tests/capacity/vanke127/fixed_check.py "$VANKE_CASE" .local/vanke-127/fixed-read-recheck.json
 ```
 
+<a id="history-import-rebuild"></a>
+
+### 11.1 固定验证库的历史导入与重建
+
+本节适用于本节所列固定验证库，由 M02 数据与环境维护者在重建或更换导入器时核对。源文件始终在仓外私有位置，根组织映射到一个 BU，其余为部门，BU 直属部门没有行政父部门。各阶段、原行号、来源摘要及实际处理结果可逐行追溯。原件没有的交易身份、操作者和时刻由本次真实办理产生。[来源保护](134-parallel-development-baseline.md) · [原批采纳与验收](../verification/127-vanke-full-history.md)
+
+| 原规则 | 重建时执行的约束 |
+| --- | --- |
+| V127-I01 来源绑定、I02 名称 | 专属导入器按文件阶段和原行号生成提交号，匹配已核对的原编码、日期、名称与父边。显式历史名称按原 UTF-8 字节保存，拒绝无效编码、超过 200 码点、无文字数字、控制或不可见格式字符。普通新建、更正及预览仍使用产品名称规则。 |
+| I03 业务保护、I04 更正 | 写入沿用 Go 的日期、关系、当前授权、锁、幂等与审计，锁前锁后均核对完整依赖。上级更正定位原创建或资料日期。若名称相同或只有扩展变化导致无变化，同日父边由有来源映射的日期新增表示，保留原操作、业务日期及实际处理结果。 |
+| I05 扩展、I06 后续维护 | 原组织类型和原因留在专属验证来源表并计入整库空间。只变更扩展的行保留来源，产品无需生成虚假版本。原结果复用实际终态。继承字段保留历史原名，显式再改名称、简称时执行普通准入。 |
+| I07 日期合并与续跑 | 名称与父边按业务日合并，同日先形成资料再处理父边。按对象追加或更正末日期，使用上一笔真实来源、记录与修订号。每批发送前在仓外保存原请求，取得全批回执后才推进前缀。部分失败用原键和原文恢复，再继续后续命令。 |
+
+重建按父层推进，相关祖先、非叶子及同一对象保持顺序。跨阶段、跨日的独立叶子可并行，前提是全部来源的每对象序列及各行所见祖先的最近动作与原顺序逐项相同。若锁后发现新入边或来源变化，重新发现并取得对应保护。依赖前沿超过 128 个身份时仅为本次读取装载轻量邻接表。持久库专用导入运行器可使用 12—64 个数据库连接，从 32 路 HTTP / 32 个连接试跑，按实测吞吐与失败率调整。普通服务及正式容量测量沿用 12 个连接。重建完成后以普通入口复核真实 API、历史与冻结路径、重启及原提交结果，再交接持久环境。[关系守卫与依赖](../specs/m02/120-dated-maintenance-technical-contract.md)
+
 ## 12 当前模型4390基准
 
 2026-11-12用户明确要求4390应用当时最新改动。入口为[4390](http://127.0.0.1:4390)，持久profile `m02-current-vanke5-b`、API8390/DB54392，当时固定构建b82a1027c35b2591aa8a9b86f10246c25f5f3e09（已合并PR #10），采用模型5/read-segment-4/query-seal /3及迁移00001—00007。原模型4完整快照导入独立新库，现场1BU、87343部门、132297来源全部保留；18张原表、全部历史、22表持久复制、数据库重启、实际构建、双角色菜单/历史及无搜索父候选核验见[原更新记录](../verification/131-4390-model5-refresh.md)。2026-11-13为完成用户指定更名而更新的当前构建见第16节，profile、端口和原库继续保留。开发账号仍为admin、reader，公开开发密码admin1234567。
@@ -326,7 +341,7 @@ CHNHCM_LOCAL_PROFILE=m02-current-vanke5-b python3 scripts/local-bu.py down
 
 2026-11-10开始的131 T04/T05接续中，4390/4387/4388在该任务开始时已停止，继续保留原程序、容器和数据库；2026-11-11 06:57北京时间在万科后处理、R40完整回归、R41只读诊断及首批提交验证结束后再次核对原52个容器身份/完整挂载记录/稳定状态一致，三个页面及API端口均未监听，此前挂载数组顺序误报及复核分别保留。上述4390地址是保留的开发入口配置，不表示此刻在线；本轮未获更新或切换4390的指令。容量只在自有可丢弃的模型4 A与模型5 B副本分时执行，每阶段最多两份完整运行库。其当前构建、进展、资源归属、冷暖失败和收尾待项由[131 T04/T05记录](../verification/131-t04-capacity-and-handoff.md)持有；责任为wt-dev-b本任务实现/验证维护者，复查节点为各完整形状验证结束及最终交付。125容量P1保持，未将模型5接入固定模型4库。
 
-2026-11-11按用户决定，wt-dev-b已选定R118并本地提交`f544108`，当前源码为模型5/read-segment-4；[选定方案及实测边界](../plans/131-department-query-reduction.md#39-本阶段选定方案及实测边界)由131持有。上文`up --fixed-web`仅是模型匹配时的操作模板，当前模型5源码不能用于启动这个模型4 profile。R118在本任务自有模型5副本和临时回归环境验证，4390仍保留原模型4构建，未更新或切换；本轮受影响回归已分轮完成，首失败保留；当前两形状正常写入/空间成本、原历史/重启恢复及T05阶段交接已完成，完整容量后置和125P1仍开放。
+2026-11-11按用户决定，wt-dev-b已选定R118并本地提交`f544108`，当前源码为模型5/read-segment-4；[选定方案及实测边界](../archive/plans/131-department-query-reduction.md#39-本阶段选定方案及实测边界)由131持有。上文`up --fixed-web`仅是模型匹配时的操作模板，当前模型5源码不能用于启动这个模型4 profile。R118在本任务自有模型5副本和临时回归环境验证，4390仍保留原模型4构建，未更新或切换；本轮受影响回归已分轮完成，首失败保留；当前两形状正常写入/空间成本、原历史/重启恢复及T05阶段交接已完成，完整容量后置和125P1仍开放。
 
 2026-11-12 07:17，131按用户批准范围结束本阶段：当前两形状各2000笔写入及重启各2000份结果恢复、必要CSV/菜单和全部原历史保护通过，自有运行容器、卷、测试进程及私有连接配置已回收；原52容器身份/完整挂载/稳定状态与六个固定端口核验通过，4390/4387/4388及API仍按任务开始时状态停止保留。原R127/R128调度器已正常退出，19400次未开始容量和1827次全覆盖观察后置，不应自动重启旧控制器。完整原件、私有结果和历史证据继续由wt-dev-b本任务维护者保管；下次明确恢复125容量整改或环境交接时，重新核对模型、构建、输入和归属，再决定运行资源。当前模型5代码不可直接接入固定4390模型4库，本次未获切换4390授权；最终边界见[131 T05交接](../verification/131-t04-capacity-and-handoff.md#41-本次t05阶段交接结论)。
 

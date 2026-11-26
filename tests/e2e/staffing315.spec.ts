@@ -167,9 +167,20 @@ for (const [width, height] of desktopViewports)
       });
       await click('保存');
       await expect(page.getByRole('button', { name: '查看保存结果' })).toBeEnabled();
+      // Restore the pending reference as a browser last opened before 00028 stored it.
+      await page.evaluate(() => {
+        const currentKey = 'chnhcm-pending-staffing-quotas';
+        const pending = localStorage.getItem(currentKey);
+        if (!pending || !JSON.parse(pending).length) throw new Error('缺少待确认的核编提交号');
+        localStorage.setItem('chnhcm-pending-quotas', pending);
+        localStorage.removeItem(currentKey);
+      });
       page.once('dialog', (dialog) => dialog.accept());
       await page.reload();
+      const recovered = page.waitForResponse((r) =>
+        r.request().method() === 'POST' && /\/staffing-quotas\/submissions\/[^/]+\/resolve$/.test(new URL(r.url()).pathname));
       await click('查看保存结果');
+      expect((await recovered).status()).toBe(200);
       await expect(page.getByText('正在查看只读历史资料')).toBeVisible();
       await expect(page.getByRole('link', { name: '查看岗位核编原件' })).toBeVisible();
     } else await click('保存');

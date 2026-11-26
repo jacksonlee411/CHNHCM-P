@@ -133,7 +133,7 @@ def select(paths, policy, regular=True, root=Path('.'), *, backend_impacts=()):
         if docs_path(path) or passive_evidence(path, inputs):
             reasons.append('documentation/passive evidence')
             continue
-        if path in {'scripts/check-repository.py', 'scripts/document_governance.py', 'scripts/design_revisions.py'} or (
+        if path in {'scripts/check-repository.py', 'scripts/document_catalog.py', 'scripts/document_governance.py', 'scripts/design_revisions.py'} or (
                 path.startswith('scripts/test_') and Path(path).suffix in {'.py', '.mjs'}):
             reasons.append('document tooling or tooling unit test: ' + path)
             continue

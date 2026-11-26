@@ -1,6 +1,6 @@
 # CHNHCM-010 当前日期用语修正验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)与 [17 术语表](../architecture/target/17-terminology-glossary.md)的当前日期用语修正，遵循 [015 命名规范](../governance/015-terminology-naming.md)。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)与 [17 术语表](../architecture/target/17-terminology-glossary.md)的当前日期用语修正，遵循 [015 命名规范](../governance/015-terminology-naming.md)。
 
 ## 1 基线及范围
 

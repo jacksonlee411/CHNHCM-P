@@ -2,7 +2,7 @@
 
 ## 1 受测范围
 
-基线为固定 f 的 `39660e70ded3257fe0c3e483e694dbe12f81bc2b`。本次从人员、员工、办理记录及招聘录用的正式入口验证。前次复评记录了 27 条问题的可重复现象，方案评审另有记录。[前次实证](500-t04-implementation-rereview.md) · [实施与关闭判据](../plans/509-t04-remediation.md) · [独立方案评审](509-t04-remediation-review.md)
+基线为固定 f 的 `39660e70ded3257fe0c3e483e694dbe12f81bc2b`。本次从人员、员工、办理记录及招聘录用的正式入口验证。前次复评记录了 27 条问题的可重复现象，方案评审另有记录。[前次实证](500-t04-implementation-rereview.md) · [实施与关闭判据](../archive/plans/509-t04-remediation.md) · [独立方案评审](509-t04-remediation-review.md)
 
 **本地验收通过，T04-01 至 T04-27 全部关闭。** 末轮独立复验无新增问题。修复候选通过 143 项完整菜单，并已更新到固定 f 的 4386。原库 24 项既有菜单和下列具名原样本均已复查。[固定环境及原样本](#fixed-environment)
 

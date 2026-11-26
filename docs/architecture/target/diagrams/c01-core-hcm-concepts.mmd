@@ -42,7 +42,7 @@ flowchart TB
     JOB["Job / JobFamily 职务与分类"]
     POS["Position 独立席位"]
     GR["Grade / Ladder 职级与阶梯"]
-    CAP["StaffingQuota 部门总额或岗位定额<br/>Reservation / Occupancy 岗位预留与占编"]
+    CAP["StaffingQuota 部门总额或岗位定额<br/>按 M05 预留与 M04 占编核验余量"]
     PH["PositionHierarchy 岗位层级版本"]
     MODE["StaffingPolicy 岗位模式与占用规则"]
     JOB -->|工作类型引用| POS
@@ -61,7 +61,7 @@ flowchart TB
   A -->|工作地点引用| LOC
   A -->|业务上下文引用| BU
   A -->|级别引用| GR
-  CAP -->|岗位占编引用 assignmentId| A
+  A -->|实际占编期间及任职来源| CAP
   A -->|下游明确建立| PAY
   REF -->|校验上述引用 明确采用版本| A
   N["概念连线非表外键或同一聚合；岗位层级与实际汇报独立；适用与权限分别校验<br/>人员类别与组织责任独立；派遣用人/用工及付款角色分别确定；关联和资格不直接认定劳动关系"]

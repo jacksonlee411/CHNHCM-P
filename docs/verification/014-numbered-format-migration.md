@@ -14,14 +14,14 @@
 
 | 文档 | 本次处置及复核重点 | 结论 |
 | --- | --- | --- |
-| [001 本地建仓交付记录](../plans/001-repository-bootstrap.md) | 正文保持原字节；已有四节数字章节，复核来源、交付证据、未结事项与长期约定交接。原建仓 completed 及受测信息不完整的限制保留 | accepted |
+| [001 本地建仓交付记录](../archive/plans/001-repository-bootstrap.md) | 正文保持原字节；已有四节数字章节，复核来源、交付证据、未结事项与长期约定交接。原建仓 completed 及受测信息不完整的限制保留 | accepted |
 | [002 技术方向](../adr/002-technology-stack.md) | 正文保持原字节；已有背景、决定、来源候选、代价、适用与待决项。保留原技术选择及后续版本核对责任，不重评工具版本 | accepted |
 | [003 实施阶段](../adr/003-implementation-stages.md) | 正文保持原字节；阶段输入/退出证据、关键待决项与暂缓范围、完成口径和维护位置明确，不将来源 U1/U2 变成本仓开工门槛 | accepted |
 | [004 目录与依赖](../architecture/004-repository-layout.md) | 改为六节数字章节，正文链接登记；补目标、演进责任与验证入口。原目录树、Mermaid、跨域/SQL/迁移及资金边界原文保留 | accepted |
 | [005 分支与文档编号](../governance/005-branches-and-documents.md) | 改为五节数字章节，补维护角色、执行检查和格式统一要求；历史工作树建立与当前规则分开。分支路径、号段、编号例外和授权边界保留 | accepted |
 | [006 资产保留](../assets/006-preservation-contract.md) | 正文保持原字节；分类、角色、采用流程、独立状态、失败/例外及证据保存可核对，资产台账不提升完成状态 | accepted |
 | [007 首个切片 M02](../architecture/007-m02-entry.md) | 改为六节数字章节，补规格、维护与验证入口；原事实归属、跨域职责、日期/历史/授权与体验要求原文保留，未代写 M02 规格 | accepted |
-| [008 下一步](../plans/008-next-steps.md) | 正文保持原字节；四份文档顺序、准备事项的影响/角色/处理节点、评审及交接完整。执行仍为 not_started，010—013 仍为 planned | accepted |
+| [008 下一步](../archive/plans/008-next-steps.md) | 正文保持原字节；四份文档顺序、准备事项的影响/角色/处理节点、评审及交接完整。执行仍为 not_started，010—013 仍为 planned | accepted |
 | [009 大陆组织角色](../adr/009-mainland-organization-terms.md) | 改为八节数字章节，补背景、原有取舍归纳及维护关系；原角色决定、entityId 含义、任职条件、分支/签约边界及八个反例原文保留。来源核对明确属于原术语修订 | accepted |
 | [014 文档管理规范](../governance/014-document-management.md) | 编号文档统一 numbered，active 必须有 accepted 审阅；legacy_documents 必须为空。仅两份固定的历史附属报告保留原格式，不能据此豁免编号正文 | accepted |
 

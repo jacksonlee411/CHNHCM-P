@@ -1,6 +1,6 @@
 # CHNHCM-116 R4实施评审修复与补验
 
-登记信息：[registry.json](../governance/registry.json)。关联[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[119页面合同](../specs/m02/119-department-functional-design.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)及[121验收映射](../specs/m02/121-dated-object-admission-matrix.md)。原[R4实施报告](116-r4-department-backend.md)与[本地样本](116-r4-local-department-samples.md)保留原时点证据。
+登记信息：[registry.json](../governance/registry.json)。关联[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[119页面合同](../specs/m02/119-department-functional-design.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)及[121验收映射](../specs/m02/121-dated-object-admission-matrix.md)。原[R4实施报告](116-r4-department-backend.md)与[本地样本](116-r4-local-department-samples.md)保留原时点证据。
 
 ## 1 评审采纳与基线
 

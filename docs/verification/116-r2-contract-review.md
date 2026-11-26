@@ -2,7 +2,7 @@
 
 登记信息：[登记表](../governance/registry.json) `governance.verification_records`。
 适用范围：R2-A事务提炼、R2-B提交恢复；不含部门运行时和R3—R6。
-上游依据：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
+上游依据：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
 
 ## 1 验证对象与受测基线
 

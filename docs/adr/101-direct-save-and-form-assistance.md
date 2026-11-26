@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)。适用范围：M02全部已接BU新建及维护入口。上游依据：[012页面表达原则](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[025全新实施](025-greenfield-implementation-policy.md)。
 
-当前范围补充：[109](../plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
+当前范围补充：[109](../archive/plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
 
 ## 1 背景与问题
 

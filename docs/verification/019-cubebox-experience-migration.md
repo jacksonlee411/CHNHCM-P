@@ -1,6 +1,6 @@
 # CHNHCM-019 CubeBox共享体验迁移与页面对比验证
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：十组展示组件及现有BU创建/查询。上游为[019计划](../plans/019-cubebox-experience-migration.md)、[012交互合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[006资产保留](../assets/006-preservation-contract.md)。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：十组展示组件及现有BU创建/查询。上游为[019计划](../archive/plans/019-cubebox-experience-migration.md)、[012交互合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[006资产保留](../assets/006-preservation-contract.md)。
 
 ## 1 验证对象与受测基线
 

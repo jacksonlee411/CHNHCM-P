@@ -1,6 +1,6 @@
 # CHNHCM-111 Community T01与T02实施及定向验证
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[111计划](../plans/111-bu-list-experience-upgrade.md)、[113决定](../adr/113-bu-list-community-adoption.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[013](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)，按验证模板编写。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[111计划](../archive/plans/111-bu-list-experience-upgrade.md)、[113决定](../adr/113-bu-list-community-adoption.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[013](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)，按验证模板编写。
 
 ## 1 对象与基线
 

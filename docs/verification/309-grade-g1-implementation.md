@@ -1,6 +1,6 @@
 # CHNHCM-309 G1职级实施与验收
 
-登记信息：[registry.json](../governance/registry.json)。范围为[309 T01／T02](../plans/309-m03-grade-ladder.md)及[310](../specs/m03/310-grade-ladder-contract.md)的Grade适用部分。G1实施、分层验收及五轮主代理复评已通过，T01／T02关闭。阶梯、Job可用职级及引用关系属于G2，尚未实施。
+登记信息：[registry.json](../governance/registry.json)。范围为[309 T01／T02](../archive/plans/309-m03-grade-ladder.md)及[310](../specs/m03/310-grade-ladder-contract.md)的Grade适用部分。G1实施、分层验收及五轮主代理复评已通过，T01／T02关闭。阶梯、Job可用职级及引用关系属于G2，尚未实施。
 
 ## 1 基线和运行保护
 

@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：允许已生效记录删除和改日，保留首条删除保护、允许首条改日的文档合同调整；不属于业务运行验收。
 
-上游依据：[020决定](../adr/020-effective-record-delete-and-redate.md)、[010计划](../plans/010-m02-scope-and-plan.md)、[011删除规则](../specs/m02/011-m02-business-requirements.md#m02-br-007)、[改日规则](../specs/m02/011-m02-business-requirements.md#m02-br-017)、[删除验收](../specs/m02/011-m02-business-requirements.md#m02-ac-005)、[改日验收](../specs/m02/011-m02-business-requirements.md#m02-ac-014)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)和[013技术合同](../specs/m02/013-m02-technical-design.md)。
+上游依据：[020决定](../adr/020-effective-record-delete-and-redate.md)、[010计划](../archive/plans/010-m02-scope-and-plan.md)、[011删除规则](../specs/m02/011-m02-business-requirements.md#m02-br-007)、[改日规则](../specs/m02/011-m02-business-requirements.md#m02-br-017)、[删除验收](../specs/m02/011-m02-business-requirements.md#m02-ac-005)、[改日验收](../specs/m02/011-m02-business-requirements.md#m02-ac-014)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)和[013技术合同](../specs/m02/013-m02-technical-design.md)。
 
 ## 1 验证对象与受测基线
 

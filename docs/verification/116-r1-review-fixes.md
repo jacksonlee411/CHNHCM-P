@@ -1,6 +1,6 @@
 # CHNHCM-116 R1资料与引用比较评审修复
 
-登记信息：[registry.json](../governance/registry.json)的verification_records。适用范围：R1提交后评审发现的P2测试夹具问题。上游为[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120比较约定](../specs/m02/120-dated-maintenance-technical-contract.md)及[121](../specs/m02/121-dated-object-admission-matrix.md)；[原实施报告](116-r1-kernel-and-directory.md)保持原记录。
+登记信息：[registry.json](../governance/registry.json)的verification_records。适用范围：R1提交后评审发现的P2测试夹具问题。上游为[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120比较约定](../specs/m02/120-dated-maintenance-technical-contract.md)及[121](../specs/m02/121-dated-object-admission-matrix.md)；[原实施报告](116-r1-kernel-and-directory.md)保持原记录。
 
 ## 1 验证对象与受测基线
 

@@ -1,6 +1,6 @@
 # a/b列表、日期与启停合并复核
 
-登记信息：[registry.json](../governance/registry.json)的同路径verification_records。关联[111](../plans/111-bu-list-experience-upgrade.md)、[026](../adr/026-date-display-and-input-format.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)。
+登记信息：[registry.json](../governance/registry.json)的同路径verification_records。关联[111](../archive/plans/111-bu-list-experience-upgrade.md)、[026](../adr/026-date-display-and-input-format.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)。
 
 ## 1 对象与基线
 

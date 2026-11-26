@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：T02 评审发现的原生缩放截图裁切问题。12 张页面图已补采；**截图修复不代表 R01—R09 产品问题修复**。图面使用[校正索引](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/100-ui-capture-fix/index.html)，原件继续保存。
 
-上游依据：[100 计划](../plans/100-ui-experience-improvement.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)及[原基线](100-ui-baseline.md)。
+上游依据：[100 计划](../archive/plans/100-ui-experience-improvement.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)及[原基线](100-ui-baseline.md)。
 
 ## 1 验证对象与受测基线
 

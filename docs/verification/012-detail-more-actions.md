@@ -1,6 +1,6 @@
 # CHNHCM-012 详情更多操作与查看日期验证
 
-登记信息：[registry.json](../governance/registry.json)。受测对象：[010](../plans/010-m02-scope-and-plan.md)的T03-UI、[012](../specs/m02/012-m02-functional-and-interaction-design.md)及[023](../specs/m02/023-m02-timeline-test-cases.md)相关浏览器断言。本批验证已完成；结果仅适用于下述范围。
+登记信息：[registry.json](../governance/registry.json)。受测对象：[010](../archive/plans/010-m02-scope-and-plan.md)的T03-UI、[012](../specs/m02/012-m02-functional-and-interaction-design.md)及[023](../specs/m02/023-m02-timeline-test-cases.md)相关浏览器断言。本批验证已完成；结果仅适用于下述范围。
 
 ## 1 基线与范围
 

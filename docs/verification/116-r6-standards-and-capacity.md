@@ -1,6 +1,6 @@
 # CHNHCM-116 R6接入标准与容量交接
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)R6，上游为[120容量合同](../specs/m02/120-dated-maintenance-technical-contract.md)和[124操作指南](../guides/124-dated-object-admission-and-capacity.md)。
+登记信息：[registry.json](../governance/registry.json)。适用范围：[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)R6，上游为[120容量合同](../specs/m02/120-dated-maintenance-technical-contract.md)和[124操作指南](../guides/124-dated-object-admission-and-capacity.md)。
 
 ## 1 验证对象与基线
 

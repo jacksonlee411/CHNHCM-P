@@ -1,6 +1,6 @@
 # CHNHCM-111 不必要限制与防御性设计清理
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。依据用户“进一步全面去掉不必要的限制和防御性设计”，承接[111列表计划](../plans/111-bu-list-experience-upgrade.md)、[112源码入口](../adr/112-datagrid-pro-source-integration.md)及[025全新实施](../adr/025-greenfield-implementation-policy.md)。本次按实际作用排查限制，不将所有业务、权限和恢复检查都视为冗余。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。依据用户“进一步全面去掉不必要的限制和防御性设计”，承接[111列表计划](../archive/plans/111-bu-list-experience-upgrade.md)、[112源码入口](../archive/adr/112-datagrid-pro-source-integration.md)及[025全新实施](../adr/025-greenfield-implementation-policy.md)。本次按实际作用排查限制，不将所有业务、权限和恢复检查都视为冗余。
 
 ## 1 对象、基线与排查范围
 

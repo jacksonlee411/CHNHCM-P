@@ -1,6 +1,6 @@
 # Community完整CI运行与返回上下文补验
 
-登记信息：[registry.json](../governance/registry.json)的同路径verification_records。关联[111](../plans/111-bu-list-experience-upgrade.md)、[005门禁](../governance/005-branches-and-documents.md)及[运行指南](../guides/017-local-bu-development.md)。
+登记信息：[registry.json](../governance/registry.json)的同路径verification_records。关联[111](../archive/plans/111-bu-list-experience-upgrade.md)、[005门禁](../governance/005-branches-and-documents.md)及[运行指南](../guides/017-local-bu-development.md)。
 
 ## 1 对象与原结果
 

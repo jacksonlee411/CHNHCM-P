@@ -1,6 +1,6 @@
 # CHNHCM-010 T07综合验收与交接
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[010](../plans/010-m02-scope-and-plan.md)本版BU后台维护；规则、页面、技术与案例分别由011—013及[023](../specs/m02/023-m02-timeline-test-cases.md)持有。本记录保留失败与未运行，旧定稿报告不改写。
+登记信息：[registry.json](../governance/registry.json)。适用范围：[010](../archive/plans/010-m02-scope-and-plan.md)本版BU后台维护；规则、页面、技术与案例分别由011—013及[023](../specs/m02/023-m02-timeline-test-cases.md)持有。本记录保留失败与未运行，旧定稿报告不改写。
 
 ## 1 结论与验收边界
 

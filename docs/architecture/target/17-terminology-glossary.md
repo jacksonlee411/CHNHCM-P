@@ -102,8 +102,8 @@
 | <a id="term-m03-position"></a>Position<br>别名／原称：职位、独立席位 | 岗位 | 具有独立身份的组织岗位，关联职务与部门，可单独核编，空缺时仍然存在。 |
 | <a id="term-m03-workforceplan"></a>WorkforcePlan | 人员编制计划 | 某期间的人员目标和预算。管理员可按业务日明确采用相应版本，调整核定编制。 |
 | <a id="term-m03-positioncapacity"></a>StaffingQuota | 编制额度 | M03 按生效日期维护的部门核定总额或岗位定额，单位为非负整数名额。已核部门的待分配编制为总额减当日直属启用岗位的定额合计。 |
-| <a id="term-m03-positionreservation"></a>PositionReservation<br>别名／原称：Reservation | 招聘编制预留 | 为真实招聘需求暂留的单人编制名额。入职成功后转为占编，释放或到期时结束预留。 |
-| <a id="term-m03-positionoccupancy"></a>PositionOccupancy<br>别名／原称：Occupancy | 任职占编 | 一份按企业规则占编的有效任职使用一个岗位编制名额，自终结生效日起释放。 |
+| <a id="term-m03-positionreservation"></a>PositionReservation<br>别名／原称：Reservation | 招聘编制预留 | M05 为招聘保留的单人名额，有效期间和状态由招聘记录。M03 据此计算可用数。经录用入职时按原接受版本转换。 |
+| <a id="term-m03-positionoccupancy"></a>PositionOccupancy<br>别名／原称：Occupancy | 任职占编 | M04 的有效任职按已采用规则使用一个岗位名额，自终结生效日起释放。M03 按其期间计算岗位用量。 |
 | <a id="term-m03-positionhierarchy"></a>PositionHierarchy<br>别名／原称：Position hierarchy、岗位层级 | 岗位层级关系 | 岗位间按生效日期维护的管理汇报关系；与员工之间实际汇报关系分别维护。 |
 | <a id="term-m03-positionhierarchyversion"></a>PositionHierarchyVersion<br>别名／原称：HierarchyVersion、岗位层级版本 | 岗位层级关系版本 | 某岗位层级关系在指定期间的节点和父子边快照，消费者保存所采用版本。 |
 | <a id="term-m03-staffingpolicy"></a>StaffingPolicy<br>别名／原称：任职与编制管理政策 | 任职与编制管理规则 | 按企业、人员类别、用途及有效期间决定是否须有岗位、是否占编的规则。 |

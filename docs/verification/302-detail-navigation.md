@@ -1,6 +1,6 @@
 # CHNHCM-302 详情导航位置与响应整改记录
 
-登记信息：[registry.json](../governance/registry.json)。上游：[302计划](../plans/302-detail-navigation.md)。
+登记信息：[registry.json](../governance/registry.json)。上游：[302计划](../archive/plans/302-detail-navigation.md)。
 
 ## 1 对象与基线
 

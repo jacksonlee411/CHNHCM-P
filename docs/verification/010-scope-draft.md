@@ -1,6 +1,6 @@
 # CHNHCM-010 首批计划起草验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010 草案](../plans/010-m02-scope-and-plan.md)、登记及相关入口的资料检查；不是范围采纳、业务实施或独立评审记录。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010 草案](../archive/plans/010-m02-scope-and-plan.md)、登记及相关入口的资料检查；不是范围采纳、业务实施或独立评审记录。
 
 ## 1 验证对象与受测基线
 

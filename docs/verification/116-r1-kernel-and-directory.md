@@ -1,6 +1,6 @@
 # CHNHCM-116 R1共用内核与分类目录分批实施验证
 
-登记信息：[registry.json](../governance/registry.json)的verification_records。适用范围：116 R1，BU实际接入共用纯Go内核和117目录；R2—R6另行交付。上游：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
+登记信息：[registry.json](../governance/registry.json)的verification_records。适用范围：116 R1，BU实际接入共用纯Go内核和117目录；R2—R6另行交付。上游：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
 
 ## 1 验证对象与受测基线
 

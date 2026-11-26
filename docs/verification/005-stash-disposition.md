@@ -45,4 +45,4 @@
 
 本轮执行Git快照／真实恢复／保护核对及文档检查，证据归本目录；产品check、DB/API、浏览器、容量或部署均未运行，也无需为stash清理重跑这些产品验收。文档最终检查与309／310同批执行，结果见[最终文档日志](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/309-grade-ladder-plan-review/make-docs-final.log)。
 
-当前工作区仍保留本轮文档成果，不称工作区无修改；“处理干净”指三份stash已关闭、无待恢复实施、没有遗留临时恢复目录。下一项继续[309职级与阶梯方案](../plans/309-m03-grade-ladder.md)，不再把三份stash作为实施前置。
+当前工作区仍保留本轮文档成果，不称工作区无修改；“处理干净”指三份stash已关闭、无待恢复实施、没有遗留临时恢复目录。下一项继续[309职级与阶梯方案](../archive/plans/309-m03-grade-ladder.md)，不再把三份stash作为实施前置。

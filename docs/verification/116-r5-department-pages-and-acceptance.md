@@ -1,6 +1,6 @@
 # CHNHCM-116 R5部门页面与双对象验收
 
-登记信息：[registry.json](../governance/registry.json)。依据[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[119功能设计](../specs/m02/119-department-functional-design.md)及[121验收映射](../specs/m02/121-dated-object-admission-matrix.md)。
+登记信息：[registry.json](../governance/registry.json)。依据[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[119功能设计](../specs/m02/119-department-functional-design.md)及[121验收映射](../specs/m02/121-dated-object-admission-matrix.md)。
 
 ## 1 范围与基线
 

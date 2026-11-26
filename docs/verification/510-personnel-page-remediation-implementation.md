@@ -1,6 +1,6 @@
 # CHNHCM-510 人员页面整改实施与实页复验
 
-旧版从应用菜单分流至「员工」和「人员档案」。固定 f 原库中，同一人员有三个雇用记录编号，旧入口需要先选菜单、再猜查看日才能辨认。整改后从「人员」输入 P00000005 就能查到 0、1、2 号，点主岗可直接切换个人资料、职务信息和变更日志。初始问题、截图和归因保留在两份调查报告中。方案初审后修改一次，两组在同一版本批准，再开展产品实施。[原 11 项](500-personnel-page-review.md) · [补查 9 项及归因](500-personnel-entry-and-date-review.md) · [逐项整改与先后依赖](../plans/510-personnel-page-remediation.md) · [方案评审](510-personnel-page-remediation-review.md)
+旧版从应用菜单分流至「员工」和「人员档案」。固定 f 原库中，同一人员有三个雇用记录编号，旧入口需要先选菜单、再猜查看日才能辨认。整改后从「人员」输入 P00000005 就能查到 0、1、2 号，点主岗可直接切换个人资料、职务信息和变更日志。初始问题、截图和归因保留在两份调查报告中。方案初审后修改一次，两组在同一版本批准，再开展产品实施。[原 11 项](500-personnel-page-review.md) · [补查 9 项及归因](500-personnel-entry-and-date-review.md) · [逐项整改与先后依赖](../archive/plans/510-personnel-page-remediation.md) · [方案评审](510-personnel-page-remediation-review.md)
 
 ## 1 二十项问题的复验记录
 

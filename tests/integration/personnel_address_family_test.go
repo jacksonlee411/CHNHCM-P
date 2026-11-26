@@ -5,8 +5,12 @@ package integration_test
 import (
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	fnd "chnhcm.local/chnhcm/internal/foundation"
+	"errors"
+	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestPersonnelAddressFamily(t *testing.T) {
@@ -216,7 +220,8 @@ func TestPersonnelAddressDirectory(t *testing.T) {
 	choices["province"] = choice(candidate("&q=110000"))
 	post(in, 409)
 	choices["province"] = choice(province)
-	post(in, 200)
+	in["submissionId"], in["expectedSourceVersion"] = fnd.NewID(), root["sourceVersion"]
+	saveAddressWithLockedSources(t, hr, path, in, country, province["id"].(string), area["id"].(string))
 	data := get()
 	address := data["addresses"].([]any)[0]
 	a := address.(M)["adoptions"].(M)["area"].(M)
@@ -252,4 +257,44 @@ func TestPersonnelAddressDirectory(t *testing.T) {
 	if !reflect.DeepEqual(address, get()["addresses"].([]any)[0]) || get()["contacts"].([]any)[0].(M)["value"] != "67890" {
 		t.Fatal("unrelated edit lost original adoption")
 	}
+}
+
+// Hold the personnel publication just after adoption. A separate connection
+// must still see the country's, province's and area's source locks at this point.
+func saveAddressWithLockedSources(t *testing.T, hr *browser, path string, input map[string]any, country, province, area string) {
+	t.Helper()
+	f := hr.f
+	barrier, err := f.admin.Begin(f.ctx)
+	must(t, err)
+	defer barrier.Rollback(f.ctx)
+	_, err = barrier.Exec(f.ctx, "lock table personnel.source in share mode")
+	must(t, err)
+	done := make(chan error, 1)
+	go func() {
+		status, _, err := hr.response("POST", path+"/corrections", input, "")
+		if err == nil && status != 200 {
+			err = fmt.Errorf("address submission returned HTTP %d", status)
+		}
+		done <- err
+	}()
+	deadline := time.Now().Add(10 * time.Second)
+	for f.scalar("select count(*) from pg_stat_activity where usename='chnhcm_api' and $1::int=any(pg_blocking_pids(pid))", barrier.Conn().PgConn().PID()) == 0 {
+		if time.Now().After(deadline) {
+			t.Fatal("address submission did not reach personnel publication")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	for _, row := range []struct{ query, id string }{
+		{"select 1 from organization.country_region where instance_id=$1 and country_region_id=$2 for update nowait", country},
+		{"select 1 from organization.geoarea where instance_id=$1 and geoarea_id=$2 for update nowait", province},
+		{"select 1 from organization.geoarea where instance_id=$1 and geoarea_id=$2 for update nowait", area},
+	} {
+		_, err := f.admin.Exec(f.ctx, row.query, f.instance, row.id)
+		var pgErr *pgconn.PgError
+		if !errors.As(err, &pgErr) || pgErr.Code != "55P03" {
+			t.Fatalf("catalog source not held through personnel publication: %v", err)
+		}
+	}
+	must(t, barrier.Commit(f.ctx))
+	must(t, <-done)
 }

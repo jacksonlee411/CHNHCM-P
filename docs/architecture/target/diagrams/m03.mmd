@@ -10,16 +10,16 @@ flowchart TB
     L["GradeLadder 职级阶梯"]:::own
     P["Position 独立席位"]:::own
     Q["StaffingQuota 部门与岗位额度"]:::own
-    R["Reservation / Occupancy 招聘预留与任职占编"]:::own
+    R["岗位用量汇总与可用名额"]:::own
     W["WorkforcePlan 编制目标与预算"]:::own
     PH["PositionHierarchy 岗位层级版本"]:::own
     POL["StaffingPolicy 岗位模式与占用规则"]:::own
   end
   O["M02 组织 地点及业务上下文"]:::external
-  H["M04 Assignment 任职"]:::external
+  H["M04 任职与实际占编"]:::external
   C["M09 GradeRate 金额与报价"]:::external
   A["M15 已确认实际成本"]:::external
-  D["M05 Requisition 招聘需求"]:::external
+  D["M05 招聘份额与预留"]:::external
   JF -->|分类| J
   L -->|级别及进阶结构| G
   J -->|工作类型| P
@@ -28,15 +28,14 @@ flowchart TB
   O -->|按部门核总额| Q
   P -->|按岗位定额| Q
   Q -->|按岗位核验用量| R
-  D -->|预留| R
-  R -->|占用引用任职身份| H
+  D -->|已承诺的预留期间| R
   G -->|级别身份供金额引用| C
   C -->|版本化预算报价| W
   A -->|计划与实际比较| W
   W -->|有权人按日采用| Q
   PH -->|按有效版本引用岗位节点| P
   POL -->|任职采用模式及占编规则| H
-  H -->|入转离及更正共同事务| R
+  H -->|已采用的任职期间| R
   POL -->|是否占编| R
   classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
   classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;

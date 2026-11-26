@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：本轮文档、术语、实施待办和既有证据保护；不属于业务运行验收。
 
-上游依据：[022决定](../adr/022-joint-timeline-revision.md)、[010待办](../plans/010-m02-scope-and-plan.md)、[011规则](../specs/m02/011-m02-business-requirements.md#m02-br-019)、[012页面](../specs/m02/012-m02-functional-and-interaction-design.md)和[013技术合同](../specs/m02/013-m02-technical-design.md)。
+上游依据：[022决定](../adr/022-joint-timeline-revision.md)、[010待办](../archive/plans/010-m02-scope-and-plan.md)、[011规则](../specs/m02/011-m02-business-requirements.md#m02-br-019)、[012页面](../specs/m02/012-m02-functional-and-interaction-design.md)和[013技术合同](../specs/m02/013-m02-technical-design.md)。
 
 ## 1 验证对象与受测基线
 

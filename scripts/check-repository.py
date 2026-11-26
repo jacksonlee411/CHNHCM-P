@@ -12,6 +12,7 @@ from urllib.parse import unquote, urlsplit
 import zipfile
 from context_registry import slice_errors
 from design_revisions import resolve_hashes, historical_source_exists
+from document_catalog import catalog_matches
 from document_governance import markdown_anchors, markdown_links, validate_governance
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +47,7 @@ errors.extend(validate_governance(ROOT, registry))
 if errors:
     print('\n'.join(errors))
     raise SystemExit(1)
+require(catalog_matches(registry), '文档分类目录与登记不一致，请运行 python3 -B scripts/document_catalog.py。')
 branches = registry['fixed_branches']
 require([b['branch'] for b in branches] == ['wt-dev-' + c for c in 'abcdef'], 'six fixed branches required')
 ranges = {}

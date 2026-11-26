@@ -4,7 +4,7 @@
 
 ## 1 受测范围与依据
 
-受测工作树为 `wt-dev-f`，提交为 `b67cb724f759473a761e7153796a5a1acd4b2bdf`，实测开始时工作区干净。固定环境 `m01-profile-f` 使用 Web 4386、API 8386、DB 54376。工作树的 1,157 个前端和共享包源文件与固定构建清单一致，在线返回的 28 个前端文件也逐个核对了摘要。管理员、只读账号均从正常菜单进入，数据为本地合成样本。509 已在其受测版本关闭前轮 27 项，本次 11 项关联上述提交。[500 页面继承要求](../plans/500-personnel-roadmap.md#personnel-pages) · [509 固定环境交接](509-t04-remediation-implementation.md#fixed-environment)
+受测工作树为 `wt-dev-f`，提交为 `b67cb724f759473a761e7153796a5a1acd4b2bdf`，实测开始时工作区干净。固定环境 `m01-profile-f` 使用 Web 4386、API 8386、DB 54376。工作树的 1,157 个前端和共享包源文件与固定构建清单一致，在线返回的 28 个前端文件也逐个核对了摘要。管理员、只读账号均从正常菜单进入，数据为本地合成样本。509 已在其受测版本关闭前轮 27 项，本次 11 项关联上述提交。[500 页面继承要求](../archive/plans/500-personnel-roadmap.md#personnel-pages) · [509 固定环境交接](509-t04-remediation-implementation.md#fixed-environment)
 
 使用有界面 Chromium 140.0.7339.186，对照同一构建的业务单元和职务详情。员工、档案及办理记录按场景实测五种 100% 内容视口，分别为 1440×900、1440×540、390×844、320×900、320×256。原生缩放以 1280×900 内容、1280×987 外框校准，200% 下内容为 640×450，核对了草稿、来源和返回焦点。400% 下内容为 320×225，专项核对了只读证件明细及 Escape 归焦。首聘、合同和录用改期另从各自业务入口走查。[012 视口矩阵](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) · [121 接入矩阵](../specs/m02/121-dated-object-admission-matrix.md) · [400% 证件明细原图](data/500-personnel-page-review/57-reader-native400-dialog.png)
 
@@ -52,7 +52,7 @@ P00000002 的 2027-05-01 地点原笔为甲→乙，后来更正为甲→丙。�
 
 在 1440×900 下，职务参考页和个人资料使用宽 1260 px、从 x=83 开始的居中详情区。任职标题从 x=0 起，正文宽 1425 px，字段集中在左侧，缺少「任职安排／记录信息」两列。切至个人资料或日志后，原工作关系、0 号主岗及按任职列表前后定位的控件消失。「返回列表」第一次回到任职详情，第二次才回到原行。1 号兼岗上下重复显示唯一的「职务信息」页签和标题。[职务参考](data/500-personnel-page-review/03-job-reference.png) · [主岗任职](data/500-personnel-page-review/06-primary-between-dates.png) · [同人资料](data/500-personnel-page-review/08-primary-profile.png) · [兼岗](data/500-personnel-page-review/18-secondary.png)
 
-**关闭条件**　主岗三页签共享身份、查询内导航和详情布局，切换只替换获权面板。直接按「返回列表」能恢复原条件和任职行焦点。单面板兼岗清楚标识当前职务信息，无重复的切换入口。[500 详情与返回](../plans/500-personnel-roadmap.md#personnel-pages) · [507 页签布局](../specs/m04/507-job-information-tab.md#job-tab-layout) · [任职布局](../../apps/web/src/features/hire/AssignmentPage.tsx#L181) · [资料返回目的地](../../apps/web/src/features/personnel/Detail.tsx#L187)
+**关闭条件**　主岗三页签共享身份、查询内导航和详情布局，切换只替换获权面板。直接按「返回列表」能恢复原条件和任职行焦点。单面板兼岗清楚标识当前职务信息，无重复的切换入口。[500 详情与返回](../archive/plans/500-personnel-roadmap.md#personnel-pages) · [507 页签布局](../specs/m04/507-job-information-tab.md#job-tab-layout) · [任职布局](../../apps/web/src/features/hire/AssignmentPage.tsx#L181) · [资料返回目的地](../../apps/web/src/features/personnel/Detail.tsx#L187)
 
 <a id="500-ui-07"></a>
 ### 3.5 500-UI-07 主岗页签用空格无法激活，回车切换后失焦
@@ -66,7 +66,7 @@ P00000002 的 2027-05-01 地点原笔为甲→乙，后来更正为甲→丙。�
 
 从 P00000001 档案选「办理入职」，桌面十项拟任字段排成一列。「保存／取消」在表尾，1440×540 时取消按钮顶端约在 y=666，滚动后才可见。从 P00000022 任职进入「订立合同」，以及在「招聘 → 招聘录用」打开原单调整录用日期，整单操作也在正文末端。任职的「新增记录」已经把保存和取消放在页头控制区。[首聘桌面](data/500-personnel-page-review/39-first-hire.png) · [短屏滚动前](data/500-personnel-page-review/44-first-hire-short-top.png) · [滚动后](data/500-personnel-page-review/45-first-hire-short-bottom.png) · [订立合同](data/500-personnel-page-review/46-contract-draft.png) · [录用改期](data/500-personnel-page-review/66-offer-reschedule.png)
 
-**关闭条件**　三条路径的整单保存、取消均可在页头控制区操作。桌面字段按业务分组双列，窄屏按组单列。用键盘验证末字段、两个动作和离开草稿的往返。[500 表单继承](../plans/500-personnel-roadmap.md#personnel-pages) · [402 首聘表单](../specs/m04/402-hire-interactions.md) · [首聘提交区](../../apps/web/src/features/hire/HirePage.tsx#L485) · [合同提交区](../../apps/web/src/features/hire/RelationshipContracts.tsx#L58) · [录用提交区](../../apps/web/src/features/recruiting/Offers.tsx#L655)
+**关闭条件**　三条路径的整单保存、取消均可在页头控制区操作。桌面字段按业务分组双列，窄屏按组单列。用键盘验证末字段、两个动作和离开草稿的往返。[500 表单继承](../archive/plans/500-personnel-roadmap.md#personnel-pages) · [402 首聘表单](../specs/m04/402-hire-interactions.md) · [首聘提交区](../../apps/web/src/features/hire/HirePage.tsx#L485) · [合同提交区](../../apps/web/src/features/hire/RelationshipContracts.tsx#L58) · [录用提交区](../../apps/web/src/features/recruiting/Offers.tsx#L655)
 
 <a id="500-ui-09"></a>
 ### 3.7 500-UI-09 员工列表缺主兼岗筛选，窄屏缺排序入口
