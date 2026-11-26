@@ -1,6 +1,6 @@
 import { desktopViewports } from './desktop-viewports.mjs';
 import {openPersonnel} from './app-navigation';
-import { chromium } from '@playwright/test';
+import { chromium, type Locator } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { execFileSync, spawn } from 'node:child_process';
@@ -485,6 +485,34 @@ async function chooseRecordAction(page: Page, label: string) {
   await choice.focus();
   await page.keyboard.press('Enter');
 }
+// Delay the real read so it completes during a pointer gesture or while a filter is being edited.
+async function holdRead(page: Page, match: (url: URL) => boolean) {
+  let release!: () => void;
+  const held = new Promise<void>(resolve => { release = resolve; });
+  await page.route(match, async route => {
+    await held;
+    await route.continue();
+  });
+  page.once('close', release);
+  return release;
+}
+
+async function clickWhileReadCompletes(button: Locator, release: () => void, loaded: Locator) {
+  const mouse = button.page().mouse;
+  try {
+    await button.scrollIntoViewIfNeeded();
+    const box = await button.boundingBox();
+    expect(box).not.toBeNull();
+    await mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+    await mouse.down();
+    release();
+    await expect(loaded).toBeVisible();
+    await mouse.up();
+  } finally {
+    release();
+  }
+}
+
 async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   const { locations } = await hireAtLocation(page, sample);
   const { row, search } = await openEmployeeAssignment(page,sample);
@@ -521,11 +549,13 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await expect(page.getByRole('button',{name:'更多操作',exact:true})).toBeFocused();
   await chooseRecordAction(page, '更正记录');
   await expect(page.getByRole('combobox', { name: /工作地点/ })).toHaveValue(locations[1].name);
+  const releaseProfile = await holdRead(page, url => url.pathname === '/api/v1/persons/' + sample.id);
   await changeTo(locations[2].name);
   await page.getByRole('button', { name: '数据更改 · 2027-05-01', exact: true }).click();
   const revisions = page.getByRole('button', { name: /查看修订/ });
   await expect(revisions).toHaveCount(2);
-  await revisions.last().click();
+  const firstRevision = page.getByRole('button', { name: /查看修订.*第 1 次$/ });
+  await clickWhileReadCompletes(firstRevision, releaseProfile, page.getByRole('tab', {name:'个人资料'}));
   await expect(page.getByText(locations[0].name + ' → ' + locations[1].name, { exact: true })).toBeVisible();
   const versionURL = page.url();
   expect(new URL(versionURL).searchParams.get('adoptedRef')).toBeTruthy();
@@ -1572,10 +1602,13 @@ async function countedPromotionJourney(page: Page, sample: Awaited<ReturnType<ty
     await add('晋升并调动','2027-07-01');await pick('调入岗位',target.name);
     await expect(page.getByText(target.department,{exact:true})).toBeVisible();
     await pick('拟任职级',target.grade.name);
+    const releaseUsage = await holdRead(page, url => url.pathname === '/api/v1/positions/' + target.id + '/replenishment' &&
+      url.searchParams.get('businessAt') === '2027-07-01');
     await page.getByLabel(/晋升依据/).fill('同一份通知晋升并调入新岗');await button('保存').focus();await page.keyboard.press('Enter');
     await expect(page.getByText(target.name+' · 占编',{exact:true})).toBeVisible();
     await expect(page.getByText(target.grade.name,{exact:true})).toBeVisible();
-    await button('调动 · 2027-07-01').click();
+    await clickWhileReadCompletes(button('调动 · 2027-07-01'), releaseUsage,
+      page.getByText('核定 1 · 实占 1 · 超编 0', {exact:true}));
     await expect(page.getByText([target.department,target.job.name,target.name,'占编'].join(' · '),{exact:true})).toBeVisible();
     const usage=await request(page,'GET','/api/v1/positions/'+target.id+'/replenishment?businessAt=2027-07-01');
     expect(usage.body.occupied).toBe(1);expect(usage.body.reserved).toBe(0);
@@ -2605,11 +2638,20 @@ test('M04 办理原件沿姓名与类型跨第 20 和 21 笔', async ({page}) =>
     expect(saved.status,saved.body.message).toBe(200);
     changes.push(saved.body);
   }
-  await openRegister(page);
+  const releaseList = await holdRead(page, url => url.pathname === '/api/v1/employment-actions' &&
+    !url.searchParams.has('ref') && !url.searchParams.has('kind'));
   const search=page.getByRole('textbox',{name:'姓名或人员编号'});
-  await search.fill(sample.name);
-  await page.getByText('筛选条件',{exact:true}).click();
-  await page.getByLabel('办理类型',{exact:true}).selectOption('DataChange');
+  const kind=page.getByLabel('办理类型',{exact:true});
+  try {
+    await openRegister(page);
+    await search.fill(sample.name);
+    await page.getByText('筛选条件',{exact:true}).click();
+    await kind.selectOption('DataChange');
+  } finally {
+    releaseList();
+  }
+  await expect(page.getByText(/^\d+ 笔办理$/)).toBeVisible();
+  await expect(kind).toHaveValue('DataChange');
   await page.getByRole('button',{name:'应用筛选'}).click();
   await expect(page.getByText('21 笔办理',{exact:true})).toBeVisible();
   const applied = new URL(page.url()).searchParams.get('ref');

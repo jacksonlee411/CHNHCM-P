@@ -23,6 +23,7 @@ export function DutyOriginal({evidence}:{evidence:Models['DutyEvidence']}) {
 export function DutyUsage({position,day,version}:{position:string;day:string;version:string}) {
   const read=useRead(JSON.stringify([position,day,version]),async()=>unwrap(await api.GET('/api/v1/positions/{id}/replenishment',{params:{path:{id:position},query:{businessAt:day}}})));
   const v=read.data;
+  if (!v && !read.error) return <ObjectDetailField label="岗位用量">正在读取…</ObjectDetailField>;
   if(v?.quota==null||v.occupied==null||v.excess==null)return null;
   return <ObjectDetailField label="岗位用量">核定 {v.quota} · 实占 {v.totalOccupied??v.occupied} · 超编 {v.excess}</ObjectDetailField>;
 }
