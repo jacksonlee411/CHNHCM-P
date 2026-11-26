@@ -1,6 +1,6 @@
 # CHNHCM-133 过度防御与高成本设计再调查
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`中本文件条目。适用范围：按用户“重新评估和调查、应纳尽纳”要求，对当前已实现链路再次核查，扩展[133计划](../plans/133-overdefensive-processing-remediation.md#r133-comprehensive-assessment)并登记[132待决边界](../adr/132-query-and-validation-boundary.md)。原[方案编制](133-remediation-plan.md)及[追加九项](133-additional-scope-assessment.md)定稿记录保持。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`中本文件条目。适用范围：按用户“重新评估和调查、应纳尽纳”要求，对当前已实现链路再次核查，扩展[133计划](../archive/plans/133-overdefensive-processing-remediation.md#r133-comprehensive-assessment)并登记[132待决边界](../adr/132-query-and-validation-boundary.md)。原[方案编制](133-remediation-plan.md)及[追加九项](133-additional-scope-assessment.md)定稿记录保持。
 
 ## 1 对象与基线
 

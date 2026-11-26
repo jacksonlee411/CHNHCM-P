@@ -24,9 +24,22 @@ func TestBackupBeforePersonnel(t *testing.T) {
 	job := create310(h, "job", "JT01", []string{grade}, family["id"].(string))
 	pos := h.b.call("POST", "/api/v1/positions", map[string]any{"code": "PT01", "name": "迁移样本岗位", "effectiveDate": "2027-01-01", "operationType": "CREATE", "operationReason": "NEW_POSITION", "departmentId": dep, "locationId": location["id"], "jobId": job["id"], "gradeId": grade}, foundation.NewID(), 201)["objectId"].(string)
 	if os.Getenv("CHNHCM_BACKUP_POSITION_QUOTA") == "1" {
-		h.b.call("POST", "/api/v1/staffing-quotas/"+pos, map[string]any{
-			"action": "SET", "effectiveDate": "2027-04-01", "quantity": 1, "reason": "核编",
-		}, foundation.NewID(), 200)
+		path := "/api/v1/staffing-quotas/" + pos
+		save := func(body map[string]any) map[string]any {
+			return h.b.call("POST", path, body, foundation.NewID(), 200)
+		}
+		edit := func(day, action string) map[string]any {
+			detail := h.b.call("GET", path+"?businessAt="+day, nil, "", 200)
+			selected := detail["selected"].(map[string]any)
+			return map[string]any{"action": action, "expectedSourceVersion": detail["sourceVersion"],
+				"recordId": selected["recordId"], "expectedRecordRevision": selected["revision"], "reason": "核对原件"}
+		}
+		save(map[string]any{"action": "SET", "effectiveDate": "2027-04-01", "quantity": 2, "reason": "首次核编"})
+		correction := edit("2027-04-01", "CORRECT")
+		correction["effectiveDate"], correction["quantity"] = "2027-04-01", 3
+		corrected := save(correction)
+		save(map[string]any{"action": "SET", "effectiveDate": "2027-05-01", "quantity": 4, "reason": "临时增编", "expectedSourceVersion": corrected["sourceVersion"]})
+		save(edit("2027-05-01", "DELETE"))
 	}
 	dir := os.Getenv("PERSONNEL_BACKUP_DIR")
 	dump, e := os.OpenFile(dir+"/before.dump", os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)

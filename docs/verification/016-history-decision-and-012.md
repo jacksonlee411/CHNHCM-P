@@ -1,6 +1,6 @@
 # CHNHCM-016 历史决策与 012 页面合同验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[016 决策](../adr/016-m02-effective-record-history.md)、[012 功能交互](../specs/m02/012-m02-functional-and-interaction-design.md)及相关导航/状态同步。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[016 决策](../archive/adr/016-m02-effective-record-history.md)、[012 功能交互](../specs/m02/012-m02-functional-and-interaction-design.md)及相关导航/状态同步。
 
 ## 1 基线与范围
 

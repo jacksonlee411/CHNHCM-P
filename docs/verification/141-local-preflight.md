@@ -1,6 +1,6 @@
 # CHNHCM-141 本地预检设施验证
 
-[计划与验收条件](../plans/141-local-preflight.md) · [运行规范](../governance/137-actions-and-validation.md#13-减少正式候选的全量启动次数) · [登记表](../governance/registry.json)
+[计划与验收条件](../archive/plans/141-local-preflight.md) · [运行规范](../governance/137-actions-and-validation.md#13-减少正式候选的全量启动次数) · [登记表](../governance/registry.json)
 
 ## 1 受测对象
 

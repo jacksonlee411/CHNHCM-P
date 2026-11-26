@@ -1,0 +1,202 @@
+--- a/docs/plans/511-project-standards.md
++++ b/docs/plans/511-project-standards.md
+@@ -19 +19 @@
+-| 文档、来源与变更治理 | 权威位置、适用范围、责任角色、稳定条目标识、采纳与替代、来源资产、计划关闭和历史检索 | 同一条规则能由方案追至实现和证据，旧版本能按原编号及基线查回 |
++| 文档、来源与变更治理 | 权威位置、适用范围、责任角色、稳定条目标识、文档状态及转换条件、来源资产、归档前的规则提炼 | 能用证据判定文档状态，从现行条款追到原规则和适用范围，从归档原文找到今天应遵循的标准 |
+@@ -29 +29,2 @@
+-| **导航中的手写进度落后于登记和证据。** 基线首页的“当前规则”以已完成的 141 计划开头。盘点时规格入口写着 309“产品未开始”，登记已完成，G1、G2 均有实施记录。 | 两处入口给出了不同的开工依据。本次已将 309 这一处改为分别链接现行合同、计划和两批实施报告，读者可据实查到各批范围与限制。[首页](../index.md#当前规则) · [修正后的规格入口](../specs/README.md) · [G1 记录](../verification/309-grade-g1-implementation.md) · [G2 记录](../verification/309-grade-g2-implementation.md) |
++| **现行对象合同也可能保留旧条件。** 已采纳的 308 第 13.1 节把 28 个视口与角色单元标为历史，M03-AC-028 的适用条件仍写“五组100%视口”。 | 从共享规范和对象 AC 开始备测，会给同一候选排出不同的实测范围。首批用这两个入口核对第 3.1 节的预期。[308 对象验收](../specs/m03/308-job-foundation-contract.md#m03-ac-028) · [308 原批矩阵](../specs/m03/308-job-foundation-contract.md#131-尺寸和角色矩阵) |
++| **导航中的手写进度落后于登记和证据。** 基线首页把已完成的 141 计划放在“当前规则”，把已采纳且执行已完成的 126 放在“待评审草案”。盘点时规格入口仍写 309“产品未开始”，G1、G2 已有实施记录。 | 本次将 141、126 引到历史，把 309 的合同、计划、两批实施报告分开。后续用第 6.1 节的正反例持续检查分类。[首页历史入口](../index.md#验证与历史批次) · [规格入口](../specs/README.md) · [G1 记录](../verification/309-grade-g1-implementation.md) · [G2 记录](../verification/309-grade-g2-implementation.md) |
+@@ -39,0 +41,12 @@
++### 3.1 首批核对共享视口与职务对象验收
++
++体验维护者查 012 的现行条款和明确替代的旧要求，M03 维护者逐项查职务系列、职务的对象 AC 及执行矩阵。两人从各自入口分别列出同一次页面变更要测的尺寸、倍率、角色和操作。共享规则变更时，既查直接引用，也在已采纳的对象合同中搜仍写死的旧条件，逐项记录条款位置、保留的业务差异和处理结果。
++
++| 核对项 | 本例的验收预期 |
++| --- | --- |
++| 本次变更的视口与缩放 | 拟将 308 的 M03-AC-028 中“五组100%视口”改为引用 012 的普通页面桌面基线，AC-029 继续引用关键流程缩放条件。由任一入口均得出 1440×900、1440×540 的 100% 桌面视口，受影响的关键流程必测原生 200%。原生 400% 在客户明确要求、已知缺陷或有具体风险时专项验证。[012 视口与缩放](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) · [308 桌面验收](../specs/m03/308-job-foundation-contract.md#m03-ac-028) · [308 缩放验收](../specs/m03/308-job-foundation-contract.md#m03-ac-029) |
++| 职务对象特有的路径 | 两个对象均保留管理员 A 与查询者 R 的适用路径。A 可更正并保存或取消，R 可查准确原件并返回日志。缩放按实际有差异的路径选代表对象，R0、RF、W0 继续按 308 做权限专项。[308 角色与矩阵](../specs/m03/308-job-foundation-contract.md#131-尺寸和角色矩阵) |
++| 原批实测 | 从 308 第 13.1 节仍能查到两个对象、两种角色、七组条件的 28 个原批单元及结果。逐组结果在原矩阵，获权维护者从实施验收入口复核原报告。新候选另记实测基线和结果。[308 原批矩阵](../specs/m03/308-job-foundation-contract.md#131-尺寸和角色矩阵) · [308 原实施验收](../verification/308-job-page-standard-implementation.md) |
++
++首批须交付修订后的对象条款和上述对照结果。若从对象 AC 仍能读出五组 100% 为现行必测，或从历史入口已查不到原批结果，该项保持待修订。
++
+@@ -49 +62 @@
+-| 关闭与交接 · 计划及文档维护者 | 更新计划执行状态和关闭原因，关联定稿报告，交接开放项、长期定义和运行环境。同步当前入口，发起归档评估 | 从当前入口能找现行条款，从历史入口能查到原计划、原结论和后续接手位置 |
++| 关闭与交接 · 计划及文档维护者 | 更新计划执行状态和关闭原因，关联定稿报告，交接开放项和运行环境。拟归档时按第 5 节提炼规则和标准 | 每条仍有效的规则均有已采纳的长期条款承接，历史入口能定位原文、原结论和证据，方可办理归档 |
+@@ -60 +73 @@
+-## 5 怎样处理已完成计划
++### 4.2 首个组件样本用人员详情页签
+@@ -62 +75,25 @@
+-按 014 先评估执行已完成或取消的临时计划，以及已替代、废止或取消的文档。每份记录原号、仍有效的条款及承接位置、未结事项及负责方、原证据、反向引用、处置理由。建议先按下列三份校准判断。[014 归档流程](../governance/014-document-management.md#82-归档)
++首批由体验、M01 和 M04 维护者共同交付页签用法对照。下表给出各自长期维护的位置、首个样本的实现和可观察结果。导航链接这些位置，后续组件变更据此选择受影响的消费者。
++
++| 维护位置与实现 | 适用场景及判据 |
++| --- | --- |
++| 012 持有跨对象的详情布局、编辑草稿和返回焦点约定。首批在其共享体验章节补全页签与面板的关联、查看与编辑的切换条件，链接通用实现。[012 共享体验](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression) · [012 返回定位](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-link-return) · [ObjectTabs](../../packages/ui/src/components/ObjectTabs.tsx) | `ObjectTabPanel` 将面板与页签关联，只显示选中面板。改动通用面板时，抽验使用它的职务详情。`useObjectTabs` 在组件夹具中另验同一编辑草稿内切签及跨签错误定位。[职务详情](../../apps/web/src/features/staffing/Detail.tsx) · [编辑页签夹具](../../apps/web/test-fixtures/experience.tsx) |
++| 502 持有人员资料、日志及其返回位置，507 持有从主岗和兼岗进入时可见的任职面板。对象路由适配由人员详情与任职详情共用。[502 页签与日志](../specs/m01/502-person-directory-interactions.md#m01-change-log) · [507 任职入口](../specs/m04/507-job-information-tab.md#job-tab-layout) · [PersonTabs](../../apps/web/src/features/personnel/PersonTabs.tsx) · [人员详情](../../apps/web/src/features/personnel/Detail.tsx) · [任职详情](../../apps/web/src/features/hire/AssignmentPage.tsx) | 从获权的 0 号主岗进入，按权限显示面板。正号兼岗只显示该任职的职务信息。`PersonTabs` 在主动切签发起的新导航中聚焦目标页签，从原件后退时由日志恢复原位置。 |
++
++1. **主动切签。** 从“人员”打开一份同时有个人资料和变更日志读权的档案，先选中“个人资料”。用方向键移到“变更日志”时原面板仍选中，Enter 或空格激活后仅日志面板可见，焦点在已选中的“变更日志”页签。核对页签与面板的双向标识。
++2. **从原件后退。** 在该日志中记下筛选、页码、滚动位置和触发链接。用键盘打开某行“查看当次资料”，浏览器后退后应恢复原查询，焦点和滚动回到原行的触发链接。触发链接已不可见时按 502 回到日志标题。
++
++验收记录分别给出两条路径的最终焦点、选中面板和返回位置。仅查到组件名、或后退时焦点落在页签，都不能关闭此项。原首败和复验可用于选例，候选的实际结果随组件变更记录。[桌面复验中的焦点回归](../verification/012-desktop-page-acceptance.md#2-用例迁移与复验) · [人员浏览器用例](../../tests/e2e/personnel.spec.ts)
++
++<a id="5-怎样处理已完成计划"></a>
++
++## 5 文档归档前的规则和标准提炼
++
++**每份拟归档文档必须先提炼其中的规则和标准，包括有关文档状态判定和转换的条款。** 原文维护者逐条梳理，承接规范的维护者核对内容与范围。仍有效的条款全部有了已采纳的长期维护位置，原结论与证据也能查回，方可登记归档。适用对象按 014 确定，包括执行已完成或取消的临时计划，以及已替代、废止或取消的文档。[014 归档流程](../governance/014-document-management.md#82-归档)
++
++### 5.1 每份文档的提炼与判定
++
++1. **从原文提炼条款。** 检查正文、表格、示例和验收条件中的业务规则、页面布局、交互、组件用法、技术约束和评审标准。每项在归档交接说明中列出原文位置或稳定 ID、当时的采纳依据、适用对象与触发条件、应遵循的做法或可核验结果。一次性实施步骤、当批实测和未结事项分别指向原证据或接续任务。通读后确无长期规则的，记录“无可提炼条款”、核对范围和理由。
++2. **逐条确定当前效力。** 已有现行条款完整覆盖的，直接链接具体条款。仍有效但缺少承接的，由对应维护者补入长期业务、功能、技术或治理规范，在交接说明中关联目标条款及其审阅采纳依据。部分适用的写明保留范围和差异。已替代或废止的给出替代位置或废止依据。已否决的提议保留原结论，仍待决定的提议交给接续任务。还有条款的效力待定、有效内容只在旧文中或承接规范尚待采纳时，整份文档暂缓归档，写明负责角色和复查条件。
++3. **提炼文档状态的判定规则。** 凡原文涉及文档状态的判定或转换，必须写清适用文档、状态含义、转换前后的状态、触发条件、判定角色及所需证据，逐项对照 014。例如，评审要求修改时由在审退回草稿，是 014 持有的通用规则。511 初稿退回草稿是一次具体判定，可查当次评审。文档采纳看 `status` 和审阅结论，计划完成看 `execution_status` 和关闭原因，实际验收看关联报告的逐项结果，物理归档看 `archive`。交接说明引用相应基线的登记与证据。新发现且需要全仓适用的状态规则，由仓库维护者修订 014 并完成审阅。[014 生命周期](../governance/014-document-management.md#6-生命周期与完成口径) · [511 初稿评审](../verification/511-project-standards-review.md)
++
++### 5.2 试点与规则交接
+@@ -66 +103 @@
+-| 008 编写 M02 四份文档，执行已完成 | 优先评估直接归档。核对编写任务与 010—013 的实际承接，检查 003 等现行文档和定稿报告对旧路径的引用 | 仍需的条款、后续事项各有去向，原编号和关联报告可达，才登记迁移。[008 正文](008-next-steps.md) · [003 阶段输入与输出](../adr/003-implementation-stages.md#2-阶段输入交付与退出证据) |
++| 008 编写 M02 四份文档，执行已完成 | 对照 003 和 010—013，逐项判定哪些是长期的阶段或验收条件，哪些只记录当时的编写顺序。核对现行文档和定稿报告对旧路径的引用 | 仍适用条款均有承接，未结事项有去向，原编号和关联报告可达，再决定文件保存位置。[008 正文](008-next-steps.md) · [003 阶段输入与输出](../adr/003-implementation-stages.md#2-阶段输入交付与退出证据) |
+@@ -70 +107,13 @@
+-定义暂由计划持有时，目标规格先链接原锚点。实际迁移时，在同一批变更中切换现行定义、引用和归档登记。归档原文保留原 ID、标题、历史锚点与结论，正文移入 `docs/archive/<year>/<原类别>/`，登记 `archive.date / reason / previous_path` 并更新路径。分别从新入口和旧报告复查条款、证据及附件。若定稿原件的相对链接在迁移后无法解析，先把该计划列入历史入口、原位保存，记明待处理的具体引用和复查条件。按这些判据统计处置结果，可同时看到已归档和有理由留在原位的文档。[014 稳定标识与历史](../governance/014-document-management.md#42-稳定规则场景和验收-id)
++以 301 为例，“本页保存请求结束后结果仍未知，自动确认至多一次”已由 012 明文承接，交接时链接该条即可。M02-AC-057 关于读取失败、空结果和局部重试的完整验收定义目前仍在 301，121 指回该处。提炼清单须把这项列为待承接，在后继规格采纳并切换唯一现行定义前，继续从 301 原锚点读取。[301 原保存规则](301-user-feedback-and-recovery.md#31-保存确认和离开) · [012 提交和错误反馈](../specs/m02/012-m02-functional-and-interaction-design.md#42-提交和错误反馈) · [301 原验收定义](301-user-feedback-and-recovery.md#m02-ac-057) · [121 现有映射](../specs/m02/121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)
++
++### 5.3 原位保存与物理归档
++
++条款承接和文件保存位置分别判定。初评基线的 43 份已完成计划中，31 份被定稿报告直接链接。办理时先列现行引用方和定稿报告引用的具体章节，再按下表选择。[初评的引用排查](../verification/511-project-standards-review.md#22-p1-原位保存时长期定义如何转交缺少可执行的分支) · [014 稳定标识与历史](../governance/014-document-management.md#42-稳定规则场景和验收-id)
++
++| 情形 | 条款和文件的处置 |
++| --- | --- |
++| 部分承接，原文仍持有有效条款 | 原文保持 `active`，注明剩余适用范围。后继草稿先引用原定义。某个 ID 获得承接时，在同一变更中切换唯一定义和所有现行引用，原文改为引用。依赖旧锚点的定稿报告须仍能定位原义。两者无法同时满足的条款留在原处。例如当前仍从 301 读 M02-AC-057，121 指向该定义。 |
++| 整份已有获采纳的后继，历史报告依赖原路径 | 登记 `superseded`、后继和关闭原因，保留原位正文与历史锚点，`archive` 留空。现行入口只指向后继，定稿报告仍能定位所评旧条款。 |
++| 符合 014 的物理归档条件，现行条款、未结事项及历史引用均已有去向 | 保留原 ID、标题、历史锚点与结论，将正文移入 `docs/archive/<year>/<原类别>/`，同步路径、可维护的引用及 `archive.date / reason / previous_path`。核对定稿报告的历史定位后再关闭。 |
++
++301 的历史核验有两步。先从原评审第 3.2 节读取当次结论“17 项未运行”，其旧链接指向“6.1 待执行验收”。再按第 7 节的固定版本和证据目录找到第四轮接受的 `draft-3`，核对该稿同名章节。公开树中 301 现为“6.1 实施验收”，旧片段缺少锚点。试点须让旧片段落到说明原结论的历史位置，注明原稿和章节，同时保留现行第 6.1 节的独立入口。获权维护者核实原稿后登记定位结果。只打开今天的第 6.1 节，或仍未核实原稿，均暂缓迁移。[301 原评审的逐项结论](../verification/301-user-feedback-plan-review.md#32-文档及范围检查) · [301 受评原稿的固定版本](../verification/301-user-feedback-plan-review.md#7-证据保存) · [301 当前实施验收](301-user-feedback-and-recovery.md#61-实施验收)
+@@ -76,3 +125,5 @@
+-| 采纳方案后，先整理入口和模板 | 仓库维护者参照已校正的 309 入口，将首页、规格目录中的进度叙述导向登记和报告。与体验和领域维护者在现有模板接入第 4 节的字段 | 方案作者与评审者各自从首页查“人员主兼岗入口”“普通页面视口”“计划归档条件”，三题均在两次链接跳转内到达同一现行条款 |
+-| 下一次涉及人员或共享页面的修订，验证实际用法 | M01/M04、体验及验证维护者选一个真实变更，用第 4.1 节格式完成方案、实现与评审交接。同时对 008、301 做第一批归档评估 | 从任一验收项能反查依据、对象差异、实现和证据。试点两份计划都有处置与理由，301 的 17 项均能逐项查回 |
+-| 试点通过后，按领域处理存量，随后随交付维护 | 文档维护者按依赖和被引用情况分批清理，合同维护者签收提取条款，各批有处置清单。以后计划关闭时评估归档，共享条款修订时复核消费者和导航 | 基线 43 份已完成计划逐份有处置或带责任角色与复查条件的暂缓理由。已迁条款的现行定义唯一，历史来源可达。每批通过 `make docs`、`git diff --check` 及条款语义抽查 |
++| 首批，整理入口和模板 | 仓库维护者将首页及规格目录的进度叙述导向登记和报告。把第 5 节提炼要求纳入 014，计划模板引用归档交接条件。方案与验证模板接入第 4 节的字段 | 方案作者与评审者各自从首页查“人员主兼岗入口”“普通页面视口”“计划归档条件”，三题均在两次链接跳转内到达同一现行条款，并通过第 6.1 节的分类样本。对“计划已完成但有效标准仍只见于该计划”的样本，均判为暂缓归档 |
++| 同一首批，修正现行对象合同的冲突 | 体验与 M03 维护者按第 3.1 节核对受影响的现行引用方，修订 308 的对象 AC，保留对象操作、权限及原批证据 | 从 012 和 308 分别得到一致的桌面和缩放条件，从对象入口可区分两角色的操作，从历史入口可查原 28 个单元的结果 |
++| 同一首批，交付页签组件用法对照 | 体验、M01、M04 维护者将第 4.2 节的共享行为和对象路由差异分别落到 012、502、507 的对应条款，关联通用面板、路由适配和两处人员消费者 | 评审者从条款能定位实现与受影响页面，并在同一构建实操主动切签、浏览器后退。两条路径的焦点去向均有实测记录，才可关闭该项 |
++| 下一次涉及人员或共享页面的修订，验证实际用法 | M01/M04、体验及验证维护者选一个真实变更，用第 4.1 节格式完成方案、实现与评审交接。同时对 008、301 做归档试点 | 从验收项能反查条款、对象差异、实现和证据。两份计划均有规则提炼与状态判定依据，301 的 17 项各有承接位置、退出依据或暂缓理由。分别由 121 查唯一定义、由定稿报告查原结论和原稿对应章节。受阻项须写明负责人与复查条件 |
++| 试点通过后，按领域处理存量，随后随交付维护 | 文档维护者按依赖和被引用情况分批清理，合同维护者核对承接条款。以后计划关闭时评估归档，共享条款修订时复核消费者和导航 | 基线 43 份已完成计划逐份有提炼结论或带责任角色与复查条件的暂缓理由。归档完成项逐份满足第 5 节，暂缓项单列。每批通过 `make docs`、`git diff --check` 及条款语义抽查 |
+@@ -80 +131,12 @@
+-本次交付的是现状盘点、任务导航和待审方案。治理批次的完成依据是上表的实际结果。方案编制使用仓内合同、登记与既有报告，产品验收结论由各报告按其受测范围持有。
++### 6.1 从首页检索计划、待审文稿、验收和历史
++
++以下样本取自本次修订时的登记。首批按受测基线核对完整清单，记录入口、找到的正文或报告、应出现和应排除的结果。后续状态有变时，按新基线的登记和关闭记录核对。[按状态检索](../governance/README.md#计划与文稿) · [唯一登记表](../governance/registry.json)
++
++| 从首页要找什么 | 应能找到 | 应排除或另行核对 |
++| --- | --- | --- |
++| 正在实施哪个人员计划 | 在办计划按 `type=plan` 且 `execution_status=in_progress` 查询，返回 [500 人员路线](500-personnel-roadmap.md) | 510 和 135 执行已完成，均应排除。计划尚待启动的归入 `not_started` |
++| 510 整改如何关闭，当时实际验了什么 | 从历史入口找到 [510 的执行结果](510-personnel-page-remediation.md#4-实施结果)，从验收入口按关联号找到[510 原实施复验的 20 项记录](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录)，查到具体旧编号、实测和证据 | 方案评审与实施复验须能区分。登记为 `active / completed` 可以查原批，原批通过的范围以实施报告为准 |
++| 135 是否还在等评审，执行是否已关闭 | 文稿按 `status=in_review` 可查到 [135](135-real-head-product-integration.md)，同一计划也在执行已关闭清单中出现。登记的 `closure` 说明关闭原因 | 返回 `in_review / completed` 两个值。135 不进入在办清单，其决策按已采纳条款判断 |
++| 首页原先错分的材料应去哪里 | 历史入口可查 [141 预检计划](141-local-preflight.md)和 [126 存储研究](126-compact-history-storage-research.md)。当前预检从 [137 的现行要求](../governance/137-actions-and-validation.md#13-减少正式候选的全量启动次数)进入 | 141 的历史计划不能充当现行预检规范入口。126 已采纳且执行已完成，应从待审草案排除 |
++
++本稿按初评四项发现修订。复评时，第 3.1 节核对现行引用，第 5 节核对归档前的规则提炼与原文保存，第 4.2 节核对组件交付，本节核对导航分类。批次实施和产品验收随各自的实际结果登记。[原评审](../verification/511-project-standards-review.md) · [受评初稿](../verification/data/511-project-standards-review/reviewed-plan.txt) · [受评导航](../verification/data/511-project-standards-review/reviewed-navigation.txt)
+--- a/docs/governance/README.md
++++ b/docs/governance/README.md
+@@ -12 +12,2 @@
+-| 改一个控件，应接哪份共用实现，哪些页面需要一起复验 | [页面继承与业务差异的填法](../templates/dated-object-admission.md#page-inheritance) · [职务已采用的共用布局、交互及差异](../specs/m03/308-job-foundation-contract.md#m03-page-inheritance) | [主题](../../packages/ui/src/theme.ts) · [详情布局](../../packages/ui/src/components/ObjectDetail.tsx) · [页签](../../packages/ui/src/components/ObjectTabs.tsx) · [共享离开保护](../../apps/web/src/shared/dated/useDraftExit.ts) |
++| 改一个控件，应接哪份共用实现，哪些页面需要一起复验 | [页面继承与业务差异的填法](../templates/dated-object-admission.md#page-inheritance) · [职务已采用的共用布局、交互及差异](../specs/m03/308-job-foundation-contract.md#m03-page-inheritance) | [主题](../../packages/ui/src/theme.ts) · [详情布局](../../packages/ui/src/components/ObjectDetail.tsx) · [共享离开保护](../../apps/web/src/shared/dated/useDraftExit.ts) |
++| 人员主动切换页签、从原件后退，各应聚焦哪里 | [012 返回定位](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-link-return) · [502 人员页签与日志](../specs/m01/502-person-directory-interactions.md#m01-change-log) · [507 主岗与兼岗面板](../specs/m04/507-job-information-tab.md#job-tab-layout) | [通用面板 ObjectTabs](../../packages/ui/src/components/ObjectTabs.tsx) · [路由适配 PersonTabs](../../apps/web/src/features/personnel/PersonTabs.tsx) · [人员详情](../../apps/web/src/features/personnel/Detail.tsx) · [任职详情](../../apps/web/src/features/hire/AssignmentPage.tsx) · [焦点复验](../verification/012-desktop-page-acceptance.md#2-用例迁移与复验) |
+@@ -20,0 +22,17 @@
++
++## 计划与文稿
++
++在[登记表](registry.json)的 `documents` 中按任务查询。下表的链接供走查，完整清单按当前登记筛选。
++
++| 入口 | 筛选方法 | 走查样本 |
++| --- | --- | --- |
++| 在办计划 | 取 `type=plan` 且 `execution_status=in_progress`。尚待启动的计划另查 `not_started` | [500 人员路线及批次](../plans/500-personnel-roadmap.md#2-批次前置与交付结果) |
++| 待审文稿 | 按文档 `status` 查 `draft` 或 `in_review`。计划另读 `execution_status` | [135 对象头接入方案](../plans/135-real-head-product-integration.md) |
++| 已关闭批次 | 按 `type=plan` 查执行 `completed` 或 `cancelled`，并读 `closure` 和 `archive` | [510 整改结果](../plans/510-personnel-page-remediation.md#4-实施结果) · [首页历史入口](../index.md#验证与历史批次) |
++| 原始验收 | 在 `governance.verification_records` 中按 `related_documents` 查同一编号，按范围选择实施复验，再读逐项结果和限制 | [510 的二十项实测](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) |
++
++例如，从仓库根目录可以直接列出在办计划及其两种状态和正文路径。
++
++```sh
++jq -r '.documents[] | select(.type == "plan" and .execution_status == "in_progress") | [.id, .status, .execution_status, .path] | @tsv' docs/governance/registry.json
++```
+--- a/docs/governance/registry.json
++++ b/docs/governance/registry.json
+@@ -3074,0 +3075,24 @@
++    },
++    {
++      "id": "CHNHCM-511",
++      "title": "项目规范体系建设与文档治理方案",
++      "path": "docs/plans/511-project-standards.md",
++      "owner_branch": "wt-dev-f",
++      "owner_role": "Repository maintainer，协同受影响的领域、体验和验证维护者",
++      "owner": null,
++      "status": "draft",
++      "type": "plan",
++      "modules": [],
++      "scope": "全仓标准覆盖面、现行合同检索、修订实施与评审的引用方式，以及已关闭计划的规则提取与归档。",
++      "format": "numbered",
++      "review": {
++        "date": "2026-11-26",
++        "reviewer": "Codex 主代理（方案编写者复核）",
++        "scope": "511 初稿、任务导航、现行合同与归档试点的反例，以及分批实施和验收条件。",
++        "result": "changes_requested",
++        "evidence": "docs/verification/511-project-standards-review.md"
++      },
++      "execution_status": "not_started",
++      "superseded_by": [],
++      "closure": null,
++      "archive": null
+@@ -3088,0 +3113,19 @@
++      {
++        "path": "docs/verification/511-project-standards-review.md",
++        "related_documents": ["CHNHCM-511"],
++        "format": "numbered",
++        "status": "final",
++        "date": "2026-11-26",
++        "base_commit": "4488d58c7029a69be36d360f1f9cdaf27357893b",
++        "working_tree": "dirty",
++        "change_description": "受评输入含未提交的 511 正文与规范导航，以及登记表、文档首页、规格目录的 511 批次增量。正文及导航摘要见报告。",
++        "environment": "wt-dev-f 本地工作树，Git 快照、Python 标准库、文档治理检查器及隔离临时目录。",
++        "scope": "方案盘点、入口定位、现行条款一致性、定稿报告对已完成计划的引用、原位提取稳定 ID、组件用法与批次验收。",
++        "results": [
++          {"check": "原盘点基线、稳定定义计数和三条两跳规范查询", "result": "passed", "evidence": "docs/verification/511-project-standards-review.md"},
++          {"check": "扫描 291 份定稿报告的仓内直链，复核 301 旧片段，验证现行定义重复拒绝及整体替代后原位保留两种情形", "result": "passed", "evidence": "docs/verification/511-project-standards-review.md"},
++          {"check": "受评初稿的 make docs、git diff --check 与三项定向治理回归", "result": "passed", "evidence": "docs/verification/511-project-standards-review.md"},
++          {"check": "方案采纳条件的语义评审，现行冲突、原位提取、组件交付及四类入口验收各有待修订项", "result": "failed", "evidence": "docs/verification/511-project-standards-review.md"}
++        ],
++        "limitations": ["由方案编写者复核。反向引用统计限于已登记定稿报告中的仓内 Markdown 直接链接。产品运行、私有附件及实际批量归档属于各自交付范围。"]
++      },
+--- a/docs/index.md
++++ b/docs/index.md
+@@ -1,0 +2,2 @@
++
++查业务规则、页面与组件、工程实施及评审依据，可从[项目规范导航](governance/README.md)按任务进入。查在办计划和待审文稿，按[登记状态检索](governance/README.md#计划与文稿)。查某批做过什么，可从[验证记录](verification/README.md)或[已关闭批次](#验证与历史批次)进入。
+@@ -135 +137 @@
+-[141 本地预检计划](plans/141-local-preflight.md)覆盖候选与实际用例结果、逐次证据保护及生成物核对。
++本地预检的范围、步骤和生成物核对见 [137 的候选验证要求](governance/137-actions-and-validation.md#13-减少正式候选的全量启动次数)。
+@@ -202,0 +205,3 @@
++- [141 本地预检计划](plans/141-local-preflight.md)及[实施记录](verification/141-local-preflight.md)保留候选与实际用例结果、逐次证据保护和生成物核对的交付依据。
++- [126 完整历史紧凑存储研究](plans/126-compact-history-storage-research.md)在隔离模型中覆盖原案例历史、审计和索引，约 191.5 MB。产品实施时，完整案例静态整理为 276.22 MB，真实读写后普通维护为 311.02 MB。200 MB 已按用户决定改为参考值，部分延迟未达标，容量 P1 保持。[研究实测与限制](verification/126-storage-feasibility.md) · [产品实施记录](verification/126-compact-history-implementation.md)
++- [510 人员页面整改的执行结果](plans/510-personnel-page-remediation.md#4-实施结果)关联[二十项原始实施复验](verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录)。
+@@ -230,0 +236,2 @@
++- [511 项目规范体系建设与文档治理方案](plans/511-project-standards.md)给出标准覆盖面、现状盘点、修订与评审示例及归档批次。
++
+@@ -233 +240,3 @@
+-- [126完整历史紧凑存储研究](plans/126-compact-history-storage-research.md)：覆盖现案例历史、审计和索引的隔离模型约191.5 MB；[实测与限制](verification/126-storage-feasibility.md)不等于产品迁移或容量P1关闭。
++- [135 对象头产品接入文稿](plans/135-real-head-product-integration.md)的审阅状态与该计划的执行关闭原因分别记在[文档登记](governance/registry.json)。
++
++## 历次设计与实施记录
+@@ -263,2 +271,0 @@
+-当前126实施及验证：[紧凑历史实施报告](verification/126-compact-history-implementation.md)。完整案例静态整理276.22MB，真实读写后普通维护311.02MB；200MB已按用户决定改为参考值，部分延迟未达，容量P1保持。
+-
+--- a/docs/specs/README.md
++++ b/docs/specs/README.md
+@@ -9 +9 @@
+-[310职级／阶梯对象接入](m03/310-grade-ladder-contract.md)：同企业Job可用职级与Ladder顺序、完整日期引用、页面继承及18项新验收；[309方案](../plans/309-m03-grade-ladder.md)分G1／G2，产品未开始。
++职务可用职级、职级阶梯顺序、完整日期引用、页面继承和 18 项验收见[310 职级／阶梯合同](m03/310-grade-ladder-contract.md)。分批范围和实际结果可查[309 计划](../plans/309-m03-grade-ladder.md)、[G1 职级实施记录](../verification/309-grade-g1-implementation.md)和[G2 阶梯与职务职级实施记录](../verification/309-grade-g2-implementation.md)。
+--- a/docs/verification/README.md
++++ b/docs/verification/README.md
+@@ -1,0 +2,4 @@
++
++[511 项目规范体系建设与文档治理方案评审](511-project-standards-review.md)记录现行条款、归档试点、组件用法和导航分类的复评条件。
++
++510 人员页面整改的旧编号、首败、实测和复验按项记录，方案评审另有原稿与结论。[二十项实施复验](510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) · [510 方案评审](510-personnel-page-remediation-review.md)

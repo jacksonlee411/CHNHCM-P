@@ -1,6 +1,6 @@
 # CHNHCM-020 T06独立评审与修复
 
-登记信息：[registry.json](../governance/registry.json)。范围：冻结T06提交的独立代理评审、发现项修复与实际复验。依据[010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)及024/025。原[技术验证](020-redate-implementation.md)保留当时结果，不覆盖其中的待授权记录。
+登记信息：[registry.json](../governance/registry.json)。范围：冻结T06提交的独立代理评审、发现项修复与实际复验。依据[010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)及024/025。原[技术验证](020-redate-implementation.md)保留当时结果，不覆盖其中的待授权记录。
 
 ## 1 对象与基线
 

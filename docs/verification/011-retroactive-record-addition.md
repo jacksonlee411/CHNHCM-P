@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：按用户要求允许已有 BU 补登记过去发生的普通资料变更，核对范围、规则、交互、技术设计和验收的一致性。
 
-上游依据：[010 范围](../plans/010-m02-scope-and-plan.md)、[011 新增规则](../specs/m02/011-m02-business-requirements.md#m02-br-005)、[新增场景](../specs/m02/011-m02-business-requirements.md#m02-scn-003)、[新增验收](../specs/m02/011-m02-business-requirements.md#m02-ac-003)、[012 页面](../specs/m02/012-m02-functional-and-interaction-design.md)、[013 技术合同](../specs/m02/013-m02-technical-design.md)和[018 来源决策](../adr/018-effective-records-and-source-history.md)。
+上游依据：[010 范围](../archive/plans/010-m02-scope-and-plan.md)、[011 新增规则](../specs/m02/011-m02-business-requirements.md#m02-br-005)、[新增场景](../specs/m02/011-m02-business-requirements.md#m02-scn-003)、[新增验收](../specs/m02/011-m02-business-requirements.md#m02-ac-003)、[012 页面](../specs/m02/012-m02-functional-and-interaction-design.md)、[013 技术合同](../specs/m02/013-m02-technical-design.md)和[018 来源决策](../adr/018-effective-records-and-source-history.md)。
 
 ## 1 验证对象与受测基线
 

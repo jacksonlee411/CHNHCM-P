@@ -2,7 +2,7 @@
 
 登记信息：[登记表](../governance/registry.json)的verification_records。
 适用范围：R3-09 P2，共用useDraftExit及新建、单条维护、固定两条的离开保护。
-上游依据：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)及[023](../specs/m02/023-m02-timeline-test-cases.md)。[原R3报告](116-r3-frontend-workflow.md)和证据保留原结果。
+上游依据：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)及[023](../specs/m02/023-m02-timeline-test-cases.md)。[原R3报告](116-r3-frontend-workflow.md)和证据保留原结果。
 
 ## 1 验证对象与受测基线
 

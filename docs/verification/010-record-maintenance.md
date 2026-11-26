@@ -1,6 +1,6 @@
 # CHNHCM-010 记录维护批次实施与验证
 
-登记信息：[登记表](../governance/registry.json)中本报告路径。适用范围：[010](../plans/010-m02-scope-and-plan.md)的T01—T03；不含后续启停、改日、删除、联合办理及整版验收。
+登记信息：[登记表](../governance/registry.json)中本报告路径。适用范围：[010](../archive/plans/010-m02-scope-and-plan.md)的T01—T03；不含后续启停、改日、删除、联合办理及整版验收。
 上游依据：[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)。
 
 ## 1 验证对象与受测基线

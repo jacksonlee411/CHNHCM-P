@@ -1,6 +1,6 @@
 # CHNHCM-109 启停期间专用维护实施与多轮检查
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[109计划](../plans/109-lifecycle-pair-maintenance.md)。2026-11-02启动、11-03复核；固定范围已完成；修复后最后两轮复核无新增主要问题，实际通过及限制如下。
+登记信息：[registry.json](../governance/registry.json)。适用范围：[109计划](../archive/plans/109-lifecycle-pair-maintenance.md)。2026-11-02启动、11-03复核；固定范围已完成；修复后最后两轮复核无新增主要问题，实际通过及限制如下。
 
 ## 1 基线、业务结果与退出范围
 

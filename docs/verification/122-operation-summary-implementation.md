@@ -1,6 +1,6 @@
 # CHNHCM-122 操作摘要与变更日志实施验证
 
-登记信息：[registry.json](../governance/registry.json)。承接用户“批准122，请完成122的实施”，关联[122计划](../plans/122-bu-operation-summary-and-change-log.md)、011—013及023第25章。原合同评审、修订和123后复核报告保持原时点与原字节。
+登记信息：[registry.json](../governance/registry.json)。承接用户“批准122，请完成122的实施”，关联[122计划](../archive/plans/122-bu-operation-summary-and-change-log.md)、011—013及023第25章。原合同评审、修订和123后复核报告保持原时点与原字节。
 
 ## 1 基线与授权
 

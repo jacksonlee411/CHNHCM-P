@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：100 T03—T06，BU 创建/查询页面及共享展示组件。本报告只记录本批实现与实际复验；执行状态、文档采纳和完整 M02 验收分别维护。
 
-上游依据：[100计划](../plans/100-ui-experience-improvement.md)、[012页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[011验收锚点](../specs/m02/011-m02-business-requirements.md)及[修复前基线](100-ui-baseline.md)。[T01](100-b-runtime-isolation.md)、[运行修复](100-runtime-review-fixes.md)、[T02截图补验](100-ui-baseline-capture-fix.md)及其原件保持。
+上游依据：[100计划](../archive/plans/100-ui-experience-improvement.md)、[012页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[011验收锚点](../specs/m02/011-m02-business-requirements.md)及[修复前基线](100-ui-baseline.md)。[T01](100-b-runtime-isolation.md)、[运行修复](100-runtime-review-fixes.md)、[T02截图补验](100-ui-baseline-capture-fix.md)及其原件保持。
 
 ## 1 验证对象与受测基线
 

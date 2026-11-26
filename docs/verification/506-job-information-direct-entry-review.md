@@ -22,4 +22,4 @@
 
 附加的 `check-repository.py --check-refs` 返回缺少本地分支引用。按 005 对照登记表，本机有 main、wt-dev-e、wt-dev-f 三个本地分支，wt-dev-a 至 wt-dev-d 仅有 origin 跟踪引用。登记的七个 origin 跟踪引用均在。[005 文档交付检查](../governance/005-branches-and-documents.md)
 
-T04 按职务先验地点变更及原笔更正，按岗批次从同一满编岗位走拟调入和实况补录。共同办理、原笔撤销、关系级授权、并发及回滚随真实 Go、数据库、API 和正常菜单验收。[T04 分批安排](../plans/500-personnel-roadmap.md#job-information-delivery)
+T04 按职务先验地点变更及原笔更正，按岗批次从同一满编岗位走拟调入和实况补录。共同办理、原笔撤销、关系级授权、并发及回滚随真实 Go、数据库、API 和正常菜单验收。[T04 分批安排](../archive/plans/500-personnel-roadmap.md#job-information-delivery)

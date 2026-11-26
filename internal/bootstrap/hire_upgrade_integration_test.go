@@ -15,6 +15,7 @@ import (
 
 	"chnhcm.local/chnhcm/db/migrations"
 	"chnhcm.local/chnhcm/internal/bootstrap"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -72,10 +73,25 @@ func TestHire400PositionBackups(t *testing.T) {
 				return digests
 			}
 			before := facts()
-			var source, submission, quotaOriginal, quotaSubmission, quotaVersion string
+			var source, submission string
+			type quotaSource struct {
+				Original, Submission, Version, Record, Action, RecordSource string
+				Quantity                                                    *int
+			}
+			var quotaSources []quotaSource
 			must(t, db.QueryRow(f.ctx, "SELECT source_id, submission_id FROM staffing.position_source WHERE object_id=$1", seed.Position).Scan(&source, &submission))
 			if version == 27 {
-				must(t, db.QueryRow(f.ctx, "SELECT to_jsonb(s)::text, submission_id, source_id FROM staffing.quota_source s WHERE position_id=$1", seed.Position).Scan(&quotaOriginal, &quotaSubmission, &quotaVersion))
+				rows, err := db.Query(f.ctx, `SELECT to_jsonb(s)::text, s.submission_id, s.source_id, s.target_record, s.action,
+					r.source_id, r.quantity FROM staffing.quota_source s LEFT JOIN staffing.quota_record r
+					ON (r.instance_id,r.position_id,r.record_id)=(s.instance_id,s.position_id,s.target_record)
+					AND r.source_id=CASE WHEN s.action='DELETE' THEN s.previous_source ELSE s.source_id END
+					WHERE s.position_id=$1 ORDER BY s.source_no`, seed.Position)
+				must(t, err)
+				quotaSources, err = pgx.CollectRows(rows, pgx.RowToStructByPos[quotaSource])
+				must(t, err)
+				if len(quotaSources) == 0 {
+					t.Fatal("expected the original quota records")
+				}
 			}
 			for range 2 {
 				must(t, bootstrap.Migrate(f.ctx, db, migrations.Files))
@@ -97,13 +113,43 @@ func TestHire400PositionBackups(t *testing.T) {
 			if receipt["outcome"] != "accepted" || receipt["objectId"] != seed.Position || receipt["sourceVersion"] != source {
 				t.Fatal("original position receipt mismatch")
 			}
-			if version == 27 {
+			for _, q := range quotaSources {
 				var preserved bool
-				must(t, db.QueryRow(f.ctx, "SELECT snapshot->'originalSource'=$2::jsonb FROM staffing.quota_source WHERE source_id=$1", quotaVersion, quotaOriginal).Scan(&preserved))
-				got := b.call("POST", "/api/v1/staffing-quotas/submissions/"+quotaSubmission+"/resolve", nil, "", 200)
-				if !preserved || got["sourceVersion"] != quotaVersion || got["outcome"] != "accepted" {
-					t.Fatal("original quota or receipt mismatch")
+				must(t, db.QueryRow(f.ctx, "SELECT snapshot->'originalSource'=$2::jsonb FROM staffing.quota_source WHERE source_id=$1", q.Version, q.Original).Scan(&preserved))
+				got := b.call("POST", "/api/v1/staffing-quotas/submissions/"+q.Submission+"/resolve", nil, "", 200)
+				if !preserved || got["sourceVersion"] != q.Version || got["action"] != q.Action || got["outcome"] != "accepted" ||
+					got["positionId"] != seed.Position || got["selectedRecordId"] != q.Record {
+					t.Fatalf("%s: original quota or receipt mismatch", q.Action)
 				}
+				recordSource := got["sourceVersion"].(string)
+				if original, ok := got["originalSourceVersion"].(string); ok {
+					recordSource = original
+				}
+				if recordSource != q.RecordSource {
+					t.Fatalf("%s: receipt points to %s, want original record at %s", q.Action, recordSource, q.RecordSource)
+				}
+				detail := b.call("GET", "/api/v1/staffing-quotas/positions/"+seed.Position+"?sourceVersion="+recordSource+"&selectedRecordId="+q.Record, nil, "", 200)
+				if detail["recordId"] != q.Record || q.Quantity == nil && detail["quota"] != nil || q.Quantity != nil && detail["quota"] != float64(*q.Quantity) {
+					t.Fatalf("%s: original record or quota value mismatch", q.Action)
+				}
+			}
+			if len(quotaSources) != 0 {
+				currentInput := map[string]any{"positionId": seed.Position, "effectiveDate": "2027-04-01", "quota": 2, "reason": "首次核编"}
+				conflict := b.call("POST", "/api/v1/staffing-quotas", currentInput, quotaSources[0].Submission, 409)
+				if conflict["code"] != "M03_SUBMISSION_MISMATCH" {
+					t.Fatal("reusing an original submission ID must not open a new write")
+				}
+				_, err := db.Exec(f.ctx, "DELETE FROM access.subject_grant WHERE principal_id=$1 AND action='staffingquota.history.read'", b.subject)
+				must(t, err)
+				for _, q := range quotaSources {
+					limited := b.call("POST", "/api/v1/staffing-quotas/submissions/"+q.Submission+"/resolve", nil, "", 200)
+					if limited["outcome"] != "accepted" || limited["sourceVersion"] != nil || limited["originalSourceVersion"] != nil || limited["selectedRecordId"] != nil {
+						t.Fatalf("%s: original receipt ignored current history permissions", q.Action)
+					}
+				}
+			}
+			if !reflect.DeepEqual(before, facts()) {
+				t.Fatal("recovering original receipts changed stored evidence")
 			}
 		})
 	}

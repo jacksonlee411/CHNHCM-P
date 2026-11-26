@@ -1,6 +1,6 @@
 # CHNHCM-111 Community列表T03真实业务验证
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[111计划](../plans/111-bu-list-experience-upgrade.md)、[012列表交互](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)、[013接线](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)及[023第21节](../specs/m02/023-m02-timeline-test-cases.md#m02-list-pro-cases)，按[验证模板](../templates/verification.md)编写。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[111计划](../archive/plans/111-bu-list-experience-upgrade.md)、[012列表交互](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)、[013接线](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)及[023第21节](../specs/m02/023-m02-timeline-test-cases.md#m02-list-pro-cases)，按[验证模板](../templates/verification.md)编写。
 
 ## 1 对象与受测基线
 

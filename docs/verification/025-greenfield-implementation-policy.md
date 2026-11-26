@@ -1,6 +1,6 @@
 # CHNHCM-025 全新实施策略修订验证
 
-登记信息：[registry.json](../governance/registry.json)。受测对象：[025决策](../adr/025-greenfield-implementation-policy.md)、根目录[AGENTS](../../AGENTS.md)、[010计划](../plans/010-m02-scope-and-plan.md)及相关现行规格/案例。本文只记录文档修订和保护检查。
+登记信息：[registry.json](../governance/registry.json)。受测对象：[025决策](../adr/025-greenfield-implementation-policy.md)、根目录[AGENTS](../../AGENTS.md)、[010计划](../archive/plans/010-m02-scope-and-plan.md)及相关现行规格/案例。本文只记录文档修订和保护检查。
 
 ## 1 受测基线
 

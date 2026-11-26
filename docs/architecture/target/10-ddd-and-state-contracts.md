@@ -12,8 +12,8 @@
 | --- | --- | --- | --- |
 | Personnel | M01 | Person、个人资料、账户身份；IdentityView | 招聘Candidate由本域核对映射为Person；不以登录账号作为人员身份 |
 | Organization | M02 | 组织、树、地点、法律实体允许用途；OrganizationView | 外部组织代码由导入ACL映射；允许用途不含付款运营配置 |
-| Staffing | M03、M04 | 职位资源、预留/占用、工作关系、任职；Hire/Transfer/EndEmployment、EmploymentView | 消费Person及组织版本；内部两模块保留各自聚合；不引入薪税余额 |
-| Recruiting | M05 | 申请、Candidate、Offer、交接；HireHandoff | Staffing资源接口为上游；Offer条款经薪酬域再次确认 |
+| Staffing | M03、M04 | 职位资源、额度核验、工作关系、任职与实际占编；Hire/Transfer/EndEmployment、EmploymentView | 消费Person及组织版本；内部两模块保留各自聚合；不引入薪税余额 |
+| Recruiting | M05 | 申请、Candidate、Offer、招聘预留及转换、交接；HireHandoff | Staffing资源接口为上游；Offer条款经薪酬域再次确认 |
 | WorkTime | M06、M07、M08 | 排班、工时、缺勤、权益；PublishedTime、AbsenceResult | Staffing有效段为上游；时间分类经Payroll ACL映射为工资输入 |
 | Compensation | M09 | GradeRate、授予、下发；AwardDelivery | Staffing的Grade身份、Talent发布结果为上游；不直接写工资项目 |
 | Payroll | M10 | PayrollContext、计薪归属、运行/结果、采用、工资累计、工资单发布 | Staffing、WorkTime、Compensation、Tax、Contribution、Benefits的公开合同；本域ACL保留每个金额来源唯一性 |
@@ -67,7 +67,7 @@ X02登记SharedReference引用描述值类型并拥有ApplicabilityPolicy、Defa
 
 X02配置版本、X03授权策略/授予、X06指标定义分别是其支持上下文的根。X04的Job/Attempt及X05的Observation/ChannelAttempt是技术记录，无权成为业务聚合根的替代。各消费者拥有自己的Adoption/Inbox；各源域拥有自己的Revision/Outbox。跨根或跨上下文协调只能调用公开写端口，并由事务协调器共享事务上下文，禁止直接更新对方表。
 
-**Staffing强一致选择：**Hire、Transfer、EndEmployment/EndAssignment、未来终结撤销和日期更正均通过同一协调器在PostgreSQL短事务内完成。以固定顺序锁定受影响StaffingQuota、Employment/Assignment及相应用途PrimarySelection；再次校验输入版本、组织允许值与全部受影响日期段，再转换预留、释放/建立占用、保存关系/首任职或调动切片及业务Outbox，一起提交。组织变更也参与版本栅栏：提交时其版本已变则拒绝，不以早先预览作最终判断。M01登记是此前独立事务，失败入职不撤回Person。合同独立办理，只有此命令明确含合同操作时才同事务写入。剩余一席被两人同时争取只能一人成功；任一写入失败全部回滚，数据库唯一/区间约束作为最终守卫。
+**Staffing强一致选择：**Hire、Transfer、EndEmployment/EndAssignment、未来终结撤销和日期更正均通过同一协调器在PostgreSQL短事务内完成。以固定顺序锁定受影响StaffingQuota、Employment/Assignment及相应用途PrimarySelection；再次校验输入版本、组织允许值与全部受影响日期段，再经 M05 转换适用的招聘预留，由 M04 释放或建立占编、保存关系及任职变化，各域写自己的 Outbox，一起提交。组织变更也参与版本栅栏：提交时其版本已变则拒绝，不以早先预览作最终判断。M01登记是此前独立事务，失败入职不撤回Person。合同独立办理，只有此命令明确含合同操作时才同事务写入。剩余一席被两人同时争取只能一人成功；任一写入失败全部回滚，数据库唯一/区间约束作为最终守卫。
 
 权益消费、应付占用、税务确认等同样用对应根的revision/锁及业务唯一键；“同一数据库”本身不证明上述约束存在。任何事务都不等待银行、税务、HR人工任务或邮件。跨域后续采用允许最终一致，但是否可付款、是否可扣收必须同步读取责任根的守卫，不能依赖滞后投影。
 
@@ -98,7 +98,7 @@ Work Relationship 是上位系统概念，Employment 是其工作关系记录；
 
 核编与岗位改隶、启停共用受影响部门的稳定守卫，首次设额也可取得守卫。跨部门改隶按稳定身份顺序锁定新旧部门，再锁改动对象。在同一短事务内重读 M02 部门有效期、M03 岗位归属和最新额度节点，按所有受影响日期段检验最终分配。服务端校验改动目标的当前授权，并用完整分配判定上限。成功时同笔写入各对象修订、业务 Outbox 与同一次提交回执。失败时保留原安排。后台减编使用相同检查。[同日调剂及减编](../../specs/m03/313-position-capacity-contract.md#m03-br-040)
 
-**后续招聘与任职用量。** StaffingPolicy 按企业、人员类别、用途和期间确定岗位模式及是否占编。按岗位任职须采用有效岗位，仅按职务任职采用职务与组织。接入后在岗位上记录本次接替的专用期间及各段预留、占编的来源，已办任职保留采用的规则版本。[招聘预留与任职占编](../../specs/m03/313-position-capacity-contract.md#m03-br-027)
+**后续招聘与任职用量。** StaffingPolicy 按企业、人员类别、用途和期间确定岗位模式及是否占编。按岗位任职须采用有效岗位，仅按职务任职采用职务与组织。M03 核定交接专用期间，用量取自 M05 的招聘预留和 M04 的任职占编，已办任职保留采用的规则版本。[招聘预留与任职占编](../../specs/m03/313-position-capacity-contract.md#m03-br-027)
 
 涉及招聘份额时，先经 M05 公开端口按企业、需求和稳定份额取守卫，再按 Staffing 锁序锁定受影响对象。保存时重读绑定、承诺及期间。按人数缩招须在同一事务核实选中的份额仍可互换，连同需求新人数和逐份释放结果提交。发正式录用时，Go 重验双方确定的到岗日、全任期和权限，将录用版本、沿用或新增的预留及 Outbox 一起提交，提交成功后才可对外送达。转换采用已接受的有效录用。安排交接时在岗位守卫内核实原任结束边界、接替者、分段用量和后续常规名额。若待锁份额集合变化，退出事务按完整集合重验。任职、名额与各域办理结果同笔提交，重试返回原结果。[招聘预留](../../specs/m03/313-position-capacity-contract.md#m03-br-027) · [限期交接](../../specs/m03/313-position-capacity-contract.md#m03-br-035)
 

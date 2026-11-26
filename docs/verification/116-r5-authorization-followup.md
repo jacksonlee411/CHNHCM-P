@@ -1,7 +1,7 @@
 # CHNHCM-116 R5关系候选与日志筛选授权复修
 
 登记信息：[registry.json](../governance/registry.json)。适用范围：R5再次评审的P1关系候选拒绝后缓存残留，以及P2日志状态筛选未裁剪。
-上游依据：[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[119交互合同](../specs/m02/119-department-functional-design.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)、[121接入矩阵](../specs/m02/121-dated-object-admission-matrix.md)。
+上游依据：[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[119交互合同](../specs/m02/119-department-functional-design.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)、[121接入矩阵](../specs/m02/121-dated-object-admission-matrix.md)。
 
 ## 1 验证对象与受测基线
 

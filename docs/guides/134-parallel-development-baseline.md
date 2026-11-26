@@ -111,7 +111,7 @@ python3 scripts/local-bu.py verify --origin http://127.0.0.1:4403
 
 ## 5 CI与同步
 
-PR面向main。CI长期规则集中到[137规范](../governance/137-actions-and-validation.md)，节流接线按[136计划](../plans/136-actions-cost-reduction.md)实施；生效版本与实际结果见[136发布记录](../verification/136-actions-publication.md)。完整范围的矩阵与运行时长以[137第7节](../governance/137-actions-and-validation.md#7-分片缓存与运行资源)为准。试点工作流在quality和矩阵之间执行前置回归，可在提交稳定候选前运行 `make ci-preflight`。具体分片与启用位置见[当前工作流](../../.github/workflows/ci.yml)及[试点记录](../verification/136-hosted-minutes-pilot.md)。限定范围独立选择DB/API及浏览器，当前后续接线与发布边界见[136记录](../verification/136-impact-selection.md)；full/selected/docs正式PR的等价main结果可复用。片内workers=1、retries=0、临时运行隔离保持，分片不随开发分支数量增加。
+PR 面向 main。CI 维护者按 137 确定正式门禁、分片及运行时长，按第 12.1 节接续托管分钟试点。工作流在 quality 和矩阵之间执行前置回归，提交稳定候选前可运行 `make ci-preflight`。限定范围独立选择 DB/API 及浏览器，full、selected、docs 正式 PR 的等价 main 结果按 137 复用。各片使用独立临时环境，workers=1、retries=0，分片按实际用例和耗时分配。[分片规则](../governance/137-actions-and-validation.md#7-分片缓存与运行资源) · [托管分钟观察](../governance/137-actions-and-validation.md#hosted-minutes-observation) · [当前工作流](../../.github/workflows/ci.yml) · [首批发布](../verification/136-actions-publication.md) · [限定范围实施](../verification/136-impact-selection.md)
 
 交付前先完成本地受影响检查及生成物核对，再推送稳定候选；在依赖需要或准备交付时同步main，不为保持所有分支同SHA反复更新开放PR。正式PR运行与手动诊断分开，手动成功不能代替合并门禁。最终检查核对head、base、受测引用、实际范围和全部计划结果；失败job补验仅按[137第6节](../governance/137-actions-and-validation.md#6-失败与重跑)执行，明确分批结果及原失败，不表述为单轮全绿。
 

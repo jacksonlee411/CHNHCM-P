@@ -1,6 +1,6 @@
 # 发布前浏览器位置冲突补验
 
-登记信息：[registry.json](../governance/registry.json)的同路径verification_records。关联[023案例](../specs/m02/023-m02-timeline-test-cases.md#m02-tl-274)、[105位置新增](../plans/105-positioned-addition-and-coverage.md)。
+登记信息：[registry.json](../governance/registry.json)的同路径verification_records。关联[023案例](../specs/m02/023-m02-timeline-test-cases.md#m02-tl-274)、[105位置新增](../archive/plans/105-positioned-addition-and-coverage.md)。
 
 ## 1 对象与失败证据
 

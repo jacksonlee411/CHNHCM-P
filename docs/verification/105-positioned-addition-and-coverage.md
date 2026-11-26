@@ -1,6 +1,6 @@
 # CHNHCM-105 位置新增插入与更正覆盖验证
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[105计划](../plans/105-positioned-addition-and-coverage.md)、103的AC030/TL-258—281及104的AC031/补充TL-294—301。原103文档同步和104实施报告保持原证据。
+登记信息：[registry.json](../governance/registry.json)。适用范围：[105计划](../archive/plans/105-positioned-addition-and-coverage.md)、103的AC030/TL-258—281及104的AC031/补充TL-294—301。原103文档同步和104实施报告保持原证据。
 
 ## 1 验证对象与受测基线
 

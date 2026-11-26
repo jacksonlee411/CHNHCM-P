@@ -1,6 +1,6 @@
 # CHNHCM-104 统一更正记录实施验证
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[104计划](../plans/104-unified-record-correction.md)、[AC031](../specs/m02/011-m02-business-requirements.md#m02-ac-031)及[TL-282—293](../specs/m02/023-m02-timeline-test-cases.md#m02-tl-unified-correction)。
+登记信息：[registry.json](../governance/registry.json)。适用范围：[104计划](../archive/plans/104-unified-record-correction.md)、[AC031](../specs/m02/011-m02-business-requirements.md#m02-ac-031)及[TL-282—293](../specs/m02/023-m02-timeline-test-cases.md#m02-tl-unified-correction)。
 
 ## 1 验证对象与受测基线
 

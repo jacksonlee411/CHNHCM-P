@@ -1,6 +1,6 @@
 # CHNHCM-111 BU列表实施前文档修订与多轮检查
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[110决策](../adr/110-bu-list-and-datagrid.md)、[111计划](../plans/111-bu-list-experience-upgrade.md)及关联列表合同的文档准备；本报告不记录Pro实现或产品验收通过。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[110决策](../adr/110-bu-list-and-datagrid.md)、[111计划](../archive/plans/111-bu-list-experience-upgrade.md)及关联列表合同的文档准备；本报告不记录Pro实现或产品验收通过。
 
 ## 1 验证对象与受测基线
 
@@ -23,7 +23,7 @@
 | R2修复及复验 | 补AC追踪及012交接，重新检查合同/状态 | 通过，65项工具测试；8项辅助断言和语义自查通过，无新增发现 | [R2日志](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-bu-list-preimplementation-docs/round-2-docs.log)、[R2语义](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-bu-list-preimplementation-docs/round-2-semantic.json) |
 | R3交付语义与历史保护 | 重读采用/待决/后置、版本证据、登记/旧状态及原件 | 通过，无新增发现；旧案例正文和业务规则身份保留，111执行为not_started | [R3语义](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-bu-list-preimplementation-docs/round-3-semantic.json)、[保护基线](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-bu-list-preimplementation-docs/protected-baseline.json) |
 | 差异格式 | git diff --check | 通过，最终冻结后再核对，实际输出单列 | [差异检查](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-bu-list-preimplementation-docs/diff-check.json) |
-| Pro产品实现与新增案例执行 | 安装/构建/许可、真实DB/API及浏览器 | 未运行，不计通过；TL-323—334全部待验 | [111计划](../plans/111-bu-list-experience-upgrade.md) |
+| Pro产品实现与新增案例执行 | 安装/构建/许可、真实DB/API及浏览器 | 未运行，不计通过；TL-323—334全部待验 | [111计划](../archive/plans/111-bu-list-experience-upgrade.md) |
 
 收尾结构检查及冻结输入核验另见[最终检查](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-bu-list-preimplementation-docs/final-checks.json)；该记录只承接本批文档，不扩大上述业务边界。
 

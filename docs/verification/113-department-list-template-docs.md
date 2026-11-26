@@ -1,6 +1,6 @@
 # CHNHCM-113 部门列表样板与列能力范围修订复核
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[113决定](../adr/113-bu-list-community-adoption.md)、[111计划](../plans/111-bu-list-experience-upgrade.md)、[012功能合同](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[014](../governance/014-document-management.md)，从[验证模板](../templates/verification.md)起草。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[113决定](../adr/113-bu-list-community-adoption.md)、[111计划](../archive/plans/111-bu-list-experience-upgrade.md)、[012功能合同](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[014](../governance/014-document-management.md)，从[验证模板](../templates/verification.md)起草。
 
 ## 1 对象与基线
 

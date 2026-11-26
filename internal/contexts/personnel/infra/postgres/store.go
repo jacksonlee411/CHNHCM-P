@@ -2,9 +2,11 @@ package postgres
 
 import (
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	d "chnhcm.local/chnhcm/internal/contexts/personnel/domain"
 	p "chnhcm.local/chnhcm/internal/contexts/personnel/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -15,24 +17,20 @@ import (
 	"time"
 )
 
-type adoptCountry func(context.Context, pgx.Tx, access.Guard, string, string, string) (*p.CountryAdoption, string, error)
-type adoptArea func(context.Context, pgx.Tx, access.Guard, string, string) ([]p.CountryAdoption, string, error)
 type authorizePersonnel func(context.Context, pgx.Tx, f.Credentials) (access.PersonAccess, access.Guard, error)
 type Store struct {
-	AdoptArea          adoptArea
-	AdoptCountry       adoptCountry
+	ProfileCatalog     org.ProfileCatalog
 	Pool               *pgxpool.Pool
 	Authorize          authorizePersonnel
 	AuthorizeDirectory authorizePersonnel
 }
 type request struct {
-	adoptArea    adoptArea
-	guard        access.Guard
-	adoptCountry adoptCountry
-	ctx          context.Context
-	tx           pgx.Tx
-	a            access.PersonAccess
-	instance     string
+	profileCatalog org.ProfileCatalog
+	credentials    f.Credentials
+	ctx            context.Context
+	tx             pgx.Tx
+	a              access.PersonAccess
+	instance       string
 }
 
 func run[T any](ctx context.Context, s *Store, c f.Credentials, fn func(*request) (T, error)) (T, error) {
@@ -49,7 +47,7 @@ func runAuthorized[T any](ctx context.Context, s *Store, c f.Credentials, author
 	if e != nil {
 		return zero, e
 	}
-	r := request{ctx: ctx, tx: tx, a: a, instance: a.Principal.InstanceID, guard: g, adoptArea: s.AdoptArea, adoptCountry: s.AdoptCountry}
+	r := request{ctx: dbtx.With(ctx, tx), tx: tx, a: a, instance: a.Principal.InstanceID, credentials: c, profileCatalog: s.ProfileCatalog}
 	v, e := fn(&r)
 	if e != nil {
 		return zero, e

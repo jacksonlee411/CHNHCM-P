@@ -20,4 +20,4 @@
 
 `make docs` 的 180 项回归和仓库文档检查通过，`make boundaries` 与 `git diff --check` 通过。补查本次新增及改写文句中的仓内链接、标题锚点和新文稿空白，均可定位并符合格式。
 
-T04 实施时从正常菜单办理，并用 Go、真实 PostgreSQL 和 API 验证职级资格、事务回滚、不同经办人并发及同号恢复。页面验收另核受限原件、切换旧来源和返回焦点。按职务先验证可用职级集合，按岗位另行验证岗位资格和占编。[T04 交付与签收](../plans/500-personnel-roadmap.md#t04-same-day-actions)
+T04 实施时从正常菜单办理，并用 Go、真实 PostgreSQL 和 API 验证职级资格、事务回滚、不同经办人并发及同号恢复。页面验收另核受限原件、切换旧来源和返回焦点。按职务先验证可用职级集合，按岗位另行验证岗位资格和占编。[T04 交付与签收](../archive/plans/500-personnel-roadmap.md#t04-same-day-actions)

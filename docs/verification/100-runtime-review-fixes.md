@@ -1,6 +1,6 @@
 # CHNHCM-100 运行隔离评审修复验证
 
-登记信息：[registry.json](../governance/registry.json) 的同路径记录。适用范围：[100 T01](../plans/100-ui-experience-improvement.md#ui100-runtime-isolation) 的两项 P2 评审问题；运行方法由 [017](../guides/017-local-bu-development.md) 持有。[原运行隔离报告](100-b-runtime-isolation.md)及其证据保留，本报告记录后续修复与补验。
+登记信息：[registry.json](../governance/registry.json) 的同路径记录。适用范围：[100 T01](../archive/plans/100-ui-experience-improvement.md#ui100-runtime-isolation) 的两项 P2 评审问题；运行方法由 [017](../guides/017-local-bu-development.md) 持有。[原运行隔离报告](100-b-runtime-isolation.md)及其证据保留，本报告记录后续修复与补验。
 
 ## 1 对象与基线
 

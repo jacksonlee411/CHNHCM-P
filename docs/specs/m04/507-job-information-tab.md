@@ -2,7 +2,7 @@
 
 从「人员」查本人，从「人事事务」查跨人办理。找某份任职，从人员名录进入「职务信息」直接办理。核查某段时间办过哪些事，从「人事事务 → 办理记录」跨员工查询。两处打开同一笔 M04 办理，个人资料及其变更日志归 M01。首次入职从本人档案沿用 402。[502 人员详情](../m01/502-person-directory-interactions.md#m01-change-log) · [402 入职表单](402-hire-interactions.md) · [506 业务规则](506-job-information-records.md#m04-br-012) · [登记表](../../governance/registry.json)
 
-普通名录与详情只在真实生效记录上切换。本人办理历史列出获权原件。跨员工办理期间与部门编制指定日依各自专项合同。[123 日期边界](../../adr/123-current-maintenance-and-dated-query-boundary.md) · [510 查询及验收判据](../../plans/510-personnel-page-remediation.md)
+普通名录与详情只在真实生效记录上切换。本人办理历史列出获权原件。跨员工办理期间与部门编制指定日依各自专项合同。[123 日期边界](../../adr/123-current-maintenance-and-dated-query-boundary.md) · [510 查询及验收判据](../../archive/plans/510-personnel-page-remediation.md)
 
 <a id="job-tab-layout"></a>
 ## 1 入口与页内布局
@@ -111,7 +111,9 @@
 | 表单、记录动作与原件 | [012 表单](../m02/012-m02-functional-and-interaction-design.md#m02-ui-object-form)、[公共表单](../../../packages/ui/src/components/ObjectForm.tsx)、[草稿保护](../../../apps/web/src/shared/dated/useDraftExit.ts)、[首单表单与提交](../../../apps/web/src/features/hire/HirePage.tsx) | 桌面左标签、两列字段，窄屏按组单列。对照字号、输入高度、错误及保存落点。人事事务在本面板独立保存，个人资料九栏仍按原整页办理。 |
 
 <a id="m04-ac-016"></a>
-**M04-AC-016 页面验收。** 在同一候选构建，以经办人、只读者及仅见一个兼岗的读者从菜单实操。经办人完成地点变更新增／更正、历史补录、按类型合法删除、原件返回和取消草稿。只读者可读其获权任职与办理。另验有 M04 读权但无 M01 历史权、只有 M01 历史权、当前无有效行但可查撤销原单三种组合。授权变化后重进及回退均按当前范围。桌面视口与关键办理的原生缩放按 012 共享矩阵选取。记录视觉对照和键盘到达末字段、错误、保存、历史退出及返回行的结果。[业务验收样本](506-job-information-records.md#m04-ac-010) · [012 视口矩阵](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
+**M04-AC-016 页面验收。** 从人员名录进入 0 号仅呈现当前获权的资料、职务与日志，正号只呈现该任职的职务信息。从筛选后的 2 号返回应还焦原行；主动切签应还焦选中签，从日志原件后退应还焦原触发链接。分别核对两处消费者的权限和路由恢复。[共享页签](../m02/012-m02-functional-and-interaction-design.md#m02-ui-tabs) · [人员路由页签](../../../apps/web/src/features/personnel/PersonTabs.tsx) · [任职详情](../../../apps/web/src/features/hire/AssignmentPage.tsx) · [人员日志与返回](../m01/502-person-directory-interactions.md#m01-change-log)
+
+在同一候选构建，以经办人、只读者及仅见一个兼岗的读者从菜单实操。经办人完成地点变更新增／更正、历史补录、按类型合法删除、原件返回和取消草稿。只读者可读其获权任职与办理。另验有 M04 读权但无 M01 历史权、只有 M01 历史权、当前无有效行但可查撤销原单三种组合。授权变化后重进及回退均按当前范围。桌面视口与关键办理的原生缩放按 012 共享矩阵选取。记录视觉对照和键盘到达末字段、错误、保存、历史退出及返回行的结果。[业务验收样本](506-job-information-records.md#m04-ac-010) · [012 视口矩阵](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
 
 经办人改地点和纠正错字时，直接保存且可查前后值。按岗模式另从同一满编门店岗分别办理明日拟调入、补录上周已履职，核对缺额提示、按日实占、原定额和他人预留。缺事实更正权时从链接直达也应被拒绝。[实际履职样本](506-job-information-records.md#actual-duty-case)
 

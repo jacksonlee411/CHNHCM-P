@@ -2,11 +2,11 @@
 
 2026-11-13首次新建默认日期按用户确定的[202项目规则](../../adr/202-master-data-default-effective-date.md)统一为1900-01-01，由Go创建上下文提供defaultEffectiveDate；currentDate仍表示今日，明确输入、原日期、后续位置/启停规则及依赖资格保持。默认非法时准确拒绝并允许用户明确改日，不静默换今天或改写父对象。本轮合同已接入现有BU/部门，产品适配及受影响分批回归见[200 G1报告](../../verification/200-g1-default-date.md)，原实施报告不改写。
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：M02 首批业务单元（BU）后台直接维护，承接 [010 范围](../../plans/010-m02-scope-and-plan.md)、[011 业务需求](011-m02-business-requirements.md)、[012 功能交互](012-m02-functional-and-interaction-design.md)、[018 历史决策](../../adr/018-effective-records-and-source-history.md)和[020记录维护决定](../../adr/020-effective-record-delete-and-redate.md)。本文持有实施合同；创建/查询及共同约束已采纳并落到真实代码，范围、检查及未完成项见[首批验证](../../verification/010-first-vertical-slice.md)和[运行指南](../../guides/017-local-bu-development.md)。
+登记信息：[registry.json](../../governance/registry.json)。适用范围：M02 首批业务单元（BU）后台直接维护，承接 [010 范围](../../archive/plans/010-m02-scope-and-plan.md)、[011 业务需求](011-m02-business-requirements.md)、[012 功能交互](012-m02-functional-and-interaction-design.md)、[018 历史决策](../../adr/018-effective-records-and-source-history.md)和[020记录维护决定](../../adr/020-effective-record-delete-and-redate.md)。本文持有实施合同；创建/查询及共同约束已采纳并落到真实代码，范围、检查及未完成项见[首批验证](../../verification/010-first-vertical-slice.md)和[运行指南](../../guides/017-local-bu-development.md)。
 
 当前普通维护查询按[123决定](../../adr/123-current-maintenance-and-dated-query-boundary.md)执行：取消通用查看日期；列表按服务端D，详情按所选记录，明确来源仍只读。原修订日志及旧验证报告保留其时点；当前合同以下述正文为准。
 
-2026-11-07按获批[126](../../plans/126-compact-history-storage-research.md)同步紧凑存储。第3.1及6.3节持有当前物理格式；后文来源、成员、修订、command_result、change_entry及字段名描述其逻辑事实，除明确列出的原生表外不再表示独立宽表/列。第9节按日期保留实施沿革，其旧SQL、索引及模型标识不属于当前安装合同。实际效果见[126实施报告](../../verification/126-compact-history-implementation.md)。
+2026-11-07按获批[126](../../archive/plans/126-compact-history-storage-research.md)同步紧凑存储。第3.1及6.3节持有当前物理格式；后文来源、成员、修订、command_result、change_entry及字段名描述其逻辑事实，除明确列出的原生表外不再表示独立宽表/列。第9节按日期保留实施沿革，其旧SQL、索引及模型标识不属于当前安装合同。实际效果见[126实施报告](../../verification/126-compact-history-implementation.md)。
 
 公共约束引用 [002 技术栈](../../adr/002-technology-stack.md)、[004 分层与迁移](../../architecture/004-repository-layout.md)、[DDD 合同](../../architecture/target/10-ddd-and-state-contracts.md)、[17 术语表](../../architecture/target/17-terminology-glossary.md)及 [014 文档规范](../../governance/014-document-management.md)。业务规则与验收 ID 继续在 011 唯一定义；本稿不以技术实现扩大或覆盖其范围。
 
@@ -17,13 +17,13 @@
 当前交互按[101直接保存](../../adr/101-direct-save-and-form-assistance.md)执行：全部场景取消手动预览及预览许可门槛，填写后直接提交；只读计算用于自动默认/必要影响，Go在保存事务内重新核验。下文“预览”在仍有计算含义处指只读辅助，不再指用户按钮或必经步骤；历史实施记录保留原时点。
 
 
-2026-11-02采纳[103位置新增/插入](../../adr/103-positioned-record-addition.md)：本稿单条普通新增的准备上下文及anchorRecordId已由[105](../../plans/105-positioned-addition-and-coverage.md)同步OpenAPI、生成客户端和Go实现。既有报告保持原范围，不接受缺锚点旧写入格式。
+2026-11-02采纳[103位置新增/插入](../../adr/103-positioned-record-addition.md)：本稿单条普通新增的准备上下文及anchorRecordId已由[105](../../archive/plans/105-positioned-addition-and-coverage.md)同步OpenAPI、生成客户端和Go实现。既有报告保持原范围，不接受缺锚点旧写入格式。
 
 2026-11-08合同修订：[128](../../adr/128-authorization-evidence-removal.md)撤除逐次授权过程档案及业务终态对其依赖。本文件第2节、第3.1.3/3.1.4节、第4—6节和第8节有关完整授权证据的旧要求按128局部替代；第9节原批次描述及旧报告保留历史语境。下述128目标合同尚未实施，现行代码和固定库仍为原模型；不将当前权限、操作者身份快照或业务历史一并取消。
 
 ## 1 需求映射与边界
 
-2026-11-03按[113](../../adr/113-bu-list-community-adoption.md)接入Community原字节源码、摘要列及原生列设置，执行归[111](../../plans/111-bu-list-experience-upgrade.md)。T01/T02代码、类型/构建与组件定向结果见[本轮报告](../../verification/111-community-t01-t02.md)，T03真实业务与七组条件另见[本轮报告](../../verification/111-community-t03.md)；上述基础批次Go/API/SQL及生成客户端不变。本次单列增量按4.1.2扩展唯一查询合同；取消列拖动/固定不影响其他规则。
+2026-11-03按[113](../../adr/113-bu-list-community-adoption.md)接入Community原字节源码、摘要列及原生列设置，执行归[111](../../archive/plans/111-bu-list-experience-upgrade.md)。T01/T02代码、类型/构建与组件定向结果见[本轮报告](../../verification/111-community-t01-t02.md)，T03真实业务与七组条件另见[本轮报告](../../verification/111-community-t03.md)；上述基础批次Go/API/SQL及生成客户端不变。本次单列增量按4.1.2扩展唯一查询合同；取消列拖动/固定不影响其他规则。
 
 ### 1.1 交付范围和当前事实
 
@@ -128,7 +128,7 @@ Go1.26及已锁定golang.org/x/text v0.43.0使用Unicode15.0.0。名称所需Der
 
 ### 3.1 表与约束
 
-按用户批准的[126方案](../../plans/126-compact-history-storage-research.md)，当前物理模型采用对象拥有的强类型历史块。每份来源仍包含完整逻辑成员、修订、原结果和事件；重复值和结构通过不可变字典及内容根共享。下文“来源、修订、成员、来源项、终态、Outbox”指逻辑事实，不要求一事实一宽表行。迁移00001—00007、m02-compact-4是130当前可执行结构，旧物理布局由Git及原验证报告保留，不建立兼容视图、双写或旧算法回退。
+按用户批准的[126方案](../../archive/plans/126-compact-history-storage-research.md)，当前物理模型采用对象拥有的强类型历史块。每份来源仍包含完整逻辑成员、修订、原结果和事件；重复值和结构通过不可变字典及内容根共享。下文“来源、修订、成员、来源项、终态、Outbox”指逻辑事实，不要求一事实一宽表行。迁移00001—00007、m02-compact-4是130当前可执行结构，旧物理布局由Git及原验证报告保留，不建立兼容视图、双写或旧算法回退。
 
 | 当前物理表 | 所有权、索引及内容 |
 | --- | --- |
@@ -355,7 +355,7 @@ GET列表新增可选filterField、filterOperator、filterValue，三者全部�
 <a id="m02-tech-query-selection"></a>
 #### 4.1.3 完整查询结果选择及CSV目标合同
 
-依据[114](../../adr/114-bu-query-selection-and-export.md)、[BR022](011-m02-business-requirements.md#m02-br-022)、[BR023](011-m02-business-requirements.md#m02-br-023)和[012交互](012-m02-functional-and-interaction-design.md#m02-ui-query-selection)，由[115](../../plans/115-bu-query-selection-and-export.md)实施。以下合同已由115接入OpenAPI、Go/SQL、客户端与页面；本轮实际结果由[115实施报告](../../verification/115-query-selection-implementation.md)记录。原文档评审及111报告保留原受测范围，不据此扩大通过。
+依据[114](../../adr/114-bu-query-selection-and-export.md)、[BR022](011-m02-business-requirements.md#m02-br-022)、[BR023](011-m02-business-requirements.md#m02-br-023)和[012交互](012-m02-functional-and-interaction-design.md#m02-ui-query-selection)，由[115](../../archive/plans/115-bu-query-selection-and-export.md)实施。以下合同已由115接入OpenAPI、Go/SQL、客户端与页面；本轮实际结果由[115实施报告](../../verification/115-query-selection-implementation.md)记录。原文档评审及111报告保留原受测范围，不据此扩大通过。
 
 **查询与集合版本。** 实现时从现有List提炼同源授权查询投影：同一实例/企业、当前bu.read对象及字段合并权、服务端D解析、q/status、至多一个列条件、相同字段筛选拒绝/排除语义。分页查询、完整集合核对和导出共用该投影；不另写前端过滤器、无授权ID扫描或使用管理角色连接绕过过滤。集合U中每BU一个ID，包含未生效首条的现行列表语义；不接受sourceVersion、knownAt、adoptedRef或任意enterpriseId。
 
@@ -407,7 +407,7 @@ CSV使用UTF-8 BOM及RFC4180引号/双引号/CRLF规则，固定四列“编码�
 <a id="m02-tech-operation-summary"></a>
 #### 4.1.4 记录操作摘要、身份快照与日志表格查询
 
-本节是[122](../../plans/122-bu-operation-summary-and-change-log.md)当前合同，承接[BR034/035](011-m02-business-requirements.md#m02-br-034)；服务端及页面已接线，实际验证见[实施报告](../../verification/122-operation-summary-implementation.md)。既有详情的来源级`actor/recordedAt`不能代替修订摘要；实现同步更新唯一OpenAPI、Go公开DTO和客户端，不保留两套旧新响应或前端回退算法。本节不改变旧来源、修订及提交结果封口要求。
+本节是[122](../../archive/plans/122-bu-operation-summary-and-change-log.md)当前合同，承接[BR034/035](011-m02-business-requirements.md#m02-br-034)；服务端及页面已接线，实际验证见[实施报告](../../verification/122-operation-summary-implementation.md)。既有详情的来源级`actor/recordedAt`不能代替修订摘要；实现同步更新唯一OpenAPI、Go公开DTO和客户端，不保留两套旧新响应或前端回退算法。本节不改变旧来源、修订及提交结果封口要求。
 
 **身份权威与封存。** X03通过公开端口返回`OperatorSnapshot{subjectId, displayName, login, kind, identityEvidence}`；`subjectId`为稳定主体ID，`displayName`和`login`为可空字符串，`kind`为`human/service/unknown`，`identityEvidence`为`captured/subject_id_only`。新写入必须取得经过认证的同一主体的账号及类别，姓名可空；服务主体使用其真实服务账号。X03补最小展示姓名/主体类别来源，不借此创建员工档案管理。M02由组合根接入公开端口，在权限守卫覆盖的操作快照点读取，并与新来源原子封存；身份读取失败拒绝新业务事务，不能先提交来源再异步补姓名。写入请求禁止携带operator等只读身份/时刻字段。改名/停用不改既有快照，授权仍按当前主体与对象判断，快照不能充当权限。
 
@@ -1012,10 +1012,34 @@ BU完整启用期间相同（合并相邻active范围，包含首条、未来及
 
 ## 10 301用户反馈接续
 
-2026-11-14用户授权实施[301方案](../../plans/301-user-feedback-and-recovery.md)。第3节规定本轮目标：保存请求结束未知后至多自动确认一次，手动确认与同内容重试互斥；刷新只恢复身份；会话校验与业务权限分流；局部失败保留合法条件和可读输入。错误分类、筛选／选择恢复及提示生命周期按301同步实施；本节替代旧长提示、强制返回列表和旧统一错误分流要求。Go业务规则、当前授权及不可变历史保持。实际完成范围见[实施记录](../../verification/301-user-feedback-implementation.md)，未完成验收不作已交付声明。
+2026-11-14用户授权实施[301方案](../../archive/plans/301-user-feedback-and-recovery.md)。当时第3节规定的目标：保存请求结束未知后至多自动确认一次，手动确认与同内容重试互斥；刷新只恢复身份；会话校验与业务权限分流；局部失败保留合法条件和可读输入。错误分类以[013 条款](013-m02-technical-design.md#m02-feedback-errors)为准，筛选、选择及提示恢复的逐项验收见[121](121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)；本节替代旧长提示、强制返回列表和旧统一错误分流要求。Go业务规则、当前授权及不可变历史保持。实际完成范围见[实施记录](../../verification/301-user-feedback-implementation.md)，未完成验收不作已交付声明。
 
 301实施补充：BU选择核对与导出仍在同一版本下完整核验，专用JSON请求体上限为32MiB，其余普通命令保持64KiB；不通过分次导出绕过全量授权和失败零文件。部门选择沿120的1024项分块。超出传输上限返回413／M02_SELECTION_BATCH_LIMIT，读取中断返回400／M02_INVALID_SELECTION；成员数量与CSV文件大小限制分别使用对应原因。
 
 403／AUTH_REQUEST_VALIDATION_FAILED触发同页会话恢复；恢复期间或恢复失败后暂停三个保存入口和手动结果确认，保留同身份的可读输入。恢复成功只解除暂停，不自动保存；401或主体／实例变化沿原会话隔离清理。结果确认只接受accepted、no_change、rejected、not_applied四种终态；pending或解码不完整均保留原身份。
 
 日志400响应通过既有Error.field定位page、pageSize、throughSourceVersion或filter；前端只移除对应日志参数，过滤条件三项作为一个条件一起重置，保留其他合法筛选和页大小。M02_INVALID_LOG_RANGE仅重置日志上界；重复logReturn只移除该返回参数。503保留全部条件并重试，不使用重置代替恢复。
+
+<a id="m02-feedback-errors"></a>
+
+## 11 保存、选择与会话的错误分类
+
+保存结果区负责保存中、未知和确认结果；字段错误留在当前字段及可定位的摘要；列表、树、候选、日志、操作影响各自显示局部错误。摘要可以定位字段，但不把同一故障再叠加全局警告、表单警告和按钮长说明。未解除的真实错误保持可见，后续办理和合法状态变化清除旧通知；不依靠固定几秒自动消失作为唯一处理。
+
+可选操作影响读取失败时显示“操作影响暂时无法加载”及“重试”，不因此禁止提交给Go校验，也不保证一定能保存。办理所需原因／默认值尚未取得时，指出缺少的实际内容并重试该项，不沿用旧默认。Go返回的真实业务阻断继续显示具体获权原因，不当成可忽略的辅助读取故障。
+
+Go仍是权限、业务拒绝、结果终态、日期及容量判定的唯一权威。前端只把已确定的原因和字段转换成大陆中文及实际动作，不通过文字包含某个词猜测错误类型。OpenAPI、Go 产生点及 BU、部门客户端使用下列对应关系。
+
+| 实际原因 | 机器分类 | 页面处理 |
+| --- | --- | --- |
+| CSRF请求校验失败 | 403／AUTH_REQUEST_VALIDATION_FAILED，与业务ACCESS_DENIED分开 | 恢复当前登录状态，不归因于业务撤权；不自动重发保存 |
+| 选择成员超过总上限 | 413／M02_SELECTION_MEMBER_LIMIT | Go提供真实数量限制文案；用户分批选取／导出，不让等待替代减量 |
+| 单次选择编辑或传输大小超过限制 | 413／M02_SELECTION_BATCH_LIMIT | 部门按当前协议分块；BU保持原子集合并使用32MiB专用传输上限。真实超限提示减少本次所选项，不建议改成全选；失败按当前选择状态恢复 |
+| 临时选择资源不足 | 保留429／M02_SELECTION_RESOURCE_LIMIT | 稍后重试，继续区分首次建立和已有草稿；不自动重建基准 |
+
+读取请求体失败不作为大小超限；未知服务错误只表示当前服务不可用，由调用场景决定显示加载错误还是保存待确认。保存拒绝的中文原因依据已有确切终态及获权诊断生成，不重新执行业务校验；未知错误码用安全的任务说明，不直接输出裸码。数字限制只由Go产生，前端不另定业务上限。
+
+默认英文网络异常、解析错误和框架错误页改为当前任务的中文说明；意外页面错误提供返回可访问页面的入口。前端异常不代表保存失败或未保存，不能通过错误页自动清除待确认身份。历史“来源明细”中经授权、按需展开的原始事实仍保留。
+
+
+读写、权限及恢复的独立验收见[121 逐项映射](121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)。

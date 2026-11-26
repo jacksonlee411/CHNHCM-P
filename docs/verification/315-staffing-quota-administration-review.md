@@ -6,9 +6,9 @@
 
 | 文档 | 本次处理及后续用途 |
 | --- | --- |
-| 业务合同与开发计划 | 先修订 313 的额度、减编、入口及分批验收，再编写 315。第一步接通部门和岗位独立定额，第二步完成部门内调剂、反向校验与统一签收。[313](../specs/m03/313-position-capacity-contract.md) · [315](../plans/315-staffing-quota-administration.md) |
+| 业务合同与开发计划 | 先修订 313 的额度、减编、入口及分批验收，再编写 315。第一步接通部门和岗位独立定额，第二步完成部门内调剂、反向校验与统一签收。[313](../specs/m03/313-position-capacity-contract.md) · [315](../archive/plans/315-staffing-quota-administration.md) |
 | 部门与岗位来源 | 118 补部门身份、有效期及反向检查，312 补岗位启停、改日和改隶时的分配校验。311 的岗位定义签收提供已有能力的依据。[118](../specs/m02/118-department-business-requirements.md) · [312](../specs/m03/312-position-contract.md) · [311 岗位签收](311-position-definition-signoff.md) |
-| 职类独立验收 | 308 的 AC090 和 314 继续用旧职务岗位证明编制可独立交付。部门额度与调剂由 315 签收。[308 分批验收](../specs/m03/308-job-foundation-contract.md#m03-ac-090) · [314 职类路线图](../plans/314-m03-job-function-roadmap.md) |
+| 职类独立验收 | 308 的 AC090 和 314 继续用旧职务岗位证明编制可独立交付。部门额度与调剂由 315 签收。[308 分批验收](../specs/m03/308-job-foundation-contract.md#m03-ac-090) · [314 职类路线图](../archive/plans/314-m03-job-function-roadmap.md) |
 | 架构与导航 | 同步 StaffingQuota 的部门和岗位身份、事务、术语及概念图，并从总入口、规格索引和验证索引关联本期文件。[M03 模块](../architecture/target/modules/m03.md) · [事务合同](../architecture/target/10-ddd-and-state-contracts.md#staffing-quota-transaction) · [术语](../architecture/target/17-terminology-glossary.md#term-m03-positioncapacity) · [总入口](../index.md) · [规格索引](../specs/README.md) · [验证索引](README.md) |
 | 实施时沿用的共用合同 | 012 管理后台交互，120、121 管业务日期、独立修订和接入，X03 管动作、对象和字段授权。实际开发沿用这些合同。[012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression) · [120](../specs/m02/120-dated-maintenance-technical-contract.md) · [121](../specs/m02/121-dated-object-admission-matrix.md) · [X03](../architecture/target/modules/x03.md) |
 
@@ -32,4 +32,4 @@
 
 修订后 `make docs` 的 128 项检查用例全部通过，覆盖 417 份 Markdown、13,109 条本地链接。另核对本次增改行内的 50 处章节链接。已登记的 247 份既有验证记录逐项对照一致。差异与新增文件的空白检查通过。
 
-315 的产品执行状态为待开始。真实数据库升级、事务竞争、API、后台菜单和浏览器人工走查在实施批执行。[315 验证与交接](../plans/315-staffing-quota-administration.md#5-验证与交接)
+315 的产品执行状态为待开始。真实数据库升级、事务竞争、API、后台菜单和浏览器人工走查在实施批执行。[315 验证与交接](../archive/plans/315-staffing-quota-administration.md#5-验证与交接)

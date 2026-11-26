@@ -1,6 +1,6 @@
 # CHNHCM-011 操作类型、原因与日期修订验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[17 术语表](../architecture/target/17-terminology-glossary.md)的操作分类、原因、日期及对应验收说明。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[17 术语表](../architecture/target/17-terminology-glossary.md)的操作分类、原因、日期及对应验收说明。
 
 ## 1 基线与范围
 

@@ -2,7 +2,7 @@
 
 ## 1 范围与基线
 
-2026-11-22，依据用户采纳的登记简化方案，复核 [500 路线图](../plans/500-personnel-roadmap.md#registration-revision-steps)、[501 业务验收](../specs/m01/501-person-registration-requirements.md#m01-fields)、[502 正常菜单](../specs/m01/502-person-directory-interactions.md#m01-page-register)及 [503 事务与权限](../specs/m01/503-person-registration-design.md#m01-recovery)。基线为固定工作树 `wt-dev-f` 的 `f7d84f192ff518555a60dfe939a78455d8a48597` 加工作区 T00/T01 变更。修订前的三份规格逐字节对应[原评审包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/500-personnel-t00/reviewed-specs.zip)的第四稿。[原 T01 产品实测](500-t01-personnel-registration.md)对应材料必填的旧构建。
+2026-11-22，依据用户采纳的登记简化方案，复核 [500 路线图](../archive/plans/500-personnel-roadmap.md#registration-revision-steps)、[501 业务验收](../specs/m01/501-person-registration-requirements.md#m01-fields)、[502 正常菜单](../specs/m01/502-person-directory-interactions.md#m01-page-register)及 [503 事务与权限](../specs/m01/503-person-registration-design.md#m01-recovery)。基线为固定工作树 `wt-dev-f` 的 `f7d84f192ff518555a60dfe939a78455d8a48597` 加工作区 T00/T01 变更。修订前的三份规格逐字节对应[原评审包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/500-personnel-t00/reviewed-specs.zip)的第四稿。[原 T01 产品实测](500-t01-personnel-registration.md)对应材料必填的旧构建。
 
 Oracle 将疑似重复人员提示与证件号码唯一性校验分别配置，Moka 的再入职记录说明按重复信息直接认人会造成误合并。本次采用用户确定的实例内号码排他范围；即使证件类型或签发地不同，同号仍阻止第二人占用。[Oracle 证件校验](https://docs.oracle.com/en/cloud/saas/human-resources/fawhr/how-national-identifiers-are-validated.html) · [Moka 再入职修订](https://mokapeople.moyincloud.com/d/1660565124237328385.html)
 
@@ -40,4 +40,4 @@ Oracle 将疑似重复人员提示与证件号码唯一性校验分别配置，M
 
 首次 `make docs` 运行的 137 项脚本用例通过，仓库检查指出新评审记录缺少结果项。补登实际结果后复验通过。单独核对四份方案、评审记录和导航新增的 173 处本地链接（含 78 个锚点），原路线图的 8 个场景及 501 的 6 个规则、10 个验收标识均保留。用临时 Git 索引把未跟踪文档纳入本次 9 份文件的差异检查，`git diff --check` 通过。
 
-本轮交付文档。已有产品实测仍对应原 T01 构建；新版的 Go、数据库竞争与恢复、菜单操作、容量和人事签收由[500 第 6.1 节](../plans/500-personnel-roadmap.md#registration-revision-steps)接续。
+本轮交付文档。已有产品实测仍对应原 T01 构建；新版的 Go、数据库竞争与恢复、菜单操作、容量和人事签收由[500 第 6.1 节](../archive/plans/500-personnel-roadmap.md#registration-revision-steps)接续。

@@ -1,6 +1,6 @@
 # CHNHCM-300 部门树实施方案评审与修订
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[300实施计划](../plans/300-department-tree-implementation.md)的权限、查询／选择接入、分页定位、并发状态、容量及实施可验证性。按[验证模板](../templates/verification.md)记录文档评审，不作为产品功能或性能证据。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[300实施计划](../archive/plans/300-department-tree-implementation.md)的权限、查询／选择接入、分页定位、并发状态、容量及实施可验证性。按[验证模板](../templates/verification.md)记录文档评审，不作为产品功能或性能证据。
 
 ## 1 验证对象与受测基线
 
@@ -24,7 +24,7 @@
 | --- | --- | --- | --- |
 | 原方案问题检查 | 对照当前DTO、Go选择事务、页面选择钩子、引用与路径授权、实际容量合同；构造失败反例 | 要求修改：2项P1、5项P2，均为方案缺口或冲突，不登记为已实现产品的新故障 | [问题及复核清单](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/300-department-tree-review/review.json)、评审前快照 |
 | 修订后逐项复核 | 检查权限矩阵、草稿页状态、范围失效、窗口边界、乱序响应、无效查询动作及预算是否形成一致合同；重核T00—T05出口 | 7项在文档层关闭，本轮复核无未关闭P1／P2；接受限定实施方案 | 第4节、修订后方案快照 |
-| 产品验收AC045—056 | 未开始产品实施，没有真实运行结果 | 未运行 | [计划验收矩阵](../plans/300-department-tree-implementation.md#61-功能与保护矩阵) |
+| 产品验收AC045—056 | 未开始产品实施，没有真实运行结果 | 未运行 | [计划验收矩阵](../archive/plans/300-department-tree-implementation.md#61-功能与保护矩阵) |
 
 ### 3.2 文档及保护检查
 

@@ -1,6 +1,6 @@
 # CHNHCM-309 G2阶梯与职务职级实施记录
 
-登记信息：[registry.json](../governance/registry.json)。范围为[309 T03／T04](../plans/309-m03-grade-ladder.md)及[310](../specs/m03/310-grade-ladder-contract.md)的G2适用部分。初次交付的本地验收见第1至8节，交付后评审发现的8项问题及复验见第9节。
+登记信息：[registry.json](../governance/registry.json)。范围为[309 T03／T04](../archive/plans/309-m03-grade-ladder.md)及[310](../specs/m03/310-grade-ladder-contract.md)的G2适用部分。初次交付的本地验收见第1至8节，交付后评审发现的8项问题及复验见第9节。
 
 ## 1 开工基线与环境保护
 

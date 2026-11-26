@@ -1,6 +1,6 @@
 # CHNHCM-013 M02 多轮独立评审与修订验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010 首批计划](../plans/010-m02-scope-and-plan.md)、[011 业务需求](../specs/m02/011-m02-business-requirements.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[013 技术设计](../specs/m02/013-m02-technical-design.md)及 [016 历史决策](../adr/016-m02-effective-record-history.md)的静态合同评审；不是业务运行报告。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010 首批计划](../archive/plans/010-m02-scope-and-plan.md)、[011 业务需求](../specs/m02/011-m02-business-requirements.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[013 技术设计](../specs/m02/013-m02-technical-design.md)及 [016 历史决策](../archive/adr/016-m02-effective-record-history.md)的静态合同评审；不是业务运行报告。
 
 ## 1 基线、环境与范围
 

@@ -19,4 +19,4 @@
 
 按两个员工的事项、任职、发生部门、生效日及首次登记时刻独立复算，四笔、三笔、关系转正一笔、受限读者一笔的预期均相符。核对当前工作区 14 份新增或改写文稿中的 185 处仓内链接及锚点，5 个未跟踪文件的空白和末行通过。`make docs` 的 180 项回归和仓库资料检查、`make boundaries` 及 `git diff --check` 均通过。
 
-跨人员办理记录及两个入口的联验列入 T04。真实数据库、API、受限角色菜单、返回焦点及原生缩放待产品实施后按相应批次验收。[T04 分批交付](../plans/500-personnel-roadmap.md#job-information-delivery)
+跨人员办理记录及两个入口的联验列入 T04。真实数据库、API、受限角色菜单、返回焦点及原生缩放待产品实施后按相应批次验收。[T04 分批交付](../archive/plans/500-personnel-roadmap.md#job-information-delivery)

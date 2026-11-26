@@ -1,6 +1,6 @@
 # CHNHCM-122 实施评审修复与补验
 
-登记信息：[registry.json](../governance/registry.json)。关联[122计划](../plans/122-bu-operation-summary-and-change-log.md)、[013技术合同](../specs/m02/013-m02-technical-design.md)及[023第25章](../specs/m02/023-m02-timeline-test-cases.md#m02-tests-operation-summary)。本记录承接用户“请修复发现问题”，原实施报告和证据保持原字节。
+登记信息：[registry.json](../governance/registry.json)。关联[122计划](../archive/plans/122-bu-operation-summary-and-change-log.md)、[013技术合同](../specs/m02/013-m02-technical-design.md)及[023第25章](../specs/m02/023-m02-timeline-test-cases.md#m02-tests-operation-summary)。本记录承接用户“请修复发现问题”，原实施报告和证据保持原字节。
 
 ## 1 基线、范围与结论
 

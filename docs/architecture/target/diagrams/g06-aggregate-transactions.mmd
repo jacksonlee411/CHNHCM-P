@@ -6,12 +6,14 @@ flowchart TB
   subgraph HR["T1 Staffing短事务 · 固定锁序 + expectedRevision"]
     H["Staffing协调器<br/>入职 调动 终结 撤销及更正"]
     Q["M03 StaffingQuota根
-核定编制 预留 占编"]
-    E["M04 Employment / Assignment根<br/>含经理关系的期间守卫"]
+核定编制与岗位用量核验"]
+    E["M04 Employment / Assignment根<br/>实际占编与经理关系期间守卫"]
+    OFFER["M05 Recruiting 已接受的录用及预留转换"]
     S["M04 PrimarySelection根"]
     O["各自业务Outbox"]
     H --> Q
     H --> E
+    H -->|经招聘入职| OFFER
     H --> S
     H --> O
   end

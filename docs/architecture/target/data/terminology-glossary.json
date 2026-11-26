@@ -912,7 +912,7 @@
       "scope": "M03",
       "term": "PositionReservation",
       "zh": "招聘编制预留",
-      "definition": "为真实招聘需求暂留的单人编制名额。入职成功后转为占编，释放或到期时结束预留。",
+      "definition": "M05 为招聘保留的单人名额，有效期间和状态由招聘记录。M03 据此计算可用数。经录用入职时按原接受版本转换。",
       "aliases": [
         "Reservation"
       ],
@@ -926,7 +926,7 @@
       "scope": "M03",
       "term": "PositionOccupancy",
       "zh": "任职占编",
-      "definition": "一份按企业规则占编的有效任职使用一个岗位编制名额，自终结生效日起释放。",
+      "definition": "M04 的有效任职按已采用规则使用一个岗位名额，自终结生效日起释放。M03 按其期间计算岗位用量。",
       "aliases": [
         "Occupancy"
       ],

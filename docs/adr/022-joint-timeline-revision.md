@@ -1,8 +1,8 @@
 # CHNHCM-022 M02 有限联合修订与历史补全
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：同一BU的有限联合修订、首条历史补全及业务分类录错处置。承接[021](021-bu-lifecycle-and-record-maintenance.md)、[020](020-effective-record-delete-and-redate.md)与[018](018-effective-records-and-source-history.md)；[011](../specs/m02/011-m02-business-requirements.md)持有规则，[010](../plans/010-m02-scope-and-plan.md)持有待办。本文保留原决策与后续替代，联合实现见T08；单条分类入口按104、首条维护按107收敛。结果授权、失败恢复和实现/验证前置已由[024](024-timeline-implementation-simplification.md)部分替代，精确范围见第5节。
+登记信息：[registry.json](../governance/registry.json)。适用范围：同一BU的有限联合修订、首条历史补全及业务分类录错处置。承接[021](021-bu-lifecycle-and-record-maintenance.md)、[020](020-effective-record-delete-and-redate.md)与[018](018-effective-records-and-source-history.md)；[011](../specs/m02/011-m02-business-requirements.md)持有规则，[010](../archive/plans/010-m02-scope-and-plan.md)持有待办。本文保留原决策与后续替代，联合实现见T08；单条分类入口按104、首条维护按107收敛。结果授权、失败恢复和实现/验证前置已由[024](024-timeline-implementation-simplification.md)部分替代，精确范围见第5节。
 
-当前范围补充：[109](../plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
+当前范围补充：[109](../archive/plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
 
 ## 1 背景与问题
 
@@ -26,7 +26,7 @@ Go先构造全部变更后的候选集合，再按最终日期解析资料、启
 
 ### 2.3 分类录错处置
 
-单条分类按[104](../plans/104-unified-record-correction.md)在“更正记录→业务分类”内使用CORRECT，与名称/日期可一次保存且不要求联合权；只有多目标关联操作使用本决策联合协议。首条只能在CREATE内改原因；非首条可在CHANGE、DEACTIVATE、REACTIVATE间纠正类型及相应原因，最终时间线必须合法，不能把非首条改成CREATE。
+单条分类按[104](../archive/plans/104-unified-record-correction.md)在“更正记录→业务分类”内使用CORRECT，与名称/日期可一次保存且不要求联合权；只有多目标关联操作使用本决策联合协议。首条只能在CREATE内改原因；非首条可在CHANGE、DEACTIVATE、REACTIVATE间纠正类型及相应原因，最终时间线必须合法，不能把非首条改成CREATE。
 
 更正记录未编辑分类时、仅日期API和删除继续继承原分类；显式分类面保存新类型/原因及服务端名称快照，并保留旧分类。新选分类按适用固定目录校验；未改分类的记录不受旧原因下架影响。不增加自由文本处理原因、备注或另一套撤销动作。
 

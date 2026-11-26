@@ -4,7 +4,7 @@
 
 登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：100 T02 的修复前问题基线、012 修订及 M02 交接。**T02 的材料已形成，R01—R09 产品问题尚未修复，T03/T04 未实施。**
 
-上游依据：[100 计划](../plans/100-ui-experience-improvement.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[011 查询](../specs/m02/011-m02-business-requirements.md#m02-ac-001)、[创建](../specs/m02/011-m02-business-requirements.md#m02-ac-002)、[返回](../specs/m02/011-m02-business-requirements.md#m02-ac-007)及[历史](../specs/m02/011-m02-business-requirements.md#m02-ac-008)。[打开修复前图面](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/100-ui-baseline/index.html)。
+上游依据：[100 计划](../archive/plans/100-ui-experience-improvement.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[011 查询](../specs/m02/011-m02-business-requirements.md#m02-ac-001)、[创建](../specs/m02/011-m02-business-requirements.md#m02-ac-002)、[返回](../specs/m02/011-m02-business-requirements.md#m02-ac-007)及[历史](../specs/m02/011-m02-business-requirements.md#m02-ac-008)。[打开修复前图面](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/100-ui-baseline/index.html)。
 
 ## 1 验证对象与受测基线
 
@@ -93,7 +93,7 @@
 
 ### 6.2 M02 交接及下一批
 
-[100 具体交接清单](../plans/100-ui-experience-improvement.md)列明 `packages/ui`、`BusinessUnits.tsx`、`shared/navigation.ts`、012/浏览器用例、013/OpenAPI 和登记的协作边界。a 采集开始时为 `889bcd9`，有包含 010/011/012/013、ADR 和登记等的并行修改；b 不导入这些未合入规则。双方实际提交到位后再逐段核对合同与实现，不整文件覆盖。
+[100 具体交接清单](../archive/plans/100-ui-experience-improvement.md)列明 `packages/ui`、`BusinessUnits.tsx`、`shared/navigation.ts`、012/浏览器用例、013/OpenAPI 和登记的协作边界。a 采集开始时为 `889bcd9`，有包含 010/011/012/013、ADR 和登记等的并行修改；b 不导入这些未合入规则。双方实际提交到位后再逐段核对合同与实现，不整文件覆盖。
 
 当前日志 DTO 已有 actor 主体标识、action、时间、记录字段及分类快照；T04 可使用这些真实字段。**可读操作者名称、后续维护的前后值和目标/关系**由 Organization/API 维护者在 013 定义来源、当前授权及一致性，再由 010 实施；本轮没有擅自新增姓名或差异 API，也不将这一缺口描述为所有日志数据都缺失。
 

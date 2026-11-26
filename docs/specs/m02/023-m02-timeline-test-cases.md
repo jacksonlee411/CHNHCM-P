@@ -1,6 +1,6 @@
 # CHNHCM-023 M02 时间轴全面测试案例
 
-登记信息：[registry.json](../../governance/registry.json)。本文是[技术设计模板](../../templates/technical-design.md)裁剪形成的测试设计，持有可执行的测试输入、步骤和独立预期；业务规则仍由[011](011-m02-business-requirements.md)持有，交互由[012](012-m02-functional-and-interaction-design.md)持有，协议、事务及迁移由[013](013-m02-technical-design.md)持有，范围和批次由[010](../../plans/010-m02-scope-and-plan.md)持有。
+登记信息：[registry.json](../../governance/registry.json)。本文是[技术设计模板](../../templates/technical-design.md)裁剪形成的测试设计，持有可执行的测试输入、步骤和独立预期；业务规则仍由[011](011-m02-business-requirements.md)持有，交互由[012](012-m02-functional-and-interaction-design.md)持有，协议、事务及迁移由[013](013-m02-technical-design.md)持有，范围和批次由[010](../../archive/plans/010-m02-scope-and-plan.md)持有。
 
 下列现行页面案例按[012 视口与缩放](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)选取共享桌面视口、关键流程的原生 200% 和触发专项的原生 400%。各批执行交接中的倍率与结果按当时记录。
 
@@ -12,7 +12,7 @@
 103文档采纳时的记录（2026-11-02）：[103位置新增/插入](../../adr/103-positioned-record-addition.md)：第5.1节追加24项待验案例，旧SCN003案例补充所选位置与显式锚点输入。规则/案例已编写不代表产品或调用已实现；原T07的253例及旧报告保持各自当时合同，当时新24例和受影响旧参数留待实施；后续已由105接线验证，108补验其明确留出的参数，实际范围分别见对应报告。
 
 
-当前范围按[109](../../plans/109-lifecycle-pair-maintenance.md)收窄：BR019只公开插入停用与重新启用、删除停用与重新启用；旧通用请求/预览、项目编辑、混合办理、多条分类纠错和日期交换退出。带“109退役”的行保留原输入/预期作历史，不执行、不计当前通过。未退役的共用原子性、权限/并发/来源/恢复断言按固定两请求或合法普通单条入口承接；原报告不回写。
+当前范围按[109](../../archive/plans/109-lifecycle-pair-maintenance.md)收窄：BR019只公开插入停用与重新启用、删除停用与重新启用；旧通用请求/预览、项目编辑、混合办理、多条分类纠错和日期交换退出。带“109退役”的行保留原输入/预期作历史，不执行、不计当前通过。未退役的共用原子性、权限/并发/来源/恢复断言按固定两请求或合法普通单条入口承接；原报告不回写。
 
 2026-11-08按[128](../../adr/128-authorization-evidence-removal.md)修订TL-178/TL-212及反例14的预期，编号不变；取消逐次完整判权存证断言，改验当前权限、原结果独立恢复及过程档案删除。新参数尚未运行，旧报告结果保持，不能沿用为新参数通过。
 
@@ -750,7 +750,7 @@ T05实际覆盖与未完成参数见[分类删除验证](../../verification/020-
 <a id="m02-list-pro-cases"></a>
 ## 21 Community列表目标与交互回归
 
-上游为[113 Community决定](../../adr/113-bu-list-community-adoption.md)、[110剩余交互](../../adr/110-bu-list-and-datagrid.md)、[012列表目标](012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[013接线](013-m02-technical-design.md#m02-tech-list-pro)，执行归[111](../../plans/111-bu-list-experience-upgrade.md)。TL-323—334共12例沿用稳定ID，本次更新Community目标，不新增编号或通过数；当前Community T01/T02代码及定向组件/合成HTTP检查见[本轮报告](../../verification/111-community-t01-t02.md)；旧Pro T02报告仅说明原基线，当前12例真实业务参数及七组条件另见[111 T03](../../verification/111-community-t03.md)，不跨批累加旧通过数。旧T07/019/100/109的通过不能迁入，复用既有BR/SCN/AC。历史带pro锚点保留追踪身份，不代表组件选择。
+上游为[113 Community决定](../../adr/113-bu-list-community-adoption.md)、[110剩余交互](../../adr/110-bu-list-and-datagrid.md)、[012列表目标](012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[013接线](013-m02-technical-design.md#m02-tech-list-pro)，执行归[111](../../archive/plans/111-bu-list-experience-upgrade.md)。TL-323—334共12例沿用稳定ID，本次更新Community目标，不新增编号或通过数；当前Community T01/T02代码及定向组件/合成HTTP检查见[本轮报告](../../verification/111-community-t01-t02.md)；旧Pro T02报告仅说明原基线，当前12例真实业务参数及七组条件另见[111 T03](../../verification/111-community-t03.md)，不跨批累加旧通过数。旧T07/019/100/109的通过不能迁入，复用既有BR/SCN/AC。历史带pro锚点保留追踪身份，不代表组件选择。
 
 夹具使用任务自有合成BU，至少73个可分页对象，包含未生效首条、长名称/编码、三种状态及读字段受限身份；验证者独立给出排序预期，编码/名称顺序按013而非拼音。页面从正常菜单进入。安装/类型/构建及依赖图另按111 T01验收；实际页面须无Pro许可水印或许可console提示，不过滤或遮挡。主B负责界面及真实请求/响应，权限/一致计数的实际API断言复用同基线已有检查；只在本批新增业务查询时补A，不为第三方通用算法重建单元测试。以下范围和期望是合同，不是执行通过记录。
 
@@ -841,7 +841,7 @@ T05实际覆盖与未完成参数见[分类删除验证](../../verification/020-
 <a id="m02-tests-operation-summary"></a>
 ## 25 基本资料操作摘要与变更日志表格化
 
-本章承接[122计划草案](../../plans/122-bu-operation-summary-and-change-log.md)、[SCN027](011-m02-business-requirements.md#m02-scn-027)、[BR034/035](011-m02-business-requirements.md#m02-br-034)及[AC041—044](011-m02-business-requirements.md#m02-ac-041)，页面和技术合同分别见[012](012-m02-functional-and-interaction-design.md#m02-ui-operation-summary)、[013](013-m02-technical-design.md#m02-tech-operation-summary)。20例全部**未运行**，以下是独立预期，不是复用旧产品通过。既有366编号及退役状态保持。
+本章承接[122计划草案](../../archive/plans/122-bu-operation-summary-and-change-log.md)、[SCN027](011-m02-business-requirements.md#m02-scn-027)、[BR034/035](011-m02-business-requirements.md#m02-br-034)及[AC041—044](011-m02-business-requirements.md#m02-ac-041)，页面和技术合同分别见[012](012-m02-functional-and-interaction-design.md#m02-ui-operation-summary)、[013](013-m02-technical-design.md#m02-tech-operation-summary)。20例全部**未运行**，以下是独立预期，不是复用旧产品通过。既有366编号及退役状态保持。
 
 ### 25.1 角色、样本与独立预期
 
