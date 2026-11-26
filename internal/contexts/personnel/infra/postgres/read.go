@@ -76,15 +76,18 @@ func (s *Store) List(ctx context.Context, c f.Credentials, q p.Query) (p.Directo
 	})
 }
 func (r *request) list(q p.Query, renew bool) (p.Directory, error) {
-	ctx := r.ctx
 	v := p.Directory{Rows: []p.Summary{}}
 	order, args, keyword, e := r.directory(q, renew)
 	if e != nil {
 		return v, e
 	}
+	return listDirectory(r.ctx, r.tx, q, order, args, keyword)
+}
+func listDirectory(ctx context.Context, tx pgx.Tx, q p.Query, order string, args []any, keyword string) (p.Directory, error) {
+	v := p.Directory{Rows: []p.Summary{}}
 	v.Keyword = keyword
 	// The left join retains the total even after revocation empties the requested page.
-	rows, e := r.tx.Query(ctx, directorySQL+` select t.total,v.person_id,v.name,v.number,v.historical from (select count(*) total from visible)t left join (select * from visible order by `+order+` limit $8 offset $9)v on true order by `+order, append(args, q.Size, (q.Page-1)*q.Size)...)
+	rows, e := tx.Query(ctx, directorySQL+` select t.total,v.person_id,v.name,v.number,v.historical from (select count(*) total from visible)t left join (select * from visible order by `+order+` limit $8 offset $9)v on true order by `+order, append(args, q.Size, (q.Page-1)*q.Size)...)
 	if e != nil {
 		return v, e
 	}
@@ -358,6 +361,19 @@ func (v *directoryLookup) Page(keys []p.DirectoryKey, anchor string) (out p.Inde
 	ctx, tx, order, q := v.ctx, v.tx, v.order, v.q
 	args := slices.Clone(v.args)
 	out.Keyword = v.keyword
+	// Without replacement rows or an anchor this is exactly the ordinary
+	// personnel page. Avoid expanding and sorting a second copy of the set.
+	if len(keys) == 0 && anchor == "" {
+		page, err := listDirectory(ctx, tx, q, order, args, v.keyword)
+		if err != nil {
+			return out, err
+		}
+		out.Total = page.Total
+		for _, summary := range page.Rows {
+			out.Rows = append(out.Rows, p.IndexedPerson{Summary: summary, Key: summary.ID})
+		}
+		return out, nil
+	}
 	var ids, people []string
 	var orders []int
 	for _, k := range keys {
