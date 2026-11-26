@@ -3048,6 +3048,24 @@
       "superseded_by": [],
       "closure": {"date": "2026-11-25", "reason": "27 项修复及 508 原六项回归通过，固定 f 原库前向升级至 00057 并完成菜单复验。"},
       "archive": null
+    },
+    {
+      "id": "CHNHCM-510",
+      "title": "人员页面二十项问题整改与验收",
+      "path": "docs/plans/510-personnel-page-remediation.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Personnel、Staffing、Recruiting、体验与验证维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "plan",
+      "modules": ["M01", "M04", "M05", "X03"],
+      "scope": "500-UI-01 至 20 的人员入口、按权名录、详情与准确来源、交互及固定环境验收。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": "not_started",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
     }
   ],
   "first_slice": {
