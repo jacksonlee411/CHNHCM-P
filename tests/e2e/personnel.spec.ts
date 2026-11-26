@@ -200,7 +200,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
       if (r.method() === 'POST' && new URL(r.url()).pathname === '/api/v1/persons') registrations++;
     };
     page.on('request', countRegistration);
-    await btn('登记人员').click();
+    await page.getByRole('link', { name: '登记人员', exact: true }).click();
     expect(await measureField(page, '姓名')).toEqual(baseline);
     await btn('保存').click();
     await expect(page.locator('#person-error')).toBeFocused();
@@ -212,7 +212,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
     await btn('放弃修改').click();
     expect(registrations).toBe(0);
     page.off('request', countRegistration);
-    await btn('登记人员').click();
+    await page.getByRole('link', { name: '登记人员', exact: true }).click();
     const key = randomUUID().slice(0, 8),
       name = '验收人员' + key;
     await page.getByRole('textbox', { name: '姓名', exact: true }).fill(name);
@@ -268,7 +268,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
     await expect(page.getByText('10000002', { exact: true })).toBeVisible();
     await expect(page.getByText('demo@example.test', { exact: true })).toBeVisible();
   } else {
-    await expect(btn('登记人员')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: '登记人员', exact: true })).toHaveCount(0);
     await search(page, cohort);
     await page.getByRole('link', { name: cohort, exact: true }).first().click();
     await expect(btn('更正资料')).toHaveCount(0);
@@ -457,7 +457,7 @@ test('T01 同名直接登记、本人改号、导航重试及撤去旧来源字�
   await menu(page);
   const btn = (name: string) => page.getByRole('button', { name, exact: true });
   const reference = 'Q-9' + randomUUID().slice(0, 6);
-  await btn('登记人员').click();
+  await page.getByRole('link', { name: '登记人员', exact: true }).click();
   await page.getByRole('textbox', { name: '姓名', exact: true }).fill(cohort);
   await page.getByLabel('登记单号（选填）').fill(reference);
   await expect(btn('登记为另一人')).toHaveCount(0);
@@ -494,18 +494,18 @@ test('T01 同名直接登记、本人改号、导航重试及撤去旧来源字�
   await page.getByRole('link', { name: '返回列表' }).click();
   await search(page, oldNumber);
   await expect(page.getByText('历史编号', { exact: false }).last()).toBeVisible();
-  await page.route(
-    '**/navigation*',
-    (route) =>
-      route.fulfill({
-        status: 503,
-        contentType: 'application/json',
-        body: JSON.stringify({ code: 'UNAVAILABLE', message: '暂不可用' }),
-      }),
-    { times: 1 },
-  );
+  const directoryRoute = '**/api/v1/personnel/directory/query';
+  await page.route(directoryRoute, (route) => {
+    if (route.request().postDataJSON()?.anchor !== id) return route.continue();
+    return route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ code: 'UNAVAILABLE', message: '暂不可用' }),
+    });
+  });
   await page.getByRole('link', { name: cohort, exact: true }).click();
   await expect(page.getByText('暂时无法切换记录')).toBeVisible();
+  await page.unroute(directoryRoute);
   await expect(page.getByText('17700009990', { exact: true })).toBeVisible();
   await btn('重试').click();
   await expect(page.getByLabel('第1个，共1个匹配对象')).toBeVisible();
@@ -792,7 +792,7 @@ test('人事试办：同名两人、两人同时登记同一证号、同一张�
   const button = (p: Page, name: string) => p.getByRole('button', { name, exact: true });
   const openForm = async (p: Page, name: string, number: string, ref?: string) => {
     await menu(p);
-    await button(p, '登记人员').click();
+    await p.getByRole('link', { name: '登记人员', exact: true }).click();
     await p.getByRole('textbox', { name: '姓名', exact: true }).fill(name);
     await p.getByRole('textbox', { name: '姓名', exact: true }).press('Tab');
     await select(p, '证件类型', '居民身份证');
@@ -910,7 +910,7 @@ test('仅填姓名登记后，在原档案补填和更换证件', async ({ page 
   await login(page, 'admin');
   await menu(page);
   const button = (name: string) => page.getByRole('button', { name, exact: true });
-  await button('登记人员').click();
+  await page.getByRole('link', { name: '登记人员', exact: true }).click();
   await page.getByRole('textbox', { name: '姓名', exact: true }).fill('补证试办');
   await button('保存').click();
   await expect(button('更正资料')).toBeVisible();

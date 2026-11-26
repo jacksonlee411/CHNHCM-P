@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { Tab, Tabs } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
 export type PersonTab = 'profile' | 'job' | 'history';
 const labels: Record<PersonTab, string> = { profile: '个人资料', job: '职务信息', history: '变更日志' };
@@ -14,15 +14,16 @@ export function PersonTabs({
 }) {
   const navigate = useNavigate(),
     route = useLocation(),
+    navigation = useNavigationType(),
     focused = useRef('');
   useLayoutEffect(() => {
-    if (route.state?.focusPersonTab !== selected || focused.current === route.key) return;
+    if (navigation !== 'PUSH' || route.state?.focusPersonTab !== selected || focused.current === route.key) return;
     const target = document.getElementById('person-' + selected + '-tab');
     if (target) {
       target.focus({ preventScroll: true });
       focused.current = route.key;
     }
-  }, [selected, route.key, route.state]);
+  }, [navigation, selected, route.key, route.state]);
   return (
     <Tabs
       aria-label="人员详情"
