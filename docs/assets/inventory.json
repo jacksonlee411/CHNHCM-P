@@ -11104,7 +11104,9 @@
         "docs/verification/data/500-personnel-page-review/measurements.json",
         "docs/verification/data/500-personnel-page-review/browser-regression.txt",
         "docs/verification/500-personnel-entry-and-date-review.md",
-        "docs/verification/data/500-personnel-entry-and-date-review/observations.json"
+        "docs/verification/data/500-personnel-entry-and-date-review/observations.json",
+        "docs/verification/510-personnel-page-remediation-implementation.md",
+        "docs/verification/data/510-personnel-remediation/observations.json"
       ],
       "target_files": ["docs/plans/500-personnel-roadmap.md", "docs/specs/m01/502-person-directory-interactions.md", "docs/specs/m04/507-job-information-tab.md", "tests/e2e/first-hire.spec.ts"]
     },

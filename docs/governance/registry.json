@@ -3087,6 +3087,40 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/510-personnel-page-remediation-implementation.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-123",
+          "CHNHCM-500",
+          "CHNHCM-502",
+          "CHNHCM-507",
+          "CHNHCM-510"
+        ],
+        "format": "numbered",
+        "status": "draft",
+        "date": "2026-11-26",
+        "base_commit": "56e59cdbff8dca6f3a7f0715be064dab403f7d56",
+        "working_tree": "dirty",
+        "change_description": "补录二十项措施、正常菜单截图、跨到期及并发改日回归。",
+        "environment": "固定 f 原库副本及独立 PostgreSQL、Chromium 实库浏览器。",
+        "scope": "本人名录、页签、日期、跨人办理、表单、来源与原行恢复。",
+        "results": [
+          {
+            "check": "两轮原反例与共享页面对照",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/observations.json"
+          },
+          {
+            "check": "首次全量集成运行 20 分钟超时",
+            "result": "interrupted",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          }
+        ],
+        "limitations": [
+          "本阶段截图来自原库副本，固定 f 更新与最终验收另行核验。"
+        ]
+      },
+      {
         "path": "docs/verification/510-personnel-page-remediation-review.md",
         "related_documents": [
           "CHNHCM-500",
