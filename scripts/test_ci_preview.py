@@ -143,7 +143,7 @@ class PreviewTests(unittest.TestCase):
             run.assert_called_once()
             args = run.call_args.args[0]
             self.assertIn('scripts/local-bu.py', args)
-            self.assertIn('390px', args[-1])
+            self.assertIn('899px', args[-1])
             self.assertNotIn('139', args[-1])
 
     def test_ready_identifies_working_inputs_without_staging_and_matches_commit_tree(self):

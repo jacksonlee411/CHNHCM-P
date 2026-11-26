@@ -16,11 +16,11 @@ from ci_shards import FULL_BROWSER, balanced_groups, browser_seconds, selected_b
 
 PREFLIGHT_CASES = (
     ('operation-permissions.spec.ts', 'TL380/382 在途日志失效、历史切换和原上界刷新'),
-    ('staffing307.spec.ts', 'Staffing307 admin 双对象桌面窄屏短屏布局和取消'),
+    ('staffing307.spec.ts', 'Staffing307 admin 双对象桌面和短屏布局及取消'),
     ('staffing309.spec.ts', '309 grade admin V01 AC017/020/021/022/023/028/030'),
-    ('staffing309.spec.ts', '309 grade admin V03 AC017/020/021/022/023/028/030'),
+    ('staffing309.spec.ts', '309 grade admin V02 AC017/020/021/022/023/028/030'),
     ('staffing312-hierarchy.spec.ts', '139 查询者聚焦结构日期后收到默认日期仍可输入并查询'),
-    ('staffing314.spec.ts', '314 T04 双维查询、返回与固定选择 390px'),
+    ('staffing314.spec.ts', '314 T04 双维查询、返回与固定选择 899px'),
 )
 PREFLIGHT_TITLES = tuple(title for _, title in PREFLIGHT_CASES)
 
