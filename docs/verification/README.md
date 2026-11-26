@@ -1,6 +1,6 @@
 # 验证记录
 
-e 树已在同步后的主线复验免占编首单、暂停补员竞争、跨模式占编及旧岗升级。4496 仍运行按职务首单的旧构建。[本次复评与交接](404-main-sync-reassessment.md) · [404 原方案评审](404-position-exempt-first-hire-review.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire)
+e 树已在同步后的主线复验免占编首单、暂停补员竞争、跨模式占编及旧岗升级。4496 原卷已升至 00057，旧单及私人回执可查，新首单实岗一份、常规占编零。[4496 原卷签收与合成样本](404-4496-acceptance.md) · [同步复评](404-main-sync-reassessment.md) · [404 原方案评审](404-position-exempt-first-hire-review.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire)
 
 500 人员页面的实页评审登记了 11 项待修复问题，可逐项查阅复现路径、规范、截图及关闭条件。[500 人员页面布局与交互问题登记](500-personnel-page-review.md)
 

@@ -2689,9 +2689,13 @@
         "result": "accepted",
         "evidence": "docs/verification/400-hire-simplification.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "T02 准备及 T03 三种首单已分模式签收，4496 原卷完成历史与新免占首单联验。",
+        "evidence": "docs/verification/404-4496-acceptance.md"
+      },
       "archive": null
     },
     {
@@ -2809,9 +2813,13 @@
         "result": "accepted",
         "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "四个实施阶段已验收，4496 原卷升级、旧单与私人回执回查、新实岗免占首单及岗位用量均已交接。",
+        "evidence": "docs/verification/404-4496-acceptance.md"
+      },
       "archive": null
     },
     {
@@ -23262,6 +23270,71 @@
         "limitations": [
           "浏览器只执行所列三个首单场景及其前置。主线、4386 及原方案的历史验收分别保留原范围。",
           "4496 本轮仍为 bc769ff、00039。升级及用户地址实操归 e 的第 4 阶段。"
+        ]
+      },
+      {
+        "path": "docs/verification/404-4496-acceptance.md",
+        "related_documents": [
+          "CHNHCM-400",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-404",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "ccd0900ab1db293601f5266ec480f4a9231e25e1",
+        "working_tree": "clean",
+        "change_description": "产品受测提交修复默认原办理的撤销状态；本地预检使用固定构建的单独提交为 d6b46f44。验收资料据此另行登记。",
+        "environment": "wt-dev-e，Go 1.26.0、PostgreSQL 18.6、Chromium；隔离原库副本及 t03-first-e（4496 / 8496 / 54496）。",
+        "scope": "原库备份与还原、逐行迁移比对、历史与私人回执、原菜单按岗首单、日期边界、岗位份数和两层主选择。",
+        "results": [
+          {
+            "check": "恢复角色首轮因授权人不同被拒",
+            "result": "failed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "原库 162 张表完整还原，含两个任用版本的副本两次升级至 00057",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "副本默认读取已撤销原 Hire 的状态与旧版不符，现有实库用例补断言复现",
+            "result": "failed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "修复后区分默认读取与签发修订，副本及原库旧单与五份私人回执逐笔通过",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "人员和岗位菜单办成单人决定实岗免占，按三天、两层主选择、提交与岗位用量对账",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "五种视口分别打开两份固定样本，原件与免占份数可见且无页面横向溢出",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "本地预检的开发服务器两轮企业前置未全部通过",
+            "result": "failed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "固定构建复跑本地前置和首单浏览器回归，含原生 200%",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          }
+        ],
+        "limitations": [
+          "4496 写入一个限定业务日的合成首单；占编竞争使用先前同业务实现的独立 PostgreSQL 验证。",
+          "旧账号未获试用修复预览权限，库中试用动作数为零。本地候选的远程提交与门禁另行办理。"
         ]
       }
     ]
