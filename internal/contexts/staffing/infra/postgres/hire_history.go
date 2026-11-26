@@ -446,7 +446,8 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if !current.from && !current.to {
 			return f.Fail(403, "HIRE_DENIED", "当前权限不允许读取原件")
 		}
-		if revision == "" {
+		currentView := revision == ""
+		if currentView {
 			revision = a.Revision
 		}
 		var version string
@@ -457,10 +458,15 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if e != nil {
 			return e
 		}
-		a, e = scanHireAction(u.tx.QueryRow(ctx, assignmentActionAtSourceSQL+" WHERE a.instance_id=$1 AND a.id=$2", st.Instance, id, version))
+		issued, e := scanHireAction(u.tx.QueryRow(ctx, assignmentActionAtSourceSQL+" WHERE a.instance_id=$1 AND a.id=$2", st.Instance, id, version))
 		if e != nil {
 			return e
 		}
+		if currentView {
+			// A later cancellation is visible on the current action, but not on its issued revision.
+			issued.Cancelled = a.Cancelled
+		}
+		a = issued
 		disclosure, e := u.actionDisclosure(ctx, a, true)
 		if e != nil {
 			return e
