@@ -2,7 +2,7 @@
 
 ## 1 交付目标与基线
 
-人事经办人从员工任职办理变动、退出及再聘，从「人员 → 人事事务 → 办理记录」查回原件。招聘经办人从原录用核对入职当时的采用。提交 `39660e70ded3257fe0c3e483e694dbe12f81bc2b` 上有 27 项开放问题，其中 11 项 P1、16 项 P2。本方案按原问题编号验收，保留原十阶段及 508 六项通过的样本。每批先复现反例，再按相同业务事实复验。主兼岗转换、审批和工资采用仍由原路线图负责。[登记表](../../governance/registry.json) · [27 项实证](../../verification/500-t04-implementation-rereview.md) · [分批路线图](../../plans/500-personnel-roadmap.md#job-information-delivery) · [508 六项](508-job-information-remediation.md#acceptance-cases)
+人事经办人从员工任职办理变动、退出及再聘，从「人员 → 人事事务 → 办理记录」查回原件。招聘经办人从原录用核对入职当时的采用。提交 `39660e70ded3257fe0c3e483e694dbe12f81bc2b` 上有 27 项开放问题，其中 11 项 P1、16 项 P2。本方案按原问题编号验收，保留原十阶段及 508 六项通过的样本。每批先复现反例，再按相同业务事实复验。主兼岗转换、审批和工资采用仍由原路线图负责。[登记表](../../governance/registry.json) · [27 项实证](../../verification/500-t04-implementation-rereview.md) · [分批路线图](500-personnel-roadmap.md#job-information-delivery) · [508 六项](508-job-information-remediation.md#acceptance-cases)
 
 <a id="delivery-order"></a>
 ## 2 批次、依赖与负责方

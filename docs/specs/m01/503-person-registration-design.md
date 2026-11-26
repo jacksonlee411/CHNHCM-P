@@ -99,4 +99,4 @@ Go 在短事务内重验权限、期望来源与提交身份。PostgreSQL 对现
 | 升级／恢复 | 保留原 T01 前备份的组织、岗位及 X03 回归；另在空库及含 00026 人员数据的备份副本上执行前向迁移、重跑并重启。旧档主要证件全空，不以材料号回填。核对 personId、现/旧人员编号、旧来源、材料绑定、修订、保全及提交终态。核验原提交可查回、原单据换提交号相同语义仍能查原办理，旧材料权不能看新证件。再对新证件做备份恢复和到期处置。 |
 | 浏览器与容量 | 核对登记菜单不按姓名发起查询、旧候选端口已撤销，名录仍可按姓名检索。按[502 角色与视口](502-person-directory-interactions.md#4-产品候选的页面验收)及本合同第 5 节执行，变更共用 UI 须回归 BU/职务。产品报告链接到[501 的十项条件](501-person-registration-requirements.md#4-t01-独立验收条件)。 |
 
-上述为修订后产品验收输入。原 T00 规格与原 T01 构建的实测分别保留；当前实施顺序见[500 路线图](../../plans/500-personnel-roadmap.md#registration-revision-steps)，文档评审范围见[修订评审](../../verification/500-registration-without-name-prompts.md)。
+上述为修订后产品验收输入。原 T00 规格与原 T01 构建的实测分别保留；主要证件防重和原号查回按[登记与编号场景](501-person-registration-requirements.md#m01-scn-001)核对，文档评审范围见[修订评审](../../verification/500-registration-without-name-prompts.md)。

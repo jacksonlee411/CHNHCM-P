@@ -20,4 +20,4 @@
 
 文档检查 `make docs` 通过，含 137 项检查器用例。模块生成器复核 57 份产物一致。另逐条核对 500–503 的原有业务标识和 48 处相关锚点引用，并将未跟踪的规格及评审文件纳入差异检查，`git diff --check` 通过。
 
-本次方案复核通过。现有登记页面和服务端仍执行原 T01 规则。新版的系统改动、同时登记同一证号的数据库验证，以及人事从菜单试办，均待实施。[原构建的实测记录](500-t01-personnel-registration.md) · [人事实施步骤](../plans/500-personnel-roadmap.md#registration-revision-steps)
+本次方案复核通过。现有登记页面和服务端仍执行原 T01 规则。新版的系统改动、同时登记同一证号的数据库验证，以及人事从菜单试办，均待实施。[原构建的实测记录](500-t01-personnel-registration.md) · [人事实施步骤](../archive/plans/500-personnel-roadmap.md#registration-revision-steps)

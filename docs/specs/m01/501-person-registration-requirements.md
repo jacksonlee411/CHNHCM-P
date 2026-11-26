@@ -1,6 +1,6 @@
 # CHNHCM-501 人员登记与名录业务规格
 
-人事专员可以先登记一个尚无工作关系的人，重登后按姓名、现号或旧号找回。个人资料的主责是 Personnel。入职、岗位、工资和登录账号有各自的办理依据。首批交付范围来自 [500 路线图](../../plans/500-personnel-roadmap.md)，人员、工作关系及任职的取舍见[目标映射](../../architecture/target/07-concept-mapping.md)和[M01 合同](../../architecture/target/modules/m01.md)。[登记表](../../governance/registry.json)
+人事专员可以先登记一个尚无工作关系的人，重登后按姓名、现号或旧号找回。个人资料的主责是 Personnel。入职、岗位、工资和登录账号有各自的办理依据。首批交付范围见[500 归档路线图](../../archive/plans/500-personnel-roadmap.md)。[目标映射](../../architecture/target/07-concept-mapping.md) · [M01 合同](../../architecture/target/modules/m01.md) · [登记表](../../governance/registry.json)
 
 ## 1 谁使用哪些资料
 
@@ -49,7 +49,7 @@
 
 ## 4 T01 独立验收条件
 
-场景沿用[登记与编号](../../plans/500-personnel-roadmap.md#m01-scn-001)和[个人资料与权限](../../plans/500-personnel-roadmap.md#m01-scn-002)。下列均为合成样本的产品预期。实际业务办理、界面行为及服务端验证分别见[页面规格](502-person-directory-interactions.md)和[技术合同](503-person-registration-design.md)。
+下列合成样本用于验收本规格的两项场景。[登记与编号](#m01-scn-001) · [个人资料与权限](#m01-scn-002) · [页面规格](502-person-directory-interactions.md) · [技术合同](503-person-registration-design.md)
 
 | 验收条件 | 给定、操作与预期 |
 | --- | --- |
@@ -74,12 +74,14 @@
 | 小李和小周各自打开登记页面，为同一名新员工填写同一个身份证号码，两人几乎同时点保存。两笔都是普通手工登记。 | 先保存成功的一笔建档，另一笔因该证号已登记而不能再建。即使一人把姓名写错，结果也一样。员工名录里只有一份档案。 |
 | 小李昨天已按一张编号为 RS-018 的《人事登记单》办了登记。今天小周拿到同一张单，填了相同的登记单号，其他内容也照原单录入。 | 有权查看这张单和该员工档案的小周可以看到昨天的办理结果和原人员编号。员工名录里仍是原来那份档案。普通手工登记无需编单号。 |
 
-两项上游场景的交接如下。每一项产品条件由 T01 留真实结果，规格评审另见[本期记录](../../verification/500-t00-personnel-specifications.md)。
+### 4.1 登记与资料权限的验收场景
 
-| 上游用户场景 | 业务与验收 | 页面和实现约束 |
+| 场景和独立预期 | 业务与验收 | 页面和实现约束 |
 | --- | --- | --- |
-| [登记与编号](../../plans/500-personnel-roadmap.md#m01-scn-001) | [独立登记](#m01-br-001)、[主要证件号码防重](#m01-br-002)、[永久编号](#m01-br-003)、[查回原办理结果](#m01-br-006)。验[登记](#m01-ac-001)、[重复](#m01-ac-002)、[改号](#m01-ac-005)、[失联](#m01-ac-007) | [登记及改号](502-person-directory-interactions.md#m01-page-register) · [提交与并发](503-person-registration-design.md#m01-recovery) |
-| [个人资料与权限](../../plans/500-personnel-roadmap.md#m01-scn-002) | [资料更正](#m01-br-004)、[可见范围](#m01-br-005)、[保留](#m01-retention)。验[受限读者](#m01-ac-003)、[项目修订](#m01-ac-004)、[历史撤权](#m01-ac-006)、[页面返回](#m01-ac-008)、[到期](#m01-ac-009)、[容量](#m01-ac-010) | [查询及可见结果](502-person-directory-interactions.md#m01-page-query) · [公开端口](503-person-registration-design.md#m01-ports) · [规模](503-person-registration-design.md#m01-capacity) |
+| <a id="m01-scn-001"></a>**M01-SCN-001 登记与编号**。只填姓名即可登记。判断人员重复只看现用主要证件号码。同名不查询、不提示。两人证号不同可分别建档，同一证号即使由两人同时录入或姓名写法不同，也只能建一份档案。离职再聘沿用原人。取消草稿零写。同一提交号原样重送只得原人原号，换内容被拒。获准改人员编号后，旧号仍定位原人，原来源显示原号，旧号不得重发。 | [独立登记](#m01-br-001)、[主要证件号码防重](#m01-br-002)、[永久编号](#m01-br-003)、[查回原办理结果](#m01-br-006)。验[登记](#m01-ac-001)、[重复](#m01-ac-002)、[改号](#m01-ac-005)、[失联](#m01-ac-007) | [登记及改号](502-person-directory-interactions.md#m01-page-register) · [提交与并发](503-person-registration-design.md#m01-recovery) |
+| <a id="m01-scn-002"></a>**M01-SCN-002 个人资料与权限**。经办人更正一条联系方式，另一条原样保留。两人按同一旧修订先后保存，后者收到冲突并保留可见输入。有历史权时能核对原值。撤联系方式读权后返回已开的原件、当前页或原回执均无号码。用仅有部门维护权、无相应人员核对或读权的账号，从员工名录搜索或直接访问 API 都不能发现该范围外的人。 | [资料更正](#m01-br-004)、[可见范围](#m01-br-005)、[保留](#m01-retention)。验[受限读者](#m01-ac-003)、[项目修订](#m01-ac-004)、[历史撤权](#m01-ac-006)、[页面返回](#m01-ac-008)、[到期](#m01-ac-009)、[容量](#m01-ac-010) | [九栏字段及敏感资料](505-personal-profile-contract.md#profile-items-and-access) · [查询及可见结果](502-person-directory-interactions.md#m01-page-query) · [公开端口](503-person-registration-design.md#m01-ports) · [规模](503-person-registration-design.md#m01-capacity) |
+
+登记和更正用真实 DB/API 分别验证经办人、只读者和受限账号的菜单。再聘时联验同一人及其旧号。首批规格与登记实测各自保留当时的范围。[T00 规格评审](../../verification/500-t00-personnel-specifications.md) · [登记试办](../../verification/500-personnel-registration-trial.md) · [再聘](../m04/506-job-information-records.md#m04-scn-003)
 
 ## 5 首批范围的取舍
 

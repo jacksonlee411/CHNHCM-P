@@ -20,7 +20,7 @@
 
 ## M04 入职、任职与人事事务
 
-[直接入职规则](m04/401-direct-hire-requirements.md) · [准备与办理页面](m04/402-hire-interactions.md) · [来源采用、权限与事务](m04/403-hire-technical-contract.md) · [职务记录、主兼岗及再聘](m04/506-job-information-records.md) · [任职入口与页签](m04/507-job-information-tab.md#job-tab-layout)
+[直接入职与未来撤销](m04/401-direct-hire-requirements.md#m04-scn-001) · [已接受录用转入职](m04/401-direct-hire-requirements.md#m04-scn-005) · [工作关系合同](m04/512-employment-contracts.md) · [准备与办理页面](m04/402-hire-interactions.md) · [来源采用、权限与事务](m04/403-hire-technical-contract.md) · [职务记录、主兼岗及再聘](m04/506-job-information-records.md) · [任职入口与页签](m04/507-job-information-tab.md#job-tab-layout)
 
 ## 实施与验证去向
 

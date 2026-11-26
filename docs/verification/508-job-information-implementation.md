@@ -64,4 +64,4 @@
 | 实际交付的 5 份 Web 文件 | `a0b472883f673ce668baabf29ecd731a524d70c098f097e72946d8d7af21f74d` |
 | 统一升级器 | `5d614b8a3c08b7fc9335321bef397f92f5bb00014ddcf0b5813b525309d2a271` |
 
-**本地验收结论为通过。** 508 六项和交叉回归已完成，500 第 6.3 节在上述候选上可以接受。临时浏览器环境、测试容器与旧版合成备份已回收。远程合并与发布按 003、137 另行办理。[实施状态](../archive/plans/508-job-information-remediation.md) · [主路线](../plans/500-personnel-roadmap.md#job-information-delivery)
+**本地验收结论为通过。** 508 六项和交叉回归已完成，500 第 6.3 节在上述候选上可以接受。临时浏览器环境、测试容器与旧版合成备份已回收。远程合并与发布按 003、137 另行办理。[实施状态](../archive/plans/508-job-information-remediation.md) · [主路线](../archive/plans/500-personnel-roadmap.md#job-information-delivery)

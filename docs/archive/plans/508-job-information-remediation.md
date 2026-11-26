@@ -1,6 +1,6 @@
 # CHNHCM-508 人员职务信息评审问题修复实施方案
 
-本方案接续 500 第 6.3 节。2026-11-25 的产品复核在最后一次产品合并 `dfd49554` 上确认六项缺陷。固定 f 与远端 main 为 `d981fed8`，两版仅五份文档有差异。六项修复均以此为起点。原十阶段的通过项和首败保留在各自受测版本。[登记表](../../governance/registry.json) · [500 的交付范围](../../plans/500-personnel-roadmap.md#job-information-delivery) · [原交付证据](../../verification/500-job-information-delivery-review.md#stage-delivery-results) · [六项复核事实与本方案评审](../../verification/508-job-information-remediation-review.md)
+本方案接续 500 第 6.3 节。2026-11-25 的产品复核在最后一次产品合并 `dfd49554` 上确认六项缺陷。固定 f 与远端 main 为 `d981fed8`，两版仅五份文档有差异。六项修复均以此为起点。原十阶段的通过项和首败保留在各自受测版本。[登记表](../../governance/registry.json) · [500 的交付范围](500-personnel-roadmap.md#job-information-delivery) · [原交付证据](../../verification/500-job-information-delivery-review.md#stage-delivery-results) · [六项复核事实与本方案评审](../../verification/508-job-information-remediation-review.md)
 
 ## 1 目标和实施顺序
 

@@ -2,7 +2,7 @@
 
 ## 1 评审对象与判断
 
-2026-11-25，固定 f 的受测提交为 `39660e70ded3257fe0c3e483e694dbe12f81bc2b`，起评时工作区和 stash 均为空。十阶段采用 500 实施结果总表的编号，其中阶段 1 含首单和地点更改，阶段 2 是历史维护，阶段 3 是跨人员办理记录。508 的 F1 至 F6 保留原编号。阶段 8 的 404 作为免占编首单的前置，用 f 的实际代码和业务结果验收。[分批主方案](../plans/500-personnel-roadmap.md#job-information-delivery) · [十阶段总表](500-job-information-delivery-review.md#stage-delivery-results) · [508 原六项](508-job-information-implementation.md)
+2026-11-25，固定 f 的受测提交为 `39660e70ded3257fe0c3e483e694dbe12f81bc2b`，起评时工作区和 stash 均为空。十阶段采用 500 实施结果总表的编号，其中阶段 1 含首单和地点更改，阶段 2 是历史维护，阶段 3 是跨人员办理记录。508 的 F1 至 F6 保留原编号。阶段 8 的 404 作为免占编首单的前置，用 f 的实际代码和业务结果验收。[分批主方案](../archive/plans/500-personnel-roadmap.md#job-information-delivery) · [十阶段总表](500-job-information-delivery-review.md#stage-delivery-results) · [508 原六项](508-job-information-implementation.md)
 
 **受测提交 `39660e7` 暂缓整体验收。** 七轮独立评审共确认 27 项开放问题，P1 有 11 项，P2 有 16 项。各轮新增依次为 15、6、2、1、1、2、0 项。第七轮在新库复现了上一轮两项，未增加问题。508 原六项的既定场景本次回归通过。后续修复沿用下表编号，可据编号对照产品复验。[逐轮范围与结果](#review-rounds) · [509 修复后的实测](509-t04-remediation-implementation.md)
 
@@ -98,4 +98,4 @@
 - **隔离菜单。** 对独立 profile 运行 `python3 -B scripts/local-bu.py smoke --fixed-web -- first-hire.spec.ts`。正式浏览器套件在 Web 45625、API 47105、DB 44829 运行 21 分钟，136 项全部通过，含 5 项企业前置、131 项人员及跨域菜单用例。另在 Web 47599、API 46039、DB 47791 运行 5 项前置及 3 项专查，分别观察到再聘未定位原件、删除立即落库和双窗口冲突后无法重核。两套临时环境均已回收。[人员菜单](../../tests/e2e/first-hire.spec.ts) · [隔离环境入口](../../scripts/local-bu.py)
 - **固定样本。** `m01-profile-f` 由固定 f 负责，Web 4386、API 8386、DB 54376。核验了检出归属。监听 8386 的 API 可执行文件 SHA-256 为 `e48d8d0161629a7335c6fc9b8c4f7d0b7fc18820d990a96ed42a8329d489727b`，与受测提交的构建一致。入口 HTML、JavaScript、CSS、字体及许可文件五个 HTTP 内容摘要均与 508 交接清单一致。从实际地址另跑原离职发生部门、档案历史选日与刷新、已接受录用改期与取消，3 项均通过。固定环境只进行登录、查询、阅读与取消草稿，保留供用户验收，验收结束或下次更新时复查。[固定样本交接](508-job-information-implementation.md) · [本地运行规则](../guides/017-local-bu-development.md#local-runtime-cleanup)
 - **试件首败。** 两轮新建兼岗的试件各曾遗漏 `parallel=false`，前置 HTTP 400，补齐后才取得业务对照。BU 首轮按“取消”寻找“取消编辑”超时，改用实际名称后通过。浏览器另遇到旧列表尚未替换、请求误匹配上下文、按错角色入口和合同名称等试件问题。改为匹配本次姓名查询结果及原件地址、采用实际菜单和合同编号后，复验结果见上表。
-- **工程检查与业务边界。** `make check` 通过，含文档治理、Go 与 SQL 边界、Go 单元测试和 vet、Web 类型检查及差异空白检查。定稿另验 `make docs`、`git diff --check`、全部问题编号与优先级计数、报告的相对链接及锚点。此次仅更新评审记录、登记表和文档入口。主兼岗转换、M20 审批、年资、工资采用和独立发布由原路线图承接。[检查入口](../../Makefile) · [T04 范围](../plans/500-personnel-roadmap.md#job-information-delivery)
+- **工程检查与业务边界。** `make check` 通过，含文档治理、Go 与 SQL 边界、Go 单元测试和 vet、Web 类型检查及差异空白检查。定稿另验 `make docs`、`git diff --check`、全部问题编号与优先级计数、报告的相对链接及锚点。此次仅更新评审记录、登记表和文档入口。主兼岗转换、M20 审批、年资、工资采用和独立发布由原路线图承接。[检查入口](../../Makefile) · [T04 范围](../archive/plans/500-personnel-roadmap.md#job-information-delivery)

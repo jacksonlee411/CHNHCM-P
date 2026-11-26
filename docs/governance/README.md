@@ -16,7 +16,17 @@
 | 如何交付候选、更新验收环境和交接运行资源 | [验收环境更新](../adr/003-implementation-stages.md#acceptance-environment-update) · [固定分支与交付](005-branches-and-documents.md) · [并行环境与数据范围](../guides/134-parallel-development-baseline.md) | [本地运行与收尾](../guides/017-local-bu-development.md#local-runtime-cleanup) |
 | 规则写在哪里，怎样修订、引用证据和归档 | [分类与权威归属](014-document-management.md#2-分类目录与权威归属) · [新建与修订](014-document-management.md#81-新建及修订) · [归档条件](014-document-management.md#82-归档) · [三类资产](../assets/006-preservation-contract.md) | [文档模板](../templates/README.md) · [资产登记](../assets/inventory.json) · [来源资料](../reference/README.md) |
 
-BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)定位 011 与 118 的定义。人员登记、资料权限分别见[500 登记场景](../plans/500-personnel-roadmap.md#m01-scn-001)和[500 权限场景](../plans/500-personnel-roadmap.md#m01-scn-002)。
+BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)定位 011 与 118 的定义。
+
+<a id="personnel-acceptance-scenarios"></a>
+
+**人员业务的验收场景**
+
+| 办理范围 | 现行场景 |
+| --- | --- |
+| 人员档案 | [登记与编号](../specs/m01/501-person-registration-requirements.md#m01-scn-001) · [个人资料与权限](../specs/m01/501-person-registration-requirements.md#m01-scn-002) |
+| 入职和工作关系合同 | [直接与未来入职](../specs/m04/401-direct-hire-requirements.md#m04-scn-001) · [合同续订](../specs/m04/512-employment-contracts.md#m04-scn-004) · [录用转入职](../specs/m04/401-direct-hire-requirements.md#m04-scn-005) |
+| 任职变动 | [兼岗与人员计数](../specs/m04/506-job-information-records.md#m04-scn-002) · [调动、离职与再聘](../specs/m04/506-job-information-records.md#m04-scn-003) · [同日动作与经理](../specs/m04/506-job-information-records.md#m04-scn-006) |
 
 唯一企业的初始化与期间覆盖归 [120 企业约束](../specs/m02/120-dated-maintenance-technical-contract.md#enterprise-dated-contract)，固定验证库的历史导入与重建归 [017](../guides/017-local-bu-development.md#history-import-rebuild)。BU 与部门的容量复测见 [124 测量口径](../guides/124-dated-object-admission-and-capacity.md#bu-department-capacity-comparison)和[在办的 125](../plans/125-r6-capacity-remediation.md)，职务系列和职务见 [308 容量分组](../specs/m03/308-job-foundation-contract.md#job-capacity-matrix)。
 
@@ -28,7 +38,7 @@ BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-a
 
 | 入口 | 筛选方法 | 走查样本 |
 | --- | --- | --- |
-| 在办计划 | 取 `type=plan` 且 `execution_status=in_progress`。尚待启动的计划另查 `not_started` | [500 人员路线及批次](../plans/500-personnel-roadmap.md#2-批次前置与交付结果) |
+| 在办计划 | 取 `type=plan` 且 `execution_status=in_progress`。尚待启动的计划另查 `not_started` | [当前在办计划](catalog/README.md#catalog-in-progress) |
 | 待审文稿 | 按文档 `status` 查 `draft` 或 `in_review`。计划另读 `execution_status` | [135 对象头接入方案](../archive/plans/135-real-head-product-integration.md) |
 | 已关闭批次 | 按 `type=plan` 查执行 `completed` 或 `cancelled`，并读 `closure` 和 `archive` | [510 整改结果](../archive/plans/510-personnel-page-remediation.md#4-实施结果) · [首页历史入口](../index.md#验证与历史批次) |
 | 原始验收 | 在 `governance.verification_records` 中按 `related_documents` 查同一编号，按范围选择实施复验，再读逐项结果和限制 | [510 的二十项实测](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) |

@@ -17,7 +17,7 @@
 
 ## 验证与历史批次
 
-[已关闭计划](governance/catalog/README.md#catalog-closed)保留各份的执行及采纳状态，可按原编号打开归档正文。[全部验证记录](governance/catalog/README.md#catalog-evidence)可按关联编号查找原评审、实施和复验。归档前的提炼依据见[511 首轮逐份评估](verification/511-project-standards-implementation.md#plan-dispositions)，最新去向见[物理归档与规则交接](verification/511-physical-archive.md)。
+[已关闭计划](governance/catalog/README.md#catalog-closed)保留各份的执行及采纳状态，可按原编号打开归档正文。[全部验证记录](governance/catalog/README.md#catalog-evidence)可按关联编号查找原评审、实施和复验。归档依据见[511 首轮逐份评估](verification/511-project-standards-implementation.md#plan-dispositions)、[首批物理归档与交接](verification/511-physical-archive.md)及[500 人员路线图关闭与场景去向](verification/500-personnel-roadmap-closeout.md)。
 
 ## 本地运行
 

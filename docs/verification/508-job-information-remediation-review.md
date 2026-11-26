@@ -2,7 +2,7 @@
 
 ## 1 对象与结论
 
-2026-11-25，Codex 主代理在固定 f 起草并评审 508。以 `d981fed840d374837f1797001af444fe94c2db6f` 的代码、迁移、合同和本次工作区中的方案为依据。首次走查要求修订历史成员更新、旧数据处理、回执定位和详情日期。修订后逐项复审，**方案评审通过，可以开始实施**。六项产品修复的执行状态为未开始，500 第 6.3 节整体交付继续暂缓接受。[实施方案](../archive/plans/508-job-information-remediation.md) · [500 第 6.3 节](../plans/500-personnel-roadmap.md#job-information-delivery) · [登记表](../governance/registry.json)
+2026-11-25，Codex 主代理在固定 f 起草并评审 508。以 `d981fed840d374837f1797001af444fe94c2db6f` 的代码、迁移、合同和本次工作区中的方案为依据。首次走查要求修订历史成员更新、旧数据处理、回执定位和详情日期。修订后逐项复审，**方案评审通过，可以开始实施**。六项产品修复的执行状态为未开始，500 第 6.3 节整体交付继续暂缓接受。[实施方案](../archive/plans/508-job-information-remediation.md) · [500 第 6.3 节](../archive/plans/500-personnel-roadmap.md#job-information-delivery) · [登记表](../governance/registry.json)
 
 ## 2 六项产品反例与版本
 

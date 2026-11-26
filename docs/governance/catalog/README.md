@@ -64,6 +64,7 @@
 | [505 M01 个人资料九栏目维护合同](../../specs/m01/505-personal-profile-contract.md) | active | — | 原位 |
 | [506 M04 职务信息与任职记录业务规则](../../specs/m04/506-job-information-records.md) | active | — | 原位 |
 | [507 人员详情职务信息与人事事务办理记录页面设计](../../specs/m04/507-job-information-tab.md) | active | — | 原位 |
+| [512 工作关系合同业务规格](../../specs/m04/512-employment-contracts.md) | active | — | 原位 |
 
 <a id="catalog-in-progress"></a>
 
@@ -76,7 +77,6 @@
 | [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
 | [206 法律实体分阶段实施计划](../../plans/206-legal-entity-implementation.md) | active | in_progress | 原位 |
 | [400 M04 T02 入职规则与准备实施方案](../../plans/400-hire-readiness.md) | active | in_progress | 原位 |
-| [500 人员模块实施路线图](../../plans/500-personnel-roadmap.md) | active | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
 
@@ -138,6 +138,7 @@
 | [311 M03岗位定义与岗位层级实施方案](../../archive/plans/311-m03-positions.md) | active | completed | 物理归档 |
 | [314 M03 职类实施批次路线图](../../archive/plans/314-m03-job-function-roadmap.md) | active | completed | 物理归档 |
 | [315 部门与岗位编制后台实施计划](../../archive/plans/315-staffing-quota-administration.md) | active | completed | 物理归档 |
+| [500 人员模块实施路线图](../../archive/plans/500-personnel-roadmap.md) | active | completed | 物理归档 |
 | [504 M01 个人资料扩展实施方案](../../archive/plans/504-personal-profile-extension.md) | active | completed | 物理归档 |
 | [508 人员职务信息评审问题修复实施方案](../../archive/plans/508-job-information-remediation.md) | active | completed | 物理归档 |
 | [509 在职变动、结束与再聘复评问题修复方案](../../archive/plans/509-t04-remediation.md) | active | completed | 物理归档 |
@@ -174,6 +175,7 @@
 | 511、014、016、017、112、120、124、125、127、129、130、135、139、300、301、304、307、308 | [CHNHCM-511 文档物理归档与历史引用迁移](../../verification/511-physical-archive.md) | 2026-11-26 | final |
 | 500、501、503、507、510 | [CHNHCM-510 人员页面整改方案评审](../../verification/510-personnel-page-remediation-review.md) | 2026-11-26 | final |
 | 012、123、500、502、507、510 | [CHNHCM-510 人员页面整改实施与实页复验](../../verification/510-personnel-page-remediation-implementation.md) | 2026-11-26 | final |
+| 500、014、401、501、506、512、313、511 | [CHNHCM-500 人员模块实施路线图关闭与场景交接](../../verification/500-personnel-roadmap-closeout.md) | 2026-11-26 | final |
 | 012、121、402、500、501、502、505、506、507、509 | [CHNHCM-500 人员页面布局与交互问题登记](../../verification/500-personnel-page-review.md) | 2026-11-26 | final |
 | 012、121、123、124、313、402、500、501、502、506、507、509 | [CHNHCM-500 人员入口、职务信息与日期交互补充评审](../../verification/500-personnel-entry-and-date-review.md) | 2026-11-26 | final |
 | 012、023、121、124、308、310、312、315、402、500、501、502、505、507 | [CHNHCM-012 桌面页面验收范围调整](../../verification/012-desktop-page-acceptance.md) | 2026-11-26 | final |

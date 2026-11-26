@@ -2,7 +2,7 @@
 
 ## 1 目标与范围
 
-人事从「人员 → 员工 → 个人资料」为已登记的一个人维护九栏资料。经办人可以先录一名无任职人员的紧急联系人，日后在原档补录教育经历或银行账户。两次办理沿用同一人员编号。一人有多份任职时共用一份资料。只读者按各自人员范围和字段授权查看。[九栏字段及操作](../../specs/m01/505-personal-profile-contract.md#profile-nine-sections) · [500 总路线图](../../plans/500-personnel-roadmap.md) · [登记表](../../governance/registry.json)
+人事从「人员 → 员工 → 个人资料」为已登记的一个人维护九栏资料。经办人可以先录一名无任职人员的紧急联系人，日后在原档补录教育经历或银行账户。两次办理沿用同一人员编号。一人有多份任职时共用一份资料。只读者按各自人员范围和字段授权查看。[九栏字段及操作](../../specs/m01/505-personal-profile-contract.md#profile-nine-sections) · [500 总路线图](500-personnel-roadmap.md) · [登记表](../../governance/registry.json)
 
 | 交付内容 | 栏目或操作 |
 | --- | --- |

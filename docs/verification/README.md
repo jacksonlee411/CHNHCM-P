@@ -1,5 +1,7 @@
 # 验证记录
 
+[500 人员路线图关闭依据、8 项验收场景的原文与现行定义](500-personnel-roadmap-closeout.md)
+
 [文档物理归档、路径迁移与六份规则交接](511-physical-archive.md)
 
 [按关联编号查全部评审、验收及历史记录](../governance/catalog/README.md#catalog-evidence) · [511 规范实施与逐份归档评估](511-project-standards-implementation.md)
@@ -13,7 +15,7 @@
 
 500-UI-12 至 20 接续记录普通人员入口、职务信息页签、日期轴、通用查看日期和相邻流程的 9 项问题。四轮走查覆盖单任职、多任职、首聘、只读、返回与专项统计，并对照实施合同和旧浏览器断言。[500 人员入口与日期交互补充评审](500-personnel-entry-and-date-review.md)
 
-职务信息的设计复核覆盖首单升级与实施分批、主兼岗分行、两处查回原笔、106 的同日办理，以及普通更正、撤销和已履职补录的最少输入。当前产品证据覆盖按职务首单、原件、查回及未来撤销。[实施步骤与依赖复核](500-job-information-delivery-review.md) · [直接办理负担修订](506-job-information-direct-entry-review.md) · [106 同日办理复核](506-same-day-actions-design-review.md) · [办理列表复核](507-personnel-action-register-design-review.md) · [主兼岗复核](506-job-information-design-review.md) · [已有首单实测](400-first-hire-integration.md#decision-first-hire)
+职务信息的设计复核覆盖首单升级与实施分批、主兼岗分行、两处查回原笔、106 的同日办理，以及普通更正、撤销和已履职补录的最少输入。首单实测记录了按职务入职、原件、查回及未来撤销。后续任职变动、工作关系合同和录用交接可按阶段查验。[首单实测](400-first-hire-integration.md#decision-first-hire) · [分阶段交付结果](500-job-information-delivery-review.md#stage-delivery-results) · [直接办理负担修订](506-job-information-direct-entry-review.md) · [同日办理复核](506-same-day-actions-design-review.md) · [办理列表复核](507-personnel-action-register-design-review.md) · [主兼岗复核](506-job-information-design-review.md)
 
 M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合同已记录实际验证范围。[T02 实施及交接](400-hire-simplification.md#t02-results) · [实施复评与修复](400-hire-simplification.md#t02-implementation-review) · [办理负担复核](400-hire-simplification.md) · [原四轮评审](400-hire-readiness-review.md)
 
@@ -21,7 +23,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [主要证件号码防重实施与人事试办](500-personnel-registration-trial.md)记录旧档案升级核对和从员工名录实际办理的结果。4380 已更新至新版。[原档案页面复查](500-personnel-registration-trial.md#personnel-4380-update)
 
-人员登记现行方案只按主要证件号码判断人员重复。三种常见办理及取消同名查询后的复核见[本次方案评审](500-registration-without-name-prompts.md)。登记规则、旧档核对、页面调整和人事试办的顺序见[实施路线图](../plans/500-personnel-roadmap.md#registration-revision-steps)。
+人员登记按现用主要证件号码防重。三种常见办理和取消同名查询的原因见当时的方案评审，旧档核对、页面调整和人事试办的次序保存在归档路线图。[现行登记规则](../specs/m01/501-person-registration-requirements.md#m01-scn-001) · [方案评审](500-registration-without-name-prompts.md) · [归档路线图](../archive/plans/500-personnel-roadmap.md#registration-revision-steps)
 
 [上次主要证件方案评审](500-primary-document-registration-review.md)保留该版关于证号、同一张单再次办理和旧档升级的复核记录。当时的同名提示约定已取消。
 
@@ -29,7 +31,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [500 T00 人员首批规格评审](500-t00-personnel-specifications.md)记录原四稿关于未任职者、同名者和受限读者的走查、修订和万人样本复算。新版产品按[现行十项条件](../specs/m01/501-person-registration-requirements.md#4-t01-独立验收条件)验收。
 
-人员路线图第五稿通过评审。记录包含逐稿修订、页面继承、人员与任职的授权交集，以及未来入职撤销后旧请求重送的名额算例。[500 评审记录](500-personnel-roadmap-review.md) · [人员模块实施路线图](../plans/500-personnel-roadmap.md)
+人员路线图第五稿通过评审。记录包含逐稿修订、页面继承、人员与任职的授权交集，以及未来入职撤销后旧请求重送的名额算例。[500 评审记录](500-personnel-roadmap-review.md) · [人员模块实施路线图](../archive/plans/500-personnel-roadmap.md)
 
 [313 岗位核编首批实施验证](313-quota-implementation.md)记录按日核编、部门汇总、数据库重启查回，以及 AC090 中核编独验和补登旧职务职类的并存联验。
 
