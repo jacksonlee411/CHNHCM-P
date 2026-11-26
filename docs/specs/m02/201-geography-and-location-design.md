@@ -1,6 +1,6 @@
 # CHNHCM-201 国家地区行政区划与地点建设方案
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。分批交付由[200路线图](../../plans/200-geography-and-location-roadmap.md)持有；本方案经[减少过度设计与共用能力评审](../../verification/200-geography-design-review.md)修订；文档评审与产品实施分别登记，不把拟议对象、表和API记作已实现。G3细化经[203专项评审](../../verification/203-g3-plan-review.md)通过；G3已完成实施、主代理复评及限定范围验收，实际结果见[203实施记录](../../verification/203-g3-implementation.md)，G4实施及限定验收完成，实际结果见[204实施记录](../../verification/204-g4-implementation.md)，G5已完成首批联合验收及4383运行交付，见[205](../../verification/205-g5-implementation.md)；G4具体分批及准入映射由[204实施方案](../../plans/204-g4-location-implementation.md)持有。
+登记信息：[registry.json](../../governance/registry.json)。适用范围：国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。分批交付由[200路线图](../../plans/200-geography-and-location-roadmap.md)持有；本方案经[减少过度设计与共用能力评审](../../verification/200-geography-design-review.md)修订；文档评审与产品实施分别登记，不把拟议对象、表和API记作已实现。G3细化经[203专项评审](../../verification/203-g3-plan-review.md)通过；G3已完成实施、主代理复评及限定范围验收，实际结果见[203实施记录](../../verification/203-g3-implementation.md)，G4实施及限定验收完成，实际结果见[204实施记录](../../verification/204-g4-implementation.md)，G5已完成首批联合验收及4383运行交付，见[205](../../verification/205-g5-implementation.md)；G4具体分批及准入映射由[204实施方案](../../archive/2026/plans/204-g4-location-implementation.md)持有。
 
 上游：[M02目标](../../architecture/target/modules/m02.md)、[120共用技术合同](120-dated-maintenance-technical-contract.md)、[124接入指南](../../guides/124-dated-object-admission-and-capacity.md)、[202默认日期决定](../../adr/202-master-data-default-effective-date.md)、[来源索引](../../reference/200-geography-sources.json)。
 
@@ -451,7 +451,7 @@ G4已将GeoArea引用方法提取为ReferenceUnit，并由Location在原pgx事�
 | <a id="m02-ac-210"></a>M02-AC-210 共性回归 | make check/build/integration/smoke及生成一致性按实际影响执行，BU/部门受影响结果齐备 | [SCN211](#m02-scn-211) |
 | <a id="m02-ac-211"></a>M02-AC-211 容量与收尾 | 按200规模及目标逐组记录结果；2026-11-14用户决定20会话统一P95≤500ms且性能非阻断，单会话及正确性要求保持；原125边界保留，自有资源核验完成 | [200第4.3节](../../plans/200-geography-and-location-roadmap.md#43-验证规模与计时口径) |
 
-以上为跨G2—G5的验收定义。G2功能及G3限定范围已交付，实际结果分别见200 G2报告和[203实施报告](../../verification/203-g3-implementation.md)；G4采用[204实施方案](../../plans/204-g4-location-implementation.md)的18项清单，产品已完成限定验收，G5首批综合验收与4383运行交付已由[205](../../verification/205-g5-implementation.md)完成，D08/D09非阻断性能项保持。旧报告只覆盖其实际构建与范围。
+以上为跨G2—G5的验收定义。G2功能及G3限定范围已交付，实际结果分别见200 G2报告和[203实施报告](../../verification/203-g3-implementation.md)；G4采用[204实施方案](../../archive/2026/plans/204-g4-location-implementation.md)的18项清单，产品已完成限定验收，G5首批综合验收与4383运行交付已由[205](../../verification/205-g5-implementation.md)完成，D08/D09非阻断性能项保持。旧报告只覆盖其实际构建与范围。
 
 ## 10 待决事项与实施边界
 

@@ -1,6 +1,6 @@
 # CHNHCM-304 企业完整按日维护
 
-2026-11-16路径部分由[306](306-department-path-simplification.md)接续：企业名称不再进入对外部门路径，企业归属上下文与内部封存证据保持。本文其余实施及历史结果保留。
+2026-11-16路径部分由[306](../archive/2026/plans/306-department-path-simplification.md)接续：企业名称不再进入对外部门路径，企业归属上下文与内部封存证据保持。本文其余实施及历史结果保留。
 
 登记信息：[registry.json](../governance/registry.json)。依据：[M02蓝图](../architecture/target/modules/m02.md)、[120共用合同](../specs/m02/120-dated-maintenance-technical-contract.md)、[124接入指南](../guides/124-dated-object-admission-and-capacity.md)、[202默认日期](../adr/202-master-data-default-effective-date.md)。
 

@@ -1,6 +1,6 @@
 # CHNHCM-124 按日维护对象接入及容量验证指南
 
-2026-11-15当前接入状态：国家及区划已分别由G2/G3完成真实接入；Location按[204方案](../plans/204-g4-location-implementation.md)第2.2节填写共用规则适用性，专属合同归201，产品实施及限定验收完成，见[204实施记录](../verification/204-g4-implementation.md)。地理路线的规模及20会话500ms目标按[200第4.3节](../plans/200-geography-and-location-roadmap.md#43-验证规模与计时口径)，不将本指南旧BU/部门容量矩阵直接复制为地点门槛。
+2026-11-15当前接入状态：国家及区划已分别由G2/G3完成真实接入；Location按[204方案](../archive/2026/plans/204-g4-location-implementation.md)第2.2节填写共用规则适用性，专属合同归201，产品实施及限定验收完成，见[204实施记录](../verification/204-g4-implementation.md)。地理路线的规模及20会话500ms目标按[200第4.3节](../plans/200-geography-and-location-roadmap.md#43-验证规模与计时口径)，不将本指南旧BU/部门容量矩阵直接复制为地点门槛。
 
 2026-11-13新对象准入须核对[202默认日期决定](../adr/202-master-data-default-effective-date.md)：配置与主数据首次新建默认1900-01-01，明确输入、原记录及后续操作日期规则保持。当前BU/部门的产品适配及分批回归已由[200 G1报告](../verification/200-g1-default-date.md)持有；原交付证据不改写，未来对象仍须随自身切片验证。
 

@@ -1,6 +1,6 @@
 # CHNHCM-306 部门路径精简与案例集团根部门补全
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：单企业架构的部门路径，以及45300与当前万科4383案例数据。上游依据：[118部门规格](../specs/m02/118-department-business-requirements.md)、[123当前维护](../adr/123-current-maintenance-and-dated-query-boundary.md)。
+登记信息：[registry.json](../../../governance/registry.json)。适用范围：单企业架构的部门路径，以及45300与当前万科4383案例数据。上游依据：[118部门规格](../../../specs/m02/118-department-business-requirements.md)、[123当前维护](../../../adr/123-current-maintenance-and-dated-query-boundary.md)。
 
 ## 1 用户目标
 
@@ -14,7 +14,7 @@
 
 ## 3 交付物与依赖
 
-Go列表摘要及路径投影、前端路径组件、受影响测试、案例维护脚本和[实施验证](../verification/306-department-path-simplification.md)。固定d环境迁移1—14；万科现场e79ffd4c的00014为法律实体、00015为地点地址，d的00014为企业；按各自固定清单构建，仅应用本次路径差异，不以旧程序接入新库。
+Go列表摘要及路径投影、前端路径组件、受影响测试、案例维护脚本和[实施验证](../../../verification/306-department-path-simplification.md)。固定d环境迁移1—14；万科现场e79ffd4c的00014为法律实体、00015为地点地址，d的00014为企业；按各自固定清单构建，仅应用本次路径差异，不以旧程序接入新库。
 
 ## 4 阶段任务
 
@@ -42,3 +42,5 @@ V306-01：当前、停用、未来路径只含部门层级；V306-02：真实集
 ## 7 进度记录与交接
 
 2026-11-16：从a8dc35e6完成三个产品文件调整与两案例补全。23个DB/API根、30个浏览器用例分轮通过；67/63条原记录按原日期更正，全量219635份原BU/部门来源保持。实际构建、双角色页面和自有临时资源收尾完成。c固定构建补丁首次遗漏、浏览器首失败及离线预算限制保留于实施报告；原容量问题不由本次关闭。
+
+2026-11-26 本批已归档。仍适用条款、原验收及接续责任见[逐份交接](../../../verification/511-project-standards-implementation.md#plan-306)。

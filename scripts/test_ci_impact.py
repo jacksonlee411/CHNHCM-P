@@ -86,7 +86,7 @@ class ImpactTests(unittest.TestCase):
             self.assertEqual(self.select('internal/contexts/staffing/application/list.go', root=root)['scope'], 'full')
 
     def test_document_tooling_uses_complete_quality_without_business_jobs(self):
-        p = self.select('scripts/check-repository.py', 'scripts/test_ci_policy.py')
+        p = self.select('scripts/check-repository.py', 'scripts/document_catalog.py', 'scripts/test_ci_policy.py')
         self.assertEqual((p['scope'], p['integration_shards'], p['browser_shards']), ('selected', 0, 0))
 
     def test_backend_domain_includes_reverse_references_and_shared_roots(self):

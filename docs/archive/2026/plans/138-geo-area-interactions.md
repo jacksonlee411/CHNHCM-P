@@ -1,6 +1,6 @@
 # CHNHCM-138 行政区划目录交互实施方案
 
-[登记表](../governance/registry.json) · [012 共享体验](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list) · [201 地理资料](../specs/m02/201-geography-and-location-design.md#m02-br-208)
+[登记表](../../../governance/registry.json) · [012 共享体验](../../../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list) · [201 地理资料](../../../specs/m02/201-geography-and-location-design.md#m02-br-208)
 
 ## 1 用户任务与基线
 
@@ -18,8 +18,10 @@
 
 ## 4 执行与交接
 
-实施后的操作路径、权限反例、浏览器与真实 DB/API 的结果集中在[评审与验证](../verification/138-geo-area-interactions.md)。
+实施后的操作路径、权限反例、浏览器与真实 DB/API 的结果集中在[评审与验证](../../../verification/138-geo-area-interactions.md)。
 
 ## 5 澳门目录及地区化层级
 
 从澳门邮政和地籍部门采集两组原名，保存版次、来源链接、网页摘要及本仓来源键。澳门用独立固定包发布，验证空官方码、十个根对象和重复装载，同时保留其他三地已发布的原始来源。层级统一用于列表、详情和列筛选，列表标题采用「行政区划」。逐项核对当前记录及历史来源的路径末项、本级名称撤权、窄屏和直接下级返回。国家与层级联动仅评估共享筛选合同及查询往返。
+
+2026-11-26 本批已归档。仍适用条款、原验收及接续责任见[逐份交接](../../../verification/511-project-standards-implementation.md#plan-138)。

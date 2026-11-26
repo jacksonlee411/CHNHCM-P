@@ -4,6 +4,8 @@
 适用范围：BU、部门、部门树、登录及共享保存流程中的38组提示问题，以及两项相邻表达问题。
 上游依据：[38组排查](../verification/133-user-facing-message-audit.md)、[012页面原则](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[119部门交互](../specs/m02/119-department-functional-design.md)、[013保存合同](../specs/m02/013-m02-technical-design.md)、[120共用合同](../specs/m02/120-dated-maintenance-technical-contract.md)。
 
+2026-11-26 规则交接。第 3 节和第 6.1 节保留原批定义与结论。共用业务验收由 [011](../specs/m02/011-m02-business-requirements.md#m02-feedback-acceptance) 承接，部门特有的筛选和游标由 [118](../specs/m02/118-department-business-requirements.md#m02-department-feedback-acceptance) 承接。保存、离开、局部重试和提示归 [012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-feedback-recovery)，部门页面归 [119](../specs/m02/119-department-functional-design.md#11-301用户反馈接续)，错误分类、传输和故障恢复归 [013](../specs/m02/013-m02-technical-design.md#m02-feedback-errors)，部门选择协议归 [120](../specs/m02/120-dated-maintenance-technical-contract.md)，BU 选择与导出归 [114](../adr/114-bu-query-selection-and-export.md)。[121](../specs/m02/121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)直达各现行定义。38 组问题、当批时序和执行结果留在本计划及原报告。登记保留执行关闭记录和原文路径。
+
 ## 1 用户目标
 
 管理员、查询者从“设置→组织配置→业务单元／部门”完成查询、选择导出、资料维护和查看历史。页面应让用户看清当前结果、哪里需要处理、下一步能做什么；后台编号、请求复用、分页恢复和技术诊断由系统处理。权限按实际动作和字段判断，不按角色名称硬编码。
@@ -171,6 +173,10 @@ Go仍是权限、业务拒绝、结果终态、日期及容量判定的唯一权
 实施按影响执行make check、make boundaries、相关DB/API与浏览器检查；页面状态错误需实际浏览器验证，保存、授权、容量原因需真实API证据。验证包含双对象和正常菜单，不使用旧通过记录替代本次结果；不将本计划扩为125全部容量复测。
 
 文档阶段执行make docs和git diff --check，不创建运行环境。产品阶段由d分支复用当前模型持久开发profile或创建明确可丢弃的临时profile；记录实际入口、用途和归属，按003／017在收尾回收自有临时资源。既有持久库、固定构建、原业务历史保持，留下运行环境须登记责任及复查节点。
+
+<a id="61-待执行验收"></a>
+
+**受评原稿的「6.1 待执行验收」。** 第四轮采纳的是 `draft-3`，当时 17 项均未运行。2026-11-26 核对原件第 6.1 节的标题与 17 个锚点，原稿文本 SHA-256 为 `8b00436b1b03788a31ff3910e3d829f0cc1407d9a01c811120b74298dbb5ae05`。后来实施的结果见本文件「6.1 实施验收」及实施报告。[原评审第 3.2 节](../verification/301-user-feedback-plan-review.md#32-文档及范围检查) · [获权访问受评原稿](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/301-user-feedback-plan-review/draft-3.json) · [实施验收](#61-实施验收)
 
 ## 7 进度记录与交接
 

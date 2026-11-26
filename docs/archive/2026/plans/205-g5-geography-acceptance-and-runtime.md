@@ -1,6 +1,6 @@
 # CHNHCM-205 G5地理联合验收与固定运行交付
 
-登记信息：[registry.json](../governance/registry.json)。承接[200路线图](200-geography-and-location-roadmap.md)G5/T05—T06、[201验收矩阵](../specs/m02/201-geography-and-location-design.md#geography-acceptance)、[204交接](../verification/204-g4-implementation.md)。执行记录见[205实施报告](../verification/205-g5-implementation.md)。
+登记信息：[registry.json](../../../governance/registry.json)。承接[200路线图](../../../plans/200-geography-and-location-roadmap.md)G5/T05—T06、[201验收矩阵](../../../specs/m02/201-geography-and-location-design.md#geography-acceptance)、[204交接](../../../verification/204-g4-implementation.md)。执行记录见[205实施报告](../../../verification/205-g5-implementation.md)。
 
 ## 1 用户目标
 
@@ -46,3 +46,5 @@ AC200—AC211逐项列实际构建、证据、原失败及限制；复用与本�
 2026-11-15立项时：用户授权G5实施及按需部署；已核对干净40b0c293基线，登记本计划。主代理复核已明确国家目标、最终构建证据复用、隔离计时和固定历史保护四项边界；实际执行结果由205报告持有，当时尚未开始执行，不计为验收通过。
 
 2026-11-15收尾：T00—T05完成，20组4000次零错误、31条浏览器、授权4383更新及原30表/全部原历史保护完成。主代理复评通过，自有临时资源回收；D08/D09和125其他容量P1保持，首批200路线图关闭。
+
+2026-11-26 本批已归档。仍适用条款、原验收及接续责任见[逐份交接](../../../verification/511-project-standards-implementation.md#plan-205)。

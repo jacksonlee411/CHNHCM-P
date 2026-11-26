@@ -1,6 +1,6 @@
 # CHNHCM 工作约定
 
-始终使用中文沟通。本仓是独立 China HCM 产品的全新实施，采用模块化单体，Go 是唯一权威领域内核；保留CubeBox的体验、业务及验证资产。文档入口：[docs/index.md](docs/index.md)。
+始终使用中文沟通。本仓是独立 China HCM 产品的全新实施，采用模块化单体，Go 是唯一权威领域内核；保留CubeBox的体验、业务及验证资产。[文档首页](docs/index.md) · [规范导航](docs/governance/README.md)。
 
 ## 开始工作
 

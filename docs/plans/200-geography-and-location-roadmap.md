@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)。适用范围：全球国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。本文持有分批交付、依赖与退出条件；对象方案由[201](../specs/m02/201-geography-and-location-design.md)持有，配置与主数据首次新建默认日期由[202](../adr/202-master-data-default-effective-date.md)持有。
 
-上游：[M02边界](../architecture/007-m02-entry.md)、[116共用维护](116-m02-shared-dated-maintenance-roadmap.md)、[124接入指南](../guides/124-dated-object-admission-and-capacity.md)、[132查询边界](../adr/132-query-and-validation-boundary.md)、[134并行基线](../guides/134-parallel-development-baseline.md)。本轮方案经[共用能力与必要校验评审](../verification/200-geography-design-review.md)修订，G1默认日期已完成，G2国家目录本轮功能交付收尾，按用户2026-11-14决定缩放及容量另行接续；2026-11-15已关联G3中原3条缩放后续通过证据，国家容量已由205补验通过，G3的[203实施方案](203-g3-geo-area-admission.md)已完成[专项评审](../verification/203-g3-plan-review.md)，G3已完成实施及限定范围验收，G4的[204方案](204-g4-location-implementation.md)已制定并评审通过，G4实施及限定验收完成，G5由[205](205-g5-geography-acceptance-and-runtime.md)完成首批联合验收与4383运行交付；固定4383当前运行由[205](../verification/205-g5-implementation.md)持有，原万科初始化记录保留。
+上游：[M02边界](../architecture/007-m02-entry.md)、[116共用维护](116-m02-shared-dated-maintenance-roadmap.md)、[124接入指南](../guides/124-dated-object-admission-and-capacity.md)、[132查询边界](../adr/132-query-and-validation-boundary.md)、[134并行基线](../guides/134-parallel-development-baseline.md)。本轮方案经[共用能力与必要校验评审](../verification/200-geography-design-review.md)修订，G1默认日期已完成，G2国家目录本轮功能交付收尾，按用户2026-11-14决定缩放及容量另行接续；2026-11-15已关联G3中原3条缩放后续通过证据，国家容量已由205补验通过，G3的[203实施方案](../archive/2026/plans/203-g3-geo-area-admission.md)已完成[专项评审](../verification/203-g3-plan-review.md)，G3已完成实施及限定范围验收，G4的[204方案](../archive/2026/plans/204-g4-location-implementation.md)已制定并评审通过，G4实施及限定验收完成，G5由[205](../archive/2026/plans/205-g5-geography-acceptance-and-runtime.md)完成首批联合验收与4383运行交付；固定4383当前运行由[205](../verification/205-g5-implementation.md)持有，原万科初始化记录保留。
 
 ## 1 用户目标
 
@@ -77,8 +77,8 @@ Odoo只读SQL、实例版本、字段差异和观察见[实机记录](https://gi
 | G0 / T00 范围及分项来源准入 | 用户范围、201能力表、202 | Organization、数据来源维护者 | 一份三对象能力/差异表；国家及各地来源版次、映射和拒绝清单；架构归属同步 | 按对应对象/地区关闭D01—D03；不要求无关来源同时完成 | G0完成：固定版次、逐项处置与离线输入已核对，见[报告](../verification/200-g0-source-admission.md)；G0当时未运行发布，后续G2/G3已装载发布 |
 | G1 / T01 默认日期与最小适配 | 202已明确；公共合同按134协调 | Go、体验、Access维护者 | 统一初始默认及全部日期入口边界，BU/部门受影响适配；其余类型端口随T02接入 | 日期子任务可独立验收；共用扩展与首个真实国家切片同批验收，不设先完成全框架的门槛 | 默认日期子任务完成；企业初始化、BU/部门上下文与页面及分批回归完成；类型扩展已随G2完成，见[本批记录](../verification/200-g1-default-date.md) |
 | G2 / T02 国家/地区纵向切片 | T00国家来源与D03；T01必要修改同批交付 | Organization、存储、体验维护者 | 独立类型/表/来源、固定包装载、首批菜单/API与授权 | 251条完整核对；查询、显示资料变更/更正、启停、历史、恢复；公共回归通过 | 本轮功能交付收尾；229个DB/API根、285条浏览器分批通过，原3条X11缺项在G3公共回归已有通过证据，本次[关联](../verification/204-g4-plan-review.md)；国家正式容量已由[205](../verification/205-g5-implementation.md)补齐，原[本批记录](../verification/200-g2-country-catalog.md)保持 |
-| G3 / T03 必要行政区划接入 | T02；各地自己的来源准入 | Organization、来源、体验及存储维护者 | GeoArea固定结构、单日路径、有限引用链及分页候选 | 各地区独立核对数量/父关系/例外；CN/HK/TW完整发布、MO基础地址；未完成范围不开放候选 | [203方案](203-g3-geo-area-admission.md)已评审通过，存储、固定装载发布、授权/API与页面已交付，主代理复评及限定验收通过，见[验收](../verification/203-g3-implementation.md) |
-| G4 / T04 地点纵向交付 | 国家目录就绪；逐地消费已发布区域；MO按基础地址出口 | Organization、体验、Access维护者 | Location地址、完整共用维护、选择/导出及可靠提交 | 四地分别正常菜单保存、维护、旧来源及恢复；目录停止选用不阻断无关地点修改 | [204实施方案](204-g4-location-implementation.md)及[实施与验收](../verification/204-g4-implementation.md)完成；251个DB/API根、354个浏览器用例分轮通过，8组1600次零错误及全部400回执/原历史重启核验完成 |
+| G3 / T03 必要行政区划接入 | T02；各地自己的来源准入 | Organization、来源、体验及存储维护者 | GeoArea固定结构、单日路径、有限引用链及分页候选 | 各地区独立核对数量/父关系/例外；CN/HK/TW完整发布、MO基础地址；未完成范围不开放候选 | [203方案](../archive/2026/plans/203-g3-geo-area-admission.md)已评审通过，存储、固定装载发布、授权/API与页面已交付，主代理复评及限定验收通过，见[验收](../verification/203-g3-implementation.md) |
+| G4 / T04 地点纵向交付 | 国家目录就绪；逐地消费已发布区域；MO按基础地址出口 | Organization、体验、Access维护者 | Location地址、完整共用维护、选择/导出及可靠提交 | 四地分别正常菜单保存、维护、旧来源及恢复；目录停止选用不阻断无关地点修改 | [204实施方案](../archive/2026/plans/204-g4-location-implementation.md)及[实施与验收](../verification/204-g4-implementation.md)完成；251个DB/API根、354个浏览器用例分轮通过，8组1600次零错误及全部400回执/原历史重启核验完成 |
 | G5 / T05 综合正确性 | T02—T04 | 验证维护者 | 实际能力对应的数据/Go/DB/API/浏览器报告 | 201适用验收全部有结果；公共规则与对象映射分别覆盖，后置项不计通过 | [205验收](../verification/205-g5-implementation.md)完成，非阻断D08/D09保留 |
 | G5 / T06 性能与交接 | 最终构建、T05 | 容量、文档及运行维护者 | 关键入口分组测量、来源/资料/资产同步、资源收尾 | 新对象性能逐组判定；非阻断与125遗留保留；临时资源回收及保留profile说明完成 | [205验收](../verification/205-g5-implementation.md)完成，非阻断D08/D09保留 |
 
@@ -140,13 +140,13 @@ G0已落实D01固定版次、D02八条全部隔离及MO基础地址范围、D03�
 
 2026-11-13 G1默认日期子任务完成：企业初始化、BU/部门创建上下文及页面复用Go默认1900，原历史与后续日期规则保持。完整DB/API清单与40浏览器场景按首败、分组及定向复验记录，见[本批报告](../verification/200-g1-default-date.md)。未更新固定环境；G2—G5未开始。
 
-2026-11-14 G3方案制定：同步最新main后形成[203必要行政区划接入方案](203-g3-geo-area-admission.md)，201补齐结构固定、地区发布、候选末级、页面和G4事务引用合同。CN3209/HK21/TW390、MO基础地址范围保持；本次是方案及同步集成验证，G3产品未开始，固定环境未更新。
+2026-11-14 G3方案制定：同步最新main后形成[203必要行政区划接入方案](../archive/2026/plans/203-g3-geo-area-admission.md)，201补齐结构固定、地区发布、候选末级、页面和G4事务引用合同。CN3209/HK21/TW390、MO基础地址范围保持；本次是方案及同步集成验证，G3产品未开始，固定环境未更新。
 
 2026-11-14 G3专项评审：201/203的发布、历史授权、完整查询/导航、窄批核对及固定代码/维护边界完成修订，2项P1、3项P2文档关闭，见[评审记录](../verification/203-g3-plan-review.md)。203采纳但执行仍not_started，其他阶段及原验证证据保持。
 
 2026-11-14 G3实施收尾：[203验收](../verification/203-g3-implementation.md)完成3620条固定目录、维护/历史/授权、路径/候选/引用、238个DB/API根与298个浏览器用例分轮覆盖。18组3600次零错误，按用户20会话500ms非阻断的新决定全部达到目标；原300ms失败保留。G4/G5未实施，固定4383/4388未更新。
 
-2026-11-15 G4方案及状态同步：fetch确认当前HEAD包含最新origin/main，形成[204实施方案](204-g4-location-implementation.md)，评审与G2缩放证据关联见[本次报告](../verification/204-g4-plan-review.md)。G0/G1完成，G2功能交付、国家容量待补，G3实施验收完成且已有固定运行交付；G4方案与产品实施分开，G4/G5产品未开始，200整体保持in_progress。
+2026-11-15 G4方案及状态同步：fetch确认当前HEAD包含最新origin/main，形成[204实施方案](../archive/2026/plans/204-g4-location-implementation.md)，评审与G2缩放证据关联见[本次报告](../verification/204-g4-plan-review.md)。G0/G1完成，G2功能交付、国家容量待补，G3实施验收完成且已有固定运行交付；G4方案与产品实施分开，G4/G5产品未开始，200整体保持in_progress。
 
 2026-11-15 G4实施收尾：[204验收](../verification/204-g4-implementation.md)完成四地地点及完整共用维护、准确采用、授权、固定选择/CSV、分轮公共回归、8组1600次测量和全部400回执/原历史重启核验。G4/T04 completed；200整体仍in_progress，G5待最终联合出口、国家列表容量及交接。原失败、G3测量、125其他容量P1及固定运行版本分别保持。
 

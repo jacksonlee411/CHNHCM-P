@@ -1,6 +1,6 @@
 # CHNHCM-121 M02双对象接入验证矩阵
 
-2026-11-16新增[306验收](../../plans/306-department-path-simplification.md#6-验收与关闭条件)：V306-01—06覆盖纯部门路径、真实集团、查询导出、旧源及案例补全；旧历史夹具保留原证据，当前测试预期按新显示规则更新。
+2026-11-16新增[306验收](../../archive/2026/plans/306-department-path-simplification.md#6-验收与关闭条件)：V306-01—06覆盖纯部门路径、真实集团、查询导出、旧源及案例补全；旧历史夹具保留原证据，当前测试预期按新显示规则更新。
 
 2026-11-15企业按[304方案](../../plans/304-enterprise-maintenance.md)的V01—V14接入完整维护，实际验证由[本批记录](../../verification/304-enterprise-maintenance.md)持有；不得以BU/部门既有结果直接替代企业验收。
 
@@ -271,7 +271,7 @@ R6本批实测已交付：R6-01标准、R6-02规模/完整性、R6-04最终冷�
 
 ## 14 131-T00冻结与后续产品验证
 
-[131-T00设计冻结](../../verification/131-t00-design-freeze.md)覆盖C01—C06的长期合同、R01完整性、X03计划、单语句闭包、期间排除、模型/索引/接口消费者及同输入基线。T00证明不计作整项Q131-V产品验收；T01—T04仍按[131第6节](../../plans/131-department-query-reduction.md#q131-verification)完成全部角色、真实菜单、API、浏览器和规定容量。
+[131-T00设计冻结](../../verification/131-t00-design-freeze.md)覆盖C01—C06的长期合同、R01完整性、X03计划、单语句闭包、期间排除、模型/索引/接口消费者及同输入基线。T00证明不计作整项Q131-V产品验收；T01—T04仍按[131第6节](../../archive/2026/plans/131-department-query-reduction.md#q131-verification)完成全部角色、真实菜单、API、浏览器和规定容量。
 
 | 规则/验收 | T00固定证据 | 正式接入仍需验证 |
 | --- | --- | --- |
@@ -371,11 +371,19 @@ R129-V01—V05回归BU合法无变化、覆盖不变、覆盖变化、共同守�
 
 ## 21 用户反馈与异常恢复验收
 
-301的M02-AC-057—073定义在[方案验收矩阵](../../plans/301-user-feedback-and-recovery.md#61-实施验收)，覆盖BU／部门的正常入口、读写故障、会话／字段权限、确认与重试、筛选选择及恢复动作。实施证据由[301记录](../../verification/301-user-feedback-implementation.md)持有；不把旧通过、单句文案匹配或有限用例替代整个矩阵。
+BU 与部门由现行规格持有以下独立预期。按当前授权从正常菜单验证，结果和原范围查[301 实施记录](../../verification/301-user-feedback-implementation.md)与[当时的方案评审](../../verification/301-user-feedback-plan-review.md#32-文档及范围检查)。
+
+| 场景与适用对象 | 现行定义 |
+| --- | --- |
+| 双对象读取、保存、离开与迟到响应 | [M02-AC-057](011-m02-business-requirements.md#m02-ac-057)、[M02-AC-058](011-m02-business-requirements.md#m02-ac-058)、[M02-AC-059](011-m02-business-requirements.md#m02-ac-059)、[M02-AC-060](011-m02-business-requirements.md#m02-ac-060)、[M02-AC-061](011-m02-business-requirements.md#m02-ac-061)、[M02-AC-062](011-m02-business-requirements.md#m02-ac-062) |
+| 部门树筛选与路径游标 | [M02-AC-063](118-department-business-requirements.md#m02-ac-063)、[M02-AC-064](118-department-business-requirements.md#m02-ac-064) |
+| 日志、固定选择与导出 | [M02-AC-065](011-m02-business-requirements.md#m02-ac-065)、[M02-AC-066](011-m02-business-requirements.md#m02-ac-066)、[M02-AC-067](011-m02-business-requirements.md#m02-ac-067) |
+| 会话、权限及依赖项 | [M02-AC-068](011-m02-business-requirements.md#m02-ac-068)、[M02-AC-069](011-m02-business-requirements.md#m02-ac-069) |
+| 消息、帮助与异常页面 | [M02-AC-070](011-m02-business-requirements.md#m02-ac-070)、[M02-AC-071](011-m02-business-requirements.md#m02-ac-071)、[M02-AC-072](011-m02-business-requirements.md#m02-ac-072)、[M02-AC-073](011-m02-business-requirements.md#m02-ac-073) |
 
 ## 22 G4地点准入映射
 
-2026-11-15 [204实施方案](../../plans/204-g4-location-implementation.md)第2.2节逐组映射本表共用规则：稳定身份/日期、资料/补丁、删除/改日/首条、启停/固定两条、分类、读取/返回、权限、原子提交、固定选择及操作者日志均适用；部门BU/Hierarchy/持续运营覆盖不适用。地点地址、逐动作采用与企业范围由[201](201-geography-and-location-design.md)持有，不能把部门专属资格复制过去。
+2026-11-15 [204实施方案](../../archive/2026/plans/204-g4-location-implementation.md)第2.2节逐组映射本表共用规则：稳定身份/日期、资料/补丁、删除/改日/首条、启停/固定两条、分类、读取/返回、权限、原子提交、固定选择及操作者日志均适用；部门BU/Hierarchy/持续运营覆盖不适用。地点地址、逐动作采用与企业范围由[201](201-geography-and-location-design.md)持有，不能把部门专属资格复制过去。
 
 204的G4-V01—V18承接数据、Go、真实DB/API、正常菜单、故障/并发及公共回归，G4-T06承接地点容量及资源；当前Location已接线并完成主代理复评及限定验收，逐项实际证据见[204实施记录](../../verification/204-g4-implementation.md)。国家/区划既有结果与G2三条缩放后续证据关联见[204评审记录](../../verification/204-g4-plan-review.md)，不据文档评审将产品标为通过。
 

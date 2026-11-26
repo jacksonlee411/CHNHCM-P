@@ -648,8 +648,10 @@ test('T01 变更日志跨页、筛选、查看敏感差异与撤权', async ({ p
     await originalTab.close();
   }
   await reach308(page, trigger);
+  await trigger.focus();
+  await expect(trigger).toBeFocused();
   const before = await trigger.evaluate(el => el.getBoundingClientRect().top);
-  await trigger.click();
+  await trigger.press('Enter');
   await expect(page.getByRole('heading', { name: prefix, exact: true })).toBeVisible();
   await page.goBack();
   await expect.poll(sources).toEqual([versions[1], first]);

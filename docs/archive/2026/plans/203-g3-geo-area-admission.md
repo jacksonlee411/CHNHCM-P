@@ -1,10 +1,10 @@
 # CHNHCM-203 G3必要行政区划接入实施方案
 
-后续状态：2026-11-15 G5首批联合验收及4383运行更新已完成，见[205](../verification/205-g5-implementation.md)；本文原批次构建、失败及当时状态保持。
+后续状态：2026-11-15 G5首批联合验收及4383运行更新已完成，见[205](../../../verification/205-g5-implementation.md)；本文原批次构建、失败及当时状态保持。
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[200路线图](200-geography-and-location-roadmap.md)的G3/T03，只交付必要GeoArea目录。长期业务及技术合同由[201方案](../specs/m02/201-geography-and-location-design.md)持有，本文负责实施分批、交付物和退出条件。
+登记信息：[registry.json](../../../governance/registry.json)。适用范围：[200路线图](../../../plans/200-geography-and-location-roadmap.md)的G3/T03，只交付必要GeoArea目录。长期业务及技术合同由[201方案](../../../specs/m02/201-geography-and-location-design.md)持有，本文负责实施分批、交付物和退出条件。
 
-上游：[G0来源准入](../verification/200-g0-source-admission.md)、[G2国家目录](../verification/200-g2-country-catalog.md)、[国家来源资料精简](../verification/200-country-resource-simplification.md)、[202默认日期](../adr/202-master-data-default-effective-date.md)、[124接入指南](../guides/124-dated-object-admission-and-capacity.md)、[134协作基线](../guides/134-parallel-development-baseline.md)。本轮同步、资料核对与方案自复核见[203记录](../verification/203-g3-plan-and-sync.md)。本方案已完成[专项评审与修订](../verification/203-g3-plan-review.md)，按本次评审范围采纳；G3实施、主代理复评及限定范围验收已完成，见[实施验收](../verification/203-g3-implementation.md)。
+上游：[G0来源准入](../../../verification/200-g0-source-admission.md)、[G2国家目录](../../../verification/200-g2-country-catalog.md)、[国家来源资料精简](../../../verification/200-country-resource-simplification.md)、[202默认日期](../../../adr/202-master-data-default-effective-date.md)、[124接入指南](../../../guides/124-dated-object-admission-and-capacity.md)、[134协作基线](../../../guides/134-parallel-development-baseline.md)。本轮同步、资料核对与方案自复核见[203记录](../../../verification/203-g3-plan-and-sync.md)。本方案已完成[专项评审与修订](../../../verification/203-g3-plan-review.md)，按本次评审范围采纳；G3实施、主代理复评及限定范围验收已完成，见[实施验收](../../../verification/203-g3-implementation.md)。
 
 ## 1 用户目标与正常入口
 
@@ -16,7 +16,7 @@
 
 ### 2.1 按地区交付的输入
 
-采用G0已准入的`chnhcm-geography-g0-v1`，不在本批重新抓取或升级官方版次。完整输入为[package.json.gz](../../tests/fixtures/geography/v1/package.json.gz)，分母、摘要和逐行处置由[manifest.json](../../tests/fixtures/geography/v1/manifest.json)与来源原包持有。全部3620条初始日期为1900-01-01、英文名缺省；该日期不代表真实行政建制成立日。
+采用G0已准入的`chnhcm-geography-g0-v1`，不在本批重新抓取或升级官方版次。完整输入为[package.json.gz](../../../../tests/fixtures/geography/v1/package.json.gz)，分母、摘要和逐行处置由[manifest.json](../../../../tests/fixtures/geography/v1/manifest.json)与来源原包持有。全部3620条初始日期为1900-01-01、英文名缺省；该日期不代表真实行政建制成立日。
 
 | 范围 | 本期发布条数与类型 | 父关系与可选末级 | 必验案例 |
 | --- | --- | --- | --- |
@@ -25,7 +25,7 @@
 | 台湾 | 390：22县市、368乡镇市区；TW-NLSC | 22根、368条县市→乡镇市区边；368末级 | 臺南市→中西區；嘉義市与嘉義縣区分，代码按字符串保存 |
 | 澳门 | 0条已准入区划；8条旧资料继续隔离 | 不发布空目录完成标记，不生成虚拟末级 | 候选明确为基础地址范围；G4允许国家/地区加详细地址 |
 
-总计56根、3564条边、最大深度3、3235末级。以上数字是固定资料的核对分母，不能硬编码成未来产品容量限制。末级按完整已发布结构判定，不能因下级停用、日期不适用或无权读取而把上级变成最具体可选项，详见[201引用资格](../specs/m02/201-geography-and-location-design.md#m02-br-207)。
+总计56根、3564条边、最大深度3、3235末级。以上数字是固定资料的核对分母，不能硬编码成未来产品容量限制。末级按完整已发布结构判定，不能因下级停用、日期不适用或无权读取而把上级变成最具体可选项，详见[201引用资格](../../../specs/m02/201-geography-and-location-design.md#m02-br-207)。
 
 大陆树中的3条港澳台交叉根和414条未映射旧地址继续仅存离线来源。澳门新来源准入、版次升级及真实撤并另立来源修订任务；本批不猜名称映射、不伪造代码或翻译，不创建任何工作地点。
 
@@ -61,7 +61,7 @@ GeoArea与CountryRegion同属Organization，内部读取走有类型的应用/�
 
 现有c基线为模型5及00001—00010。GeoArea独立保存身份、按日资料、不可变来源、类型编码及读取投影；父边只有对象资料一处权威，查询索引可投影父ID。G3代码固定，按实例/地区/代码方案/代码设身份唯一约束；业务记录仍用有效期间，不另建不变代码的期间分段或回收流程。来源映射独立于可更正的名称，实例目录不新增企业字段来绕过范围权限。
 
-发布标记只记录国家/地区及固定包版次、摘要和数量。发布前一次窄批读取全部初始化映射/固定结构，与已验证包逐键核对后原子写标记，不循环读取3620份完整历史。发布后运行查询只读标记和必要对象，不复算全包。重跑以不可变初始化映射判断已完成对象，不能把人工名称更正当成来源漂移而覆盖。详细边界见[201装载](../specs/m02/201-geography-and-location-design.md#53-g3固定资料装载与发布)。
+发布标记只记录国家/地区及固定包版次、摘要和数量。发布前一次窄批读取全部初始化映射/固定结构，与已验证包逐键核对后原子写标记，不循环读取3620份完整历史。发布后运行查询只读标记和必要对象，不复算全包。重跑以不可变初始化映射判断已完成对象，不能把人工名称更正当成来源漂移而覆盖。详细边界见[201装载](../../../specs/m02/201-geography-and-location-design.md#53-g3固定资料装载与发布)。
 
 开工时按134重新核对主线及在途分支迁移、公共历史接口和生成器，再领取实际可用序号；方案不预占00011。本次同步已将国家适配器接入主线新的历史Append/PublishProjection接口；GeoArea直接使用最终共同合同。各固定库与其程序保持匹配，不因新DDL默认重建或升级持久环境。
 
@@ -126,18 +126,20 @@ AC202的真实地点保存、AC205的旧地点地址及无关修改、AC206的Lo
 
 G3开发复用c责任下的当前模型环境；自动DB/API、smoke使用创建时明确temporary的独占资源，结束后核对容器、卷、浏览器及API进程无自有残留。不得对全机prune或将既有持久资源改为可删除。保留环境须登记实际profile/三端口、构建、模型/迁移、用途、责任与复查节点。
 
-本方案制定时未更新固定环境；后续G3已由[运行验收](../verification/203-g3-runtime.md)接入4383，再由[万科初始化](../verification/203-vanke-fixed-runtime.md)交付m02-current-vanke-c。运行事实与本批G3原容量构建分别追溯；204方案任务不操作固定环境。
+本方案制定时未更新固定环境；后续G3已由[运行验收](../../../verification/203-g3-runtime.md)接入4383，再由[万科初始化](../../../verification/203-vanke-fixed-runtime.md)交付m02-current-vanke-c。运行事实与本批G3原容量构建分别追溯；204方案任务不操作固定环境。
 
 交付给G4的资料包括地区发布范围、候选/API及事务端口、最具体节点规则、当前授权裁剪、准确采用结构、澳门基础地址出口和全部首失败/遗留清单。完成方案不自动开始G3编码、远程推送、PR或部署。
 
 ## 7 进度记录
 
-2026-11-14：按用户要求同步最新main并制定本方案。固定资料只读复核、主代理方案自复核与文档检查由[本批记录](../verification/203-g3-plan-and-sync.md)持有。G3-T00—T05实施均未开始，G4/G5及原G2后补事项保持各自责任。
+2026-11-14：按用户要求同步最新main并制定本方案。固定资料只读复核、主代理方案自复核与文档检查由[本批记录](../../../verification/203-g3-plan-and-sync.md)持有。G3-T00—T05实施均未开始，G4/G5及原G2后补事项保持各自责任。
 
-2026-11-14专项评审：主代理对照固定输入与G2实际合同完成首轮评审，2项P1、3项P2已修订，复核范围与反例见[评审报告](../verification/203-g3-plan-review.md)。本次采纳方案，实施状态保持not_started；原编制报告、同步集成证据及固定环境保持。
+2026-11-14专项评审：主代理对照固定输入与G2实际合同完成首轮评审，2项P1、3项P2已修订，复核范围与反例见[评审报告](../../../verification/203-g3-plan-review.md)。本次采纳方案，实施状态保持not_started；原编制报告、同步集成证据及固定环境保持。
 
-2026-11-14开始实施：GeoArea领域资料/固定结构/采用结构与3620条离线输入准备已加入，5个基础测试根通过。数据库发布、API、页面及正式验收未完成，见[实施验收](../verification/203-g3-implementation.md)；不能按方案评审结论宣称产品验收通过。
+2026-11-14开始实施：GeoArea领域资料/固定结构/采用结构与3620条离线输入准备已加入，5个基础测试根通过。数据库发布、API、页面及正式验收未完成，见[实施验收](../../../verification/203-g3-implementation.md)；不能按方案评审结论宣称产品验收通过。
 
-2026-11-14接线与评审整改：独立存储、固定装载发布、授权/API、候选/引用和页面已实现。香港中断并发续做、重启、快照和字段权专项通过；完整验收继续执行，首失败、复验与实际范围以[实施记录](../verification/203-g3-implementation.md)为准。
+2026-11-14接线与评审整改：独立存储、固定装载发布、授权/API、候选/引用和页面已实现。香港中断并发续做、重启、快照和字段权专项通过；完整验收继续执行，首失败、复验与实际范围以[实施记录](../../../verification/203-g3-implementation.md)为准。
 
-2026-11-15 G4交接状态同步：G3-T00—T05完成及原证据保持；后续地点任务由[204](204-g4-location-implementation.md)承接，G4已接入并完成限定验收，见[204实施记录](../verification/204-g4-implementation.md)；G5未实施。G2三条缩放后续证据由[204报告](../verification/204-g4-plan-review.md)关联，国家容量及125其他遗留保持。
+2026-11-15 G4交接状态同步：G3-T00—T05完成及原证据保持；后续地点任务由[204](204-g4-location-implementation.md)承接，G4已接入并完成限定验收，见[204实施记录](../../../verification/204-g4-implementation.md)；G5未实施。G2三条缩放后续证据由[204报告](../../../verification/204-g4-plan-review.md)关联，国家容量及125其他遗留保持。
+
+2026-11-26 本批已归档。仍适用条款、原验收及接续责任见[逐份交接](../../../verification/511-project-standards-implementation.md#plan-203)。

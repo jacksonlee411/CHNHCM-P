@@ -2103,6 +2103,66 @@ test('M04 桌面按主兼岗搜索并用键盘打开未来任职',async({page})=
   await expect(page.getByRole('tab',{name:'职务信息'})).toHaveAttribute('aria-selected','true');
   await expect(page.getByLabel('查看业务日')).toHaveCount(0);
 });
+
+test('按人员编号筛选兼岗并返回原行，资料读者只见本人', async ({ page, browser }) => {
+  await signIn(page);
+  const sample = await seed(page);
+  const person = await request(page, 'GET', '/api/v1/persons/' + sample.id);
+  expect(person.status).toBe(200);
+  const number = person.body.number;
+  const { hire } = await hireAtLocation(page, sample);
+  await ensureJobOnlyPolicy(page, 'secondary');
+  const primaryPath = '/api/v1/assignments/' + hire.assignment;
+  for (const [index, from] of ['2027-05-01', '2027-05-02'].entries()) {
+    const current = await request(page, 'GET', primaryPath + '?businessAt=' + from);
+    expect(current.status).toBe(200);
+    const added = await request(page, 'POST', primaryPath + '/additional-assignments', {
+      from, expectedSourceVersion: current.body.sourceVersion, parallel: false,
+      department: sample.departmentId, job: sample.jobId, notice: '兼岗名录验收',
+    }, randomUUID());
+    expect(added.status, added.body.message).toBe(200);
+    expect(added.body.recordNumber).toBe(index + 1);
+  }
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openPersonnel(page);
+  const search = page.getByRole('textbox', { name: '姓名或人员编号' });
+  await search.fill(number);
+  await search.press('Enter');
+  await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
+  const filter = page.getByRole('combobox', { name: '主兼岗' });
+  await filter.click();
+  await page.getByRole('option', { name: '兼岗', exact: true }).click();
+  await expect(page.getByText('2 份任职，1 人', { exact: true })).toBeVisible();
+  const second = page.getByRole('row').filter({ has: page.getByRole('gridcell', { name: '2', exact: true }) })
+    .getByRole('link', { name: sample.name, exact: true });
+  await second.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.object-detail-identity')).toContainText('2 号兼岗');
+  await page.getByRole('link', { name: '返回人员', exact: true }).click();
+  await expect(second).toBeFocused();
+  await expect(search).toHaveValue(number);
+  await expect(filter).toHaveText('兼岗');
+
+  const reader = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  try {
+    const limited = await reader.newPage();
+    await signIn(limited, 'reader');
+    await openPersonnel(limited);
+    const limitedSearch = limited.getByRole('textbox', { name: '姓名或人员编号' });
+    await limitedSearch.fill(number);
+    await limitedSearch.press('Enter');
+    await expect(limited.getByText('0 份任职，1 人', { exact: true })).toBeVisible();
+    const self = limited.getByRole('link', { name: sample.name, exact: true });
+    await expect(self).toHaveCount(1);
+    await self.click();
+    await expect(limited.getByRole('tab', { name: '个人资料' })).toBeVisible();
+    await expect(limited.getByRole('tab', { name: '职务信息' })).toHaveCount(0);
+  } finally {
+    await reader.close();
+  }
+});
+
 async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   await concurrentJourney(page, sample);
   await expect(page.getByLabel('姓名或人员编号')).toHaveValue(sample.name);
