@@ -197,6 +197,16 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
   const data = listing.data,
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
+  useEffect(()=>{
+    if(!data) return;
+    const choices={department:data.departments,fromDepartment:data.fromDepartments,toDepartment:data.toDepartments,operator:data.operators};
+    const next=new URLSearchParams(params);
+    for(const [name,options] of Object.entries(choices)){
+      const value=next.get(name);
+      if(value && !options?.some(option=>option.id===value)) next.delete(name);
+    }
+    if(next.toString()!==params.toString()){next.delete('selected');next.set('page','1');setParams(next,{replace:true});}
+  },[data,params,setParams]);
   const countKey=JSON.stringify({...query,page:undefined});
   const lastCount=useRef<{key:string;total:number} | undefined>(undefined);
   useEffect(()=>{if(data)lastCount.current={key:countKey,total:data.total};},[countKey,data]);

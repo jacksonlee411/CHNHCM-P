@@ -707,6 +707,7 @@ async function registerJourney(page: Page, sample: Awaited<ReturnType<typeof see
   expect((await empty).status()).toBe(200);
   await expect(page.getByText('0 笔办理',{exact:true})).toBeVisible();
   expect(page.url()).not.toContain(encodeURIComponent(sample.name));
+  await page.locator('summary').filter({hasText:'离职'}).click();
   await search.fill(sample.name);
   await page.getByLabel('办理类型', { exact: true }).selectOption('DataChange');
   await page.getByLabel('生效起日', { exact: true }).fill('2027-05-01');

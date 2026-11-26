@@ -144,6 +144,8 @@ type InitialRecordPosition struct {
 }
 
 type Original struct {
+	PersonName        string                 `json:"personName,omitempty"`
+	PersonNumber      string                 `json:"personNumber,omitempty"`
 	InitialPosition   *InitialRecordPosition `json:"initialRecordPosition,omitempty"`
 	Exchange          *ExchangeLink          `json:"exchange,omitempty"`
 	Manager           *ManagerFact           `json:"manager,omitempty"`

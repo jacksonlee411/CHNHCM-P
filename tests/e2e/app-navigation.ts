@@ -20,6 +20,7 @@ export async function chooseApplication(page: Page, label: '部门' | '设置') 
 
 export async function openPersonnel(page: Page) {
   const drawerButton = page.getByRole('button',{name:'打开导航',exact:true});
+  if (await page.evaluate(() => innerWidth < 900)) await drawerButton.waitFor();
   if(await drawerButton.isVisible()){
     await drawerButton.click();
     const drawer=page.locator('#navigation-drawer');
@@ -30,5 +31,5 @@ export async function openPersonnel(page: Page) {
     await page.getByRole('button',{name:'切换应用',exact:true}).click();
     await page.getByRole('menuitem',{name:'人员',exact:true}).click();
   }
-  await page.getByRole('heading',{name:'人员',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'人员',level:1,exact:true}).waitFor();
 }

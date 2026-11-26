@@ -92,7 +92,9 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const offers=person.useRead(record.data && !creating && !version && !mode ? id:undefined,()=>offerAccess(id));
   const hire = person.useRead(record.data && !creating && !version && !mode ? id : undefined, () => employment(id));
   const terms = hire.data?.terms || [];
-  const assignment = terms.find(t=>t.assignment === params.get('assignment'))?.assignment || (terms.length===1 ? terms[0].assignment : undefined);
+  const requestedTerm=params.get('assignment');
+  const assignment=requestedTerm || (terms.length===1?terms[0].assignment:undefined);
+  const missingTerm=!!requestedTerm && !!hire.data && !terms.some(t=>t.assignment===requestedTerm);
   const hasJobTab = terms.length > 0;
   const listed = params.get('from') === 'directory';
   const rowAnchor = params.get('selected') || id;
@@ -180,6 +182,11 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const jobParams=person.directoryParams(params);
   if(listed)jobParams.set('from','directory');
   if(assignment && assignment===params.get('assignment') && params.has('assignmentDay'))jobParams.set('assignmentDay',params.get('assignmentDay')!);
+  const hireParams=new URLSearchParams({returnTo:profilePath});
+  const historyParams=new URLSearchParams(hireParams);
+  historyParams.set('view','history');
+  const rehireParams=new URLSearchParams(hireParams);
+  if(hire.data?.rehireFrom){rehireParams.set('rehireAction',hire.data.rehireFrom.action);rehireParams.set('rehireRevision',hire.data.rehireFrom.revision);}
   const assignmentPath = assignment ? personPath+'/assignments/'+assignment+'?'+jobParams : profilePath+'&tab=job';
   const back = person.path + '?' + backParams;
   const permitted =
@@ -256,9 +263,9 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
               </Button>
             ) : null}
             {offers.data?.canRead&&<Button component={Link} to={offerPath+'?person='+id}>招聘录用</Button>}
-            {hire.data?.rehireFrom && <Button component={Link} to={person.path+'/'+id+'/employment?rehireAction='+hire.data.rehireFrom.action+'&rehireRevision='+hire.data.rehireFrom.revision}>办理再聘</Button>}
-            {hire.data?.canHire && <Button component={Link} to={personPath+'/employment?'+detailParams} state={{hire:true}}>办理入职</Button>}
-            {!!hire.data?.actions.length && <Button component={Link} to={personPath+'/employment?'+detailParams+'&view=history'}>本人办理历史</Button>}
+            {hire.data?.rehireFrom && <Button component={Link} to={personPath+'/employment?'+rehireParams}>办理再聘</Button>}
+            {hire.data?.canHire && <Button component={Link} to={personPath+'/employment?'+hireParams} state={{hire:true}}>办理入职</Button>}
+            {!!hire.data?.actions.length && <Button component={Link} to={personPath+'/employment?'+historyParams}>本人办理历史</Button>}
           </>
         }
         navigation={
@@ -330,6 +337,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
           </Alert>
         )}
         {mode && !permitted && (data || access.data) && <Alert severity="warning">没有本次办理权限</Alert>}
+        {missingTerm && <Alert severity="info">所选任职不可用</Alert>}
         {(data || hasTabs) && (
           <ObjectDetailSheet
             identity={

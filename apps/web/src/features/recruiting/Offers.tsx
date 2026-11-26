@@ -227,7 +227,8 @@ export function OfferDetail({
   const saved = useRef(false),
     failure = useRef<HTMLDivElement>(null),
     opener = useRef<HTMLButtonElement | null>(null),
-    lastOperation = useRef('');
+    lastOperation = useRef(''),
+    openedOffer = useRef<Pick<Models['RecruitingOffer'], 'version' | 'arrival' | 'reserveFrom' | 'lastDay'>>(undefined);
   const entry = useRead(creating ? person : undefined, () =>
     offerAccess(person),
   );
@@ -265,9 +266,9 @@ export function OfferDetail({
     () => readMode(options.position?.id),
   );
   const scheduleChanged =
-    arrival !== item?.arrival ||
-    start !== item?.reserveFrom ||
-    last !== (item?.lastDay ?? '');
+    arrival !== openedOffer.current?.arrival ||
+    start !== openedOffer.current?.reserveFrom ||
+    last !== (openedOffer.current?.lastDay ?? '');
   const dirty = !!(
     day ||
     basis ||
@@ -337,6 +338,7 @@ export function OfferDetail({
   useEffect(() => {
     if (error) failure.current?.focus();
   }, [error]);
+  const staleDraft=!!op && !creating && !!item && openedOffer.current?.version !== item.version;
   const title = creating ? '发出录用' : (item?.number ?? '招聘录用');
   usePageTitle(title);
   const backParams = new URLSearchParams(params);
@@ -382,12 +384,12 @@ export function OfferDetail({
     );
   }
   function submit() {
-    if (!ready || !op || send.busy) return;
+    if (!ready || !op || send.busy || staleDraft) return;
     void send.submit({
       operation: op,
       businessDate: day,
       basis,
-      expected: item?.version,
+      expected: creating ? undefined : openedOffer.current?.version,
       dates:
         op === 'reschedule'
           ? { arrival, reserveFrom: start, lastDay: last || undefined }
@@ -422,7 +424,7 @@ export function OfferDetail({
                   <Button
                     type="submit" form="offer-record-form"
                     variant="contained"
-                    disabled={!ready || send.busy}
+                    disabled={!ready || send.busy || staleDraft}
                   >
                     保存
                   </Button>
@@ -520,6 +522,7 @@ export function OfferDetail({
                       key={action}
                       ref={node => { if (action === lastOperation.current) opener.current = node; }}
                       onClick={(e) => {
+                        openedOffer.current = item;
                         lastOperation.current = action;
                         opener.current = e.currentTarget;
                         saved.current = false;
@@ -577,6 +580,7 @@ export function OfferDetail({
               )}
             </ObjectForm>
           )}
+          {staleDraft && <Alert severity="warning">这份录用已被修改。请取消草稿，核对当前录用后重新办理。</Alert>}
           {op && (!creating || entry.data?.canIssue) && (
             <Box
               id="offer-record-form" component="form"

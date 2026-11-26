@@ -5,6 +5,7 @@ package bootstrap_test
 import (
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"maps"
+	"os"
 	"testing"
 )
 
@@ -93,6 +94,9 @@ func TestPersonOwnsConcurrentAssignmentNumbersAcrossRelationships(t *testing.T) 
 		t.Fatal("按部门及主兼岗过滤", secondary)
 	}
 	b.call("POST", "/api/v1/personnel/directory/query", M{"page": 1, "pageSize": 20, "businessAt": "2027-04-01"}, "", 400)
+	if os.Getenv("CHNHCM_PERSONNEL_CAPACITY") == "1" {
+		measureMixedDirectory(t, x, x.hire["assignment"].(string), one["assignment"].(string), bare.(string))
+	}
 	for _, r := range []struct {
 		result  M
 		primary bool

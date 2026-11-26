@@ -2,7 +2,7 @@
 
 此索引保留公开项目前身的技术文档和验收导航。历史运行附件由原仓保管，对应链接需要私仓权限。
 
-人员方案设「员工」与「人事事务」两个入口。员工列表按部门列各份任职，同人同部门也分行。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。实施先把已有按职务首单接入 0 号页签，再交地点变更与原笔更正。人事事务从这笔变更开始复用任职中的办理，兼岗和同日动作按各自前置接入。[分批实施及依赖图](plans/500-personnel-roadmap.md#job-information-delivery) · [编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [设计复核与参考来源](verification/506-job-information-design-review.md)
+经办人从「人员」按姓名或现旧编号查询，获权任职逐份列出。没有可列任职的本人按名录授权显示一行。本人资料与职务信息直接切签，跨人办理从「人事事务」进入。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。实施先把已有按职务首单接入 0 号页签，再交地点变更与原笔更正。人事事务从这笔变更开始复用任职中的办理，兼岗和同日动作按各自前置接入。[分批实施及依赖图](plans/500-personnel-roadmap.md#job-information-delivery) · [编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [设计复核与参考来源](verification/506-job-information-design-review.md)
 
 T04「在职变动、结束与再聘」在 509 本地候选及固定 f 的 4386 原库验收通过。509 已关闭对 `39660e7` 七轮复评发现的 27 项问题，涵盖实际汇报、同日与跨岗办理、退出与再聘、岗位实占及页面交互。508 原六项也已回归。[27 项原反例](verification/500-t04-implementation-rereview.md) · [509 分批修复方案](plans/509-t04-remediation.md) · [方案独立评审](verification/509-t04-remediation-review.md) · [509 产品验收及固定环境](verification/509-t04-remediation-implementation.md#fixed-environment) · [508 原批验证](verification/508-job-information-implementation.md)
 

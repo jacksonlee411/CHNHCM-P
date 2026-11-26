@@ -14191,6 +14191,8 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        personName: {type: string}
+        personNumber: {type: string}
         initialRecordPosition:
           type: object
           additionalProperties: false

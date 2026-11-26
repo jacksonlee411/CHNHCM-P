@@ -1,5 +1,5 @@
-import { employmentHistoryReturn, personnelReturn, registerListParams } from './jobLinks';
-import { actionLabel } from './AssignmentRecordForm';
+import { employmentHistoryReturn, personnelReturn, profileReturn, registerListParams } from './jobLinks';
+import { actionLabel, relationAction } from './AssignmentRecordForm';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, MenuItem, Paper, Stack, Typography } from '@mui/material';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -44,7 +44,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     params = new URLSearchParams(route.search),
     origin = params.get('rehireAction') && params.get('rehireRevision') ? {action:params.get('rehireAction')!,revision:params.get('rehireRevision')!} : undefined,
     from = params.get('returnTo') || route.state?.fromAction,
-    returnTo = personnelReturn(from) || employmentHistoryReturn(from, id),
+    returnTo = profileReturn(from,id) || personnelReturn(from) || employmentHistoryReturn(from, id),
     back = cancellation?.returnTo ?? returnTo ?? person.path + '/' + id + '?' + person.directoryParams(params);
   const pendingKey = ['chnhcm-rehire',session.instanceId,session.subjectId].join('.');
   const activePage = useRef(true);
@@ -522,7 +522,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                       {a.notice || (a.kind==='DataChange'?'工作地点变更':'任用决定')}
                     </Typography>
                     <Typography variant="body2">
-                      雇用记录 {a.recordNumber} 号 · {a.primaryJob ? '主岗' : '兼岗'}
+                      {relationAction(a.kind)?'工作关系':`雇用记录 ${a.recordNumber} 号 · ${a.primaryJob?'主岗':'兼岗'}`}
                     </Typography>
                     <Typography variant="body2">{recordedTime(a.recordedAt)}</Typography>
                     {a.canHistory && (
@@ -536,7 +536,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                     {a.canHistory && original === a.id && source.data && (
                       <Box sx={{ overflowWrap: 'anywhere' }}>
                         <Typography>工作关系 {a.employment}</Typography>
-                        <Typography>首任职 {a.assignment}</Typography>
+                        {!relationAction(a.kind) && <Typography>{['Hire','Rehire','CancelHire'].includes(a.kind)?'首任职':'任职'} {a.assignment}</Typography>}
                         {source.data.locationChange&&<Typography>工作地点 {source.data.locationChange.before?.name??'—'} → {source.data.locationChange.after.name}</Typography>}
                         {source.data.sources && (
                           <>

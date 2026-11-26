@@ -8,6 +8,7 @@ import (
 
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
+	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
 	f "chnhcm.local/chnhcm/internal/foundation"
@@ -139,13 +140,7 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 			}
 			return nil
 		}
-		var people []person.Summary
-		var k string
-		if personnel {
-			people, k, e = s.HirePeople.DirectoryPeople(dbtx.With(ctx, u.tx), c, q.Ref)
-		} else {
-			people, k, e = s.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, ids, q.Ref)
-		}
+		people, k, e := s.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, ids, q.Ref)
 		if e != nil {
 			return e
 		}
@@ -156,23 +151,14 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 		}
 		departments := map[string]h.EmployeeDepartment{}
 		var matching []h.EmployeeRow
-		represented := map[string]bool{}
 		for _, r := range allowed {
 			p, ok := identities[r.Person]
 			if !ok {
 				continue
 			}
 			r.Name, r.Number, r.Historical = p.Name, p.Number, p.Historical
-			represented[r.Person] = true
 			matching = append(matching, r)
 			departments[r.Department] = h.EmployeeDepartment{ID: r.Department, Name: r.DepartmentName}
-		}
-		if personnel && primary == "" && q.Department == "" {
-			for _, p := range people {
-				if !represented[p.ID] {
-					matching = append(matching, h.EmployeeRow{ID: p.ID, Person: p.ID, Name: p.Name, Number: p.Number, Historical: p.Historical})
-				}
-			}
 		}
 		var deptIDs []string
 		for id := range departments {
@@ -182,15 +168,23 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 		if e != nil {
 			return e
 		}
-		for _, src := range sources {
-			index := d.At(src.Timeline, out.BusinessAt)
-			if index < 0 {
-				continue
+		visibleSources := map[string]app.PositionSource{}
+		parentAt := func(id, day string) string {
+			src, ok := visibleSources[id]
+			if !ok {
+				return ""
 			}
-			parent := src.Records[index].Data["parent"]
+			i := d.At(src.Timeline, day)
+			if i < 0 {
+				return ""
+			}
+			parent := src.Records[i].Data["parent"]
 			if _, visible := departments[parent]; !visible {
-				continue
+				return ""
 			}
+			return parent
+		}
+		for _, src := range sources {
 			show := true
 			for _, name := range []string{"department.read", "department.history.read"} {
 				decision, e := u.Access().Decide(ctx, access.Intent{EnterpriseID: src.Enterprise, DepartmentTarget: src.DepartmentTarget, Action: name, Kind: "object"})
@@ -203,10 +197,12 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 				}
 			}
 			if show {
-				v := departments[src.ID]
-				v.Parent = parent
-				departments[src.ID] = v
+				visibleSources[src.ID] = src
 			}
+		}
+		for id, dept := range departments {
+			dept.Parent = parentAt(id, out.BusinessAt)
+			departments[id] = dept
 		}
 		for _, dept := range departments {
 			out.Departments = append(out.Departments, dept)
@@ -223,7 +219,7 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 			if q.Department != "" {
 				dep := r.Department
 				for dep != "" && dep != q.Department {
-					dep = departments[dep].Parent
+					dep = parentAt(dep, max(out.BusinessAt, r.From))
 				}
 				if dep == "" {
 					continue
@@ -234,6 +230,39 @@ func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQu
 			}
 			kept = append(kept, r)
 			count[r.Person] = true
+		}
+		if personnel && primary == "" && q.Department == "" {
+			keys := make([]person.DirectoryKey, 0, len(kept))
+			assignments := make(map[string]h.EmployeeRow, len(kept))
+			for _, r := range kept {
+				keys = append(keys, person.DirectoryKey{Person: r.Person, ID: r.ID, Order: r.RecordNumber})
+				assignments[r.ID] = r
+			}
+			page, err := s.HirePeople.IndexedDirectory(dbtx.With(ctx, u.tx), c, person.Query{Ref: q.Ref, Page: q.Page, Size: q.PageSize, Sort: q.Sort}, keys, q.Anchor)
+			if err != nil {
+				return err
+			}
+			out.Total, out.People, out.Keyword = page.Total, page.Total-len(kept)+len(count), page.Keyword
+			for _, p := range page.Rows {
+				row, found := assignments[p.Key]
+				if !found {
+					row = h.EmployeeRow{ID: p.ID, Person: p.ID, Name: p.Name, Number: p.Number, Historical: p.Historical}
+				}
+				out.Rows = append(out.Rows, row)
+			}
+			if page.Nav.Position > 0 {
+				link := func(key string) *h.AssignmentLink {
+					if key == "" {
+						return nil
+					}
+					if r, ok := assignments[key]; ok {
+						return directoryLink(r)
+					}
+					return &h.AssignmentLink{Person: key}
+				}
+				out.Navigation = &h.AssignmentNav{Position: page.Nav.Position, Previous: link(page.Nav.Prev), Next: link(page.Nav.Next)}
+			}
+			return nil
 		}
 		slices.SortFunc(kept, func(a, b h.EmployeeRow) int {
 			order := cmp.Compare(a.Number, b.Number)

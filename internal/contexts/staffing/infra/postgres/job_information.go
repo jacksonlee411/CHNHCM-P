@@ -420,33 +420,44 @@ func (u *unit) assignmentView(ctx context.Context, c f.Credentials, id, day, ver
 // A real arrangement boundary can exist without a new action, for example the
 // first normal day after a finite duty period. Scope the segment before exposing its date.
 func (u *unit) effectiveDates(ctx context.Context, a h.Action, version string, actions []h.Action) ([]string, error) {
-	rows, err := u.tx.Query(ctx, `SELECT lower(period)::text,department_id FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 ORDER BY lower(period)`, u.store.Instance, a.Assignment, version)
+	source, err := u.assignmentIdentity(ctx, a.Assignment)
 	if err != nil {
 		return nil, err
 	}
-	type boundary struct {
-		Day        string
-		Department string
+	actionDays := make([]string, 0, len(actions))
+	for _, action := range actions {
+		actionDays = append(actionDays, action.BusinessDate)
 	}
+	rows, err := u.tx.Query(ctx, `WITH dates AS (
+  SELECT unnest($4::text[])::date AS day UNION
+  SELECT lower(period) FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3
+ ) SELECT dates.day::text,coalesce(seg.department_id,$5::uuid) FROM dates
+ LEFT JOIN staffing.assignment_segment seg ON seg.instance_id=$1 AND seg.assignment_id=$2 AND seg.version=$3 AND seg.period @> dates.day
+ ORDER BY dates.day`, u.store.Instance, a.Assignment, version, actionDays, source.Department)
+	if err != nil {
+		return nil, err
+	}
+	type boundary struct{ Day, Department string }
 	segments, err := pgx.CollectRows(rows, pgx.RowToStructByPos[boundary])
 	if err != nil {
 		return nil, err
 	}
-	dates := make([]string, 0, len(actions)+len(segments))
-	for _, action := range actions {
-		dates = append(dates, action.BusinessDate)
-	}
+	dates := make([]string, 0, len(segments))
+	permissions := map[string]bool{}
 	for _, s := range segments {
-		ok, err := u.employmentAllowed(ctx, "read", a.Person, a.Employer, s.Department, false)
-		if err != nil {
-			return nil, err
+		allowed, known := permissions[s.Department]
+		if !known {
+			allowed, err = u.employmentAllowed(ctx, "read", a.Person, a.Employer, s.Department, false)
+			if err != nil {
+				return nil, err
+			}
+			permissions[s.Department] = allowed
 		}
-		if ok {
+		if allowed {
 			dates = append(dates, s.Day)
 		}
 	}
-	slices.Sort(dates)
-	return slices.Compact(dates), nil
+	return dates, nil
 }
 
 func (u *unit) maintenancePeriod(ctx context.Context, a h.Action, day, kind string) (f.Period, error) {

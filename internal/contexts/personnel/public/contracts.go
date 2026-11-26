@@ -179,6 +179,24 @@ type Query struct {
 	Ref, Sort  string
 	Page, Size int
 }
+
+// DirectoryKey expands one visible person into caller-authorized rows. The
+// consumer owns those row identities and their order within that person.
+type DirectoryKey struct {
+	Person, ID string
+	Order      int
+}
+type IndexedPerson struct {
+	Summary
+	Key string
+}
+type IndexedDirectory struct {
+	Rows    []IndexedPerson
+	Total   int
+	Keyword string
+	Nav     Nav
+}
+
 type Source struct {
 	Version  string    `json:"sourceVersion"`
 	At       time.Time `json:"recordedAt"`

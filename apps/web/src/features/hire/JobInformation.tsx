@@ -472,7 +472,7 @@ export function JobInformation({
       navigate('/personnel/employees/' + personId + '/assignments/' + entry + '?' + next, options);
     } else setParams(next, options);
   }
-  const at = data?.actions.filter((a) => a.businessDate === day) ?? [];
+  const at = facts?.actions.filter(a => a.businessDate === facts.businessAt) ?? [];
   const historyNotice = <HistoryNotice onReturn={returnCurrent} label="返回当前职务信息" />;
   const evidence = original.data;
   const canCorrect = opened && !evidence?.exchange && (opened.canCorrectDuty || opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion);
@@ -570,7 +570,7 @@ export function JobInformation({
                         <Button
                           key={a.id}
                           id={chosenId === a.id ? controlId + '-record' : undefined}
-                          onClick={() => select({action:a.id, assignmentDay:a.businessDate, adoptedRef:undefined})}
+                          onClick={() => select({action:a.id, assignmentDay:a.businessDate, adoptedRef:historical?a.revision:undefined, sourceVersion:historical?facts?.sourceVersion:undefined})}
                         >
                           {actionLabel(a)}{a.operation==='Withdraw'?'（已撤销）':a.operation==='Delete'?'（已删除）':''} · {a.businessDate}
                         </Button>

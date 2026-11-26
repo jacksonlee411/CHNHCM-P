@@ -32,7 +32,7 @@ const directorySQL = `with visible as (
  select b.person_id,n.name,b.number,(x.number is not null and x.number<>b.number and strpos(n.name,$5)=0) historical
  from personnel.person b join personnel.identity_payload n on (b.instance_id,b.person_id,b.head)=(n.instance_id,n.person_id,n.version)
  left join personnel.number x on x.instance_id=b.instance_id and x.person_id=b.person_id and x.number=$6
- where b.instance_id=$1 and b.ordinary_until>clock_timestamp() and ($2 or b.person_id=any($3::uuid[]))
+ where b.instance_id=$1 and b.ordinary_until>statement_timestamp() and ($2 or b.person_id=any($3::uuid[]))
  and not (b.person_id=any(coalesce($4::uuid[],'{}'))) and (strpos(n.name,$5)>0 or x.number is not null)
 ) `
 
@@ -336,28 +336,87 @@ func (s *Store) GetRecordedNumber(ctx context.Context, c f.Credentials, id, vers
 	return source.Number, nil
 }
 
-// DirectoryPeople returns all identities visible in the caller's transaction before
-// assignment filtering, row selection, counting and pagination.
-func (s *Store) DirectoryPeople(ctx context.Context, c f.Credentials, ref string) ([]p.Summary, string, error) {
+// IndexedDirectory counts and pages the union of ordinary people and authorized
+// row keys in SQL. Only the requested page and adjacent target identities cross
+// the context boundary, including when a query covers the entire customer.
+func (s *Store) IndexedDirectory(ctx context.Context, c f.Credentials, q p.Query, keys []p.DirectoryKey, anchor string) (out p.IndexedDirectory, err error) {
 	tx, ok := dbtx.From(ctx)
 	if !ok {
-		return nil, "", errors.New("directory lookup requires caller transaction")
+		return out, errors.New("directory lookup requires caller transaction")
 	}
 	access, _, err := s.Authorize(ctx, tx, c)
 	if err != nil {
-		return nil, "", err
+		return out, err
 	}
 	r := request{ctx: ctx, tx: tx, a: access, instance: access.Principal.InstanceID}
-	_, args, keyword, err := r.directory(p.Query{Ref: ref, Size: 20, Page: 1}, false)
+	order, args, keyword, err := r.directory(q, false)
 	if err != nil {
-		return nil, "", err
+		return out, err
 	}
-	rows, err := tx.Query(ctx, directorySQL+" SELECT person_id,name,number,historical FROM visible", args...)
+	out.Keyword = keyword
+	var ids, people []string
+	var orders []int
+	for _, k := range keys {
+		ids = append(ids, k.ID)
+		people = append(people, k.Person)
+		orders = append(orders, k.Order)
+	}
+	args = append(args, ids, people, orders)
+	base := directorySQL + `, indexed AS (
+ SELECT v.*,coalesce(k.id,v.person_id) row_id,coalesce(k.ordinal,0) ordinal FROM visible v
+ LEFT JOIN unnest($7::uuid[],$8::uuid[],$9::int[]) k(id,person,ordinal) ON k.person=v.person_id
+ ) `
+	order += ",ordinal,row_id"
+	// Read one neighbour on each side of the requested page. A selected row
+	// on this page can return its exact navigation without ranking every row.
+	offset := (q.Page - 1) * q.Size
+	start := max(0, offset-1)
+	rows, err := tx.Query(ctx, base+`SELECT counts.total,v.person_id,v.name,v.number,v.historical,v.row_id
+ FROM (SELECT count(*) total FROM indexed)counts LEFT JOIN (SELECT * FROM indexed ORDER BY `+order+` LIMIT $10 OFFSET $11)v ON true ORDER BY `+order, append(args, q.Size+1+offset-start, start)...)
 	if err != nil {
-		return nil, "", err
+		return out, err
 	}
-	result, err := pgx.CollectRows(rows, pgx.RowToStructByPos[p.Summary])
-	return result, keyword, err
+	var page []p.IndexedPerson
+	for rows.Next() {
+		var id, name, number, row *string
+		var historical *bool
+		if err = rows.Scan(&out.Total, &id, &name, &number, &historical, &row); err != nil {
+			rows.Close()
+			return out, err
+		}
+		if id != nil {
+			page = append(page, p.IndexedPerson{Summary: p.Summary{ID: *id, Name: *name, Number: *number, Historical: *historical}, Key: *row})
+		}
+	}
+	rows.Close()
+	if err = rows.Err(); err != nil {
+		return out, err
+	}
+	first := min(offset-start, len(page))
+	end := min(first+q.Size, len(page))
+	out.Rows = page[first:end]
+	if anchor == "" {
+		return out, nil
+	}
+	for i := first; i < end; i++ {
+		if page[i].Key == anchor {
+			out.Nav.Position = start + i + 1
+			if i > 0 {
+				out.Nav.Prev = page[i-1].Key
+			}
+			if i+1 < len(page) {
+				out.Nav.Next = page[i+1].Key
+			}
+			return out, nil
+		}
+	}
+	err = tx.QueryRow(ctx, base+`, positions AS (
+ SELECT row_id,row_number() OVER w pos,lag(row_id) OVER w prev,lead(row_id) OVER w next FROM indexed WINDOW w AS (ORDER BY `+order+`))
+ SELECT pos,coalesce(prev::text,''),coalesce(next::text,'') FROM positions WHERE row_id=$10`, append(args, anchor)...).Scan(&out.Nav.Position, &out.Nav.Prev, &out.Nav.Next)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return out, nil
+	}
+	return out, err
 }
 
 // RecognizedPeople discloses only directory identity fields for the supplied candidates.

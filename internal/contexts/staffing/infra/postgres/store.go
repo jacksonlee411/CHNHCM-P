@@ -36,7 +36,7 @@ type Store struct {
 		hireprep.Personnel
 		RenewDirectoryQuery(context.Context, foundation.Credentials, string) error
 		DirectoryPage(context.Context, foundation.Credentials, person.Query) (person.Directory, error)
-		DirectoryPeople(context.Context, foundation.Credentials, string) ([]person.Summary, string, error)
+		IndexedDirectory(context.Context, foundation.Credentials, person.Query, []person.DirectoryKey, string) (person.IndexedDirectory, error)
 		RecognizedPeople(context.Context, foundation.Credentials, []string, string) ([]person.Summary, string, error)
 		CheckHirePerson(context.Context, foundation.Credentials, string) error
 	}

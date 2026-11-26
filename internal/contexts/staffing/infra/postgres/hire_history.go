@@ -434,7 +434,7 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if h.RelationAction(a.Kind) {
 			out, e = u.relationOriginal(ctx, a, revision)
 			if e == nil {
-				out.InitialPosition, e = u.initialPosition(ctx, a)
+				e = u.identifyOriginal(ctx, c, a, &out)
 			}
 			return e
 		}
@@ -678,10 +678,30 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 		}
 		out.Action = a
-		out.InitialPosition, e = u.initialPosition(ctx, a)
+		e = u.identifyOriginal(ctx, c, a, &out)
 		return e
 	})
 	return
+}
+
+func (u *unit) identifyOriginal(ctx context.Context, c f.Credentials, a h.Action, out *h.Original) error {
+	position, e := u.initialPosition(ctx, a)
+	if e != nil {
+		return e
+	}
+	out.InitialPosition = position
+	names, _, e := u.store.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, []string{a.Person}, "")
+	var fault *f.Fault
+	if errors.As(e, &fault) && (fault.Status == 403 || fault.Status == 404) {
+		return nil
+	}
+	if e != nil {
+		return e
+	}
+	if len(names) == 1 {
+		out.PersonName, out.PersonNumber = names[0].Name, names[0].Number
+	}
+	return nil
 }
 
 func (u *unit) revisionVisible(ctx context.Context, a h.Action, revision string) (bool, error) {

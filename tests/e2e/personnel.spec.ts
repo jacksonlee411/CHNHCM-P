@@ -878,7 +878,7 @@ test('人事试办：同名两人、两人同时登记同一证号、同一张�
     const wonNumber = (await winner.locator('.object-identity-summary').innerText()).trim();
     await button(loser, '取消').click();
     await button(loser, '放弃修改').click();
-    await expect(loser.getByRole('heading', { name: '人员', exact: true })).toBeVisible();
+    await expect(loser.getByRole('heading', { name: '人员', level:1, exact: true })).toBeVisible();
     // The losing clerk already returned to the directory when discarding the form.
     if (winner === page) await menu(page);
     await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees');

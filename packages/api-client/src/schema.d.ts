@@ -6913,6 +6913,8 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            personName?: string;
+            personNumber?: string;
             initialRecordPosition?: {
                 /** @enum {string} */
                 recorded: "Add" | "Insert";

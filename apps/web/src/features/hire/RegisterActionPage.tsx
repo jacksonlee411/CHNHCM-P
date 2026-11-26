@@ -230,7 +230,7 @@ function ActionDetail({
         {a && (
           <>
             <Typography component="h1" variant="h5">
-              {visibleAssignment.data && <>{visibleAssignment.data.name} · {visibleAssignment.data.number} · </>}{actionLabel(a)} ·{' '}
+              {original.data?.personName && <>{original.data.personName} · {original.data.personNumber} · </>}{actionLabel(a)} ·{' '}
               {relationAction(a.kind)
                 ? '工作关系'
                 : a.recordNumber + ' 号' + (a.primaryJob ? '主岗' : '兼岗')}
