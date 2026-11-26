@@ -3072,6 +3072,30 @@
       "superseded_by": [],
       "closure": {"date": "2026-11-26", "reason": "二十项页面整改已逐项复验，固定 f 原库完成桌面交接，定向业务回归及两套万人容量试验通过。"},
       "archive": null
+    },
+    {
+      "id": "CHNHCM-511",
+      "title": "项目规范体系建设与文档治理方案",
+      "path": "docs/plans/511-project-standards.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Repository maintainer，协同受影响的领域、体验和验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [],
+      "scope": "全仓标准覆盖面、现行合同检索、修订实施与评审的引用方式，以及已关闭计划的规则提取与归档。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（方案编写者复核）",
+        "scope": "初评四项及复评遗留的 P2。以 135 与 017 的已采纳场景、已否决候选、原文审阅和执行关闭状态核定归档前的提炼条件。",
+        "result": "accepted",
+        "evidence": "docs/verification/511-project-standards-acceptance.md"
+      },
+      "execution_status": "not_started",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
     }
   ],
   "first_slice": {
@@ -3086,6 +3110,61 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/511-project-standards-acceptance.md",
+        "related_documents": ["CHNHCM-511"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "02cb1fe40893ac6322a91bab80448d3ba0d31237",
+        "working_tree": "dirty",
+        "change_description": "以复评存证的输入为前态，修订 511 第 5.3、6.1 节。受评正文摘要及逐项核对见报告。",
+        "environment": "wt-dev-f、Python 文档治理夹具、临时目录。",
+        "scope": "方案采纳，核对 135 的部分承接及原文状态。",
+        "results": [
+          {"check": "查回 017 已采纳场景、135 否决结论及原登记", "result": "passed", "evidence": "docs/verification/511-project-standards-acceptance.md"},
+          {"check": "草稿及在审原文交接单项通过，无整份审阅时提升状态被拒绝", "result": "passed", "evidence": "docs/verification/511-project-standards-acceptance.md"}
+        ],
+        "limitations": ["由方案编写者复核，治理批次及页面实测在实施记录中单独判定。"]
+      },
+      {
+        "path": "docs/verification/511-project-standards-rereview.md",
+        "related_documents": ["CHNHCM-511"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "02cb1fe40893ac6322a91bab80448d3ba0d31237",
+        "working_tree": "dirty",
+        "change_description": "受评输入是未提交的 511 修订稿、任务导航及登记表、首页、规格和验证目录的增量。六份输入的可重放差异、前态和摘要见复评记录。",
+        "environment": "wt-dev-f 本地工作树、Git、jq、Python 文档治理检查器及临时目录。",
+        "scope": "初评两项 P1 和两项 P2，另用 135 的真实登记状态及已采纳、已否决决定检验逐条提炼。",
+        "results": [
+          {"check": "核对 012 和 308 的视口及历史矩阵、301 条款和原稿交接、页签两种焦点预期、首页完整在办及待审分类", "result": "passed", "evidence": "docs/verification/511-project-standards-rereview.md"},
+          {"check": "隔离验证取得条款依据后保留在审原文可通过，缺少整份接受结论时将原文改为 active 被拒绝", "result": "passed", "evidence": "docs/verification/511-project-standards-rereview.md"},
+          {"check": "按 511 第 5.3 节为在审且执行已完成的原文选择部分承接路径", "result": "failed", "evidence": "docs/verification/511-project-standards-rereview.md"},
+          {"check": "受评候选的 make docs、git diff --check、四项定向治理回归及六份输入逐字节重放", "result": "passed", "evidence": "docs/verification/511-project-standards-rereview.md"}
+        ],
+        "limitations": ["由方案编写者复评。范围为文档和治理规则。301 原仓的受评原稿由获权维护者在试点核验，产品实测和存量归档由实施批次留证。"]
+      },
+      {
+        "path": "docs/verification/511-project-standards-review.md",
+        "related_documents": ["CHNHCM-511"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "4488d58c7029a69be36d360f1f9cdaf27357893b",
+        "working_tree": "dirty",
+        "change_description": "受评输入含未提交的 511 正文与规范导航，以及登记表、文档首页、规格目录的 511 批次增量。正文及导航摘要见报告。",
+        "environment": "wt-dev-f 本地工作树，Git 快照、Python 标准库、文档治理检查器及隔离临时目录。",
+        "scope": "方案盘点、入口定位、现行条款一致性、定稿报告对已完成计划的引用、原位提取稳定 ID、组件用法与批次验收。",
+        "results": [
+          {"check": "原盘点基线、稳定定义计数和三条两跳规范查询", "result": "passed", "evidence": "docs/verification/511-project-standards-review.md"},
+          {"check": "扫描 291 份定稿报告的仓内直链，复核 301 旧片段，验证现行定义重复拒绝及整体替代后原位保留两种情形", "result": "passed", "evidence": "docs/verification/511-project-standards-review.md"},
+          {"check": "受评初稿的 make docs、git diff --check 与三项定向治理回归", "result": "passed", "evidence": "docs/verification/511-project-standards-review.md"},
+          {"check": "方案采纳条件的语义评审，现行冲突、原位提取、组件交付及四类入口验收各有待修订项", "result": "failed", "evidence": "docs/verification/511-project-standards-review.md"}
+        ],
+        "limitations": ["由方案编写者复核。反向引用统计限于已登记定稿报告中的仓内 Markdown 直接链接。产品运行、私有附件及实际批量归档属于各自交付范围。"]
+      },
       {
         "path": "docs/verification/012-desktop-page-acceptance.md",
         "related_documents": [

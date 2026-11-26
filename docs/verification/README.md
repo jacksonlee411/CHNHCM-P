@@ -1,5 +1,9 @@
 # 验证记录
 
+511 的修订验收包括 135 在审文稿的单项决定交接、原状态保留和错误提升被拒绝的对照。[方案采纳](511-project-standards-acceptance.md) · [复评](511-project-standards-rereview.md) · [初评](511-project-standards-review.md)
+
+510 人员页面整改的旧编号、首败、实测和复验按项记录，方案评审另有原稿与结论。[二十项实施复验](510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) · [510 方案评审](510-personnel-page-remediation-review.md)
+
 500 人员页面的实页评审登记了 11 项待修复问题，可逐项查阅复现路径、规范、截图及关闭条件。[500 人员页面布局与交互问题登记](500-personnel-page-review.md)
 
 500-UI-12 至 20 接续记录普通人员入口、职务信息页签、日期轴、通用查看日期和相邻流程的 9 项问题。四轮走查覆盖单任职、多任职、首聘、只读、返回与专项统计，并对照实施合同和旧浏览器断言。[500 人员入口与日期交互补充评审](500-personnel-entry-and-date-review.md)

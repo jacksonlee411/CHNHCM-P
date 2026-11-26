@@ -1,5 +1,7 @@
 # CHNHCM
 
+查业务规则、页面与组件、工程实施及评审依据，可从[项目规范导航](governance/README.md)按任务进入。查在办计划和待审文稿，按[登记状态检索](governance/README.md#计划与文稿)。查某批做过什么，可从[验证记录](verification/README.md)或[已关闭批次](#验证与历史批次)进入。
+
 此索引保留公开项目前身的技术文档和验收导航。历史运行附件由原仓保管，对应链接需要私仓权限。
 
 经办人从「人员」按姓名或现旧编号查询，获权任职逐份列出。没有可列任职的本人按名录授权显示一行。本人资料与职务信息直接切签，跨人办理从「人事事务」进入。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。实施先把已有按职务首单接入 0 号页签，再交地点变更与原笔更正。人事事务从这笔变更开始复用任职中的办理，兼岗和同日动作按各自前置接入。[分批实施及依赖图](plans/500-personnel-roadmap.md#job-information-delivery) · [编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [设计复核与参考来源](verification/506-job-information-design-review.md)
@@ -132,7 +134,7 @@ M04 直接入职沿用人员原档，可引用任用决定或说明无编号通�
 
 ## 当前规则
 
-[141 本地预检计划](plans/141-local-preflight.md)覆盖候选与实际用例结果、逐次证据保护及生成物核对。
+本地预检的范围、步骤和生成物核对见 [137 的候选验证要求](governance/137-actions-and-validation.md#13-减少正式候选的全量启动次数)。
 
 [137 Actions 使用与验证规范](governance/137-actions-and-validation.md)统一触发、范围、门禁、失败补验和用量口径。[136 节流计划](plans/136-actions-cost-reduction.md)的首个窗口已按 10 次有效交付收口，结果见[终期成本观察](verification/136-actions-observation.md#6-窗口收口)。此前的[本地实施](verification/136-actions-implementation.md)和[方案验证](verification/136-actions-policy-validation.md)保留 61 项离线反例及 3944 分钟历史快照。
 
@@ -154,6 +156,8 @@ M04 直接入职沿用人员原档，可引用任用决定或说明无编号通�
 113已接入Community DataGrid8.29.3原字节源码及同版声明，完成T01/T02-A/B/C；采用部门样板、摘要列、原生列设置，保留A/D、名称链接、20/50/100与#066b68，取消列拖动/固定。实际类型/构建及组件/合成HTTP检查见[111实施报告](verification/111-community-t01-t02.md)，T03真实Go/API/DB与七组条件另见[新报告](verification/111-community-t03.md)，原T04评估已完成并维持当批查询，列条件原为后置，见[评估记录](verification/111-column-filter-evaluation.md)；T05限定交付已完成，见[交付报告](verification/111-community-t05-delivery.md)。旧Pro及113文档报告保留原结果；用户随后采纳单列条件与应用/取消，见本次增量报告，Excel/跨列组合仍后置。
 
 ## 当前交付与规格
+
+[511 项目规范体系建设与文档治理方案](plans/511-project-standards.md)给出标准覆盖面、现状盘点、修订与评审示例及归档批次。
 
 [116共用按日维护路线图](plans/116-m02-shared-dated-maintenance-roadmap.md)：R0—R5及R6标准/实测交接已交付；2026-11-15按用户决定完成执行关闭，R6-P01/P02及P03剩余容量/成本由125统一接收。
 
@@ -200,6 +204,9 @@ M04 直接入职沿用人员原档，可引用任用决定或说明无编号通�
 
 ## 验证与历史批次
 
+- [141 本地预检计划](plans/141-local-preflight.md)及[实施记录](verification/141-local-preflight.md)保留候选与实际用例结果、逐次证据保护和生成物核对的交付依据。
+- [126 完整历史紧凑存储研究](plans/126-compact-history-storage-research.md)在隔离模型中覆盖原案例历史、审计和索引，约 191.5 MB。产品实施时，完整案例静态整理为 276.22 MB，真实读写后普通维护为 311.02 MB。200 MB 已按用户决定改为参考值，部分延迟未达标，容量 P1 保持。[研究实测与限制](verification/126-storage-feasibility.md) · [产品实施记录](verification/126-compact-history-implementation.md)
+- [510 人员页面整改的执行结果](plans/510-personnel-page-remediation.md#4-实施结果)关联[二十项原始实施复验](verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录)。
 - [验证记录入口](verification/README.md)：报告持有受测基线、实际结果与限制，旧通过不自动代表当前实现。
 - [T07本版综合验收](verification/010-t07-acceptance.md)：原257编号基线为241整例通过、3例仅本域参数通过、9例消费者前置未接、4例退役；不覆盖后续新增或修订参数。
 - [T04启停](verification/021-lifecycle-implementation.md)及[评审修复](verification/021-lifecycle-review-fixes.md)；[T05删除](verification/020-delete-implementation.md)及[评审修复](verification/020-delete-review-fixes.md)；[T06改日复审](verification/020-redate-independent-review.md)；[原T08联合修订](verification/022-joint-implementation.md)。这些报告保留原入口及原时点，当前步骤见012/017。
@@ -230,7 +237,9 @@ python3 scripts/local-bu.py verify
 
 - [132目标决定](adr/132-query-and-validation-boundary.md)：第7节已冻结M0主线具体合同；其余条件项继续按项冻结，路线图及后续交付由133持有，125容量P1保持。
 
-- [126完整历史紧凑存储研究](plans/126-compact-history-storage-research.md)：覆盖现案例历史、审计和索引的隔离模型约191.5 MB；[实测与限制](verification/126-storage-feasibility.md)不等于产品迁移或容量P1关闭。
+- [135 对象头产品接入文稿](plans/135-real-head-product-integration.md)的审阅状态与该计划的执行关闭原因分别记在[文档登记](governance/registry.json)。
+
+## 历次设计与实施记录
 
 - M04 的日级模型已用于按职务首次入职。T04 已规定从职务信息办理同日转正、晋升和调动，按来源核对当日任职、各笔原件及撤销后的次数。[106 首单采纳决定](adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) · [逐步办理与撤销样本](specs/m04/506-job-information-records.md#m04-scn-018) · [只有共同办理才合法的样本](specs/m04/506-job-information-records.md#m04-scn-019) · [T04 实施与验收](plans/500-personnel-roadmap.md#t04-same-day-actions)
 
@@ -259,8 +268,6 @@ R4实施评审的P1删除摘要日期读权及P2管理BU稳定ID筛选已采纳�
 2026-11-06 R5完成六轮评审与修复，关闭1项P1及5项P2（含修复回归和布局验证缺口）；最后两轮32项、18项分别通过，无新增主要问题。完整DB/API的外层异常和单项耗时失败、随后3次定向通过分别保留，不称单轮全绿。实际结果、当前输入和资源收尾见[多轮报告](verification/116-r5-multiround-review.md)，R6仍未开始。
 
 R6接入标准、容量实测与交接已交付；容量P1整改未关闭：[124操作指南](guides/124-dated-object-admission-and-capacity.md)、[本批记录](verification/116-r6-standards-and-capacity.md)。
-
-当前126实施及验证：[紧凑历史实施报告](verification/126-compact-history-implementation.md)。完整案例静态整理276.22MB，真实读写后普通维护311.02MB；200MB已按用户决定改为参考值，部分延迟未达，容量P1保持。
 
 125恢复容量整改的当前执行见[恢复记录](verification/125-capacity-resumption.md)，125原交付及原4390基准采用m02-compact-3，130原实施另用模型4候选验证；用户随后要求更新4390，当前模型4入口见[更新记录](verification/130-4390-model4-refresh.md)，原库及原证据保留。
 

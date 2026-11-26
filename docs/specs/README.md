@@ -6,7 +6,7 @@
 
 直接入职由人事从已登记的原人办理。组织用途与岗位政策先按期间准备，实际入职按模式签收。[401 业务规则与验收](m04/401-direct-hire-requirements.md) · [402 页面合同](m04/402-hire-interactions.md) · [403 技术合同](m04/403-hire-technical-contract.md) · [400 实施方案](../plans/400-hire-readiness.md)
 
-[310职级／阶梯对象接入](m03/310-grade-ladder-contract.md)：同企业Job可用职级与Ladder顺序、完整日期引用、页面继承及18项新验收；[309方案](../plans/309-m03-grade-ladder.md)分G1／G2，产品未开始。
+职务可用职级、职级阶梯顺序、完整日期引用、页面继承和 18 项验收见[310 职级／阶梯合同](m03/310-grade-ladder-contract.md)。分批范围和实际结果可查[309 计划](../plans/309-m03-grade-ladder.md)、[G1 职级实施记录](../verification/309-grade-g1-implementation.md)和[G2 阶梯与职务职级实施记录](../verification/309-grade-g2-implementation.md)。
 
 [308职务系列／职务页面标准](m03/308-job-foundation-contract.md#m03-page-inheritance)：逐页继承与业务差异、独立场景及14项新增验收；页面整改及28个尺寸角色单元已完成，后续正式发布与4380交接见[308实施记录](../verification/308-job-page-standard-implementation.md#m03-308-publication)。
 
