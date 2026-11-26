@@ -308,14 +308,22 @@ test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查�
   for (const dirty of [false, true]) {
     const createLink = page.getByRole("link", { name: "新建", exact: true });
     await createLink.focus();
-    const leaveScroll = await scroller.evaluate(e => (['auto', 'scroll'].includes(getComputedStyle(e).overflowY) ? e : document.scrollingElement!).scrollTop);
+    // Focusing the toolbar can scroll the short page before the link is activated.
+    const departure = await createLink.evaluateHandle(link => {
+      const position = { top: null as number | null };
+      link.addEventListener('click', () => { position.top = document.scrollingElement!.scrollTop; }, { once: true });
+      return position;
+    });
     await createLink.press('Enter');
+    const leaveScroll = await departure.evaluate(position => position.top);
+    await departure.dispose();
+    expect(leaveScroll).not.toBeNull();
     await expect(page.getByRole("heading", { name: "新建业务单元", exact: true })).toBeVisible();
     if (dirty) await page.getByRole("textbox", { name: "编码", exact: true }).fill("SCROLL_CANCEL");
     await page.getByRole("link", { name: "取消", exact: true }).click();
     if (dirty) await page.getByRole("button", { name: "放弃修改" }).click();
     await expect(page.getByText(recordRange(page, 20, 1))).toBeVisible();
-    await expect.poll(() => scroller.evaluate(e => (['auto', 'scroll'].includes(getComputedStyle(e).overflowY) ? e : document.scrollingElement!).scrollTop)).toBe(leaveScroll);
+    await expect.poll(() => page.evaluate(() => document.scrollingElement!.scrollTop)).toBe(leaveScroll);
   }
   const target = page.getByRole("link", {
     name: prefix + "_12 单元",

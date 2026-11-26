@@ -454,6 +454,7 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
   await row.focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('.object-detail-identity h1')).toHaveText(sample.name);
+  if (count === 0) await page.getByRole('tab', { name: '职务信息', exact: true }).click();
   if(businessAt!=='2027-04-01'){
     const projection=await request(page,'GET','/api/v1/assignments/'+new URL(page.url()).pathname.split('/').pop());
     const node=projection.body.effectiveDates.filter((d:string)=>d<=businessAt).at(-1);
@@ -806,9 +807,9 @@ async function historyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>)
   await button('调动 · 2027-07-01').click();
   await expect(page.getByRole('heading',{name:'调动原件'})).toBeVisible();
   await expect(page.getByText('合成七月跨部门调令',{exact:true})).toBeVisible();
-  await chooseEffectiveDate(page,'2027-06-01');
+  await chooseEffectiveDate(page,'2027-04-01');
   await button('插入记录').click();
-  await expect(page.getByRole('textbox',{name:/^生效日期/})).toHaveValue('2027-06-01');
+  await date('生效日期','2027-06-01');
   await page.getByRole('combobox',{name:/工作地点/}).fill(locations[1].name);
   await page.getByRole('option',{name:locations[1].name,exact:true}).click();
   await button('保存').click();
@@ -835,7 +836,7 @@ async function historyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>)
   await button('确认删除').click();
   await expect.poll(() => deletions.length).toBe(1);
   await expect(page.getByText([sample.department,sample.job,locations[0].name].join(' · '),{exact:true})).toBeVisible();
-  await button('数据更改 · 2027-06-10').click();
+  await button('数据更改（已删除） · 2027-06-10').click();
   await expect(page.getByText('已删除',{exact:true})).toBeVisible();
   await expect(button('删除记录')).toHaveCount(0);
   await expect(page.getByRole('button',{name:/查看修订/})).toHaveCount(3);
@@ -1124,7 +1125,9 @@ async function probationJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
   const search=page.getByRole('textbox',{name:'姓名或人员编号'});await search.fill(sample.name);await search.press('Enter');
   const record=page.locator('a[data-object-link]').filter({hasText:'转正'});
   await expect(record).toHaveCount(1);await record.focus();await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading',{name:'转正 · 工作关系',exact:true})).toBeVisible();
+  const profile = await request(page,'GET','/api/v1/persons/'+sample.id);
+  expect(profile.status).toBe(200);
+  await expect(page.getByRole('heading',{name:sample.name+' · '+profile.body.number+' · 转正 · 工作关系',exact:true})).toBeVisible();
   await expect(page.getByText('试用转正通知',{exact:true})).toBeVisible();
   await page.getByRole('link',{name:'返回办理记录'}).click();
   await expect(record).toBeFocused();
@@ -1222,7 +1225,7 @@ async function promotionJourney(page: Page, sample: Awaited<ReturnType<typeof se
       await page.getByRole('combobox',{name:'引用通知'}).click();
       await page.getByRole('option',{name:'调动 · 独立调动通知',exact:true}).click();
       await button('保存').click();
-      await button('晋升 · '+date).click();
+      await button('晋升（已撤销） · '+date).click();
       await button('查看撤销依据来源').click();
       await expect(page.getByText('调动 · '+date+' · 独立调动通知',{exact:true})).toBeVisible();
       await expect(page.getByText(p5.name,{exact:true})).toBeVisible();
@@ -1731,7 +1734,7 @@ async function dutyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
   await hire(sample.id,home.id);
   const number='门店已执行派令'+sample.name;
   await send('appointment-decisions',{source:randomUUID(),number,roster:false,rows:[{person:sample.id,employer:{id:sample.employerId,name:sample.employer},position:{id:store.id,name:store.name},arrival:first}]});
-  await openEmployeeAssignment(page,sample,first);
+  await openEmployeeAssignment(page,sample,first,0);
   const button=(name:string)=>page.getByRole('button',{name,exact:true});
   const select=async(label:string,choice:string)=>{await page.getByRole('combobox',{name:new RegExp(label)}).click();await page.getByRole('option',{name:choice,exact:true}).click()};
   const date=async(label:string,date:string)=>{const field=page.getByRole('textbox',{name:new RegExp('^'+label)});await field.fill(date);await field.press('Tab')};
