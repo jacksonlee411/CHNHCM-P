@@ -23,6 +23,32 @@ export function parse(params: URLSearchParams): DirectoryQuery {
     sort: params.get('sort') || 'number',
   };
 }
+export function directoryParams(params: URLSearchParams) {
+  const result = new URLSearchParams();
+  for (const key of ['ref', 'department', 'primary', 'sort', 'selected', 'page', 'pageSize']) {
+    const value = params.get(key);
+    if (value) result.set(key, value);
+  }
+  return result;
+}
+export function directoryQuery(params: URLSearchParams): Models['PersonnelDirectoryQuery'] & {sort:string} {
+  const query = parse(params);
+  const primary = params.get('primary');
+  return { ...query, pageSize: query.pageSize as 20 | 50 | 100,
+    department: params.get('department') || undefined,
+    primary: primary === 'primary' || primary === 'secondary' ? primary : undefined };
+}
+export async function directory(s: Principal, params: URLSearchParams, anchor?: string) {
+  return unwrap(await api.POST('/api/v1/personnel/directory/query', {
+    params: { header: headers(s) }, body: { ...directoryQuery(params), anchor },
+  }));
+}
+export function directoryTarget(params: URLSearchParams, personId: string, assignment?: string) {
+  const next = directoryParams(params);
+  next.set('from', 'directory');
+  next.set('selected', assignment || personId);
+  return path + '/' + personId + (assignment ? '/assignments/' + assignment : '') + '?' + next;
+}
 export const profile = async (id: string, version?: string, view?: string) =>
   version
     ? unwrap(

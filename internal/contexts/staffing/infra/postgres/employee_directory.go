@@ -23,9 +23,36 @@ func (s *Store) CanListAssignments(ctx context.Context, c f.Credentials) (yes bo
 	return
 }
 
-func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.AssignmentQuery) (out h.EmployeeDirectory, err error) {
+func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.AssignmentQuery) (h.EmployeeDirectory, error) {
+	return s.directory(ctx, c, q, false, "")
+}
+func (s *Store) PersonnelDirectory(ctx context.Context, c f.Credentials, q h.PersonnelQuery) (h.PersonnelDirectory, error) {
+	if !slices.Contains([]string{"", "primary", "secondary"}, q.Primary) {
+		return h.PersonnelDirectory{}, f.Fail(400, "EMPLOYEE_QUERY", "主兼岗条件无效")
+	}
+	v, err := s.directory(ctx, c, h.AssignmentQuery{Anchor: q.Anchor, Department: q.Department, Ref: q.Ref, Page: q.Page, PageSize: q.PageSize, Sort: q.Sort}, true, q.Primary)
+	if err != nil {
+		return h.PersonnelDirectory{}, err
+	}
+	out := h.PersonnelDirectory{Rows: []h.PersonnelRow{}, Departments: v.Departments, Navigation: v.Navigation, People: v.People, Total: v.Total, Assignments: v.Assignments, Keyword: v.Keyword}
+	for _, r := range v.Rows {
+		row := h.PersonnelRow{ID: r.ID, Person: r.Person, Name: r.Name, Number: r.Number, Historical: r.Historical}
+		if r.Employment != "" {
+			row.Assignment = &r
+			row.Future = r.From > v.BusinessAt
+		}
+		out.Rows = append(out.Rows, row)
+	}
+	return out, nil
+}
+func (s *Store) directory(ctx context.Context, c f.Credentials, q h.AssignmentQuery, personnel bool, primary string) (out h.EmployeeDirectory, err error) {
 	if q.Anchor != "" && !f.ValidID(q.Anchor) || q.BusinessAt != "" && !f.ValidDate(q.BusinessAt) || q.Department != "" && !f.ValidID(q.Department) || q.Person != "" && !f.ValidID(q.Person) || q.Page < 1 || q.Page > 1000000 || !slices.Contains([]int{20, 50, 100}, q.PageSize) || !slices.Contains([]string{"", "name", "-name", "number", "-number"}, q.Sort) {
 		return out, f.Fail(400, "EMPLOYEE_QUERY", "请核对日期、部门及页码")
+	}
+	if personnel && q.Ref != "" {
+		if e := s.HirePeople.RenewDirectoryQuery(ctx, c, q.Ref); e != nil {
+			return out, e
+		}
 	}
 	out.Rows = []h.EmployeeRow{}
 	out.Departments = []h.EmployeeDepartment{}
@@ -34,7 +61,7 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 		if e != nil {
 			return e
 		}
-		if !ok {
+		if !ok && !personnel {
 			return f.Fail(403, "EMPLOYEE_DIRECTORY", "当前权限不允许查询员工任职")
 		}
 		out.BusinessAt = q.BusinessAt
@@ -45,7 +72,9 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 			FROM staffing.assignment_head head JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
 			JOIN staffing.assignment t ON (t.instance_id,t.id)=(s.instance_id,s.assignment_id)
 			JOIN staffing.employment e ON (e.instance_id,e.id)=(t.instance_id,t.employment_id)
-			WHERE head.instance_id=$1 AND s.period @> $2::date AND ($3='' OR t.person_id=NULLIF($3,'')::uuid)`, s.Instance, out.BusinessAt, q.Person)
+			WHERE head.instance_id=$1 AND $4 AND (s.period @> $2::date OR ($5 AND lower(t.period)>$2::date AND s.period @> lower(t.period)))
+      AND ($3='' OR t.person_id=NULLIF($3,'')::uuid)
+      ORDER BY t.person_id,t.record_number,lower(t.period),t.id`, s.Instance, out.BusinessAt, q.Person, ok, personnel)
 		if e != nil {
 			return e
 		}
@@ -69,7 +98,16 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 		}
 		allowed := []h.EmployeeRow{}
 		var ids []string
+		type recordKey struct {
+			person string
+			number int
+		}
+		selected := map[recordKey]bool{}
 		for _, r := range candidates {
+			key := recordKey{r.Person, r.RecordNumber}
+			if personnel && selected[key] {
+				continue
+			}
 			read, e := u.employmentAllowed(ctx, "read", r.Person, r.employer, r.Department, false)
 			if e != nil {
 				return e
@@ -84,10 +122,30 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 			if !list {
 				continue
 			}
+			selected[key] = true
 			allowed = append(allowed, r.EmployeeRow)
 			ids = append(ids, r.Person)
 		}
-		people, k, e := s.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, ids, q.Ref)
+		// When there are no visible assignment rows to merge, PostgreSQL can count
+		// and page the scoped people directly, including old-number matches.
+		if personnel && len(allowed) == 0 && primary == "" && q.Department == "" && q.Anchor == "" {
+			page, err := s.HirePeople.DirectoryPage(dbtx.With(ctx, u.tx), c, person.Query{Ref: q.Ref, Page: q.Page, Size: q.PageSize, Sort: q.Sort})
+			if err != nil {
+				return err
+			}
+			out.People, out.Total, out.Keyword = page.Total, page.Total, page.Keyword
+			for _, p := range page.Rows {
+				out.Rows = append(out.Rows, h.EmployeeRow{ID: p.ID, Person: p.ID, Name: p.Name, Number: p.Number, Historical: p.Historical})
+			}
+			return nil
+		}
+		var people []person.Summary
+		var k string
+		if personnel {
+			people, k, e = s.HirePeople.DirectoryPeople(dbtx.With(ctx, u.tx), c, q.Ref)
+		} else {
+			people, k, e = s.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, ids, q.Ref)
+		}
 		if e != nil {
 			return e
 		}
@@ -98,14 +156,23 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 		}
 		departments := map[string]h.EmployeeDepartment{}
 		var matching []h.EmployeeRow
+		represented := map[string]bool{}
 		for _, r := range allowed {
 			p, ok := identities[r.Person]
 			if !ok {
 				continue
 			}
-			r.Name, r.Number = p.Name, p.Number
+			r.Name, r.Number, r.Historical = p.Name, p.Number, p.Historical
+			represented[r.Person] = true
 			matching = append(matching, r)
 			departments[r.Department] = h.EmployeeDepartment{ID: r.Department, Name: r.DepartmentName}
+		}
+		if personnel && primary == "" && q.Department == "" {
+			for _, p := range people {
+				if !represented[p.ID] {
+					matching = append(matching, h.EmployeeRow{ID: p.ID, Person: p.ID, Name: p.Name, Number: p.Number, Historical: p.Historical})
+				}
+			}
 		}
 		var deptIDs []string
 		for id := range departments {
@@ -150,6 +217,9 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 		kept := matching[:0]
 		count := map[string]bool{}
 		for _, r := range matching {
+			if primary == "primary" && !r.PrimaryJob || primary == "secondary" && r.PrimaryJob {
+				continue
+			}
 			if q.Department != "" {
 				dep := r.Department
 				for dep != "" && dep != q.Department {
@@ -158,6 +228,9 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 				if dep == "" {
 					continue
 				}
+			}
+			if r.Employment != "" {
+				out.Assignments++
 			}
 			kept = append(kept, r)
 			count[r.Person] = true
@@ -181,11 +254,11 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 				nav := h.AssignmentNav{Position: index + 1}
 				if index > 0 {
 					r := kept[index-1]
-					nav.Previous = &h.AssignmentLink{Person: r.Person, Assignment: r.ID}
+					nav.Previous = directoryLink(r)
 				}
 				if index+1 < len(kept) {
 					r := kept[index+1]
-					nav.Next = &h.AssignmentLink{Person: r.Person, Assignment: r.ID}
+					nav.Next = directoryLink(r)
 				}
 				out.Navigation = &nav
 				break
@@ -196,4 +269,12 @@ func (s *Store) ListAssignments(ctx context.Context, c f.Credentials, q h.Assign
 		return nil
 	})
 	return
+}
+
+func directoryLink(r h.EmployeeRow) *h.AssignmentLink {
+	link := &h.AssignmentLink{Person: r.Person}
+	if r.Employment != "" {
+		link.Assignment = r.ID
+	}
+	return link
 }

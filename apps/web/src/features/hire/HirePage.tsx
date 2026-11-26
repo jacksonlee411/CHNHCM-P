@@ -45,12 +45,11 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
     origin = params.get('rehireAction') && params.get('rehireRevision') ? {action:params.get('rehireAction')!,revision:params.get('rehireRevision')!} : undefined,
     from = params.get('returnTo') || route.state?.fromAction,
     returnTo = personnelReturn(from) || employmentHistoryReturn(from, id),
-    back = cancellation?.returnTo ?? returnTo ?? person.path + '/' + id + route.search;
+    back = cancellation?.returnTo ?? returnTo ?? person.path + '/' + id + '?' + person.directoryParams(params);
   const pendingKey = ['chnhcm-rehire',session.instanceId,session.subjectId].join('.');
   const activePage = useRef(true);
   useEffect(()=>{activePage.current=true; return ()=>{activePage.current=false;};},[]);
-  const [day, setDay] = useState(''),
-    [mode, setMode] = useState<'hire' | 'cancel' | ''>(cancellation ? 'cancel' : (origin || route.state?.hire) ? 'hire' : '');
+  const [mode, setMode] = useState<'hire' | 'cancel' | ''>(cancellation ? 'cancel' : (origin || route.state?.hire) ? 'hire' : '');
   const [draft, setDraft] = useState<Models['HireInput']>(() => ({...empty(id),rehireOf:origin})),
     [choices, setChoices] = useState<Partial<Record<TargetKind, Option>>>({});
   const [reason, setReason] = useState(''),
@@ -62,7 +61,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   const failure = useRef<HTMLDivElement>(null),
     saved = useRef(false);
   const details = person.useRead(id, () => person.profile(id));
-  const overview = person.useRead(JSON.stringify([id, day]), () => employment(id, day));
+  const overview = person.useRead(id, () => employment(id));
   const eligibleHire=draft.rehireOf ? !!overview.data?.actions.some(a=>a.canRehire&&a.id===draft.rehireOf?.action&&a.revision===draft.rehireOf.revision) : !!overview.data?.canHire;
   const acceptedOffers=person.useRead(overview.data?.canHire && !cancellation && !draft.rehireOf ? id:undefined,async()=>{
     const access=unwrap(await api.GET('/api/v1/recruiting/context',{params:{query:{person:id}}}));
@@ -184,7 +183,6 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       }
       if (currentSubmission) {
         saved.current = true;
-        if (draft.arrival) setDay(draft.arrival);
         close();
       }
       overview.invalidate();
@@ -199,7 +197,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       setError(person.message(e));
     },
   });
-  usePageTitle(mode === 'hire' ? hireTitle : '工作关系与任职');
+  usePageTitle(mode === 'hire' ? hireTitle : '本人办理历史');
   useEffect(() => {
     send.start();
   }, [send.start]);
@@ -297,7 +295,10 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
   };
   const cancelForm = () => {
     close();
-    if (origin && returnTo) {
+    if ((route.state?.hire || origin) && params.get('view')!=='history') {
+      saved.current=true;
+      navigate(back,{replace:true});
+    } else if (origin && returnTo) {
       saved.current = true;
       setOriginal(origin.action);
       navigate(returnTo, {replace:true});
@@ -347,12 +348,21 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
         navigation={null}
         identity={
           <>
-            <RecordBackButton component={Link} to={back} />
+            <RecordBackButton component={Link} to={back} label={back.includes('/assignments/')?'返回职务信息':back.startsWith('/personnel/actions/')?'返回办理明细':back.includes('/employment?')?'返回办理历史':'返回本人'} />
             {details.data?.name}
           </>
         }
         actions={
-          !mode && (overview.data?.canHire || overview.data?.rehireFrom) ? (
+          mode && details.data && overview.data ? <Stack direction="row" gap={1}>
+                  <Button
+                    type="submit" form="person-hire-form"
+                    variant="contained"
+                    disabled={send.busy || (mode === 'hire' && !preview.data?.adoption)}
+                  >
+                    保存
+                  </Button>
+                  <Button onClick={() => leave.request(cancelForm)}>取消</Button>
+          </Stack> : !mode && (overview.data?.canHire || overview.data?.rehireFrom) ? (
             <Button variant="contained" onClick={() => begin('hire')}>
               {overview.data?.rehireFrom ? '办理再聘' : '办理入职'}
             </Button>
@@ -362,7 +372,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
       <Box className="page-scroll" data-page-scroll role="region" tabIndex={0} aria-label="入职与任职">
         <Paper sx={{ p: { xs: 1.5, sm: 3 }, maxWidth: 1000, mx: 'auto' }}>
           <Typography variant="h5" component="h1">
-            {mode === 'hire' ? hireTitle : mode === 'cancel' ? '撤销未来入职' : '工作关系与任职'}
+            {mode === 'hire' ? hireTitle : mode === 'cancel' ? '撤销未来入职' : '本人办理历史'}
           </Typography>
           {mode !== 'cancel' && acceptedOffers.data?.map(offer=><Button component={Link} key={offer.id} to={'/recruiting/offers/'+offer.id+'?person='+id}>已接受录用 {offer.number} · {offer.arrival}</Button>)}
           {details.data && (
@@ -384,7 +394,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
           {send.storageError && <Alert severity="error">无法保存提交号，请恢复浏览器存储后办理。</Alert>}
           {mode && details.data && overview.data && (
             <Box
-              component="form"
+              id="person-hire-form" component="form"
               onSubmit={(e) => {
                 e.preventDefault();
                 void submit();
@@ -392,7 +402,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
             >
               <ObjectForm>
                 {mode === 'hire' && eligibleHire && (
-                  <ObjectDetailSection title="拟任安排">
+                  <div className="object-detail-columns"><ObjectDetailSection title="拟任安排">
                     {!!decisions.data?.length && (
                       <ObjectTextField
                         select
@@ -437,6 +447,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                         onChange={(e) => update({ lastDay: e.target.value || undefined })}
                       />
                     )}
+                    </ObjectDetailSection><ObjectDetailSection title="任职与用人单位">
                     {(arrangement.error || selectedArrangement.error) && <Alert severity="error">{arrangement.error ?? selectedArrangement.error}</Alert>}
                     {arrangement.data?.positionRequired && targets('position')}
                     {(!arrangement.data || arrangement.data.jobRequired || selectedArrangement.data?.department || basis?.department) && targets('department')}
@@ -451,7 +462,7 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                         onChange={(e) => update({ notice: e.target.value })}
                       />
                     )}
-                  </ObjectDetailSection>
+                  </ObjectDetailSection></div>
                 )}
                 {mode === 'cancel' && action && (
                   <ObjectDetailSection title="撤销依据">
@@ -483,14 +494,6 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
                 )}
                 {preview.error && <Alert severity="error">{preview.error}</Alert>}
                 <Stack direction="row" gap={1} flexWrap="wrap">
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={send.busy || (mode === 'hire' && !preview.data?.adoption)}
-                  >
-                    保存
-                  </Button>
-                  <Button onClick={() => leave.request(cancelForm)}>取消</Button>
                   {(error || decisions.error || preview.error || preview.data?.missing?.length) &&
                     mode === 'hire' && (
                       <Button
@@ -510,21 +513,6 @@ export function EmployeeHire({ id, session, cancellation }: { id: string; sessio
           )}
           {!mode && overview.data && (
             <ObjectForm>
-              <ObjectDetailSection title="该日任职">
-                {overview.data && !overview.data.terms.length && <Typography>暂无可查看的任职</Typography>}
-                <ObjectTextField
-                  type="date"
-                  label="查询日期"
-                  value={day}
-                  onChange={(e) => setDay(e.target.value)}
-                />
-                {overview.data && (
-                  <Typography>
-                    可见在职 {overview.data.people} 人，任职 {overview.data.assignments} 份，占编{' '}
-                    {overview.data.seats}
-                  </Typography>
-                )}
-              </ObjectDetailSection>
               <ObjectDetailSection title="办理记录">
                 {overview.data?.actions.map((a) => (
                   <Box key={a.id} sx={{ mb: 1 }}>

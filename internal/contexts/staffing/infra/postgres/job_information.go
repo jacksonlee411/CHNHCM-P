@@ -79,8 +79,32 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 	if day != "" && !f.ValidDate(day) || version != "" && !f.ValidID(version) {
 		return out, f.Fail(400, "ASSIGNMENT_INPUT", "业务日或来源无效")
 	}
-	pinned := version != ""
 	err = st.within(ctx, c, false, true, func(u *unit) error {
+		var e error
+		out, e = u.assignmentView(ctx, c, id, day, version)
+		if e != nil || day != "" || version != "" {
+			return e
+		}
+		// Use the last visible event through the server's applicable day. A future-only
+		// term opens on its first visible event. Keep both projections in one snapshot.
+		node := ""
+		for _, date := range out.EffectiveDates {
+			if date > out.BusinessAt && node != "" {
+				break
+			}
+			node = date
+		}
+		if node != "" && node != out.BusinessAt {
+			out, e = u.assignmentView(ctx, c, id, node, version)
+		}
+		return e
+	})
+	return
+}
+func (u *unit) assignmentView(ctx context.Context, c f.Credentials, id, day, version string) (out h.AssignmentView, err error) {
+	st := u.store
+	pinned := version != ""
+	err = func() error {
 		today := u.now.In(f.Shanghai).Format(time.DateOnly)
 		if day == "" {
 			term, err := u.assignmentIdentity(ctx, id)
@@ -383,9 +407,46 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			out.Actions = append(out.Actions, item)
 		}
 
+		out.EffectiveDates, e = u.effectiveDates(ctx, a, version, out.Actions)
+		if e != nil {
+			return e
+		}
+
 		return nil
-	})
+	}()
 	return
+}
+
+// A real arrangement boundary can exist without a new action, for example the
+// first normal day after a finite duty period. Scope the segment before exposing its date.
+func (u *unit) effectiveDates(ctx context.Context, a h.Action, version string, actions []h.Action) ([]string, error) {
+	rows, err := u.tx.Query(ctx, `SELECT lower(period)::text,department_id FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 ORDER BY lower(period)`, u.store.Instance, a.Assignment, version)
+	if err != nil {
+		return nil, err
+	}
+	type boundary struct {
+		Day        string
+		Department string
+	}
+	segments, err := pgx.CollectRows(rows, pgx.RowToStructByPos[boundary])
+	if err != nil {
+		return nil, err
+	}
+	dates := make([]string, 0, len(actions)+len(segments))
+	for _, action := range actions {
+		dates = append(dates, action.BusinessDate)
+	}
+	for _, s := range segments {
+		ok, err := u.employmentAllowed(ctx, "read", a.Person, a.Employer, s.Department, false)
+		if err != nil {
+			return nil, err
+		}
+		if ok {
+			dates = append(dates, s.Day)
+		}
+	}
+	slices.Sort(dates)
+	return slices.Compact(dates), nil
 }
 
 func (u *unit) maintenancePeriod(ctx context.Context, a h.Action, day, kind string) (f.Period, error) {

@@ -415,6 +415,7 @@ export function Editor({
   ) => (
     <ObjectTextField
       id={id}
+      required={id === 'name'}
       label={label}
       value={value}
       onChange={(e) => set(e.target.value)}

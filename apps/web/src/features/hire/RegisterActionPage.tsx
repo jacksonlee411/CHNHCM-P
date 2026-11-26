@@ -230,7 +230,7 @@ function ActionDetail({
         {a && (
           <>
             <Typography component="h1" variant="h5">
-              {actionLabel(a)} ·{' '}
+              {visibleAssignment.data && <>{visibleAssignment.data.name} · {visibleAssignment.data.number} · </>}{actionLabel(a)} ·{' '}
               {relationAction(a.kind)
                 ? '工作关系'
                 : a.recordNumber + ' 号' + (a.primaryJob ? '主岗' : '兼岗')}
@@ -251,11 +251,6 @@ function ActionDetail({
                   assignment={a.assignment}
                   day={params.get('assignmentDay') || a.businessDate}
                   selectedAction={entered}
-                  onDay={(day) => {
-                    const q = new URLSearchParams(params);
-                    q.set('assignmentDay', day);
-                    setParams(q);
-                  }}
                   actionSlot={actionSlot}
                   historySlot={historySlot}
                   onModeChange={setMode}

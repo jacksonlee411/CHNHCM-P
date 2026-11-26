@@ -5034,6 +5034,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/personnel/directory/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["listPersonnelDirectory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/query": {
         parameters: {
             query?: never;
@@ -6356,6 +6372,9 @@ export interface components {
             until?: string;
             employerName: string;
             terms: {
+                employerName?: string;
+                /** Format: date */
+                until?: string;
                 /** Format: uuid */
                 assignment: string;
                 recordNumber: number;
@@ -6672,6 +6691,56 @@ export interface components {
             /** Format: uuid */
             assignment: string;
         };
+        PersonnelDirectoryQuery: {
+            /** Format: uuid */
+            anchor?: string;
+            /** Format: uuid */
+            department?: string;
+            /** @enum {string} */
+            primary?: "primary" | "secondary";
+            /** Format: uuid */
+            ref?: string;
+            page: number;
+            /** @enum {integer} */
+            pageSize: 20 | 50 | 100;
+            sort?: string;
+        };
+        PersonnelDirectoryLink: {
+            /** Format: uuid */
+            person: string;
+            /** Format: uuid */
+            assignment?: string;
+        };
+        PersonnelDirectoryRow: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            person: string;
+            name: string;
+            number: string;
+            historical?: boolean;
+            assignment?: components["schemas"]["EmployeeAssignmentRow"];
+            future?: boolean;
+        };
+        PersonnelDirectory: {
+            navigation?: {
+                position: number;
+                previous?: components["schemas"]["PersonnelDirectoryLink"];
+                next?: components["schemas"]["PersonnelDirectoryLink"];
+            };
+            rows: components["schemas"]["PersonnelDirectoryRow"][];
+            departments: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                /** Format: uuid */
+                parent?: string;
+            }[];
+            people: number;
+            total: number;
+            assignments: number;
+            keyword: string;
+        };
         EmployeeAssignmentDirectory: {
             navigation?: {
                 position: number;
@@ -6693,6 +6762,7 @@ export interface components {
             keyword: string;
         };
         AssignmentView: {
+            effectiveDates: string[];
             canAddRecord: boolean;
             canInsertRecord: boolean;
             canReadContracts: boolean;
@@ -7052,6 +7122,9 @@ export interface components {
         EmploymentOverview: {
             rehireFrom?: components["schemas"]["EmploymentActionRef"];
             terms: {
+                employerName?: string;
+                /** Format: date */
+                until?: string;
                 /** Format: uuid */
                 assignment: string;
                 recordNumber: number;
@@ -24509,6 +24582,41 @@ export interface operations {
                     "application/json": {
                         canList: boolean;
                     };
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listPersonnelDirectory: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonnelDirectoryQuery"];
+            };
+        };
+        responses: {
+            /** @description Authorized personnel and current or future assignments */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonnelDirectory"];
                 };
             };
             /** @description Unavailable */

@@ -95,11 +95,29 @@ function Filters({
   const options={department:data?.departments,fromDepartment:data?.fromDepartments,toDepartment:data?.toDepartments,operator:data?.operators};
   const named = (record: Record<string, string>) =>
     Object.entries(record).map(([id, name]) => ({ id, name }));
+  const panel=useRef<HTMLDetailsElement>(null), trigger=useRef<HTMLElement>(null);
+  const [open,setOpen]=useState(false);
+  function close() {
+    if(panel.current)panel.current.open=false;
+    setOpen(false);
+    trigger.current?.focus();
+  }
+  const summary=fields.flatMap(key=>{
+    const value=params.get(key);
+    if(!value)return [];
+    if(key==='kind')return kinds[value as keyof typeof kinds] || [];
+    if(key==='status')return statuses[value as keyof typeof statuses] || [];
+    if(key in dates)return dates[key as keyof typeof dates]+' '+value;
+    const option=options[key as keyof typeof options]?.find(x=>x.id===value);
+    return option ? scopes[key as keyof typeof scopes]+' '+option.name : [];
+  }).join('、');
   return (
-    <details>
-      <summary>筛选条件</summary>
-      <Stack
-        key={params.toString()}
+    <details ref={panel} onToggle={e=>setOpen(e.currentTarget.open)} onKeyDown={e=>{
+      if(e.key==='Escape' && open){e.preventDefault();close();}
+    }}>
+      <summary ref={trigger}>筛选条件{summary && ' · '+summary}</summary>
+      {open && <Stack
+        key={params.toString()+JSON.stringify(options)}
         component="form"
         direction="row"
         flexWrap="wrap"
@@ -109,6 +127,7 @@ function Filters({
           e.preventDefault();
           const values = new FormData(e.currentTarget);
           apply(Object.fromEntries(fields.map((name) => [name, String(values.get(name) ?? '')])));
+          close();
         }}
       >
         {select('kind', '办理类型', named(kinds))}
@@ -120,8 +139,9 @@ function Filters({
           select(name, label, options[name as keyof typeof options] ?? []),
         )}
         <Button type="submit">应用筛选</Button>
-        <Button onClick={() => apply(Object.fromEntries(fields.map((key) => [key, ''])))}>清除筛选</Button>
-      </Stack>
+        <Button onClick={()=>{apply(Object.fromEntries(fields.map(key=>[key,''])));close();}}>清除筛选</Button>
+        <Button onClick={close}>取消</Button>
+      </Stack>}
     </details>
   );
 }

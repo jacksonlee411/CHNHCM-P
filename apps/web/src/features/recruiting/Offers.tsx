@@ -417,7 +417,24 @@ export function OfferDetail({
             招聘录用
           </>
         }
-        actions={null}
+        actions={op && (!creating || entry.data?.canIssue) && (
+                <Stack direction="row" gap={1}>
+                  <Button
+                    type="submit" form="offer-record-form"
+                    variant="contained"
+                    disabled={!ready || send.busy}
+                  >
+                    保存
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      leave.request(() => (creating ? navigate(back) : close()))
+                    }
+                  >
+                    取消
+                  </Button>
+                </Stack>
+        )}
       />
       <Box
         className="page-scroll"
@@ -562,13 +579,14 @@ export function OfferDetail({
           )}
           {op && (!creating || entry.data?.canIssue) && (
             <Box
-              component="form"
+              id="offer-record-form" component="form"
               onSubmit={(e) => {
                 e.preventDefault();
                 submit();
               }}
             >
-              <ObjectForm>
+              <ObjectForm><div className="object-detail-columns"><ObjectDetailSection title="录用安排">
+
                 {!creating && (
                   <Typography component="h2" variant="h6">
                     {operations[op]}
@@ -633,6 +651,7 @@ export function OfferDetail({
                     )}
                   </>
                 )}
+                </ObjectDetailSection><ObjectDetailSection title="本次办理">
                 <ObjectTextField
                   required
                   type="date"
@@ -646,22 +665,8 @@ export function OfferDetail({
                   value={basis}
                   onChange={(e) => setBasis(e.target.value)}
                 />
-                <Stack direction="row" gap={1}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={!ready || send.busy}
-                  >
-                    保存
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      leave.request(() => (creating ? navigate(back) : close()))
-                    }
-                  >
-                    取消
-                  </Button>
-                </Stack>
+
+                </ObjectDetailSection></div>
               </ObjectForm>
             </Box>
           )}

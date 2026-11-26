@@ -64,6 +64,7 @@ type State struct {
 }
 
 type AssignmentView struct {
+	EffectiveDates      []string       `json:"effectiveDates"`
 	CanAddRecord        bool           `json:"canAddRecord"`
 	CanInsertRecord     bool           `json:"canInsertRecord"`
 	FutureTerm          bool           `json:"futureTerm,omitempty"`
@@ -116,7 +117,35 @@ type AssignmentQuery struct {
 	PageSize   int    `json:"pageSize"`
 	Sort       string `json:"sort,omitempty"`
 }
+type PersonnelQuery struct {
+	Anchor     string `json:"anchor,omitempty"`
+	Department string `json:"department,omitempty"`
+	Primary    string `json:"primary,omitempty"`
+	Ref        string `json:"ref,omitempty"`
+	Page       int    `json:"page"`
+	PageSize   int    `json:"pageSize"`
+	Sort       string `json:"sort,omitempty"`
+}
+type PersonnelRow struct {
+	ID         string       `json:"id"`
+	Person     string       `json:"person"`
+	Name       string       `json:"name"`
+	Number     string       `json:"number"`
+	Historical bool         `json:"historical,omitempty"`
+	Assignment *EmployeeRow `json:"assignment,omitempty"`
+	Future     bool         `json:"future,omitempty"`
+}
+type PersonnelDirectory struct {
+	Navigation  *AssignmentNav       `json:"navigation,omitempty"`
+	Rows        []PersonnelRow       `json:"rows"`
+	Departments []EmployeeDepartment `json:"departments"`
+	People      int                  `json:"people"`
+	Assignments int                  `json:"assignments"`
+	Total       int                  `json:"total"`
+	Keyword     string               `json:"keyword"`
+}
 type EmployeeRow struct {
+	Historical     bool   `json:"-"`
 	ID             string `json:"id"`
 	Person         string `json:"person"`
 	Employment     string `json:"employment"`
@@ -137,7 +166,7 @@ type EmployeeDepartment struct {
 }
 type AssignmentLink struct {
 	Person     string `json:"person"`
-	Assignment string `json:"assignment"`
+	Assignment string `json:"assignment,omitempty"`
 }
 type AssignmentNav struct {
 	Position int             `json:"position"`
@@ -148,6 +177,7 @@ type EmployeeDirectory struct {
 	Navigation  *AssignmentNav       `json:"navigation,omitempty"`
 	Rows        []EmployeeRow        `json:"rows"`
 	Departments []EmployeeDepartment `json:"departments"`
+	Assignments int                  `json:"-"`
 	People      int                  `json:"people"`
 	Total       int                  `json:"total"`
 	BusinessAt  string               `json:"businessAt"`
@@ -188,6 +218,7 @@ type JobInformation interface {
 	MaintainRecord(context.Context, f.Credentials, string, string, string, string, RecordMaintenance) (Receipt, error)
 	CanListRegister(context.Context, f.Credentials) (bool, error)
 	ListRegister(context.Context, f.Credentials, RegisterQuery) (RegisterResult, error)
+	PersonnelDirectory(context.Context, f.Credentials, PersonnelQuery) (PersonnelDirectory, error)
 	CanListAssignments(context.Context, f.Credentials) (bool, error)
 	ListAssignments(context.Context, f.Credentials, AssignmentQuery) (EmployeeDirectory, error)
 	AssignmentInfo(context.Context, f.Credentials, string, string, string) (AssignmentView, error)

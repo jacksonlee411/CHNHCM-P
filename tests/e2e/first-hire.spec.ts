@@ -1,3 +1,4 @@
+import {openPersonnel} from './app-navigation';
 import { chromium } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
@@ -99,33 +100,14 @@ async function seed(page: Page, withDocument = true, employerFrom='2027-04-01') 
   };
 }
 async function openPerson(page: Page, name: string) {
-  const drawerButton = page.getByRole('button', { name: '打开导航', exact: true });
-  if (await drawerButton.isVisible()) {
-    await drawerButton.click();
-    const drawer = page.locator('#navigation-drawer');
-    const personnel = drawer.getByRole('button', { name: '人员', exact: true });
-    const expanded = await personnel.getAttribute('aria-expanded');
-    if (expanded !== 'true') await personnel.click();
-    if (expanded !== null) {
-      const employees = drawer.getByRole('button', { name: '员工', exact: true });
-      if ((await employees.getAttribute('aria-expanded')) !== 'true') await employees.click();
-      await drawer.getByRole('button', { name: '人员档案', exact: true }).click();
-    }
-  } else {
-    await page.getByRole('button', { name: '切换应用', exact: true }).click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-    await expect(page).toHaveURL((url) => ['/personnel/employees', '/personnel/assignments'].includes(url.pathname));
-    if (new URL(page.url()).pathname === '/personnel/assignments') {
-      await page.getByRole('link', { name: '人员档案', exact: true }).click();
-    }
-  }
-  await expect(page.getByRole('heading', { name: '人员档案', exact: true })).toBeVisible();
+  await openPersonnel(page);
   await page.getByLabel('姓名或人员编号').fill(name);
   await page.getByLabel('姓名或人员编号').press('Enter');
   await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees' && url.searchParams.has('ref'));
-  const target = page.locator('a[data-object-link]').filter({ hasText: name });
+  const target = page.locator('a[data-object-link]').filter({ hasText: name }).first();
   await expect(target).toBeVisible();
   await target.click();
+  if(new URL(page.url()).pathname.includes('/assignments/')) await page.getByRole('tab',{name:'个人资料'}).click();
 }
 async function fillHire(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   await openPerson(page, sample.name);
@@ -217,20 +199,20 @@ async function journey(
   await expect(button('保存')).toBeEnabled();
   await button('保存').focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByText('可见在职 1 人，任职 1 份，占编 0')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'本人办理历史'})).toBeVisible();
   await button('查看原办理').click();
   await expect(page.getByText('采用规则 T02-employee-1')).toBeVisible();
   await expect(page.getByText('任用决定 ' + ref.number)).toBeVisible();
   await expect(page.getByText('原单 ' + ref.source + '，修订 ' + ref.version)).toBeVisible();
   if (ref.line) await expect(page.getByText('名单行 ' + ref.line + '，修订 ' + ref.version)).toBeVisible();
-  await page.getByRole('textbox', { name: /^查询日期/ }).fill('2027-03-31');
-  await expect(page.getByText('可见在职 0 人，任职 0 份，占编 0')).toBeVisible();
+  await expect(page.getByLabel('查询日期')).toHaveCount(0);
+  expect((await request(page,'GET','/api/v1/persons/'+sample.id+'/employment?businessAt=2027-03-31')).body).toMatchObject({people:0,assignments:0,seats:0});
   await button('撤销未来入职').click();
   await page.getByRole('textbox', { name: /^撤销说明/ }).fill('任用单位于到岗前撤回通知');
   await button('保存').click();
   await expect(page.getByText(/入职（已撤销）/)).toBeVisible();
-  await page.getByRole('textbox', { name: /^查询日期/ }).fill('2027-04-01');
-  await expect(page.getByText('可见在职 0 人，任职 0 份，占编 0')).toBeVisible();
+  await expect(page.getByLabel('查询日期')).toHaveCount(0);
+  expect((await request(page,'GET','/api/v1/persons/'+sample.id+'/employment?businessAt=2027-04-01')).body).toMatchObject({people:0,assignments:0,seats:0});
 }
 test('T03 查回前一人的原号时保留当前入职草稿', async ({ page }) => {
   test.setTimeout(110000);
@@ -241,7 +223,7 @@ test('T03 查回前一人的原号时保留当前入职草稿', async ({ page })
     page.waitForRequest((r) => new URL(r.url()).pathname === '/api/v1/hires' && r.method() === 'POST'),
     page.getByRole('button', { name: '保存', exact: true }).click(),
   ]);
-  await expect(page.getByText('可见在职 1 人，任职 1 份，占编 0')).toBeVisible();
+  await expect(page.getByRole('heading',{name:'本人办理历史'})).toBeVisible();
   const key = await requestA.headerValue('Idempotency-Key');
   expect(key).toBeTruthy();
   await page.goto('/');
@@ -324,8 +306,8 @@ test('T03 原人补证后放弃入职', async ({ page }) => {
   await expect(page.getByRole('textbox', { name: /^任用通知说明/ })).toHaveValue(/四月一日/);
   await page.getByRole('button', { name: '取消', exact: true }).click();
   await page.getByRole('button', { name: '放弃修改' }).click();
-  await page.getByRole('textbox', { name: /^查询日期/ }).fill('2027-04-01');
-  await expect(page.getByText('可见在职 0 人，任职 0 份，占编 0')).toBeVisible();
+  await expect(page.getByLabel('查询日期')).toHaveCount(0);
+  expect((await request(page,'GET','/api/v1/persons/'+sample.id+'/employment?businessAt=2027-04-01')).body).toMatchObject({people:0,assignments:0,seats:0});
   const current = await request(page, 'GET', '/api/v1/persons/' + sample.id + '?view=edit');
   expect(current.body.documents).toHaveLength(1);
 });
@@ -457,26 +439,14 @@ async function hireAtLocation(page: Page, sample: Awaited<ReturnType<typeof seed
   return { locations, hire: hired.body };
 }
 async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeof seed>>,businessAt='2027-04-01', count=1, assignment?:string){
-  const desktop = page.getByRole('button', { name: '切换应用', exact: true });
-  if (await desktop.isVisible()) {
-    await desktop.click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-  } else {
-    await page.getByRole('button', { name: '打开导航', exact: true }).click();
-    const personnel = page.getByRole('button', { name: '人员', exact: true });
-    if ((await personnel.getAttribute('aria-expanded')) !== 'true') await personnel.click();
-    await page.getByRole('button', { name: '员工列表', exact: true }).click();
-  }
-  await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
-  const date = page.getByRole('textbox', { name: /^业务日期/ });
-  await date.fill(businessAt);
-  await date.press('Tab');
+  await openPersonnel(page);
+  await expect(page.getByRole('textbox',{name:'业务日期'})).toHaveCount(0);
   const search = page.getByRole('textbox', { name: '姓名或人员编号' });
   await search.fill(sample.name);
   const fetched = page.waitForResponse(response => {
-    if (new URL(response.url()).pathname !== '/api/v1/assignments/query') return false;
+    if (new URL(response.url()).pathname !== '/api/v1/personnel/directory/query') return false;
     const input = response.request().postDataJSON();
-    return !!input?.ref && input.businessAt === businessAt && !input.anchor && response.ok();
+    return !!input?.ref && !input.businessAt && !input.anchor && response.ok();
   });
   await search.press('Enter');
   const loaded = await fetched;
@@ -488,8 +458,28 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
   await expect(row).toHaveAttribute('href',new RegExp('ref='+ref));
   await row.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('tab', { name: '职务信息' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('.object-detail-identity h1')).toHaveText(sample.name);
+  if(businessAt!=='2027-04-01'){
+    const projection=await request(page,'GET','/api/v1/assignments/'+new URL(page.url()).pathname.split('/').pop());
+    const node=projection.body.effectiveDates.filter((d:string)=>d<=businessAt).at(-1);
+    if(node)await chooseEffectiveDate(page,node);
+  }
   return { row, search };
+}
+async function chooseEffectiveDate(page: Page, day: string) {
+  const axis=page.getByRole('navigation',{name:'生效日期'});
+  const point=axis.locator('button[data-day="'+day+'"]');
+  if(await point.isVisible()) await point.click();
+  else {
+    const compact=axis.locator('[data-date-menu="all"]');
+    if(await compact.isVisible()) await compact.click();
+    else {
+      const first=await axis.locator('button[data-day]').first().getAttribute('data-day');
+      await axis.locator(day<(first || '')?'[data-date-menu="before"]':'[data-date-menu="after"]').click();
+    }
+    await page.getByRole('menuitem',{name:day,exact:true}).click();
+  }
+  await expect(axis.locator('[aria-current=date]')).toContainText(day);
 }
 async function chooseRecordAction(page: Page, label: string) {
   const trigger = page.getByRole('button', {name: '更多操作', exact: true});
@@ -566,7 +556,7 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
     .toBe(true);
-  await page.getByRole('link', { name: '返回列表', exact: true }).click();
+  await page.getByRole('link', { name: '返回人员', exact: true }).click();
   await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible({timeout:15000});
   await expect(row).toBeFocused();
   await expect(search).toHaveValue(sample.name);
@@ -657,7 +647,7 @@ async function openRegister(page: Page) {
     if (!(await transactions.isVisible())) {
       await desktop.click();
       await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-      await expect(page.getByRole('heading', { name: /^(员工|办理记录|人员档案)$/ }).first()).toBeVisible();
+      await expect(page.getByRole('heading', { name: /^(人员|办理记录)$/ }).first()).toBeVisible();
       if (new URL(page.url()).pathname === '/personnel/actions') {
         await expect(heading).toBeVisible();
         return;
@@ -670,7 +660,7 @@ async function openRegister(page: Page) {
     await page.keyboard.press('Enter');
   } else {
     await page.getByRole('button', { name: '打开导航', exact: true }).click();
-    const personnel = page.getByRole('button', { name: '人员', exact: true });
+    const personnel = page.locator('#navigation-drawer').getByRole('button', { name: '人员', exact: true }).first();
     if ((await personnel.getAttribute('aria-expanded')) !== 'true') await personnel.click();
     const transactions = page.getByRole('button', { name: '人事事务', exact: true });
     if ((await transactions.getAttribute('aria-expanded')) !== 'true') await transactions.click();
@@ -826,16 +816,16 @@ async function historyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>)
   await button('调动 · 2027-07-01').click();
   await expect(page.getByRole('heading',{name:'调动原件'})).toBeVisible();
   await expect(page.getByText('合成七月跨部门调令',{exact:true})).toBeVisible();
-  await date('查看业务日','2027-06-01');
+  await chooseEffectiveDate(page,'2027-06-01');
   await button('插入记录').click();
   await expect(page.getByRole('textbox',{name:/^生效日期/})).toHaveValue('2027-06-01');
   await page.getByRole('combobox',{name:/工作地点/}).fill(locations[1].name);
   await page.getByRole('option',{name:locations[1].name,exact:true}).click();
   await button('保存').click();
   await expect(button('数据更改 · 2027-06-01')).toBeVisible();
-  await date('查看业务日','2027-07-01');
+  await chooseEffectiveDate(page,'2027-07-01');
   await expect(page.getByText([destination,sample.job,locations[1].name].join(' · '),{exact:true})).toBeVisible();
-  await date('查看业务日','2027-06-01');
+  await chooseEffectiveDate(page,'2027-06-01');
   await button('数据更改 · 2027-06-01').click();
   await chooseRecordAction(page, '调整生效日期');
   await date('生效日期','2027-06-10');
@@ -859,7 +849,7 @@ async function historyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>)
   await expect(page.getByText('已删除',{exact:true})).toBeVisible();
   await expect(button('删除记录')).toHaveCount(0);
   await expect(page.getByRole('button',{name:/查看修订/})).toHaveCount(3);
-  await date('查看业务日','2027-07-01');
+  await chooseEffectiveDate(page,'2027-07-01');
   await expect(page.getByText([destination,sample.job,locations[0].name].join(' · '),{exact:true})).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
@@ -938,14 +928,14 @@ async function concurrentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await page.getByLabel(/任用依据/).fill('放弃本次草稿');
   await go('取消');
   await button('放弃修改').click();
-  await expect(page.getByRole('heading', { name: new RegExp('0 号主岗') })).toBeVisible();
+  await expect(page.locator('.object-detail-identity').filter({hasText:'0 号主岗'})).toBeVisible();
   await go('新增兼岗');
   await choose('部门', sample.department);
   await choose('职务', sample.job);
   await page.getByLabel(/任用依据/).fill('兼任部门评审员');
   await button('保存').focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: new RegExp('1 号兼岗') })).toBeVisible();
+  await expect(page.locator('.object-detail-identity').filter({hasText:'1 号兼岗'})).toBeVisible();
   await expect(page.getByRole('tab', { name: '个人资料' })).toHaveCount(0);
   await expect(page.getByRole('tab', { name: /个人日志/ })).toHaveCount(0);
   await button('新增记录').click();
@@ -969,7 +959,7 @@ async function concurrentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await choose('职务', sample.job);
   await page.getByLabel(/任用依据/).fill('培训关系独立聘任');
   await button('保存').click();
-  await expect(page.getByRole('heading', { name: new RegExp('2 号兼岗') })).toBeVisible();
+  await expect(page.locator('.object-detail-identity').filter({hasText:'2 号兼岗'})).toBeVisible();
   await expect(page.getByText('本工作关系主任职', { exact: true })).toBeVisible();
   await expect(page.getByRole('tab', { name: '个人资料' })).toHaveCount(0);
   await expect
@@ -1018,7 +1008,7 @@ test('M04 仅见兼岗的读者从员工目录直达获权职务信息', async (
     const screen = await reader.newPage();
     await signIn(screen, 'reader');
     await openEmployeeAssignment(screen, sample);
-    await expect(screen.getByRole('heading', { name: /2 号兼岗/ })).toBeVisible();
+    await expect(screen.locator('.object-detail-identity').filter({hasText:'2 号兼岗'})).toBeVisible();
     await expect(screen.getByRole('tab', { name: '个人资料' })).toHaveCount(0);
     await expect(screen.getByRole('link', { name: '新增兼岗' })).toHaveCount(0);
     const hidden = await request(
@@ -1072,7 +1062,7 @@ test('M04 从兼岗打开关系转正的获权任职来源并返回原岗', asyn
     await expect(screen.getByText('获权关系转正通知',{exact:true})).toBeVisible();
     await screen.getByRole('button',{name:'返回当前职务信息'}).click();
     await expect(screen).toHaveURL(url => url.pathname.endsWith('/'+secondary.assignment) && !url.searchParams.has('sourceVersion'));
-    await expect(screen.getByRole('heading',{name:/1 号兼岗/})).toBeVisible();
+    await expect(screen.locator('.object-detail-identity').filter({hasText:'1 号兼岗'})).toBeVisible();
     await expect(screen.getByText('获权关系转正通知',{exact:true})).toBeVisible();
     await expect(record).toBeFocused();
   }
@@ -1100,7 +1090,7 @@ test('M04 从兼岗打开关系转正的获权任职来源并返回原岗', asyn
       await expect(screen.getByText('获权关系转正通知',{exact:true})).toHaveCount(0);
       if (status === 200) await expect(screen.getByText('该办理或来源当前不可用。')).toBeVisible();
       await screen.getByRole('button',{name:'返回当前职务信息'}).click();
-      await expect(screen.getByRole('heading',{name:/1 号兼岗/})).toBeVisible();
+      await expect(screen.locator('.object-detail-identity').filter({hasText:'1 号兼岗'})).toBeVisible();
       await expect(screen.getByText('获权关系转正通知',{exact:true})).toBeVisible();
     }
     const beforeRevoke = screen.waitForResponse(r => new URL(r.url()).pathname==='/api/v1/assignments/'+secondary.assignment &&
@@ -1117,7 +1107,7 @@ test('M04 从兼岗打开关系转正的获权任职来源并返回原岗', asyn
     expect((await denied).status()).toBe(403);
     await expect(screen.getByText('获权关系转正通知',{exact:true})).toHaveCount(0);
     await screen.getByRole('button',{name:'返回当前职务信息'}).click();
-    await expect(screen.getByRole('heading',{name:/1 号兼岗/})).toBeVisible();
+    await expect(screen.locator('.object-detail-identity').filter({hasText:'1 号兼岗'})).toBeVisible();
     await expect(screen).toHaveURL(url => !url.searchParams.has('action') && !url.searchParams.has('sourceVersion'));
     await expect(screen.getByRole('button',{name:'新增记录',exact:true})).toBeFocused();
   } finally {
@@ -1329,7 +1319,7 @@ async function lifecycleJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
   await button('离职 · 2027-08-31').click();await expect(page.getByRole('heading',{name:'离职原件'})).toBeVisible();
   let sourceAddress = '';
   if (fromHistory) {
-    await page.getByRole('link',{name:'办理历史',exact:true}).click();
+    await page.getByRole('link',{name:'本人办理历史',exact:true}).click();
     await button('从原离职办理再聘').click();
     await expect(page).toHaveURL(url => !!url.searchParams.get('rehireAction') && !!url.searchParams.get('rehireRevision'));
     sourceAddress = new URL(page.url()).searchParams.get('returnTo')!;
@@ -1403,7 +1393,7 @@ async function positionHireJourney(page: Page, sample: Awaited<ReturnType<typeof
     await expect(page.getByText(position.department,{exact:true})).toBeVisible();
     await expect(page.getByText(position.job.name,{exact:true})).toBeVisible();
     await expect(button('保存')).toBeEnabled();await button('保存').focus();await page.keyboard.press('Enter');
-    await expect(page.getByText('可见在职 1 人，任职 1 份，占编 0')).toBeVisible();
+    await expect(page.getByRole('heading',{name:'本人办理历史'})).toBeVisible();
     await button('查看原办理').click();
     await expect(page.getByText(new RegExp(position.name+' · 免占编'))).toBeVisible();
     await namedMenu308(page,'岗位','职务配置','/settings/staffing/positions');
@@ -1712,7 +1702,7 @@ async function successionJourney(page:Page, successor:Awaited<ReturnType<typeof 
     await expect(page.getByText(b.name+' · 交接占编',{exact:true})).toBeVisible();
     await button('调动 · 2027-04-01').click();
     await expect(page.getByText(outgoing.name+' · 2027-04-01 起交接，2027-04-11 起占常规名额',{exact:true})).toBeVisible();
-    const date=page.getByRole('textbox',{name:'查看业务日'});await date.fill('2027-04-11');await date.press('Tab');
+    await chooseEffectiveDate(page,'2027-04-11');
     await expect(page.getByText(b.name+' · 占编',{exact:true})).toBeVisible();
     const usage=await request(page,'GET','/api/v1/positions/'+b.id+'/replenishment?businessAt=2027-04-10');
     expect([usage.body.occupied,usage.body.handoverOccupied,usage.body.totalOccupied,usage.body.reserved]).toEqual([1,1,2,0]);
@@ -1777,7 +1767,7 @@ async function dutyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
   await expect(page.getByText('门店考勤 · 考勤'+sample.name,{exact:true})).toBeVisible();
   await expect(page.getByText(first+' 至 '+last,{exact:true})).toBeVisible();
   for(const day of [first,'2026-04-06',last,after]){const v=await usage(day);expect([v.quota,v.occupied,v.excess]).toEqual(day===after?[3,3,0]:[3,4,1])}
-  await date('查看业务日',after);await expect(page.getByText(home.name+' · 占编',{exact:true})).toBeVisible();
+  await chooseEffectiveDate(page,after);await expect(page.getByText(home.name+' · 占编',{exact:true})).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
 const seedDuty=(page:Page)=>seed(page,true,'2026-04-01');
@@ -1981,7 +1971,7 @@ async function openAdditionalAssignment(page: Page, sample: Awaited<ReturnType<t
     return;
   }
 
-  const routePattern = '**/api/v1/assignments/query';
+  const routePattern = '**/api/v1/personnel/directory/query';
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
   let requested = false;
@@ -2047,7 +2037,7 @@ async function secondaryPositionJourney(page:Page,sample:Awaited<ReturnType<type
     const end=page.getByRole('textbox',{name:/^最后任职日/});await end.fill('2027-04-30');await end.press('Tab');
     await page.getByLabel(/任用依据/).fill('兼任第二岗位至四月底');
     const save=page.getByRole('button',{name:'保存',exact:true});await expect(save).toBeEnabled();await save.focus();await expect(save).toBeFocused();await page.keyboard.press('Enter');
-    await expect(page.getByRole('heading',{name:/1 号兼岗/})).toBeVisible();
+    await expect(page.locator('.object-detail-identity').filter({hasText:'1 号兼岗'})).toBeVisible();
     await expect(page.getByText(second.name+' · 占编',{exact:true})).toBeVisible();
     for(const [p,day,n] of [[main,first,1],[second,first,1],[second,'2027-05-01',0]] as const) {
       const usage=await request(page,'GET','/api/v1/positions/'+p.id+'/replenishment?businessAt='+day);expect(usage.body.occupied).toBe(n);
@@ -2072,36 +2062,25 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
 }
 test('M04 一人两个占编岗位 原生200%',async()=>{await native200(secondaryPositionJourney)});
 
-test('M04 员工列表首次默认日期延迟时保留已输入的业务日和姓名',async({page})=>{
+test('M04 人员名录的延迟响应保留姓名草稿及搜索返回位置',async({page})=>{
   test.setTimeout(90000);
-  await signIn(page);const sample=await seed(page);await hireAtLocation(page,sample);
+  await signIn(page);
+  const sample=await seed(page);
+  await hireAtLocation(page,sample);
   await page.setViewportSize({width:320,height:256});
-  let release!:()=>void;
-  const pending=new Promise<void>(resolve=>{release=resolve});
-  await page.route('**/api/v1/assignments/query',async route=>{
-    const body=route.request().postDataJSON();
-    if(!body.businessAt&&!body.ref)await pending;
-    await route.continue();
-  });
-  try {
-    await page.goto('/personnel/assignments');
-    const day=page.getByRole('textbox',{name:/^业务日期/});
-    await day.fill('2027-04-01');
-    const search=page.getByRole('textbox',{name:'姓名或人员编号'});await search.fill(sample.name);await search.press('Enter');
-    await expect(page).toHaveURL(u=>u.searchParams.get('businessAt')==='2027-04-01'&&u.searchParams.has('ref'));
-  } finally { release(); }
-  await expect(page.getByText('1 份任职，1 人',{exact:true})).toBeVisible();
-  await expect(page.getByRole('textbox',{name:/^业务日期/})).toHaveValue('2027-04-01');
-  await page.unroute('**/api/v1/assignments/query');
-  let received!: () => void, finish!: () => void;
-  const arrived = new Promise<void>(resolve => { received = resolve; });
+  await openPersonnel(page);
+  const input=page.getByRole('textbox',{name:'姓名或人员编号'});
+  await input.fill(sample.name);
+  await input.press('Enter');
+  await expect(page.locator('a[data-object-link]').first()).toContainText(sample.name);
+  const prior=new URL(page.url()).searchParams.get('ref');
+  let finish!:()=>void,received!:()=>void;
+  const arrived=new Promise<void>(resolve=>{received=resolve});
   const hold = new Promise<void>(resolve => { finish = resolve; });
-  await page.route('**/api/v1/assignments/query',async route => {
+  await page.route('**/api/v1/personnel/directory/query',async route => {
     const response = await route.fetch();
     received(); await hold; await route.fulfill({response});
   },{times:1});
-  const prior = new URL(page.url()).searchParams.get('ref');
-  const input = page.getByRole('textbox',{name:'姓名或人员编号'});
   await input.fill(sample.name); await input.press('Enter');
   try {
     await arrived;
@@ -2112,58 +2091,31 @@ test('M04 员工列表首次默认日期延迟时保留已输入的业务日和�
   expect(current).toBeTruthy(); expect(current).not.toBe(prior);
   const employee=page.locator('a[data-object-link]').filter({hasText:sample.name});
   await expect(employee).toHaveAttribute('href',new RegExp('ref='+current));
-  await employee.click(); await page.getByRole('link',{name:'返回列表',exact:true}).click();
+  await employee.click(); await page.getByRole('link',{name:'返回人员',exact:true}).click();
   await expect(employee).toBeFocused(); await expect(input).toHaveValue(sample.name);
 });
 
-test('M04 从本人范围聚焦日期后收到默认日仍可按键盘选任职', async ({ page }) => {
-  test.setTimeout(90000);
-  await signIn(page);
-  const sample = await seed(page);
-  await hireAtLocation(page, sample);
-  await page.setViewportSize({ width: 320, height: 900 });
-  let release!: () => void;
-  const pending = new Promise<void>((resolve) => { release = resolve; });
-  await page.route('**/api/v1/assignments/query', async (route) => {
-    if (!route.request().postDataJSON().businessAt) await pending;
-    await route.continue();
-  });
-  const day = page.getByRole('textbox', { name: /^业务日期/ });
-  try {
-    await page.goto('/personnel/assignments?person=' + sample.id);
-    await day.focus();
-    await day.press('ControlOrMeta+a');
-  } finally {
-    release();
-  }
-  await expect(page.getByText(/^\d+ 份任职，\d+ 人$/)).toBeVisible();
-  await expect(day).toHaveValue('');
-  await page.keyboard.insertText('2027-04-01');
-  await day.press('Tab');
-  await expect(page).toHaveURL((url) =>
-    url.searchParams.get('person') === sample.id && url.searchParams.get('businessAt') === '2027-04-01',
-  );
-  await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible();
-  await expect(page.locator('a[data-object-link]').filter({ hasText: sample.name })).toHaveCount(1);
+test('M04 窄屏按主兼岗搜索并用键盘打开未来任职',async({page})=>{
+  await signIn(page);const sample=await seed(page);await hireAtLocation(page,sample);
+  await page.setViewportSize({width:320,height:900});await openPersonnel(page);
+  const filter=page.getByRole('combobox',{name:'主兼岗'});await filter.click();
+  await page.getByRole('option',{name:'主岗',exact:true}).click();
+  const input=page.getByLabel('姓名或人员编号');await input.fill(sample.name);await input.press('Enter');
+  const row=page.locator('a[data-object-link]').filter({hasText:sample.name});await row.focus();await row.press('Enter');
+  await expect(page.getByRole('tab',{name:'职务信息'})).toHaveAttribute('aria-selected','true');
+  await expect(page.getByLabel('查看业务日')).toHaveCount(0);
 });
-
 async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   await concurrentJourney(page, sample);
-  await openPerson(page, sample.name);
-  await page.getByRole('link', { name: '工作关系与任职', exact: true }).click();
-  await expect(page).toHaveURL((url) =>
-    url.pathname === '/personnel/assignments' && url.searchParams.get('person') === sample.id,
-  );
-  const day = page.getByRole('textbox', { name: /^业务日期/ });
-  await day.fill('2027-04-01');
-  await day.press('Tab');
-  await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
+  await openPersonnel(page);
+  await page.getByLabel('姓名或人员编号').fill(sample.name);await page.getByLabel('姓名或人员编号').press('Enter');
+  await expect(page.getByText('3 份任职，1 人',{exact:true})).toBeVisible();
   const rows = page.locator('a[data-object-link]').filter({ hasText: sample.name });
   await expect(rows).toHaveCount(3);
   const primary = rows.first();
   await primary.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: /0 号主岗/ })).toBeVisible();
+  await expect(page.locator('.object-detail-identity').filter({hasText:'0 号主岗'})).toBeVisible();
   const tab = (name: string) => page.getByRole('tab', { name, exact: true });
   await tab('个人资料').click();
   await expect(tab('个人资料')).toHaveAttribute('aria-selected', 'true');
@@ -2173,19 +2125,20 @@ async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<type
   await expect(tab('变更日志')).toHaveAttribute('aria-selected', 'true');
   await tab('职务信息').focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: /0 号主岗/ })).toBeVisible();
+  await expect(page.locator('.object-detail-identity').filter({hasText:'0 号主岗'})).toBeVisible();
   await expect(tab('职务信息')).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('link', { name: /返回/ }).first().click();
   await expect(primary).toBeFocused();
-  await expect(day).toHaveValue('2027-04-01');
+  await expect(page.getByRole('textbox',{name:'业务日期'})).toHaveCount(0);
   await rows.nth(1).click();
-  await expect(page.getByRole('heading', { name: /1 号兼岗/ })).toBeVisible();
-  await expect(page.getByRole('tab')).toHaveCount(1);
+  await expect(page.locator('.object-detail-identity').filter({hasText:'1 号兼岗'})).toBeVisible();
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  await expect(page.getByRole('heading',{name:'职务信息',exact:true})).toBeVisible();
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 }
 
 for (const [width, height] of [[1440, 900], [1440, 540], [390, 844], [320, 900], [320, 256]]) {
-  test(`M04 从人员档案选择本人任职并切换主岗页签 ${width}x${height}`, async ({ page }) => {
+  test(`M04 从人员选择本人任职并切换主岗页签 ${width}x${height}`, async ({ page }) => {
     test.setTimeout(180000);
     await signIn(page);
     const sample = await seed(page);
@@ -2193,7 +2146,7 @@ for (const [width, height] of [[1440, 900], [1440, 540], [390, 844], [320, 900],
     await assignmentTabsJourney(page, sample);
   });
 }
-test('M04 从人员档案选择本人任职并切换主岗页签 原生200%', async () => {
+test('M04 从人员选择本人任职并切换主岗页签 原生200%', async () => {
   await native200(assignmentTabsJourney);
 });
 
@@ -2248,8 +2201,8 @@ test('M04 主岗、个人日志和撤销原单各按当前授权重新读取', a
       { revision: hire.revision, reason: '原通知在到岗前已撤回' }, randomUUID());
     expect(cancelled.status, cancelled.body.message).toBe(200);
     await screen.goto(profileURL);
-    await screen.getByRole('link', { name: '工作关系与任职', exact: true }).click();
-    await expect(screen.getByText('暂无可查看的任职', { exact: true })).toBeVisible();
+    await screen.getByRole('link', { name: '本人办理历史', exact: true }).click();
+    await expect(screen.getByRole('heading',{name:'本人办理历史'})).toBeVisible();
     await expect(screen.getByText(/入职（已撤销）/)).toBeVisible();
     await screen.getByRole('button', { name: '查看原办理', exact: true }).first().click();
     await expect(screen.getByText('首任职 ' + hire.assignment, { exact: true })).toBeVisible();
@@ -2382,16 +2335,11 @@ async function profileAssignmentDateJourney(page:Page,sample:Awaited<ReturnType<
     const current = await term();
     expect(current.state.departmentId).toBe(dest.id);
     await openPerson(page,sample.name);
-    await page.getByRole('link',{name:'工作关系与任职',exact:true}).click();
-    const day=page.getByRole('textbox',{name:'查看业务日',exact:true});
-    await expect(day).toHaveValue(current.businessAt);
+    await page.getByRole('tab',{name:'职务信息'}).click();
+    await expect(page.locator('[aria-current=date]')).toHaveText(current.businessAt);
     await expect(page.getByText(destinationName+' · '+sample.job,{exact:true})).toBeVisible();
-    await day.fill('2026-04');
-    await expect(day).toHaveValue('2026-04');
-    await day.fill('2026-04-05');
-    await expect(page).toHaveURL(url=>url.searchParams.get('assignmentDay')==='2026-04-05' && !url.searchParams.has('businessAt'));
-    await page.reload();
-    await expect(day).toHaveValue('2026-04-05');
+    await chooseEffectiveDate(page,'2026-04-01');
+    await page.reload();await expect(page.locator('[aria-current=date]')).toHaveText('2026-04-01');
     await expect(page.getByText(sample.department+' · '+sample.job,{exact:true})).toBeVisible();
   } finally {
     for (const {rule,revision} of restored.reverse()) {
@@ -2434,7 +2382,7 @@ test('M04 员工列表跨第21份任职后返回姓名、页码和原行', async
     expect(added.body.recordNumber).toBe(n);
   }
   await openEmployeeAssignment(page,sample,'2027-05-21',21,hire.assignment);
-  await page.getByRole('link',{name:'返回列表',exact:true}).click();
+  await page.getByRole('link',{name:'返回人员',exact:true}).click();
   const search = page.getByRole('textbox',{name:'姓名或人员编号'});
   await expect(search).toHaveValue(sample.name);
   await page.getByRole('button',{name:'下一页',exact:true}).first().click();
@@ -2450,11 +2398,11 @@ test('M04 员工列表跨第21份任职后返回姓名、页码和原行', async
   await expect(last).toHaveAttribute('href',/page=2/);
   await expect(search).toHaveValue(sample.name);
   await last.click();
-  await expect(page.getByRole('heading',{name:/20 号兼岗/})).toBeVisible();
-  await page.getByRole('link',{name:'返回列表',exact:true}).click();
+  await expect(page.locator('.object-detail-identity').filter({hasText:'20 号兼岗'})).toBeVisible();
+  await page.getByRole('link',{name:'返回人员',exact:true}).click();
   await expect(last).toBeFocused();
   await expect(search).toHaveValue(sample.name);
-  await expect(page).toHaveURL(u=>u.searchParams.get('page')==='2' && u.searchParams.get('businessAt')==='2027-05-21');
+  await expect(page).toHaveURL(u=>u.searchParams.get('page')==='2' && !u.searchParams.has('businessAt'));
 });
 
 test('M04 办理列表的姓名慢应答保留新输入并遵从浏览器返回', async ({page}) => {

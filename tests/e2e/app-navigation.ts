@@ -17,3 +17,18 @@ export async function chooseApplication(page: Page, label: '部门' | '设置') 
     await page.getByRole('menuitem', { name: label, exact: true }).click();
   }
 }
+
+export async function openPersonnel(page: Page) {
+  const drawerButton = page.getByRole('button',{name:'打开导航',exact:true});
+  if(await drawerButton.isVisible()){
+    await drawerButton.click();
+    const drawer=page.locator('#navigation-drawer');
+    const app=drawer.getByRole('button',{name:'人员',exact:true}).first();
+    if(await app.getAttribute('aria-expanded')!=='true') await app.click();
+    await drawer.getByRole('button',{name:'人员',exact:true}).last().click();
+  } else {
+    await page.getByRole('button',{name:'切换应用',exact:true}).click();
+    await page.getByRole('menuitem',{name:'人员',exact:true}).click();
+  }
+  await page.getByRole('heading',{name:'人员',exact:true}).waitFor();
+}

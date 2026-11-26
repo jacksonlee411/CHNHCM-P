@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import {createPortal} from 'react-dom';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Alert, Box, Button, Stack, Typography } from '@mui/material';
 import { api, unwrap, type Models } from '@chnhcm/api-client';
-import { ObjectDetailField, ObjectTextField, recordedTime } from '@chnhcm/ui';
+import { ObjectDetailField, ObjectDetailSection, ObjectTextField, recordedTime } from '@chnhcm/ui';
 import { useRead, message } from '../personnel/api';
 import { useRuleSubmission } from '../readiness/useRuleSubmission';
 import { lastDutyDay } from './ActualDutyFields';
@@ -10,10 +11,12 @@ type Command=Models['EmploymentContractCommand'];
 type Contract=Models['EmploymentContract'];
 const labels={sign:'订立合同',renew:'续订合同',end:'终结合同'};
 
-export function RelationshipContracts({view,session,draft,update,begin,cancel,finish}:{
+export function RelationshipContracts({view,session,draft,update,begin,cancel,finish,actionSlot}:{
+  actionSlot: HTMLElement | null;
   view:Models['AssignmentView'];session:Models['Principal'];draft?:Command;update:(v:Command)=>void;
   begin:(cmd:Command,button:HTMLButtonElement)=>void;cancel:()=>void;finish:()=>void;
 }) {
+  const formId=useId();
   const [chosen,select]=useState(''),[error,setError]=useState('');
   const [notice,setNotice]=useState('');
   const alert=useRef<HTMLDivElement>(null);
@@ -42,7 +45,7 @@ export function RelationshipContracts({view,session,draft,update,begin,cancel,fi
     <Typography component="h3">工作关系合同</Typography>
     <ObjectDetailField label="用人单位">{view.employerName}</ObjectDetailField>
     {list.error && <Alert severity="error" action={<Button onClick={list.refresh}>重试</Button>}>{list.error}</Alert>}
-    {draft && list.data?.canManage ? <Box component="form" onSubmit={e=>{e.preventDefault();if(available&&!submission.busy)void submission.submit(draft)}}>
+    {draft && list.data?.canManage ? <Box id={formId} component="form" onSubmit={e=>{e.preventDefault();if(available&&!submission.busy)void submission.submit(draft)}}>
       <Stack spacing={1.5}>
         <Typography component="h4">{labels[draft.operation]}</Typography>
         {draft.ref && <ObjectDetailField label="原合同">{items.find(c=>c.id===draft.ref?.id)?.number}</ObjectDetailField>}
@@ -50,12 +53,12 @@ export function RelationshipContracts({view,session,draft,update,begin,cancel,fi
           <ObjectTextField label="合同首个无效日" type="date" required value={draft.firstInactive??''} onChange={e=>update({...draft,firstInactive:e.target.value})}/>
           <ObjectTextField label="合同终结依据" required value={draft.basis??''} onChange={e=>update({...draft,basis:e.target.value})}/>
         </>:<>
-          <ObjectTextField label="合同编号" required value={draft.number??''} onChange={e=>update({...draft,number:e.target.value})}/>
+          <div className="object-detail-columns"><ObjectDetailSection title="签约信息"><ObjectTextField label="合同编号" required value={draft.number??''} onChange={e=>update({...draft,number:e.target.value})}/>
           <ObjectTextField label="签订日" type="date" required value={draft.signed??''} onChange={e=>update({...draft,signed:e.target.value})}/>
-          <ObjectTextField label="合同起日" type="date" required value={draft.from??''} onChange={e=>update({...draft,from:e.target.value})}/>
-          <ObjectTextField label="合同至（含当日）" type="date" value={draft.lastDay??''} onChange={e=>update({...draft,lastDay:e.target.value||undefined})}/>
+          </ObjectDetailSection><ObjectDetailSection title="合同期间"><ObjectTextField label="合同起日" type="date" required value={draft.from??''} onChange={e=>update({...draft,from:e.target.value})}/>
+          <ObjectTextField label="合同至（含当日）" type="date" value={draft.lastDay??''} onChange={e=>update({...draft,lastDay:e.target.value||undefined})}/></ObjectDetailSection></div>
         </>}
-        <Stack direction="row" gap={1}><Button variant="contained" type="submit" disabled={!available||submission.busy}>保存合同</Button><Button onClick={cancel}>取消</Button></Stack>
+        {actionSlot && createPortal(<Stack direction="row" gap={1}><Button variant="contained" type="submit" form={formId} disabled={!available||submission.busy}>保存合同</Button><Button onClick={cancel}>取消</Button></Stack>,actionSlot)}
       </Stack>
     </Box>:<>
       <Stack direction="row" flexWrap="wrap" gap={1}>

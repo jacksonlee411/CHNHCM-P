@@ -81,6 +81,8 @@ type Action struct {
 	CanHistory bool `json:"canHistory"`
 }
 type TermLink struct {
+	EmployerName string `json:"employerName,omitempty"`
+	Until        string `json:"until,omitempty"`
 	Assignment   string `json:"assignment"`
 	RecordNumber int    `json:"recordNumber"`
 	From         string `json:"from"`

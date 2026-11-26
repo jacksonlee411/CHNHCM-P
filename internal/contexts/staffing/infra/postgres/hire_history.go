@@ -120,7 +120,11 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 					return e
 				}
 				if visible {
-					out.Terms = append(out.Terms, h.TermLink{Assignment: a.Assignment, RecordNumber: a.RecordNumber, From: a.From})
+					summary, err := u.relationshipSummary(ctx, a, a, false)
+					if err != nil {
+						return err
+					}
+					out.Terms = append(out.Terms, h.TermLink{Assignment: a.Assignment, RecordNumber: a.RecordNumber, From: a.From, Until: a.Until, EmployerName: summary.EmployerName})
 					if active {
 						out.Seats += seats
 						out.People = 1
