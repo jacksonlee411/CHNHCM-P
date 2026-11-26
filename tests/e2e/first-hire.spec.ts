@@ -2100,8 +2100,7 @@ test('M04 桌面按主兼岗搜索并用键盘打开未来任职',async({page})=
 });
 async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   await concurrentJourney(page, sample);
-  await openPersonnel(page);
-  await page.getByLabel('姓名或人员编号').fill(sample.name);await page.getByLabel('姓名或人员编号').press('Enter');
+  await expect(page.getByLabel('姓名或人员编号')).toHaveValue(sample.name);
   await expect(page.getByText('3 份任职，1 人',{exact:true})).toBeVisible();
   const rows = page.locator('a[data-object-link]').filter({ hasText: sample.name });
   await expect(rows).toHaveCount(3);
