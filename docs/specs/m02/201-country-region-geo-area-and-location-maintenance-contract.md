@@ -1,6 +1,8 @@
-# CHNHCM-201 国家地区行政区划与地点建设方案
+# CHNHCM-201 国家/地区目录、行政区划目录与企业地点维护技术合同
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。分批交付由[200路线图](../../archive/plans/200-geography-and-location-roadmap.md)持有；本方案经[减少过度设计与共用能力评审](../../verification/200-geography-design-review.md)修订；文档评审与产品实施分别登记，不把拟议对象、表和API记作已实现。G3细化经[203专项评审](../../verification/203-g3-plan-review.md)通过；G3已完成实施、主代理复评及限定范围验收，实际结果见[203实施记录](../../verification/203-g3-implementation.md)，G4实施及限定验收完成，实际结果见[204实施记录](../../verification/204-g4-implementation.md)，G5已完成首批联合验收及4383运行交付，见[205](../../verification/205-g5-implementation.md)；G4具体分批及准入映射由[204实施方案](../../archive/plans/204-g4-location-implementation.md)持有。
+国家/地区目录覆盖全球，行政区划目录和企业地点维护适用于中国大陆、香港、澳门和台湾。区划目录按来源区分行政区划和地址分区。修订、开发与评审时，按本合同核对目录来源、地点地址引用、存储、接口、权限、页面交互及验收条件。首批交付的任务、依赖和退出条件见 200 路线图。[登记表](../../governance/registry.json) · [200 实施路线图](../../archive/plans/200-geography-and-location-roadmap.md)
+
+规格审阅和产品验收分别登记。原设计经共用能力评审修订。G3 区划通过专项评审、实施复评及限定范围验收，G4 企业地点按 204 的准入映射完成限定验收，G5 完成首批联合验收及 4383 运行交付。[设计评审](../../verification/200-geography-design-review.md) · [203 专项评审](../../verification/203-g3-plan-review.md) · [203 实施记录](../../verification/203-g3-implementation.md) · [204 实施方案](../../archive/plans/204-g4-location-implementation.md) · [204 实施记录](../../verification/204-g4-implementation.md) · [205 联合验收记录](../../verification/205-g5-implementation.md)
 
 上游：[M02目标](../../architecture/target/modules/m02.md)、[120共用技术合同](120-dated-maintenance-technical-contract.md)、[124接入指南](../../guides/124-dated-object-admission-and-capacity.md)、[202默认日期决定](../../adr/202-master-data-default-effective-date.md)、[来源索引](../../reference/200-geography-sources.json)。
 
@@ -10,15 +12,15 @@
 
 管理员查阅和维护国家/地区及本期区划，在相应地区建立实际办公、工作或组织地点，修改地址、办理启停并查阅旧来源。查询者从相同正常菜单读取获权资料。来源维护者沿受控装载入口引入固定地理包；不向普通用户开放自由创建官方行政实体。
 
-本方案区分三类事实：国家/地区目录、行政及地址区域目录、企业地点。地点是M02 Location，有企业内稳定身份和编码；CubeBox的地址地名、Odoo的res.city、员工个人地址均不是这个对象。企业地点不得按同名区域自动生成。
+CountryRegion 记录国家/地区，GeoArea 记录行政区划或地址分区，Location 记录企业地点。地点在企业内有稳定身份和编码；CubeBox的地址地名、Odoo的res.city、员工个人地址均不是这个对象。企业地点不得按同名区域自动生成。
 
 ### 1.2 所属域与能力
 
-本批拟将CountryRegion和GeoArea登记为Organization拥有的地理参考对象，Location继续属于M02组织对象。国家/地区和区划在客户实例内共享，不按BU复制；地点归企业，首版不要求管理BU。编码/区域范围不表示主权分类，四地选择器使用CN、HK、MO、TW来源代码定位地址范围。
+CountryRegion 和 GeoArea 是 Organization 持有的地理参考对象，Location 属于 M02 组织对象。国家/地区和区划在客户实例内共享，不按BU复制；地点归企业，首版不要求管理BU。编码/区域范围不表示主权分类，四地选择器使用CN、HK、MO、TW来源代码定位地址范围。
 
 X03裁决当前权限；X02继续拥有适用/默认政策，不持有这三类对象的第二份事实。本批不新设第18个上下文，不把Organization完整内核搬到X01。未来其他域只通过公开只读引用合同使用地理对象。
 
-本方案持有三类对象的本批设计范围；T00按对象同步007、目标M02及上下文范围说明，目标生成源及产物按本仓修订链更新。文档评审通过不等于架构登记、数据冻结或产品实现已经完成。
+三类对象的维护规则及验收条件在本合同中定义。T00按对象同步007、目标M02及上下文范围说明，目标生成源及产物按本仓修订链更新。文档评审通过不等于架构登记、数据冻结或产品实现已经完成。
 
 ## 2 范围和来源准入规则
 

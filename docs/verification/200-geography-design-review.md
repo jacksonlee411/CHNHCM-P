@@ -1,6 +1,6 @@
 # CHNHCM-200 国家地区与地点方案精简及复用评审
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[200路线图](../archive/plans/200-geography-and-location-roadmap.md)、[201方案](../specs/m02/201-geography-and-location-design.md)、[202默认日期](../adr/202-master-data-default-effective-date.md)。上游为[124接入指南](../guides/124-dated-object-admission-and-capacity.md)及[132必要校验边界](../adr/132-query-and-validation-boundary.md)。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[200路线图](../archive/plans/200-geography-and-location-roadmap.md)、[201方案](../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)、[202默认日期](../adr/202-master-data-default-effective-date.md)。上游为[124接入指南](../guides/124-dated-object-admission-and-capacity.md)及[132必要校验边界](../adr/132-query-and-validation-boundary.md)。
 
 ## 1 验证对象与受测基线
 

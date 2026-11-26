@@ -564,7 +564,7 @@
     },
     {
       "id": "CHNHCM-201",
-      "decision": "docs/specs/m02/201-geography-and-location-design.md",
+      "decision": "docs/specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md",
       "base_commit": "0842699c9ab93acb1ab14d55c05bfdde289eb2e9",
       "scope": "G0 geographic reference object ownership and phase boundary; no implemented API or database claim.",
       "verification": "docs/verification/200-g0-source-admission.md",

@@ -1,6 +1,6 @@
 # CHNHCM-200 国家地区行政区划与地点实施路线图
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：全球国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。本文持有分批交付、依赖与退出条件；对象方案由[201](../../specs/m02/201-geography-and-location-design.md)持有，配置与主数据首次新建默认日期由[202](../../adr/202-master-data-default-effective-date.md)持有。
+登记信息：[registry.json](../../governance/registry.json)。适用范围：全球国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。本文持有分批交付、依赖与退出条件；对象方案由[201](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)持有，配置与主数据首次新建默认日期由[202](../../adr/202-master-data-default-effective-date.md)持有。
 
 上游：[M02边界](../../architecture/007-m02-entry.md)、[116共用维护](116-m02-shared-dated-maintenance-roadmap.md)、[124接入指南](../../guides/124-dated-object-admission-and-capacity.md)、[132查询边界](../../adr/132-query-and-validation-boundary.md)、[134并行基线](../../guides/134-parallel-development-baseline.md)。本轮方案经[共用能力与必要校验评审](../../verification/200-geography-design-review.md)修订，G1默认日期已完成，G2国家目录本轮功能交付收尾，按用户2026-11-14决定缩放及容量另行接续；2026-11-15已关联G3中原3条缩放后续通过证据，国家容量已由205补验通过，G3的[203实施方案](203-g3-geo-area-admission.md)已完成[专项评审](../../verification/203-g3-plan-review.md)，G3已完成实施及限定范围验收，G4的[204方案](204-g4-location-implementation.md)已制定并评审通过，G4实施及限定验收完成，G5由[205](205-g5-geography-acceptance-and-runtime.md)完成首批联合验收与4383运行交付；固定4383当前运行由[205](../../verification/205-g5-implementation.md)持有，原万科初始化记录保留。
 
@@ -27,7 +27,7 @@
 | 共性适配 | 先改202默认日期；其余类型/页面扩展随首个国家真实切片完成，见201第4节 | 真实调用方驱动，不先建通用平台；公共修改不改变BU/部门历史 |
 | 数据准入 | 固定离线Go命令、来源映射与按目录/地区的完成标记，复用原提交恢复 | 空库可重现、重复包零增长；一地失败不阻断其他已完整目录 |
 
-表中数量是已核对来源版次的分母，不是全国现时普查或未来版本的固定业务常量。四地地址处理方案、来源缺口和地点含义见[201](../../specs/m02/201-geography-and-location-design.md)。
+表中数量是已核对来源版次的分母，不是全国现时普查或未来版本的固定业务常量。四地地址处理方案、来源缺口和地点含义见[201](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)。
 
 ### 2.2 后置范围
 
@@ -122,7 +122,7 @@ G0已落实D01固定版次、D02八条全部隔离及MO基础地址范围、D03�
 
 ## 6 验收与关闭条件
 
-验收定义由[201第9节](../../specs/m02/201-geography-and-location-design.md#9-验收矩阵)持有。当前计划关闭须满足全部适用正确性条件、数据准入和各阶段交接；性能未达项按第4.3节明确归属和接受边界。计划任务完成、文档采纳和产品实际验收分别登记。
+验收定义由[201第9节](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#9-验收矩阵)持有。当前计划关闭须满足全部适用正确性条件、数据准入和各阶段交接；性能未达项按第4.3节明确归属和接受边界。计划任务完成、文档采纳和产品实际验收分别登记。
 
 受影响检查包括make docs、make boundaries、make check、make build、make integration、make smoke；生成代码变化运行make generate并检查漂移。浏览器默认桌面Chromium，四地地址与窄屏各有正常菜单旅程；不把模拟API或旧CubeBox通过记录计入。
 

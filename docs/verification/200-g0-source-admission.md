@@ -1,6 +1,6 @@
 # CHNHCM-200 G0范围与固定来源准入
 
-登记信息：[registry.json](../governance/registry.json)。承接[200 T00](../archive/plans/200-geography-and-location-roadmap.md)、[201能力表](../specs/m02/201-geography-and-location-design.md)和[202](../adr/202-master-data-default-effective-date.md)。
+登记信息：[registry.json](../governance/registry.json)。承接[200 T00](../archive/plans/200-geography-and-location-roadmap.md)、[201能力表](../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)和[202](../adr/202-master-data-default-effective-date.md)。
 
 ## 1 基线与阶段
 

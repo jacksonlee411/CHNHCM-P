@@ -383,7 +383,7 @@ BU 与部门由现行规格持有以下独立预期。按当前授权从正常�
 
 ## 22 G4地点准入映射
 
-2026-11-15 [204实施方案](../../archive/plans/204-g4-location-implementation.md)第2.2节逐组映射本表共用规则：稳定身份/日期、资料/补丁、删除/改日/首条、启停/固定两条、分类、读取/返回、权限、原子提交、固定选择及操作者日志均适用；部门BU/Hierarchy/持续运营覆盖不适用。地点地址、逐动作采用与企业范围由[201](201-geography-and-location-design.md)持有，不能把部门专属资格复制过去。
+2026-11-15 [204实施方案](../../archive/plans/204-g4-location-implementation.md)第2.2节逐组映射本表共用规则：稳定身份/日期、资料/补丁、删除/改日/首条、启停/固定两条、分类、读取/返回、权限、原子提交、固定选择及操作者日志均适用；部门BU/Hierarchy/持续运营覆盖不适用。地点地址、逐动作采用与企业范围由[201 企业地点维护合同](201-country-region-geo-area-and-location-maintenance-contract.md)持有，不能把部门专属资格复制过去。
 
 204的G4-V01—V18承接数据、Go、真实DB/API、正常菜单、故障/并发及公共回归，G4-T06承接地点容量及资源；当前Location已接线并完成主代理复评及限定验收，逐项实际证据见[204实施记录](../../verification/204-g4-implementation.md)。国家/区划既有结果与G2三条缩放后续证据关联见[204评审记录](../../verification/204-g4-plan-review.md)，不据文档评审将产品标为通过。
 

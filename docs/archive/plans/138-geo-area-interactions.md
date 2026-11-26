@@ -1,6 +1,6 @@
 # CHNHCM-138 行政区划目录交互实施方案
 
-[登记表](../../governance/registry.json) · [012 共享体验](../../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list) · [201 地理资料](../../specs/m02/201-geography-and-location-design.md#m02-br-208)
+[登记表](../../governance/registry.json) · [012 共享体验](../../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list) · [201 地理资料](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#m02-br-208)
 
 ## 1 用户任务与基线
 

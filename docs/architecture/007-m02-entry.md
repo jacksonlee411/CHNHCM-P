@@ -14,7 +14,7 @@ M02 持有组织对象、法律实体允许用途、按用途组织架构、Cont
 
 大陆组织角色按[CHNHCM-009](../adr/009-mainland-organization-terms.md)区分：劳动关系首选“用人单位”，派遣接收方为“用工单位”，其他关系按性质使用“关联单位”或具体角色。符合条件的分支机构不因缺少独立法人资格而被一律排除。`Employment.entityId` 是关联组织引用，具体用人/用工事实由 M04 核对，付款及税费角色由相应消费域独立确定。
 
-国家/地区CountryRegion与行政区划/地址分区GeoArea由Organization持有实例共享参考事实，Location持有企业工作地点及地址引用；不归X02或部门Hierarchy。范围和共用能力见[201](../specs/m02/201-geography-and-location-design.md)，[G0结果](../verification/200-g0-source-admission.md)仅证明来源/范围准备，不计产品交付。
+国家/地区CountryRegion与行政区划/地址分区GeoArea由Organization持有实例共享参考事实，Location持有企业工作地点及地址引用；不归X02或部门Hierarchy。范围和共用能力见[201 地理目录与企业地点维护技术合同](../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)，[G0结果](../verification/200-g0-source-admission.md)仅证明来源/范围准备，不计产品交付。
 
 ## 3 跨域依赖与合同边界
 

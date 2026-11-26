@@ -16,7 +16,7 @@
 
 ## M02部门及共用接入合同
 
-[部门规则](m02/118-department-business-requirements.md) · [部门交互](m02/119-department-functional-design.md) · [共用日期、历史、选择和权限](m02/120-dated-maintenance-technical-contract.md) · [按日对象接入](m02/121-dated-object-admission-matrix.md) · [异常恢复逐项验收](m02/121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收) · [国家、区划与地点](m02/201-geography-and-location-design.md) · [法律实体基础验收](m02/207-legal-entity-design.md#legal-entity-l1-acceptance) · [主体用途与真实采用](m02/207-legal-entity-design.md#legal-entity-purpose-handoff)
+[部门规则](m02/118-department-business-requirements.md) · [部门交互](m02/119-department-functional-design.md) · [共用日期、历史、选择和权限](m02/120-dated-maintenance-technical-contract.md) · [按日对象接入](m02/121-dated-object-admission-matrix.md) · [异常恢复逐项验收](m02/121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收) · [国家/地区目录、行政区划目录与企业地点维护技术合同](m02/201-country-region-geo-area-and-location-maintenance-contract.md) · [法律实体基础验收](m02/207-legal-entity-design.md#legal-entity-l1-acceptance) · [主体用途与真实采用](m02/207-legal-entity-design.md#legal-entity-purpose-handoff)
 
 ## M04 入职、任职与人事事务
 

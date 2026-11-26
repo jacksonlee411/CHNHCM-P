@@ -2,7 +2,7 @@
 
 后续状态：2026-11-15 G5首批联合验收及4383运行更新已完成，见[205](../../verification/205-g5-implementation.md)；本文原批次构建、失败及当时状态保持。
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：[200路线图](200-geography-and-location-roadmap.md)的G3/T03，只交付必要GeoArea目录。长期业务及技术合同由[201方案](../../specs/m02/201-geography-and-location-design.md)持有，本文负责实施分批、交付物和退出条件。
+登记信息：[registry.json](../../governance/registry.json)。适用范围：[200路线图](200-geography-and-location-roadmap.md)的G3/T03，只交付必要GeoArea目录。长期业务及技术合同由[201方案](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)持有，本文负责实施分批、交付物和退出条件。
 
 上游：[G0来源准入](../../verification/200-g0-source-admission.md)、[G2国家目录](../../verification/200-g2-country-catalog.md)、[国家来源资料精简](../../verification/200-country-resource-simplification.md)、[202默认日期](../../adr/202-master-data-default-effective-date.md)、[124接入指南](../../guides/124-dated-object-admission-and-capacity.md)、[134协作基线](../../guides/134-parallel-development-baseline.md)。本轮同步、资料核对与方案自复核见[203记录](../../verification/203-g3-plan-and-sync.md)。本方案已完成[专项评审与修订](../../verification/203-g3-plan-review.md)，按本次评审范围采纳；G3实施、主代理复评及限定范围验收已完成，见[实施验收](../../verification/203-g3-implementation.md)。
 
@@ -25,7 +25,7 @@
 | 台湾 | 390：22县市、368乡镇市区；TW-NLSC | 22根、368条县市→乡镇市区边；368末级 | 臺南市→中西區；嘉義市与嘉義縣区分，代码按字符串保存 |
 | 澳门 | 0条已准入区划；8条旧资料继续隔离 | 不发布空目录完成标记，不生成虚拟末级 | 候选明确为基础地址范围；G4允许国家/地区加详细地址 |
 
-总计56根、3564条边、最大深度3、3235末级。以上数字是固定资料的核对分母，不能硬编码成未来产品容量限制。末级按完整已发布结构判定，不能因下级停用、日期不适用或无权读取而把上级变成最具体可选项，详见[201引用资格](../../specs/m02/201-geography-and-location-design.md#m02-br-207)。
+总计56根、3564条边、最大深度3、3235末级。以上数字是固定资料的核对分母，不能硬编码成未来产品容量限制。末级按完整已发布结构判定，不能因下级停用、日期不适用或无权读取而把上级变成最具体可选项，详见[201引用资格](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#m02-br-207)。
 
 大陆树中的3条港澳台交叉根和414条未映射旧地址继续仅存离线来源。澳门新来源准入、版次升级及真实撤并另立来源修订任务；本批不猜名称映射、不伪造代码或翻译，不创建任何工作地点。
 
@@ -61,7 +61,7 @@ GeoArea与CountryRegion同属Organization，内部读取走有类型的应用/�
 
 现有c基线为模型5及00001—00010。GeoArea独立保存身份、按日资料、不可变来源、类型编码及读取投影；父边只有对象资料一处权威，查询索引可投影父ID。G3代码固定，按实例/地区/代码方案/代码设身份唯一约束；业务记录仍用有效期间，不另建不变代码的期间分段或回收流程。来源映射独立于可更正的名称，实例目录不新增企业字段来绕过范围权限。
 
-发布标记只记录国家/地区及固定包版次、摘要和数量。发布前一次窄批读取全部初始化映射/固定结构，与已验证包逐键核对后原子写标记，不循环读取3620份完整历史。发布后运行查询只读标记和必要对象，不复算全包。重跑以不可变初始化映射判断已完成对象，不能把人工名称更正当成来源漂移而覆盖。详细边界见[201装载](../../specs/m02/201-geography-and-location-design.md#53-g3固定资料装载与发布)。
+发布标记只记录国家/地区及固定包版次、摘要和数量。发布前一次窄批读取全部初始化映射/固定结构，与已验证包逐键核对后原子写标记，不循环读取3620份完整历史。发布后运行查询只读标记和必要对象，不复算全包。重跑以不可变初始化映射判断已完成对象，不能把人工名称更正当成来源漂移而覆盖。详细边界见[201装载](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#53-g3固定资料装载与发布)。
 
 开工时按134重新核对主线及在途分支迁移、公共历史接口和生成器，再领取实际可用序号；方案不预占00011。本次同步已将国家适配器接入主线新的历史Append/PublishProjection接口；GeoArea直接使用最终共同合同。各固定库与其程序保持匹配，不因新DDL默认重建或升级持久环境。
 

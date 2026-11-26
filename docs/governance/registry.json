@@ -2133,8 +2133,8 @@
     },
     {
       "id": "CHNHCM-201",
-      "title": "国家地区行政区划与地点建设方案",
-      "path": "docs/specs/m02/201-geography-and-location-design.md",
+      "title": "国家/地区目录、行政区划目录与企业地点维护技术合同",
+      "path": "docs/specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、体验、数据来源及验证维护者",
       "owner": null,
@@ -2144,7 +2144,7 @@
         "M02",
         "X03"
       ],
-      "scope": "地理参考对象和地点的资料、日期、关系、独立存储、类型API、页面与验证方案。",
+      "scope": "全球国家/地区目录，以及中国大陆、香港、澳门、台湾的行政区划与地址分区目录、企业地点维护。覆盖来源准入、按日维护、地点地址引用、独立存储、类型 API、权限、页面和验收条件。",
       "format": "numbered",
       "review": {
         "date": "2026-11-19",

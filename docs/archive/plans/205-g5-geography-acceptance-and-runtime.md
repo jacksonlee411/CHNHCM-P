@@ -1,6 +1,6 @@
 # CHNHCM-205 G5地理联合验收与固定运行交付
 
-登记信息：[registry.json](../../governance/registry.json)。承接[200路线图](200-geography-and-location-roadmap.md)G5/T05—T06、[201验收矩阵](../../specs/m02/201-geography-and-location-design.md#geography-acceptance)、[204交接](../../verification/204-g4-implementation.md)。执行记录见[205实施报告](../../verification/205-g5-implementation.md)。
+登记信息：[registry.json](../../governance/registry.json)。承接[200路线图](200-geography-and-location-roadmap.md)G5/T05—T06、[201验收矩阵](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#geography-acceptance)、[204交接](../../verification/204-g4-implementation.md)。执行记录见[205实施报告](../../verification/205-g5-implementation.md)。
 
 ## 1 用户目标
 

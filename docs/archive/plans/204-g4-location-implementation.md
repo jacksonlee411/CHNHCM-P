@@ -2,7 +2,7 @@
 
 后续状态：2026-11-15 G5首批联合验收及4383运行更新已完成，见[205](../../verification/205-g5-implementation.md)；本文原批次构建、失败及当时状态保持。
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：[200路线图](200-geography-and-location-roadmap.md)的G4/T04企业地点纵向交付。本计划持有实施分批、准入映射和退出证据；长期地址、采用与授权合同由[201](../../specs/m02/201-geography-and-location-design.md)持有。
+登记信息：[registry.json](../../governance/registry.json)。适用范围：[200路线图](200-geography-and-location-roadmap.md)的G4/T04企业地点纵向交付。本计划持有实施分批、准入映射和退出证据；长期地址、采用与授权合同由[201](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)持有。
 
 上游：[项目阶段](../../adr/003-implementation-stages.md)、[全新实施](../../adr/025-greenfield-implementation-policy.md)、[120共用技术合同](../../specs/m02/120-dated-maintenance-technical-contract.md)、[121接入矩阵](../../specs/m02/121-dated-object-admission-matrix.md)、[124接入指南](../../guides/124-dated-object-admission-and-capacity.md)、[202默认日期](../../adr/202-master-data-default-effective-date.md)、[132必要查询](../../adr/132-query-and-validation-boundary.md)、[134公共协作](../../guides/134-parallel-development-baseline.md)、[301反馈恢复](301-user-feedback-and-recovery.md)。本方案按[最小接入模板](../../templates/dated-object-admission.md)填写，已完成[三轮主代理文档评审](../../verification/204-g4-plan-review.md)：3项P1、3项P2文档层关闭；现已完成[产品实施与限定验收](../../verification/204-g4-implementation.md)。
 
@@ -29,7 +29,7 @@
 
 ### 2.2 共用规则适用性
 
-下表对照121第2/3节逐组映射；原稳定规则由[011](../../specs/m02/011-m02-business-requirements.md)与[201](../../specs/m02/201-geography-and-location-design.md)拥有，本表不重新定义它们。
+下表对照121第2/3节逐组映射；原稳定规则由[011](../../specs/m02/011-m02-business-requirements.md)与[201](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md)拥有，本表不重新定义它们。
 
 | 121规则组 | Location适用与差异 | 必须取得的本对象证据 |
 | --- | --- | --- |
@@ -81,11 +81,11 @@ G2三条原生缩放在G3公共回归已有后续通过记录，本次核对原�
 
 ### 3.3 正常任务与历史结果
 
-地址字段由[201第3.6节](../../specs/m02/201-geography-and-location-design.md#36-g4地点字段与身份)、全动作采用由[第3.7节](../../specs/m02/201-geography-and-location-design.md#37-g4完整维护的采用矩阵)持有；采用必须覆盖最终分类、停用继承、删除及固定两条，不能按请求名称直接套规则。新建默认1900，已有1984或2020起始企业必须允许用户明确改合法日期；不能改企业起日来满足默认。更正直接显示原值；选择国家后旧区域不匹配须清除并重选，切回、改日期、切换动作及候选迟到响应均服从当前请求归属。
+地址字段由[201第3.6节](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#36-g4地点字段与身份)、全动作采用由[第3.7节](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#37-g4完整维护的采用矩阵)持有；采用必须覆盖最终分类、停用继承、删除及固定两条，不能按请求名称直接套规则。新建默认1900，已有1984或2020起始企业必须允许用户明确改合法日期；不能改企业起日来满足默认。更正直接显示原值；选择国家后旧区域不匹配须清除并重选，切回、改日期、切换动作及候选迟到响应均服从当前请求归属。
 
 Location普通详情使用记录自己的准确采用地址。目录更名、停选不修改旧地点来源；纯名称/门牌/邮编变化沿用原采用。创建、换引用、改采用日和重新启用在保存事务重新核对资格。所有开放维护动作还须验证停用继承、固定两条和分类变化后的最终候选。
 
-查询字段、固定选择绑定和九列CSV由[201第6.4节](../../specs/m02/201-geography-and-location-design.md#64-g4查询选择导出与地址控件)持有；准确标签和导出权限由第7.5节持有。选择/导出采用固定身份与当前读权；列表、详情前后导航、返回、选择建立共享完整已应用查询。用户更改集合条件后主动重新选择，不自动捕获新集合。CSV完整校验后生成，失败零文件；取消或超时释放自有事务、连接和临时文件。
+查询字段、固定选择绑定和九列CSV由[201第6.4节](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#64-g4查询选择导出与地址控件)持有；准确标签和导出权限由第7.5节持有。选择/导出采用固定身份与当前读权；列表、详情前后导航、返回、选择建立共享完整已应用查询。用户更改集合条件后主动重新选择，不自动捕获新集合。CSV完整校验后生成，失败零文件；取消或超时释放自有事务、连接和临时文件。
 
 ## 4 阶段任务
 
@@ -118,7 +118,7 @@ Location普通详情使用记录自己的准确采用地址。目录更名、停
 
 ### 6.1 正确性清单
 
-G4-V编号仅为本批执行清单，长期依据为[201验收矩阵](../../specs/m02/201-geography-and-location-design.md#geography-acceptance)及第2.2节共用矩阵。下表为验收要求；实际分轮结果及未完成项见[实施记录](../../verification/204-g4-implementation.md)。
+G4-V编号仅为本批执行清单，长期依据为[201验收矩阵](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md#geography-acceptance)及第2.2节共用矩阵。下表为验收要求；实际分轮结果及未完成项见[实施记录](../../verification/204-g4-implementation.md)。
 
 | 项目 | 独立预期及必须覆盖的反例 | 分层与长期映射 |
 | --- | --- | --- |

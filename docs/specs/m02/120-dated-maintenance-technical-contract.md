@@ -3,7 +3,7 @@
 2026-11-16路径显示按[306](../../archive/plans/306-department-path-simplification.md)接续：所有对外路径仅含真实部门，不拼接企业；删除路径内未生效/停用说明，状态与日期独立显示。内部按日解析、历史封存及字段授权保持。
 
 2026-11-15企业按[304](../../archive/plans/304-enterprise-maintenance.md)接入同一dated/submission内核，使用独立企业表组、DTO及实例授权。企业依赖读取只取得身份、有效期间及名称时间线，不读取业务时钟；BU/部门在原取时点以同一个业务日投影名称，写入仍在相关锁全部取得后取时。正反向引用共用企业行共享/排他锁，候选完整启用期间由Go核验。306接续决定：部门对外路径仅包含真实部门，企业名称只用于归属上下文；内部封存证据保持，投影过滤企业节点；列表/树/导航/选择在原语句快照捕获企业当前资料，Go取日投影，路径游标头帧仅传输一次。实际实施及验证见[304记录](../../verification/304-enterprise-maintenance.md)。
-2026-11-15地点实际接入：Location复用本合同的日期候选、可靠提交、强类型适配及独立存储；专属全动作采用、地址权限及查询合同由[201](201-geography-and-location-design.md)持有，分批及验证由[204](../../archive/plans/204-g4-location-implementation.md)持有。地点已接入上述共用合同；限定验收已完成，实际范围见[204实施记录](../../verification/204-g4-implementation.md)。部门Hierarchy与BU选择合同保持。
+2026-11-15地点实际接入：Location复用本合同的日期候选、可靠提交、强类型适配及独立存储；专属全动作采用、地址权限及查询合同由[201 企业地点维护合同](201-country-region-geo-area-and-location-maintenance-contract.md)持有，分批及验证由[204](../../archive/plans/204-g4-location-implementation.md)持有。地点已接入上述共用合同；限定验收已完成，实际范围见[204实施记录](../../verification/204-g4-implementation.md)。部门Hierarchy与BU选择合同保持。
 
 2026-11-13首次新建默认日期按用户确定的[202项目规则](../../adr/202-master-data-default-effective-date.md)统一为1900-01-01，由Go创建上下文提供defaultEffectiveDate；currentDate仍表示今日，明确输入、原日期、后续位置/启停规则及依赖资格保持。默认非法时准确拒绝并允许用户明确改日，不静默换今天或改写父对象。本轮合同已接入现有BU/部门，产品适配及受影响分批回归见[200 G1报告](../../verification/200-g1-default-date.md)，原实施报告不改写。
 

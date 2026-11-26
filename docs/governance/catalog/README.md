@@ -48,7 +48,7 @@
 | [128 授权过程与关联跳转过度设计整改](../../adr/128-authorization-evidence-removal.md) | active | — | 原位 |
 | [134 并行开发共同基线与独立环境](../../guides/134-parallel-development-baseline.md) | active | — | 原位 |
 | [137 GitHub Actions使用与验证规范](../137-actions-and-validation.md) | active | — | 原位 |
-| [201 国家地区行政区划与地点建设方案](../../specs/m02/201-geography-and-location-design.md) | active | — | 原位 |
+| [201 国家/地区目录、行政区划目录与企业地点维护技术合同](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md) | active | — | 原位 |
 | [202 配置与主数据默认生效日期](../../adr/202-master-data-default-effective-date.md) | active | — | 原位 |
 | [207 法律实体基础维护合同](../../specs/m02/207-legal-entity-design.md) | active | — | 原位 |
 | [308 职类、职务系列与职务基础合同](../../specs/m03/308-job-foundation-contract.md) | active | — | 原位 |

@@ -8194,7 +8194,7 @@
           "document": "CHNHCM-201",
           "scope": "本次所在地区连续选择、路径回填/上级导航、国家范围组合搜索和滚动追加；当前权/旧采用及四地真实回归，限定范围不提升完整来源资产状态。",
           "target_files": [
-            "docs/specs/m02/201-geography-and-location-design.md",
+            "docs/specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md",
             "internal/contexts/organization/infra/postgres/geoarea_query.go"
           ],
           "implemented": true,
