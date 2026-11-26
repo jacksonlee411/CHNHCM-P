@@ -1,0 +1,1 @@
+{"number":"00058","branch":"wt-dev-a","name":"access_grant_versions","purpose":"CHNHCM-027 T02 逐份授予、固定策略版本与存量授权迁移","depends_on":["00057"],"status":"reserved","main":"560cea88199c801ceb49a9cb81d4f4c1a2d0d68c"}
