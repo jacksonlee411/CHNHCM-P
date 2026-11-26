@@ -413,6 +413,7 @@ test('T03 原生 200% 首单办理及撤销', async () => {
 });
 
 async function hireAtLocation(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+  await ensureJobOnlyPolicy(page, 'hire');
   const suffix = randomUUID().slice(0, 7),
     locations: { id: string; name: string }[] = [];
   const countries = await request(page, 'GET', '/api/v1/country-regions?q=MO');
@@ -871,35 +872,22 @@ for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]
 }
 test('M04 历史插入与按职务调动 原生200%',async()=>{await native200(historyJourney)});
 
-async function enableSecondaryPolicy(page: Page) {
-  const policy = await request(page, 'GET', '/api/v1/assignment-policies');
-  if (
-    !policy.body.rows.some(
-      (r: { purpose: string; category: string }) => r.purpose === 'secondary' && r.category === 'Employee',
-    )
-  ) {
-    const saved = await request(
-      page,
-      'POST',
-      '/api/v1/assignment-policies',
-      {
-        expectedVersion: policy.body.version,
-        row: {
-          id: randomUUID(),
-          category: 'Employee',
-          purpose: 'secondary',
-          mode: 'JobOnly',
-          from: '2027-04-01',
-        },
-      },
-      randomUUID(),
-    );
-    expect(saved.status, saved.body.message).toBe(200);
-  }
+async function ensureJobOnlyPolicy(page: Page, purpose: 'hire' | 'secondary') {
+  const path = '/api/v1/assignment-policies', from = '2027-04-01';
+  const policy = await request(page, 'GET', path);
+  expect(policy.status, policy.body.message).toBe(200);
+  const current = policy.body.rows.find((r: { category: string; purpose: string; from: string; until?: string }) =>
+    r.category === 'Employee' && r.purpose === purpose && r.from <= from && (!r.until || from < r.until));
+  if (current?.mode === 'JobOnly') return;
+  const row = current ?? { id: randomUUID(), category: 'Employee', purpose, from };
+  const saved = await request(page, 'POST', path, {
+    expectedVersion: policy.body.version, row: { ...row, mode: 'JobOnly' },
+  }, randomUUID());
+  expect(saved.status, saved.body.message).toBe(200);
 }
 async function concurrentJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
   const { hire } = await hireAtLocation(page, sample);
-  await enableSecondaryPolicy(page);
+  await ensureJobOnlyPolicy(page, 'secondary');
   const newDept = '培训部' + randomUUID().slice(0, 5);
   const training = await apiDepartment(page, sample.buId, { name: newDept });
   const employerName = '培训公司' + randomUUID().slice(0, 6);
@@ -1050,7 +1038,7 @@ test('M04 从兼岗打开关系转正的获权任职来源并返回原岗', asyn
   await signIn(page);
   const sample = await seed(page);
   const {hire} = await hireAtLocation(page,sample);
-  await enableSecondaryPolicy(page);
+  await ensureJobOnlyPolicy(page, 'secondary');
   const other = await apiDepartment(page, sample.buId,{name:'兼岗来源部'+randomUUID().slice(0,6)});
   const base = '/api/v1/assignments/'+hire.assignment;
   async function save(path:string, day:string, fields:object) {
@@ -1985,7 +1973,7 @@ test('M04 采用录用的跨页返回按招聘和人事原件的现权读取', a
   }, ['hire']);
 });
 
-async function openAdditionalAssignment(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
+async function openAdditionalAssignment(page: Page, sample: Awaited<ReturnType<typeof seed>>, assignment: string) {
   const link = page.getByRole('link', { name: '新增兼岗', exact: true });
   if (page.viewportSize()?.width !== 1440 || page.viewportSize()?.height !== 900) {
     await openEmployeeAssignment(page, sample);
@@ -1993,18 +1981,24 @@ async function openAdditionalAssignment(page: Page, sample: Awaited<ReturnType<t
     return;
   }
 
-  const routePattern = /\/api\/v1\/assignments\/[0-9a-f-]{36}(?:\?|$)/;
+  const routePattern = '**/api/v1/assignments/query';
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
-  let reads = 0;
+  let requested = false;
   await page.route(routePattern, async route => {
-    if (route.request().method() !== 'GET' || ++reads !== 2) return route.continue();
-    const response = await route.fetch();
-    await held;
-    await route.fulfill({ response });
+    const request = route.request();
+    if (request.method() === 'POST' && request.postDataJSON()?.anchor === assignment) {
+      requested = true;
+      await held;
+    }
+    await route.continue();
   });
   try {
     await openEmployeeAssignment(page, sample);
+    await expect.poll(() => requested).toBe(true);
+    const pager = page.getByRole('navigation', { name: '对象导航' });
+    await expect(pager).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '新增记录', exact: true })).toBeVisible();
     await link.scrollIntoViewIfNeeded();
     const box = await link.boundingBox();
     expect(box).not.toBeNull();
@@ -2012,7 +2006,7 @@ async function openAdditionalAssignment(page: Page, sample: Awaited<ReturnType<t
     await page.mouse.move(point.x, point.y);
     await page.mouse.down();
     release();
-    await expect(page.getByRole('button', { name: '新增记录', exact: true })).toBeVisible();
+    await expect(pager.getByText('1 / 1', { exact: true })).toBeVisible();
     const hit = await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.closest('a,button')?.textContent, point);
     expect(hit).toBe('新增兼岗');
     await page.mouse.up();
@@ -2046,7 +2040,7 @@ async function secondaryPositionJourney(page:Page,sample:Awaited<ReturnType<type
     }
     const hire=await request(page,'POST','/api/v1/hires',{person:sample.id,employer:sample.employerId,position:main.id,arrival:first,notice:'主岗聘任'},randomUUID());
     expect(hire.status,hire.body.message).toBe(200);
-    await openAdditionalAssignment(page, sample);
+    await openAdditionalAssignment(page, sample, hire.body.assignment);
     const positions=page.getByRole('combobox',{name:/^岗位/});
     await positions.fill(second.name);await page.getByRole('option',{name:second.name,exact:true}).click();
     await expect(page.getByText(second.department,{exact:true})).toBeVisible();await expect(page.getByText(second.job.name,{exact:true})).toBeVisible();
@@ -2292,36 +2286,37 @@ test('M05 交接应答在按下和松开之间到达时仍打开改期', async (
     await page.reload();
     await expect(page.getByText('已发出',{exact:true})).toBeVisible();
     await expect(button('调整录用日期')).toHaveCount(0);
-    let responseReady!: () => void;
-    let deliverResponse!: () => void;
-    const received = new Promise<void>(resolve => { responseReady = resolve; });
-    const held = new Promise<void>(resolve => { deliverResponse = resolve; });
-    await page.route('**/hire-handoff?*', async route => {
-      if (new URL(route.request().url()).searchParams.get('sourceVersion') !== current.body.version) {
-        await route.continue();
-        return;
-      }
-      const response = await route.fetch();
-      responseReady();
+    const handoff = (url: URL) => url.pathname === offerPath + '/hire-handoff' &&
+      url.searchParams.get('sourceVersion') === current.body.version;
+    let release!: () => void, requested = false;
+    const held = new Promise<void>(resolve => { release = resolve; });
+    await page.route(handoff, async route => {
+      requested = true;
       await held;
-      await route.fulfill({ response });
+      await route.continue();
     });
-    await button('返回当前录用').click();
-    await expect(page.getByText('已接受', { exact: true })).toBeVisible();
-    await received;
     const reschedule = button('调整录用日期');
-    await reschedule.scrollIntoViewIfNeeded();
-    const box = await reschedule.boundingBox();
-    expect(box).not.toBeNull();
-    const x = box!.x + box!.width / 2, y = box!.y + box!.height / 2;
-    const hit = () => page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest('button')?.textContent, [x, y]);
-    expect(await hit()).toBe('调整录用日期');
-    await page.mouse.move(x, y);
-    await page.mouse.down();
-    deliverResponse();
-    await expect(button('按录用办理入职')).toBeVisible();
-    expect(await hit()).toBe('调整录用日期');
-    await page.mouse.up();
+    try {
+      await button('返回当前录用').click();
+      await expect(page.getByText('已接受', { exact: true })).toBeVisible();
+      await expect.poll(() => requested).toBe(true);
+      await expect(button('按录用办理入职')).toHaveCount(0);
+      await reschedule.scrollIntoViewIfNeeded();
+      const box = await reschedule.boundingBox();
+      expect(box).not.toBeNull();
+      const x = box!.x + box!.width / 2, y = box!.y + box!.height / 2;
+      const hit = () => page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest('button')?.textContent, [x, y]);
+      expect(await hit()).toBe('调整录用日期');
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+      release();
+      await expect(button('按录用办理入职')).toBeVisible();
+      expect(await hit()).toBe('调整录用日期');
+      await page.mouse.up();
+    } finally {
+      release();
+      await page.unroute(handoff);
+    }
 
     const arrival = page.getByRole('textbox', { name: /^约定到岗日/ });
     await expect(arrival).toHaveValue('2027-05-01');
@@ -2427,7 +2422,7 @@ test('M04 员工列表跨第21份任职后返回姓名、页码和原行', async
   await signIn(page);
   const sample = await seed(page);
   const {hire} = await hireAtLocation(page,sample);
-  await enableSecondaryPolicy(page);
+  await ensureJobOnlyPolicy(page, 'secondary');
   const path = '/api/v1/assignments/'+hire.assignment;
   for (let n=1; n<=20; n++) {
     const from = '2027-05-'+String(n).padStart(2,'0');

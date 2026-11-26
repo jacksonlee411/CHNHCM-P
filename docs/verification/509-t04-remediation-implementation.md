@@ -74,6 +74,8 @@
 
 第二次预检通过了生成物比对。国家地区旧库试件重建 00009 时仍留有 00056、00057 的登记，统一升级器按设计拒绝这一不连续的模型。补全一次性测试库的还原步骤，并用 Goose 的目标版本准备地点和岗位的历史库。集成分片检出完整 Git 历史，确保 00055 和 00056 的原版写样测试在 PR 中实际执行。写样沿用测试机选定的镜像仓库，保留原版 PostgreSQL 的版本与摘要。[旧库准备](../../internal/bootstrap/legal_entity206_acceptance_integration_test.go) · [按原版写样](../../internal/bootstrap/probation_restore_integration_test.go) · [正式分片](../../.github/workflows/ci.yml)
 
+PR #27 首轮的两个 PostgreSQL 分片和 15 个浏览器分片通过。浏览器第 16 片有 185 项通过、15 项失败。双占编兼岗用例按请求次数拦截任职读取，离开详情后仍尝试交付应答。测试中断后，13 项按职务入职的样本遇到按岗位规则，返回 409。录用改期用例另有一次在页面关闭后继续转发交接查询。修订后的兼岗用例按所选任职拦住真实对象导航查询，等到「1 / 1」出现再在原坐标松开。改期用例只拦本次录用版本的交接查询，入职操作出现后在原坐标松开，随后撤除拦截。按职务样本逐次核对办理日的入职和兼岗规则。[首轮失败分片](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/45718147178/job/139573598627) · [菜单用例](../../tests/e2e/first-hire.spec.ts)
+
 <a id="fixed-environment"></a>
 ## 7 固定 f 原库与验收入口
 
