@@ -1,3 +1,5 @@
+import { desktopFormViewports, desktopViewports } from './desktop-viewports.mjs';
+import {openPersonnel as menu} from './app-navigation';
 import { randomUUID } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -68,19 +70,6 @@ async function login(page: Page, role: string) {
   await page.getByLabel('密码').fill('admin1234567');
   await page.getByRole('button', { name: '登录', exact: true }).click();
   await expect(page.getByRole('button', { name: '退出', exact: true })).toBeVisible();
-}
-async function menu(page: Page) {
-  const desktop = page.getByRole('button', { name: '切换应用', exact: true });
-  const mobile = page.getByRole('button', { name: '打开导航', exact: true });
-  await expect(desktop.or(mobile).first()).toBeVisible();
-  if (await desktop.isVisible()) {
-    await desktop.click();
-    await page.getByRole('menuitem', { name: '人员', exact: true }).click();
-  } else {
-    await mobile.click();
-    await page.getByRole('button', { name: '人员', exact: true }).click();
-  }
-  await expect(page.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
 }
 async function select(page: Page, label: string, choice: string) {
   await page.getByRole('combobox', { name: label, exact: true }).click();
@@ -211,7 +200,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
       if (r.method() === 'POST' && new URL(r.url()).pathname === '/api/v1/persons') registrations++;
     };
     page.on('request', countRegistration);
-    await btn('登记人员').click();
+    await page.getByRole('link', { name: '登记人员', exact: true }).click();
     expect(await measureField(page, '姓名')).toEqual(baseline);
     await btn('保存').click();
     await expect(page.locator('#person-error')).toBeFocused();
@@ -223,7 +212,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
     await btn('放弃修改').click();
     expect(registrations).toBe(0);
     page.off('request', countRegistration);
-    await btn('登记人员').click();
+    await page.getByRole('link', { name: '登记人员', exact: true }).click();
     const key = randomUUID().slice(0, 8),
       name = '验收人员' + key;
     await page.getByRole('textbox', { name: '姓名', exact: true }).fill(name);
@@ -279,7 +268,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
     await expect(page.getByText('10000002', { exact: true })).toBeVisible();
     await expect(page.getByText('demo@example.test', { exact: true })).toBeVisible();
   } else {
-    await expect(btn('登记人员')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: '登记人员', exact: true })).toHaveCount(0);
     await search(page, cohort);
     await page.getByRole('link', { name: cohort, exact: true }).first().click();
     await expect(btn('更正资料')).toHaveCount(0);
@@ -321,10 +310,38 @@ async function journey(page: Page, role: string, relogin: boolean) {
   expect(new URL(page.url()).searchParams.get('page')).toBe('2');
   await openPersonLog(page, 'Space');
   await click308(page, panel.getByRole('link', { name: '查看当次资料', exact: true }).last());
-  await btn('返回当前资料').click();
   const returning = page.getByRole('link', { name: '返回列表', exact: true });
-  await expect(returning).toHaveAttribute('href', /page=2/);
-  await returning.click();
+  if (role === 'admin' && dimensions.zoom === 2) {
+    // Deliver the real journal while the operator is pressing the directory link.
+    let release!: () => void;
+    const resume = new Promise<void>(resolve => { release = resolve; });
+    const journal = '**/api/v1/persons/*/changes';
+    const requested = page.waitForRequest(journal);
+    await page.route(journal, async route => {
+      await resume;
+      await route.continue();
+    }, { times: 1 });
+    try {
+      await btn('返回当前资料').click();
+      await requested;
+      await expect(returning).toHaveAttribute('href', /page=2/);
+      await returning.hover();
+      await page.mouse.down();
+      await expect(returning).toBeFocused();
+      release();
+      await expect(panel.getByRole('link', { name: '查看当次资料' }).last()).toBeAttached();
+      await expect(returning).toBeFocused();
+    } finally {
+      release();
+      await page.mouse.up();
+    }
+  } else {
+    await btn('返回当前资料').click();
+    await expect(panel.getByRole('link', { name: '查看当次资料' }).last()).toBeFocused();
+    await expect(returning).toHaveAttribute('href', /page=2/);
+    await returning.click();
+  }
+  await expect(page).toHaveURL(url => url.pathname === '/personnel/employees' && url.searchParams.get('page') === '2');
   await expect
     .poll(() =>
       page.evaluate(() => ({
@@ -337,13 +354,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
   expect(await page.getByLabel('姓名或人员编号').inputValue()).toBe(cohort);
 }
 for (const role of ['admin', 'reader'])
-  for (const [w, h] of [
-    [1440, 900],
-    [1440, 540],
-    [390, 844],
-    [320, 900],
-    [320, 256],
-  ]) {
+  for (const [w, h] of desktopViewports) {
     test('T01 ' + role + ' ' + w + '×' + h, async ({ page }) => {
       test.setTimeout(90000);
       await page.setViewportSize({ width: w, height: h });
@@ -387,18 +398,11 @@ for (const role of ['admin', 'reader'])
       await expect
         .poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio]))
         .toEqual([1280, 900, 1]);
-      for (const [steps, factor] of [
-        [5, 2],
-        [8, 4],
-      ]) {
-        execFileSync('python3', ['docs/verification/data/100-ui-baseline/native-zoom.py', String(steps)], {
-          env,
-        });
-        await expect
-          .poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio]))
-          .toEqual([1280 / factor, 900 / factor, factor]);
-        await journey(page, role, false);
-      }
+      execFileSync('python3', ['docs/verification/data/100-ui-baseline/native-zoom.py', '5'], { env });
+      await expect
+        .poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio]))
+        .toEqual([640, 450, 2]);
+      await journey(page, role, false);
     } finally {
       await browser?.close();
       display.kill();
@@ -453,7 +457,7 @@ test('T01 同名直接登记、本人改号、导航重试及撤去旧来源字�
   await menu(page);
   const btn = (name: string) => page.getByRole('button', { name, exact: true });
   const reference = 'Q-9' + randomUUID().slice(0, 6);
-  await btn('登记人员').click();
+  await page.getByRole('link', { name: '登记人员', exact: true }).click();
   await page.getByRole('textbox', { name: '姓名', exact: true }).fill(cohort);
   await page.getByLabel('登记单号（选填）').fill(reference);
   await expect(btn('登记为另一人')).toHaveCount(0);
@@ -490,18 +494,18 @@ test('T01 同名直接登记、本人改号、导航重试及撤去旧来源字�
   await page.getByRole('link', { name: '返回列表' }).click();
   await search(page, oldNumber);
   await expect(page.getByText('历史编号', { exact: false }).last()).toBeVisible();
-  await page.route(
-    '**/navigation*',
-    (route) =>
-      route.fulfill({
-        status: 503,
-        contentType: 'application/json',
-        body: JSON.stringify({ code: 'UNAVAILABLE', message: '暂不可用' }),
-      }),
-    { times: 1 },
-  );
+  const directoryRoute = '**/api/v1/personnel/directory/query';
+  await page.route(directoryRoute, (route) => {
+    if (route.request().postDataJSON()?.anchor !== id) return route.continue();
+    return route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ code: 'UNAVAILABLE', message: '暂不可用' }),
+    });
+  });
   await page.getByRole('link', { name: cohort, exact: true }).click();
   await expect(page.getByText('暂时无法切换记录')).toBeVisible();
+  await page.unroute(directoryRoute);
   await expect(page.getByText('17700009990', { exact: true })).toBeVisible();
   await btn('重试').click();
   await expect(page.getByLabel('第1个，共1个匹配对象')).toBeVisible();
@@ -788,7 +792,7 @@ test('人事试办：同名两人、两人同时登记同一证号、同一张�
   const button = (p: Page, name: string) => p.getByRole('button', { name, exact: true });
   const openForm = async (p: Page, name: string, number: string, ref?: string) => {
     await menu(p);
-    await button(p, '登记人员').click();
+    await p.getByRole('link', { name: '登记人员', exact: true }).click();
     await p.getByRole('textbox', { name: '姓名', exact: true }).fill(name);
     await p.getByRole('textbox', { name: '姓名', exact: true }).press('Tab');
     await select(p, '证件类型', '居民身份证');
@@ -869,7 +873,7 @@ test('人事试办：同名两人、两人同时登记同一证号、同一张�
     const wonNumber = (await winner.locator('.object-identity-summary').innerText()).trim();
     await button(loser, '取消').click();
     await button(loser, '放弃修改').click();
-    await expect(loser.getByRole('heading', { name: '员工', exact: true })).toBeVisible();
+    await expect(loser.getByRole('heading', { name: '人员', level:1, exact: true })).toBeVisible();
     // The losing clerk already returned to the directory when discarding the form.
     if (winner === page) await menu(page);
     await expect(page).toHaveURL((url) => url.pathname === '/personnel/employees');
@@ -906,7 +910,7 @@ test('仅填姓名登记后，在原档案补填和更换证件', async ({ page 
   await login(page, 'admin');
   await menu(page);
   const button = (name: string) => page.getByRole('button', { name, exact: true });
-  await button('登记人员').click();
+  await page.getByRole('link', { name: '登记人员', exact: true }).click();
   await page.getByRole('textbox', { name: '姓名', exact: true }).fill('补证试办');
   await button('保存').click();
   await expect(button('更正资料')).toBeVisible();
@@ -988,6 +992,7 @@ async function check504(page: Page, section: string, variant: string, mode: stri
   await expect(dlg.locator('.MuiDialogActions-root button')).toHaveText(reference.modes[mode].footer_right);
   const fields = dlg.locator('.profile-grid .object-detail-field');
   const requiredFields: Record<string, string[]> = {
+    银行账户: ['银行名称', '户名', '银行账号', '币种'],
     地址: ['地址类型', '国家/地区', '详细地址'],
     家庭成员与紧急联系人: ['联系人姓名', '与员工关系'],
     教育经历: ['教育记录类型', '学校/授予院校', ...(variant === '已取得学历' ? ['学历'] : variant === '学位授予' ? ['学位'] : [])],
@@ -1044,11 +1049,8 @@ async function check504(page: Page, section: string, variant: string, mode: stri
     expect(hint!.y + hint!.height).toBeLessThanOrEqual(btn!.y);
   }
 }
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-])
-  test('504 六种弹框与变体 ' + width, async ({ page }) => {
+for (const [width, height] of desktopViewports)
+  test('504 六种弹框与变体 ' + width + '×' + height, async ({ page }) => {
     test.setTimeout(150000);
     await page.setViewportSize({ width, height });
     await open504(page);
@@ -1084,13 +1086,8 @@ for (const [width, height] of [
           '户口性质',
           '政治面貌',
         ]);
-        if (width === 1440) {
-          expect(layout[0].y).toBe(layout[7].y);
-          expect(layout[7].x).toBeGreaterThan(layout[0].x);
-        } else {
-          expect(layout.every((f) => f.x === layout[0].x)).toBe(true);
-          expect(layout[7].y).toBeGreaterThan(layout[6].y);
-        }
+        expect(layout[0].y).toBe(layout[7].y);
+        expect(layout[7].x).toBeGreaterThan(layout[0].x);
         expect(layout[1].y - layout[0].y).toBeLessThanOrEqual(40);
         for (const f of layout) {
           expect(f.valueX).toBeGreaterThan(f.x + 90);
@@ -1107,7 +1104,7 @@ for (const [width, height] of [
         await expect(contacts.getByRole('button', { name: mode + ' · 123456', exact: true })).toBeVisible();
         await expect(contacts.getByText('主要', { exact: true })).toBeVisible();
         await expect(contacts.getByText('工作', { exact: true })).toBeVisible();
-        if (mode === '查看' && width === 390) {
+        if (mode === '查看') {
           const longValue = await basic.getByText('Alexandria'.repeat(8), { exact: true }).evaluate((el) => ({
             wraps: el.clientHeight > 32,
             fits: el.scrollWidth <= el.clientWidth + 1,
@@ -1168,17 +1165,7 @@ test('504 共用查看与长表单的视口和原生缩放', async () => {
         .getByRole('button', { name: editing ? /^编辑 · / : /^查看 · / })
         .first()
         .click();
-      for (const [w, h, z] of [
-        [1440, 900, 1],
-        [1440, 540, 1],
-        [390, 844, 1],
-        [320, 900, 1],
-        [320, 256, 1],
-        [599, 844, 1],
-        [600, 844, 1],
-        [1280, 900, 2],
-        [1280, 900, 4],
-      ]) {
+      for (const [w, h, z] of desktopFormViewports) {
         await p.setViewportSize({ width: w, height: h });
         if (z > 1) await browser.setZoom(z);
         await check504(p, '身份证件', '有期限', editing ? '编辑' : '查看');
@@ -1222,7 +1209,7 @@ test('504 共用查看与长表单的视口和原生缩放', async () => {
 });
 
 test('504 受限字段重排、只读遮罩和原行焦点', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await open504(page, 'reader');
   const principal = await page.evaluate(
       async () => (await (await fetch('/api/v1/session')).json()).subjectId,
@@ -1284,13 +1271,13 @@ test('504 原文、目录采用与跨栏错误定位后整页保存', async ({ p
   await btn('应用').click();
   await btn('保存').click();
   await expect(page.getByRole('dialog')).toBeVisible();
-  await page.setViewportSize({ width: 320, height: 256 });
+  await page.setViewportSize({ width: 1440, height: 540 });
   const error = page.getByText('到期日期须不早于签发日期，长期有效时请清空到期日期', { exact: true }).last();
   await expect(error).toBeVisible();
   await error.scrollIntoViewIfNeeded();
   const e = await error.boundingBox(),
     b = await page.locator('.profile-dialog .MuiDialogContent-root').boundingBox();
-  expect(e!.height).toBeGreaterThan(19);
+  expect(e!.y).toBeGreaterThanOrEqual(b!.y - 1);
   expect(e!.y + e!.height).toBeLessThanOrEqual(b!.y + b!.height + 1);
   await page.getByLabel('到期日期', { exact: true }).fill('2040-01-01');
   await btn('应用').click();
@@ -1367,11 +1354,8 @@ async function openFamilySample(page: Page, role = 'admin') {
   await page.getByRole('link', { name, exact: true }).click();
   return { path, source: saved.body.sourceVersion, id: root.body.id };
 }
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-]) {
-  test('504 第二批两栏六个弹框及取消 ' + width, async ({ page }) => {
+for (const [width, height] of desktopViewports) {
+  test('504 第二批两栏六个弹框及取消 ' + width + '×' + height, async ({ page }) => {
     await page.setViewportSize({ width, height });
     const { path, source } = await openFamilySample(page);
     const button = (name: string) => page.getByRole('button', { name, exact: true });
@@ -1494,8 +1478,8 @@ test('504 第二批只读和受限家庭明细重排与条数', async ({ page })
   (values(array['familyName'],'${grants[0]}'::uuid,'${data.family[1].itemId}'::uuid),(array['familyBirthDate','familyEmail','familyEmail.masked'],'${grants[1]}'::uuid,null::uuid)) v(fields,grant_id,item_id) where login='reader'`);
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await expect(group).toHaveAccessibleDescription('1 条');
-    for (const width of [1440, 390]) {
-      await page.setViewportSize({ width, height: width === 1440 ? 900 : 844 });
+    for (const [width, height] of desktopViewports) {
+      await page.setViewportSize({ width, height });
       const row = group.getByRole('button', { name: '查看 · 合成甲' });
       await row.focus();
       await row.press('Enter');
@@ -1516,7 +1500,7 @@ test('504 第二批只读和受限家庭明细重排与条数', async ({ page })
       );
       expect(positions[2][0]).toBe(positions[0][0]);
       expect(positions[2][1]).toBeGreaterThan(positions[0][1]);
-      expect(positions[0][1] === positions[1][1]).toBe(width === 1440);
+      expect(positions[0][1]).toBe(positions[1][1]);
       await page.keyboard.press('Escape');
       await expect(row).toBeFocused();
     }
@@ -1525,7 +1509,7 @@ test('504 第二批只读和受限家庭明细重排与条数', async ({ page })
   }
 });
 
-test('504 第二批地址目录控件、五种视口与原生缩放', async () => {
+test('504 第二批地址目录控件、桌面视口与原生缩放', async () => {
   test.setTimeout(150000);
   const browser = await nativeZoomBrowser(),
     p = browser.page;
@@ -1533,15 +1517,7 @@ test('504 第二批地址目录控件、五种视口与原生缩放', async () =
     await openFamilySample(p);
     await p.getByRole('button', { name: '更正资料', exact: true }).click();
     const row = p.getByRole('button', { name: '编辑 · 居住地址' });
-    for (const [width, height, zoom] of [
-      [1440, 900, 1],
-      [1440, 540, 1],
-      [390, 844, 1],
-      [320, 900, 1],
-      [320, 256, 1],
-      [1280, 900, 2],
-      [1280, 900, 4],
-    ]) {
+    for (const [width, height, zoom] of desktopFormViewports) {
       await p.setViewportSize({ width, height });
       if (zoom !== 1) await browser.setZoom(zoom);
       await row.focus();
@@ -1719,11 +1695,8 @@ const thirdBatchRecords = [
   { section: credentialSection, variant: '有期限', name: '有期合成资格' },
 ];
 
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-]) {
-  test('504 第三批教育凭证录入、弹框与取消 ' + width, async ({ page }) => {
+for (const [width, height] of desktopViewports) {
+  test('504 第三批教育凭证录入、弹框与取消 ' + width + '×' + height, async ({ page }) => {
     test.setTimeout(180000);
     await page.setViewportSize({ width, height });
     const { path } = await openFamilySample(page);
@@ -1834,7 +1807,7 @@ for (const [width, height] of [
   });
 }
 
-test('504 第三批学习经历五种视口及原生缩放', async () => {
+test('504 第三批学习经历桌面视口及原生缩放', async () => {
   test.setTimeout(135000);
   const browser = await nativeZoomBrowser(),
     p = browser.page;
@@ -1844,15 +1817,7 @@ test('504 第三批学习经历五种视口及原生缩放', async () => {
     const opener = p
       .getByRole('group', { name: '教育经历', exact: true })
       .getByRole('button', { name: '添加一行' });
-    for (const [width, height, zoom] of [
-      [1440, 900, 1],
-      [1440, 540, 1],
-      [390, 844, 1],
-      [320, 900, 1],
-      [320, 256, 1],
-      [1280, 900, 2],
-      [1280, 900, 4],
-    ]) {
+    for (const [width, height, zoom] of desktopFormViewports) {
       await p.setViewportSize({ width, height });
       if (zoom > 1) await browser.setZoom(zoom);
       await opener.focus();
@@ -1881,6 +1846,193 @@ test('504 第三批学习经历五种视口及原生缩放', async () => {
       await expect(dlg.getByRole('button', { name: '应用' })).toBeFocused();
       await p.keyboard.press('Escape');
       await expect(opener).toBeFocused();
+    }
+  } finally {
+    await browser.close();
+  }
+});
+
+for (const [width, height] of desktopViewports) {
+  test('504 第四批银行三态、健康与整页保存取消 ' + width + '×' + height, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    const { path } = await openFamilySample(page);
+    const button = (name: string) => page.getByRole('button', { name, exact: true });
+    const bank = page.getByRole('group', { name: '银行账户', exact: true });
+    const dlg = page.getByRole('dialog');
+    await button('更正资料').click();
+    await bank.getByRole('button', { name: '添加一行' }).click();
+    await check504(page, '银行账户', '通用', '新增');
+    for (const [id, value] of Object.entries({
+      bankName: '合成银行',
+      branchName: '合成支行',
+      accountHolder: '合成户名',
+      accountNumber: '000abc504',
+      currency: 'CNY',
+    })) {
+      await dlg.locator('#row-' + id).fill(value);
+    }
+    await dlg.getByLabel('主要账户').check();
+    await button('应用').click();
+    await page.getByLabel('健康状况简述').fill('合成摘要甲');
+    await page.getByLabel('曾用名').fill('合成九栏');
+    await button('保存').click();
+    const opener = button('查看 · 合成银行');
+    await opener.press('Enter');
+    await check504(page, '银行账户', '通用', '查看');
+    await expect(dlg).toContainText('********');
+    await button('查看完整号码').click();
+    await expect(dlg).toContainText('000abc504');
+    if (height === 900) {
+      await button('隐藏号码').click();
+      await expect(dlg).not.toContainText('000abc504');
+      const sql = personnelSQL(), deny = randomUUID();
+      const personId = path.split('/').at(-1)!;
+      expect(personId).toMatch(/^[0-9a-f-]{36}$/);
+      sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id,denied)
+        select instance_id,principal_id,'bank.read','personal-bank',array['accountNumber'],array['${personId}'::uuid],'${deny}',true from access.principal where login='admin'`);
+      let resume!: () => void, entered!: () => void;
+      const pending = new Promise<void>((resolve) => { resume = resolve; });
+      const intercepted = new Promise<void>((resolve) => { entered = resolve; });
+      try {
+        await page.route((url) => url.searchParams.get('view')?.startsWith('bank-') === true, async (route) => {
+          entered();
+          await pending;
+          await route.continue();
+        }, { times: 1 });
+        await button('查看完整号码').click();
+        await intercepted;
+        await expect(dlg).not.toContainText('000abc504');
+        await expect(dlg).toContainText('********');
+        resume();
+        await expect(dlg.getByText('银行账号', { exact: true })).toHaveCount(0);
+      } finally {
+        resume();
+        sql(`delete from access.person_grant where grant_id='${deny}'`);
+      }
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      await expect(button('查看完整号码')).toBeVisible();
+      await expect(dlg).not.toContainText('000abc504');
+    }
+    await page.keyboard.press('Escape');
+    await expect(opener).toBeFocused();
+    const saved = (await request(page, 'GET', path)).body;
+    expect(saved.healthSummary).toBe('合成摘要甲');
+    expect(saved.basic.formerName).toBe('合成九栏');
+    expect(saved.bankAccounts[0].fields.accountNumber).toBe('********');
+    await button('更正资料').click();
+    await button('编辑 · 合成银行').click();
+    await expect(dlg.locator('#row-accountNumber')).toHaveValue('000abc504');
+    await check504(page, '银行账户', '通用', '编辑');
+    if (height === 900) {
+      await dlg.locator('#row-accountNumber').fill('000different');
+      await dlg.locator('#row-accountNumber').fill('000abc504');
+      await page.keyboard.press('Escape');
+      await expect(dlg).toHaveCount(0);
+      await button('编辑 · 合成银行').click();
+    }
+    await dlg.locator('#row-branchName').fill('草稿支行');
+    await button('应用').click();
+    await button('编辑 · 合成甲').click();
+    await dlg.locator('#row-employer').fill('草稿单位');
+    await button('应用').click();
+    await page
+      .getByRole('group', { name: '地址', exact: true })
+      .getByRole('button', { name: '添加一行' })
+      .click();
+    await select(page, '地址类型', '通讯地址');
+    await dlg.locator('#row-addressCountry').fill('原文国家');
+    await dlg.locator('#row-street').fill('草稿地址');
+    await button('应用').click();
+    await page.getByLabel('健康状况简述').fill('');
+    await button('取消').click();
+    await button('放弃修改').click();
+    await expect(opener).toBeVisible();
+    expect((await request(page, 'GET', path)).body).toEqual(saved);
+    await button('退出').click();
+    await expect(page.getByLabel('密码')).toBeVisible();
+    await login(page, 'reader');
+    await menu(page);
+    await search(page, saved.name);
+    await page.getByRole('link', { name: saved.name, exact: true }).click();
+    await expect(page.getByRole('heading', { name: '基本信息', exact: true })).toBeVisible();
+    await expect(bank).toHaveCount(0);
+    await expect(page.getByText('健康信息', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('合成摘要甲')).toHaveCount(0);
+    const maskedNumberOnly = height === 540;
+    const grant = randomUUID(), sql = personnelSQL();
+    expect(saved.id).toMatch(/^[0-9a-f-]{36}$/);
+    try {
+      sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id)
+        select instance_id,principal_id,'bank.read','personal-bank',${maskedNumberOnly ? "array['accountNumber.masked']" : "array['bankName','accountNumber.masked']"},array['${saved.id}'::uuid],'${grant}' from access.principal where login='reader'`);
+      await page.reload();
+      const restrictedOpener = maskedNumberOnly ? button('查看 · 银行账户') : opener;
+      await restrictedOpener.press('Enter');
+      await expect(dlg.locator('.object-field-label')).toHaveText(maskedNumberOnly ? ['银行账号'] : ['银行名称', '银行账号']);
+      await expect(dlg).toContainText('********');
+      await expect(dlg.getByRole('button', {name: '查看完整号码'})).toHaveCount(0);
+      await expect(dlg).not.toContainText('000abc504');
+      await page.keyboard.press('Escape');
+      await expect(restrictedOpener).toBeFocused();
+    } finally { sql(`delete from access.person_grant where grant_id='${grant}'`); }
+  });
+}
+
+test('504 第四批健康撤权时整页回滚并清理草稿', async ({ page }) => {
+  const { id, path, source } = await openFamilySample(page);
+  const button = (name: string) => page.getByRole('button', { name, exact: true });
+  await button('更正资料').click();
+  await page.getByLabel('曾用名').fill('获权草稿');
+  await page.getByLabel('健康状况简述').fill('甲'.repeat(201));
+  await button('保存').click();
+  await expect(page.getByLabel('健康状况简述')).toBeFocused();
+  await expect(page.getByLabel('健康状况简述')).toHaveAttribute('aria-invalid', 'true');
+  await page.getByLabel('健康状况简述').fill('撤权前输入');
+  const sql = personnelSQL(),
+    grant = randomUUID();
+  expect(id).toMatch(/^[0-9a-f-]{36}$/);
+  try {
+    sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id,denied)
+      select instance_id,principal_id,'health.read','health-summary',array['healthSummary'],array['${id}'::uuid],'${grant}',true from access.principal where login='admin'`);
+    await button('保存').click();
+    await expect(page.locator('#person-error')).toContainText('没有本次办理权限');
+    await expect(page.getByText('健康信息', { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel('曾用名')).toHaveValue('获权草稿');
+    const detail = (await request(page, 'GET', path)).body;
+    expect(detail.sourceVersion).toBe(source);
+    expect(detail.healthSummary).toBeUndefined();
+    expect(detail.basic.formerName).toBe('');
+  } finally {
+    sql(`delete from access.person_grant where grant_id='${grant}'`);
+  }
+});
+
+test('504 第四批整页末栏和银行弹框的视口与原生缩放', async () => {
+  test.setTimeout(150000);
+  const browser = await nativeZoomBrowser(),
+    page = browser.page;
+  try {
+    await openFamilySample(page);
+    await page.getByRole('button', { name: '更正资料', exact: true }).click();
+    for (const [width, height, zoom] of desktopFormViewports) {
+      await page.setViewportSize({ width, height });
+      if (zoom !== 1) await browser.setZoom(zoom);
+      const summary = page.getByLabel('健康状况简述');
+      await summary.focus();
+      await expect(summary).toBeInViewport();
+      await summary.fill('合成末栏');
+      const add = page
+        .getByRole('group', { name: '银行账户', exact: true })
+        .getByRole('button', { name: '添加一行' });
+      await add.focus();
+      await add.press('Enter');
+      await check504(page, '银行账户', '通用', '新增');
+      const primary = page.getByLabel('主要账户');
+      await primary.focus();
+      await expect(primary).toBeInViewport();
+      await primary.press('Tab');
+      await expect(page.getByRole('dialog').getByRole('button', { name: '取消' })).toBeFocused();
+      await page.keyboard.press('Escape');
+      await expect(add).toBeFocused();
     }
   } finally {
     await browser.close();

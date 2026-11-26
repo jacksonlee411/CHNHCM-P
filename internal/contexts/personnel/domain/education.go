@@ -14,7 +14,7 @@ var Credentials = ItemSection{"credentials", "qualification",
 	[]string{"credentialKind", "credentialName", "credentialLevel", "specialty", "certificateNumber", "awardingBody", "issuedOn", "validFrom", "validUntil", "indefinite"},
 	[]string{"credentialName", "credentialKind"}}
 
-var ItemSections = []ItemSection{Addresses, Family, Education, Credentials}
+var ItemSections = []ItemSection{Addresses, Family, Education, Credentials, BankAccounts}
 
 func EducationFieldApplies(kind, key string) bool {
 	switch key {

@@ -1,10 +1,25 @@
 import unittest
+from collections import Counter, defaultdict
 from unittest.mock import patch
 
 import ci_browser as browser
 
 
 class BrowserInventoryTests(unittest.TestCase):
+    def test_large_entry_uses_discovered_declarations_for_full_and_selected_runs(self):
+        entry = 'first-hire.spec.ts'
+        specs = [dict(file=entry, line=line, id=str(i), tests=[dict(projectName='chromium')])
+                 for i, line in enumerate([15, 15, 31, 97, 123, 123])]
+        locations = defaultdict(Counter)
+        selected = browser.inventory(dict(suites=[dict(file=entry, specs=specs)]), locations=locations)
+        self.assertEqual(browser.selected_browser_count([entry]), 2)
+        groups = browser.shard_files(selected, 2, [], locations)
+        self.assertCountEqual(groups, [[f'{entry}:15', f'{entry}:31'], [f'{entry}:97', f'{entry}:123']])
+        self.assertEqual(browser.arguments([f'{entry}:97']), [r'(?:^|/)first\-hire\.spec\.ts$:97'])
+        with self.assertRaisesRegex(ValueError, 'shared declarations'):
+            browser.inventory(dict(suites=[dict(file=entry, specs=[dict(specs[0], file='shared.ts')])]),
+                              locations=locations)
+
     def test_same_basename_in_distinct_directories_keeps_its_own_entry(self):
         report = {'config': {'rootDir': '/code/tests/e2e'}, 'suites': []}
         for dirname in ['staffing', 'organization']:

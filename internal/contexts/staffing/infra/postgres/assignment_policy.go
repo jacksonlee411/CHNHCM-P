@@ -107,9 +107,35 @@ func (st *Store) ResolvePolicy(ctx context.Context, c f.Credentials, submission 
 }
 
 func (st *Store) CheckAssignment(ctx context.Context, c f.Credentials, in s.AssignmentCheck) (out []s.AssignmentSegment, err error) {
+	return st.checkAssignment(ctx, c, in, nil)
+}
+func (st *Store) checkAssignment(ctx context.Context, c f.Credentials, in s.AssignmentCheck, retained []f.Period) (out []s.AssignmentSegment, err error) {
+	return st.checkOwnerAssignment(ctx, c, in, retained, "M04", "", nil)
+}
+func (st *Store) CheckOfferArrangement(ctx context.Context, c f.Credentials, in s.AssignmentCheck, prior, person, employer, action string) ([]s.AssignmentSegment, error) {
+	return st.checkOwnerAssignment(ctx, c, in, nil, "M05", prior, func(u *unit) error {
+		if in.Position == "" {
+			return nil
+		}
+		ok, err := u.positionEmploymentScope(ctx, in.Position, in.Period, person, employer, "offer."+action, "recruit")
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return f.Fail(403, "OFFER_DENIED", "所选岗位超出本次录用权限")
+		}
+		return nil
+	})
+}
+func (st *Store) checkOwnerAssignment(ctx context.Context, c f.Credentials, in s.AssignmentCheck, retained []f.Period, owner, prior string, authorize func(*unit) error) (out []s.AssignmentSegment, err error) {
 	err = st.policy(ctx, c, "check", false, func(u *unit, locked bool) error {
 		if in.Enterprise != u.enterprise.ID {
 			return f.Fail(403, "ACCESS_DENIED", "企业不可用")
+		}
+		if authorize != nil {
+			if e := authorize(u); e != nil {
+				return e
+			}
 		}
 		repo := u.policyStore()
 		head, e := repo.Head(ctx)
@@ -123,7 +149,11 @@ func (st *Store) CheckAssignment(ctx context.Context, c f.Credentials, in s.Assi
 		if e != nil {
 			return e
 		}
-		out, e = app.CheckJobAssignment(ctx, u, in, head, rows, locked)
+		if in.Position != "" {
+			out, e = u.checkPositionAssignment(ctx, in, head, rows, locked, retained, owner, prior, false)
+		} else {
+			out, e = app.CheckJobAssignment(ctx, u, in, head, rows, locked)
+		}
 		if e == nil && in.Adopted != nil && !slices.Equal(in.Adopted, out) {
 			return f.Fail(409, "M03_SOURCE_CHANGED", "部门、职务或任职政策来源已变化，请重新核对")
 		}

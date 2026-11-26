@@ -13,6 +13,11 @@ type AccessAppointmentIssuerFixture struct {
 	PrincipalID string
 }
 
+type AccessContractFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessCredential struct {
 	InstanceID       string
 	PrincipalID      string
@@ -22,6 +27,11 @@ type AccessCredential struct {
 	Salt             []byte
 	PasswordHash     []byte
 	UpdatedAt        pgtype.Timestamptz
+}
+
+type AccessDutyFixture struct {
+	InstanceID  string
+	PrincipalID string
 }
 
 type AccessEmploymentFixture struct {
@@ -41,14 +51,79 @@ type AccessEmploymentGrant struct {
 	ExpiresAt    pgtype.Timestamptz
 }
 
+type AccessEmploymentHistoryFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessEmploymentLifecycleFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessEmploymentLocationFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessEmploymentParallelFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessEmploymentProbationFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessEmploymentPromotionFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessEmploymentRegisterFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessEmploymentSuccessionFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
 type AccessHireIdentityFixture struct {
 	InstanceID  string
 	PrincipalID string
 }
 
+type AccessOfferFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessOfferGrant struct {
+	InstanceID   string
+	PrincipalID  string
+	GrantID      string
+	Action       string
+	PersonID     *string
+	EmployerID   *string
+	DepartmentID *string
+	ExpiresAt    pgtype.Timestamptz
+}
+
 type AccessPersonAddressFamilyFixture struct {
 	InstanceID  string
 	PrincipalID string
+}
+
+type AccessPersonDataPurpose struct {
+	InstanceID   string
+	Purpose      string
+	Version      string
+	ValidUntil   pgtype.Timestamptz
+	OrdinaryDays int32
+	EvidenceDays int32
 }
 
 type AccessPersonFixture struct {
@@ -90,6 +165,11 @@ type AccessPersonProfileFixture struct {
 }
 
 type AccessPersonQualificationFixture struct {
+	InstanceID  string
+	PrincipalID string
+}
+
+type AccessPersonSensitiveFixture struct {
 	InstanceID  string
 	PrincipalID string
 }
@@ -911,6 +991,12 @@ type OrganizationStorageContract struct {
 	Contract  string
 }
 
+type PersonnelBankAccount struct {
+	InstanceID string
+	PersonID   string
+	AccountID  string
+}
+
 type PersonnelContactPayload struct {
 	InstanceID       string
 	PersonID         string
@@ -1030,6 +1116,7 @@ type PersonnelProfileItemPayload struct {
 	OrdinaryUntil    pgtype.Timestamptz
 	EvidenceUntil    pgtype.Timestamptz
 	CollectionPolicy string
+	AccountID        *string
 }
 
 type PersonnelQuery struct {
@@ -1067,6 +1154,101 @@ type PersonnelTerminal struct {
 	Fault        []byte
 }
 
+type RecruitingHandoffCancellation struct {
+	InstanceID       string
+	OfferID          string
+	AcceptedVersion  string
+	CancelledVersion string
+	CancelAction     string
+	CancelRevision   string
+}
+
+type RecruitingHireHandoff struct {
+	InstanceID       string
+	OfferID          string
+	AcceptedVersion  string
+	ConvertedVersion string
+	HireAction       string
+	HireRevision     string
+	AssignmentID     string
+}
+
+type RecruitingOffer struct {
+	InstanceID   string
+	ID           string
+	Number       string
+	PersonID     string
+	EmployerID   string
+	DepartmentID string
+	JobID        string
+	PositionID   *string
+	Arrival      pgtype.Date
+	ReserveFrom  pgtype.Date
+	UntilDate    pgtype.Date
+	Terms        []byte
+}
+
+type RecruitingOfferHead struct {
+	InstanceID string
+	OfferID    string
+	Version    string
+}
+
+type RecruitingOfferRevisedTerm struct {
+	InstanceID string
+	OfferID    string
+	Version    string
+	Terms      []byte
+}
+
+type RecruitingOfferRevision struct {
+	InstanceID   string
+	OfferID      string
+	Version      string
+	Previous     *string
+	Operation    string
+	Status       string
+	BusinessDate pgtype.Date
+	Basis        string
+	Actor        string
+	RecordedAt   pgtype.Timestamptz
+}
+
+type RecruitingOfferSegment struct {
+	InstanceID string
+	OfferID    string
+	Version    string
+	Period     pgtype.Range[pgtype.Date]
+	PositionID *string
+	Effect     string
+	Adoption   []byte
+}
+
+type RecruitingOfferSubmission struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	Digest       *string
+	OfferID      *string
+	Version      *string
+}
+
+type RecruitingOutbox struct {
+	InstanceID string
+	EventID    string
+	OfferID    string
+	Version    string
+}
+
+type RecruitingPositionIntake struct {
+	InstanceID     string
+	PositionID     string
+	CreationSource string
+	Version        string
+	Since          pgtype.Date
+	RecordedAt     pgtype.Timestamptz
+}
+
 type StaffingAppointmentOutbox struct {
 	InstanceID string
 	Source     string
@@ -1095,6 +1277,31 @@ type StaffingAssignment struct {
 	JobID        string
 	BuID         *string
 	LocationID   *string
+	PersonID     string
+	RecordNumber int32
+	Period       pgtype.Range[pgtype.Date]
+}
+
+type StaffingAssignmentExit struct {
+	InstanceID    string
+	AssignmentID  string
+	ActionID      string
+	Revision      string
+	FirstInactive pgtype.Date
+}
+
+type StaffingAssignmentHead struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+}
+
+type StaffingAssignmentMember struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+	ActionID     string
+	Revision     string
 }
 
 type StaffingAssignmentPolicyMember struct {
@@ -1139,11 +1346,94 @@ type StaffingAssignmentPolicyTerminal struct {
 	RecordedAt     pgtype.Timestamptz
 }
 
+type StaffingAssignmentPublication struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+}
+
 type StaffingAssignmentSegment struct {
 	InstanceID   string
 	AssignmentID string
 	Period       pgtype.Range[pgtype.Date]
 	Adoption     []byte
+	Version      string
+	LocationID   *string
+	LocationRef  []byte
+	DepartmentID string
+	JobID        string
+	GradeRef     []byte
+}
+
+type StaffingAssignmentSource struct {
+	InstanceID   string
+	AssignmentID string
+	Version      string
+	Previous     *string
+	ActionID     string
+	Revision     string
+}
+
+type StaffingContractOutbox struct {
+	InstanceID string
+	ContractID string
+	Version    string
+}
+
+type StaffingContractProcess struct {
+	InstanceID   string
+	ContractID   string
+	Version      string
+	Operation    string
+	BusinessDate pgtype.Date
+	Actor        string
+	OperatorName string
+	RecordedAt   pgtype.Timestamptz
+	Basis        string
+	LeaveAction  *string
+}
+
+type StaffingContractSubmission struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	Digest       string
+	AssignmentID *string
+	ContractID   *string
+	Version      *string
+}
+
+type StaffingDutyApplication struct {
+	InstanceID    string
+	ObservationID string
+	ActionID      string
+}
+
+type StaffingDutyObservation struct {
+	InstanceID   string
+	ID           string
+	AssignmentID string
+	Issuer       string
+	Number       string
+}
+
+type StaffingDutyObservationHead struct {
+	InstanceID    string
+	ObservationID string
+	Version       string
+}
+
+type StaffingDutyObservationRevision struct {
+	InstanceID      string
+	ObservationID   string
+	Version         string
+	Previous        *string
+	Actor           string
+	RecordedAt      pgtype.Timestamptz
+	Digest          string
+	Dispatch        string
+	DispatchVersion string
+	Fact            []byte
 }
 
 type StaffingEmployment struct {
@@ -1163,17 +1453,48 @@ type StaffingEmploymentAction struct {
 	EmploymentID string
 	AssignmentID string
 	OriginalID   *string
-	BusinessDate pgtype.Date
 	Actor        string
 	RecordedAt   pgtype.Timestamptz
-	Notice       string
-	Adoption     []byte
+}
+
+type StaffingEmploymentActionRevision struct {
+	InstanceID       string
+	AssignmentID     string
+	ActionID         string
+	Revision         string
+	PreviousRevision *string
+	BusinessDate     pgtype.Date
+	Notice           string
+	Actor            string
+	OperatorSnapshot []byte
+	RecordedAt       pgtype.Timestamptz
+	Adoption         []byte
+	Operation        string
+}
+
+type StaffingEmploymentContract struct {
+	InstanceID   string
+	ID           string
+	EmploymentID string
+	Number       string
+	Signed       pgtype.Date
+	Period       pgtype.Range[pgtype.Date]
+	Predecessor  *string
+}
+
+type StaffingEmploymentExit struct {
+	InstanceID    string
+	EmploymentID  string
+	ActionID      string
+	Revision      string
+	FirstInactive pgtype.Date
 }
 
 type StaffingEmploymentOutbox struct {
 	InstanceID string
 	EventID    string
 	ActionID   string
+	Revision   string
 }
 
 type StaffingEmploymentPrimary struct {
@@ -1184,6 +1505,20 @@ type StaffingEmploymentPrimary struct {
 	TargetID   string
 	Purpose    string
 	Period     pgtype.Range[pgtype.Date]
+}
+
+type StaffingEmploymentRecord struct {
+	InstanceID   string
+	PersonID     string
+	RecordNumber int32
+}
+
+type StaffingEmploymentRevisionPublication struct {
+	InstanceID   string
+	AssignmentID string
+	ActionID     string
+	Revision     string
+	Version      string
 }
 
 type StaffingGrade struct {
@@ -1391,6 +1726,16 @@ type StaffingHireTerminal struct {
 	Digest       string
 	Outcome      string
 	ActionID     *string
+	Revision     *string
+}
+
+type StaffingHiredOffer struct {
+	InstanceID        string
+	OfferID           string
+	AcceptedVersion   string
+	ConversionVersion string
+	ActionID          string
+	Revision          string
 }
 
 type StaffingJob struct {
@@ -1651,6 +1996,16 @@ type StaffingJobTerminal struct {
 	ClosedAt     pgtype.Timestamptz
 }
 
+type StaffingManagerAgreement struct {
+	InstanceID        string
+	AssignmentID      string
+	ActionID          string
+	Revision          string
+	ManagerAssignment *string
+	Purpose           string
+	Period            pgtype.Range[pgtype.Date]
+}
+
 type StaffingPosition struct {
 	InstanceID   string
 	EnterpriseID string
@@ -1711,6 +2066,13 @@ type StaffingPositionHierarchyVersion struct {
 	SubmissionID string
 }
 
+type StaffingPositionIntake struct {
+	InstanceID string
+	PositionID string
+	SourceID   string
+	Period     pgtype.Range[pgtype.Date]
+}
+
 type StaffingPositionOutbox struct {
 	InstanceID string
 	ObjectID   string
@@ -1729,6 +2091,25 @@ type StaffingPositionRead struct {
 	Active       bool
 	Fact         []byte
 	ValidPeriod  pgtype.Range[pgtype.Date]
+}
+
+type StaffingPositionReplenishment struct {
+	InstanceID   string
+	PositionID   string
+	Revision     string
+	Actor        string
+	BusinessDate pgtype.Date
+	Paused       bool
+	Reason       string
+	Digest       string
+	RecordedAt   pgtype.Timestamptz
+}
+
+type StaffingPositionReplenishmentClosed struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	RecordedAt   pgtype.Timestamptz
 }
 
 type StaffingPositionRevision struct {
@@ -1767,6 +2148,17 @@ type StaffingPositionSource struct {
 	RecordedAt   pgtype.Timestamptz
 }
 
+type StaffingPositionSuccession struct {
+	InstanceID      string
+	ID              string
+	PositionID      string
+	AssignmentID    string
+	ActionID        string
+	Incumbent       string
+	IncumbentSource string
+	Period          pgtype.Range[pgtype.Date]
+}
+
 type StaffingPositionTerminal struct {
 	InstanceID   string
 	SubjectID    string
@@ -1774,6 +2166,22 @@ type StaffingPositionTerminal struct {
 	Digest       []byte
 	Result       []byte
 	ClosedAt     pgtype.Timestamptz
+}
+
+type StaffingProbationReceiptAssignment struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	AssignmentID string
+}
+
+type StaffingPromotionTransfer struct {
+	InstanceID        string
+	AssignmentID      string
+	Promotion         string
+	PromotionRevision string
+	Transfer          string
+	TransferRevision  string
 }
 
 type StaffingQuotaControl struct {
@@ -1837,4 +2245,27 @@ type StaffingQuotum struct {
 type StaffingStorageContract struct {
 	Singleton bool
 	Contract  string
+}
+
+type StaffingTransferExchange struct {
+	InstanceID       string
+	ID               string
+	FirstAssignment  string
+	SecondAssignment string
+	FirstAction      string
+	SecondAction     string
+	FirstPosition    string
+	SecondPosition   string
+}
+
+type StaffingTransferExchangeRevision struct {
+	InstanceID       string
+	ExchangeID       string
+	Version          string
+	FirstAssignment  string
+	FirstAction      string
+	FirstRevision    string
+	SecondAssignment string
+	SecondAction     string
+	SecondRevision   string
 }

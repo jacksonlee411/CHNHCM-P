@@ -81,7 +81,7 @@ func TestPersonnelCapacity(t *testing.T) {
 				if e != nil {
 					return nil, e
 				}
-				return call(b, "GET", fmt.Sprintf("%s?ref=%s&page=%d", persons, v["ref"], page), nil)
+				return call(b, "POST", "/api/v1/personnel/directory/query", M{"ref": v["ref"], "page": page, "pageSize": 20, "sort": "number"})
 			}
 			for _, check := range []struct {
 				b                            *browser

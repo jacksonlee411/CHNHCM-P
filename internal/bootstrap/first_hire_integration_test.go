@@ -52,7 +52,7 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	}
 	zero := func(stage string) {
 		t.Helper()
-		for _, table := range []string{"employment", "assignment", "employment_primary", "employment_action", "employment_outbox", "assignment_segment"} {
+		for _, table := range []string{"employment", "employment_record", "assignment", "employment_primary", "employment_action", "employment_outbox", "assignment_segment"} {
 			if n := h.f.scalar("SELECT count(*) FROM staffing." + table); n != 0 {
 				t.Fatalf("%s: %s=%d", stage, table, n)
 			}
@@ -199,7 +199,7 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	}
 	resolve := func(key string) M { return b.call("POST", "/api/v1/hires/submissions/"+key+"/resolve", nil, "", 200) }
 	receipt := resolve(key)
-	if receipt["outcome"] != "accepted" || receipt["employment"] == nil || receipt["assignment"] == nil {
+	if receipt["outcome"] != "accepted" || receipt["employment"] == nil || receipt["assignment"] == nil || receipt["recordNumber"] != 0.0 {
 		t.Fatal(receipt)
 	}
 	if b.call("POST", "/api/v1/hires", in, key, 200)["action"] != receipt["action"] {
@@ -218,6 +218,9 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	}
 	daily("2027-03-31", 0)
 	action := daily("2027-04-01", 1)["actions"].([]any)[0].(M)
+	if action["recordNumber"] != 0.0 || action["primaryJob"] != true {
+		t.Fatal("首任期未接入本人 0 号", action)
+	}
 	if n := h.f.scalar(`SELECT count(*) FROM staffing.assignment_segment WHERE assignment_id=$1 AND period @> date '2027-04-01'
         AND adoption->>'seats'='0' AND adoption->>'position'='' AND adoption->>'jobRevision'<>'' AND adoption->>'departmentRevision'<>''`, receipt["assignment"]); n != 1 {
 		t.Fatal("missing adopted JobOnly segment", n)
@@ -225,12 +228,12 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	if n := h.f.scalar("SELECT count(*) FROM staffing.employment_primary"); n != 2 {
 		t.Fatal(n)
 	}
-	if n := h.f.scalar("SELECT count(*) FROM staffing.employment_action WHERE adoption->'sources'->'identity'->>'personVersion'=$1 AND adoption->'sources'->>'rule'='T02-employee-1'", p["sourceVersion"]); n != 1 {
+	if n := h.f.scalar("SELECT count(*) FROM staffing.employment_action_revision WHERE adoption->'sources'->'identity'->>'personVersion'=$1 AND adoption->'sources'->>'rule'='T02-employee-1'", p["sourceVersion"]); n != 1 {
 		t.Fatal("missing immutable adoption")
 	}
 	b.call("POST", "/api/v1/employment-actions/"+action["id"].(string)+"/cancel", M{"revision": action["revision"], "reason": "任用通知于到岗前撤回"}, f.NewID(), 200)
 	daily("2027-04-01", 0)
-	if resolve(key)["action"] != receipt["action"] || b.call("POST", "/api/v1/hires", in, key, 200)["action"] != receipt["action"] {
+	if resolve(key)["recordNumber"] != 0.0 || resolve(key)["action"] != receipt["action"] || b.call("POST", "/api/v1/hires", in, key, 200)["action"] != receipt["action"] {
 		t.Fatal("lost original result")
 	}
 	if h.f.scalar("SELECT count(*) FROM staffing.employment_primary") != 0 || h.f.scalar("SELECT count(*) FROM staffing.employment_outbox") != 2 {
@@ -258,7 +261,7 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 		t.Fatal("history still offered after revocation")
 	}
 	h.policy("DELETE FROM access.employment_grant WHERE principal_id=$1 AND action='read'", b.subject)
-	if got := resolve(key); got["action"] != nil || got["employment"] != nil || got["outcome"] != "accepted" {
+	if got := resolve(key); got["action"] != nil || got["employment"] != nil || got["recordNumber"] != nil || got["outcome"] != "accepted" {
 		t.Fatal("receipt disclosed after revocation", got)
 	}
 	if len(daily("2027-04-01", 0)["actions"].([]any)) != 0 {

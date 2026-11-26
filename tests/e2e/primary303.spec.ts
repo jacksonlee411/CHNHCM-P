@@ -57,7 +57,7 @@ for (const role of ['admin', 'reader']) test(`303 ${role}一级顺序、直接�
   }
 });
 
-for (const width of [1440, 390]) test(`303 ${width}跨应用取消离开与放弃保留正确归属`, async ({ page }) => {
+for (const width of [1440, 899]) test(`303 ${width}跨应用取消离开与放弃保留正确归属`, async ({ page }) => {
   test.setTimeout(60000);
   await open(page);
   await page.setViewportSize({ width, height: 900 });
@@ -100,22 +100,20 @@ test('303 一级菜单键盘、抽屉顺序与尺寸切换焦点', async ({ page
   await page.keyboard.press('ArrowUp');
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { level: 1, name: '部门', exact: true })).toBeVisible();
-  for (const width of [390, 320]) {
-    await page.setViewportSize({ width, height: 568 });
-    await expect(page.locator('[data-navigation-mode]')).toHaveAttribute('data-navigation-mode', 'drawer');
-    const trigger = page.getByRole('button', { name: '打开导航', exact: true });
-    await trigger.click();
-    const drawer = page.locator('#navigation-drawer');
-    await expect(drawer.getByRole('button', { name: /^(部门|人员|设置)$/ })).toHaveText(['部门', '人员', '设置']);
-    await expect(drawer.getByRole('button', { name: '部门', exact: true })).not.toHaveAttribute('aria-expanded');
-    await drawer.getByRole('button', { name: '部门', exact: true }).click();
-    await expect(drawer).not.toBeVisible();
-    await page.getByRole('button', { name: '打开部门树', exact: true }).click();
-    await expect(page.getByRole('tree', { name: '部门树', exact: true })).toBeVisible();
-    await page.keyboard.press('Escape');
-    await trigger.click(); await page.keyboard.press('Escape'); await expect(trigger).toBeFocused();
-    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-  }
+  await page.setViewportSize({ width: 899, height: 900 });
+  await expect(page.locator('[data-navigation-mode]')).toHaveAttribute('data-navigation-mode', 'drawer');
+  const trigger = page.getByRole('button', { name: '打开导航', exact: true });
+  await trigger.click();
+  const drawer = page.locator('#navigation-drawer');
+  await expect(drawer.getByRole('button', { name: /^(部门|人员|设置)$/ })).toHaveText(['部门', '人员', '设置']);
+  await expect(drawer.getByRole('button', { name: '部门', exact: true })).not.toHaveAttribute('aria-expanded');
+  await drawer.getByRole('button', { name: '部门', exact: true }).click();
+  await expect(drawer).not.toBeVisible();
+  await page.getByRole('button', { name: '打开部门树', exact: true }).click();
+  await expect(page.getByRole('tree', { name: '部门树', exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await trigger.click(); await page.keyboard.press('Escape'); await expect(trigger).toBeFocused();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.getByRole('button', { name: '打开导航', exact: true }).click();
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.locator('#navigation-drawer')).not.toBeVisible();

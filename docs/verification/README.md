@@ -2,7 +2,11 @@
 
 按岗位免占编首单的办理、并发与验收方案已完成[404 多轮评审](404-position-exempt-first-hire-review.md)。原决定按职务首单的产品证据见[400 第 13 节](400-first-hire-integration.md#13-公共-e-从已有任用决定办理首单)。
 
-T03 已在共同版本复验两类同号旧库，106 已在首批范围采纳，首单等待 Personnel 的入职核对接口。[首笔直接入职的开工核对](400-first-hire-integration.md)
+500 人员页面的实页评审登记了 11 项待修复问题，可逐项查阅复现路径、规范、截图及关闭条件。[500 人员页面布局与交互问题登记](500-personnel-page-review.md)
+
+500-UI-12 至 20 接续记录普通人员入口、职务信息页签、日期轴、通用查看日期和相邻流程的 9 项问题。四轮走查覆盖单任职、多任职、首聘、只读、返回与专项统计，并对照实施合同和旧浏览器断言。[500 人员入口与日期交互补充评审](500-personnel-entry-and-date-review.md)
+
+职务信息的设计复核覆盖首单升级与实施分批、主兼岗分行、两处查回原笔、106 的同日办理，以及普通更正、撤销和已履职补录的最少输入。当前产品证据覆盖按职务首单、原件、查回及未来撤销。[实施步骤与依赖复核](500-job-information-delivery-review.md) · [直接办理负担修订](506-job-information-direct-entry-review.md) · [106 同日办理复核](506-same-day-actions-design-review.md) · [办理列表复核](507-personnel-action-register-design-review.md) · [主兼岗复核](506-job-information-design-review.md) · [已有首单实测](400-first-hire-integration.md#decision-first-hire)
 
 M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合同已记录实际验证范围。[T02 实施及交接](400-hire-simplification.md#t02-results) · [实施复评与修复](400-hire-simplification.md#t02-implementation-review) · [办理负担复核](400-hire-simplification.md) · [原四轮评审](400-hire-readiness-review.md)
 

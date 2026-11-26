@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures';
 
-test('日期轴多节点、隐藏日期菜单、键盘和窄屏选择保持同一展示记录', async ({ page }) => {
+test('日期轴多节点、隐藏日期菜单、键盘和折叠选择保持同一展示记录', async ({ page }) => {
   await page.goto('/test-fixtures/experience.html');
   const axis = page.getByRole('navigation', { name: '生效日期', exact: true });
   await expect(axis).toBeVisible();
@@ -13,7 +13,7 @@ test('日期轴多节点、隐藏日期菜单、键盘和窄屏选择保持同�
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status')).toHaveText('选中记录：2026-02-01');
-  await page.setViewportSize({ width: 390, height: 480 });
+  await page.setViewportSize({ width: 767, height: 540 });
   await axis.getByRole('button', { name: /选择生效日期/ }).click();
   await page.getByRole('menuitem', { name: '2026-12-01', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('选中记录：2026-12-01');
@@ -32,7 +32,7 @@ test('日期轴多节点、隐藏日期菜单、键盘和窄屏选择保持同�
 });
 
 test('跨页签错误定位展开隐藏分组，来回切换保留输入且短屏可滚动', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 480 });
+  await page.setViewportSize({ width: 1440, height: 540 });
   await page.goto('/test-fixtures/experience.html');
   await page.getByRole('button', { name: '核对输入' }).click();
   await expect(page.getByRole('tab', { name: '补充资料' })).toHaveAttribute('aria-selected', 'true');

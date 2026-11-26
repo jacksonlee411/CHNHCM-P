@@ -1,0 +1,646 @@
+{
+  "reviewedCommit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+  "capturedOn": "2026-11-26",
+  "profile": "m01-profile-f",
+  "browser": "140.0.7339.186",
+  "source": {
+    "originalScreenshotCount": 68,
+    "localArchive": "evidence.zip",
+    "archiveSHA256": "e4b6180fd046e59ea9c3d884fc7f1dac265a821f84bc08f24a3e5cc8c01299bc",
+    "originalObservationsSHA256": "ee3378c8721fc0eba8b56e1c8c866a403909690c95c99449593016ce2f6ec6a3"
+  },
+  "screenshots": [
+    {
+      "file": "03-job-reference.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "20f3fe6fd8655ade88704af171f72739d98f82e444be61025edf791ef1b26687"
+    },
+    {
+      "file": "06-primary-between-dates.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "c33d2601a65c6575244a6c2f55d7f565596760bab6154b011e659b689a8f2c91"
+    },
+    {
+      "file": "07-tab-space.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "63ea7ab5fd16bd81b4fb8f3b79bd0498a452c777532294483af63e76671a9ecb"
+    },
+    {
+      "file": "08-primary-profile.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "051af246ed284f396e2e48620c317485be6818716f5520618f22a88fa800b037"
+    },
+    {
+      "file": "12-compact-date-options.png",
+      "pixels": [
+        390,
+        844
+      ],
+      "sha256": "d883f48ceb570b1e3fb76e2a94c7aa67845194f83ee0e1f375944b8b49cb7e43"
+    },
+    {
+      "file": "16-tab-from-original.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "6fce4084b9b5f32dd120d39cfa03bddd57d18f27c270dece1b569871674d87b5"
+    },
+    {
+      "file": "18-secondary.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "5b20a9b5bcee040b4c1b6374a9a6b74a54b9356acf4c9f6b3dc1a841e37dd0f9"
+    },
+    {
+      "file": "26-register-applied-collapsed.png",
+      "pixels": [
+        1440,
+        540
+      ],
+      "sha256": "3926f380bf257504bfbbf8c4e27f03dc9dec7cc38b7827af20108e84747d0359"
+    },
+    {
+      "file": "28-register-person-two.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "4d32ea183b319a4b353d9370616ad2ca27ec4acaa36b2598634de5be24706698"
+    },
+    {
+      "file": "29-register-person-three.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "51e1d5dadcfd6c79e8ed72dab02684c9ac41006c976b8d94291fa2e64c032368"
+    },
+    {
+      "file": "35-registration.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "12ba2e36bc4648895f7a57529faf1cb513c1fee8b8fcec358c146c4922830e13"
+    },
+    {
+      "file": "36-register-error.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "a7220e2683119ae44d76df3670e5fcd0e3e1af8f1eeb1c0e9db8a1474f742a49"
+    },
+    {
+      "file": "39-first-hire.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "031fa9bafcc7c9e79b7de06a58c8db3f55cdab88fc4a63fb74e6d19753a2395b"
+    },
+    {
+      "file": "42-native200-old-revision.png",
+      "pixels": [
+        1280,
+        900
+      ],
+      "sha256": "0f55c74e619cd2d2c2259e8ed4ea15388a40a6b4fac61a9a3bbdac92182d100e"
+    },
+    {
+      "file": "43-native200-exact-source.png",
+      "pixels": [
+        1280,
+        900
+      ],
+      "sha256": "f893b1b8a3055ea625ad8ff1e8625c79b062de87b3a382b2d502a60af1c7d43c"
+    },
+    {
+      "file": "44-first-hire-short-top.png",
+      "pixels": [
+        1440,
+        540
+      ],
+      "sha256": "89c6238500a735ce8a516492494941252796c15812d95bba4c1034491632afba"
+    },
+    {
+      "file": "45-first-hire-short-bottom.png",
+      "pixels": [
+        1440,
+        540
+      ],
+      "sha256": "63be32845192ced963b8350404790dc2dc6abed5f11c0ad3f492e5c242da7e4f"
+    },
+    {
+      "file": "46-contract-draft.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "e7a06c585cf0c515c9200eb3e84b29caf05fe6eacb46e4136a049056f758561f"
+    },
+    {
+      "file": "53-primary-filter-menu.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "1c28b277051fb58f89d32be639de05d46d69bc4297f6cd6dd5c793091d58b4e3"
+    },
+    {
+      "file": "55-employee-mobile-controls.png",
+      "pixels": [
+        390,
+        844
+      ],
+      "sha256": "52316e3aef38b00cdeecc4ee0defec6a4d103d3aef803bafd45440ff3cbe8ce9"
+    },
+    {
+      "file": "57-reader-native400-dialog.png",
+      "pixels": [
+        1280,
+        900
+      ],
+      "sha256": "e68f3d0793006efe25991c342c724b5078779687c16b4d40347229215f796a3c"
+    },
+    {
+      "file": "59-old-term-from-rehire.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "6e269c8a0255bd069a188b5e4bb6defde79f78582cc93241f5e8bc143e4d6dc8"
+    },
+    {
+      "file": "60-filter-draft-mismatch.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "0d019f9196510ca8d1d34ed6e8cff131fff4b9fe888330e9cda8bb0be78bf237"
+    },
+    {
+      "file": "61-same-day-register.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "d8c4dc2a9c44975d6f81ea0ff607fb209e71d3d7279a10ab8dfcee6a9f3ef50a"
+    },
+    {
+      "file": "62-same-day-timeline.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "e16e40a53291a224300ee4aa74ab91b74bb69a4ec1d5b1acde3abbdf3356f766"
+    },
+    {
+      "file": "65-correction-ready-without-person.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "1c08a27246ad38dd372c9b756f93d7fd225d996d6d0fc94bd3e391469e8eaa9e"
+    },
+    {
+      "file": "66-offer-reschedule.png",
+      "pixels": [
+        1440,
+        900
+      ],
+      "sha256": "5b9d23015ad415049538f1ecd2166cb5f223aa9b4d675a6abbb1af5610a3d230"
+    }
+  ],
+  "readings": {
+    "可保存的跨人更正": {
+      "head": [
+        "数据更改 · 0 号主岗",
+        "办理明细",
+        "更正记录 · 数据更改"
+      ],
+      "enabled": true,
+      "text": "跳到正文\n人员\n员工\n人事事务\n招聘\n\nadmin\n\n退出\n返回办理记录\n办理记录\n保存\n取消\n数据更改 · 0 号主岗\n办理明细\n雇用记录编号\n0 · 主岗\n更正记录 · 数据更改\n生效日期*\n业务原因\n工作地点变更\n工作地点*"
+    },
+    "正在查看旧修订": {
+      "该日任职": "研发a9df68d2 · 专员a9df68d2 · 工作地点丙2e245c4",
+      "原件工作地点": "工作地点甲2e245c4 → 工作地点乙2e245c4"
+    },
+    "查看当次任职": {
+      "该日任职": "研发a9df68d2 · 专员a9df68d2 · 工作地点乙2e245c4",
+      "原件工作地点": "工作地点甲2e245c4 → 工作地点乙2e245c4"
+    },
+    "未展开再聘原件就切回旧任期": {
+      "tabs": [
+        {
+          "name": "个人资料",
+          "sel": "false",
+          "id": "",
+          "controls": null
+        },
+        {
+          "name": "职务信息",
+          "sel": "true",
+          "id": "",
+          "controls": null
+        },
+        {
+          "name": "变更日志",
+          "sel": "false",
+          "id": "",
+          "controls": null
+        }
+      ],
+      "alerts": []
+    },
+    "窄屏生效日期与下拉选项": {
+      "current": "2027-04-15",
+      "options": [
+        "2027-05-01",
+        "2027-04-01"
+      ],
+      "selected": [
+        null,
+        null
+      ]
+    },
+    "任职阅读布局": {
+      "h1": {
+        "x": 0,
+        "w": 1425
+      },
+      "sheet": null,
+      "cols": 0
+    },
+    "同一主岗资料布局": {
+      "h1": {
+        "x": 176,
+        "w": 1142
+      },
+      "sheet": {
+        "x": 83,
+        "w": 1260
+      },
+      "cols": 0
+    },
+    "主岗资料页两次返回": {
+      "first": "assignments",
+      "second": "/personnel/assignments",
+      "focus": [
+        "A",
+        null,
+        "晋升同日验收11ecb1b8"
+      ]
+    },
+    "方向键移动后": {
+      "focusTagAndRole": [
+        "A",
+        "tab"
+      ],
+      "focusedTab": "个人资料",
+      "tabs": [
+        {
+          "name": "个人资料",
+          "sel": "false",
+          "id": "",
+          "controls": null
+        },
+        {
+          "name": "职务信息",
+          "sel": "true",
+          "id": "",
+          "controls": null
+        },
+        {
+          "name": "变更日志",
+          "sel": "false",
+          "id": "",
+          "controls": null
+        }
+      ],
+      "panels": [
+        {
+          "id": "",
+          "label": null,
+          "hidden": false
+        }
+      ]
+    },
+    "按空格后": {
+      "focusTagAndRole": [
+        "A",
+        "tab"
+      ],
+      "focusedTab": "个人资料",
+      "tabs": [
+        {
+          "name": "个人资料",
+          "sel": "false",
+          "id": "",
+          "controls": null
+        },
+        {
+          "name": "职务信息",
+          "sel": "true",
+          "id": "",
+          "controls": null
+        },
+        {
+          "name": "变更日志",
+          "sel": "false",
+          "id": "",
+          "controls": null
+        }
+      ],
+      "panels": [
+        {
+          "id": "",
+          "label": null,
+          "hidden": false
+        }
+      ]
+    },
+    "按回车后": {
+      "focusTagAndRole": [
+        "BODY",
+        null
+      ],
+      "focusedTab": null,
+      "tabs": [
+        {
+          "name": "个人资料",
+          "sel": "true",
+          "id": "person-profile-tab",
+          "controls": "person-profile-panel"
+        },
+        {
+          "name": "职务信息",
+          "sel": "false",
+          "id": "",
+          "controls": null
+        },
+        {
+          "name": "变更日志",
+          "sel": "false",
+          "id": "person-history-tab",
+          "controls": "person-history-panel"
+        }
+      ],
+      "panels": [
+        {
+          "id": "person-history-panel",
+          "label": "person-history-tab",
+          "hidden": true
+        },
+        {
+          "id": "person-profile-panel",
+          "label": "person-profile-tab",
+          "hidden": false
+        }
+      ]
+    },
+    "短屏首聘取消按钮滚动前后": {
+      "before": {
+        "x": 308.5,
+        "y": 666.015625,
+        "width": 64,
+        "height": 36.5
+      },
+      "after": {
+        "x": 308.5,
+        "y": 479.015625,
+        "width": 64,
+        "height": 36.5
+      }
+    },
+    "折叠筛选后重开": {
+      "applied": "DataChange",
+      "input": "Leave",
+      "visibleCount": true,
+      "cancel": 0
+    },
+    "登记姓名必填标识": {
+      "name": {
+        "required": false,
+        "aria": null,
+        "label": "姓名"
+      },
+      "canSubmit": true
+    },
+    "空白登记的错误焦点": [
+      "DIV",
+      "alert",
+      "请填写姓名"
+    ],
+    "档案资料行放弃后": "0 条\n\n暂无记录"
+  },
+  "viewportRuns": [
+    {
+      "content": [
+        1440,
+        900
+      ],
+      "archive": {
+        "size": [
+          1440,
+          900
+        ],
+        "logReturn": true,
+        "error": true,
+        "archive": true
+      },
+      "assignmentReturnFocus": [
+        "A",
+        null,
+        "并行任职验收960605bb"
+      ],
+      "registerReturn": true,
+      "readerArchiveReturnFocus": [
+        "A",
+        null,
+        "职务信息验收a9df68d2"
+      ]
+    },
+    {
+      "content": [
+        1440,
+        540
+      ],
+      "archive": {
+        "size": [
+          1440,
+          540
+        ],
+        "logReturn": true,
+        "error": true,
+        "archive": true
+      },
+      "assignmentReturnFocus": [
+        "A",
+        null,
+        "并行任职验收960605bb"
+      ],
+      "registerReturn": true,
+      "readerArchiveReturnFocus": [
+        "A",
+        null,
+        "职务信息验收a9df68d2"
+      ]
+    },
+    {
+      "content": [
+        390,
+        844
+      ],
+      "archive": {
+        "size": [
+          390,
+          844
+        ],
+        "logReturn": true,
+        "error": true,
+        "archive": true
+      },
+      "assignmentReturnFocus": [
+        "A",
+        null,
+        "并行任职验收960605bb · 1 号兼岗"
+      ],
+      "registerReturn": true,
+      "readerArchiveReturnFocus": [
+        "A",
+        null,
+        "职务信息验收a9df68d2"
+      ]
+    },
+    {
+      "content": [
+        320,
+        900
+      ],
+      "archive": {
+        "size": [
+          320,
+          900
+        ],
+        "logReturn": true,
+        "error": true,
+        "archive": true
+      },
+      "assignmentReturnFocus": [
+        "A",
+        null,
+        "并行任职验收960605bb · 1 号兼岗"
+      ],
+      "registerReturn": true,
+      "readerArchiveReturnFocus": [
+        "A",
+        null,
+        "职务信息验收a9df68d2"
+      ]
+    },
+    {
+      "content": [
+        320,
+        256
+      ],
+      "archive": {
+        "size": [
+          320,
+          256
+        ],
+        "logReturn": true,
+        "error": true,
+        "archive": true
+      },
+      "assignmentReturnFocus": [
+        "A",
+        null,
+        "并行任职验收960605bb · 1 号兼岗"
+      ],
+      "registerReturn": true,
+      "readerArchiveReturnFocus": [
+        "A",
+        null,
+        "职务信息验收a9df68d2"
+      ]
+    }
+  ],
+  "zoom": {
+    "原生缩放基准": {
+      "w": 1280,
+      "h": 900,
+      "outer": [
+        1280,
+        987
+      ],
+      "dpr": 1
+    },
+    "原生200%原件退出与列表归焦": {
+      "w": 640,
+      "h": 450,
+      "outer": [
+        1280,
+        987
+      ],
+      "dpr": 2,
+      "focused": [
+        "A",
+        null,
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ]
+    },
+    "只读原生200%查看及退出历史": {
+      "w": 640,
+      "h": 450,
+      "outer": [
+        1280,
+        987
+      ],
+      "dpr": 2,
+      "focused": [
+        "A",
+        null,
+        "查看当次资料"
+      ]
+    },
+    "只读原生400%资料明细退出": {
+      "w": 320,
+      "h": 225,
+      "outer": [
+        1280,
+        987
+      ],
+      "dpr": 4,
+      "focused": [
+        "BUTTON",
+        null,
+        "护照"
+      ]
+    },
+    "只读缩放恢复": {
+      "w": 1280,
+      "h": 900,
+      "outer": [
+        1280,
+        987
+      ],
+      "dpr": 1
+    }
+  }
+}

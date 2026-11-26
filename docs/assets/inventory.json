@@ -8786,11 +8786,11 @@
             "docs/plans/504-personal-profile-extension.md",
             "docs/specs/m01/505-personal-profile-contract.md"
           ],
-          "implemented": false,
-          "verified": false,
+          "implemented": true,
+          "verified": true,
           "complete_asset_verified": false,
-          "evidence": "docs/verification/504-personal-profile-dialog-layout.md",
-          "verification_limit": "已完成九栏方案及 CubeBox 弹框参考布局的文档审阅。CHNHCM 七类弹框的产品验收按 505 的 020 分批执行。原 T01 采用范围见 disposition 与原验收记录。"
+          "evidence": "docs/verification/504-personal-profile-fourth-batch.md",
+          "verification_limit": "4180 参考布局在 504 弹框布局记录定稿。七类记录在产品页累计验证 21/21，真实主岗与兼岗共享留到 T04。"
         },
         {
           "document": "CHNHCM-504",
@@ -8836,6 +8836,20 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/504-personal-profile-third-batch.md",
           "verification_limit": "第三批六个组合及五种字段变体已验证。七类记录累计完成 18/21 个组合，银行账户随第四批。"
+        },
+        {
+          "document": "CHNHCM-504",
+          "scope": "银行三态、健康摘要和七类集合的整页草稿。银行账户沿用原型三行六字段及窄屏次序。",
+          "target_files": [
+            "apps/web/src/features/personnel/ProfileSections.tsx",
+            "apps/web/src/features/personnel/profileDraft.ts",
+            "tests/e2e/personnel.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/504-personal-profile-fourth-batch.md",
+          "verification_limit": "七类弹框 21/21，九栏普通资料维护与按权读取。真实任职共享由 T04 联验。"
         }
       ]
     }
@@ -8945,9 +8959,61 @@
       "verified": true,
       "evidence": "docs/verification/138-geo-area-interactions.md",
       "complete_asset_verified": false
+    },
+    {
+      "id": "EXTERNAL-E507-JOB-DATA",
+      "document": "CHNHCM-507",
+      "source_record": "docs/reference/506-job-information-sources.json",
+      "source_repository": "Oracle PeopleSoft HCM 9.2.055 与 Odoo 19.0",
+      "scope": "采用按雇用记录查看履历、从原行办理及员工身份区下的页签布局。部门树按任职筛选、0 号与兼岗的页签范围由本项目 502、507 规定。",
+      "registered": true,
+      "extracted": false,
+      "implemented": true,
+      "verified": true,
+      "complete_asset_verified": false,
+      "design_evidence": "docs/verification/506-job-information-design-review.md",
+      "adoption_scope": "509 按原行进入办理，验证主兼岗的历史来源、只读与返回原行。",
+      "adoption_evidence": "docs/verification/509-t04-remediation-implementation.md"
     }
   ],
   "external_verification_sources": [
+    {
+      "id": "EXTERNAL-B506-STAFFING-OPERATIONS",
+      "category": "business",
+      "source": {
+        "repository": "Bugs-And-Blossoms",
+        "workspace_head": "a76db79227fdc4a0805fcd6e37fe22898d8b02ea",
+        "path": "docs/dev-plans/staffing/894-staffing-domain-readmission-and-rename-contract.md",
+        "sha256": "145aa4a949591348234b8bc9251508ee1bc99ee2a0caa0b5d28bee894c404fc3",
+        "tracked_by_git": true
+      },
+      "source_record": "docs/reference/506-job-information-sources.json",
+      "preservation": "原件留在来源项目的指定提交，来源索引同时定位通用 899 合同。",
+      "target_owner": "M04-staffing",
+      "disposition": "提炼记录操作、业务类型与原因的绑定。按本项目的直接入职、两层主选择、同日依赖和未来撤销裁定实际效果。",
+      "state": {"registered": true, "extracted": false, "implemented": true, "verified": true},
+      "verified_scope": "按 506 核初次记录位置、同日前序、动作原因、未来撤销和保留准确原件。",
+      "complete_asset_verified": false,
+      "new_evidence": ["docs/verification/506-job-information-design-review.md", "docs/verification/509-t04-remediation-implementation.md"]
+    },
+    {
+      "id": "EXTERNAL-V506-CONCURRENT-ASSIGNMENTS",
+      "category": "verification",
+      "source": {
+        "repository": "Bugs-And-Blossoms",
+        "workspace_head": "a76db79227fdc4a0805fcd6e37fe22898d8b02ea",
+        "path": "docs/dev-plans/staffing/1113-basic-concurrent-assignment-and-organization-appointment-implementation-plan.md",
+        "sha256": "189f29199dedd5a126b8a2d6cdbfba45d85bd544d5c33d612aedaa230d9d0530",
+        "tracked_by_git": true
+      },
+      "source_record": "docs/reference/506-job-information-sources.json",
+      "preservation": "原菜单验收保存在来源项目 1113 第 4.42 节。",
+      "target_owner": "M04-staffing",
+      "disposition": "提取一主两兼、结束一岗和受限读取的业务问题。506、507 依本项目编号规则补入 0 号再聘、兼岗新号和同部门分行的独立预期。509 实测同案重办、双连接取号、单岗退出和仅见兼岗的来源返回。",
+      "state": {"registered": true, "extracted": false, "implemented": true, "verified": true},
+      "complete_asset_verified": false,
+      "new_evidence": ["docs/verification/506-job-information-design-review.md", "docs/verification/509-t04-remediation-implementation.md"]
+    },
     {
       "id": "EXTERNAL-V308-JOB-CLASSIFICATION",
       "category": "verification",
@@ -11015,6 +11081,35 @@
         "tests/e2e/staffing314-zoom.spec.ts",
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/314-job-function-t02/upgrade.py"
       ]
+    },
+    {
+      "id": "NATIVE-V500-PERSONNEL-PAGES",
+      "category": "verification",
+      "document": "CHNHCM-500",
+      "source": {
+        "repository": "CHNHCM",
+        "commit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+        "path": "docs/plans/500-personnel-roadmap.md",
+        "excerpt": "第 4 节的页面继承对照表和紧随其后的视口验收段落，含末行换行",
+        "file_sha256": "2d255fb971d1b57eeeb5b3d2cf7ff121e59c449b3379100b33241e255a57104c",
+        "sha256": "08898a8d12c71a225e98422c20dc634e80a9003da7042780d6aeafe00782cbaa"
+      },
+      "preserved_in": {"file": "docs/verification/data/500-personnel-page-review/page-criteria.txt"},
+      "target_owner": "Personnel、Staffing、Recruiting 与体验维护者",
+      "disposition": "按受测版本的独立预期实走合成人员菜单，保存 11 项反例的操作步骤、成对原图、键盘与布局读数，供修复后按原编号复验。",
+      "state": {"registered": true, "extracted": true, "implemented": true, "verified": true},
+      "verified_scope": "首轮三项定向人员用例通过，页面登记 11 项待修复。入口与日期补查在同一产品基线登记 9 项（高 3、中 4、低 2），纠正首轮 500-UI-05 的普通页查看日判据。510 已按原编号复验这 20 项，固定原库和副本合计 34 张实操截图。此验收限于已登记的页面专项。",
+      "new_evidence": [
+        "docs/verification/500-personnel-page-review.md",
+        "docs/verification/data/500-personnel-page-review/measurements.json",
+        "docs/verification/data/500-personnel-page-review/browser-regression.txt",
+        "docs/verification/500-personnel-entry-and-date-review.md",
+        "docs/verification/data/500-personnel-entry-and-date-review/observations.json",
+        "docs/verification/510-personnel-page-remediation-implementation.md",
+        "docs/verification/data/510-personnel-remediation/observations.json",
+        "docs/verification/data/510-personnel-remediation/validation.json"
+      ],
+      "target_files": ["docs/plans/500-personnel-roadmap.md", "docs/specs/m01/502-person-directory-interactions.md", "docs/specs/m04/507-job-information-tab.md", "tests/e2e/first-hire.spec.ts"]
     },
     {
       "id": "NATIVE-V500-T00",

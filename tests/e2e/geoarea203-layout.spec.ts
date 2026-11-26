@@ -1,3 +1,4 @@
+import { nativeZoomCases } from './desktop-viewports.mjs';
 import { directoryReturnJourney, geoField, openGeoFilter } from './geoarea-directory-support';
 import { chromium } from '@playwright/test';
 import { spawn, execFileSync } from 'node:child_process';
@@ -5,7 +6,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { test, expect, openMoreActions } from './fixtures';
 import { open } from './bu-support';
 import { captureViewport } from '../../docs/verification/data/100-ui-capture-fix/capture-viewport.mjs';
-test('区划203 原生Chromium200%和400%布局及键盘', async () => {
+test('区划203 Chromium 原生缩放布局及键盘', async () => {
     test.setTimeout(180000);
     const evidence = `.local/g3-implementation/layout/${Date.now()}-${process.pid}`;
     mkdirSync(evidence, { recursive: true });
@@ -36,7 +37,7 @@ test('区划203 原生Chromium200%和400%布局及键盘', async () => {
         const first = await dims();
         await cdp.send('Browser.setWindowBounds', { windowId, bounds: { width: first.outer[0] + 1280 - first.width, height: first.outer[1] + 900 - first.height } });
         const matrix = [];
-        for (const [steps, dpr] of [[5, 2], [8, 4]]) {
+        for (const [steps, dpr] of nativeZoomCases()) {
             zoom(steps);
             await expect.poll(async () => (await dims()).dpr).toBe(dpr);
             if (await page.getByRole('button', { name: '打开导航', exact: true }).isVisible()) {

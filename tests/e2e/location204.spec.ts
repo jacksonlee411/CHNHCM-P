@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { readFileSync } from "node:fs";
 import { randomUUID } from 'node:crypto';
 import { test, expect, openMoreActions, type Page } from './fixtures';
@@ -44,7 +45,7 @@ test('地点204 地区连续选择、上级路径、全局组合搜索与已选�
  await page.keyboard.press('Escape'); await page.getByRole('button',{name:'取消编辑',exact:true}).click();
 });
 
-test('地点204 地区搜索滚动追加、窄屏和键盘连续选择', async ({page}) => {
+test('地点204 地区搜索滚动追加、短屏和键盘连续选择', async ({page}) => {
  await open(page); await menu(page); await page.getByRole('link',{name:'新建',exact:true}).click();
  await page.locator('#location-effectiveDate').fill('2020-01-01'); await choose(page,'国家/地区','中国');
  const control=page.getByRole('combobox',{name:'行政区划',exact:true}); await control.fill('区');
@@ -56,7 +57,7 @@ test('地点204 地区搜索滚动追加、窄屏和键盘连续选择', async (
  await control.fill('区'); expect(new URL((await restarted).url()).searchParams.has('cursor')).toBe(false);
  await expect(page.getByRole('option')).toHaveCount(50); expect(await page.getByRole('option').first().getAttribute('aria-label')).toBe(first);
  await page.keyboard.press('Escape');
- for(const [width,height] of [[390,844],[320,900],[320,500]]) {
+ for(const [width,height] of desktopViewports) {
   await page.setViewportSize({width,height}); await control.click();
   await page.getByRole('option',{name:'中国 / 北京市',exact:true}).click();
   await expect(control).toHaveAttribute('aria-expanded','true'); await expect(page.getByRole('option',{name:'中国 / 北京市 / 东城区',exact:true})).toBeVisible();
@@ -125,10 +126,10 @@ test('地点204 完整地址无分隔符、准确采用与字段权限', async (
     await page.screenshot({ path: '.local/location-address-presentation/form.png', mask: [page.locator('.app-account-name')] });
     const longAddress = '长'.repeat(1000) + '𠀀';
     await address.fill(longAddress);
-    await page.setViewportSize({ width: 320, height: 900 });
+    await page.setViewportSize({ width: 1440, height: 540 });
     await expect(addressField(page, '完整地址')).toHaveText(prefix + longAddress);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-    await page.screenshot({ path: '.local/location-address-presentation/narrow-long.png', mask: [page.locator('.app-account-name')] });
+    await page.screenshot({ path: '.local/location-address-presentation/short-long.png', mask: [page.locator('.app-account-name')] });
     await page.setViewportSize({ width: 1440, height: 900 });
     await address.fill('A / B 栋 2-11');
     await expect(addressField(page, '完整地址')).toHaveText(prefix + 'A / B 栋 2-11');

@@ -5,6 +5,8 @@ package postgres
 import (
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
+	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
+	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	"chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
@@ -27,12 +29,17 @@ import (
 )
 
 type Store struct {
-	HirePeople interface {
+	OfferHandoffs  recruit.Handoffs
+	OfferAllowed   func(context.Context, pgx.Tx, string, string, string, string, string, bool) (bool, error)
+	PositionOpened func(context.Context, string, string, string, string) error
+	HirePeople     interface {
 		hireprep.Personnel
+		OpenDirectory(context.Context, foundation.Credentials, person.Query) (person.DirectoryLookup, error)
+		RecognizedPeople(context.Context, foundation.Credentials, []string, string) ([]person.Summary, string, error)
 		CheckHirePerson(context.Context, foundation.Credentials, string) error
 	}
 	HirePurposes      org.LegalPurposes
-	EmploymentAllowed func(context.Context, pgx.Tx, string, string, string, string, string, bool) (bool, error)
+	EmploymentAllowed func(context.Context, pgx.Tx, string, string, string, string, string, bool, ...string) (bool, error)
 	QuotaPolicies     func(context.Context, d.UsageIntent) ([]d.QuotaPolicy, error)
 	Usage             func(context.Context, string, string) (d.QuotaUsage, error)
 	Pool              *pgxpool.Pool
@@ -658,6 +665,9 @@ func (u *unit) Save(ctx context.Context, p d.Plan, c s.Command, operator access.
 	batch := &pgx.Batch{}
 	batch.Queue("INSERT INTO "+name+"(instance_id,enterprise_id,id,code,source_id,source_no,first_date,head) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(instance_id,id) DO UPDATE SET source_id=excluded.source_id,source_no=excluded.source_no,first_date=excluded.first_date,head=excluded.head", u.store.Instance, t.Enterprise, t.ID, t.Code, t.Source, t.Number, t.Records[0].Date, b)
 	batch.Queue("INSERT INTO "+name+"_source(instance_id,object_id,source_id,source_no,subject_id,submission_id,digest,snapshot,operation,operator,recorded_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", u.store.Instance, t.ID, t.Source, t.Number, u.guard.Principal().ID, c.SubmissionID, c.Digest, b, op, actor, u.Now())
+	if t.Kind == d.Position && len(p.Before.Records) == 0 {
+		batch.Queue("INSERT INTO staffing.position_intake(instance_id,position_id,source_id,period) VALUES($1,$2,$3,daterange($4::date,NULL,'[)'))", u.store.Instance, t.ID, t.Source, t.Records[0].Date)
+	}
 	// A revision already contains its complete decided dates and facts. Reuse
 	// unchanged consumer projections while moving them to the new head source;
 	// only replaced/deleted decisions require index deletion and reinsertion.
@@ -719,7 +729,13 @@ func (u *unit) Save(ctx context.Context, p d.Plan, c s.Command, operator access.
 	if e = results.Close(); e != nil {
 		return e
 	}
-	return u.saveMembers(ctx, t, memberCopies)
+	if e = u.saveMembers(ctx, t, memberCopies); e != nil {
+		return e
+	}
+	if t.Kind == d.Position && len(p.Before.Records) == 0 && u.store.PositionOpened != nil {
+		return u.store.PositionOpened(dbtx.With(ctx, u.tx), u.store.Instance, t.ID, t.Source, t.Records[0].Date)
+	}
+	return nil
 }
 func (u *unit) Sources(ctx context.Context, k d.Kind, id string) ([]app.Source, error) {
 	rows, e := u.tx.Query(ctx, "SELECT snapshot,operation,operator,recorded_at FROM "+table(k)+"_source WHERE instance_id=$1 AND object_id=$2 ORDER BY source_no DESC", u.store.Instance, id)

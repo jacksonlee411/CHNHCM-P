@@ -15,8 +15,11 @@ import (
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	persondb "chnhcm.local/chnhcm/internal/contexts/personnel/infra/postgres"
 	person "chnhcm.local/chnhcm/internal/contexts/personnel/public"
+	recruitdb "chnhcm.local/chnhcm/internal/contexts/recruiting/infra/postgres"
+	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	staffingapp "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	"chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
+	sd "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
 	staffingdb "chnhcm.local/chnhcm/internal/contexts/staffing/infra/postgres"
 	staffing "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	"chnhcm.local/chnhcm/internal/foundation"
@@ -35,9 +38,13 @@ import (
 )
 
 type Runtime struct {
+	Offers             recruit.Offers
+	OfferTargets       func(context.Context, foundation.Credentials, hireprep.TargetSearch) ([]org.EligibleEntity, error)
+	OfferArrangement   func(context.Context, foundation.Credentials, hireprep.ArrangementQuery) (hireprep.ArrangementMode, error)
 	Hires              hireprep.Hires
 	FirstHireRules     hireprep.Rules
 	LegalPurposes      org.LegalPurposes
+	Replenishments     staffing.Replenishments
 	AssignmentPolicies staffing.AssignmentPolicies
 	Personnel          person.Service
 	Staffing           staffing.Service
@@ -96,8 +103,9 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	o := &orgdb.Store{Pool: p, Instance: instance, Guard: a.Guard}
 	st := &staffingdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Organization: o, PositionDirectory: o}
 	st.QuotaPolicies = st.PublishedQuotaPolicies
+
 	o.Staffing = st
-	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AdoptArea: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]person.CountryAdoption, string, error) {
+	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AuthorizeDirectory: a.PersonnelDirectory, AdoptArea: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]person.CountryAdoption, string, error) {
 		nodes, err := o.AdoptProfileArea(ctx, tx, g, id, date)
 		if err != nil {
 			return nil, "", err
@@ -114,6 +122,38 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 		}
 		return &person.CountryAdoption{ID: value.ID, SourceVersion: value.SourceVersion, RecordID: value.RecordID, Revision: value.Revision, Date: value.Date}, value.Name, nil
 	}}
+	recruitment := &recruitdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Allowed: a.OfferAllowed, Enterprise: o, Employers: o, Person: func(ctx context.Context, c foundation.Credentials, id string) (string, error) {
+		found, _, e := people.RecognizedPeople(ctx, c, []string{id}, "")
+		if e != nil {
+			return "", e
+		}
+		if len(found) != 1 {
+			return "", foundation.Fail(404, "OFFER_PERSON", "人员不可用")
+		}
+		return found[0].Name, nil
+	}, Arrangement: st.CheckOfferArrangement, LockPosition: st.LockUsagePosition}
+	st.OfferHandoffs = recruitment
+	st.OfferAllowed = a.OfferAllowed
+	st.PositionOpened = recruitment.PositionOpened
+	st.Usage = func(ctx context.Context, inst, position string) (sd.QuotaUsage, error) {
+		used, e := st.AssignmentPositionUsage(ctx, inst, position)
+		if e != nil {
+			return used, e
+		}
+		reservations, e := recruitment.Usage(ctx, inst, position)
+		if e != nil {
+			return used, e
+		}
+		if reservations.Coverage != "" {
+			used.Coverage = append(used.Coverage, sd.SourceCoverage{Owner: "M05", Version: reservations.Coverage, UsageSpan: sd.UsageSpan{From: reservations.From}})
+		}
+		for _, seg := range reservations.Segments {
+			span := sd.UsageSpan{From: seg.From, Until: seg.Until}
+			used.Managed = append(used.Managed, span)
+			used.Uses = append(used.Uses, sd.PositionUse{Owner: "M05", UsageSpan: span, Source: seg.Source, Policy: seg.Policy, Effect: seg.Effect, Department: seg.Department, Job: seg.Job})
+		}
+		return used, nil
+	}
 	st.HirePeople = people
 	st.HirePurposes = o
 	st.EmploymentAllowed = a.EmploymentAllowed
@@ -129,7 +169,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 			slog.Warn("revoked staffing selection cleanup failed")
 		}
 	}
-	runtime := &Runtime{Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
+	runtime := &Runtime{Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
 	if e = runtime.Ready(ctx); e != nil {
 		p.Close()
 		return nil, e
@@ -259,14 +299,15 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool, migrations fs.FS) error {
 }
 
 type FirstHireRuleInput struct {
-	Version, From, Until string
+	Version, From, Until  string
+	HistoricalFixtureFrom string
 }
 
 type InitInput struct {
 	EmploymentFixture                                                bool
 	FirstHireRule                                                    *FirstHireRuleInput
 	HireIdentityFixture                                              bool
-	PersonalProfileFixture                                           bool
+	PersonalProfileFixture, SensitiveProfileFixture                  bool
 	Instance, EnterpriseCode, EnterpriseName, Start, Login, Password string
 	PersonnelProfile                                                 string
 	ReadOnly                                                         bool
@@ -290,6 +331,11 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 		return e
 	}
 	if cfg := in.FirstHireRule; cfg != nil {
+		if in.EmploymentFixture && cfg.HistoricalFixtureFrom != "" {
+			if e = staffingdb.InitializeFirstHireRule(ctx, tx, in.Instance, subject, staffingdb.HistoricalFixtureRule, foundation.Period{From: cfg.HistoricalFixtureFrom, Until: cfg.From}); e != nil {
+				return e
+			}
+		}
 		if e = staffingdb.InitializeFirstHireRule(ctx, tx, in.Instance, subject, cfg.Version, foundation.Period{From: cfg.From, Until: cfg.Until}); e != nil {
 			return e
 		}
@@ -304,6 +350,11 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 	}
 	if in.HireIdentityFixture {
 		if e = accessdb.InitializeHireIdentity(ctx, tx, in.Instance, subject); e != nil {
+			return e
+		}
+	}
+	if in.SensitiveProfileFixture {
+		if e = accessdb.InitializeSensitiveProfileFixture(ctx, tx, in.Instance, subject); e != nil {
 			return e
 		}
 	}
@@ -390,9 +441,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,39)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,57)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 38 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 56 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -411,6 +462,35 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                 AND (32=ANY(versions) OR to_regclass('organization.legal_purpose_source') IS NULL)
                 AND to_regclass('organization.legal_purpose_terminal') IS NULL)
           )))
+          AND (NOT (57=ANY(versions)) OR (EXISTS(SELECT FROM pg_index WHERE indexrelid=to_regclass('staffing.manager_start_per_purpose') AND NOT indisunique AND indisvalid)
+            AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.assignment_publication') AND tgname='check_reporting_starts' AND tgenabled='O' AND tgfoid=to_regprocedure('staffing.check_reporting_starts()'))))
+          AND (NOT (56=ANY(versions)) OR to_regclass('staffing.probation_receipt_assignment') IS NOT NULL)
+          AND (NOT (55=ANY(versions)) OR (to_regclass('staffing.hired_offer') IS NOT NULL AND to_regclass('recruiting.hire_handoff') IS NOT NULL AND to_regclass('recruiting.offer_revised_terms') IS NOT NULL AND to_regclass('recruiting.handoff_cancellation') IS NOT NULL))
+          AND (NOT (54=ANY(versions)) OR (to_regclass('staffing.employment_contract') IS NOT NULL AND to_regclass('staffing.contract_process') IS NOT NULL AND to_regclass('access.contract_fixture') IS NOT NULL))
+          AND (NOT (53=ANY(versions)) OR (to_regclass('staffing.duty_application') IS NOT NULL AND to_regclass('staffing.duty_observation_revision') IS NOT NULL AND to_regclass('access.duty_fixture') IS NOT NULL))
+          AND (NOT (52=ANY(versions)) OR (to_regclass('staffing.position_succession') IS NOT NULL AND to_regclass('access.employment_succession_fixture') IS NOT NULL))
+          AND (NOT (51=ANY(versions)) OR (to_regclass('staffing.transfer_exchange') IS NOT NULL AND to_regclass('staffing.transfer_exchange_revision') IS NOT NULL))
+          AND (NOT (50=ANY(versions)) OR (to_regclass('recruiting.offer_segment') IS NOT NULL AND to_regclass('recruiting.position_intake') IS NOT NULL AND to_regclass('access.offer_grant') IS NOT NULL))
+          AND (NOT (49=ANY(versions)) OR (to_regclass('staffing.position_intake') IS NOT NULL AND to_regclass('staffing.position_replenishment') IS NOT NULL AND to_regclass('staffing.position_replenishment_closed') IS NOT NULL))
+          AND (NOT (48=ANY(versions)) OR (to_regclass('staffing.manager_agreement') IS NOT NULL AND to_regclass('staffing.employment_exit') IS NOT NULL AND to_regclass('staffing.assignment_exit') IS NOT NULL AND to_regclass('access.employment_lifecycle_fixture') IS NOT NULL))
+          AND (NOT (47=ANY(versions)) OR (to_regclass('staffing.promotion_transfer') IS NOT NULL AND to_regclass('access.employment_promotion_fixture') IS NOT NULL))
+          AND (NOT (46=ANY(versions)) OR (to_regclass('staffing.relationship_probation_fact') IS NOT NULL
+             AND to_regclass('access.employment_probation_fixture') IS NOT NULL))
+          AND (NOT (45=ANY(versions)) OR (
+             to_regclass('staffing.assignment_issued_positive_number') IS NOT NULL
+             AND to_regclass('access.employment_parallel_fixture') IS NOT NULL
+             AND EXISTS(SELECT FROM information_schema.columns WHERE table_schema='staffing' AND table_name='assignment' AND column_name='period' AND is_nullable='NO')))
+          AND (NOT (44=ANY(versions)) OR (
+             to_regclass('staffing.employment_revision_publication') IS NOT NULL AND to_regclass('access.employment_history_fixture') IS NOT NULL
+             AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.assignment_publication') AND tgname='revision_publication' AND tgenabled='O')))
+          AND (NOT (43=ANY(versions)) OR to_regclass('access.employment_register_fixture') IS NOT NULL)
+          AND (NOT (42=ANY(versions)) OR (
+               EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('staffing.assignment_segment') AND conname='assignment_source_period' AND contype='x' AND convalidated)
+               AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.assignment_member') AND tgname='sealed_source' AND tgenabled='O')
+               AND to_regclass('staffing.assignment_head') IS NOT NULL))
+          AND (NOT (41=ANY(versions)) OR (
+               EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('staffing.assignment') AND conname='assignment_record' AND convalidated AND confrelid=to_regclass('staffing.employment_record'))
+               AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.employment_record') AND tgname='immutable_fact' AND tgenabled='O')))
           AND (NOT (39=ANY(versions)) OR (to_regclass('staffing.hire_single_decision') IS NOT NULL AND to_regclass('staffing.hire_roster_line') IS NOT NULL AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.appointment_version') AND tgname='immutable_fact' AND tgenabled='O')))
           AND (NOT (37=ANY(versions)) OR (to_regclass('staffing.employment_primary') IS NOT NULL AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('staffing.employment_action') AND tgname='immutable_fact' AND tgenabled='O')))
           AND (NOT (35=ANY(versions)) OR (
@@ -450,6 +530,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
            to_regprocedure('access.person_policy_for_use(uuid)') IS NOT NULL AND
            NOT EXISTS(SELECT FROM unnest(ARRAY['person','number','source','counter','terminal','identity_payload','evidence_payload','contact_payload','material','outbox','query','hold','disposition']) name WHERE to_regclass('personnel.'||name) IS NULL)))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=30 AND is_applied) OR to_regclass('personnel.current_document_number') IS NOT NULL OR to_regclass('personnel.document_occupied') IS NOT NULL)
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=40 AND is_applied) OR
+          (to_regclass('personnel.bank_account') IS NOT NULL AND to_regclass('personnel.person_bank_number') IS NOT NULL
+           AND to_regclass('personnel.person_health_summary') IS NOT NULL AND to_regprocedure('access.person_data_purposes_for_use(uuid)') IS NOT NULL))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=38 AND is_applied) OR
            (to_regclass('personnel.person_highest_degree') IS NOT NULL AND to_regclass('personnel.person_highest_education') IS NOT NULL AND to_regclass('access.person_qualification_fixture') IS NOT NULL))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=36 AND is_applied) OR

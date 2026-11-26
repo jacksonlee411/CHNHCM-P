@@ -1,6 +1,7 @@
+import {offerAccess,offerPath} from '../recruiting/Offers';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSearchParams, useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, IconButton, Menu, MenuItem, Tab, Tabs } from '@mui/material';
+import { Alert, Box, Button, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PersonIcon from '@mui/icons-material/Person';
 import {
@@ -14,6 +15,7 @@ import {
   RecordPager,
   HistoryNotice,
 } from '@chnhcm/ui';
+import {PersonTabs} from './PersonTabs';
 import { employment } from "../hire/HirePage";
 import { OperationSummary } from '../../shared/dated/OperationLog';
 import { usePageTitle } from '../../shared/navigation';
@@ -35,8 +37,10 @@ export const documentLabels: Record<string, string> = {
 };
 function DocumentFields({ data, version }: { data: person.Profile; version?: string }) {
   const [show, setShow] = useState(false);
-  const full = person.useRead(show && data.canReadDocument ? data.id + data.sourceVersion : undefined, () =>
-    person.profile(data.id, version, 'fullDocument'),
+  const full = person.useRead(
+    show && data.canReadDocument ? data.id + data.sourceVersion : undefined,
+    () => person.profile(data.id, version, 'fullDocument'),
+    'fresh',
   );
   const doc = full.data?.primaryDocument || data.primaryDocument;
   if (!doc) return null;
@@ -75,7 +79,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const { id = '' } = useParams(),
     [params, setParams] = useSearchParams(),
     navigate = useNavigate();
-  const mode = creating ? 'register' : params.get('action'),
+  const mode = creating ? 'register' : (['correct','renumber'].includes(params.get('action') || '') ? params.get('action') : null),
     version = params.get('source') || undefined,
     log = params.get('tab') === 'history';
   const restoredSection = useRef('');
@@ -85,11 +89,18 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const record = person.useRead(id ? JSON.stringify([id, version, mode]) : undefined, () =>
     person.profile(id, version, mode === 'correct' && !version ? 'edit' : undefined),
   );
-  const hire=person.useRead(record.data && !creating && !version && !mode ? id:undefined,()=>employment(id));
+  const offers=person.useRead(record.data && !creating && !version && !mode ? id:undefined,()=>offerAccess(id));
+  const hire = person.useRead(record.data && !creating && !version && !mode ? id : undefined, () => employment(id));
+  const terms = hire.data?.terms || [];
+  const requestedTerm=params.get('assignment');
+  const assignment=requestedTerm || (terms.length===1?terms[0].assignment:undefined);
+  const missingTerm=!!requestedTerm && !!hire.data && !terms.some(t=>t.assignment===requestedTerm);
+  const hasJobTab = terms.length > 0;
+  const listed = params.get('from') === 'directory';
+  const rowAnchor = params.get('selected') || id;
   const data = record.data,
-    nav = person.useRead(data && params.has('from') ? id + JSON.stringify(query) : undefined, () =>
-      person.navigation(id, query),
-    );
+    nav = person.useRead(data && listed ? rowAnchor+person.directoryParams(params) : undefined,
+      () => person.directory(session,params,rowAnchor));
   // Reauthorize the basic record when returning from history, including browser Back.
   // Keep the tab controls mounted while its fields and actions await the fresh projection.
   const [checkingProfile, setCheckingProfile] = useState(false);
@@ -105,21 +116,22 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
       setCheckingProfile(false);
     }
   }, [log, data, mode, version, record.error, record.invalidate, checkingProfile]);
-  const hasTabs = !version && (data?.history || (checkingProfile && !data && !record.error));
-  const selected = hasTabs && log ? 'history' : 'profile';
+  const showHistory = !version && (data?.history || (checkingProfile && !data && !record.error));
+  const hasTabs = showHistory || hasJobTab;
+  const selected = showHistory && log ? 'history' : hasJobTab && params.get('tab')==='job' ? 'job' : 'profile';
   useEffect(() => {
     if (version) {
       wasSource.current = true;
       return;
     }
-    if (record.error || (data && !hasTabs)) positions.clear();
-    if (data && log && !hasTabs) {
+    if (record.error || (data && !showHistory)) positions.clear();
+    if (data && log && !showHistory) {
       const current = new URLSearchParams(params);
       current.delete('tab');
       setParams(current, { replace: true });
       focusIdentity();
     }
-  }, [data, hasTabs, log, params, record.error, setParams, version]);
+  }, [data, showHistory, log, params, record.error, setParams, version]);
   useEffect(() => {
     const target = route.state?.profileSection;
     if (
@@ -156,14 +168,26 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
       version && values.source === '' ? { state: { logVisit: route.state?.logVisit } } : undefined,
     );
   }
-  const backParams = new URLSearchParams(params);
-  for (const k of ['from', 'source', 'tab', 'action']) backParams.delete(k);
-  if (data) {
-    backParams.set('selected', id);
-    if (nav.data) backParams.set('page', String(Math.ceil(nav.data.position / query.pageSize)));
-  }
+  const backParams = person.directoryParams(params);
+  if (listed && nav.data?.navigation) backParams.set('page', String(Math.ceil(nav.data.navigation.position/query.pageSize)));
   const cancelParams = new URLSearchParams(params);
   cancelParams.delete('action');
+  const detailParams=person.directoryParams(params);
+  if(listed) detailParams.set('from','directory');
+  const personPath=person.path+'/'+id;
+  if(assignment){detailParams.set('assignment',assignment);
+    if(params.get('assignment')===assignment && params.has('assignmentDay'))detailParams.set('assignmentDay',params.get('assignmentDay')!);}
+  const selectedTerm=terms.find(t=>t.assignment===assignment);
+  const profilePath=personPath+'?'+detailParams;
+  const jobParams=person.directoryParams(params);
+  if(listed)jobParams.set('from','directory');
+  if(assignment && assignment===params.get('assignment') && params.has('assignmentDay'))jobParams.set('assignmentDay',params.get('assignmentDay')!);
+  const hireParams=new URLSearchParams({returnTo:profilePath+(selected==='history'?'&tab=history':'')});
+  const historyParams=new URLSearchParams(hireParams);
+  historyParams.set('view','history');
+  const rehireParams=new URLSearchParams(hireParams);
+  if(hire.data?.rehireFrom){rehireParams.set('rehireAction',hire.data.rehireFrom.action);rehireParams.set('rehireRevision',hire.data.rehireFrom.revision);}
+  const assignmentPath = assignment ? personPath+'/assignments/'+assignment+'?'+jobParams : profilePath+'&tab=job';
   const back = person.path + '?' + backParams;
   const permitted =
     mode === 'register'
@@ -174,20 +198,15 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   async function move(dir: 'next' | 'previous') {
     const identity = location.href;
     try {
-      const fresh = await person.navigation(id, query),
-        target = dir === 'next' ? fresh.next : fresh.prev;
-      if (location.href !== identity) return;
-      if (!target) {
-        nav.refresh();
-        return;
-      }
+      const fresh=await person.directory(session,params,rowAnchor);
+      if (location.href!==identity) return;
+      const position=fresh.navigation;
+      const target=position?.[dir];
+      if(!position || !target){nav.refresh();return;}
       setNavError('');
-      const next = new URLSearchParams(params);
-      next.delete('source');
-      next.delete('tab');
-      next.set('page', String(Math.ceil((fresh.position + (dir === 'next' ? 1 : -1)) / query.pageSize)));
-      next.set('selected', target);
-      navigate(person.path + '/' + target + '?' + next);
+      const next=person.directoryParams(params);
+      next.set('page',String(Math.ceil((position.position+(dir==='next'?1:-1))/query.pageSize)));
+      navigate(person.directoryTarget(next,target.person,target.assignment));
     } catch (e) {
       if (location.href === identity) setNavError(person.message(e));
     }
@@ -238,19 +257,23 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
         }
         actions={
           <>
-          {hire.data && (hire.data.canHire || hire.data.actions.length>0) && <Button component={Link} to={person.path+"/"+id+"/employment?"+params} state={{hire:hire.data.actions.length===0}}>{hire.data.actions.length?"工作关系与任职":"办理入职"}</Button>}
-          {data?.editable?.length && !version ? (
-            <Button variant="contained" onClick={() => edit({ action: 'correct' })}>
-              更正资料
-            </Button>
-          ) : null}</>
+            {data?.editable?.length && !version ? (
+              <Button variant="contained" onClick={() => edit({ action: 'correct' })}>
+                更正资料
+              </Button>
+            ) : null}
+            {offers.data?.canRead&&<Button component={Link} to={offerPath+'?person='+id}>招聘录用</Button>}
+            {hire.data?.rehireFrom && <Button component={Link} to={personPath+'/employment?'+rehireParams}>办理再聘</Button>}
+            {hire.data?.canHire && <Button component={Link} to={personPath+'/employment?'+hireParams} state={{hire:true}}>办理入职</Button>}
+            {!!hire.data?.actions.length && <Button component={Link} to={personPath+'/employment?'+historyParams}>本人办理历史</Button>}
+          </>
         }
         navigation={
-          nav.data && (
+          nav.data?.navigation && (
             <RecordPager
-              previous={!!nav.data.prev}
-              next={!!nav.data.next}
-              counter={{ position: nav.data.position, count: nav.data.total }}
+              previous={!!nav.data.navigation.previous}
+              next={!!nav.data.navigation.next}
+              counter={{ position: nav.data.navigation.position, count: nav.data.total }}
               onChange={move}
             />
           )
@@ -314,6 +337,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
           </Alert>
         )}
         {mode && !permitted && (data || access.data) && <Alert severity="warning">没有本次办理权限</Alert>}
+        {missingTerm && <Alert severity="info">所选任职不可用</Alert>}
         {(data || hasTabs) && (
           <ObjectDetailSheet
             identity={
@@ -321,35 +345,13 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
                 <ObjectDetailIdentity
                   icon={<PersonIcon />}
                   title={data?.name || (version ? '办理原件' : '个人资料')}
-                  summary={data?.number}
+                  summary={[data?.number,selectedTerm && (selectedTerm.recordNumber+' 号'+(selectedTerm.recordNumber===0?'主岗':'兼岗')),selectedTerm?.employerName,selectedTerm && selectedTerm.from+' 起'].filter(Boolean).join(' · ')}
                 />
               </div>
             }
             tabs={
               hasTabs && (
-                <Tabs
-                  aria-label="人员详情"
-                  value={selected}
-                  variant="scrollable"
-                  allowScrollButtonsMobile
-                  onChange={(_, tab: string) => {
-                    wasSource.current = false;
-                    edit({ tab: tab === 'history' ? 'history' : '' });
-                  }}
-                >
-                  <Tab
-                    value="profile"
-                    id="person-profile-tab"
-                    aria-controls="person-profile-panel"
-                    label="个人资料"
-                  />
-                  <Tab
-                    value="history"
-                    id="person-history-tab"
-                    aria-controls="person-history-panel"
-                    label="变更日志"
-                  />
-                </Tabs>
+                <PersonTabs selected={selected} targets={{profile:profilePath,job:hasJobTab?assignmentPath:undefined,history:showHistory?profilePath+'&tab=history':undefined}} />
               )
             }
           >
@@ -368,13 +370,19 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
                 )}
               </ObjectTabPanel>
             )}
+            {hasJobTab && <ObjectTabPanel prefix="person" value="job" selected={selected}>
+              {selected==='job' && <ObjectDetailSection title="选择任职">{terms.map(term=>
+                <Button key={term.assignment} component={Link} to={personPath+'/assignments/'+term.assignment+'?'+detailParams}>
+                  {term.recordNumber} 号{term.recordNumber===0?'主岗':'兼岗'} · {term.employerName} · {term.from} 起{term.until?'，'+term.until+' 起不在任':''}
+                </Button>)}</ObjectDetailSection>}
+            </ObjectTabPanel>}
             {profilePanel(
               !!hasTabs,
               selected,
               selected === 'profile' && data && (
                 <>
                   {!version && (
-                    <ProfileSections data={data} />
+                    <ProfileSections data={data} recheck={record.refresh} />
                   )}
                   {!version && data.primaryDocument && !data.readable?.includes('documentKind') && (
                     <DocumentFields data={data} />

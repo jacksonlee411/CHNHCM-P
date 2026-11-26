@@ -2,6 +2,7 @@ package domain
 
 import (
 	"slices"
+	"strconv"
 
 	"chnhcm.local/chnhcm/internal/foundation"
 )
@@ -20,7 +21,8 @@ type SourceCoverage struct {
 
 type PositionUse struct {
 	UsageSpan
-	Owner, Source, Policy, Effect string
+	Owner, Source, Policy, Effect          string
+	Department, Job, Assignment, Incumbent string
 }
 
 // Managed identifies the explicitly taken-over part of this position's timeline.
@@ -32,8 +34,8 @@ type QuotaUsage struct {
 }
 
 type UsageCount struct {
-	Managed, Known             bool
-	Reserved, Occupied, Exempt int
+	Managed, Known                       bool
+	Reserved, Occupied, Exempt, Handover int
 }
 
 func (u QuotaUsage) coveredBy(owner, day string) bool {
@@ -64,6 +66,14 @@ func (u QuotaUsage) At(day string) UsageCount {
 		case use.Owner == "M05" && use.Effect == "none":
 			// A recruitment segment can adopt an exempt rule without reserving a seat.
 			continue
+		case use.Owner == "M04" && use.Effect == "handover":
+			if slices.ContainsFunc(u.Uses, func(orig PositionUse) bool {
+				return orig.Assignment == use.Incumbent && orig.Owner == "M04" && orig.Effect == "occupied" && orig.Contains(day)
+			}) {
+				c.Handover++
+			} else {
+				c.Occupied++
+			}
 		case use.Owner == "M04" && use.Effect == "occupied":
 			c.Occupied++
 		case use.Owner == "M04" && use.Effect == "exempt":
@@ -135,7 +145,7 @@ func (u QuotaUsage) CheckTightening(before, after StaffingQuota, previous, propo
 		if !c.Known {
 			return usageConflict(day, "岗位用量尚未核齐")
 		}
-		if stop && c.Reserved+c.Occupied+c.Exempt > 0 {
+		if stop && c.Reserved+c.Occupied+c.Exempt+c.Handover > 0 {
 			return usageConflict(day, "仍有预留或任职，无法停用岗位")
 		}
 		if next < old && c.Reserved+c.Occupied > max(0, next) {
@@ -214,8 +224,12 @@ func (u QuotaUsage) PlanUse(intent UsageIntent, rules []QuotaPolicy, q StaffingQ
 				if !c.Known {
 					return nil, usageConflict(day, "岗位用量尚未核齐")
 				}
-				if capacity(q, day) <= c.Occupied+c.Reserved {
-					return nil, usageConflict(day, "没有可用的常规名额")
+				limit := capacity(q, day)
+				if limit < 0 {
+					return nil, usageConflict(day, "该岗位尚未核定常规编制")
+				}
+				if shortage := c.Occupied + c.Reserved + 1 - limit; shortage > 0 {
+					return nil, foundation.Fail(409, "M03_QUOTA_SHORTAGE", day+" 起缺 "+strconv.Itoa(shortage)+" 编")
 				}
 				if intent.Owner == "M04" {
 					use.Effect = "occupied"
@@ -250,4 +264,36 @@ func ApplicablePolicy(rules []QuotaPolicy, enterprise, category, purpose, day st
 		return nil, usageConflict(day, "缺少适用的占编规则版本")
 	}
 	return chosen, nil
+}
+
+// CheckExchange compares both published assignments per position. Third-party
+// reservations and appointments enter the final count at every dated boundary.
+func (u QuotaUsage) CheckExchange(before QuotaUsage, q StaffingQuota, first, second string) error {
+	days := append(before.boundaries(), u.boundaries()...)
+	for _, r := range q.Records {
+		days = append(days, r.Date)
+	}
+	occupied := func(e QuotaUsage, id, day string) bool {
+		return slices.ContainsFunc(e.Uses, func(v PositionUse) bool {
+			return v.Owner == "M04" && v.Effect == "occupied" && v.Assignment == id && v.Contains(day)
+		})
+	}
+	slices.Sort(days)
+	for _, day := range slices.Compact(days) {
+		if day == "" || !(occupied(u, first, day) && !occupied(before, first, day) || occupied(u, second, day) && !occupied(before, second, day)) {
+			continue
+		}
+		c := u.At(day)
+		if !c.Known {
+			return usageConflict(day, "岗位用量尚未核齐")
+		}
+		limit := capacity(q, day)
+		if limit < 0 {
+			return usageConflict(day, "没有有效岗位核定数")
+		}
+		if deficit := c.Reserved + c.Occupied - limit; deficit > 0 {
+			return foundation.Fail(409, "M03_QUOTA_SHORTAGE", day+" 起缺 "+strconv.Itoa(deficit)+" 编")
+		}
+	}
+	return nil
 }

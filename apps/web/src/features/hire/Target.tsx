@@ -4,9 +4,11 @@ import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
 
-export type TargetKind = 'department' | 'job' | 'employer' | 'bu' | 'location';
+export type TargetKind = 'position' | 'department' | 'job' | 'employer' | 'bu' | 'location' | 'grade';
 export type Option = { id: string; name: string };
 export const labels = {
+  position:'岗位',
+  grade:'个人职级',
   department: '部门',
   job: '职务',
   employer: '用人单位',
@@ -19,22 +21,24 @@ export function Target({
   choice,
   onChange,
   draft,
-  session,
+  session, recruiting,
 }: {
   kind: TargetKind;
+  recruiting?: boolean;
   choice?: Option;
   onChange: (value?: Option) => void;
   draft: Models['HireInput'];
   session: Models['Principal'];
 }) {
   const [search, setSearch] = useState('');
-  const enabled = !!draft.arrival;
+  const enabled = !!draft.arrival && (kind !== 'grade' || !!draft.job);
   const key = [
     kind,
     search,
-    draft.arrival,
+    draft.arrival, draft.rehireOf,
     draft.lastDay,
     draft.department,
+    draft.job,
     draft.employer,
     draft.bu,
     draft.location,
@@ -42,13 +46,16 @@ export function Target({
   const candidates = useRead(enabled ? JSON.stringify(key) : undefined, async (): Promise<Option[]> => {
     const params = { header: { 'X-CSRF-Token': session.csrf } };
     const query = {
-      person: draft.person,
+      person: draft.person, rehireOf:draft.rehireOf,
       arrival: draft.arrival,
       lastDay: draft.lastDay || undefined,
       department: draft.department || undefined,
       search,
       page: 1,
     };
+    if (recruiting && (kind === 'position' || kind === 'job' || kind === 'department' || kind === 'employer')) {
+      return unwrap(await api.POST('/api/v1/recruiting/targets', {params,body:{...query, kind, employer:draft.employer || undefined,job:kind==='position'?draft.job:undefined}}));
+    }
     if (kind === 'employer') {
       return unwrap(
         await api.POST('/api/v1/hires/employers', {
@@ -60,11 +67,11 @@ export function Target({
     return unwrap(
       await api.POST('/api/v1/hires/targets', {
         params,
-        body: { ...query, kind, employer: draft.employer || undefined },
+        body: { ...query, kind, job:kind==='grade'||kind==='position'?draft.job:undefined, employer: draft.employer || undefined },
       }),
     );
   });
-  const required = kind !== 'bu' && kind !== 'location';
+  const required = kind !== 'bu' && kind !== 'location' && kind !== 'grade';
   return (
     <ObjectDetailField label={labels[kind]} inputId={'hire-' + kind} required={required}>
       <Autocomplete

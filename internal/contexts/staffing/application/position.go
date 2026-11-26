@@ -144,11 +144,27 @@ func preparePositions(ctx context.Context, u Unit, plan *d.Plan, locked bool) er
 	if after.Kind == d.Position && len(before.Records) > 0 {
 		proposed := d.QuotaEligibility(after)
 		previous := d.QuotaEligibility(before)
-		if losesPositionEligibility(before, after) {
-			usage, err := u.PositionUsage(ctx, after.ID)
-			if err != nil {
-				return err
+		usage, err := u.PositionUsage(ctx, after.ID)
+		if err != nil {
+			return err
+		}
+		for _, use := range usage.Uses {
+			if use.Owner != "M04" || use.Department == "" {
+				continue
 			}
+			span := foundation.Period{From: use.From, Until: use.Until}
+			var boundaries []string
+			for _, r := range after.Records {
+				boundaries = append(boundaries, r.Date, r.End)
+			}
+			for _, p := range span.Split(boundaries) {
+				i := d.At(after, p.From)
+				if i < 0 || !after.Records[i].Active() || after.Records[i].Data["departmentId"] != use.Department || after.Records[i].Data["jobId"] != use.Job {
+					return foundation.Fail(409, "POSITION_ASSIGNMENT_USE", p.From+" 起已有岗位任职，请先核对实际安排")
+				}
+			}
+		}
+		if losesPositionEligibility(before, after) {
 			if err = usage.CheckTightening(d.StaffingQuota{}, d.StaffingQuota{}, previous, proposed); err != nil {
 				return err
 			}

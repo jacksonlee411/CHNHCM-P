@@ -183,7 +183,7 @@ def smoke(args):
                        "--web-port", str(ports[0]), "--api-port", str(ports[1]), "--db-port", str(ports[2])], env)
         configured = True
         print(f"Temporary Chromium profile: {profile}; Web=http://127.0.0.1:{ports[0]}; API={ports[1]}; DB={ports[2]}", flush=True)
-        run(command + ["up", "--first-hire"] + (["--fixed-web"] if getattr(args, "fixed_web", False) else []), env)
+        run(command + ["up", "--first-hire", "--sensitive-profile"] + (["--fixed-web"] if getattr(args, "fixed_web", False) else []), env)
         extra = args.playwright_args
         if extra[:1] == ["--"]:
             extra = extra[1:]
@@ -306,6 +306,8 @@ def execute(args):
     env = environment(config, conn)
     run([str(BIN / "upgrader"), "-mode", "runtime-roles"], env,
         dict(API=config["api_password"]))
+    if args.sensitive_profile:
+        config["sensitive_profile"] = True
     if args.first_hire:
         config["first_hire"] = True
     for login, password, read_only in [(config["login"], config["password"], False),
@@ -314,7 +316,8 @@ def execute(args):
         run([str(BIN / "upgrader"), "-mode", "initialize"], env,
             dict(Instance=config["instance"], **enterprise,
                  Login=login, Password=password, ReadOnly=read_only, PersonnelProfile="reader" if read_only else "registrar", PersonalProfileFixture=True,
-                 **(dict(HireIdentityFixture=True, EmploymentFixture=True, FirstHireRule=dict(Version="T02-employee-1", From="2027-04-01")) if config.get("first_hire") and not read_only else {})))
+                 SensitiveProfileFixture=bool(config.get("sensitive_profile")) and not read_only,
+                 **(dict(HireIdentityFixture=True, EmploymentFixture=True, FirstHireRule=dict(Version="T02-employee-1", From="2027-04-01", HistoricalFixtureFrom="2026-01-01")) if config.get("first_hire") and not read_only else {})))
     run([str(BIN / "upgrader"), "-mode", "country-catalog"], env,
         dict(login=config["login"], password=config["password"]))
     run([str(BIN / "upgrader"), "-mode", "geoarea-catalog"], env,
@@ -362,6 +365,7 @@ def main():
     up = commands.add_parser("up")
     up.add_argument("--no-web", action="store_true", help="start database and API only")
     up.add_argument("--first-hire", action="store_true", help="enable the synthetic Employee hire rule and local operator grants")
+    up.add_argument("--sensitive-profile", action="store_true", help="enable synthetic bank and health purposes for the local registrar")
     up.add_argument("--fixed-web", action="store_true", help="serve a profile-owned fixed frontend build with this API")
     up.add_argument("--temporary", action="store_true", help="mark a new named profile as disposable")
     up.add_argument("--purpose", help="short local environment purpose")

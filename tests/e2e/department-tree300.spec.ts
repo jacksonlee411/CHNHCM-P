@@ -1,3 +1,4 @@
+import { nativeZoomCases } from './desktop-viewports.mjs';
 import {test, expect, type Page} from './fixtures';
 import {open} from './bu-support';
 import {apiBU, apiDepartment, menu, departmentKind} from './dated-object-support';
@@ -58,7 +59,7 @@ test('300部门树正常菜单、独立展开定位、范围交集、固定选�
   await page.getByRole('link',{name:'返回列表',exact:true}).click();
   await expect(grid.locator('.MuiDataGrid-row')).toHaveCount(1);
   await expect(page.getByRole('tree').locator(`[data-tree-id="${root.id}"]`)).toHaveAttribute('aria-selected','true');
-  for(const width of [1000,900,899,390,320]) {
+  for(const width of [1000,900,899]) {
     await page.setViewportSize({width,height:844});
     if(width>=900) await expect(page.getByRole('tree')).toBeVisible();
     else {
@@ -222,13 +223,13 @@ test('300迟到定位不能覆盖新选择，末页定位支持前后同级且DO
   } finally {release();await page.unrouteAll({behavior:'wait'})}
 });
 
-test('300原生Chromium200%和400%缩放下抽屉与范围操作',async()=>{
+test('300Chromium 原生缩放下抽屉与范围操作',async()=>{
   test.setTimeout(120000);
   const {nativeZoomBrowser}=await import('./native-zoom-support');
   const native=await nativeZoomBrowser(),page=native.page;
   try {
     await open(page);const bu=await apiBU(page),root=await apiDepartment(page,bu.id,{name:'缩放部门树'+Date.now()});await menu(page,departmentKind);
-    for(const factor of [2,4]) {
+    for(const [, factor] of nativeZoomCases()) {
       await native.setZoom(factor);
       const trigger=page.getByRole('button',{name:'打开部门树',exact:true});await expect(trigger).toBeInViewport();await trigger.click();
       await page.getByRole('textbox',{name:'定位树中部门',exact:true}).fill(root.code);

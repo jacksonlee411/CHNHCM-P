@@ -484,6 +484,33 @@ func hireMigrationSet(t *testing.T, include func(string) bool) fstest.MapFS {
 	return files
 }
 
+func TestPublic39UpgradeToBankHealth(t *testing.T) {
+	pool := newStaffingMigrationPool(t)
+	ctx := t.Context()
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00039" })))
+	if bootstrap.CheckCurrentStorage(ctx, pool) == nil {
+		t.Fatal("runtime admitted the previous schema")
+	}
+	const decision = "49000000-0000-4000-8000-000000000039"
+	_, err := pool.Exec(ctx, `insert into staffing.appointment_version (instance_id,source,version,edition,number,roster,withdrawn,members,digest,actor,recorded_at)
+	 values ($1,$1,$1,1,'合成决定39',false,false,'[]','synthetic',$1,now())`, decision)
+	must(t, err)
+	_, err = pool.Exec(ctx, "insert into staffing.appointment_outbox values ($1,$1,$1)", decision)
+	must(t, err)
+	for range 2 {
+		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
+	}
+	// The positive applied rows must contain every version exactly once.
+	// CheckCurrentStorage below verifies the required final version and layout.
+	var preserved bool
+	must(t, pool.QueryRow(ctx, `select exists(select from staffing.appointment_version v join staffing.appointment_outbox o using(instance_id,source,version) where v.version=$1 and number='合成决定39')
+	 and (select count(*)=max(version_id) and count(distinct version_id)=max(version_id) from goose_db_version where is_applied and version_id>0)`, decision).Scan(&preserved))
+	if !preserved {
+		t.Fatal("prior decision, event or continuous ledger changed")
+	}
+	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+}
+
 func TestPublic37UpgradeToEducationCredentials(t *testing.T) {
 	pool := newStaffingMigrationPool(t)
 	ctx := t.Context()

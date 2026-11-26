@@ -13,8 +13,8 @@ type EnterpriseFloor interface {
 }
 
 type PositionReferenceRecord struct {
-	ID, Revision, Start, End, Name string
-	Active                         bool
+	ID, Revision, Start, End, Name, Parent string
+	Active                                 bool
 }
 type PositionReference struct {
 	ID, Source, Code string

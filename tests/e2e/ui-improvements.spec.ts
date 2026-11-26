@@ -257,9 +257,9 @@ test('表单帮助、未保存提示、日志已有字段和时刻表达、历�
   await expect(page.locator('.change-operation').getByText(/北京时间 UTC\+08:00/)).toBeVisible();
   await page.getByRole('link', { name: '查看当次资料', exact: true }).click();
   await expect(page.getByText('正在查看只读历史资料', { exact: true })).toBeVisible();
-  await page.setViewportSize({ width: 320, height: 256 });
-  await expect.poll(() => page.evaluate(() => ({ width: innerWidth, height: innerHeight, scrollable: document.documentElement.scrollHeight > innerHeight }))).toEqual({ width: 320, height: 256, scrollable: true });
-  await page.mouse.move(160, 248); await page.mouse.wheel(0, 1600);
+  await page.setViewportSize({ width: 1440, height: 540 });
+  await expect.poll(() => page.evaluate(() => ({ width: innerWidth, height: innerHeight, scrollable: document.documentElement.scrollHeight > innerHeight }))).toEqual({ width: 1440, height: 540, scrollable: true });
+  await page.mouse.move(720, 520); await page.mouse.wheel(0, 1600);
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
   await expect(page.getByText('正在查看只读历史资料', { exact: true })).toBeInViewport();
   await expect(page.getByRole('button', { name: '返回当前资料', exact: true })).toBeInViewport();

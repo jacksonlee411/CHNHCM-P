@@ -46,6 +46,7 @@ func (a *API) Handler() http.Handler {
 	a.locationRoutes(mux)
 	a.legalentityRoutes(mux)
 	a.readinessRoutes(mux)
+	a.recruitingRoutes(mux)
 	a.staffingRoutes(mux)
 	mux.Handle("GET /healthz", Handler())
 	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
