@@ -239,7 +239,7 @@ class CandidateTests(unittest.TestCase):
             self.write('tests/e2e/first-hire.spec.ts', 'changed scenario')
         plan, env, pr = self.candidate(change)
         outputs = ci.schedule(plan, {'pull_request': pr}, env, API())
-        self.assertEqual(len(outputs['integration_matrix']), 4)
+        self.assertEqual(len(outputs['integration_matrix']), 5)
         self.assertTrue(outputs['run_integration'])
         self.assertEqual(plan['browser_files'], ['first-hire.spec.ts'])
         self.assertFalse(outputs['run_browser'])

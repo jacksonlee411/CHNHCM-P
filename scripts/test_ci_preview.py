@@ -83,7 +83,7 @@ class PreviewTests(unittest.TestCase):
         self.write(API_CLIENT, CLIENT.replace('Successful response', 'Current jobs'))
         p = self.report()
         self.assertEqual(p['current']['scope'], 'full')
-        self.assertEqual((p['shadow']['integration_shards'], p['shadow']['browser_files']), (4, ['staffing.spec.ts']))
+        self.assertEqual((p['shadow']['integration_shards'], p['shadow']['browser_files']), (5, ['staffing.spec.ts']))
         for other in [changed.replace('JobList', 'AccessPolicy'), changed.replace('createJob', 'replaceJob'),
                       changed.replace('Successful write', 'Updated'), API.replace('Successful response', '*alias'),
                       changed + 'security: []\n']:
@@ -95,7 +95,7 @@ class PreviewTests(unittest.TestCase):
         self.write(self.sql, INDEX)
         plan = self.report()['shadow']
         self.assertEqual((plan['scope'], plan['integration_filter'], plan['integration_shards'],
-                          plan['browser_files']), ('selected', '^Test', 4, ['staffing.spec.ts']))
+                          plan['browser_files']), ('selected', '^Test', 5, ['staffing.spec.ts']))
         for bad in [INDEX.replace('staffing.job_read (', 'access.grants ('),
                     INDEX.replace('CREATE INDEX', 'CREATE UNIQUE INDEX'), INDEX + 'DELETE FROM staffing.job;',
                     INDEX.replace('active, start_date', 'lower(name)'), INDEX.replace('DROP INDEX staffing.', 'DROP INDEX access.')]:

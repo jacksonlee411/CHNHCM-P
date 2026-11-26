@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 FULL_BROWSER = 16
-FULL_INTEGRATION = 4
+FULL_INTEGRATION = 5
 TIMINGS = '.github/ci-shard-seconds.json'
 SECONDS = json.loads((Path(__file__).resolve().parents[1] / TIMINGS).read_text())
 
@@ -25,7 +25,7 @@ def selected_browser_count(files):
 
 def selected_integration_count(pattern):
     estimate = sum(seconds for name, seconds in SECONDS['integration'].items() if re.search(pattern, name))
-    return min(FULL_INTEGRATION, max(1, math.ceil(estimate / 650)))
+    return min(FULL_INTEGRATION, max(1, math.ceil(estimate / 500)))
 
 
 def balanced_groups(items, total, seconds):

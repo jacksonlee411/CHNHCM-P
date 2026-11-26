@@ -1199,10 +1199,15 @@ async function promotionJourney(page: Page, sample: Awaited<ReturnType<typeof se
     if (pair) await choose('拟任职级',p6.name);
     await button('保存').click();
     await button('调动 · '+date).click();
+    await expect(page.getByRole('heading', {name: '调动原件', exact: true})).toBeVisible();
     if (pair) {
-      await button('查看通知来源').click();
+      const noticeSource = button('查看通知来源');
+      await expect(noticeSource).toHaveAttribute('aria-expanded', 'false');
+      await noticeSource.click();
+      await expect(noticeSource).toHaveAttribute('aria-expanded', 'true');
       await expect(page.getByText('晋升 · '+date+' · 晋升及调动共同通知',{exact:true})).toBeVisible();
       await button('晋升 · '+date).click();
+      await expect(page.getByRole('heading', {name: '晋升原件', exact: true})).toBeVisible();
       await chooseRecordAction(page, '撤销晋升');
       await page.getByLabel(/撤销依据/).fill('核对原通知');
       await button('保存').click();
