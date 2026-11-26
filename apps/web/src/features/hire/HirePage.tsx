@@ -1,7 +1,9 @@
+import { employmentHistoryReturn, personnelReturn, profileReturn, registerListParams } from './jobLinks';
+import { actionLabel, relationAction } from './AssignmentRecordForm';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, MenuItem, Paper, Stack, Typography } from '@mui/material';
-import { Link, useLocation, useParams } from 'react-router-dom';
-import { api, ApiError, unwrap, type Models } from '@chnhcm/api-client';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { api, ApiError, sessionGuard, unwrap, type Models } from '@chnhcm/api-client';
 import {
   ObjectDetailField,
   ObjectDetailSection,
@@ -37,25 +39,46 @@ export function HirePage({ session }: { session: Models['Principal'] }) {
   const { id = '' } = useParams();
   return <EmployeeHire key={session.instanceId + session.subjectId + id} id={id} session={session} />;
 }
-function EmployeeHire({ id, session }: { id: string; session: Models['Principal'] }) {
-  const route = useLocation(),
-    back = person.path + '/' + id + route.search;
-  const [day, setDay] = useState(''),
-    [mode, setMode] = useState<'hire' | 'cancel' | ''>(route.state?.hire ? 'hire' : '');
-  const [draft, setDraft] = useState(() => empty(id)),
+export function EmployeeHire({ id, session, cancellation }: { id: string; session: Models['Principal']; cancellation?: {action:Models['EmploymentAction']; returnTo:string; done:()=>void} }) {
+  const navigate = useNavigate(), route = useLocation(),
+    params = new URLSearchParams(route.search),
+    origin = params.get('rehireAction') && params.get('rehireRevision') ? {action:params.get('rehireAction')!,revision:params.get('rehireRevision')!} : undefined,
+    from = params.get('returnTo') || route.state?.fromAction,
+    returnTo = profileReturn(from,id) || personnelReturn(from) || employmentHistoryReturn(from, id),
+    back = cancellation?.returnTo ?? returnTo ?? person.path + '/' + id + '?' + person.directoryParams(params);
+  const pendingKey = ['chnhcm-rehire',session.instanceId,session.subjectId].join('.');
+  const activePage = useRef(true);
+  useEffect(()=>{activePage.current=true; return ()=>{activePage.current=false;};},[]);
+  const [mode, setMode] = useState<'hire' | 'cancel' | ''>(cancellation ? 'cancel' : (origin || route.state?.hire) ? 'hire' : '');
+  const [draft, setDraft] = useState<Models['HireInput']>(() => ({...empty(id),rehireOf:origin})),
     [choices, setChoices] = useState<Partial<Record<TargetKind, Option>>>({});
   const [reason, setReason] = useState(''),
-    [action, setAction] = useState<Models['EmploymentAction']>(),
-    [original, setOriginal] = useState('');
+    [action, setAction] = useState<Models['EmploymentAction'] | undefined>(cancellation?.action),
+    [original, setOriginal] = useState(params.get('action') || '');
   const [notice, setNotice] = useState(''),
     [error, setError] = useState(''),
     [generation, newPreview] = useState(0);
   const failure = useRef<HTMLDivElement>(null),
     saved = useRef(false);
   const details = person.useRead(id, () => person.profile(id));
-  const overview = person.useRead(JSON.stringify([id, day]), () => employment(id, day));
-  const decisions = person.useRead(mode === 'hire' && overview.data?.canHire ? id : undefined, async () =>
-    unwrap(await api.GET('/api/v1/persons/{id}/appointment-decisions', { params: { path: { id } } })),
+  const overview = person.useRead(id, () => employment(id));
+  const eligibleHire=draft.rehireOf ? !!overview.data?.actions.some(a=>a.canRehire&&a.id===draft.rehireOf?.action&&a.revision===draft.rehireOf.revision) : !!overview.data?.canHire;
+  const acceptedOffers=person.useRead(overview.data?.canHire && !cancellation && !draft.rehireOf ? id:undefined,async()=>{
+    const access=unwrap(await api.GET('/api/v1/recruiting/context',{params:{query:{person:id}}}));
+    if(!access.canRead)return [];
+    const results=unwrap(await api.GET('/api/v1/recruiting/offers',{params:{query:{person:id}}}));
+    return results.offers.filter(v=>v.status==='accepted');
+  });
+  const hireTitle=draft.rehireOf ? '办理再聘' : '办理入职';
+  const arrangementQuery = { person: id, arrival: draft.arrival, lastDay: draft.lastDay || undefined, rehireOf: draft.rehireOf, position: undefined };
+  const arrangement = person.useRead(mode === 'hire' && eligibleHire && draft.arrival ? JSON.stringify(arrangementQuery) : undefined, async () =>
+    unwrap(await api.POST('/api/v1/hires/arrangement', {params:{header:{'X-CSRF-Token':session.csrf}},body:arrangementQuery})));
+  const selectedArrangement = person.useRead(draft.position && arrangement.data?.positionRequired && !arrangement.data.jobRequired ? JSON.stringify([arrangementQuery,draft.position]) : undefined, async () =>
+    unwrap(await api.POST('/api/v1/hires/arrangement', {params:{header:{'X-CSRF-Token':session.csrf}},body:{...arrangementQuery,position:draft.position}})));
+  const decisions = person.useRead(mode === 'hire' && eligibleHire ? JSON.stringify([id, draft.rehireOf]) : undefined, async () =>
+    unwrap(await api.GET('/api/v1/persons/{id}/appointment-decisions', {
+      params: { path: { id }, query: {rehireAction: draft.rehireOf?.action, rehireRevision: draft.rehireOf?.revision} }
+    })),
   );
   const basis = decisions.data?.find(
     (v) => v.ref.source === draft.decision?.source && v.ref.version === draft.decision.version,
@@ -66,11 +89,12 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
   const header = { 'X-CSRF-Token': session.csrf };
   const ready =
     mode === 'hire' &&
-    overview.data?.canHire &&
+    eligibleHire &&
     draft.arrival &&
     draft.employer &&
-    draft.department &&
-    draft.job &&
+    arrangement.data &&
+    (!arrangement.data.jobRequired || draft.department && draft.job) &&
+    (!arrangement.data.positionRequired || draft.position) &&
     (draft.decision ? !!basis : draft.notice?.trim());
   const previewKey = JSON.stringify([draft, generation]);
   const selected = useRef<{ key: string; adoption: Models['HireAdoption'] } | undefined>(undefined);
@@ -86,6 +110,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
   const close = () => {
     selected.current = undefined;
     setMode('');
+    if (cancellation) cancellation.done();
     setDraft(empty(id));
     setChoices({});
     setReason('');
@@ -93,13 +118,14 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
     setError('');
   };
   const leave = useDraftExit(
-    !!mode && (JSON.stringify(draft) !== JSON.stringify(empty(id)) || !!reason),
+    !!mode && (JSON.stringify({...draft,rehireOf:undefined}) !== JSON.stringify(empty(id)) || !!reason),
     () => saved.current,
     close,
   );
   const send = useRuleSubmission<Command, Models['HireReceipt']>('employee-hire', session, {
-    send: async (cmd, key) =>
-      'hire' in cmd
+    send: async (cmd, key) => {
+      if ('hire' in cmd && cmd.hire.rehireOf) sessionStorage.setItem(pendingKey + '.' + key, '1');
+      return 'hire' in cmd
         ? unwrap(
             await api.POST('/api/v1/hires', {
               params: { header: { ...header, 'Idempotency-Key': key } },
@@ -111,23 +137,56 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
               params: { path: { id: cmd.cancel }, header: { ...header, 'Idempotency-Key': key } },
               body: { revision: cmd.revision, reason: cmd.reason },
             }),
-          ),
+          );
+    },
     resolve: async (sub) =>
       unwrap(
         await api.POST('/api/v1/hires/submissions/{sub}/resolve', { params: { path: { sub }, header } }),
       ),
-    finished: (r, recovered) => {
-      if (r.outcome === 'accepted') {
-        if (recovered !== 'other') {
-          saved.current = true;
-          if (draft.arrival) setDay(draft.arrival);
-          close();
-        }
-        overview.invalidate();
-        setNotice(recovered ? '已查回原办理。' : '已保存。');
-      } else {
+    finished: async (r, recovered) => {
+      const pending = pendingKey + '.' + r.submissionId;
+      const ownRehire = sessionStorage.getItem(pending) === '1';
+      if (ownRehire) sessionStorage.removeItem(pending);
+      if (r.outcome !== 'accepted') {
         setError(r.outcome === 'rejected' ? '原提交已拒绝。' : '原号已确认未执行。');
+        return;
       }
+      const currentSubmission = recovered !== 'other';
+      const restoredDraft = ownRehire && !!origin && !draft.arrival &&
+        JSON.stringify({...draft,rehireOf:undefined}) === JSON.stringify(empty(id));
+      const own = currentSubmission || restoredDraft;
+      if (own && ownRehire && r.recordNumber === 0 && r.action && r.assignment && r.employment && r.revision) {
+        const current = sessionGuard(), address = location.href;
+        try {
+          const original = unwrap(await api.GET('/api/v1/employment-actions/{id}', {params:{path:{id:r.action},query:{adoptedRef:r.revision}}}));
+          if (!activePage.current || !current() || address !== location.href) return;
+          const a = original.action, basis = draft.rehireOf || origin;
+          if (a.kind === 'Rehire' && a.person === id && a.employment === r.employment && a.assignment === r.assignment &&
+              (!basis || original.rehireOf?.action === basis.action && original.rehireOf?.revision === basis.revision)) {
+            const prior = returnTo ? new URL(returnTo,location.origin) : undefined;
+            const query = prior ? registerListParams(prior.searchParams) : new URLSearchParams();
+            if (prior?.pathname.startsWith('/personnel/actions/')) {
+              query.set('returnAction',prior.pathname.split('/').pop()!);
+              query.set('returnTo',returnTo!);
+              if (prior.searchParams.has('fromRegister')) query.set('fromRegister','1');
+            } else if (profileReturn(returnTo,id) || employmentHistoryReturn(returnTo, id)) {
+              query.set('returnTo', returnTo!);
+            }
+            query.set('assignmentDay',a.businessDate);
+            query.set('action',a.id);
+            query.set('adoptedRef',a.revision);
+            saved.current = true;
+            navigate(person.path + '/' + id + '/assignments/' + a.assignment + '?' + query,{replace:true});
+            return;
+          }
+        } catch { if (!activePage.current || !current() || address !== location.href) return; }
+      }
+      if (currentSubmission) {
+        saved.current = true;
+        close();
+      }
+      overview.invalidate();
+      setNotice(recovered ? '已查回原办理。' : '已保存。');
     },
     failed: (e) => {
       if (e instanceof ApiError && [401, 403, 404].includes(e.status)) {
@@ -138,7 +197,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
       setError(person.message(e));
     },
   });
-  usePageTitle(mode === 'hire' ? '办理入职' : '工作关系与任职');
+  usePageTitle(mode === 'hire' ? hireTitle : '本人办理历史');
   useEffect(() => {
     send.start();
   }, [send.start]);
@@ -151,7 +210,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
       details.status === 404 ||
       overview.status === 403 ||
       overview.status === 404 ||
-      (mode === 'hire' && overview.data && !overview.data.canHire) ||
+      (mode === 'hire' && overview.data && !eligibleHire) ||
       (mode === 'cancel' &&
         overview.data &&
         !overview.data.actions.some(
@@ -172,9 +231,10 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
     selected.current = undefined;
     setDraft({
       ...empty(id),
-      decision: item?.ref,
+      rehireOf:draft.rehireOf,decision: item?.ref,
       arrival: item?.arrival ?? '',
       lastDay: item?.lastDay,
+      position: item?.position?.id,
       department: item?.department?.id ?? '',
       job: item?.job?.id ?? '',
       bu: item?.bu?.id,
@@ -200,21 +260,49 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
     setChoices((old) => ({
       ...old,
       [kind]: v,
+      ...(kind==='job'||kind==='position'?{grade:undefined}:{}),
       ...(['bu', 'location', 'department'].includes(kind) ? { employer: undefined } : {}),
     }));
     update({
       [kind]: v?.id ?? '',
+      ...(kind==='job'||kind==='position'?{grade:undefined}:{}),
       ...(!basis?.employer && ['bu', 'location', 'department'].includes(kind) ? { employer: '' } : {}),
     });
   };
   const begin = (next: 'hire' | 'cancel', row?: Models['EmploymentAction']) => {
     saved.current = false;
     setAction(row);
+    if (next === 'hire') {
+      const rehireOf = row ? {action:row.id,revision:row.revision} : overview.data?.rehireFrom;
+      setDraft({...empty(id),rehireOf});
+      if (rehireOf) {
+        const history = new URLSearchParams(params);
+        history.set('view','history');
+        history.set('action',rehireOf.action);
+        const backToHistory = employmentHistoryReturn(route.pathname + '?' + history, id);
+        const command = new URLSearchParams(params);
+        command.set('rehireAction',rehireOf.action);
+        command.set('rehireRevision',rehireOf.revision);
+        if (backToHistory) command.set('returnTo',backToHistory);
+        navigate(route.pathname + '?' + command, {replace:true, state:route.state});
+      }
+    }
     setReason('');
     setMode(next);
     setNotice('');
     setError('');
     send.start();
+  };
+  const cancelForm = () => {
+    close();
+    if ((route.state?.hire || origin) && params.get('view')!=='history') {
+      saved.current=true;
+      navigate(back,{replace:true});
+    } else if (origin && returnTo) {
+      saved.current = true;
+      setOriginal(origin.action);
+      navigate(returnTo, {replace:true});
+    }
   };
   const submit = async () => {
     setError('');
@@ -236,7 +324,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
       : field === 'expiryDate' && (editable.includes('expiryDate') || editable.includes('longTerm')),
   );
   const targets = (k: TargetKind) => {
-    const fixed = basis?.[k];
+    const fixed = k==='grade' ? undefined : basis?.[k] ?? ((k==='department'||k==='job') && !arrangement.data?.jobRequired ? selectedArrangement.data?.[k] : undefined);
     if (fixed)
       return (
         <ObjectDetailField key={k} label={labels[k]}>
@@ -247,7 +335,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
       <Target
         key={k}
         kind={k}
-        draft={draft}
+        draft={k==='grade' && selectedArrangement.data?.job ? {...draft,job:selectedArrangement.data.job.id} : draft}
         session={session}
         choice={choices[k]}
         onChange={(v) => changeTarget(k, v)}
@@ -260,14 +348,23 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
         navigation={null}
         identity={
           <>
-            <RecordBackButton component={Link} to={back} />
+            <RecordBackButton component={Link} to={back} label={back.includes('/assignments/')?'返回职务信息':back.startsWith('/personnel/actions/')?'返回办理明细':back.includes('/employment?')?'返回办理历史':'返回本人'} />
             {details.data?.name}
           </>
         }
         actions={
-          !mode && overview.data?.canHire ? (
+          mode && details.data && overview.data ? <Stack direction="row" gap={1}>
+                  <Button
+                    type="submit" form="person-hire-form"
+                    variant="contained"
+                    disabled={send.busy || (mode === 'hire' && !preview.data?.adoption)}
+                  >
+                    保存
+                  </Button>
+                  <Button onClick={() => leave.request(cancelForm)}>取消</Button>
+          </Stack> : !mode && (overview.data?.canHire || overview.data?.rehireFrom) ? (
             <Button variant="contained" onClick={() => begin('hire')}>
-              办理入职
+              {overview.data?.rehireFrom ? '办理再聘' : '办理入职'}
             </Button>
           ) : null
         }
@@ -275,16 +372,17 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
       <Box className="page-scroll" data-page-scroll role="region" tabIndex={0} aria-label="入职与任职">
         <Paper sx={{ p: { xs: 1.5, sm: 3 }, maxWidth: 1000, mx: 'auto' }}>
           <Typography variant="h5" component="h1">
-            {mode === 'hire' ? '办理入职' : mode === 'cancel' ? '撤销未来入职' : '工作关系与任职'}
+            {mode === 'hire' ? hireTitle : mode === 'cancel' ? '撤销未来入职' : '本人办理历史'}
           </Typography>
+          {mode !== 'cancel' && acceptedOffers.data?.map(offer=><Button component={Link} key={offer.id} to={'/recruiting/offers/'+offer.id+'?person='+id}>已接受录用 {offer.number} · {offer.arrival}</Button>)}
           {details.data && (
             <Typography>
               {details.data.name} · {details.data.number}
             </Typography>
           )}
-          {(error || details.error || overview.error) && (
+          {(error || (mode==='hire' && details.error) || overview.error) && (
             <Alert ref={failure} tabIndex={-1} severity="error">
-              {error || details.error || overview.error}
+              {error || (mode==='hire' && details.error) || overview.error}
             </Alert>
           )}
           {notice && <Alert severity="success">{notice}</Alert>}
@@ -296,15 +394,15 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
           {send.storageError && <Alert severity="error">无法保存提交号，请恢复浏览器存储后办理。</Alert>}
           {mode && details.data && overview.data && (
             <Box
-              component="form"
+              id="person-hire-form" component="form"
               onSubmit={(e) => {
                 e.preventDefault();
                 void submit();
               }}
             >
               <ObjectForm>
-                {mode === 'hire' && overview.data.canHire && (
-                  <ObjectDetailSection title="拟任安排">
+                {mode === 'hire' && eligibleHire && (
+                  <div className="object-detail-columns"><ObjectDetailSection title="拟任安排">
                     {!!decisions.data?.length && (
                       <ObjectTextField
                         select
@@ -333,6 +431,12 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                         onChange={(e) => update({ arrival: e.target.value })}
                       />
                     )}
+                    <ObjectTextField
+                      type="date"
+                      label="实际试用开始日"
+                      value={draft.trialStart ?? ''}
+                      onChange={(e) => update({ trialStart: e.target.value || undefined })}
+                    />
                     {basis?.lastDay ? (
                       <ObjectDetailField label="任期至（含当日）">{basis.lastDay}</ObjectDetailField>
                     ) : (
@@ -343,7 +447,12 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                         onChange={(e) => update({ lastDay: e.target.value || undefined })}
                       />
                     )}
-                    {(['department', 'job', 'bu', 'location', 'employer'] as const).map(targets)}
+                    </ObjectDetailSection><ObjectDetailSection title="任职与用人单位">
+                    {(arrangement.error || selectedArrangement.error) && <Alert severity="error">{arrangement.error ?? selectedArrangement.error}</Alert>}
+                    {arrangement.data?.positionRequired && targets('position')}
+                    {(!arrangement.data || arrangement.data.jobRequired || selectedArrangement.data?.department || basis?.department) && targets('department')}
+                    {(!arrangement.data || arrangement.data.jobRequired || selectedArrangement.data?.job || basis?.job) && targets('job')}
+                    {(['grade', 'bu', 'location', 'employer'] as const).map(targets)}
                     {!draft.decision && (
                       <ObjectTextField
                         required
@@ -353,7 +462,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                         onChange={(e) => update({ notice: e.target.value })}
                       />
                     )}
-                  </ObjectDetailSection>
+                  </ObjectDetailSection></div>
                 )}
                 {mode === 'cancel' && action && (
                   <ObjectDetailSection title="撤销依据">
@@ -385,14 +494,6 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                 )}
                 {preview.error && <Alert severity="error">{preview.error}</Alert>}
                 <Stack direction="row" gap={1} flexWrap="wrap">
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={send.busy || (mode === 'hire' && !preview.data?.adoption)}
-                  >
-                    保存
-                  </Button>
-                  <Button onClick={() => leave.request(close)}>取消</Button>
                   {(error || decisions.error || preview.error || preview.data?.missing?.length) &&
                     mode === 'hire' && (
                       <Button
@@ -410,42 +511,33 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
               </ObjectForm>
             </Box>
           )}
-          {!mode && details.data && (
+          {!mode && overview.data && (
             <ObjectForm>
-              <ObjectDetailSection title="该日任职">
-                <ObjectTextField
-                  type="date"
-                  label="查询日期"
-                  value={day}
-                  onChange={(e) => setDay(e.target.value)}
-                />
-                {overview.data && (
-                  <Typography>
-                    可见在职 {overview.data.people} 人，任职 {overview.data.assignments} 份，占编{' '}
-                    {overview.data.seats}
-                  </Typography>
-                )}
-              </ObjectDetailSection>
               <ObjectDetailSection title="办理记录">
                 {overview.data?.actions.map((a) => (
                   <Box key={a.id} sx={{ mb: 1 }}>
                     <Typography>
-                      {a.from} ·{' '}
-                      {a.kind === 'CancelHire' ? '撤销入职' : a.cancelled ? '入职（已撤销）' : '入职'} ·{' '}
-                      {a.notice || '任用决定'}
+                      {a.businessDate} ·{' '}
+                      {a.kind==='Hire'&&a.cancelled ? '入职（已撤销）' : actionLabel(a)} ·{' '}
+                      {a.notice || (a.kind==='DataChange'?'工作地点变更':'任用决定')}
+                    </Typography>
+                    <Typography variant="body2">
+                      {relationAction(a.kind)?'工作关系':`雇用记录 ${a.recordNumber} 号 · ${a.primaryJob?'主岗':'兼岗'}`}
                     </Typography>
                     <Typography variant="body2">{recordedTime(a.recordedAt)}</Typography>
                     {a.canHistory && (
                       <Button onClick={() => setOriginal(original === a.id ? '' : a.id)}>查看原办理</Button>
                     )}
+                    {a.canRehire && <Button onClick={()=>begin('hire',a)}>从原离职办理再聘</Button>}
                     {a.canCancel && <Button onClick={() => begin('cancel', a)}>撤销未来入职</Button>}
                     {a.canHistory && original === a.id && source.error && (
                       <Alert severity="error">{source.error}</Alert>
                     )}
                     {a.canHistory && original === a.id && source.data && (
                       <Box sx={{ overflowWrap: 'anywhere' }}>
-                        <Typography>工作关系 {a.employment}</Typography>
-                        <Typography>首任职 {a.assignment}</Typography>
+                        {source.data.relation ? <Typography>工作关系 {source.data.relation.employerName} · {source.data.relation.from} 起{source.data.relation.until && '，'+source.data.relation.until+' 起不在该关系'}</Typography> : <Typography>工作关系 {a.employment}</Typography>}
+                        {!relationAction(a.kind) && <Typography>{['Hire','Rehire','CancelHire'].includes(a.kind)?'首任职':'任职'} {a.assignment}</Typography>}
+                        {source.data.locationChange&&<Typography>工作地点 {source.data.locationChange.before?.name??'—'} → {source.data.locationChange.after.name}</Typography>}
                         {source.data.sources && (
                           <>
                             {source.data.sources.legal.map((v) => (
@@ -455,7 +547,7 @@ function EmployeeHire({ id, session }: { id: string; session: Models['Principal'
                             ))}
                             {source.data.sources.segments.map((v) => (
                               <Typography key={v.from}>
-                                {v.from} 起 · {v.departmentName} · {v.jobName}
+                                {v.from} 起 · {v.departmentName} · {v.jobName}{v.positionName && ` · ${v.positionName} · ${v.seats ? "占编" : "免占编"}`}
                               </Typography>
                             ))}
                             {source.data.appointment && (

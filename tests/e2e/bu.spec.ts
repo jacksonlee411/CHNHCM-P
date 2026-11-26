@@ -245,7 +245,7 @@ test("响应丢失后刷新查回原结果，并阻止新标识重复提交", as
   await expectCurrentDate(page, date);
 });
 
-test("未保存输入保护、正常取消、只读账号与窄屏退出", async ({ page }) => {
+test("未保存输入保护、正常取消、只读账号与短屏退出", async ({ page }) => {
   await login(page);
   await page.getByRole("link", { name: "新建", exact: true }).click();
   await page
@@ -262,7 +262,7 @@ test("未保存输入保护、正常取消、只读账号与窄屏退出", async
   await page.getByRole("button", { name: "放弃修改" }).click();
   await page.getByRole("button", { name: "退出", exact: true }).click();
   await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1440, height: 540 });
   await login(page, true);
   await expect(
     page.getByRole("link", { name: "新建", exact: true }),
@@ -307,15 +307,33 @@ test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查�
     .toBeGreaterThan(0);
   for (const dirty of [false, true]) {
     const createLink = page.getByRole("link", { name: "新建", exact: true });
-    await createLink.focus();
-    const leaveScroll = await scroller.evaluate(e => (['auto', 'scroll'].includes(getComputedStyle(e).overflowY) ? e : document.scrollingElement!).scrollTop);
+    await createLink.evaluate(link => link.focus({ preventScroll: true }));
+    // Capture the document position at keyboard activation, after the real wheel.
+    const departure = await createLink.evaluateHandle(link => {
+      const position = { top: null as number | null };
+      link.addEventListener('click', () => { position.top = document.scrollingElement!.scrollTop; }, { once: true });
+      return position;
+    });
     await createLink.press('Enter');
+    const leaveScroll = await departure.evaluate(position => position.top);
+    await departure.dispose();
+    expect(leaveScroll).not.toBeNull();
+    expect(leaveScroll).toBeGreaterThan(0);
     await expect(page.getByRole("heading", { name: "新建业务单元", exact: true })).toBeVisible();
     if (dirty) await page.getByRole("textbox", { name: "编码", exact: true }).fill("SCROLL_CANCEL");
+    // Reproduce rows arriving before the auto-height grid has been measured.
+    const pendingLayout = !dirty && await page.addStyleTag({ content: '.list-grid { max-height: 48px !important; overflow: hidden !important; }' });
     await page.getByRole("link", { name: "取消", exact: true }).click();
     if (dirty) await page.getByRole("button", { name: "放弃修改" }).click();
     await expect(page.getByText(recordRange(page, 20, 1))).toBeVisible();
-    await expect.poll(() => scroller.evaluate(e => (['auto', 'scroll'].includes(getComputedStyle(e).overflowY) ? e : document.scrollingElement!).scrollTop)).toBe(leaveScroll);
+    if (pendingLayout) {
+      await expect.poll(() => page.evaluate(() => {
+        const doc = document.scrollingElement!;
+        return doc.scrollHeight - doc.clientHeight;
+      })).toBeLessThan(leaveScroll!);
+      await pendingLayout.evaluate(style => style.remove());
+    }
+    await expect.poll(() => page.evaluate(() => document.scrollingElement!.scrollTop)).toBe(leaveScroll);
   }
   const target = page.getByRole("link", {
     name: prefix + "_12 单元",
@@ -1052,13 +1070,13 @@ test('对象导航跨服务端分页、返回定位，并在当前授权拒绝�
 });
 
 
-test('公共导航桌面键盘关闭和窄屏尺寸切换恢复焦点', async ({ page }) => {
+test('公共导航桌面键盘关闭和导航断点切换恢复焦点', async ({ page }) => {
   await login(page);
   const section = page.getByRole('button', { name: '组织配置', exact: true });
   await section.focus(); await page.keyboard.press('Enter');
   await expect(page.getByRole('menuitem', { name: '业务单元', exact: true })).toBeFocused();
   await page.keyboard.press('Escape'); await expect(section).toBeFocused();
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 899, height: 900 });
   await page.getByRole('button', { name: '打开导航', exact: true }).click();
   await expect(page.locator('#navigation-drawer').getByRole('button', { name: '业务单元', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '关闭导航', exact: true }).click();

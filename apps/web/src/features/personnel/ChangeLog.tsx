@@ -268,6 +268,16 @@ export function PersonChangeLog({
     queueMicrotask(load);
     return () => controller.abort();
   }, [session.csrf, id, query, attempt, positions, recheckProfile]);
+  // The original may finish loading after the operator has started another
+  // navigation. Restore the saved position only while that return is pending.
+  useLayoutEffect(() => {
+    if (!restore.current) return;
+    const cancel = () => { restore.current = false; };
+    const events = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'focusin'];
+    if (document.activeElement?.closest('a, button, input, select, textarea')) cancel();
+    events.forEach(event => document.addEventListener(event, cancel, true));
+    return () => events.forEach(event => document.removeEventListener(event, cancel, true));
+  }, []);
   useLayoutEffect(() => {
     if (!page || !restore.current) return;
     const saved = initialPosition.current;

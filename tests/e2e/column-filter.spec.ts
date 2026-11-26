@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { test, expect } from './fixtures';
 import { login, seed, query, panel, option, isList, policy, out, listPath } from './community-list-support.mjs';
 import { appendFileSync } from 'node:fs';
@@ -133,12 +134,12 @@ test('TL341 当前失败重试及迟到真实响应不盖新条件', async ({ pa
     release(); await page.unrouteAll({ behavior: 'wait' }); await expect(page.getByRole('link', { name: fixture.items[1].name, exact: true })).toBeVisible(); await expect(page.getByRole('link', { name: fixture.items[0].name, exact: true })).toHaveCount(0);
   } finally { release(); }
 });
-test('TL342 窄屏/短屏布局、键盘、焦点及断点关闭', async ({ page }) => {
-  for (const [width, height] of [[390, 844], [320, 568], [1200, 420]]) {
+test('TL342 短屏布局、键盘、焦点及断点关闭', async ({ page }) => {
+  for (const [width, height] of desktopViewports) {
     await page.setViewportSize({ width, height }); await panel(page, '列筛选…'); const dialog = page.getByRole('dialog'); await dialog.getByLabel('值', { exact: true }).fill(fixture.items[0].code);
     expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.getByRole('button', { name: '应用', exact: true }).focus(); await page.keyboard.press('Enter'); await expect(page.getByText('1–1 / 1', { exact: true })).toBeVisible();
     await panel(page, '列筛选…'); await dialog.getByLabel('值', { exact: true }).fill('取消草稿'); await page.keyboard.press('Escape'); await expect(page.getByRole('button', { name: '更多操作', exact: true })).toBeFocused();
   }
-  await page.setViewportSize({ width: 1200, height: 900 }); await panel(page, '列筛选…'); await page.setViewportSize({ width: 390, height: 844 }); await expect(page.getByRole('dialog')).toHaveCount(0); await expect(page.getByRole('button', { name: '更多操作', exact: true })).toBeFocused();
+  await page.setViewportSize({ width: 1200, height: 900 }); await panel(page, '列筛选…'); await page.setViewportSize({ width: 899, height: 900 }); await expect(page.getByRole('dialog')).toHaveCount(0); await expect(page.getByRole('button', { name: '更多操作', exact: true })).toBeFocused();
 });

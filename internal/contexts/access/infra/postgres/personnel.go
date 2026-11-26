@@ -10,15 +10,22 @@ import (
 )
 
 func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+	return s.personnel(ctx, tx, c, false)
+}
+
+// PersonnelDirectory restricts the grant projection to ordinary identity reads.
+// A large per-person scope on unrelated profile or history rights is not needed
+// to authorize a directory search or its session-owned reference.
+func (s *Store) PersonnelDirectory(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+	return s.personnel(ctx, tx, c, true)
+}
+func (s *Store) personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials, directoryOnly bool) (access.PersonAccess, access.Guard, error) {
 	var a access.PersonAccess
 	g, e := s.Guard(ctx, tx, c)
 	if e != nil {
 		return a, nil, e
 	}
 	a.Principal = g.Principal()
-	if e = tx.QueryRow(ctx, "select clock_timestamp()").Scan(&a.At); e != nil {
-		return a, nil, e
-	}
 	var validUntil *time.Time
 	e = tx.QueryRow(ctx, `select version,ordinary_days,evidence_days,allow_permanent_decision,case when isfinite(valid_until) then valid_until else null end,material_days,material_evidence_days,contact_days,contact_evidence_days from access.person_policy_for_use($1)`, s.Instance).Scan(&a.Policy.Version, &a.Policy.OrdinaryDays, &a.Policy.EvidenceDays, &a.Policy.AllowPermanentDecision, &validUntil, &a.Policy.MaterialDays, &a.Policy.MaterialEvidenceDays, &a.Policy.ContactDays, &a.Policy.ContactEvidenceDays)
 	if validUntil != nil {
@@ -27,7 +34,32 @@ func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentia
 	if e != nil && !errors.Is(e, pgx.ErrNoRows) {
 		return a, nil, e
 	}
-	rows, e := tx.Query(ctx, `select action,purpose,fields,person_ids::text[],denied,expires_at,coalesce(source_version::text,''),coalesce(item_id::text,'') from access.person_grant where instance_id=$1 and principal_id=$2 and (expires_at is null or expires_at>$3)`, s.Instance, a.Principal.ID, a.At)
+	purposes, e := tx.Query(ctx, `select purpose,version,case when isfinite(valid_until) then valid_until end,ordinary_days,evidence_days from access.person_data_purposes_for_use($1)`, s.Instance)
+	if e != nil {
+		return a, nil, e
+	}
+	a.Purposes = map[string]access.PersonDataPurpose{}
+	for purposes.Next() {
+		var key string
+		var p access.PersonDataPurpose
+		var expiry *time.Time
+		if e = purposes.Scan(&key, &p.Version, &expiry, &p.OrdinaryDays, &p.EvidenceDays); e != nil {
+			purposes.Close()
+			return a, nil, e
+		}
+		if expiry != nil {
+			p.ValidUntil = *expiry
+		}
+		a.Purposes[key] = p
+	}
+	if e = purposes.Err(); e != nil {
+		return a, nil, e
+	}
+	// Both policy reads can wait for writers. Use the time at which their terms are available.
+	if e = tx.QueryRow(ctx, "select clock_timestamp()").Scan(&a.At); e != nil {
+		return a, nil, e
+	}
+	rows, e := tx.Query(ctx, `select action,purpose,fields,person_ids::text[],denied,expires_at,coalesce(source_version::text,''),coalesce(item_id::text,'') from access.person_grant where instance_id=$1 and principal_id=$2 and (expires_at is null or expires_at>$3) and (not $4 or (action='read' and purpose='directory' and source_version is null and item_id is null))`, s.Instance, a.Principal.ID, a.At, directoryOnly)
 	if e != nil {
 		return a, nil, e
 	}
@@ -163,4 +195,29 @@ func InitializeHireIdentity(ctx context.Context, tx pgx.Tx, instance, subject st
 	) INSERT INTO access.person_grant(instance_id,principal_id,action,purpose,fields)
 	SELECT instance_id,principal_id,'hire.check','hire',ARRAY['name','document','missing.document','missing.expiryDate','missing.inspection'] FROM first`, instance, subject)
 	return err
+}
+
+// Only an explicitly provisioned synthetic maintainer receives these purposes.
+func InitializeSensitiveProfileFixture(ctx context.Context, tx pgx.Tx, instance, subject string) error {
+	tag, err := tx.Exec(ctx, `insert into access.person_sensitive_fixture select instance_id,principal_id from access.person_fixture
+ where instance_id=$1 and principal_id=$2 and profile='registrar' on conflict do nothing`, instance, subject)
+	if err != nil || tag.RowsAffected() == 0 {
+		return err
+	}
+	for _, group := range []struct {
+		action string
+		fields []string
+	}{
+		{"bank", []string{"bankName", "branchName", "accountHolder", "accountNumber", "currency", "bankPrimary"}},
+		{"health", []string{"healthSummary"}},
+	} {
+		purpose := access.PersonPurpose(group.action + ".read")
+		if _, err = tx.Exec(ctx, `insert into access.person_data_purpose values($1,$2,'local-sensitive-1','infinity',365,730) on conflict do nothing`, instance, purpose); err != nil {
+			return err
+		}
+		if _, err = tx.Exec(ctx, `insert into access.person_grant(instance_id,principal_id,action,purpose,fields) select $1,$2,action,$3,$4 from unnest($5::text[]) action`, instance, subject, purpose, group.fields, []string{group.action + ".read", group.action + ".correct"}); err != nil {
+			return err
+		}
+	}
+	return nil
 }

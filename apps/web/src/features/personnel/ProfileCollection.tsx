@@ -33,6 +33,7 @@ function summaryColumns(group: Group, read: string[]) {
   } else if (isProfileItem(group)) {
     const summaryKeys: Partial<Record<Group, string[]>> = {
       addresses: ['street', 'addressCountry', 'province', 'area', 'postalCode'],
+      bankAccounts: ['branchName', 'accountHolder', 'accountNumber', 'currency'],
       family: ['relationship', 'familyPhone', 'familyEmail', 'emergency', 'employer', 'familyJob'],
       education: ['educationType', 'major', 'educationLevel', 'highestEducation', 'degree', 'highestDegree'],
       credentials: [
@@ -55,7 +56,9 @@ function summaryColumns(group: Group, read: string[]) {
               ? f[key]
                 ? '是'
                 : '否'
-              : f[key],
+              : key === 'accountNumber'
+                ? '********'
+                : f[key],
         });
   } else {
     if (read.includes('documentNumber') || read.includes('documentNumber.masked')) {
@@ -90,7 +93,14 @@ export function ProfileCollection({
 }: Props) {
   const doc = group === 'documents';
   const item = isProfileItem(group);
-  const flag = doc ? 'documentPrimary' : group === 'addresses' ? 'addressPrimary' : 'contactPrimary';
+  const flag =
+    group === 'bankAccounts'
+      ? 'bankPrimary'
+      : doc
+        ? 'documentPrimary'
+        : group === 'addresses'
+          ? 'addressPrimary'
+          : 'contactPrimary';
   const columns = summaryColumns(group, read).filter(
     (column) => !rows.length || rows.some((row) => !row.hidden?.includes(column.key)),
   );
@@ -101,6 +111,7 @@ export function ProfileCollection({
       : doc
         ? write.includes('documentKind') && write.includes('documentNumber')
         : write.includes('phone') || write.includes('email'));
+  const bank = group === 'bankAccounts';
   const records = rows.map((row) => {
     const writable = write.filter((k) => !row.locked?.includes(k));
     const field = row.fields;
@@ -150,7 +161,9 @@ export function ProfileCollection({
               <thead>
                 <tr>
                   <th scope="col">
-                    {item ? labelsByGroup[group][requiredByGroup[group][0]] : doc ? '证件类型' : '号码或邮箱'}
+                    {bank && (!read.includes('bankName') || rows.some((r) => r.hidden?.includes('bankName')))
+                      ? title
+                      : item ? labelsByGroup[group][requiredByGroup[group][0]] : doc ? '证件类型' : '号码或邮箱'}
                   </th>
                   {columns.map((c) => (
                     <th key={c.key} scope="col">
@@ -163,7 +176,9 @@ export function ProfileCollection({
               <tbody>
                 {records.map(({ row, canEdit, canMark, canRemove }) => {
                   const f = row.fields;
-                  const name = item ? f[requiredByGroup[group][0]] : doc ? kinds[f.documentKind] : f.value;
+                  const name = bank
+                    ? f.bankName || f.branchName || f.accountHolder || title
+                    : item ? f[requiredByGroup[group][0]] : doc ? kinds[f.documentKind] : f.value;
                   const primary = read.includes(flag) && !!f[flag];
                   return (
                     <tr key={row.key}>

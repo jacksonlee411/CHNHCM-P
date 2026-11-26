@@ -1,11 +1,14 @@
 package postgres
 
 import (
+	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	d "chnhcm.local/chnhcm/internal/contexts/personnel/domain"
 	"chnhcm.local/chnhcm/internal/contexts/personnel/infra/postgres/generated"
 	p "chnhcm.local/chnhcm/internal/contexts/personnel/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"context"
+	"errors"
 	"github.com/jackc/pgx/v5"
 	"slices"
 	"strings"
@@ -13,8 +16,8 @@ import (
 )
 
 func (s *Store) CreateQuery(ctx context.Context, c f.Credentials, keyword string) (string, error) {
-	return run(ctx, s, c, func(r *request) (string, error) {
-		if !r.entry().CanRead {
+	return runAuthorized(ctx, s, c, s.AuthorizeDirectory, func(r *request) (string, error) {
+		if requiredPolicy(r) != nil || !r.a.Scope("read", "name", "number").Available() {
 			return "", d.Denied()
 		}
 		if utf8.RuneCountInString(keyword) > 200 {
@@ -30,13 +33,13 @@ const directorySQL = `with visible as (
  select b.person_id,n.name,b.number,(x.number is not null and x.number<>b.number and strpos(n.name,$5)=0) historical
  from personnel.person b join personnel.identity_payload n on (b.instance_id,b.person_id,b.head)=(n.instance_id,n.person_id,n.version)
  left join personnel.number x on x.instance_id=b.instance_id and x.person_id=b.person_id and x.number=$6
- where b.instance_id=$1 and b.ordinary_until>clock_timestamp() and ($2 or b.person_id=any($3::uuid[]))
+ where b.instance_id=$1 and b.ordinary_until>$7 and ($2 or b.person_id=any($3::uuid[]))
  and not (b.person_id=any(coalesce($4::uuid[],'{}'))) and (strpos(n.name,$5)>0 or x.number is not null)
 ) `
 
-func (r *request) directory(q p.Query) (string, []any, string, error) {
+func (r *request) directory(q p.Query, renew bool) (string, []any, string, error) {
 	scope := r.a.Scope("read", "name", "number")
-	if !r.entry().CanRead {
+	if requiredPolicy(r) != nil || !scope.Available() {
 		return "", nil, "", d.Denied()
 	}
 	keyword := ""
@@ -44,7 +47,8 @@ func (r *request) directory(q p.Query) (string, []any, string, error) {
 		if !f.ValidID(q.Ref) {
 			return "", nil, "", d.Missing()
 		}
-		e := r.tx.QueryRow(r.ctx, `update personnel.query set expires_at=clock_timestamp()+interval '30 minutes' where instance_id=$1 and subject=$2 and session_id=$3 and ref=$4 and expires_at>clock_timestamp() returning keyword`, r.instance, r.a.Principal.ID, r.a.Principal.SessionID, q.Ref).Scan(&keyword)
+		var e error
+		keyword, e = r.queryKeyword(q.Ref, renew)
 		if e != nil {
 			return "", nil, "", noRows(e)
 		}
@@ -54,43 +58,105 @@ func (r *request) directory(q p.Query) (string, []any, string, error) {
 		return "", nil, "", d.Invalid("page", "名录查询条件无效")
 	}
 	number, _ := d.Number(keyword)
-	return order + ",person_id", []any{r.instance, scope.All, scope.Include, scope.Exclude, keyword, number}, keyword, nil
+	return order + ",person_id", []any{r.instance, scope.All, scope.Include, scope.Exclude, keyword, number, r.a.At}, keyword, nil
 }
+func (r *request) queryKeyword(ref string, renew bool) (string, error) {
+	stmt := `SELECT keyword FROM personnel.query WHERE instance_id=$1 AND subject=$2 AND session_id=$3 AND ref=$4 AND expires_at>clock_timestamp()`
+	if renew {
+		stmt = `UPDATE personnel.query SET expires_at=clock_timestamp()+interval '30 minutes' WHERE instance_id=$1 AND subject=$2 AND session_id=$3 AND ref=$4 AND expires_at>clock_timestamp() RETURNING keyword`
+	}
+	var keyword string
+	e := r.tx.QueryRow(r.ctx, stmt, r.instance, r.a.Principal.ID, r.a.Principal.SessionID, ref).Scan(&keyword)
+	return keyword, e
+}
+
 func (s *Store) List(ctx context.Context, c f.Credentials, q p.Query) (p.Directory, error) {
 	return run(ctx, s, c, func(r *request) (p.Directory, error) {
-		v := p.Directory{Rows: []p.Summary{}}
-		order, args, keyword, e := r.directory(q)
-		if e != nil {
-			return v, e
-		}
-		v.Keyword = keyword
-		// The left join retains the total even after revocation empties the requested page.
-		rows, e := r.tx.Query(ctx, directorySQL+` select t.total,v.person_id,v.name,v.number,v.historical from (select count(*) total from visible)t left join (select * from visible order by `+order+` limit $7 offset $8)v on true order by `+order, append(args, q.Size, (q.Page-1)*q.Size)...)
-		if e != nil {
-			return v, e
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var id, name, number *string
-			var historical *bool
-			if e = rows.Scan(&v.Total, &id, &name, &number, &historical); e != nil {
-				return v, e
-			}
-			if id != nil {
-				v.Rows = append(v.Rows, p.Summary{ID: *id, Name: *name, Number: *number, Historical: *historical})
-			}
-		}
-		return v, rows.Err()
+		return r.list(q, true)
 	})
 }
+func (r *request) list(q p.Query, renew bool) (p.Directory, error) {
+	v := p.Directory{Rows: []p.Summary{}}
+	order, args, keyword, e := r.directory(q, renew)
+	if e != nil {
+		return v, e
+	}
+	return listDirectory(r.ctx, r.tx, q, order, args, keyword)
+}
+func listDirectory(ctx context.Context, tx pgx.Tx, q p.Query, order string, args []any, keyword string) (p.Directory, error) {
+	v := p.Directory{Rows: []p.Summary{}}
+	v.Keyword = keyword
+	// The left join retains the total even after revocation empties the requested page.
+	rows, e := tx.Query(ctx, directorySQL+` select t.total,v.person_id,v.name,v.number,v.historical from (select count(*) total from visible)t left join (select * from visible order by `+order+` limit $8 offset $9)v on true order by `+order, append(args, q.Size, (q.Page-1)*q.Size)...)
+	if e != nil {
+		return v, e
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id, name, number *string
+		var historical *bool
+		if e = rows.Scan(&v.Total, &id, &name, &number, &historical); e != nil {
+			return v, e
+		}
+		if id != nil {
+			v.Rows = append(v.Rows, p.Summary{ID: *id, Name: *name, Number: *number, Historical: *historical})
+		}
+	}
+	return v, rows.Err()
+}
+
+// OpenDirectory resolves the session-owned query, grants, and retention clock
+// once for all projections made in this transaction.
+func (s *Store) OpenDirectory(ctx context.Context, c f.Credentials, q p.Query) (p.DirectoryLookup, error) {
+	tx, ok := dbtx.From(ctx)
+	if !ok {
+		return nil, errors.New("directory lookup requires caller transaction")
+	}
+	access, _, err := s.AuthorizeDirectory(ctx, tx, c)
+	if err != nil {
+		return nil, err
+	}
+	r := request{ctx: ctx, tx: tx, a: access, instance: access.Principal.InstanceID}
+	order, args, keyword, err := r.directory(q, false)
+	if err != nil {
+		return nil, err
+	}
+	return &directoryLookup{ctx: ctx, tx: tx, q: q, store: s, owner: access.Principal, order: order, args: args, keyword: keyword}, nil
+}
+
+type directoryLookup struct {
+	store          *Store
+	owner          access.Principal
+	ctx            context.Context
+	tx             pgx.Tx
+	q              p.Query
+	order, keyword string
+	args           []any
+}
+
+// Renew the exact session-owned reference after the authorized read commits.
+// Updating it in a separate statement lets concurrent list and detail reads
+// share the reference without serializing their repeatable-read transactions.
+func (v *directoryLookup) Renew(ctx context.Context) error {
+	tag, err := v.store.Pool.Exec(ctx, `UPDATE personnel.query SET expires_at=clock_timestamp()+interval '30 minutes'
+ WHERE instance_id=$1 AND subject=$2 AND session_id=$3 AND ref=$4 AND expires_at>clock_timestamp()`, v.owner.InstanceID, v.owner.ID, v.owner.SessionID, v.q.Ref)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() != 1 {
+		return d.Missing()
+	}
+	return nil
+}
+
 func (s *Store) Navigation(ctx context.Context, c f.Credentials, id string, q p.Query) (p.Nav, error) {
 	return run(ctx, s, c, func(r *request) (p.Nav, error) {
 		var v p.Nav
-		order, args, _, e := r.directory(q)
+		order, args, _, e := r.directory(q, true)
 		if e != nil {
 			return v, e
 		}
-		e = r.tx.QueryRow(ctx, directorySQL+`, positions as (select person_id,row_number() over w pos,count(*) over () total,lag(person_id) over w prev,lead(person_id) over w next from visible window w as (order by `+order+`)) select pos,total,coalesce(prev::text,''),coalesce(next::text,'') from positions where person_id=$7`, append(args, id)...).Scan(&v.Position, &v.Total, &v.Prev, &v.Next)
+		e = r.tx.QueryRow(ctx, directorySQL+`, positions as (select person_id,row_number() over w pos,count(*) over () total,lag(person_id) over w prev,lead(person_id) over w next from visible window w as (order by `+order+`)) select pos,total,coalesce(prev::text,''),coalesce(next::text,'') from positions where person_id=$8`, append(args, id)...).Scan(&v.Position, &v.Total, &v.Prev, &v.Next)
 		return v, noRows(e)
 	})
 }
@@ -107,7 +173,7 @@ func (r *request) editable(id string) []string {
 		}
 	}
 	for _, s := range d.ItemSections {
-		if !r.itemRead(s, id, "", s.Required[0]) {
+		if !r.itemVisible(s, id, "") {
 			continue
 		}
 		for _, k := range s.Fields {
@@ -116,6 +182,9 @@ func (r *request) editable(id string) []string {
 			}
 		}
 	}
+	if r.healthWritable(id) {
+		fields = append(fields, "healthSummary")
+	}
 	return fields
 }
 func validItemView(view, prefix string) bool {
@@ -123,7 +192,7 @@ func validItemView(view, prefix string) bool {
 	return ok && f.ValidID(id)
 }
 func (s *Store) Detail(ctx context.Context, c f.Credentials, id, version, view string) (p.Detail, error) {
-	if view != "" && view != "fullDocument" && !(version == "" && (view == "edit" || validItemView(view, "document-") || validItemView(view, "credential-"))) {
+	if view != "" && view != "fullDocument" && !(version == "" && (view == "edit" || validItemView(view, "document-") || validItemView(view, "credential-") || validItemView(view, "bank-"))) {
 		return p.Detail{}, d.Invalid("view", "无效的查看方式")
 	}
 	return run(ctx, s, c, func(r *request) (p.Detail, error) {
@@ -196,6 +265,7 @@ func (r *request) detail(id, version string, exactSource bool, view string) (p.D
 		out.Decision = nil
 		r.projectProfile(v, &out, view)
 		r.projectItems(v, &out, view)
+		r.projectHealth(v, &out)
 		out.Editable = r.editable(id)
 		if !r.a.At.Before(v.materialUntil) {
 			out.Editable = slices.DeleteFunc(out.Editable, func(v string) bool { return v == "evidence" })
@@ -284,4 +354,108 @@ func (s *Store) GetRecordedNumber(ctx context.Context, c f.Credentials, id, vers
 		return "", d.Missing()
 	}
 	return source.Number, nil
+}
+
+// Page expands only caller-authorized rows before counting and paging.
+func (v *directoryLookup) Page(keys []p.DirectoryKey, anchor string) (out p.IndexedDirectory, err error) {
+	ctx, tx, order, q := v.ctx, v.tx, v.order, v.q
+	args := slices.Clone(v.args)
+	out.Keyword = v.keyword
+	// Without replacement rows or an anchor this is exactly the ordinary
+	// personnel page. Avoid expanding and sorting a second copy of the set.
+	if len(keys) == 0 && anchor == "" {
+		page, err := listDirectory(ctx, tx, q, order, args, v.keyword)
+		if err != nil {
+			return out, err
+		}
+		out.Total = page.Total
+		for _, summary := range page.Rows {
+			out.Rows = append(out.Rows, p.IndexedPerson{Summary: summary, Key: summary.ID})
+		}
+		return out, nil
+	}
+	var ids, people []string
+	var orders []int
+	for _, k := range keys {
+		ids = append(ids, k.ID)
+		people = append(people, k.Person)
+		orders = append(orders, k.Order)
+	}
+	args = append(args, ids, people, orders)
+	base := directorySQL + `, indexed AS (
+ SELECT v.*,coalesce(k.id,v.person_id) row_id,coalesce(k.ordinal,0) ordinal FROM visible v
+ LEFT JOIN unnest($8::uuid[],$9::uuid[],$10::int[]) k(id,person,ordinal) ON k.person=v.person_id
+ ) `
+	order += ",ordinal,row_id"
+	// Read one neighbour on each side of the requested page. A selected row
+	// on this page can return its exact navigation without ranking every row.
+	offset := (q.Page - 1) * q.Size
+	start := max(0, offset-1)
+	rows, err := tx.Query(ctx, base+`SELECT counts.total,v.person_id,v.name,v.number,v.historical,v.row_id
+ FROM (SELECT count(*) total FROM indexed)counts LEFT JOIN (SELECT * FROM indexed ORDER BY `+order+` LIMIT $11 OFFSET $12)v ON true ORDER BY `+order, append(args, q.Size+1+offset-start, start)...)
+	if err != nil {
+		return out, err
+	}
+	var page []p.IndexedPerson
+	for rows.Next() {
+		var id, name, number, row *string
+		var historical *bool
+		if err = rows.Scan(&out.Total, &id, &name, &number, &historical, &row); err != nil {
+			rows.Close()
+			return out, err
+		}
+		if id != nil {
+			page = append(page, p.IndexedPerson{Summary: p.Summary{ID: *id, Name: *name, Number: *number, Historical: *historical}, Key: *row})
+		}
+	}
+	rows.Close()
+	if err = rows.Err(); err != nil {
+		return out, err
+	}
+	first := min(offset-start, len(page))
+	end := min(first+q.Size, len(page))
+	out.Rows = page[first:end]
+	if anchor == "" {
+		return out, nil
+	}
+	for i := first; i < end; i++ {
+		if page[i].Key == anchor {
+			out.Nav.Position = start + i + 1
+			if i > 0 {
+				out.Nav.Prev = page[i-1].Key
+			}
+			if i+1 < len(page) {
+				out.Nav.Next = page[i+1].Key
+			}
+			return out, nil
+		}
+	}
+	err = tx.QueryRow(ctx, base+`, positions AS (
+ SELECT row_id,row_number() OVER w pos,lag(row_id) OVER w prev,lead(row_id) OVER w next FROM indexed WINDOW w AS (ORDER BY `+order+`))
+ SELECT pos,coalesce(prev::text,''),coalesce(next::text,'') FROM positions WHERE row_id=$11`, append(args, anchor)...).Scan(&out.Nav.Position, &out.Nav.Prev, &out.Nav.Next)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return out, nil
+	}
+	return out, err
+}
+
+// RecognizedPeople discloses only directory identity fields for the supplied candidates.
+// The consumer intersects these with its own authorized records before sorting or counting.
+func (s *Store) RecognizedPeople(ctx context.Context, c f.Credentials, ids []string, ref string) ([]p.Summary, string, error) {
+	v, err := s.OpenDirectory(ctx, c, p.Query{Ref: ref, Page: 1, Size: 20})
+	if err != nil {
+		return nil, "", err
+	}
+	return v.Candidates(ids)
+}
+func (v *directoryLookup) Candidates(ids []string) ([]p.Summary, string, error) {
+	if len(ids) == 0 {
+		return nil, v.keyword, nil
+	}
+	rows, err := v.tx.Query(v.ctx, directorySQL+` SELECT person_id,name,number,historical FROM visible WHERE person_id=ANY($8::uuid[])`, append(slices.Clone(v.args), ids)...)
+	if err != nil {
+		return nil, "", err
+	}
+	values, err := pgx.CollectRows(rows, pgx.RowToStructByPos[p.Summary])
+	return values, v.keyword, err
 }

@@ -20,6 +20,11 @@ func (s ItemSection) Validate(fields map[string]string) error {
 		}
 	}
 	switch s.Name {
+	case BankAccounts.Name:
+		if BankNumberKey(fields["accountNumber"]) == "********" {
+			return Invalid("accountNumber", "请填写实际银行账号")
+		}
+		return nil
 	case Education.Name:
 		return validateEducation(fields)
 	case Credentials.Name:

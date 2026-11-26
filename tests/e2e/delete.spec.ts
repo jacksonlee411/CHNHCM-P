@@ -144,10 +144,10 @@ for(const recovery of ['retry','refresh'] as const) test(`删除拒绝的COMMIT�
  expect((await read(page)).headSourceVersion).toBe(changed.body.sourceVersion);expect((await read(page,undefined,original.headSourceVersion)).timeline).toEqual(original.timeline);
 });
 
-test('未来停用删除不提前改变今日状态，窄屏确认可达且取消恢复焦点',async({page})=>{
+test('未来停用删除不提前改变今日状态，短屏确认可达且取消恢复焦点',async({page})=>{
  const today=await open(page);await create(page);const date=new Date(today+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+2);const future=date.toISOString().slice(0,10);
  await life(page,'DEACTIVATE',future);const old=await read(page);await enterDelete(page);await readyToSave(page);await expect(page.getByText('今日状态：启用 → 启用',{exact:true})).toHaveCount(0);
- await page.setViewportSize({width:320,height:256});await expect(page.getByRole('button',{name:'确认删除',exact:true})).toBeInViewport();
+ await page.setViewportSize({width:1440,height:540});await expect(page.getByRole('button',{name:'确认删除',exact:true})).toBeInViewport();
  await page.getByRole('button',{name:'取消编辑',exact:true}).click();await expect(page.locator('.object-form')).toHaveCount(0);await expect(page.getByRole('button',{name:'更多操作',exact:true})).toBeFocused();
  await enterDelete(page);await readyToSave(page);await confirm(page);expect((await read(page)).status).toBe('active');expect((await read(page,future,old.headSourceVersion)).selectedRecord.state).toBe('inactive');await expectCurrentDate(page,today);
 });

@@ -367,15 +367,15 @@
       "modules": [
         "M02"
       ],
-      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，视口与原生缩放按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。",
+      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，桌面视口、原生缩放与手机端专项的适用范围按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。",
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 对照现行合同与人员实页验收记录复核",
-        "scope": "第 2.4.1 节详情正文的阅读顺序、可见记录摘要、行操作和范围，以及与第 6.2 节视口和缩放规则的衔接。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 按用户采纳的桌面交付范围复核",
+        "scope": "第 6.2 节桌面常规矩阵、关键流程原生缩放、专项触发与旧要求替代关系；对象合同、接入模板及用例的对应范围。",
         "result": "accepted",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/012-desktop-page-acceptance.md"
       },
       "execution_status": null,
       "superseded_by": [
@@ -2757,11 +2757,11 @@
       "scope": "直接入职的材料、主体、岗位模式、主选择、同日动作及分批验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理办理负担与实施范围复核",
-        "scope": "已有身份来源、无编号任用依据、必要决定、岗位期间、主选择和稳定验收场景。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "复核普通更正的原依据、原通知或一条误录原因撤销晋升，以及独立调动、必要依赖和旧来源。",
         "result": "accepted",
-        "evidence": "docs/verification/400-hire-simplification.md"
+        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2784,14 +2784,14 @@
         "M03",
         "X03"
       ],
-      "scope": "主体用途、岗位政策与员工入职入口的字段、权限、日期、办理原件及恢复。",
+      "scope": "主体用途、岗位政策与员工入职字段，以及从职务信息承接原办理、原件与恢复。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理办理负担与实施范围复核",
-        "scope": "原档直办、按需补证、自动带入和分段、取消及原办理历史。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对人员档案发起首聘、保存后定位 0 号以及原任职地址、未来首单撤销的入口。",
         "result": "accepted",
-        "evidence": "docs/verification/400-hire-simplification.md"
+        "evidence": "docs/verification/506-job-information-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2814,14 +2814,14 @@
         "M03",
         "X03"
       ],
-      "scope": "入职来源的公开端口、分段采用、业务唯一性、主选择与动作修订、失败恢复及升级验证。",
+      "scope": "入职来源、分段采用、业务唯一性、主选择、动作修订与恢复、首单升级、跨人员办理查询及同日共同提交。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理办理负担与实施范围复核",
-        "scope": "窄核对端口、按来源防重、仅对采用资源做事务校验、后继处理和分批验证。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对旧首单接入 0 号、首笔在职写入的升级时点、动作修订及按能力衔接原回执与双入口。",
         "result": "accepted",
-        "evidence": "docs/verification/400-hire-simplification.md"
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2845,14 +2845,14 @@
         "M05",
         "X03"
       ],
-      "scope": "人员名录与登记、用工任职及招聘交接的交付顺序、页面继承、事实归属及独立验收。",
+      "scope": "人员名录与登记、用工任职、跨员工办理记录及招聘交接的交付顺序、页面继承、事实归属及独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "两轮独立 Codex 规格评审与首轮修订复核",
-        "scope": "复核人员详情与办理日志继承标准的范围和人员特有的敏感资料读取。",
+        "date": "2026-11-25",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "复核第 6.3 节十阶段的产品范围、106 同日来源、岗位及录用衔接、4386 操作样本与最终候选和主线结果。",
         "result": "accepted",
-        "evidence": "docs/verification/500-personnel-change-log.md"
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
       },
       "execution_status": "in_progress",
       "superseded_by": [],
@@ -2899,14 +2899,14 @@
         "M01",
         "X03"
       ],
-      "scope": "人员菜单、逐页标准继承、登记、个人资料正文与明细、证件维护、改号、历史与返回。",
+      "scope": "人员菜单、详情各面板授权、登记、个人资料与明细、证件维护、改号、人员历史与返回。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 对照登记及个人资料入口复核",
-        "scope": "区分登记表与在档多条资料的布局、移除与撤下主要、记录入口与整页保存，以及 501、505 的专项验收。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "复核人员菜单按授权进入员工或人事事务、人员档案与任职行的原有入口。",
         "result": "accepted",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2962,9 +2962,12 @@
         "result": "accepted",
         "evidence": "docs/plans/504-personal-profile-extension.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
+      "closure": {
+        "date": "2026-11-24",
+        "reason": "四批完成当前 M01 的九栏维护、21 个弹框组合和万人容量验收。真实主岗与兼岗共享由 T04 接续。"
+      },
       "archive": null
     },
     {
@@ -2983,15 +2986,135 @@
       "scope": "九栏字段和多条资料、同人共享、敏感字段授权、整页办理、事务边界与独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 对照首批实页与字段授权复核",
-        "scope": "复核基本信息与多条摘要的断点、阅读和键盘顺序，018 的正文验收与 020 的逐行弹框和共用布局验收。",
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对一人一份资料、0 号及人员档案入口、兼岗详情的页签边界与九栏整页保存。",
         "result": "accepted",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/506-job-information-design-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
       "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-506",
+      "title": "M04 职务信息与任职记录业务规则",
+      "path": "docs/specs/m04/506-job-information-records.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing、人事业务及 Access 维护者",
+      "owner": null,
+      "status": "active",
+      "type": "business_spec",
+      "modules": ["M04", "M03", "X03"],
+      "scope": "主兼岗、再聘、记录操作与类型绑定，以及同日晋升、调动、转正的日状态、来源、计数与部门归属。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对同日联验所需试用、职级及兼岗的业务来源，以及分批使用原有验收样本的范围。",
+        "result": "accepted",
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-507",
+      "title": "人员详情职务信息与人事事务办理记录页面设计",
+      "path": "docs/specs/m04/507-job-information-tab.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing、Personnel、体验及 Access 维护者",
+      "owner": null,
+      "status": "active",
+      "type": "functional_spec",
+      "modules": ["M01", "M04", "X03"],
+      "scope": "部门树联动的任职行、主兼岗职务信息、日期轴、跨员工办理列表、原笔维护及两个入口的返回与验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理文档复核",
+        "scope": "核对各阶段的档案、任职与原笔入口，离职间隔的再聘路径及跨人办理查询分批验收。",
+        "result": "accepted",
+        "evidence": "docs/verification/500-job-information-delivery-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-508",
+      "title": "人员职务信息评审问题修复实施方案",
+      "path": "docs/plans/508-job-information-remediation.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing、Personnel、Recruiting、体验及验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": ["M04", "M01", "M05", "X03"],
+      "scope": "500 第 6.3 节六项实测问题的修复次序、旧数据及授权保护、正常菜单与实库重新验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-25",
+        "reviewer": "Codex 主代理起草后进行语义评审及修订复审",
+        "scope": "对照六项反例和现行实现，核对同日引用、历史重算与旧库处置、回执与现权、查询及菜单验收。",
+        "result": "accepted",
+        "evidence": "docs/verification/508-job-information-remediation-review.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {"date": "2026-11-25", "reason": "六项修复及相关回归已通过，固定 f 原库完成 00056 升级和 24 项菜单复验。"},
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-509",
+      "title": "在职变动、结束与再聘复评问题修复方案",
+      "path": "docs/plans/509-t04-remediation.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing、Personnel、Recruiting、体验与验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": ["M04", "M01", "M03", "M05", "X03"],
+      "scope": "500 第 6.3 节新发现的 27 项问题的 Go 业务、跨域和交互修复、旧数据处置及原环境验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-25",
+        "reviewer": "三位分项独立评审、领域和交互回审及另一位整案独立终审",
+        "scope": "27 项逐项方案、原合同、持久数据、并发及页面真实验收判据",
+        "result": "accepted",
+        "evidence": "docs/verification/509-t04-remediation-review.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {"date": "2026-11-25", "reason": "27 项修复及 508 原六项回归通过，固定 f 原库前向升级至 00057 并完成菜单复验。"},
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-510",
+      "title": "人员页面二十项问题整改与验收",
+      "path": "docs/plans/510-personnel-page-remediation.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Personnel、Staffing、Recruiting、体验与验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": ["M01", "M04", "M05", "X03"],
+      "scope": "500-UI-01 至 20 的人员入口、按权名录、详情与准确来源、交互及固定环境验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-26",
+        "reviewer": "Codex 两组独立方案评审",
+        "scope": "二十项逐项整改、名录授权与容量、办理原件可达性和分步验收",
+        "result": "accepted",
+        "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {"date": "2026-11-26", "reason": "二十项页面整改已逐项复验，固定 f 原库完成桌面交接，定向业务回归及两套万人容量试验通过。"},
       "archive": null
     }
   ],
@@ -3158,59 +3281,6 @@
         ]
       },
       {
-        "path": "docs/verification/504-personal-profile-third-batch.md",
-        "related_documents": [
-          "CHNHCM-003",
-          "CHNHCM-012",
-          "CHNHCM-502",
-          "CHNHCM-504",
-          "CHNHCM-505"
-        ],
-        "format": "numbered",
-        "status": "final",
-        "date": "2026-11-24",
-        "base_commit": "91730333ffd8b5bcce2d47a7ccea2e505a59cb55",
-        "working_tree": "clean",
-        "change_description": "人员原档新增三类教育行、独立最高标记、专业凭证及其用途授权。",
-        "environment": "私仓 f 的原始固定环境及 PostgreSQL、Go HTTP、Chromium 结果见第 1—4 节。公共 f 在主机 3 的独立可丢弃环境复验，见第 5 节。",
-        "scope": "014、016、017、019 第三批场景和 020 两栏六个组合，00036 备份升级、处置恢复、旧路径及 4380 正常菜单。",
-        "results": [
-          {
-            "check": "私仓原验收：未填证号的凭证仍显示查看完整号码，独立断言复现",
-            "result": "failed",
-            "evidence": "docs/verification/504-personal-profile-third-batch.md"
-          },
-          {
-            "check": "私仓原验收：修正后 34 项人员浏览器回归、实库失败与恢复、行字段授权及原档查回",
-            "result": "passed",
-            "evidence": "docs/verification/504-personal-profile-third-batch.md"
-          },
-          {
-            "check": "私仓原验收：并行容量首轮两条 20 会话链路超过 500 毫秒",
-            "result": "failed",
-            "evidence": "docs/verification/504-personal-profile-third-batch.md"
-          },
-          {
-            "check": "私仓原验收：同候选同阈值独立容量复验，持久环境原表、构建与实机菜单验收",
-            "result": "passed",
-            "evidence": "docs/verification/504-personal-profile-third-batch.md"
-          },
-          {
-            "check": "第四批账户、健康、九栏容量及 T04 兼岗共享",
-            "result": "not_run",
-            "evidence": "docs/plans/504-personal-profile-extension.md"
-          },
-          {
-            "check": "公共基线及旧 f 账本升级、教育凭证与首单回归，17 个实库测试根和 12 项 Chromium 通过",
-            "result": "passed",
-            "evidence": "docs/verification/504-personal-profile-third-batch.md"
-          }
-        ],
-        "limitations": [
-          "仅本地产品验收。九栏完整容量和真实多任职随对应批次。"
-        ]
-      },
-      {
         "path": "docs/verification/027-x03-grant-cutover.md",
         "related_documents": [
           "CHNHCM-027",
@@ -3270,6 +3340,597 @@
         ],
         "limitations": [
           "管理页面、客户管理员引导与恢复、页面撤权后的真实启动走查由 T04、T05 接续。"
+        ]
+      },
+      {
+        "path": "docs/verification/012-desktop-page-acceptance.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-023",
+          "CHNHCM-121",
+          "CHNHCM-124",
+          "CHNHCM-308",
+          "CHNHCM-310",
+          "CHNHCM-312",
+          "CHNHCM-315",
+          "CHNHCM-402",
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-502",
+          "CHNHCM-505",
+          "CHNHCM-507"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b1fbac7909b23aea44eec76afcf09b2d67a109dc",
+        "working_tree": "dirty",
+        "change_description": "采用桌面交付范围，调整共享合同、对象引用和浏览器取样。",
+        "environment": "wt-dev-f，独立本地 PostgreSQL、Chromium 和同工作树服务。",
+        "scope": "桌面标准屏、短屏、原生缩放、手机视口退出默认集及业务断言迁移。",
+        "results": [
+          {
+            "check": "默认 Playwright 实际发现由 800 项变为 678 项，均为 70 个入口文件",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "旧再聘断言查找内部编号、固定构建不提供两条夹具入口、移动配置时工作进程引用旧路径",
+            "result": "failed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "按现行用例名去重实测通过 47 项，既有失败场景均复验通过",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "岗位经办人已知风险和一级菜单显式 400% 均保留，菜单实测 640×450／320×225",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          }
+        ],
+        "limitations": [
+          "678 项属于完整收集清单，未执行全套浏览器或远程 CI。各组共享企业前置，组间通过数不可直接相加。"
+        ]
+      },
+      {
+        "path": "docs/verification/510-personnel-page-remediation-implementation.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-123",
+          "CHNHCM-500",
+          "CHNHCM-502",
+          "CHNHCM-507",
+          "CHNHCM-510"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b03a20b10cc01f0cdde08b717d31cdf79c60832a",
+        "working_tree": "clean",
+        "change_description": "受测产品为 b03a20b，固定构建 eb44651 仅多出证据提交；补录固定环境 27 张与副本 7 张实操截图。",
+        "environment": "固定 f 原库 m01-profile-f（4386／8386／54376）、其一次性副本及独立 PostgreSQL、Chromium。",
+        "scope": "本人名录、页签、日期、跨人办理、表单、来源与原行恢复。",
+        "results": [
+          {
+            "check": "两组复核初版发现授权、原行、草稿与零交集问题",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "56e59cd 两组分别复核原问题通过，后续 b03a20b 复用已获权分页",
+            "result": "passed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "多人名录负载首测及和其它重负载同时运行时超过 500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "隔离运行两套万人容量试验共 3600 次，18 组全部通过",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          },
+          {
+            "check": "181 项浏览器组合首跑在第 25 项中断，包含失败",
+            "result": "interrupted",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "19 项定向 Chromium 和两包中 12 项数据库用例",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          },
+          {
+            "check": "首次默认全量集成运行 20 分钟超时",
+            "result": "interrupted",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "二十项逐项操作和共享页面对照、34 张截图",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/observations.json"
+          },
+          {
+            "check": "4386 实际桌面、短屏、200% 及 131 张原数据表升级前后比对",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          }
+        ],
+        "limitations": [
+          "全量数据库和最初的 181 项浏览器组合未取得整组通过结果。后续按影响范围复跑。",
+          "固定库实操使用合成样本，双窗保存于原库副本进行。未运行远程 CI。"
+        ]
+      },
+      {
+        "path": "docs/verification/510-personnel-page-remediation-review.md",
+        "related_documents": [
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-503",
+          "CHNHCM-507",
+          "CHNHCM-510"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "6a196cbc7ae9a034587e1281bf5b09e62f0015a8",
+        "working_tree": "clean",
+        "change_description": "记录初审要求、修订与同版本独立复审。",
+        "environment": "固定 f，本地代码、合同和浏览器调查证据。",
+        "scope": "二十项整改、依赖次序、名录容量和取消后历史可达性。",
+        "results": [
+          {
+            "check": "初审 a598922",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+          },
+          {
+            "check": "两组复审 6a196cb",
+            "result": "passed",
+            "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+          }
+        ],
+        "limitations": [
+          "方案评审通过，产品验收另行记录。"
+        ]
+      },
+      {
+        "path": "docs/verification/500-personnel-entry-and-date-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-123", "CHNHCM-124", "CHNHCM-313", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+        "working_tree": "dirty",
+        "change_description": "受测时工作树已有上一轮 500 页面问题登记、截图及索引的未提交改动。固定构建清单的起点为 39660e7，1,157 个前端和共享源文件与本树相符，在线的 28 个文件均匹配。接续登记入口、页签、生效日期和相邻流程的 9 项开放问题。",
+        "environment": "wt-dev-f 的固定 m01-profile-f，Web 4386、API 8386、DB 54376，有界面 Chromium 140.0.7339.186，本地合成样本。",
+        "scope": "正常菜单中的人员列表和详情、职务信息、本人多任职与办理历史，按四轮核对同构建的参考页面、专项日期任务、实施合同及浏览器断言。本人和任职详情覆盖五种 100% 视口及关键流程原生 200%。",
+        "results": [
+          {"check": "用户指出的四项，500-UI-12 至 15，普通人员入口、本人页签、日期轴对齐及常驻查看日期", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
+          {"check": "500-UI-16 至 20，多任职选择、菜单当前项、办理历史日期、返回动作名称及日期轴顺序", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
+          {"check": "只读者的资料入口、首聘到岗日、办理期间筛选、部门编制指定日统计及参考日期轴", "result": "passed", "evidence": "docs/verification/data/500-personnel-entry-and-date-review/observations.json"},
+          {"check": "本次 9 项问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"}
+        ],
+        "limitations": ["固定环境使用现有合成样本，仅执行浏览、读取、选择及取消。", "固定清单与本树另有 4 个后端集成测试和 3 个生成模型不同。此次未复跑全套业务、权限动态变更或原生 400%，结论限定在记录的实页路径。"]
+      },
+      {
+        "path": "docs/verification/500-personnel-page-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-505", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+        "working_tree": "clean",
+        "change_description": "登记 500 页面专项实测的 11 项开放问题，高 2 项、中 8 项、低 1 项，建议暂缓页面专项验收。",
+        "environment": "wt-dev-f，固定 m01-profile-f（Web 4386 / API 8386 / DB 54376），有界面 Chromium 140.0.7339.186，管理员、只读账号及合成样本。正式保存与动态授权另用一次性 PostgreSQL 环境。",
+        "scope": "对照业务单元及职务参考页，审查人员、任职、跨员工办理、合同及录用的列表、详情、页签、时间轴、表单和返回。五种 100% 视口，关键交互原生 200%，只读明细补查 400%。",
+        "results": [
+          {"check": "500-UI-01 至 02，跨员工更正的本人标识、旧办理修订与当次任职的来源", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "500-UI-03 至 10，跨页定位、撤销状态、生效日期、详情和页签、整单操作、列表筛选与排序", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "500-UI-11，登记姓名的可见及辅助技术必填标识", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "两岗一人的去重计数、档案草稿放弃、合同前后继与原件返回的指定样本", "result": "passed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "首轮企业维护前置 4 项通过、1 项请求失败，人员 3 项未启动", "result": "failed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
+          {"check": "人员 3 项独立浏览器复跑，包括地点保存及更正、仅见兼岗、动态授权", "result": "passed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
+          {"check": "11 项页面问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-page-review.md"}
+        ],
+        "limitations": [
+          "固定验收库使用现有合成样本，草稿取消。原生 400% 仅核对只读资料行明细及退出归焦。",
+          "三个用例的 Playwright 结果为通过，外层进程返回 143。临时资源已回收。此次为页面专项，未重验全套业务、并发或数据库不变量。"
+        ]
+      },
+      {
+        "path": "docs/verification/509-t04-remediation-implementation.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "39660e70ded3257fe0c3e483e694dbe12f81bc2b",
+        "working_tree": "dirty",
+        "change_description": "落实 T04 复评的 27 项发现，核对原业务、旧库和页面。",
+        "environment": "固定 f 工作树，隔离 PostgreSQL 和 Chromium，手工环境 4386。",
+        "scope": "T04 十阶段及 508 六项的相关人员、岗位、录用、页面与保留数据。验证 27 项修复及固定 4386 交接。",
+        "results": [
+          {"check": "早期实库及菜单回归暴露调入部门、办理导航和员工列表返回等问题", "result": "failed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
+          {"check": "49 项 PostgreSQL 回归、旧库升级与重跑、稳定决定及字段授权专项", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
+          {"check": "最新候选 143 项完整菜单、五种 100% 视口、原生 200% 及独立反例复验", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
+          {"check": "固定原库 00057、原样本及 24 项菜单、36 张业务表和四张授权表全行比对", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
+          {"check": "文档、边界、Go、前端类型、OpenAPI 客户端一致性及差异检查", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"}
+        ],
+        "limitations": ["2026-11-25 的实测覆盖本地工作树和固定 f。原生 400% 沿用 508 已确认范围，本次未执行。主线集成以随后 PR 的正式检查为准。"]
+      },
+      {
+        "path": "docs/verification/509-t04-remediation-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-313", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "39660e70ded3257fe0c3e483e694dbe12f81bc2b",
+        "working_tree": "dirty",
+        "change_description": "记录 27 项修复方案的独立评审、修改与复审。",
+        "environment": "固定 f 的产品源码、现行合同及前轮实库和菜单记录。",
+        "scope": "509 的分批依赖、交易边界、历史和数据处置、交互与逐项验收。",
+        "results": [
+          {"check": "首轮领域、同日动作及页面三方独立审查", "result": "failed", "evidence": "docs/verification/509-t04-remediation-review.md"},
+          {"check": "修订分项回审及第二轮整案独立评审", "result": "passed", "evidence": "docs/verification/509-t04-remediation-review.md"}
+        ],
+        "limitations": ["此记录评价实施方案。产品结果由本次产品验证记录单列。"]
+      },
+      {
+        "path": "docs/verification/500-t04-implementation-rereview.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-026",
+          "CHNHCM-106",
+          "CHNHCM-121",
+          "CHNHCM-313",
+          "CHNHCM-401",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-508"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "39660e70ded3257fe0c3e483e694dbe12f81bc2b",
+        "working_tree": "clean",
+        "change_description": "七轮独立复评已提交的 T04 十阶段及 508 六项修复，共 27 项开放问题，P1 有 11 项、P2 有 16 项。第七轮无新增，整体暂缓验收。",
+        "environment": "独立 PostgreSQL 18.6 与真实 HTTP、隔离 Chromium 菜单，以及固定 f 的 m01-profile-f 合成样本只读复查。",
+        "scope": "500 第 6.3 节阶段 1 至 10，包括 508 六项及其相邻业务、012/507 页面交互。",
+        "results": [
+          {
+            "check": "历史后继与归属、重复兼岗、内部接任名额、处置后撤首聘、退出与已核实履职冲突",
+            "result": "failed",
+            "evidence": "docs/verification/500-t04-implementation-rereview.md"
+          },
+          {
+            "check": "办理影响确认、跨任职转正与来源、历史刷新、并发恢复及菜单导航",
+            "result": "failed",
+            "evidence": "docs/verification/500-t04-implementation-rereview.md"
+          },
+          {
+            "check": "按名称去重的 34 个实库/API 仓内用例，含旧版前向修正与旧原件读回",
+            "result": "passed",
+            "evidence": "docs/verification/500-t04-implementation-rereview.md"
+          },
+          {
+            "check": "独立环境的 136 项正式浏览器用例，含 5 项前置",
+            "result": "passed",
+            "evidence": "docs/verification/500-t04-implementation-rereview.md"
+          },
+          {
+            "check": "固定 f 的离职发生部门、档案选日与刷新、录用改期与取消三项原回归",
+            "result": "passed",
+            "evidence": "docs/verification/500-t04-implementation-rereview.md"
+          },
+          {
+            "check": "末轮独立复现上一轮两项，另核两岗、合同、录用改期和菜单草稿，去重后无新增",
+            "result": "passed",
+            "evidence": "docs/verification/500-t04-implementation-rereview.md"
+          }
+        ],
+        "limitations": [
+          "五种 100% 视口及原生 200% 实测，原生 400% 专项依 508 既有决定未执行。固定 f 原库只读，新反例使用合成数据。",
+          "评审基线为固定 f 本地提交，远端发布与人工业务签收另行记录。"
+        ]
+      },
+      {
+        "path": "docs/verification/508-job-information-implementation.md",
+        "related_documents": [
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-508"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "d981fed840d374837f1797001af444fe94c2db6f",
+        "working_tree": "dirty",
+        "change_description": "实施六项修复、00056 回执返回任职、关系核对升级器和实库及菜单回归。",
+        "environment": "隔离 PostgreSQL 18.6 与真实 API、Chromium 五种视口及原生 200%，固定 m01-profile-f（4386/8386/54376）原库 00056。",
+        "scope": "508 六项原反例、当前及旧来源、现权、双连接、前向升级与固定 f 交接。",
+        "results": [
+          {
+            "check": "原产品实库四组及固定库三项只读反例",
+            "result": "failed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "首轮全菜单双岗点击超时及样本政策冲突（120 通过、16 失败）",
+            "result": "failed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "30 个受影响实库顶层用例，含回执和两种旧库恢复",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "最终 136 项菜单与五种视口及原生 200%",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "原固定环境 24 项和 29 张表的前后内容摘要",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          },
+          {
+            "check": "可重复生成、文档、代码边界、质量及空白检查",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-implementation.md"
+          }
+        ],
+        "limitations": [
+          "本验收对应 d981fed8 加工作区修复候选和固定 f。原生 400% 已由用户取消，数据库回归按改动范围实测。"
+        ]
+      },
+      {
+        "path": "docs/verification/508-job-information-remediation-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "d981fed840d374837f1797001af444fe94c2db6f",
+        "working_tree": "dirty",
+        "change_description": "新增 508 实施方案和方案评审记录，并在文档索引与 500 第 6.3 节接续原交付。",
+        "environment": "固定 f 本地文档工作区、d981fed8 产品源码与上轮同版实库和菜单的复核证据。",
+        "scope": "六项产品反例的根因、实施可行性、已有数据处置、复验判据和业务交接。",
+        "results": [
+          {"check": "六项原反例、业务合同和当前代码逐项对照", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
+          {"check": "首轮方案意见修订、六种登记顺序及归属与授权计数复算", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
+          {"check": "文档治理、源码边界、变更链接锚点及空白检查", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
+          {"check": "修复版本的数据库、API 和菜单验收", "result": "not_run", "evidence": "docs/plans/508-job-information-remediation.md"}
+        ],
+        "limitations": ["本次交付实施方案及其文档评审。新实现、旧库纠正和产品重新验收随实施执行。"]
+      },
+      {
+        "path": "docs/verification/500-job-information-delivery-review.md",
+        "related_documents": ["CHNHCM-106", "CHNHCM-313", "CHNHCM-400", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-25",
+        "base_commit": "dfd495542ac60a610dacb0d71dc30340976a3951",
+        "working_tree": "clean",
+        "change_description": "500 第 6.3 节由方案复核接续到十阶段实施，登记各阶段最终候选、合并及主线验证。",
+        "environment": "独立 PostgreSQL、API 与浏览器。固定 f 的 m01-profile-f，Web 4386、API 8386、DB 54376。",
+        "scope": "实施顺序、旧库前向升级、正常办理、撤权、重送、并发回滚、跨模块样本与原验收库交接。",
+        "results": [
+          {"check": "比对现有首单约束、单笔接口和 404 交接，逐项对照实施步骤与业务样本", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "核对依赖图无环，分别移去后续能力复核查询、共同办理及组合联验能否独立交付", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "首轮仓库检查发现三个四级标题缺少编号", "result": "failed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "补齐编号后文档治理、仓库资料、领域边界、改写链接及差异空白复验", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "方案复核当日的 T04 产品升级、接口、数据库及正常菜单实施验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"},
+          {"check": "十阶段真实办理、旧库升级、数据库约束、API 及权限恢复场景", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "五种常规视口及关键原生 200% 的正常菜单和固定 4386 原库样本", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
+          {"check": "各阶段最终候选三项汇总、必要分片、实际合并树及主线三项验证", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"}
+        ],
+        "limitations": ["范围为 500 第 6.3 节，其他路线图项目按各自专项推进。"]
+      },
+      {
+        "path": "docs/verification/506-job-information-direct-entry-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-313", "CHNHCM-401", "CHNHCM-402", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "87c4b07dd26acb9b4f21a0bb441a5a7cc3f1a519",
+        "working_tree": "dirty",
+        "change_description": "在上一轮未提交的 106 方案基础上修订五项直接办理要求。",
+        "environment": "wt-dev-f 本地文档工作区。",
+        "scope": "普通维护、误录撤销、已履职补录、共同通知及同日归属的操作负担与业务边界。",
+        "results": [
+          {"check": "五项修订的业务、页面、技术合同及路线图互查", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "地点更正、门店岗实际用量和 106 的同日状态、顺序与次数复算", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "文档治理与仓库、领域边界、变更链接、锚点及差异空白", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "附加本地分支引用检查，缺少 wt-dev-a 至 wt-dev-d 的本地分支", "result": "failed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "与登记表核对 main 及六个固定分支的 origin 跟踪引用", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
+          {"check": "T04 页面、Go、数据库及 API 的产品验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["复核限于设计合同及合成资料，T04 功能按路线图另行签收。"]
+      },
+      {
+        "path": "docs/verification/506-same-day-actions-design-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-310", "CHNHCM-312", "CHNHCM-313", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "87c4b07dd26acb9b4f21a0bb441a5a7cc3f1a519",
+        "working_tree": "dirty",
+        "change_description": "根据 106 评审将五项缺口补入职务信息规则、表单、技术合同和 T04 路线图。",
+        "environment": "wt-dev-f 本地文档工作区。",
+        "scope": "逐项核对晋升、专用共同提交、原笔撤销、业务先后与关系转正发生部门。",
+        "results": [
+          {"check": "106 反例、M03 资格与首单实物对照", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
+          {"check": "五步日状态及次数、顺序互换、岗位职级组合与关系转正部门的独立复算", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
+          {"check": "文档治理回归、仓库资料、领域边界、变更链接与锚点、差异和新文稿空白", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
+          {"check": "T04 同日办理的真实数据库、接口与正常菜单验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["本次复核文档及设计样本。T04 的事务、授权、页面、运行成本和前向升级随产品交付验证。"]
+      },
+      {
+        "path": "docs/verification/507-personnel-action-register-design-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-403", "CHNHCM-500", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "56189a0e59a1a8f2f35c34f5ae2d8b8e408ca37a",
+        "working_tree": "dirty",
+        "change_description": "接续已有职务信息及主兼岗文稿，补入人事事务办理列表、查询合同和 T04 双入口验收。",
+        "environment": "wt-dev-f 本地文档工作区。",
+        "scope": "区分任职行与办理行，复核跨人、跨日期、同一办理身份、发生部门和授权范围。",
+        "results": [
+          {"check": "对照当前人员路由、原笔接口及待办归属", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
+          {"check": "两人四笔样本、关系级办理去重、发生部门、日期与受限一笔的独立复算", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
+          {"check": "文档及治理回归、领域边界、链接与锚点、差异及未跟踪文件空白", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
+          {"check": "跨人员办理列表的真实 DB/API 与菜单验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["本记录限于文稿、已有源代码和接口基线。新页面及跨人查询按 T04 分批实施。"]
+      },
+      {
+        "path": "docs/verification/506-job-information-design-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-401", "CHNHCM-402", "CHNHCM-403", "CHNHCM-500", "CHNHCM-502", "CHNHCM-505", "CHNHCM-506", "CHNHCM-507"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "56189a0e59a1a8f2f35c34f5ae2d8b8e408ca37a",
+        "working_tree": "dirty",
+        "change_description": "新增职务信息规格，补入确认的主兼岗编号、再聘与员工列表决定，同步路线图、人员及首单合同和来源索引。",
+        "environment": "公共 wt-dev-f 文档工作区，本地 Bugs-And-Blossoms 固定提交、Oracle 官方文档、Odoo 固定提交。",
+        "scope": "设计采用、按人发号、再聘沿用 0、部门筛选、页签授权、同日处理、首单升级及分批验收预期。",
+        "results": [
+          {"check": "对照原始依据、首单实物并逐项核对业务与页面预期", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "初次补充链接扫描重复读取文件清单，主动中止", "result": "interrupted", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "文档回归和仓库资料、领域边界、差异空白、链接与锚点及来源摘要复核", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "主岗终身 0 号与再聘、兼岗不回收、部门内多行及页签样本的文档复核", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
+          {"check": "职务信息新页签、多笔办理与主兼岗的产品验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+        ],
+        "limitations": ["本次为 Codex 主代理文稿复核。实施、运行时分权及用户菜单验收随相应产品批次进行。"]
+      },
+      {
+        "path": "docs/verification/504-personal-profile-fourth-batch.md",
+        "related_documents": [
+          "CHNHCM-003",
+          "CHNHCM-012",
+          "CHNHCM-502",
+          "CHNHCM-504",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "bc769ff43a4b0fafd7114b0c022c26515a93e71b",
+        "working_tree": "dirty",
+        "change_description": "公共 f 新增个人账户身份、银行和健康用途、整页草稿及事务校验。",
+        "environment": "公共 wt-dev-f 本地工作区，PostgreSQL 18.6、Go 1.26.0、Chromium 固定构建，持久 m01-profile-f 的 Web 4386、API 8386、DB 54376。",
+        "scope": "第四批 M01 范围、七类弹框、万人底库、1 和 20 会话以及公共树手工验收。",
+        "results": [
+          {
+            "check": "00038 副本和有原任用决定的 00039 连续升级至 00040，重跑及到期处置恢复",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "41 个受影响 DB/API 根用例，含账户身份、用途、跨栏保存及整笔回滚",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "首次整包执行触及 20 分钟总超时，两个中断用例随后单独复跑通过",
+            "result": "interrupted",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "固定 Chromium 共 29 项，七类弹框 21/21、常规视口和原生缩放",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "写入合批前首测，20 会话整页更正读回 P95 超过 500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "合批后独立复测，万人九栏 1 与 20 会话四组共 800 次、零错误",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "4386 固定构建、原样本双角色从正常菜单办理和重读",
+            "result": "passed",
+            "evidence": "docs/verification/data/504-personal-profile/fourth-batch-results.txt"
+          },
+          {
+            "check": "多轮复评后复测遮罩读权、等待期间授权到期、重复账户定位及跨栏回滚，4386 原样本双角色通过",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-fourth-batch.md"
+          },
+          {
+            "check": "真实主岗与兼岗的共享资料",
+            "result": "not_run",
+            "evidence": "docs/plans/504-personal-profile-extension.md"
+          }
+        ],
+        "limitations": [
+          "真实主岗和兼岗共享在 T04 联验。"
+        ]
+      },
+      {
+        "path": "docs/verification/504-personal-profile-third-batch.md",
+        "related_documents": [
+          "CHNHCM-003",
+          "CHNHCM-012",
+          "CHNHCM-502",
+          "CHNHCM-504",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "91730333ffd8b5bcce2d47a7ccea2e505a59cb55",
+        "working_tree": "clean",
+        "change_description": "人员原档新增三类教育行、独立最高标记、专业凭证及其用途授权。",
+        "environment": "私仓 f 的原始固定环境及 PostgreSQL、Go HTTP、Chromium 结果见第 1—4 节。公共 f 在主机 3 的独立可丢弃环境复验，见第 5 节。",
+        "scope": "014、016、017、019 第三批场景和 020 两栏六个组合，00036 备份升级、处置恢复、旧路径及 4380 正常菜单。",
+        "results": [
+          {
+            "check": "私仓原验收：未填证号的凭证仍显示查看完整号码，独立断言复现",
+            "result": "failed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "私仓原验收：修正后 34 项人员浏览器回归、实库失败与恢复、行字段授权及原档查回",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "私仓原验收：并行容量首轮两条 20 会话链路超过 500 毫秒",
+            "result": "failed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "私仓原验收：同候选同阈值独立容量复验，持久环境原表、构建与实机菜单验收",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          },
+          {
+            "check": "第四批账户、健康、九栏容量及 T04 兼岗共享",
+            "result": "not_run",
+            "evidence": "docs/plans/504-personal-profile-extension.md"
+          },
+          {
+            "check": "公共基线及旧 f 账本升级、教育凭证与首单回归，17 个实库测试根和 12 项 Chromium 通过",
+            "result": "passed",
+            "evidence": "docs/verification/504-personal-profile-third-batch.md"
+          }
+        ],
+        "limitations": [
+          "仅本地产品验收。九栏完整容量和真实多任职随对应批次。"
         ]
       },
       {

@@ -1,10 +1,12 @@
+import { calibrateDesktopWindow } from './native-zoom-support';
+import { nativeZoomCases } from './desktop-viewports.mjs';
 import { chromium } from '@playwright/test';
 import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { test, expect, openMoreActions } from './fixtures';
 import { open } from './bu-support';
 
-test('304 企业详情和更正表单原生200%和400%缩放', async () => {
+test('304 企业详情和更正表单原生缩放', async () => {
   test.setTimeout(120000);
   let number = 1700 + process.pid % 1000;
   while (existsSync(`/tmp/.X11-unix/X${number}`) || existsSync(`/tmp/.X${number}-lock`)) number++;
@@ -25,9 +27,11 @@ test('304 企业详情和更正表单原生200%和400%缩放', async () => {
     const directory = '.local/enterprise304-native-zoom';
     mkdirSync(directory, { recursive: true });
     const observations = [];
-    for (const [steps, dpr] of [[5, 2], [8, 4]]) {
+    zoom(0);
+    await calibrateDesktopWindow(page);
+    for (const [steps, dpr] of nativeZoomCases()) {
       zoom(steps);
-      await expect.poll(() => page.evaluate(() => devicePixelRatio)).toBe(dpr);
+      await expect.poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio])).toEqual([1280 / dpr, 900 / dpr, dpr]);
       await expect(page.getByRole('tab', {name:'基本资料',exact:true})).toBeVisible();
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       await openMoreActions(page);await page.getByRole('menuitem',{name:'更正记录',exact:true}).click();

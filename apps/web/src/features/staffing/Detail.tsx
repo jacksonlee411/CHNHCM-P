@@ -25,6 +25,7 @@ import { GradeMemberList } from './GradeMembers';
 import { StaffingChangeLog, logKeys, logReturnHref } from './ChangeLog';
 import { positionQuotaPath } from './quotaApi';
 import {Arrangement} from './Arrangement';
+import { ReplenishmentLink } from './Replenishment';
 import {StructureControls} from './Hierarchy';
 import {structurePath,structureQuery,nodeLabel,useStructure} from './structure';
 import * as staff from './api';
@@ -499,6 +500,7 @@ export function StaffingDetail({
                       )}
                     </ObjectDetailSection>
                   </Box>
+                  {k==='position'&&!data?.readOnly&&!source&&!structureVersion&&<ReplenishmentLink id={id} day={current.effectiveDate ?? ''} back={staff.paths.position+'/'+id+'?'+params.toString()}/>}
                   {data?.readOnly && current.positionAdoptions && <SourceExplanation>{Object.entries(current.positionAdoptions).map(([field,ref]) => <Typography key={field} sx={{overflowWrap:'anywhere'}}>{staff.fieldLabels[field]}：{ref.name}；采用日期：{businessDate(ref.businessAt)}；来源：{ref.sourceVersion}；记录：{ref.recordId}；修订：{ref.revision}</Typography>)}</SourceExplanation>}
                   {data?.readOnly && (current.adoption || current.jobFunctionAdoption) && (
                     <SourceExplanation>

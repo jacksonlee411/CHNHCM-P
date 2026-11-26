@@ -13,7 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Only the two legacy upgrade tests capture the real empty public 00039 schema.
+// Only the two legacy upgrade tests capture the real empty public 00057 schema.
 func restoreGrantPredecessor(f *fixture) {
 	if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('access.bound_permission')") == 0 {
 		return
@@ -24,7 +24,7 @@ func restoreGrantPredecessor(f *fixture) {
  DROP VIEW access.bound_permission;
  DROP TABLE access.grant_assignment,access.grant_revision,access.policy_version;
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id=41`)
+ DELETE FROM public.goose_db_version WHERE version_id=58`)
 }
 
 func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {

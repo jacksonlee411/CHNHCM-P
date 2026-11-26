@@ -46,11 +46,13 @@ const titles = {
   family: '家庭成员与紧急联系人',
   education: '教育经历',
   credentials: '专业技术职称、职业资格与技能等级证书',
+  bankAccounts: '银行账户',
 };
 const isFlag = (k: string) =>
   [
     'longTerm',
     'contactPrimary',
+    'bankPrimary',
     'addressPrimary',
     'emergency',
     'highestEducation',
@@ -61,6 +63,7 @@ export type RowError = { group: Group; key: string; field: string; message: stri
 type Editing = {
   scope: string;
   rowError?: RowError;
+  healthError?: string;
   draft: Draft;
   setDraft: (v: Draft) => void;
   name: string;
@@ -78,9 +81,11 @@ function RowDialog({
   apply,
   close,
   dirtyChanged,
+  recheck,
   scope,
 }: {
   scope?: string;
+  recheck: () => void;
   selection: ActiveSelection;
   data: person.Profile;
   apply: (r: Row) => void;
@@ -120,29 +125,62 @@ function RowDialog({
     return () => dirtyChanged?.(false);
   }, [dirty, dirtyChanged]);
   const cert = s.group === 'credentials';
-  const numberField = cert ? 'certificateNumber' : 'documentNumber';
+  const bank = s.group === 'bankAccounts';
+  const numberField = bank ? 'accountNumber' : cert ? 'certificateNumber' : 'documentNumber';
   const canReveal =
     view &&
-    (cert || s.group === 'documents') &&
+    (bank || cert || s.group === 'documents') &&
     !!s.row.fields[numberField] &&
     read.includes(numberField) &&
     !s.row.masked?.includes(numberField) &&
     !s.row.hidden?.includes(numberField);
+  useEffect(() => {
+    if (!canReveal) setReveal(false);
+  }, [canReveal]);
+  const editBankNumber =
+    bank &&
+    !view &&
+    !!s.row.revision &&
+    write.includes(numberField) &&
+    !s.row.masked?.includes(numberField) &&
+    !s.row.hidden?.includes(numberField);
   const full = person.useRead(
-    reveal && canReveal ? JSON.stringify([data.id, s.row.key, data.sourceVersion, scope]) : undefined,
-    () => person.profile(data.id, undefined, (cert ? 'credential-' : 'document-') + s.row.key),
+    (reveal && canReveal) || editBankNumber
+      ? JSON.stringify([data.id, s.row.key, data.sourceVersion, scope])
+      : undefined,
+    () =>
+      person.profile(data.id, undefined, (bank ? 'bank-' : cert ? 'credential-' : 'document-') + s.row.key),
+    'fresh',
   );
-  const number =
-    canReveal && full.data?.sourceVersion === data.sourceVersion
-      ? (cert ? full.data?.credentials : full.data?.documents)?.find((x) => x.itemId === s.row.key)?.fields[
-          numberField
-        ]
+  const fullRow =
+    full.data?.sourceVersion === data.sourceVersion
+      ? (bank ? full.data.bankAccounts : cert ? full.data.credentials : full.data.documents)?.find(
+          (x) => x.itemId === s.row.key,
+        )
       : undefined;
+  const number =
+    fullRow && !('masked' in fullRow && fullRow.masked?.includes(numberField))
+      ? fullRow.fields[numberField]
+      : undefined;
+  const fresh = full.data;
+  const permissionChanged =
+    bank &&
+    (full.status === 403 ||
+      full.status === 404 ||
+      (fresh &&
+        (!fullRow ||
+          read.some((key) => !fresh.readable?.includes(key)) ||
+          data.editable?.some((key) => !fresh.editable?.includes(key)) ||
+          ('masked' in fullRow && fullRow.masked?.some((key) => !s.row.masked?.includes(key))) ||
+          ('hidden' in fullRow && fullRow.hidden?.some((key) => !s.row.hidden?.includes(key))))));
+  useEffect(() => {
+    if (permissionChanged) recheck();
+  }, [permissionChanged, recheck]);
   function update(k: string, v: string) {
     setError('');
     set((old) => ({
       ...old,
-      [k]: v,
+      [k]: editBankNumber && k === numberField && number !== undefined && v === number ? '********' : v,
       ...(k === 'kind' && old.kind !== v ? { value: '', contactPrimary: '' } : {}),
       ...(k === 'longTerm' && v ? { expiryDate: '' } : {}),
     }));
@@ -217,8 +255,10 @@ function RowDialog({
                   )
                 )
                   return null;
-                const label = k === 'value' ? kinds[fields.kind] || '电话' : labels[k],
-                  v = fields[k] || '';
+                const label = k === 'value' ? kinds[fields.kind] || '电话' : labels[k];
+                let v = fields[k] || '';
+                if (editBankNumber && k === numberField && (number === undefined || v === '********'))
+                  v = number ?? '';
                 const can =
                   !view && (k === 'kind' || k === 'value' ? write.includes(fields.kind) : write.includes(k));
                 if (!can)
@@ -305,6 +345,7 @@ function RowDialog({
                     id={'row-' + k}
                     label={label}
                     value={v}
+                    disabled={k === numberField && editBankNumber && number === undefined}
                     onChange={(e) => update(k, e.target.value)}
                     required={required.includes(k)}
                     select={!!choices}
@@ -323,7 +364,13 @@ function RowDialog({
                     }
                     placeholder={['startMonth', 'endMonth'].includes(k) ? 'YYYY-MM' : undefined}
                     error={error === k}
-                    helperText={error === k ? s.error?.message || '请填写' + label : undefined}
+                    helperText={
+                      error === k
+                        ? s.error?.message || '请填写' + label
+                        : k === numberField
+                          ? full.error
+                          : undefined
+                    }
                   >
                     {choices?.map((x) => (
                       <MenuItem key={x} value={x}>
@@ -360,7 +407,13 @@ function RowDialog({
   );
 }
 
-export function ProfileSections({ data, editing }: { data: person.Profile; editing?: Editing }) {
+export function ProfileSections({
+  data, editing, recheck,
+}: {
+  data: person.Profile;
+  editing?: Editing;
+  recheck: () => void;
+}) {
   const draft = editing?.draft || fromProfile(data),
     read = data.readable || [],
     write = data.editable || [];
@@ -491,7 +544,9 @@ export function ProfileSections({ data, editing }: { data: person.Profile; editi
         const allowed =
           group === 'contacts'
             ? read.includes('phone') || read.includes('email')
-            : read.includes(requiredByGroup[group][0]);
+            : group === 'bankAccounts'
+              ? Object.keys(labelsByGroup[group]).some((key) => read.includes(key))
+              : read.includes(requiredByGroup[group][0]);
         if (!allowed) return null;
         return (
           <ProfileCollection
@@ -510,10 +565,32 @@ export function ProfileSections({ data, editing }: { data: person.Profile; editi
           />
         );
       })}
+      {read.includes('healthSummary') && (
+        <ObjectDetailSection title="健康信息">
+          <div id="profile-health" tabIndex={-1}>
+            {editing && write.includes('healthSummary') ? (
+              <ObjectTextField
+                id="healthSummary"
+                label="健康状况简述"
+                error={!!editing.healthError}
+                helperText={editing.healthError}
+                value={draft.healthSummary}
+                disabled={editing.disabled}
+                onChange={(e) => editing.setDraft({ ...draft, healthSummary: e.target.value })}
+              />
+            ) : (
+              <ObjectDetailField label="健康状况简述">
+                {data.healthSummary || <span className="profile-empty">未填写</span>}
+              </ObjectDetailField>
+            )}
+          </div>
+        </ObjectDetailSection>
+      )}
       {active && (
         <RowDialog
           key={active.group + active.row.key + active.mode}
           selection={active}
+          recheck={recheck}
           scope={editing?.scope}
           data={data}
           close={() => select(undefined)}

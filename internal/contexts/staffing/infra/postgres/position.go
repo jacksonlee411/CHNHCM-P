@@ -82,7 +82,7 @@ func (u *unit) PositionSources(ctx context.Context, field string, ids []string, 
 					if !record.Active {
 						typ = "DEACTIVATE"
 					}
-					t.Records = append(t.Records, d.Record{ID: record.ID, Revision: record.Revision, Date: record.Start, End: record.End, Type: typ, Data: map[string]string{"name": record.Name}})
+					t.Records = append(t.Records, d.Record{ID: record.ID, Revision: record.Revision, Date: record.Start, End: record.End, Type: typ, Data: map[string]string{"name": record.Name, "parent": record.Parent}})
 				}
 				source := app.PositionSource{Timeline: t}
 				if field == "departmentId" {
@@ -157,5 +157,29 @@ func (s *Store) PositionUses(ctx context.Context, enterprise, field, id string) 
 			}
 		}
 	}
-	return uses, rows.Err()
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	// Adopted assignment usage follows the current published intervals, including
+	// corrections. A cancelled hire has no intervals in its current source.
+	column := map[string]string{"locationId": "s.location_id", "buId": "t.bu_id", "departmentId": "s.department_id", "jobId": "s.job_id"}[field]
+	if column == "" {
+		return uses, nil
+	}
+	assignmentRows, err := tx.Query(ctx, `SELECT lower(s.period)::text,coalesce(upper(s.period)::text,'') FROM staffing.assignment_head h
+		JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
+		JOIN staffing.assignment t ON (t.instance_id,t.id)=(s.instance_id,s.assignment_id)
+		WHERE s.instance_id=$1 AND `+column+`=$2`, s.Instance, id)
+	if err != nil {
+		return nil, err
+	}
+	defer assignmentRows.Close()
+	for assignmentRows.Next() {
+		var use staff.PositionUse
+		if err = assignmentRows.Scan(&use.Start, &use.End); err != nil {
+			return nil, err
+		}
+		uses = append(uses, use)
+	}
+	return uses, assignmentRows.Err()
 }

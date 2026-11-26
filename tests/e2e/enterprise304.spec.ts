@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import {checkPairPeriod} from './dated-object-support';
 import { randomUUID } from 'node:crypto';
 import { test, expect, openMoreActions, deferAutomaticConfirmation, type Page } from './fixtures';
@@ -111,13 +112,13 @@ test('304 草稿取消、冲突重读和丢失响应查回', async ({ page }) =>
   await page.unroute('**/api/v1/enterprise/*/records/*/correct'); await reset(page);
 });
 
-test('304 查询者和窄屏：唯一企业、记录与历史只读', async ({ page }) => {
+test('304 查询者在桌面查看唯一企业、记录与历史只读', async ({ page }) => {
   test.setTimeout(60000); await open(page, 'reader');
   await page.getByRole('button', { name: '组织配置', exact: true }).click(); await page.getByRole('menuitem', { name: '企业', exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`${base}/[0-9a-f-]+$`)); await expect(page.getByRole('tab', { name: '变更日志', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: '更多操作', exact: true })).toHaveCount(0); await expect(page.getByRole('button', { name: '新增记录', exact: true })).toHaveCount(0);
-  for (const width of [1440, 720, 390, 320]) {
-    await page.setViewportSize({ width, height: 900 }); await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  for (const [width, height] of desktopViewports) {
+    await page.setViewportSize({ width, height }); await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.getByRole('tab', { name: '变更日志', exact: true }).click(); await expect(page.locator('.change-operation').first()).toBeVisible(); await page.getByRole('tab', { name: '基本资料', exact: true }).click();
   }
 });

@@ -252,7 +252,7 @@ func (s *Store) PositionReferences(ctx context.Context, enterprise, field string
 			scope := department.PositionScope(t, now)
 			ref := org.PositionReference{ID: t.ID, Source: t.Source, Code: t.Code, DepartmentScope: &scope}
 			for _, record := range t.Records {
-				ref.Records = append(ref.Records, org.PositionReferenceRecord{ID: record.ID, Revision: record.Revision, Start: record.Date, End: record.End, Name: record.Data.Name, Active: record.State == "active"})
+				ref.Records = append(ref.Records, org.PositionReferenceRecord{ID: record.ID, Revision: record.Revision, Start: record.Date, End: record.End, Name: record.Data.Name, Parent: record.Data.Parent, Active: record.State == "active"})
 			}
 			result = append(result, ref)
 		}
@@ -300,7 +300,7 @@ func checkPositionUses[T any](ctx context.Context, unit *unit, enterprise, field
 		}
 	}
 	if first != "" {
-		return &foundation.Fault{Status: 409, Code: "M02_REFERENCE_CONFLICT", Field: "effectiveDate", Message: "自 " + first + " 起仍有启用岗位使用此资料，请先调整岗位"}
+		return &foundation.Fault{Status: 409, Code: "M02_REFERENCE_CONFLICT", Field: "effectiveDate", Message: "自 " + first + " 起仍有岗位或任职使用此资料，请先核对使用期间"}
 	}
 	return nil
 }

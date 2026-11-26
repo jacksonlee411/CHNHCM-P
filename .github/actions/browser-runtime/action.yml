@@ -19,11 +19,14 @@ runs:
       with:
         node-version-file: package.json
         package-manager-cache: false
-    - name: Fetch Ubuntu packages already downloaded by this run's preflight
+    - name: Fetch Ubuntu packages from the verified preflight
       if: inputs.shard != 'preflight' && runner.environment == 'github-hosted' && fromJSON(env.CI_PLAN).scope == 'full'
       uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+      continue-on-error: true # An expired package cache falls back to the runner's APT index.
       with:
-        pattern: chromium-apt-${{ github.run_id }}-${{ runner.arch }}
+        github-token: ${{ github.token }}
+        run-id: ${{ fromJSON(env.CI_PLAN).carried.preflight.run || github.run_id }}
+        pattern: chromium-apt-${{ fromJSON(env.CI_PLAN).carried.preflight.run || github.run_id }}-${{ runner.arch }}
         merge-multiple: true
         path: ${{ runner.temp }}/chromium-apt
     - name: Install locked dependencies, Chromium and native zoom tools

@@ -1,24 +1,36 @@
 package postgres
 
 import (
+	staff "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	"context"
 	"errors"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
 	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	f "chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"github.com/jackc/pgx/v5"
 )
 
-const hireActionSQL = `SELECT a.id,a.revision,a.kind,e.id AS employment,t.id AS assignment,e.person_id AS person,e.employer_id AS employer,t.department_id AS department,t.job_id AS job,
-a.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
-lower(e.period)::text,coalesce(upper(e.period)::text,''),EXISTS(SELECT FROM staffing.employment_action c WHERE c.instance_id=e.instance_id AND c.employment_id=e.id AND c.kind='CancelHire')
+const assignmentActionSelect = `SELECT a.id,r.revision,a.kind,r.operation,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,
+coalesce(r.adoption#>>'{promotion,department}',r.adoption->>'department',origin.department_id::text,t.department_id::text) AS department,coalesce(origin.job_id,t.job_id) AS job,
+r.business_date::text,h.version,r.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
+lower(t.period)::text,coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member xm USING(instance_id,assignment_id,action_id) WHERE x.instance_id=t.instance_id AND x.assignment_id=t.id AND xm.version=h.version),upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),coalesce(r.adoption->'previous',CASE WHEN r.adoption#>>'{probation,afterAction}' IS NOT NULL THEN jsonb_build_object('action',r.adoption#>>'{probation,afterAction}','revision',r.adoption#>>'{probation,afterRevision}') END)
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
-JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id) `
+JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
+`
+const hireActionSQL = assignmentActionSelect + ` JOIN staffing.assignment_head h ON (h.instance_id,h.assignment_id)=(a.instance_id,a.assignment_id) ` + assignmentRevisionJoin
+const assignmentActionAtSourceSQL = assignmentActionSelect + ` JOIN staffing.assignment_publication h ON (h.instance_id,h.assignment_id)=(a.instance_id,a.assignment_id) AND h.version=$3 ` + assignmentRevisionJoin
+const assignmentRevisionJoin = ` JOIN staffing.assignment_member m ON (m.instance_id,m.assignment_id,m.version,m.action_id)=(h.instance_id,h.assignment_id,h.version,a.id)
+JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(m.instance_id,m.action_id,m.revision)
+LEFT JOIN staffing.employment_revision_publication issued ON (issued.instance_id,issued.action_id,issued.revision)=(r.instance_id,r.action_id,r.revision)
+LEFT JOIN staffing.assignment_segment origin ON (origin.instance_id,origin.assignment_id,origin.version)=(issued.instance_id,issued.assignment_id,issued.version) AND origin.period @> r.business_date `
 
 func scanHireAction(row pgx.Row) (a h.Action, err error) {
-	err = row.Scan(&a.ID, &a.Revision, &a.Kind, &a.Employment, &a.Assignment, &a.Person, &a.Employer, &a.Department, &a.Job, &a.Notice, &a.RecordedAt, &a.Original, &a.From, &a.Until, &a.Cancelled)
+	err = row.Scan(&a.ID, &a.Revision, &a.Kind, &a.Operation, &a.Employment, &a.Assignment, &a.RecordNumber, &a.Person, &a.Employer, &a.Department, &a.Job, &a.BusinessDate, &a.SourceVersion, &a.Notice, &a.RecordedAt, &a.Original, &a.From, &a.Until, &a.Cancelled, &a.Previous)
+	a.PrimaryJob = a.RecordNumber == 0
 	return
 }
 func (u *unit) action(ctx context.Context, id string) (h.Action, error) {
@@ -33,6 +45,7 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 		return out, f.Fail(400, "HIRE_INPUT", "人员或业务日期无效")
 	}
 	out.Actions = []h.Action{}
+	out.Terms = []h.TermLink{}
 	err = st.within(ctx, c, false, true, func(u *unit) error {
 		today := u.now.In(f.Shanghai).Format("2006-01-02")
 		if day == "" {
@@ -51,35 +64,94 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 		if e != nil {
 			return e
 		}
-		for _, a := range actions {
-			allowed, e := u.employmentAllowed(ctx, "read", person, a.Employer, a.Department, false)
+		eligible, e := u.employmentAllowed(ctx, "employment.rehire", person, "", "", true)
+		if e != nil {
+			return e
+		}
+		var latest *h.ActionRef
+		if eligible {
+			latest, e = u.rehireAnchor(ctx, person, "9999-12-31")
 			if e != nil {
 				return e
 			}
-			if !allowed {
+		}
+		for _, a := range actions {
+			if h.RelationAction(a.Kind) {
+				scoped, visible, e := u.relationVisibleAssignment(ctx, a, "read")
+				if e != nil {
+					return e
+				}
+				if !visible {
+					continue
+				}
+				_, scoped.CanHistory, e = u.relationVisibleAssignment(ctx, a, "history")
+				if e != nil {
+					return e
+				}
+				if a.Kind == "Leave" && scoped.CanHistory && latest != nil && latest.Action == a.ID {
+					scoped.CanRehire = true
+					var eligibleDay string
+					if e = u.tx.QueryRow(ctx, `SELECT first_inactive::text FROM staffing.employment_exit WHERE instance_id=$1 AND action_id=$2`, st.Instance, a.ID).Scan(&eligibleDay); e != nil {
+						return e
+					}
+					if eligibleDay <= day {
+						out.RehireFrom = latest
+						out.CanHire = false
+					}
+				}
+				out.Actions = append(out.Actions, scoped)
 				continue
 			}
-			if a.Kind == "Hire" && !a.Cancelled {
-				if a.Includes(day) {
-					var seats int
-					if e := u.tx.QueryRow(ctx, `SELECT (adoption->>'seats')::int FROM staffing.assignment_segment
-                    WHERE instance_id=$1 AND assignment_id=$2 AND period @> $3::date`, st.Instance, a.Assignment, day).Scan(&seats); e != nil {
-						return e
-					}
-					out.Seats += seats
-					out.People = 1
-					out.Assignments++
+
+			if h.StartsAssignment(a.Kind) && !a.Cancelled {
+				out.CanHire = false
+				var seats int
+				var department string
+				e = u.tx.QueryRow(ctx, `SELECT department_id,(adoption->>'seats')::int FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND period @> $3::date AND version=$4`, st.Instance, a.Assignment, day, a.SourceVersion).Scan(&department, &seats)
+				active := e == nil
+				if e != nil && !errors.Is(e, pgx.ErrNoRows) {
+					return e
 				}
-				if a.From > today {
-					a.CanCancel, e = u.employmentAllowed(ctx, "cancel", person, a.Employer, a.Department, false)
-					if e != nil {
-						return e
+				if !active {
+					department = a.Department
+				}
+				visible, e := u.employmentAllowed(ctx, "read", person, a.Employer, department, false)
+				if e != nil {
+					return e
+				}
+				if visible {
+					summary, err := u.relationshipSummary(ctx, a, a, false)
+					if err != nil {
+						return err
+					}
+					out.Terms = append(out.Terms, h.TermLink{Assignment: a.Assignment, RecordNumber: a.RecordNumber, From: a.From, Until: a.Until, EmployerName: summary.EmployerName})
+					if active {
+						out.Seats += seats
+						out.People = 1
+						out.Assignments++
 					}
 				}
 			}
-			a.CanHistory, e = u.employmentAllowed(ctx, "history", person, a.Employer, a.Department, false)
+			read, e := u.actionDisclosure(ctx, a, false)
 			if e != nil {
 				return e
+			}
+			if !read.from && !read.to {
+				continue
+			}
+			history, e := u.actionDisclosure(ctx, a, true)
+			if e != nil {
+				return e
+			}
+			a.CanHistory = history.from || history.to
+			if a.Kind == "Transfer" && !read.to {
+				a.Department, a.Job = read.before, read.beforeJob
+			}
+			if (a.Kind == "Hire" || a.Kind == "Rehire") && !a.Cancelled && a.From > today {
+				a.CanCancel, e = u.employmentAllowed(ctx, "cancel", person, a.Employer, a.Department, false)
+				if e != nil {
+					return e
+				}
 			}
 			out.Actions = append(out.Actions, a)
 		}
@@ -89,9 +161,15 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 }
 
 func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, original string, in h.Cancel) (h.Receipt, error) {
+	if in.ExpectedSource != "" || in.Notice != "" || in.Basis != nil {
+		return st.RecordPromotion(ctx, c, "", original, "withdraw", submission, h.PromotionCommand{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.Revision, Reason: in.Reason, Notice: in.Notice, Basis: in.Basis})
+	}
 	return st.hireCommand(ctx, c, submission, []any{"CancelHire", original, in}, func(u *unit) (string, error) {
 		if !f.ValidID(original) || !f.ValidID(in.Revision) || strings.TrimSpace(in.Reason) == "" || utf8.RuneCountInString(in.Reason) > 1000 {
 			return "", f.Fail(400, "HIRE_INPUT", "请核对原办理并填写撤销依据")
+		}
+		if err := u.lockReporting(ctx); err != nil {
+			return "", err
 		}
 		a, err := u.action(ctx, original)
 		if err != nil {
@@ -112,10 +190,44 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if err != nil {
 			return "", err
 		}
-		if a.Kind != "Hire" || a.Cancelled || a.From <= today || in.Revision != a.Revision {
+		if (a.Kind != "Hire" && a.Kind != "Rehire") || a.Cancelled || a.From <= today || in.Revision != a.Revision {
 			return "", f.Fail(409, "HIRE_CANCEL_UNAVAILABLE", "原办理已生效、已撤销或修订已变化")
 		}
 		if err = u.requireEmployment(ctx, "cancel", a.Person, a.Employer, a.Department); err != nil {
+			return "", err
+		}
+		var parallel bool
+		err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment x JOIN staffing.assignment_head head ON (head.instance_id,head.assignment_id)=(x.instance_id,x.id)
+         JOIN staffing.assignment_segment s ON (s.instance_id,s.assignment_id,s.version)=(head.instance_id,head.assignment_id,head.version) WHERE x.instance_id=$1 AND x.person_id=$2 AND x.id<>$3 AND s.period && daterange($4::date,nullif($5,'')::date,'[)'))`, st.Instance, a.Person, a.Assignment, a.From, a.Until).Scan(&parallel)
+		if err != nil {
+			return "", err
+		}
+		var reporting bool
+		err = u.tx.QueryRow(ctx, currentReporting+`SELECT EXISTS(SELECT FROM reporting g JOIN staffing.assignment_head hd USING(instance_id,assignment_id)
+			JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
+			WHERE g.manager_assignment=$2 AND g.effective * s.period && daterange($3::date,nullif($4,'')::date,'[)'))`, st.Instance, a.Assignment, a.From, a.Until).Scan(&reporting)
+		if err != nil {
+			return "", err
+		}
+		if reporting {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "已有实际汇报引用本任期，请先核对后续安排")
+		}
+		if parallel {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "原期间已有关联任职，请先核对后续安排")
+		}
+
+		contracts, err := u.contractRows(ctx, a.Employment)
+		if err != nil {
+			return "", err
+		}
+		if slices.ContainsFunc(contracts, func(c h.Contract) bool { return c.RemainsAt(a.From) }) {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "本工作关系已签订合同，请先核对合同处置")
+		}
+		id, revision, version := f.NewID(), f.NewID(), f.NewID()
+		if err = u.cancelAdoptedOffer(ctx, a.ID, id, revision, today); err != nil {
+			return "", err
+		}
+		if err = u.lockExitingPositions(ctx, []string{a.Assignment}, a.From); err != nil {
 			return "", err
 		}
 		tag, err := u.tx.Exec(ctx, "DELETE FROM staffing.employment_primary WHERE instance_id=$1 AND action_id=$2", st.Instance, a.ID)
@@ -125,17 +237,28 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 		if tag.RowsAffected() != 2 {
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "主选择已变化，请核对后继安排")
 		}
-		id := f.NewID()
-		_, err = u.tx.Exec(ctx, `INSERT INTO staffing.employment_action(instance_id,id,revision,kind,employment_id,assignment_id,original_id,business_date,actor,notice,adoption)
-		VALUES($1,$2,$3,'CancelHire',$4,$5,$6,$7,$8,$9,$10)`, st.Instance, id, f.NewID(), a.Employment, a.Assignment, a.ID, a.From, u.guard.Principal().ID, strings.TrimSpace(in.Reason), map[string]string{"originalRevision": a.Revision})
-		return id, err
+		var hasDependent bool
+		if err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_member m JOIN staffing.employment_action_revision r USING(instance_id,assignment_id,action_id,revision) WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND m.action_id<>$4 AND r.operation NOT IN ('Delete','Withdraw'))`, st.Instance, a.Assignment, a.SourceVersion, a.ID).Scan(&hasDependent); err != nil {
+			return "", err
+		}
+		if hasDependent {
+			return "", f.Fail(409, "HIRE_DEPENDENCIES", "该任职已有后续办理，请先核对")
+		}
+		err = u.newEmploymentAction(ctx, employmentEntry{id: id, revision: revision, kind: "CancelHire", employment: a.Employment, assignment: a.Assignment, original: a.ID, date: a.From, notice: strings.TrimSpace(in.Reason), adoption: map[string]string{"originalRevision": a.Revision}})
+		if err != nil {
+			return "", err
+		}
+		if err = u.startAssignmentSource(ctx, a.Assignment, a.SourceVersion, version, id, revision); err != nil {
+			return "", err
+		}
+		return id, u.publishAssignmentSource(ctx, a.Assignment, a.SourceVersion, version)
 	})
 }
 
 func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, error) {
 	r := h.Receipt{Submission: key}
-	var digest, id string
-	err := u.tx.QueryRow(ctx, `SELECT digest,outcome,coalesce(action_id::text,'') FROM staffing.hire_terminal WHERE instance_id=$1 AND actor=$2 AND submission_id=$3`, u.store.Instance, u.guard.Principal().ID, key).Scan(&digest, &r.Outcome, &id)
+	var digest, id, revision, entry string
+	err := u.tx.QueryRow(ctx, `SELECT digest,outcome,coalesce(action_id::text,''),coalesce(revision::text,''),coalesce(nav.assignment_id::text,'') FROM staffing.hire_terminal LEFT JOIN staffing.probation_receipt_assignment nav USING(instance_id,actor,submission_id) WHERE instance_id=$1 AND actor=$2 AND submission_id=$3`, u.store.Instance, u.guard.Principal().ID, key).Scan(&digest, &r.Outcome, &id, &revision, &entry)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return r, "", nil
 	}
@@ -146,16 +269,80 @@ func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, 
 	if err != nil {
 		return r, digest, err
 	}
-	ok, err := u.employmentAllowed(ctx, "read", a.Person, a.Employer, a.Department, false)
-	if ok {
+	if h.RelationAction(a.Kind) {
+		a.Revision = revision
+		if entry != "" {
+			a.Assignment = entry
+		}
+		scoped, visible, e := u.relationVisibleAssignment(ctx, a, "read")
+		if e != nil {
+			return r, digest, e
+		}
+		if visible {
+			r.Action, r.Revision, r.Assignment, r.Employment = id, revision, scoped.Assignment, a.Employment
+			r.RecordNumber = &scoped.RecordNumber
+		}
+		return r, digest, nil
+	}
+
+	visible, err := u.actionDisclosure(ctx, a, false)
+	if visible.from || visible.to {
 		r.Action, r.Employment, r.Assignment = id, a.Employment, a.Assignment
+		r.RecordNumber = &a.RecordNumber
+		r.Revision = revision
+		if a.Kind == "Transfer" {
+			link, e := u.exchangeDisclosure(ctx, a, revision, false)
+			if e != nil {
+				return r, digest, e
+			}
+			if link != nil && link.Original != nil {
+				r.Related = []h.ActionRef{*link.Original}
+			}
+		}
+		if a.Kind == "Promotion" {
+			var other h.ActionRef
+			e := u.tx.QueryRow(ctx, `SELECT transfer,transfer_revision FROM staffing.promotion_transfer WHERE instance_id=$1 AND promotion=$2 AND promotion_revision=$3`, u.store.Instance, id, revision).Scan(&other.Action, &other.Revision)
+			if e == nil {
+				peer, e := u.action(ctx, other.Action)
+				if e != nil {
+					return r, digest, e
+				}
+				sides, e := u.actionDisclosure(ctx, peer, false)
+				if e != nil {
+					return r, digest, e
+				}
+				if sides.from || sides.to {
+					r.Related = []h.ActionRef{other}
+				}
+			} else if !errors.Is(e, pgx.ErrNoRows) {
+				return r, digest, e
+			}
+		}
 	}
 	return r, digest, err
 }
 func (st *Store) ResolveHire(ctx context.Context, c f.Credentials, key string) (h.Receipt, error) {
-	return st.hireCommand(ctx, c, key, nil, nil)
+	return st.employmentCommand(ctx, c, key, nil, nil)
 }
-func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, input any, work func(*unit) (string, error)) (out h.Receipt, err error) {
+
+type employmentResult struct {
+	action, revision, entry string
+	reused                  bool
+}
+
+func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, input any, work func(*unit) (string, error)) (h.Receipt, error) {
+	return st.employmentCommand(ctx, c, key, input, func(u *unit) (employmentResult, error) {
+		var result employmentResult
+		id, err := work(u)
+		if err != nil {
+			return result, err
+		}
+		result.action = id
+		err = u.tx.QueryRow(ctx, `SELECT revision FROM staffing.employment_action WHERE instance_id=$1 AND id=$2`, st.Instance, id).Scan(&result.revision)
+		return result, err
+	})
+}
+func (st *Store) employmentCommand(ctx context.Context, c f.Credentials, key string, input any, work func(*unit) (employmentResult, error)) (out h.Receipt, err error) {
 	if !f.ValidID(key) {
 		return out, f.Fail(400, "HIRE_SUBMISSION", "提交号无效")
 	}
@@ -185,7 +372,7 @@ func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, i
 			}
 			return nil
 		}
-		var id string
+		var result employmentResult
 		out = h.Receipt{Submission: key, Outcome: "not_applied"}
 		if work != nil {
 			child, e := u.tx.Begin(ctx)
@@ -194,9 +381,9 @@ func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, i
 			}
 			business := *u
 			business.tx = child
-			id, e = work(&business)
-			if e == nil {
-				_, e = child.Exec(ctx, "INSERT INTO staffing.employment_outbox VALUES($1,$2,$3) ON CONFLICT(instance_id,action_id) DO NOTHING", st.Instance, f.NewID(), id)
+			result, e = work(&business)
+			if e == nil && !result.reused {
+				_, e = child.Exec(ctx, "INSERT INTO staffing.employment_outbox(instance_id,event_id,action_id,revision) VALUES($1,$2,$3,$4) ON CONFLICT(instance_id,action_id,revision) DO NOTHING", st.Instance, f.NewID(), result.action, result.revision)
 			}
 			if e != nil {
 				if rb := child.Rollback(ctx); rb != nil {
@@ -206,7 +393,7 @@ func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, i
 				if !errors.As(e, &fault) || fault.Status >= 500 {
 					return e
 				}
-				id = ""
+				result = employmentResult{}
 				out.Outcome = "rejected"
 				failure = e
 			} else {
@@ -216,9 +403,15 @@ func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, i
 				out.Outcome = "accepted"
 			}
 		}
-		_, e = u.tx.Exec(ctx, "INSERT INTO staffing.hire_terminal VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid)", st.Instance, actor, key, digest, out.Outcome, id)
+		_, e = u.tx.Exec(ctx, "INSERT INTO staffing.hire_terminal(instance_id,actor,submission_id,digest,outcome,action_id,revision) VALUES($1,$2,$3,$4,$5,NULLIF($6,'')::uuid,NULLIF($7,'')::uuid)", st.Instance, actor, key, digest, out.Outcome, result.action, result.revision)
 		if e != nil {
 			return e
+		}
+		if result.entry != "" {
+			_, e = u.tx.Exec(ctx, `INSERT INTO staffing.probation_receipt_assignment(instance_id,actor,submission_id,assignment_id) VALUES($1,$2,$3,$4)`, st.Instance, actor, key, result.entry)
+			if e != nil {
+				return e
+			}
 		}
 		out, _, e = u.hireReceipt(ctx, key)
 		return e
@@ -229,8 +422,8 @@ func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, i
 	return
 }
 
-func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id string) (out h.Original, err error) {
-	if !f.ValidID(id) {
+func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revision string) (out h.Original, err error) {
+	if !f.ValidID(id) || revision != "" && !f.ValidID(revision) {
 		return out, f.Fail(404, "HIRE_UNAVAILABLE", "所选办理不可用")
 	}
 	err = st.within(ctx, c, false, true, func(u *unit) error {
@@ -238,13 +431,77 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id string)
 		if e != nil {
 			return e
 		}
-		if e = u.requireEmployment(ctx, "read", a.Person, a.Employer, a.Department); e != nil {
+		if h.RelationAction(a.Kind) {
+			out, e = u.relationOriginal(ctx, a, revision)
+			if e == nil {
+				e = u.identifyOriginal(ctx, c, a, &out)
+			}
 			return e
 		}
-		if e = u.requireEmployment(ctx, "history", a.Person, a.Employer, a.Department); e != nil {
+
+		current, e := u.actionDisclosure(ctx, a, true)
+		if e != nil {
 			return e
 		}
-		e = u.tx.QueryRow(ctx, "SELECT adoption FROM staffing.employment_action WHERE instance_id=$1 AND id=$2", st.Instance, id).Scan(&out)
+		if !current.from && !current.to {
+			return f.Fail(403, "HIRE_DENIED", "当前权限不允许读取原件")
+		}
+		if revision == "" {
+			revision = a.Revision
+		}
+		var version string
+		e = u.tx.QueryRow(ctx, `SELECT version FROM staffing.employment_revision_publication WHERE instance_id=$1 AND assignment_id=$2 AND action_id=$3 AND revision=$4`, st.Instance, a.Assignment, id, revision).Scan(&version)
+		if errors.Is(e, pgx.ErrNoRows) {
+			return f.Fail(404, "ACTION_REVISION_UNAVAILABLE", "所选修订不可用")
+		}
+		if e != nil {
+			return e
+		}
+		a, e = scanHireAction(u.tx.QueryRow(ctx, assignmentActionAtSourceSQL+" WHERE a.instance_id=$1 AND a.id=$2", st.Instance, id, version))
+		if e != nil {
+			return e
+		}
+		disclosure, e := u.actionDisclosure(ctx, a, true)
+		if e != nil {
+			return e
+		}
+		if !disclosure.from && !disclosure.to {
+			return f.Fail(403, "HIRE_DENIED", "当前权限不允许读取本次修订")
+		}
+		rows, e := u.tx.Query(ctx, `WITH RECURSIVE revisions AS (
+ SELECT r.*, 1 AS depth FROM staffing.employment_action_revision r
+ WHERE r.instance_id=$1 AND r.action_id=$2 AND r.previous_revision IS NULL
+ UNION ALL SELECT r.*, prev.depth+1 FROM revisions prev
+ JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.previous_revision)=(prev.instance_id,prev.action_id,prev.revision))
+ SELECT coalesce(nullif(operator_snapshot->>'displayName',''),operator_snapshot->>'login',actor::text),revision,actor,
+ to_char(recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM revisions ORDER BY depth DESC,recorded_at DESC,revision`, st.Instance, id)
+		if e != nil {
+			return e
+		}
+		revisions, e := pgx.CollectRows(rows, pgx.RowToStructByPos[h.Revision])
+		if e != nil {
+			return e
+		}
+		e = u.tx.QueryRow(ctx, "SELECT adoption FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 AND revision=$3", st.Instance, id, a.Revision).Scan(&out)
+		if e == nil && out.Manager != nil && out.Manager.Manager != "" {
+			ok, err := u.discloseManager(ctx, out.Manager, a.BusinessDate)
+			if err != nil {
+				return err
+			}
+			if !ok {
+				out.Manager = nil
+			}
+		}
+		if e == nil && out.Sources != nil && out.Sources.Offer != nil {
+			ref := out.Sources.Offer
+			_, readErr := st.OfferHandoffs.OfferForHire(dbtx.With(ctx, u.tx), c, ref.Offer, ref.Version, false)
+			var fault *f.Fault
+			if errors.As(readErr, &fault) && (fault.Status == 403 || fault.Status == 404) {
+				out.Sources.Offer = nil
+			} else if readErr != nil {
+				return readErr
+			}
+		}
 		if e == nil && out.Sources != nil && out.Sources.Decision != nil {
 			ref := out.Sources.Decision
 			opt, err := scanDecision(u.tx.QueryRow(ctx, `WITH versions AS (SELECT * FROM staffing.appointment_version WHERE instance_id=$1 AND source=$3 AND version=$4) `+memberSelect, st.Instance, a.Person, ref.Source, ref.Version))
@@ -256,9 +513,210 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id string)
 			}
 			out.Appointment = &opt
 		}
+		if e != nil {
+			return e
+		}
+		visibleSegments := func(all []staff.AssignmentSegment) ([]staff.AssignmentSegment, error) {
+			segs := all[:0]
+			for _, seg := range all {
+				if seg.DepartmentID != "" {
+					ok, err := u.employmentAllowed(ctx, "history", a.Person, a.Employer, seg.DepartmentID, false)
+					if err != nil {
+						return nil, err
+					}
+					if !ok {
+						continue
+					}
+					ok, err = u.employmentAllowed(ctx, "read", a.Person, a.Employer, seg.DepartmentID, false)
+					if err != nil {
+						return nil, err
+					}
+					if !ok {
+						continue
+					}
+				}
+				segs = append(segs, seg)
+			}
+			return segs, nil
+		}
+		if out.Sources != nil {
+			if out.Sources.Segments, e = visibleSegments(out.Sources.Segments); e != nil {
+				return e
+			}
+		}
+		e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT adoption->>'departmentName' FROM staffing.assignment_segment
+            WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND ($6='' OR department_id=nullif($5,'')::uuid) AND period @> coalesce(nullif($6,'')::date-1,$4::date)),'')`, st.Instance, a.Assignment, version, a.BusinessDate, a.Department, exitBoundary(out.Exit)).Scan(&out.DepartmentName)
+		if e != nil {
+			return e
+		}
+		if out.Promotion != nil {
+			out.DepartmentName = out.Promotion.DepartmentName
+		}
+		if out.Transfer != nil {
+			transfer := out.Transfer
+			if out.Promotion != nil {
+				disclosure.from = true
+				disclosure.to, e = u.employmentAllowed(ctx, "history", a.Person, a.Employer, transfer.After.Department, false)
+				if e != nil {
+					return e
+				}
+				read, e := u.employmentAllowed(ctx, "read", a.Person, a.Employer, transfer.After.Department, false)
+				if e != nil {
+					return e
+				}
+				disclosure.to = disclosure.to && read
+			}
+			if successor := transfer.After.Succession; successor != nil {
+				incumbent, err := u.assignmentIdentity(ctx, successor.Assignment)
+				if err != nil {
+					return err
+				}
+				allowed := disclosure.to
+				for _, grant := range []string{"read", "history"} {
+					ok, err := u.employmentAllowed(ctx, grant, incumbent.Person, incumbent.Employer, transfer.After.Department, false)
+					if err != nil {
+						return err
+					}
+					allowed = allowed && ok
+				}
+				if !allowed {
+					transfer.After.Succession = nil
+				}
+			}
+			if !disclosure.to {
+				a.Department, a.Job = transfer.BeforeDepartment, transfer.BeforeJob
+				out.DepartmentName = transfer.BeforeDepartmentName
+				transfer.After = h.JobTransfer{}
+				transfer.AfterGrade = nil
+				if out.Promotion != nil {
+					out.Promotion.After.Job = ""
+					out.Promotion.After.JobRevision = ""
+					out.Promotion.After.JobSource = ""
+				}
+			}
+			if disclosure.to {
+				transfer.After.Segments, e = visibleSegments(transfer.After.Segments)
+				if e != nil {
+					return e
+				}
+				if !slices.ContainsFunc(transfer.After.Segments, func(v staff.AssignmentSegment) bool { return v.Position != "" }) {
+					transfer.After.Position = ""
+				}
+			}
+			if !disclosure.from {
+				transfer.BeforePosition, transfer.BeforePositionName = "", ""
+				transfer.BeforeGrade = nil
+				transfer.BeforeDepartment, transfer.BeforeJob, transfer.BeforeDepartmentName, transfer.BeforeJobName = "", "", "", ""
+			}
+		}
 		a.CanHistory = true
+		for _, rev := range revisions {
+			visible, e := u.revisionVisible(ctx, a, rev.ID)
+			if e != nil {
+				return e
+			}
+			if visible {
+				out.Revisions = append(out.Revisions, rev)
+			}
+		}
+		if req := out.Requires; req != nil {
+			prior, e := u.action(ctx, req.Action)
+			if e != nil {
+				return e
+			}
+			visible, e := u.revisionVisible(ctx, prior, req.Revision)
+			if e != nil {
+				return e
+			}
+			if !visible {
+				out.Requires = nil
+			}
+		}
+		if ref := out.NoticeRef; ref != nil && ref.Action != a.ID {
+			prior, e := u.action(ctx, ref.Action)
+			if e != nil {
+				return e
+			}
+			ok, e := u.revisionVisible(ctx, prior, ref.Revision)
+			if e != nil {
+				return e
+			}
+			if !ok {
+				out.NoticeRef = nil
+			}
+		}
+		if out.Promotion != nil && out.Promotion.WithdrawalBasis != nil {
+			ref := out.Promotion.WithdrawalBasis
+			prior, e := u.action(ctx, ref.Action)
+			if e != nil {
+				return e
+			}
+			ok, e := u.revisionVisible(ctx, prior, ref.Revision)
+			if e != nil {
+				return e
+			}
+			if !ok {
+				out.Promotion.WithdrawalBasis = nil
+			}
+		}
+		if ref := out.Previous; ref != nil {
+			prior, e := u.action(ctx, ref.Action)
+			if e != nil {
+				return e
+			}
+			var visible bool
+			if h.RelationAction(prior.Kind) {
+				_, visible, e = u.relationVisibleAssignment(ctx, prior, "history")
+			} else {
+				visible, e = u.revisionVisible(ctx, prior, ref.Revision)
+			}
+			if e != nil {
+				return e
+			}
+			if !visible {
+				out.Previous = nil
+			}
+		}
+		if a.Kind == "Transfer" {
+			out.Exchange, e = u.exchangeDisclosure(ctx, a, revision, true)
+			if e != nil {
+				return e
+			}
+		}
 		out.Action = a
+		e = u.identifyOriginal(ctx, c, a, &out)
 		return e
 	})
 	return
+}
+
+func (u *unit) identifyOriginal(ctx context.Context, c f.Credentials, a h.Action, out *h.Original) error {
+	position, e := u.initialPosition(ctx, a)
+	if e != nil {
+		return e
+	}
+	out.InitialPosition = position
+	names, _, e := u.store.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, []string{a.Person}, "")
+	var fault *f.Fault
+	if errors.As(e, &fault) && (fault.Status == 403 || fault.Status == 404) {
+		return nil
+	}
+	if e != nil {
+		return e
+	}
+	if len(names) == 1 {
+		out.PersonName, out.PersonNumber = names[0].Name, names[0].Number
+	}
+	return nil
+}
+
+func (u *unit) revisionVisible(ctx context.Context, a h.Action, revision string) (bool, error) {
+	item, e := scanHireAction(u.tx.QueryRow(ctx, assignmentActionSelect+`
+     JOIN staffing.employment_revision_publication origin_version ON origin_version.instance_id=a.instance_id AND origin_version.action_id=a.id AND origin_version.revision=$3
+     JOIN staffing.assignment_publication h ON (h.instance_id,h.assignment_id,h.version)=(origin_version.instance_id,origin_version.assignment_id,origin_version.version) `+assignmentRevisionJoin+" WHERE a.instance_id=$1 AND a.id=$2", u.store.Instance, a.ID, revision))
+	if e != nil {
+		return false, e
+	}
+	disclosure, e := u.actionDisclosure(ctx, item, true)
+	return disclosure.from || disclosure.to, e
 }

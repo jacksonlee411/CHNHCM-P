@@ -90,7 +90,7 @@ func CheckJobAssignment(ctx context.Context, u Unit, in s.AssignmentCheck, head 
 			return nil, e
 		}
 		if rule.Mode != "JobOnly" {
-			return nil, f.Fail(409, "M03_POSITION_PATH_UNAVAILABLE", day+" 起适用按岗位规则，补员及实际用量尚未接入")
+			return nil, f.Fail(409, "M03_POSITION_PATH_UNAVAILABLE", day+" 起适用按岗位规则，请核对岗位及补员安排")
 		}
 		return rule, nil
 	}
@@ -100,6 +100,25 @@ func CheckJobAssignment(ctx context.Context, u Unit, in s.AssignmentCheck, head 
 	if in.Position != "" {
 		return nil, f.Fail(409, "M03_POLICY_CONFLICT", "仅按职务不能指定岗位")
 	}
+	var out []s.AssignmentSegment
+	for _, span := range in.Split(days) {
+		rule, e := checkMode(span.From)
+		if e != nil {
+			return nil, e
+		}
+		in.Period = span
+		pieces, e := AssignmentTargets(ctx, u, in, head, rule.Version, locked)
+		if e != nil {
+			return nil, e
+		}
+		out = append(out, pieces...)
+	}
+	return out, nil
+}
+
+// AssignmentTargets obtains the department and job revisions that apply to each day.
+func AssignmentTargets(ctx context.Context, u Unit, in s.AssignmentCheck, head, policy string, locked bool) ([]s.AssignmentSegment, error) {
+	var days []string
 	targets := make([]d.Timeline, 0, 2)
 	for _, ref := range []struct{ field, id string }{{"departmentId", in.Department}, {"jobId", in.Job}} {
 		found, e := u.PositionSources(ctx, ref.field, []string{ref.id}, locked)
@@ -124,10 +143,6 @@ func CheckJobAssignment(ctx context.Context, u Unit, in s.AssignmentCheck, head 
 	}
 	var out []s.AssignmentSegment
 	for _, p := range in.Split(days) {
-		rule, e := checkMode(p.From)
-		if e != nil {
-			return nil, e
-		}
 		dep, job := targets[0], targets[1]
 		di, ji := d.At(dep, p.From), d.At(job, p.From)
 		if di < 0 || !dep.Records[di].Active() {
@@ -136,7 +151,7 @@ func CheckJobAssignment(ctx context.Context, u Unit, in s.AssignmentCheck, head 
 		if ji < 0 || !job.Records[ji].Active() {
 			return nil, positionFault("jobId", p.From)
 		}
-		out = append(out, s.AssignmentSegment{Period: p, DepartmentName: dep.Records[di].Data["name"], JobName: job.Records[ji].Data["name"], PolicyVersion: head, Policy: rule.Version, DepartmentSource: dep.Source, DepartmentRevision: dep.Records[di].Revision, JobSource: job.Source, JobRevision: job.Records[ji].Revision})
+		out = append(out, s.AssignmentSegment{Period: p, DepartmentName: dep.Records[di].Data["name"], JobName: job.Records[ji].Data["name"], PolicyVersion: head, Policy: policy, DepartmentSource: dep.Source, DepartmentRevision: dep.Records[di].Revision, JobSource: job.Source, JobRevision: job.Records[ji].Revision})
 	}
 	return out, nil
 }
@@ -152,4 +167,9 @@ func HireTargetLabel(ctx context.Context, u Unit, field string, source PositionS
 		return "", nil
 	}
 	return source.Records[d.At(source.Timeline, term.From)].Data["name"], nil
+}
+
+// JobGradeVisible checks the job membership fields required to adopt a grade.
+func JobGradeVisible(ctx context.Context, u Unit, source PositionSource, day string) (bool, error) {
+	return positionRead(ctx, u, "jobId", source, day, true, true)
 }

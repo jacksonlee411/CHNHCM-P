@@ -127,11 +127,11 @@ test('TL326/331 查询者、真实字段裁剪、撤权及迟到真实响应', a
   try {
     const reader = await readContext.newPage(); await login(reader, true); await query(reader, fixture.prefix);
     await expect(reader.getByRole('link', { name: '新建', exact: true })).toBeDisabled();
-    await reader.setViewportSize({ width: 390, height: 844 }); await query(reader, fixture.items[72].code); await expect(reader.locator('.list-row-metadata')).toContainText('未生效');
+    await reader.setViewportSize({ width: 899, height: 900 }); await query(reader, fixture.items[72].code); await expect(reader.locator('.list-row-metadata')).toContainText('未生效');
     await query(reader, fixture.items[22].code); expect(await reader.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); await expect(reader.getByRole('link', { name: fixture.items[22].name, exact: true })).toBeVisible();
     await policy(reader, async (where, mutate) => {
       mutate(`UPDATE access.subject_grant SET read_fields=ARRAY['code'] WHERE ${where} AND action='bu.read'`);
-      await reader.setViewportSize({ width: 390, height: 844 }); const actual = await query(reader, fixture.items[0].code);
+      await reader.setViewportSize({ width: 899, height: 900 }); const actual = await query(reader, fixture.items[0].code);
       expect(actual.items[0].name).toBeUndefined(); expect(actual.items[0].effectiveDate).toBeUndefined();
       await expect(reader.getByRole('link', { name: '查看详情', exact: true })).toBeVisible();
       expect(await reader.locator('.MuiDataGrid-root').innerText()).not.toContain(fixture.items[0].name);
@@ -208,14 +208,14 @@ test('TL331 旧会话真实响应不覆盖新草稿，当前会话失效要求�
   } finally { release(); await page.unrouteAll({ behavior: 'ignoreErrors' }); }
 });
 
-test('TL327 窄屏链接支持浏览器操作，直达不伪造对象总数', async ({ page, context }) => {
-  await page.setViewportSize({ width: 390, height: 844 }); await query(page, fixture.items[0].code);
+test('TL327 摘要列链接支持浏览器操作，直达不伪造对象总数', async ({ page, context }) => {
+  await page.setViewportSize({ width: 899, height: 900 }); await query(page, fixture.items[0].code);
   const link = page.getByRole('link', { name: fixture.items[0].name, exact: true });
-  await page.getByLabel('搜索编码或名称').fill('手机未应用草稿'); const href = await link.getAttribute('href'); expect(href).not.toContain('手机未应用草稿');
+  await page.getByLabel('搜索编码或名称').fill('未应用草稿'); const href = await link.getAttribute('href'); expect(href).not.toContain('未应用草稿');
   for (const click of [{ modifiers: ['Control'] as ('Control')[] }, { button: 'middle' as const }]) {
     const waiting = context.waitForEvent('page'); await link.click(click); const popup = await waiting;
     await expect(popup.getByRole('heading', { level: 1 })).toContainText(fixture.items[0].code); await popup.close(); await page.bringToFront();
-    await expect(page.getByLabel('搜索编码或名称')).toHaveValue('手机未应用草稿');
+    await expect(page.getByLabel('搜索编码或名称')).toHaveValue('未应用草稿');
   }
   const copied = await context.newPage(); await copied.goto(new URL(href!, page.url()).href); await expect(copied.getByRole('heading', { level: 1 })).toContainText(fixture.items[0].code);
   const direct = new URL(href!, page.url()); direct.search = ''; await copied.goto(direct.href);

@@ -210,7 +210,7 @@ func waitForStoredGrantExpiry(t *testing.T, f *fixture, blocker pgx.Tx, grantID 
 }
 
 func TestAccess027PublicPrefixUpgrade(t *testing.T) {
-	for _, last := range []string{"00038", "00039"} {
+	for _, last := range []string{"00038", "00039", "00057"} {
 		t.Run(last, func(t *testing.T) { testPublicGrantUpgrade(t, last) })
 	}
 }
@@ -240,7 +240,7 @@ func testPublicGrantUpgrade(t *testing.T, last string) {
 	}
 	var intact bool
 	must(t, pool.QueryRow(ctx, `SELECT count(*)=6 AND to_regclass('access.grant_assignment') IS NULL AND
-		NOT EXISTS(SELECT FROM goose_db_version WHERE version_id=41 AND is_applied) FROM access.subject_grant`).Scan(&intact))
+		NOT EXISTS(SELECT FROM goose_db_version WHERE version_id=58 AND is_applied) FROM access.subject_grant`).Scan(&intact))
 	if !intact {
 		t.Fatal("failed conversion changed old permissions or ledger")
 	}
@@ -253,7 +253,7 @@ func testPublicGrantUpgrade(t *testing.T, last string) {
 	// Replaying the local startup declarations must preserve that zero.
 	must(t, bootstrap.Initialize(ctx, pool, bootstrap.InitInput{
 		Instance: inst, EnterpriseCode: "PUBLIC", EnterpriseName: "公共升级验收", Login: "empty", Password: password,
-		DevelopmentFixture: true, NewAccountFixture: &bootstrap.NewAccountFixture{PersonnelProfile: "registrar", FirstHire: true},
+		DevelopmentFixture: true, NewAccountFixture: &bootstrap.NewAccountFixture{PersonnelProfile: "registrar", FirstHire: true, SensitiveProfile: true},
 	}))
 	must(t, pool.QueryRow(ctx, `SELECT NOT EXISTS(SELECT FROM access.person_grant)
 		AND NOT EXISTS(SELECT FROM access.employment_grant)
@@ -275,4 +275,53 @@ func testPublicGrantUpgrade(t *testing.T, last string) {
 	if !intact {
 		t.Fatal("cutover changed actual rights, attributed unknown history or lost readiness scope")
 	}
+	// A registrar that predates the sensitive-profile sample still requires explicit enrollment.
+	registrar := bootstrap.InitInput{Instance: inst, EnterpriseCode: "PUBLIC", EnterpriseName: "公共升级验收", Login: "reader", Password: password, PersonnelProfile: "registrar"}
+	must(t, bootstrap.Initialize(ctx, pool, registrar))
+	registrar.PersonnelProfile = ""
+	registrar.NewAccountFixture = &bootstrap.NewAccountFixture{SensitiveProfile: true}
+	must(t, bootstrap.Initialize(ctx, pool, registrar))
+	must(t, pool.QueryRow(ctx, `SELECT EXISTS(SELECT FROM access.person_fixture WHERE profile='registrar')
+		AND NOT EXISTS(SELECT FROM access.person_sensitive_fixture)
+		AND NOT EXISTS(SELECT FROM access.person_grant WHERE action IN ('bank.read','health.read'))`).Scan(&intact))
+	if !intact {
+		t.Fatal("restart granted sensitive profile access to an existing registrar")
+	}
+}
+
+func replaceAdminPurposeGrant(t *testing.T, db *fixture, b *browser) func(*time.Time) string {
+	t.Helper()
+	var originalGrant string
+	var binding access.VersionBinding
+	must(t, db.admin.QueryRow(db.ctx, `SELECT p.grant_id,r.role_id,r.scope_id,r.fields_id
+		FROM access.bound_permission p JOIN access.grant_revision r USING(instance_id,grant_id)
+		WHERE p.principal_id=$1 AND p.action='legalpurpose.check'`, b.subject).
+		Scan(&originalGrant, &binding.Role, &binding.Scope, &binding.Fields))
+	must(t, bootstrap.ChangeAccess(db.ctx, db.admin, bootstrap.AccessChange{Instance: db.instance, Login: "admin", Operation: "revoke", GrantID: originalGrant}))
+	return func(until *time.Time) string {
+		tx, e := db.admin.Begin(db.ctx)
+		must(t, e)
+		defer tx.Rollback(db.ctx)
+		from := time.Now().Add(-time.Minute)
+		grantID := foundation.NewID()
+		_, e = accessdb.ChangeAssignment(db.ctx, tx, db.instance, access.AssignmentChange{
+			Operation: "issue", ID: grantID, RequestID: foundation.NewID(), Actor: b.subject, Subject: b.subject,
+			Source: "duty", Purpose: "legalpurpose", Binding: binding, ValidFrom: &from, ValidUntil: until,
+		})
+		must(t, e)
+		must(t, tx.Commit(db.ctx))
+		return grantID
+	}
+}
+
+func waitForBlockedTransaction(t *testing.T, db *fixture, pid uint32) {
+	t.Helper()
+	deadline := time.Now().Add(3 * time.Second)
+	for time.Now().Before(deadline) {
+		if db.scalar("SELECT count(*) FROM pg_stat_activity WHERE $1::int=any(pg_blocking_pids(pid))", pid) > 0 {
+			return
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+	t.Fatal("competing connection did not wait")
 }

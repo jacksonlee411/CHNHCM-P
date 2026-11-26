@@ -1,3 +1,4 @@
+import { nativeZoomCases } from './desktop-viewports.mjs';
 import { grants308 } from './staffing308-grants';
 import { chromium } from '@playwright/test';
 import { execFileSync, spawn } from 'node:child_process';
@@ -12,10 +13,11 @@ export function staffingZoomSuite(kinds: readonly Kind308[], batch: string, jour
 }
 export function staffingZoomCases<Kind extends string, Sample>(kinds: readonly Kind[], batch: string,
   journey: (page: Page, sample: Sample, family: Awaited<ReturnType<typeof seed308>>, role: string) => Promise<void>,
-  seed: (page: Page, kind: Kind, family: string) => Promise<Sample>) {
+  seed: (page: Page, kind: Kind, family: string) => Promise<Sample>,
+  riskAt400?: (role: string) => boolean) {
 for (const kind of kinds)
   for (const role of ['admin', 'reader'])
-    test(`${batch} ${kind} ${role} V06/V07 原生200%与400%`, async () => {
+    test(`${batch} ${kind} ${role} 原生缩放`, async () => {
       test.setTimeout(300000);
       let display = 2700 + (process.pid % 1000);
       while (existsSync(`/tmp/.X11-unix/X${display}`) || existsSync(`/tmp/.X${display}-lock`)) display++;
@@ -55,7 +57,9 @@ for (const kind of kinds)
         page.setDefaultTimeout(15000);
         await open(page);
         const family = await seed308(page, 'jobfamily');
-        const samples = [await seed(page, kind, family.id), await seed(page, kind, family.id)];
+        const zoomCases = nativeZoomCases(riskAt400?.(role));
+        const samples: Sample[] = [];
+        for (let i = 0; i < zoomCases.length; i++) samples.push(await seed(page, kind, family.id));
         if (role === 'reader') {
           await context.clearCookies();
           await open(page, 'reader');
@@ -77,10 +81,7 @@ for (const kind of kinds)
           .poll(() => page.evaluate(() => ({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio })))
           .toEqual({ width: 1280, height: 900, dpr: 1 });
         const evidence = [];
-        for (const [index, steps, factor] of [
-          [0, 5, 2],
-          [1, 8, 4],
-        ]) {
+        for (const [index, [steps, factor]] of zoomCases.entries()) {
           zoom(steps);
           await expect.poll(() => page.evaluate(() => devicePixelRatio)).toBe(factor);
           const actual = await page.evaluate(() => ({

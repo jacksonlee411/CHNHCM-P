@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -108,5 +109,29 @@ func TestQuotaTakeoverBoundaries(t *testing.T) {
 	}
 	if _, err = plan([]QuotaPolicy{rule}, pos); err == nil {
 		t.Fatal("仅按职务任职绑定了岗位")
+	}
+}
+
+func TestExchangeValidatesEachDestinationAndFutureCommitment(t *testing.T) {
+	span := UsageSpan{From: "2027-04-01"}
+	before := QuotaUsage{Managed: []UsageSpan{span}, Coverage: []SourceCoverage{{span, "M04", "assignment-source"}, {span, "M05", "offer-source"}},
+		Uses: []PositionUse{{UsageSpan: span, Owner: "M04", Source: "real-current", Policy: "ordinary", Effect: "occupied", Assignment: "third"},
+			{UsageSpan: span, Owner: "M04", Source: "outgoing", Policy: "exempt", Effect: "exempt", Assignment: "first"}}}
+	one := 1
+	quota := StaffingQuota{Records: []QuotaRecord{{Date: span.From, Amount: &one}}}
+	for _, third := range []string{"occupied", "reserved"} {
+		after := before
+		after.Uses = append([]PositionUse{}, before.Uses[0])
+		if third == "reserved" {
+			after.Uses[0].Effect = third
+			after.Uses[0].Owner = "M05"
+		}
+		after.Uses = append(after.Uses, PositionUse{UsageSpan: UsageSpan{From: "2027-05-01", Until: "2027-05-15"}, Owner: "M04", Source: "incoming", Policy: "exempt", Effect: "exempt", Assignment: "second"},
+			PositionUse{UsageSpan: UsageSpan{From: "2027-05-15"}, Owner: "M04", Source: "incoming", Policy: "counted", Effect: "occupied", Assignment: "second"})
+		e := after.CheckExchange(before, quota, "first", "second")
+		var fault *foundation.Fault
+		if !errors.As(e, &fault) || fault.Code != "M03_QUOTA_SHORTAGE" || !strings.Contains(fault.Message, "2027-05-15 起缺 1 编") {
+			t.Fatal(third, e)
+		}
 	}
 }

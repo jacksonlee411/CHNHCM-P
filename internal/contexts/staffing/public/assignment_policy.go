@@ -19,23 +19,35 @@ type AssignmentCheck struct {
 	Enterprise        string `json:"enterprise"`
 	Category          string `json:"category"`
 	Purpose           string `json:"purpose"`
-	Department        string `json:"department"`
-	Job               string `json:"job"`
+	Department        string `json:"department,omitempty"`
+	Job               string `json:"job,omitempty"`
 	Position          string `json:"position,omitempty"`
 	Expected          string `json:"expectedVersion,omitempty"`
 }
 type AssignmentSegment struct {
-	DepartmentName     string `json:"departmentName,omitempty"`
-	JobName            string `json:"jobName,omitempty"`
-	foundation.Period  `json:",inline"`
-	PolicyVersion      string `json:"policyVersion"`
-	Policy             string `json:"policy"`
-	DepartmentSource   string `json:"departmentSource"`
-	DepartmentRevision string `json:"departmentRevision"`
-	JobSource          string `json:"jobSource"`
-	JobRevision        string `json:"jobRevision"`
-	Position           string `json:"position"`
-	Seats              int    `json:"seats"`
+	Succession          string `json:"successionSource,omitempty"`
+	Handover            string `json:"handoverSource,omitempty"`
+	QuotaSource         string `json:"quotaSource,omitempty"`
+	QuotaRevision       string `json:"quotaRevision,omitempty"`
+	RecruitingCoverage  string `json:"recruitingCoverage,omitempty"`
+	DepartmentID        string `json:"departmentId,omitempty"`
+	JobID               string `json:"jobId,omitempty"`
+	PositionName        string `json:"positionName,omitempty"`
+	PositionSource      string `json:"positionSource,omitempty"`
+	PositionRevision    string `json:"positionRevision,omitempty"`
+	ReplenishmentSource string `json:"replenishmentSource,omitempty"`
+	CoverageSource      string `json:"coverageSource,omitempty"`
+	DepartmentName      string `json:"departmentName,omitempty"`
+	JobName             string `json:"jobName,omitempty"`
+	foundation.Period   `json:",inline"`
+	PolicyVersion       string `json:"policyVersion"`
+	Policy              string `json:"policy"`
+	DepartmentSource    string `json:"departmentSource"`
+	DepartmentRevision  string `json:"departmentRevision"`
+	JobSource           string `json:"jobSource"`
+	JobRevision         string `json:"jobRevision"`
+	Position            string `json:"position"`
+	Seats               int    `json:"seats"`
 }
 type AssignmentPolicies interface {
 	Policies(context.Context, foundation.Credentials, string) (foundation.DatedRules[AssignmentPolicy], error)

@@ -48,7 +48,7 @@ Go对所有受影响边的开始／结束、父子启停及邻接链边界分段
 | 来源／日志 | [012历史](../m02/012-m02-functional-and-interaction-design.md#m02-ui-history)，StaffingChangeLog | 显示业务名称、准确采用、日期和历史只读；失权不显示隐藏身份。只读用户不能写 |
 | 层级（P2） | [012共享体验](../m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)，组织结构阅读流程只作呈现参照 | 以岗位为节点而非部门；日常按结构日期查询管理汇报，历史只读封存管理汇报，不复用M02行政树写者 |
 
-页面标准无布局豁免。管理员与查询者按权限检查五种 100% 视口下列表、详情、编辑、历史和弹窗的滚轮、键盘、错误及动作可达。关键流程选实际办理角色实测原生 200%，原生 400% 按共享规范触发专项。[012 视口与缩放](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
+页面标准无布局豁免。管理员与查询者按权限检查共享桌面视口下列表、详情、编辑、历史和弹窗的滚轮、键盘、错误及动作可达。关键流程选实际办理角色实测原生 200%，原生 400% 按共享规范触发专项。[012 视口与缩放](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
 
 <a id="position-acceptance"></a>
 ## 5 独立验收样本

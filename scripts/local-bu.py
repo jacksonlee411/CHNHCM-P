@@ -191,7 +191,7 @@ def smoke(args):
                        "--web-port", str(ports[0]), "--api-port", str(ports[1]), "--db-port", str(ports[2])], env)
         configured = True
         print(f"Temporary Chromium profile: {profile}; Web=http://127.0.0.1:{ports[0]}; API={ports[1]}; DB={ports[2]}", flush=True)
-        run(command + ["up", "--first-hire"] + (["--fixed-web"] if getattr(args, "fixed_web", False) else []), env)
+        run(command + ["up", "--first-hire", "--sensitive-profile"] + (["--fixed-web"] if getattr(args, "fixed_web", False) else []), env)
         install_smoke_policy_fixture(command, env)
         extra = args.playwright_args
         if extra[:1] == ["--"]:
@@ -315,6 +315,9 @@ def execute(args):
     env = environment(config, conn)
     run([str(BIN / "upgrader"), "-mode", "runtime-roles"], env,
         dict(API=config["api_password"]))
+    enable_sensitive = args.sensitive_profile and not config.get("sensitive_profile")
+    if enable_sensitive:
+        config["sensitive_profile"] = True
     enable_hire = args.first_hire and not config.get("first_hire")
     if enable_hire:
         config["first_hire"] = True
@@ -326,11 +329,14 @@ def execute(args):
                            ReadOnly=read_only, DevelopmentFixture=temporary)
         if temporary:
             declaration["NewAccountFixture"] = dict(PersonnelProfile="reader" if read_only else "registrar",
+                                                    SensitiveProfile=bool(config.get("sensitive_profile") and not read_only),
                                                     FirstHire=bool(config.get("first_hire") and not read_only))
+        if enable_sensitive and not read_only:
+            declaration["SensitiveProfileFixture"] = True
         if enable_hire and not read_only:
             declaration.update(HireIdentityFixture=True, EmploymentFixture=True)
         if config.get("first_hire") and not read_only:
-            declaration["FirstHireRule"] = dict(Version="T02-employee-1", From="2027-04-01")
+            declaration["FirstHireRule"] = dict(Version="T02-employee-1", From="2027-04-01", HistoricalFixtureFrom="2026-01-01")
         run([str(BIN / "upgrader"), "-mode", "initialize"], env, declaration)
     for catalog in ("country-catalog", "geoarea-catalog"):
         run([str(BIN / "upgrader"), "-mode", catalog, "-skip-unauthorized-catalog"], env,
@@ -378,6 +384,7 @@ def main():
     up = commands.add_parser("up")
     up.add_argument("--no-web", action="store_true", help="start database and API only")
     up.add_argument("--first-hire", action="store_true", help="enable the synthetic Employee hire rule and local operator grants")
+    up.add_argument("--sensitive-profile", action="store_true", help="enable synthetic bank and health purposes for the local registrar")
     up.add_argument("--fixed-web", action="store_true", help="serve a profile-owned fixed frontend build with this API")
     up.add_argument("--temporary", action="store_true", help="mark a new named profile as disposable")
     up.add_argument("--purpose", help="short local environment purpose")

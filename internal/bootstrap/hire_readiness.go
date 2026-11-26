@@ -36,25 +36,200 @@ func ruleGet(run func(*http.Request, string) (any, error)) http.HandlerFunc {
 }
 func (a *API) readinessRoutes(mux *http.ServeMux) {
 	hires := a.Runtime.Hires
-	mux.HandleFunc("GET /api/v1/employment-actions/{id}", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /api/v1/positions/{id}/replenishment/submissions/{sub}/resolve", ruleBody(func(r *http.Request, _ struct{}) (any, error) {
+		return a.Runtime.Replenishments.ResolveReplenishment(r.Context(), credentials(r), r.PathValue("id"), r.PathValue("sub"))
+	}))
+	mux.HandleFunc("GET /api/v1/positions/{id}/replenishment", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "businessAt")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := a.Runtime.Replenishments.Replenishment(r.Context(), credentials(r), r.PathValue("id"), q.Get("businessAt"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/positions/{id}/replenishment", ruleBody(func(r *http.Request, in staff.ReplenishmentChange) (any, error) {
+		return a.Runtime.Replenishments.ChangeReplenishment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("GET /api/v1/assignments/context", func(w http.ResponseWriter, r *http.Request) {
 		if _, e := queryValues(r); e != nil {
 			writeError(w, e)
 			return
 		}
-		v, e := hires.OriginalAction(r.Context(), credentials(r), r.PathValue("id"))
+		allowed, e := hires.CanListAssignments(r.Context(), credentials(r))
+		respond(w, 200, map[string]bool{"canList": allowed}, e)
+	})
+	mux.HandleFunc("POST /api/v1/personnel/directory/query", ruleBody(func(r *http.Request, in h.PersonnelQuery) (any, error) {
+		return hires.PersonnelDirectory(r.Context(), credentials(r), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/query", ruleBody(func(r *http.Request, in h.AssignmentQuery) (any, error) {
+		return hires.ListAssignments(r.Context(), credentials(r), in)
+	}))
+	mux.HandleFunc("GET /api/v1/employment-actions", a.listEmploymentRegister)
+	mux.HandleFunc("GET /api/v1/employment-actions/context", a.employmentRegisterContext)
+	mux.HandleFunc("GET /api/v1/employment-actions/{id}", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "adoptedRef")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.OriginalAction(r.Context(), credentials(r), r.PathValue("id"), q.Get("adoptedRef"))
 		respond(w, 200, v, e)
 	})
+	mux.HandleFunc("GET /api/v1/assignments/{id}", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "businessAt", "sourceVersion")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.AssignmentInfo(r.Context(), credentials(r), r.PathValue("id"), q.Get("businessAt"), q.Get("sourceVersion"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/assignments/{id}/location-options", ruleBody(func(r *http.Request, in h.LocationSearch) (any, error) {
+		return hires.LocationOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/transfer-arrangement", ruleBody(func(r *http.Request, in h.TransferArrangementQuery) (any, error) {
+		return hires.TransferArrangement(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/transfer-options", ruleBody(func(r *http.Request, in h.TransferSearch) (any, error) {
+		return hires.TransferOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-assignments", ruleBody(func(r *http.Request, in h.Secondary) (any, error) {
+		return hires.AddSecondary(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-arrangement", ruleBody(func(r *http.Request, in h.SecondaryArrangementQuery) (any, error) {
+		return hires.SecondaryArrangement(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/additional-options", ruleBody(func(r *http.Request, in h.SecondaryOption) (any, error) {
+		return hires.SecondaryOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	for _, op := range []struct {
+		path  string
+		leave bool
+	}{{"end", false}, {"leave", true}} {
+		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.ExitCommand) (any, error) {
+			return hires.ExitAssignment(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.leave, in)
+		}))
+	}
+	mux.HandleFunc("GET /api/v1/assignments/{id}/leave-impact", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "date", "meaning")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.LeaveImpact(r.Context(), credentials(r), r.PathValue("id"), q.Get("date"), q.Get("meaning"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("GET /api/v1/recruiting/offers/{id}/hire-handoff", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "sourceVersion")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.OfferHireState(r.Context(), credentials(r), r.PathValue("id"), q.Get("sourceVersion"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/recruiting/offers/{id}/hire", ruleBody(func(r *http.Request, in h.OfferHireCommand) (any, error) {
+		return hires.HireFromOffer(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("GET /api/v1/assignments/{id}/contracts", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "businessAt", "exitDate", "meaning")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.Contracts(r.Context(), credentials(r), r.PathValue("id"), q.Get("businessAt"), q.Get("exitDate"), q.Get("meaning"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/assignments/{id}/contracts", ruleBody(func(r *http.Request, in h.ContractCommand) (any, error) {
+		return hires.RecordContract(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/employment-contracts/submissions/{sub}/resolve", func(w http.ResponseWriter, r *http.Request) {
+		v, e := hires.ResolveContract(r.Context(), credentials(r), r.PathValue("sub"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("GET /api/v1/assignments/{id}/duty-sources", func(w http.ResponseWriter, r *http.Request) {
+		v, e := hires.DutySources(r.Context(), credentials(r), r.PathValue("id"))
+		respond(w, 200, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/assignments/{id}/duty-observations", ruleBody(func(r *http.Request, in h.DutyObservation) (any, error) {
+		return hires.ReceiveDuty(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/actual-duty", ruleBody(func(r *http.Request, in h.DutyCommand) (any, error) {
+		return hires.RecordDuty(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/succession-options", ruleBody(func(r *http.Request, in h.SuccessionSearch) (any, error) {
+		return hires.SuccessionOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/exchange-options", ruleBody(func(r *http.Request, in h.ExchangeSearch) (any, error) {
+		return hires.ExchangeOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/position-exchanges", ruleBody(func(r *http.Request, in h.ExchangeCommand) (any, error) {
+		return hires.ExchangePositions(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/managers", ruleBody(func(r *http.Request, in h.ManagerCommand) (any, error) {
+		return hires.SetManager(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), in)
+	}))
+	mux.HandleFunc("POST /api/v1/assignments/{id}/grade-options", ruleBody(func(r *http.Request, in h.GradeSearch) (any, error) {
+		return hires.GradeOptions(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	for _, op := range []struct{ path, kind string }{{"grade-records", "grade"}, {"promotions", "promotion"}, {"promotions/{action}/correct", "promotion"}, {"promotion-transfers", "pair"}} {
+		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.PromotionCommand) (any, error) {
+			return hires.RecordPromotion(r.Context(), credentials(r), r.PathValue("id"), r.PathValue("action"), op.kind, r.Header.Get("Idempotency-Key"), in)
+		}))
+	}
+	mux.HandleFunc("POST /api/v1/assignments/{id}/probation-departments", ruleBody(func(r *http.Request, in h.LocationSearch) (any, error) {
+		return hires.ProbationDepartments(r.Context(), credentials(r), r.PathValue("id"), in)
+	}))
+	mux.HandleFunc("GET /api/v1/assignments/{id}/probation-predecessors", func(w http.ResponseWriter, r *http.Request) {
+		q, e := queryValues(r, "businessAt")
+		if e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := hires.ProbationPredecessors(r.Context(), credentials(r), r.PathValue("id"), q.Get("businessAt"))
+		respond(w, 200, v, e)
+	})
+	for _, op := range []struct{ path, kind string }{{"trial-start", "ProbationStart"}, {"confirm-employment", "ConfirmEmployment"}} {
+		mux.HandleFunc("POST /api/v1/assignments/{id}/"+op.path, ruleBody(func(r *http.Request, in h.ProbationCommand) (any, error) {
+			return hires.RecordProbation(r.Context(), credentials(r), r.PathValue("id"), r.Header.Get("Idempotency-Key"), op.kind, in)
+		}))
+	}
+
+	changeLocation := ruleBody(func(r *http.Request, in h.LocationChange) (any, error) {
+		return hires.ChangeLocation(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), r.PathValue("id"), r.PathValue("action"), in)
+	})
+	mux.HandleFunc("POST /api/v1/assignments/{id}/location-changes", changeLocation)
+	mux.HandleFunc("POST /api/v1/assignments/{id}/location-changes/{action}/correct", changeLocation)
+	for _, item := range []struct{ route, command string }{
+		{"POST /api/v1/assignments/{id}/transfers", "transfer"},
+		{"POST /api/v1/assignments/{id}/transfers/{action}/correct", "transfer"},
+		{"POST /api/v1/assignments/{id}/actions/{action}/redate", "redate"},
+		{"POST /api/v1/assignments/{id}/actions/{action}/delete", "delete"},
+	} {
+		mux.HandleFunc(item.route, ruleBody(func(r *http.Request, in h.RecordMaintenance) (any, error) {
+			return hires.MaintainRecord(r.Context(), credentials(r), r.PathValue("id"), r.PathValue("action"), item.command, r.Header.Get("Idempotency-Key"), in)
+		}))
+	}
 	mux.HandleFunc("POST /api/v1/appointment-decisions", ruleBody(func(r *http.Request, in h.DecisionPublication) (any, error) {
 		return hires.PublishDecision(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), in)
 	}))
 	mux.HandleFunc("GET /api/v1/persons/{id}/appointment-decisions", func(w http.ResponseWriter, r *http.Request) {
-		if _, e := queryValues(r); e != nil {
+		q, e := queryValues(r, "rehireAction", "rehireRevision")
+		if e != nil {
 			writeError(w, e)
 			return
 		}
-		result, e := hires.HireDecisions(r.Context(), credentials(r), r.PathValue("id"))
+		var ref *h.ActionRef
+		if q.Has("rehireAction") || q.Has("rehireRevision") {
+			ref = &h.ActionRef{Action: q.Get("rehireAction"), Revision: q.Get("rehireRevision")}
+		}
+		result, e := hires.HireDecisions(r.Context(), credentials(r), r.PathValue("id"), ref)
 		respond(w, 200, result, e)
 	})
+	mux.HandleFunc("POST /api/v1/hires/arrangement", ruleBody(func(r *http.Request, in h.ArrangementQuery) (any, error) {
+		return hires.HireArrangement(r.Context(), credentials(r), in)
+	}))
 	mux.HandleFunc("POST /api/v1/hires/targets", ruleBody(func(r *http.Request, in h.TargetSearch) (any, error) {
 		return hires.HireTargets(r.Context(), credentials(r), in)
 	}))
@@ -70,14 +245,16 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/employment-actions/{id}/cancel", ruleBody(func(r *http.Request, in h.Cancel) (any, error) {
 		return hires.CancelHire(r.Context(), credentials(r), r.Header.Get("Idempotency-Key"), r.PathValue("id"), in)
 	}))
-	mux.HandleFunc("POST /api/v1/hires/submissions/{sub}/resolve", func(w http.ResponseWriter, r *http.Request) {
+	resolveEmployment := func(w http.ResponseWriter, r *http.Request) {
 		if _, err := queryValues(r); err != nil {
 			writeError(w, err)
 			return
 		}
 		v, e := hires.ResolveHire(r.Context(), credentials(r), r.PathValue("sub"))
 		respond(w, 200, v, e)
-	})
+	}
+	mux.HandleFunc("POST /api/v1/hires/submissions/{sub}/resolve", resolveEmployment)
+	mux.HandleFunc("POST /api/v1/employment-actions/submissions/{sub}/resolve", resolveEmployment)
 	mux.HandleFunc("GET /api/v1/persons/{id}/employment", func(w http.ResponseWriter, r *http.Request) {
 		q, e := queryValues(r, "businessAt")
 		if e != nil {

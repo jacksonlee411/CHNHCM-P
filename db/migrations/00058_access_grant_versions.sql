@@ -1,5 +1,5 @@
 -- +goose Up
--- Freeze the public 00039 grants and their constraints until parity is proven.
+-- Freeze the public 00057 grants and their constraints until parity is proven.
 LOCK TABLE access.subject_grant IN ACCESS EXCLUSIVE MODE;
 -- The old model has no grant timestamps or grantor. Keep NULL for both.
 CREATE TABLE access.policy_version (

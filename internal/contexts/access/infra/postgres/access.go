@@ -710,4 +710,7 @@ func initializeDepartmentGrants(batch *pgx.Batch, instance, enterprise, subject 
 			queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, kind+"."+action, []string{"rule"}, writes)
 		}
 	}
+	if !readOnly {
+		queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, "replenishment.maintain", []string{"rule"}, []string{"rule"})
+	}
 }

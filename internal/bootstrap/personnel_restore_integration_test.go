@@ -399,6 +399,10 @@ func TestPersonnelProfileV36Backup(t *testing.T) {
 	checkPersonnelProfileBackup(t, 36)
 }
 
+func TestPersonnelProfileV38Backup(t *testing.T) {
+	checkPersonnelProfileBackup(t, 38)
+}
+
 func checkPersonnelProfileBackup(t *testing.T, version int) {
 	path := os.Getenv("CHNHCM_PERSONNEL_V" + strconv.Itoa(version) + "_DUMP")
 	if path == "" {
@@ -432,7 +436,11 @@ func checkPersonnelProfileBackup(t *testing.T, version int) {
 		values := map[string]string{}
 		for _, table := range tables {
 			var checksum string
-			must(t, db.QueryRow(f.ctx, "select md5(coalesce(string_agg(to_jsonb(v)::text,'|' order by to_jsonb(v)::text),'')) from personnel."+table+" v").Scan(&checksum))
+			projection := "to_jsonb(v)"
+			if table == "profile_item_payload" {
+				projection += " - 'account_id'"
+			} // 00039 adds a derived reference only for bank rows.
+			must(t, db.QueryRow(f.ctx, "select md5(coalesce(string_agg(row_data,'|' order by row_data),'')) from (select ("+projection+")::text as row_data from personnel."+table+" v) original").Scan(&checksum))
 			values[table] = checksum
 		}
 		return values
@@ -467,7 +475,7 @@ func checkPersonnelProfileBackup(t *testing.T, version int) {
 		var id, number, head string
 		must(t, rows.Scan(&id, &number, &head))
 		detail := b.call("GET", "/api/v1/persons/"+id, nil, "", 200)
-		if detail["number"] != number || detail["sourceVersion"] != head || (version == 31 && (detail["family"] != nil || detail["addresses"] != nil)) || detail["education"] != nil || detail["credentials"] != nil {
+		if detail["number"] != number || detail["sourceVersion"] != head || (version == 31 && (detail["family"] != nil || detail["addresses"] != nil)) || (version < 38 && (detail["education"] != nil || detail["credentials"] != nil)) || detail["bankAccounts"] != nil || detail["healthSummary"] != nil {
 			t.Fatal("old detail mismatch")
 		}
 	}
