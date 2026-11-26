@@ -7,7 +7,8 @@ import * as person from '../personnel/api';
 import { usePageTitle } from '../../shared/navigation';
 import { employment, HirePage } from './HirePage';
 import { employees } from './EmployeeDirectory';
-import { JobInformation } from './JobInformation';
+import { JobInformation, type JobPageMode } from './JobInformation';
+import { employmentHistoryReturn, personnelReturn } from './jobLinks';
 
 export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
   const { id = '' } = useParams(),
@@ -27,15 +28,7 @@ export function EmploymentEntry({ session }: { session: Models['Principal'] }) {
   if (!overview.data) return null;
   const terms = overview.data.terms;
   if (terms.length === 1)
-    return (
-      <AssignmentDetail
-        key={terms[0].assignment}
-        id={id}
-        assignment={terms[0].assignment}
-        day={params.get('businessAt') ?? terms[0].from}
-        session={session}
-      />
-    );
+    return <Navigate replace to={person.path + '/' + id + '/assignments/' + terms[0].assignment + route.search} state={route.state} />;
   if (terms.length > 1) {
     const selection = new URLSearchParams({ person: id });
     const businessAt = params.get('businessAt');
@@ -71,12 +64,21 @@ function AssignmentDetail({
   usePageTitle('职务信息');
   const navigate = useNavigate();
   const [actionSlot, setActionSlot] = useState<HTMLSpanElement | null>(null);
-  const [params] = useSearchParams(),
-    [date, setDate] = useState(day);
-  const view = person.useRead(JSON.stringify([assignment, day]), async () =>
+  const [historySlot, setHistorySlot] = useState<HTMLDivElement | null>(null);
+  const [pageMode, setPageMode] = useState<JobPageMode>('browse');
+  const [params, setParams] = useSearchParams();
+  const source = params.get('sourceVersion') || undefined;
+  function applyDay(value: string) {
+    setParams(previous => {
+      const next = new URLSearchParams(previous);
+      next.set('assignmentDay', value);
+      return next;
+    }, { replace: true });
+  }
+  const view = person.useRead(JSON.stringify([assignment, day, source]), async () =>
     unwrap(
       await api.GET('/api/v1/assignments/{id}', {
-        params: { path: { id: assignment }, query: { businessAt: day || undefined } },
+        params: { path: { id: assignment }, query: { businessAt: day || undefined, sourceVersion:source } },
       }),
     ),
   );
@@ -107,6 +109,7 @@ function AssignmentDetail({
     const target = direction === 'previous' ? nav.previous : nav.next;
     if (!target) return;
     const q = new URLSearchParams(params);
+    for (const key of ['action', 'adoptedRef', 'sourceVersion', 'sourceEntry']) q.delete(key);
     q.set('selected', target.assignment);
     const position = nav.position + (direction === 'previous' ? -1 : 1);
     q.set('page', String(Math.ceil(position / query.pageSize)));
@@ -116,31 +119,40 @@ function AssignmentDetail({
   backQuery.delete('from');
   backQuery.delete('view');
   backQuery.delete('assignmentDay');
+  for (const key of ['action', 'adoptedRef', 'sourceVersion', 'sourceEntry']) backQuery.delete(key);
   const returnAction = params.get('returnAction');
   const registerQuery = new URLSearchParams(params);
-  for (const key of ['returnAction', 'assignmentDay']) registerQuery.delete(key);
+  for (const key of ['returnAction', 'returnTo', 'assignmentDay', 'action', 'sourceVersion', 'sourceEntry']) registerQuery.delete(key);
+  if (params.get('action') !== returnAction) registerQuery.delete('adoptedRef');
+  const originalReturn = personnelReturn(params.get('returnTo'));
+  const registerOrigin = originalReturn && originalReturn.split('?')[0] === '/personnel/actions/' + returnAction ? originalReturn : undefined;
+  const historyOrigin = employmentHistoryReturn(params.get('returnTo'), id);
   const back = returnAction
-    ? '/personnel/actions/' + returnAction + '?' + registerQuery
-    : params.get('from') === 'assignments'
+    ? registerOrigin || '/personnel/actions/' + returnAction + '?' + registerQuery
+    : historyOrigin || (params.get('from') === 'assignments'
       ? employees + '?' + backQuery
-      : person.path + '/' + id + '?' + backQuery;
+      : person.path + '/' + id + '?' + backQuery);
   const personQuery = new URLSearchParams(params);
   personQuery.delete('from');
   if (listed) personQuery.set('returnTo', 'assignments');
   personQuery.set('assignment', assignment);
-  const selectedDay = date || data?.businessAt;
+  const selectedDay = day || data?.businessAt;
   if (selectedDay) personQuery.set('assignmentDay', selectedDay);
   const path = person.path + '/' + id;
   const secondary = new URLSearchParams(params);
   if (selectedDay) secondary.set('assignmentDay', selectedDay);
   const legacy = new URLSearchParams(params);
   legacy.set('view', 'history');
+  const sourceAssignment = personnelReturn(path + '/assignments/' + assignment + '?' + params);
+  if (sourceAssignment) legacy.set('returnTo', sourceAssignment);
+  const browsing = pageMode === 'browse' && !source;
+  const showRelatedTabs = pageMode !== 'history' && !source;
   return (
     <Box className="standard-page object-page">
       <RecordControl
         identity={
           <>
-            <RecordBackButton component={Link} to={back} label={returnAction ? '返回办理明细' : undefined} />
+            <RecordBackButton component={Link} to={back} label={returnAction ? '返回办理明细' : historyOrigin ? '返回办理历史' : undefined} />
             {data?.name} {data?.number}
           </>
         }
@@ -156,17 +168,16 @@ function AssignmentDetail({
           )
         }
         actions={
-          data && (
-            <Stack direction="row" flexWrap="wrap" gap={1}>
-              <span ref={setActionSlot} />
-              {(data.canAddSecondary||data.canAddParallel)&&<Button component={Link} to={path+'/assignments/'+assignment+'/additional?'+secondary}>新增兼岗</Button>}
-              {data.primaryJob&&<Button component={Link} to={path + '/employment?' + legacy}>
-                办理历史
-              </Button>}
-            </Stack>
-          )
+          <Stack direction="row" flexWrap="wrap" gap={1}>
+            <span ref={setActionSlot} />
+            {browsing && (data?.canAddSecondary||data?.canAddParallel)&&<Button component={Link} to={path+'/assignments/'+assignment+'/additional?'+secondary}>新增兼岗</Button>}
+            {browsing && data?.primaryJob&&<Button component={Link} to={path + '/employment?' + legacy}>
+              办理历史
+            </Button>}
+          </Stack>
         }
       />
+      <div ref={setHistorySlot} style={{display:'contents'}} />
       <Box className="page-scroll" data-page-scroll role="region" aria-label="任职详情" tabIndex={0}>
         {view.error && (
           <Alert severity="error" action={<Button onClick={view.refresh}>重试</Button>}>
@@ -183,8 +194,9 @@ function AssignmentDetail({
               {data.employerName} · {data.relationship === 'Employee' ? '员工关系' : data.relationship} · 自{' '}
               {data.from} 起
             </Typography>
+            {data.futureTerm && <Typography>尚未生效</Typography>}
             {data.relationshipPrimary && !data.primaryJob && <Typography>本工作关系主任职</Typography>}
-            {otherTerms && otherTerms.length>0 && <Stack direction="row" flexWrap="wrap" alignItems="center">
+            {browsing && otherTerms && otherTerms.length>0 && <Stack direction="row" flexWrap="wrap" alignItems="center">
               <Typography>同号任期</Typography>
               {otherTerms.map(term=>{
                 const q=new URLSearchParams(params);q.set('assignmentDay',term.from);
@@ -192,11 +204,11 @@ function AssignmentDetail({
               })}
             </Stack>}
             <Tabs value="job" aria-label="人员详情" variant="scrollable">
-              {profile.data && (
+              {showRelatedTabs && profile.data && (
                 <Tab component={Link} to={path + '?' + personQuery} value="person" label="个人资料" />
               )}
               <Tab value="job" label="职务信息" />
-              {profile.data?.history && (
+              {showRelatedTabs && profile.data?.history && (
                 <Tab
                   component={Link}
                   to={path + '?' + personQuery + '&tab=history'}
@@ -205,20 +217,24 @@ function AssignmentDetail({
                 />
               )}
             </Tabs>
-            <Stack component="section" role="tabpanel">
-              <ObjectForm>
-                <JobInformation
-                  assignment={assignment}
-                  day={date || data.businessAt}
-                  onDay={setDate}
-                  session={session}
-                  actionSlot={actionSlot}
-                  onSave={view.refresh}
-                />
-              </ObjectForm>
-            </Stack>
           </>
         )}
+        <Stack component="section" role="tabpanel" sx={{display: data ? undefined : 'none'}}>
+          <ObjectForm>
+            <JobInformation
+              enabled={!!data}
+              current={{...view, data}}
+              assignment={assignment}
+              day={day || data?.businessAt || ''}
+              onDay={applyDay}
+              session={session}
+              actionSlot={actionSlot}
+              historySlot={historySlot}
+              onModeChange={setPageMode}
+              onSave={view.refresh}
+            />
+          </ObjectForm>
+        </Stack>
       </Box>
     </Box>
   );

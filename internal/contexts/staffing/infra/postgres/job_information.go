@@ -79,13 +79,26 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 	if day != "" && !f.ValidDate(day) || version != "" && !f.ValidID(version) {
 		return out, f.Fail(400, "ASSIGNMENT_INPUT", "业务日或来源无效")
 	}
+	pinned := version != ""
 	err = st.within(ctx, c, false, true, func(u *unit) error {
+		today := u.now.In(f.Shanghai).Format(time.DateOnly)
+		if day == "" {
+			term, err := u.assignmentIdentity(ctx, id)
+			if err != nil {
+				return err
+			}
+			day = max(today, term.From)
+			if term.Until != "" && day >= term.Until && version == "" {
+				end, err := time.Parse(time.DateOnly, term.Until)
+				if err != nil {
+					return err
+				}
+				day = end.AddDate(0, 0, -1).Format(time.DateOnly)
+			}
+		}
 		a, e := u.assignmentAt(ctx, id, day, version)
 		if e != nil {
 			return e
-		}
-		if day == "" {
-			day = u.now.In(f.Shanghai).Format("2006-01-02")
 		}
 		history, e := u.employmentAllowed(ctx, "history", a.Person, a.Employer, a.Department, false)
 		if e != nil {
@@ -104,7 +117,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		if !exists {
 			return unknownAssignment()
 		}
-		out = h.AssignmentView{Person: a.Person, Assignment: id, Employment: a.Employment, RecordNumber: a.RecordNumber, PrimaryJob: a.PrimaryJob, SourceVersion: version, BusinessAt: day, Actions: []h.Action{}}
+		out = h.AssignmentView{Person: a.Person, Assignment: id, Employment: a.Employment, RecordNumber: a.RecordNumber, PrimaryJob: a.PrimaryJob, SourceVersion: version, BusinessAt: day, FutureTerm: !a.Cancelled && a.From > today, Actions: []h.Action{}}
 		recognized, _, e := st.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, []string{a.Person}, "")
 		if e != nil {
 			return e
@@ -119,7 +132,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		out.Name, out.Number = recognized[0].Name, recognized[0].Number
 		out.Period = a.Period
 		if version != a.SourceVersion {
-			if e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member m USING(instance_id,assignment_id,action_id,revision) WHERE x.instance_id=$1 AND x.assignment_id=$2 AND m.version=$3),upper(period)::text,'') FROM staffing.assignment WHERE instance_id=$1 AND id=$2`, st.Instance, id, version).Scan(&out.Until); e != nil {
+			if e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member m USING(instance_id,assignment_id,action_id) WHERE x.instance_id=$1 AND x.assignment_id=$2 AND m.version=$3),upper(period)::text,'') FROM staffing.assignment WHERE instance_id=$1 AND id=$2`, st.Instance, id, version).Scan(&out.Until); e != nil {
 				return e
 			}
 		}
@@ -251,6 +264,13 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			if e != nil {
 				return e
 			}
+			if !pinned && out.State != nil && (out.CanChangeLocation || out.CanTransfer || out.CanRecordDuty || out.CanStartProbation || out.CanConfirm || out.CanRecordGrade || out.CanPromote || out.CanSetManager || out.CanEnd || out.CanLeave) {
+				op, err := u.newRecordOperation(ctx, id, day)
+				if err != nil {
+					return err
+				}
+				out.CanAddRecord, out.CanInsertRecord = op == "Add", op == "Insert"
+			}
 		}
 		rows, e := u.tx.Query(ctx, assignmentActionSelect+` JOIN staffing.assignment_publication h ON h.instance_id=a.instance_id AND h.assignment_id=$2 AND h.version=$3 `+assignmentRevisionJoin+" WHERE a.instance_id=$1 ORDER BY r.business_date DESC,a.recorded_at DESC,a.id", st.Instance, id, version)
 		if e != nil {
@@ -259,6 +279,32 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 		items, e := pgx.CollectRows(rows, func(row pgx.CollectableRow) (h.Action, error) { return scanHireAction(row) })
 		if e != nil {
 			return e
+		}
+		for first := 0; first < len(items); {
+			last := first + 1
+			for last < len(items) && items[last].BusinessDate == items[first].BusinessDate {
+				last++
+			}
+			entries := make([]h.HistoryEntry, 0, last-first)
+			byID := map[string]h.Action{}
+			for _, a := range items[first:last] {
+				byID[a.ID] = a
+			}
+			for _, a := range items[first:last] {
+				ref := a.Previous
+				if ref != nil && byID[ref.Action].Revision != ref.Revision {
+					ref = nil
+				}
+				entries = append(entries, h.HistoryEntry{ID: a.ID, Previous: ref})
+			}
+			ordered, e := h.OrderDay(entries)
+			if e != nil {
+				return e
+			}
+			for n, r := range ordered {
+				items[first+n] = byID[r.ID]
+			}
+			first = last
 		}
 		for _, item := range items {
 			if h.RelationAction(item.Kind) {
@@ -336,26 +382,7 @@ func (st *Store) AssignmentInfo(ctx context.Context, c f.Credentials, id, day, v
 			}
 			out.Actions = append(out.Actions, item)
 		}
-		for first := 0; first < len(out.Actions); {
-			last := first + 1
-			for last < len(out.Actions) && out.Actions[last].BusinessDate == out.Actions[first].BusinessDate {
-				last++
-			}
-			entries := make([]h.HistoryEntry, 0, last-first)
-			byID := map[string]h.Action{}
-			for _, a := range out.Actions[first:last] {
-				entries = append(entries, h.HistoryEntry{ID: a.ID, Previous: a.Previous})
-				byID[a.ID] = a
-			}
-			ordered, e := h.OrderDay(entries)
-			if e != nil {
-				return e
-			}
-			for n, r := range ordered {
-				out.Actions[first+n] = byID[r.ID]
-			}
-			first = last
-		}
+
 		return nil
 	})
 	return

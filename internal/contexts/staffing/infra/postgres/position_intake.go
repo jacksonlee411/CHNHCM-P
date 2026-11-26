@@ -44,9 +44,9 @@ func (st *Store) AssignmentPositionUsage(ctx context.Context, instance, position
 	if e != nil {
 		return out, e
 	}
-	rows, e = tx.Query(ctx, `SELECT lower(s.period)::text,coalesce(upper(s.period)::text,''),s.version,s.adoption->>'policy',CASE WHEN replacement.id IS NOT NULL THEN 'handover' WHEN (s.adoption->>'seats')::int>0 THEN 'occupied' ELSE 'exempt' END,s.department_id,s.job_id,s.assignment_id,coalesce(replacement.incumbent::text,'')
+	rows, e = tx.Query(ctx, `SELECT lower(s.period)::text,coalesce(upper(s.period)::text,''),s.version,s.adoption->>'policy',CASE WHEN nullif(s.adoption->>'handoverSource','') IS NOT NULL THEN 'handover' WHEN (s.adoption->>'seats')::int>0 THEN 'occupied' ELSE 'exempt' END,s.department_id,s.job_id,s.assignment_id,coalesce(replacement.incumbent::text,'')
  FROM staffing.assignment_head h JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
- LEFT JOIN staffing.position_succession replacement ON replacement.instance_id=s.instance_id AND replacement.id=nullif(s.adoption->>'handoverSource','')::uuid
+ LEFT JOIN staffing.position_succession replacement ON replacement.instance_id=s.instance_id AND replacement.id=coalesce(nullif(s.adoption->>'successionSource',''),nullif(s.adoption->>'handoverSource',''))::uuid
  WHERE s.instance_id=$1 AND s.adoption->>'position'=$2`, instance, position)
 	if e != nil {
 		return out, e

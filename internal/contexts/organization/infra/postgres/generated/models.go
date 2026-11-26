@@ -2168,6 +2168,13 @@ type StaffingPositionTerminal struct {
 	ClosedAt     pgtype.Timestamptz
 }
 
+type StaffingProbationReceiptAssignment struct {
+	InstanceID   string
+	Actor        string
+	SubmissionID string
+	AssignmentID string
+}
+
 type StaffingPromotionTransfer struct {
 	InstanceID        string
 	AssignmentID      string

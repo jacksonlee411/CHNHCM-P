@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/jackc/pgx/v5"
 
+	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	f "chnhcm.local/chnhcm/internal/foundation"
 )
 
@@ -12,7 +13,35 @@ type employmentEntry struct {
 	adoption                                                                      any
 }
 
+// A relation decision may have been published to an assignment that had
+// already ended. Use only the effective nodes belonging to the chosen term.
+const activeRecordMembers = ` FROM staffing.assignment_member m
+	JOIN staffing.employment_action a ON (a.instance_id,a.id)=(m.instance_id,m.action_id)
+	JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(m.instance_id,m.action_id,m.revision)
+	WHERE r.operation NOT IN ('Delete','Withdraw') AND a.kind<>'CancelHire'
+	AND (a.kind NOT IN ('ProbationStart','ConfirmEmployment') OR EXISTS(SELECT FROM staffing.assignment_segment seg
+		WHERE (seg.instance_id,seg.assignment_id,seg.version)=(m.instance_id,m.assignment_id,m.version) AND seg.period @> r.business_date)) `
+
+func (u *unit) newRecordOperation(ctx context.Context, assignment, day string) (string, error) {
+	var later bool
+	err := u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT`+activeRecordMembers+`
+		AND m.instance_id=$1 AND m.assignment_id=$2 AND r.business_date>$3::date
+		AND m.version=(SELECT version FROM staffing.assignment_head WHERE instance_id=$1 AND assignment_id=$2))`,
+		u.store.Instance, assignment, day).Scan(&later)
+	if later {
+		return "Insert", err
+	}
+	return "Add", err
+}
+
 func (u *unit) newEmploymentAction(ctx context.Context, e employmentEntry) error {
+	if e.operation == "" && !h.StartsAssignment(e.kind) && e.kind != "CancelHire" {
+		op, err := u.newRecordOperation(ctx, e.assignment, e.date)
+		if err != nil {
+			return err
+		}
+		e.operation = op
+	}
 	operator, err := u.guard.OperatorSnapshot(ctx)
 	if err != nil {
 		return err
@@ -27,6 +56,10 @@ func (u *unit) newEmploymentAction(ctx context.Context, e employmentEntry) error
 }
 
 func (u *unit) startAssignmentSource(ctx context.Context, assignment, previous, version, action, revision string) error {
+	return u.startSourceReplacing(ctx, assignment, previous, version, action, revision, []h.ActionRef{{Action: action, Revision: revision}})
+}
+
+func (u *unit) startSourceReplacing(ctx context.Context, assignment, previous, version, action, revision string, refs []h.ActionRef) error {
 	if previous != "" {
 		rows, e := u.tx.Query(ctx, `SELECT DISTINCT adoption->>'position' AS id FROM staffing.assignment_segment WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND coalesce(adoption->>'position','')<>'' ORDER BY id`, u.store.Instance, assignment, previous)
 		if e != nil {
@@ -48,10 +81,14 @@ func (u *unit) startAssignmentSource(ctx context.Context, assignment, previous, 
 	if err != nil {
 		return err
 	}
+	ids, revisions := make([]string, len(refs)), make([]string, len(refs))
+	for i, ref := range refs {
+		ids[i], revisions[i] = ref.Action, ref.Revision
+	}
 	_, err = u.tx.Exec(ctx, `INSERT INTO staffing.assignment_member(instance_id,assignment_id,version,action_id,revision)
 		SELECT instance_id,assignment_id,$3::uuid,action_id,revision FROM staffing.assignment_member
-		WHERE instance_id=$1 AND assignment_id=$2 AND version=NULLIF($4,'')::uuid AND action_id<>$5
-		UNION ALL SELECT $1::uuid,$2::uuid,$3::uuid,$5::uuid,$6::uuid`, instance, assignment, version, previous, action, revision)
+		WHERE instance_id=$1 AND assignment_id=$2 AND version=NULLIF($4,'')::uuid AND NOT (action_id=ANY($5::uuid[]))
+		UNION ALL SELECT $1::uuid,$2::uuid,$3::uuid,id,rev FROM unnest($5::uuid[],$6::uuid[]) AS refs(id,rev)`, instance, assignment, version, previous, ids, revisions)
 	return err
 }
 

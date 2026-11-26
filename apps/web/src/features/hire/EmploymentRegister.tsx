@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Button, Stack, Typography } from '@mui/material';
-import { Link, useSearchParams } from 'react-router-dom';
-import { useGridApiRef, type GridColDef } from '@mui/x-data-grid';
-import { api, unwrap, sessionGuard, type Models } from '@chnhcm/api-client';
+import { Link, useLocation, useNavigationType, useSearchParams } from 'react-router-dom';
+import { useGridApiRef, type GridColDef, type GridSortModel } from '@mui/x-data-grid';
+import { api, ApiError, unwrap, sessionGuard, type Models } from '@chnhcm/api-client';
 import {
   DataGridPage,
   ListControl,
@@ -13,6 +13,7 @@ import {
 } from '@chnhcm/ui';
 import { useListReturn, usePageTitle } from '../../shared/navigation';
 import * as person from '../personnel/api';
+import { registerListParams } from './jobLinks';
 
 export const registerPath = '/personnel/actions';
 type Row = Models['EmploymentRegisterRow'];
@@ -138,16 +139,13 @@ function RegisterDate({ name, label, initial }: { name: string; label: string; i
   );
 }
 
-export function EmploymentRegister({ session }: { session: Models['Principal'] }) {
-  usePageTitle('办理记录');
-  const [params, setParams] = useSearchParams(),
-    apiRef = useGridApiRef();
+export function registerQuery(params: URLSearchParams) {
   const value = (name: string) => params.get(name) || undefined;
   const page = Number(value('page') ?? 1),
     pageSize = Number(value('pageSize') ?? 20) as 20 | 50 | 100;
   const ref = value('ref'),
     sort = (value('sort') ?? '-recordedAt') as Sort;
-  const query = {
+  return {
     ref,
     sort,
     page,
@@ -163,21 +161,58 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
     recordedFrom: value('recordedFrom'),
     recordedTo: value('recordedTo'),
   };
-  const listing = person.useRead(JSON.stringify(query), async () =>
+}
+
+export function EmploymentRegister({ session }: { session: Models['Principal'] }) {
+  usePageTitle('办理记录');
+  const [params, setParams] = useSearchParams(),
+    apiRef = useGridApiRef();
+  const route = useLocation(), navigation = useNavigationType();
+  const value = (name: string) => params.get(name) || undefined;
+  const query = registerQuery(params);
+  const {page, pageSize, ref, sort} = query;
+  const listing = person.useRead(JSON.stringify([route.key, query]), async () =>
     unwrap(await api.GET('/api/v1/employment-actions', { params: { query } })),
   );
   const data = listing.data,
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
-  const initialized = useRef<string | undefined>(undefined),
-    request = useRef(0),
-    edit = useRef(0);
-  useEffect(() => {
-    if (data && initialized.current !== (ref ?? '')) {
-      setDraft(data.keyword);
-      initialized.current = ref ?? '';
+  const countKey=JSON.stringify({...query,page:undefined});
+  const lastCount=useRef<{key:string;total:number} | undefined>(undefined);
+  useEffect(()=>{if(data)lastCount.current={key:countKey,total:data.total};},[countKey,data]);
+  const knownTotal = data?.total ?? (!listing.error && lastCount.current?.key===countKey ? lastCount.current.total : undefined);
+  const localSearch = useRef<string | undefined>(undefined);
+  const request = useRef(0);
+  const initializeDraft = useRef(true);
+  const appliedName = useRef<{ref: string; keyword: string} | undefined>(undefined);
+  const nameRef = ref ?? '';
+  useLayoutEffect(() => {
+    const local = navigation !== 'POP' && localSearch.current === route.search;
+    localSearch.current = undefined;
+    request.current++;
+    setError('');
+    if (!local) {
+      initializeDraft.current = true;
+      appliedName.current = undefined;
+      setDraft('');
     }
-  }, [data, ref]);
+  }, [route.key, route.search, navigation]);
+  useLayoutEffect(() => {
+    if (listing.status === 401 || listing.status === 403) {
+      request.current++;
+      initializeDraft.current = true;
+      appliedName.current = undefined;
+      lastCount.current = undefined;
+      setDraft('');
+      return;
+    }
+    if (!data) return;
+    appliedName.current = {ref:nameRef, keyword:data.keyword};
+    if (initializeDraft.current) {
+      setDraft(data.keyword);
+      initializeDraft.current = false;
+    }
+  }, [data, nameRef, listing.status]);
   useEffect(
     () => () => {
       request.current++;
@@ -194,33 +229,64 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
   });
   function update(values: Record<string, string>) {
     if (location.pathname !== registerPath) return;
-    const next = new URLSearchParams(location.search);
+    const next = registerListParams(new URLSearchParams(location.search));
     next.delete('selected');
     for (const [key, v] of Object.entries(values)) {
       if (v) next.set(key, v);
       else next.delete(key);
     }
-    if (next.toString() !== location.search.slice(1)) setParams(next);
+    if (next.toString() !== location.search.slice(1)) {
+      localSearch.current = '?' + next;
+      setParams(next);
+    } else listing.refresh();
   }
-  async function search() {
-    const token = ++request.current,
-      rev = edit.current,
-      current = sessionGuard();
+  const denied = listing.status === 401 || listing.status === 403;
+  async function apply(values: Record<string,string> = {}, newQuery = false) {
+    if (denied) return;
+    const path = location.pathname + location.search;
+    const token = ++request.current, current = sessionGuard();
+    const active = () => token === request.current && current() && location.pathname + location.search === path;
     try {
-      const saved = await person.queryRef(session, draft);
-      if (token !== request.current || !current()) return;
-      if (edit.current !== rev) initialized.current = saved.ref;
+      const word = draft.trim();
+      const applied = data?.keyword ?? (appliedName.current?.ref === nameRef ? appliedName.current.keyword : undefined);
+      const carryApplied = initializeDraft.current || !newQuery && listing.status !== 404 && word === applied;
+      let nextRef = nameRef;
+      if (!carryApplied) {
+        if (word) {
+          const access = unwrap(await api.GET('/api/v1/employment-actions/context'));
+          if (!active()) return;
+          if (!access.canList) {
+            initializeDraft.current = true;
+            appliedName.current = undefined;
+            setDraft('');
+            listing.invalidate();
+            return;
+          }
+          nextRef = (await person.queryRef(session, word)).ref;
+        } else nextRef = '';
+        if (!active()) return;
+        appliedName.current = {ref:nextRef, keyword:word};
+      }
       setError('');
-      update({ ref: saved.ref, page: '1' });
+      update({ ...values, ref: nextRef, page: '1' });
     } catch (e) {
-      if (token === request.current && current()) setError(person.message(e));
+      if (active()) {
+        setError(person.message(e));
+        if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
+          initializeDraft.current = true;
+          appliedName.current = undefined;
+          setDraft('');
+          listing.invalidate();
+        }
+      }
     }
   }
   const { columns, summary } = useMemo(() => {
     const link = (r: Row, compact = false) => {
       const text = compact ? kinds[r.kind] + ' · ' + r.name : kinds[r.kind];
       if (!r.canHistory) return text;
-      const q = new URLSearchParams(params);
+      const q = registerListParams(params);
+      q.set('fromRegister', '1');
       q.set('selected', r.id);
       return (
         <Link
@@ -292,6 +358,9 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
     };
     return { columns, summary };
   }, [params, returned.rememberRow]);
+  const sortModel = useMemo<GridSortModel>(() => [
+    {field:sort.replace('-', ''), sort:sort.startsWith('-') ? 'desc' : 'asc'},
+  ], [sort]);
   return (
     <div className="standard-page">
       <DataGridPage<Row>
@@ -303,42 +372,44 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
         loading={!data && !listing.error}
         rows={data?.rows ?? []}
         empty="没有匹配的办理记录"
-        rowCount={data?.total ?? 0}
+        rowCount={knownTotal}
         columns={columns}
         summaryColumn={summary}
         paginationModel={{ page: page - 1, pageSize }}
-        onPaginationModelChange={(m) =>
-          update({ page: String(m.pageSize === pageSize ? m.page + 1 : 1), pageSize: String(m.pageSize) })
-        }
-        sortModel={[{ field: sort.replace('-', ''), sort: sort.startsWith('-') ? 'desc' : 'asc' }]}
+        onPaginationModelChange={(m) => {
+          if (!data || (m.page===page-1 && m.pageSize===pageSize)) return;
+          request.current++;
+          update({page:String(m.pageSize===pageSize ? m.page+1 : 1),pageSize:String(m.pageSize)});
+        }}
+        sortModel={sortModel}
         onSortModelChange={(m) => {
           const v = m[0]?.sort ? (m[0].sort === 'desc' ? '-' : '') + m[0].field : '-recordedAt';
-          if (v !== sort) update({ sort: v, page: '1' });
+          if (v !== sort) void apply({sort:v});
         }}
         toolbar={
           <ListControl
             title="办理记录"
             pager={<ListPager />}
-            search={
+            search={!denied &&
               <SearchControl
                 label="姓名或人员编号"
                 value={draft}
                 onChange={(v) => {
-                  edit.current++;
-                  initialized.current = ref ?? '';
+                  initializeDraft.current = false;
                   setDraft(v);
                 }}
-                onSearch={search}
+                onSearch={() => void apply({}, true)}
               />
             }
           >
-            <Filters params={params} data={data} apply={(values) => update({ ...values, page: '1' })} />
+            {!denied && <Filters params={params} data={data} apply={(values) => void apply(values)} />}
+            {data && draft.trim() !== data.keyword && <Typography role="status" variant="body2">姓名或人员编号已修改，查询后生效。</Typography>}
             {data && <Typography>{data.total} 笔办理</Typography>}
           </ListControl>
         }
         messages={
           (error || listing.error) && (
-            <Alert severity="error" action={<Button onClick={listing.refresh}>重试</Button>}>
+            <Alert severity="error" action={<Button onClick={() => {setError(''); listing.refresh();}}>重试</Button>}>
               {error || listing.error}
             </Alert>
           )

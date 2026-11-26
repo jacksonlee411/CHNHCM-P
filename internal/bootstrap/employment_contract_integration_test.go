@@ -94,3 +94,27 @@ func TestRelationshipContractsRenewAndCloseOnlyTheSelectedRelationship(t *testin
 		t.Fatal("撤权后合同行为回执泄露", recovered)
 	}
 }
+
+func TestLeaveImpactContractsFollowNoticeBoundaryAndDepartment(t *testing.T) {
+	type M = map[string]any
+	x := lifecycleSample{setupAssignment(t)}
+	id := x.hire["assignment"].(string)
+	contract := x.post(id, "contracts", "2027-05-01", M{"operation": "sign", "number": "C-509", "signed": "2027-04-12", "from": "2027-05-01"}, 200)
+	x.policy("transfer")
+	target := x.h.b.call("POST", "/api/v1/departments", departmentCreateBody("D509I", x.bu), f.NewID(), 201)
+	x.post(id, "transfers", "2027-07-01", M{"businessDate": "2027-07-01", "department": target["departmentId"], "job": x.job, "notice": "七月起按新部门核权"}, 200)
+	x.h.policy("UPDATE access.employment_grant SET department_id=$2 WHERE principal_id=$1 AND action IN ('contract.read','contract.manage')", x.h.b.subject, x.dep)
+	impact := func(meaning string) M {
+		return x.h.b.call("GET", "/api/v1/assignments/"+id+"/leave-impact?date=2027-07-01&meaning="+meaning, nil, "", 200)
+	}
+	expected := []any{M{"id": contract["id"], "version": contract["version"], "number": "C-509"}}
+	before, after := impact("first-inactive"), impact("last-active")
+	if !reflect.DeepEqual(before["contracts"], expected) || before["canManageContracts"] != true || after["contracts"] != nil || after["canManageContracts"] != nil {
+		t.Fatal("同一通知日应按最后在职日所属部门披露合同", before, after)
+	}
+	x.h.policy("UPDATE access.employment_grant SET department_id=$2 WHERE principal_id=$1 AND action='contract.manage'", x.h.b.subject, target["departmentId"])
+	viewOnly := impact("first-inactive")
+	if !reflect.DeepEqual(viewOnly["contracts"], expected) || viewOnly["canManageContracts"] != nil {
+		t.Fatal("获准查看的待处置合同与单独的处置权限", viewOnly)
+	}
+}

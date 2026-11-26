@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"reflect"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -208,9 +210,13 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 			reason = "职级晋升"
 		}
 	}
-	target.Operation = "Add"
 	if action != "" {
 		target.Operation = "Correct"
+	} else {
+		target.Operation, e = u.newRecordOperation(ctx, id, day)
+		if e != nil {
+			return out, e
+		}
 	}
 	if in.Previous != nil {
 		if e = u.validatePreceding(ctx, a, day, in.Previous); e != nil {
@@ -222,6 +228,23 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 	if old.Grade != nil {
 		job = old.Grade.Job
 	}
+	var oldPlacement h.Placement
+	if action != "" && old.Transfer == nil && (in.Position != "" || in.Job != "") {
+		before := slices.Clone(rows)
+		confirm, err := u.currentConfirmation(ctx, a)
+		if err != nil {
+			return out, err
+		}
+		if confirm.ID != "" && a.Includes(confirm.Day) {
+			before = append(before, confirm)
+		}
+		projection, err := projectRecords(a, initial, before)
+		if err != nil {
+			return out, err
+		}
+		oldPlacement = projection.Changes[action].After
+	}
+	sameSuccessor := in.Precedes == nil
 	if in.Precedes != nil {
 		if e = u.validatePreceding(ctx, a, day, in.Precedes); e != nil {
 			return out, e
@@ -230,6 +253,7 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 			return out, assignmentConflict()
 		}
 		successor := &rows[next]
+		sameSuccessor = action != "" && successor.Previous != nil && *successor.Previous == (h.ActionRef{Action: action, Revision: old.Revision})
 		if successor.Previous != nil && successor.Previous.Action != target.ID {
 			if target.Previous != nil && target.Previous.Action != successor.Previous.Action {
 				return out, assignmentConflict()
@@ -237,7 +261,9 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 			target.Previous = successor.Previous
 		}
 		successor.Previous = &h.ActionRef{Action: target.ID, Revision: target.Revision}
-		target.Operation = "Insert"
+		if action == "" {
+			target.Operation = "Insert"
+		}
 		job = successor.Evidence.Transfer.BeforeJob
 	}
 	if in.Position != "" {
@@ -278,6 +304,7 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 	target.Grade = grade
 	target.Evidence.Promotion = &h.PromotionEvidence{After: *grade, Reason: reason}
 	pair := ""
+	placementChanged := false
 	if in.Job != "" {
 		for _, dept := range []string{scoped.Department, in.Department} {
 			for _, right := range []string{"read", "transfer", permit} {
@@ -295,7 +322,7 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 			return out, f.Fail(409, "TRANSFER_UNCHANGED", "岗位、部门和职务均未改变")
 		}
 		if kind == "pair" {
-			companion := savedRecord{Operation: "Add", Notice: strings.TrimSpace(in.TransferNotice)}
+			companion := savedRecord{Operation: target.Operation, Notice: strings.TrimSpace(in.TransferNotice)}
 			if companion.Notice == "" {
 				companion.Notice = target.Notice
 			}
@@ -312,10 +339,21 @@ func (u *unit) promotion(ctx context.Context, id, action, kind string, in h.Prom
 			pair = companion.ID
 			rows = append(rows, companion)
 		} else {
-			target.Transfer = transfer
+			placementChanged = true
+			if action != "" {
+				if old.Transfer != nil {
+					placementChanged = old.Transfer.Position != in.Position || old.Transfer.Department != in.Department || old.Transfer.Job != in.Job
+				} else {
+					placementChanged = oldPlacement.Adoption.Position != in.Position || oldPlacement.Department != in.Department || oldPlacement.Job != in.Job
+				}
+			}
+			if placementChanged {
+				target.Transfer = transfer
+			}
 		}
 	}
-	if action != "" && in.Grade == old.Grade.ID && reason == old.Evidence.Promotion.Reason && target.Notice == old.Notice && in.Job == "" && in.Precedes == nil && in.Previous == nil {
+	if action != "" && in.Grade == old.Grade.ID && reason == old.Evidence.Promotion.Reason && target.Notice == old.Notice &&
+		!placementChanged && sameSuccessor && reflect.DeepEqual(target.Previous, old.Previous) {
 		return out, f.Fail(409, "PROMOTION_UNCHANGED", "原晋升内容未改变")
 	}
 	rows[index] = target

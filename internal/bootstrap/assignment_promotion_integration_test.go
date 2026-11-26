@@ -92,6 +92,11 @@ func TestAssignmentPromotionUsesActualGradeAndOneDailySource(t *testing.T) {
 			case "reverse":
 				moved = write("transfers", day, transfer, 200)
 				promote["precedes"] = ref(moved)
+				// An unordered move made the confirmation's department undetermined.
+				// The original confirmation revision must now be rejected as stale.
+				write("promotions", day, promote, 409)
+				current := b.call("GET", "/api/v1/employment-actions/"+confirm["action"].(string), nil, "", 200)["action"].(M)
+				promote["previous"] = M{"action": current["id"], "revision": current["revision"]}
 				saved = write("promotions", day, promote, 200)
 			case "single":
 				promote["job"], promote["department"] = targetJob, dep

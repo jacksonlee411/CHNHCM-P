@@ -28,9 +28,13 @@ export function ProbationFields({
         }),
       ),
   );
-  const earlier = view.actions.filter(
-    (a) => a.kind === 'Transfer' && a.operation !== 'Delete' && a.canHistory && a.businessDate === draft.day,
+  const predecessors = useRead(
+    confirm && draft.day ? JSON.stringify([view.assignment, view.sourceVersion, draft.day]) : undefined,
+    async () => unwrap(await api.GET('/api/v1/assignments/{id}/probation-predecessors', {
+      params: { path: { id: view.assignment }, query: { businessAt: draft.day } },
+    })),
   );
+  const earlier = predecessors.data ?? [];
   return (
     <>
       <ObjectDetailField label="所属工作关系">{view.employerName}</ObjectDetailField>
@@ -50,7 +54,7 @@ export function ProbationFields({
               onInputChange={(_, v, r) => {
                 if (r === 'clear' || r === 'input') setSearch(v);
               }}
-              onChange={(_, v) => update({ ...draft, occurrence: v ?? undefined, predecessor: undefined })}
+              onChange={(_, v) => update({ ...draft, occurrence: v ?? undefined })}
               noOptionsText={departments.error ?? '没有匹配的部门'}
               renderInput={(props) => (
                 <TextField
@@ -62,10 +66,12 @@ export function ProbationFields({
               )}
             />
           </ObjectDetailField>
-          {!draft.occurrence && earlier.length > 0 && (
+          {draft.successor && <ObjectDetailField label="后续晋升">{draft.successor.notice}</ObjectDetailField>}
+          {predecessors.error && <span role="alert">{predecessors.error}</span>}
+          {earlier.length > 0 && (
             <ObjectTextField
               select
-              label="通知明确在转正前生效的调动"
+              label="通知明确在转正前生效的办理"
               value={draft.predecessor?.id ?? ''}
               onChange={(e) =>
                 update({ ...draft, predecessor: earlier.find((a) => a.id === e.target.value) })
@@ -74,7 +80,7 @@ export function ProbationFields({
               <MenuItem value="">未载明</MenuItem>
               {earlier.map((a) => (
                 <MenuItem key={a.id} value={a.id}>
-                  {a.businessDate} · {a.notice}
+                  {a.kind === 'Promotion' ? '晋升' : '调动'} · {a.notice}
                 </MenuItem>
               ))}
             </ObjectTextField>

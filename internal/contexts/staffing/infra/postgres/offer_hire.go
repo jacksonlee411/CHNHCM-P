@@ -115,7 +115,7 @@ func (st *Store) OfferHireState(ctx context.Context, c f.Credentials, id, versio
 			return e
 		}
 		input := offerHireInput(*out.Binding)
-		p, e := u.prepareHire(offerWork(ctx, v), input)
+		p, e := u.prepareHire(offerWork(ctx, v), input, true)
 		if e != nil {
 			return e
 		}
@@ -134,50 +134,50 @@ func (st *Store) OfferHireState(ctx context.Context, c f.Credentials, id, versio
 	return
 }
 func (st *Store) HireFromOffer(ctx context.Context, c f.Credentials, id, key string, in h.OfferHireCommand) (h.Receipt, error) {
-	return st.hireCommand(ctx, c, key, []any{"offer-hire", id, in}, func(u *unit) (string, error) {
+	return st.employmentCommand(ctx, c, key, []any{"offer-hire", id, in}, func(u *unit) (employmentResult, error) {
 		if !f.ValidID(id) || !f.ValidID(in.Version) || !f.ValidID(in.Person) {
-			return "", f.Fail(400, "OFFER_INPUT", "请核对原录用及人员")
+			return employmentResult{}, f.Fail(400, "OFFER_INPUT", "请核对原录用及人员")
 		}
 		if e := lock(ctx, u.tx, false, "staffing.hire.person", st.Instance, in.Person); e != nil {
-			return "", e
+			return employmentResult{}, e
 		}
 		txctx := dbtx.With(ctx, u.tx)
 		v, e := st.OfferHandoffs.OfferForHire(txctx, c, id, in.Version, true)
 		if e != nil {
-			return "", e
+			return employmentResult{}, e
 		}
 		binding := in
 		binding.Expected = nil
 		if v.Status != "accepted" || binding != offerBinding(v) {
-			return "", f.Fail(409, "OFFER_HANDOFF", "人员、用人单位、到岗日或任用安排与已接受录用不符")
+			return employmentResult{}, f.Fail(409, "OFFER_HANDOFF", "人员、用人单位、到岗日或任用安排与已接受录用不符")
 		}
 		if e = u.requireEmployment(ctx, "hire", v.Person, v.Employer, in.Department); e != nil {
-			return "", e
+			return employmentResult{}, e
 		}
 		state, e := u.visibleHandoff(ctx, v)
 		if e != nil {
-			return "", e
+			return employmentResult{}, e
 		}
 		if state.Result != nil {
-			return state.Result.Action, nil
+			return employmentResult{action: state.Result.Action, revision: state.Result.Revision, reused: true}, nil
 		}
 		if !state.CanHire {
-			return "", f.Fail(409, "OFFER_HANDOFF", "原录用或预留已变化，请先核实当前交接")
+			return employmentResult{}, f.Fail(409, "OFFER_HANDOFF", "原录用或预留已变化，请先核实当前交接")
 		}
 		hire := offerHireInput(in)
 		result, e := u.createHire(offerWork(ctx, v), hire)
 		if e != nil {
-			return "", e
+			return employmentResult{}, e
 		}
-		action, e := u.action(ctx, result)
+		action, e := u.action(ctx, result.action)
 		if e != nil {
-			return "", e
+			return employmentResult{}, e
 		}
-		converted, e := st.OfferHandoffs.CompleteHire(txctx, c, v, recruit.HireResult{Action: result, Revision: action.Revision, Assignment: action.Assignment})
+		converted, e := st.OfferHandoffs.CompleteHire(txctx, c, v, recruit.HireResult{Action: result.action, Revision: result.revision, Assignment: action.Assignment})
 		if e != nil {
-			return "", e
+			return employmentResult{}, e
 		}
-		_, e = u.tx.Exec(ctx, `INSERT INTO staffing.hired_offer VALUES($1,$2,$3,$4,$5,$6)`, st.Instance, id, v.Version, converted, result, action.Revision)
+		_, e = u.tx.Exec(ctx, `INSERT INTO staffing.hired_offer VALUES($1,$2,$3,$4,$5,$6)`, st.Instance, id, v.Version, converted, result.action, result.revision)
 		return result, e
 	})
 }

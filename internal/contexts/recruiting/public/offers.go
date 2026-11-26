@@ -19,6 +19,7 @@ type Terms struct {
 
 // The offer owns the immutable arrangement and employer evidence it adopted.
 type AssignmentSegment struct {
+	Succession          string `json:"successionSource,omitempty"`
 	Handover            string `json:"handoverSource,omitempty"`
 	QuotaSource         string `json:"quotaSource,omitempty"`
 	QuotaRevision       string `json:"quotaRevision,omitempty"`

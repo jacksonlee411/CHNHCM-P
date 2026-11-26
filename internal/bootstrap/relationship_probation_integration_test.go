@@ -75,7 +75,11 @@ func TestRelationshipProbationSharesOneRealDecision(t *testing.T) {
 			if retry["action"] != confirm["action"] {
 				t.Fatal("重送重复办理", retry)
 			}
-			write(root, "confirm-employment", at, nil, f.NewID(), 409)
+			if mode == "notice" {
+				write(root, "confirm-employment", at, nil, f.NewID(), 409)
+			} else if located := write(root, "confirm-employment", at, nil, f.NewID(), 200); located["action"] != confirm["action"] || located["revision"] != confirm["revision"] {
+				t.Fatal("同一关系转正未返回原办理", located)
+			}
 			for _, id := range []string{root, secondary} {
 				seen := 0
 				v := view(id, at)

@@ -5178,6 +5178,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assignments/{id}/probation-predecessors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["probationPredecessors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assignments/{id}/grade-options": {
         parameters: {
             query?: never;
@@ -5188,6 +5204,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["assignmentGradeOptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assignments/{id}/leave-impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["assignmentLeaveImpact"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6331,6 +6363,23 @@ export interface components {
                 from: string;
             }[];
         };
+        EmploymentLeaveImpact: components["schemas"]["EmploymentRelationSummary"] & {
+            canManageContracts?: boolean;
+            contracts?: (components["schemas"]["ContractRef"] & {
+                number: string;
+            })[];
+        };
+        ProbationPredecessor: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+            /** @enum {string} */
+            kind: "Transfer" | "Promotion";
+            notice: string;
+            /** Format: date */
+            businessDate: string;
+        };
         ProbationCommand: {
             /** Format: date */
             businessDate: string;
@@ -6343,6 +6392,7 @@ export interface components {
             afterAction?: string;
             /** Format: uuid */
             afterRevision?: string;
+            precedes?: components["schemas"]["EmploymentActionRef"];
         };
         ProbationState: {
             /** @enum {string} */
@@ -6356,7 +6406,11 @@ export interface components {
             /** Format: date */
             start: string;
             /** @enum {string} */
-            attribution: "relationship" | "notice" | "relationship-primary" | "primary-unavailable" | "same-day-order-undetermined" | "preceding-transfer";
+            attribution: "relationship" | "notice" | "relationship-primary" | "primary-unavailable" | "same-day-order-undetermined" | "preceding-transfer" | "preceding-action";
+            /** Format: uuid */
+            departmentSource?: string;
+            /** Format: uuid */
+            departmentRevision?: string;
             /** Format: uuid */
             department?: string;
             departmentName?: string;
@@ -6544,6 +6598,13 @@ export interface components {
             canHistory: boolean;
         };
         EmploymentRegister: {
+            navigation?: {
+                position: number;
+                /** Format: uuid */
+                previous?: string;
+                /** Format: uuid */
+                next?: string;
+            };
             rows: components["schemas"]["EmploymentRegisterRow"][];
             departments: {
                 /** Format: uuid */
@@ -6632,12 +6693,15 @@ export interface components {
             keyword: string;
         };
         AssignmentView: {
+            canAddRecord: boolean;
+            canInsertRecord: boolean;
             canReadContracts: boolean;
             canRecordDuty: boolean;
             canVerifyDuty: boolean;
             canHandover: boolean;
             /** Format: date */
             lastActive?: string;
+            futureTerm?: boolean;
             managers: components["schemas"]["ActualManagerFact"][];
             canSetManager: boolean;
             canEnd: boolean;
@@ -6779,6 +6843,12 @@ export interface components {
             page: number;
         };
         HireOriginal: {
+            initialRecordPosition?: {
+                /** @enum {string} */
+                recorded: "Add" | "Insert";
+                /** @enum {string} */
+                effective?: "Add" | "Insert";
+            };
             exchange?: components["schemas"]["PositionExchangeLink"];
             rehireOf?: components["schemas"]["EmploymentActionRef"];
             manager?: components["schemas"]["ActualManagerFact"];
@@ -7368,6 +7438,8 @@ export interface components {
         AssignmentSegment: {
             /** Format: uuid */
             handoverSource?: string;
+            /** Format: uuid */
+            successionSource?: string;
             /** Format: uuid */
             quotaSource?: string;
             /** Format: uuid */
@@ -24313,6 +24385,7 @@ export interface operations {
     listEmploymentRegister: {
         parameters: {
             query?: {
+                anchor?: string;
                 ref?: string;
                 department?: string;
                 fromDepartment?: string;
@@ -24781,6 +24854,39 @@ export interface operations {
             };
         };
     };
+    probationPredecessors: {
+        parameters: {
+            query: {
+                businessAt: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized same-day decisions of the relationship's personnel-management assignment */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProbationPredecessor"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     assignmentGradeOptions: {
         parameters: {
             query?: never;
@@ -24805,6 +24911,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssignmentGrade"][];
+                };
+            };
+            /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    assignmentLeaveImpact: {
+        parameters: {
+            query: {
+                date: string;
+                meaning: "last-active" | "first-inactive";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized assignments and contracts affected by the employment exit */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmploymentLeaveImpact"];
                 };
             };
             /** @description Unavailable */

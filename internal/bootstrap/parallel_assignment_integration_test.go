@@ -23,13 +23,39 @@ func TestPersonOwnsConcurrentAssignmentNumbersAcrossRelationships(t *testing.T) 
 	b.call("POST", "/api/v1/assignment-policies", M{"expectedVersion": policy["version"], "row": M{"id": f.NewID(), "category": "Employee", "purpose": "secondary", "mode": "JobOnly", "from": "2027-04-01"}}, f.NewID(), 200)
 	key := f.NewID()
 	write := base + "/additional-assignments"
-	one := b.call("POST", write, change, key, 200)
+	type result struct {
+		status int
+		body   M
+		err    error
+	}
+	ch := make(chan result, 2)
+	for _, submission := range []string{key, f.NewID()} {
+		go func() {
+			status, body, err := b.response("POST", write, change, submission)
+			ch <- result{status, body, err}
+		}()
+	}
+	var one M
+	for range 2 {
+		r := <-ch
+		must(t, r.err)
+		if r.status != 200 || (one != nil && r.body["action"] != one["action"]) {
+			t.Fatal("同案同时提交", r)
+		}
+		one = r.body
+	}
 	if one["recordNumber"] != 1.0 || one["employment"] != x.hire["employment"] {
 		t.Fatal("同关系的第一份兼岗", one)
 	}
 	retry := b.call("POST", write, change, key, 200)
 	if retry["action"] != one["action"] || retry["recordNumber"] != 1.0 {
 		t.Fatal("重送变号", retry)
+	}
+	peerPath := "/api/v1/assignments/" + one["assignment"].(string)
+	fromPeer := maps.Clone(change)
+	fromPeer["expectedSourceVersion"] = b.call("GET", peerPath+"?businessAt=2027-04-03", nil, "", 200)["sourceVersion"]
+	if replay := b.call("POST", peerPath+"/additional-assignments", fromPeer, f.NewID(), 200); replay["action"] != one["action"] {
+		t.Fatal("从同关系另一任职应找到原件", replay)
 	}
 	dept := b.call("POST", "/api/v1/departments", departmentCreateBody("D45", x.bu), f.NewID(), 201)["departmentId"].(string)
 	other := x.h.create("LAW45", "CN", "legal_person")["id"].(string)
@@ -59,17 +85,18 @@ func TestPersonOwnsConcurrentAssignmentNumbersAcrossRelationships(t *testing.T) 
 		t.Fatal(a)
 	}
 	x.h.f.exec("ALTER TABLE staffing.employment_outbox ADD CONSTRAINT test_no_parallel_event CHECK(false) NOT VALID")
-	b.call("POST", write, change, f.NewID(), 503)
-	x.h.f.exec("ALTER TABLE staffing.employment_outbox DROP CONSTRAINT test_no_parallel_event")
-	type result struct {
-		status int
-		body   M
-		err    error
+	same := maps.Clone(change)
+	same["notice"] = "换写通知仍是同一任职"
+	if got := b.call("POST", write, same, f.NewID(), 200); got["action"] != one["action"] || got["revision"] != one["revision"] {
+		t.Fatal(got)
 	}
-	ch := make(chan result, 2)
-	for _, notice := range []string{"其他兼岗甲", "其他兼岗乙"} {
+	newWork := maps.Clone(change)
+	newWork["from"] = "2027-04-04"
+	b.call("POST", write, newWork, f.NewID(), 503)
+	x.h.f.exec("ALTER TABLE staffing.employment_outbox DROP CONSTRAINT test_no_parallel_event")
+	for _, start := range []string{"2027-04-04", "2027-04-05"} {
 		in := maps.Clone(change)
-		in["notice"] = notice
+		in["from"] = start
 		go func() { status, body, err := b.response("POST", write, in, f.NewID()); ch <- result{status, body, err} }()
 	}
 	numbers := map[float64]bool{}

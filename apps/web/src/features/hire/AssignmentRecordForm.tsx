@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Autocomplete, Box, Button, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { ObjectDetailField, ObjectTextField } from '@chnhcm/ui';
@@ -36,7 +37,7 @@ export type JobDraft = {
   basis?: Action;
   transferNotice?: string;
   occurrence?: Option;
-  predecessor?: Action;
+  predecessor?: Pick<Action, 'id' | 'revision'>;
   action?: Action;
   day: string;
   source: string;
@@ -95,7 +96,7 @@ export function draftChanged(draft: JobDraft, initial: JobDraft) {
     draft.transferNotice !== initial.transferNotice ||
     draft.notice !== initial.notice ||
     draft.occurrence?.id !== initial.occurrence?.id ||
-    draft.predecessor?.id !== initial.predecessor?.id ||
+    draft.predecessor?.id !== initial.predecessor?.id || draft.predecessor?.revision !== initial.predecessor?.revision ||
     draft.value?.id !== initial.value?.id ||
     draft.position?.id !== initial.position?.id ||
     draft.department?.id !== initial.department?.id ||
@@ -175,6 +176,7 @@ export function AssignmentRecordForm({
   dirty,
   close,
   save,
+  actionSlot,
 }: {
   draft: JobDraft;
   update: (draft: JobDraft) => void;
@@ -184,8 +186,15 @@ export function AssignmentRecordForm({
   dirty: boolean;
   close: () => void;
   save: (input: JobDraft) => void;
+  actionSlot: HTMLElement | null;
 }) {
+  const formId = useId();
   const [search, setSearch] = useState('');
+  const leaveImpact = useRead(draft.kind === 'Leave' && draft.day ? JSON.stringify([view.assignment, draft.day, draft.meaning]) : undefined,
+    () => api.GET('/api/v1/assignments/{id}/leave-impact', {params:{path:{id:view.assignment},query:{date:draft.day,meaning:draft.meaning ?? 'last-active'}}}).then(unwrap));
+  const requiredContracts = leaveImpact.data?.contracts ?? [];
+  const contractsConfirmed = !!leaveImpact.data?.canManageContracts && requiredContracts.length === draft.contracts?.length &&
+    requiredContracts.every(contract => draft.contracts?.some(ref => ref.id === contract.id && ref.version === contract.version));
   const location = draft.kind === 'DataChange' && draft.mode !== 'redate';
   const choices = useRead(
     location && draft.day ? JSON.stringify([view.assignment, draft.day, search]) : undefined,
@@ -236,7 +245,7 @@ export function AssignmentRecordForm({
   const proof=draft.paper;
   const actualReady=!!draft.observation || !!(proof?.dispatch && proof.from && proof.observedThrough && proof.issuer?.trim() && proof.number?.trim());
   const valid =
-    !!draft.day &&
+    !!draft.day && (draft.kind !== 'Leave' || !!leaveImpact.data && (!requiredContracts.length || contractsConfirmed)) &&
     (duty ? actualReady : draft.kind==='PositionExchange' ? (draft.mode==='redate' ? !!draft.exchange?.peerSourceVersion : !!draft.peer && !!draft.notice.trim()) : lifecycle ? (draft.kind === 'SetManager' ? !!draft.manager || !!draft.endReporting : !!draft.notice.trim()) : draft.mode === 'withdraw' ? !!draft.basis || !!draft.withdrawal?.trim() : draft.mode === 'redate' ||
       ((grade ? !!draft.grade && !!draft.notice.trim() && (draft.kind!=='PromotionTransfer'||targetReady) : relation
         ? !!draft.notice.trim()
@@ -246,6 +255,10 @@ export function AssignmentRecordForm({
         (!prior || !!basis.data)));
   function submit() {
     if (!valid || !dirty || busy) return;
+    if (draft.kind === 'Leave') {
+      save({...draft, contracts: contractsConfirmed ? draft.contracts : undefined});
+      return;
+    }
     const record = basis.data;
     let requires = prior;
     if (prior && record && !prior.location && !prior.department && !prior.job && !prior.position) {
@@ -262,24 +275,30 @@ export function AssignmentRecordForm({
         department: targets.jobRequired ? draft.department : undefined, job: targets.jobRequired ? draft.job : undefined});
     } else save({ ...draft, requires });
   }
+  const controls = <Stack direction="row" gap={1}>
+    <Button form={formId} variant="contained" type="submit" disabled={!valid || !dirty || busy}>保存</Button>
+    <Button onClick={close}>取消</Button>
+  </Stack>;
   return (
     <Box
       component="form"
+      id={formId}
       onSubmit={(e) => {
         e.preventDefault();
         submit();
       }}
     >
-      <Stack spacing={1.5}>
         <Typography component="h3">
           {operations[draft.mode]} · {names[draft.kind]}
         </Typography>
+      <Box className="object-detail-columns">
+        <Stack spacing={1}>
         {!draft.action && !draft.successor && options.length > 1 && (
           <ObjectTextField
             select
             label="办理类型"
             value={draft.kind}
-            onChange={(e) => update({ ...draft, kind: e.target.value as JobDraft['kind'], handover:undefined, incumbent:undefined, paper:undefined, observation:undefined })}
+            onChange={(e) => update({ ...draft, kind: e.target.value as JobDraft['kind'], handover:undefined, incumbent:undefined, paper:undefined, observation:undefined, predecessor:undefined, occurrence:undefined, contracts:undefined })}
           >
             {options.map((kind) => (
               <MenuItem key={kind} value={kind}>
@@ -294,10 +313,12 @@ export function AssignmentRecordForm({
           value={draft.day}
           required
           disabled={draft.mode === 'correct' || draft.mode==='withdraw' || !!draft.successor}
-          onChange={(e) => update({ ...draft, day: e.target.value, peer:undefined, incumbent:undefined,contracts:undefined })}
+          onChange={(e) => update({ ...draft, day: e.target.value, peer:undefined, incumbent:undefined,contracts:undefined, predecessor:undefined, occurrence:undefined })}
         />}
+        </Stack>
+        <Stack spacing={1}>
         {draft.mode !== 'redate' &&
-          (duty ? <ActualDutyFields draft={draft} update={update} view={view}/> : draft.kind==='PositionExchange' ? <ExchangeFields draft={draft} update={update} assignment={view.assignment} csrf={csrf}/> : lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} mode={targets} derived={derived.data} arrangementError={derived.error} /> : relation ? (
+          (duty ? <ActualDutyFields draft={draft} update={update} view={view}/> : draft.kind==='PositionExchange' ? <ExchangeFields draft={draft} update={update} assignment={view.assignment} csrf={csrf}/> : lifecycle ? <LifecycleFields view={view} draft={draft} csrf={csrf} update={update} impact={leaveImpact} contractsConfirmed={contractsConfirmed}/> : grade ? <PromotionFields view={view} draft={draft} csrf={csrf} update={update} mode={targets} derived={derived.data} arrangementError={derived.error} /> : relation ? (
             <ProbationFields view={view} draft={draft} csrf={csrf} update={update} />
           ) : location ? (
             <>
@@ -389,13 +410,9 @@ export function AssignmentRecordForm({
               )}
             </>
           ))}
-        <Stack direction="row" gap={1}>
-          <Button variant="contained" type="submit" disabled={!valid || !dirty || busy}>
-            保存
-          </Button>
-          <Button onClick={close}>取消</Button>
         </Stack>
-      </Stack>
+      </Box>
+      {actionSlot ? createPortal(controls, actionSlot) : controls}
     </Box>
   );
 }

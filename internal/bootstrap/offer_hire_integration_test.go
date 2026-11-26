@@ -116,11 +116,13 @@ func TestAcceptedOfferConvertsItsOwnReservationOnce(t *testing.T) {
 	b.call("POST", path+"/changes", M{"operation": "reserve", "businessDate": "2027-04-15", "basis": "招聘重新取得一份名额", "expected": current["version"]}, f.NewID(), 409)
 	setPaused(false)
 	b.call("POST", path+"/changes", M{"operation": "reserve", "businessDate": "2027-04-15", "basis": "招聘重新取得一份名额", "expected": current["version"]}, f.NewID(), 200)
+	db.exec("ALTER TABLE staffing.employment_outbox ADD CONSTRAINT fail_repeated_handoff CHECK(false) NOT VALID")
 	for _, k := range []string{key, f.NewID()} {
 		if again := b.call("POST", path+"/hire", bind, k, 200); again["action"] != result["action"] {
 			t.Fatal("重送产生新入职", again)
 		}
 	}
+	db.exec("ALTER TABLE staffing.employment_outbox DROP CONSTRAINT fail_repeated_handoff")
 	if b.call("POST", action+"/cancel", cancelCmd, cancelKey, 200)["action"] != ended["action"] {
 		t.Fatal("重送产生新撤销")
 	}

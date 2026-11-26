@@ -3,9 +3,9 @@ package hireprep
 // RegisterQuery separates the effective period from the original registration time.
 // Recorded date bounds are inclusive civil dates in Asia/Shanghai.
 type RegisterQuery struct {
-	Ref, Kind, Status, BusinessFrom, BusinessTo, RecordedFrom, RecordedTo string
-	Department, FromDepartment, ToDepartment, Operator, Sort              string
-	Page, PageSize                                                        int
+	Anchor, Ref, Kind, Status, BusinessFrom, BusinessTo, RecordedFrom, RecordedTo string
+	Department, FromDepartment, ToDepartment, Operator, Sort                      string
+	Page, PageSize                                                                int
 }
 
 type RegisterRow struct {
@@ -36,7 +36,13 @@ type RegisterOperator struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
+type RegisterNavigation struct {
+	Position int    `json:"position"`
+	Previous string `json:"previous,omitempty"`
+	Next     string `json:"next,omitempty"`
+}
 type RegisterResult struct {
+	Navigation      *RegisterNavigation  `json:"navigation,omitempty"`
 	Rows            []RegisterRow        `json:"rows"`
 	Departments     []EmployeeDepartment `json:"departments"`
 	FromDepartments []EmployeeDepartment `json:"fromDepartments"`

@@ -18,6 +18,7 @@ import (
 type recordEdit struct {
 	h.RecordMaintenance
 	duty                              *h.DutyEvidence
+	checkRecordOperation              bool
 	kind, operation, location, action string
 }
 
@@ -29,7 +30,7 @@ func (st *Store) ChangeLocation(ctx context.Context, c f.Credentials, key, id, a
 	if action != "" {
 		op = "Correct"
 	}
-	edit := recordEdit{RecordMaintenance: h.RecordMaintenance{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.ExpectedRevision, BusinessDate: in.BusinessDate, Requires: in.Requires, Insert: in.Insert}, kind: "DataChange", operation: op, location: in.Location, action: action}
+	edit := recordEdit{RecordMaintenance: h.RecordMaintenance{ExpectedSource: in.ExpectedSource, ExpectedRevision: in.ExpectedRevision, BusinessDate: in.BusinessDate, Requires: in.Requires, Insert: in.Insert}, kind: "DataChange", operation: op, location: in.Location, action: action, checkRecordOperation: action == ""}
 	return st.employmentCommand(ctx, c, key, []any{"DataChange", id, action, in}, func(u *unit) (employmentResult, error) { return u.editRecord(ctx, id, edit) })
 }
 
@@ -38,6 +39,7 @@ func (st *Store) MaintainRecord(ctx context.Context, c f.Credentials, id, action
 	switch command {
 	case "transfer":
 		edit.kind, edit.operation = "Transfer", "Add"
+		edit.checkRecordOperation = action == ""
 		if in.Insert {
 			edit.operation = "Insert"
 		}
@@ -171,6 +173,16 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 	if !a.Includes(day) {
 		return out, f.Fail(409, "RECORD_PERIOD", "请选择实际任期内的业务日期")
 	}
+	if edit.action == "" {
+		op, err := u.newRecordOperation(ctx, id, day)
+		if err != nil {
+			return out, err
+		}
+		if edit.checkRecordOperation && op != edit.operation {
+			return out, f.Fail(409, "RECORD_POSITION", "请从所选日期的履历位置办理新增或插入")
+		}
+		edit.operation = op
+	}
 	scope, e := u.assignmentPlacement(ctx, a, day)
 	if e != nil {
 		return out, e
@@ -279,8 +291,8 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 			}
 		}
 		sameIncumbent := target.Transfer != nil && (target.Transfer.Succession == nil && edit.Incumbent == nil || target.Transfer.Succession != nil && edit.Incumbent != nil && target.Transfer.Succession.IncumbentRef == *edit.Incumbent)
-		if sameIncumbent && target.Transfer != nil && reflect.DeepEqual(target.Transfer.Duty, edit.duty) && edit.action != "" && target.Transfer != nil && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
-			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) {
+		if sameIncumbent && reflect.DeepEqual(target.Transfer.Duty, edit.duty) && edit.action != "" && edit.Position == target.Transfer.Position && sameTransferTargets(edit, *target.Transfer) &&
+			(strings.TrimSpace(edit.Notice) == "" || strings.TrimSpace(edit.Notice) == target.Notice) && reflect.DeepEqual(target.Requires, originals[edit.action].Requires) && reflect.DeepEqual(target.Previous, originals[edit.action].Previous) {
 			return out, f.Fail(409, "TRANSFER_UNCHANGED", "任职安排和调动依据均未改变")
 		}
 
@@ -330,8 +342,32 @@ func (u *unit) editRecord(ctx context.Context, id string, edit recordEdit) (out 
 }
 
 func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Placement, records []savedRecord, originals map[string]savedRecord, index int, permit, pair string) (out employmentResult, err error) {
+	return u.replayRecordEdit(ctx, a, initial, records, originals, index, permit, pair, false)
+}
+
+func (u *unit) replayRecordEdit(ctx context.Context, a h.Action, initial []h.Placement, records []savedRecord, originals map[string]savedRecord, index int, permit, pair string, preview bool) (out employmentResult, err error) {
 	target := records[index]
 	id := a.Assignment
+	if target.Kind != "ConfirmEmployment" {
+		confirm, err := u.currentConfirmation(ctx, a)
+		if err != nil {
+			return out, err
+		}
+		if confirm.ID != "" && a.Includes(confirm.Day) {
+			originals[confirm.ID] = confirm
+			records = append(records, confirm)
+		}
+	}
+	// A correction can remove the day on which a notice placed the two facts together.
+	for i, row := range records {
+		if row.Kind == "ConfirmEmployment" && row.Previous != nil {
+			for _, pred := range records {
+				if pred.ID == row.Previous.Action && (pred.Removed || pred.Day != row.Day) {
+					records[i].Previous = nil
+				}
+			}
+		}
+	}
 	if e := u.lockRecordPositions(ctx, initial, records); e != nil {
 		return out, e
 	}
@@ -359,9 +395,16 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 			}
 		}
 	}
-	previous, e := u.recordChanges(ctx, a, records, originals, projection, target.ID, permit)
+	force := target.ID
+	if target.Operation == "Rebase" {
+		force = ""
+	}
+	previous, e := u.recordChanges(ctx, a, records, originals, projection, force, permit)
 	if e != nil {
 		return out, e
+	}
+	if len(previous) == 0 || preview {
+		return employmentResult{action: target.ID, revision: records[index].Revision, reused: len(previous) == 0}, nil
 	}
 	// Save source and all affected revisions only after the whole candidate is legal.
 	for i := range records {
@@ -383,7 +426,11 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 		if old == "" {
 			e = u.newEmploymentAction(ctx, employmentEntry{id: r.ID, revision: r.Revision, kind: r.Kind, employment: a.Employment, assignment: id, date: r.Day, notice: r.Notice, operation: r.Operation, adoption: recordAdoption(r)})
 		} else {
-			e = u.appendRecordRevision(ctx, id, r, old)
+			owner := id
+			if r.Owner != "" {
+				owner = r.Owner
+			}
+			e = u.appendRecordRevision(ctx, owner, r, old)
 		}
 		if e != nil {
 			return out, e
@@ -396,6 +443,14 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 		}
 	}
 	target = records[index]
+	if _, ok := previous[target.ID]; !ok {
+		for _, row := range records {
+			if _, changed := previous[row.ID]; changed {
+				target = row
+				break
+			}
+		}
+	}
 	if pair != "" {
 		for _, other := range records {
 			if other.ID == pair {
@@ -407,8 +462,17 @@ func (u *unit) publishRecordEdit(ctx context.Context, a h.Action, initial []h.Pl
 			}
 		}
 	}
-	e = u.saveReplayedSource(ctx, a, f.NewID(), target, records, projection.Segments)
-	return employmentResult{action: target.ID, revision: target.Revision}, e
+	if e = u.saveReplayedSource(ctx, a, f.NewID(), target, records, projection.Segments); e != nil {
+		return out, e
+	}
+	for _, r := range records {
+		if _, changed := previous[r.ID]; changed && r.Kind == "ConfirmEmployment" {
+			if e = u.publishRelationMembers(ctx, a, r.ID, r.Revision, id); e != nil {
+				return out, e
+			}
+		}
+	}
+	return employmentResult{action: target.ID, revision: target.Revision}, nil
 }
 
 func recordPeriod(term f.Period, records []savedRecord, kind, day string) f.Period {
@@ -602,6 +666,11 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 				}
 				r.Previous = &ref
 			}
+			if r.Evidence.Probation != nil {
+				if err := u.replayAttribution(ctx, a, r, old, change, records); err != nil {
+					return nil, err
+				}
+			}
 			if r.Evidence.Promotion != nil {
 				ev := *r.Evidence.Promotion
 				ev.Before = change.Before.Grade
@@ -643,6 +712,11 @@ func (u *unit) recordChanges(ctx context.Context, a h.Action, records []savedRec
 					BeforePosition: change.Before.Adoption.Position, BeforePositionName: change.Before.Adoption.PositionName, BeforeDepartmentName: change.Before.Adoption.DepartmentName, BeforeJobName: change.Before.Adoption.JobName}
 			}
 			if !reflect.DeepEqual(recordAdoption(*r), recordAdoption(old)) || r.ID == target {
+				if r.ID != target && old.ID != "" && r.Evidence.Probation == nil {
+					if e := u.authorizeSuccessor(ctx, a, *r); e != nil {
+						return nil, e
+					}
+				}
 				departments := []string{change.Before.Department}
 				if r.Transfer != nil {
 					departments = append(departments, r.Transfer.Department)

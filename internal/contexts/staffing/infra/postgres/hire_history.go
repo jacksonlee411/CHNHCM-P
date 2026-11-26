@@ -15,9 +15,9 @@ import (
 )
 
 const assignmentActionSelect = `SELECT a.id,r.revision,a.kind,r.operation,e.id AS employment,t.id AS assignment,t.record_number,e.person_id AS person,e.employer_id AS employer,
-coalesce(r.adoption#>>'{promotion,department}',origin.department_id::text,t.department_id::text) AS department,coalesce(origin.job_id,t.job_id) AS job,
+coalesce(r.adoption#>>'{promotion,department}',r.adoption->>'department',origin.department_id::text,t.department_id::text) AS department,coalesce(origin.job_id,t.job_id) AS job,
 r.business_date::text,h.version,r.notice,to_char(a.recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS recorded_at,coalesce(a.original_id::text,'') AS original,
-lower(t.period)::text,coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member xm USING(instance_id,assignment_id,action_id,revision) WHERE x.instance_id=t.instance_id AND x.assignment_id=t.id AND xm.version=h.version),upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),r.adoption->'previous'
+lower(t.period)::text,coalesce((SELECT x.first_inactive::text FROM staffing.assignment_exit x JOIN staffing.assignment_member xm USING(instance_id,assignment_id,action_id) WHERE x.instance_id=t.instance_id AND x.assignment_id=t.id AND xm.version=h.version),upper(t.period)::text,''),EXISTS(SELECT FROM staffing.assignment_member cm JOIN staffing.employment_action c ON (c.instance_id,c.id)=(cm.instance_id,cm.action_id) WHERE (cm.instance_id,cm.assignment_id,cm.version)=(h.instance_id,h.assignment_id,h.version) AND c.kind='CancelHire'),coalesce(r.adoption->'previous',CASE WHEN r.adoption#>>'{probation,afterAction}' IS NOT NULL THEN jsonb_build_object('action',r.adoption#>>'{probation,afterAction}','revision',r.adoption#>>'{probation,afterRevision}') END)
 FROM staffing.employment_action a JOIN staffing.employment e ON (e.instance_id,e.id)=(a.instance_id,a.employment_id)
 JOIN staffing.assignment t ON (t.instance_id,t.id)=(a.instance_id,a.assignment_id)
 `
@@ -199,9 +199,9 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 			return "", err
 		}
 		var reporting bool
-		err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.manager_agreement g JOIN staffing.assignment_head h USING(instance_id,assignment_id)
-			JOIN staffing.assignment_member m USING(instance_id,assignment_id,version,action_id,revision)
-			WHERE g.instance_id=$1 AND g.manager_assignment=$2 AND g.period && daterange($3::date,nullif($4,'')::date,'[)'))`, st.Instance, a.Assignment, a.From, a.Until).Scan(&reporting)
+		err = u.tx.QueryRow(ctx, currentReporting+`SELECT EXISTS(SELECT FROM reporting g JOIN staffing.assignment_head hd USING(instance_id,assignment_id)
+			JOIN staffing.assignment_segment s USING(instance_id,assignment_id,version)
+			WHERE g.manager_assignment=$2 AND g.effective * s.period && daterange($3::date,nullif($4,'')::date,'[)'))`, st.Instance, a.Assignment, a.From, a.Until).Scan(&reporting)
 		if err != nil {
 			return "", err
 		}
@@ -234,7 +234,7 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 			return "", f.Fail(409, "HIRE_DEPENDENCIES", "主选择已变化，请核对后继安排")
 		}
 		var hasDependent bool
-		if err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_member m JOIN staffing.employment_action_revision r USING(instance_id,assignment_id,action_id,revision) WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND m.action_id<>$4 AND r.operation<>'Delete')`, st.Instance, a.Assignment, a.SourceVersion, a.ID).Scan(&hasDependent); err != nil {
+		if err = u.tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM staffing.assignment_member m JOIN staffing.employment_action_revision r USING(instance_id,assignment_id,action_id,revision) WHERE m.instance_id=$1 AND m.assignment_id=$2 AND m.version=$3 AND m.action_id<>$4 AND r.operation NOT IN ('Delete','Withdraw'))`, st.Instance, a.Assignment, a.SourceVersion, a.ID).Scan(&hasDependent); err != nil {
 			return "", err
 		}
 		if hasDependent {
@@ -253,8 +253,8 @@ func (st *Store) CancelHire(ctx context.Context, c f.Credentials, submission, or
 
 func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, error) {
 	r := h.Receipt{Submission: key}
-	var digest, id, revision string
-	err := u.tx.QueryRow(ctx, `SELECT digest,outcome,coalesce(action_id::text,''),coalesce(revision::text,'') FROM staffing.hire_terminal WHERE instance_id=$1 AND actor=$2 AND submission_id=$3`, u.store.Instance, u.guard.Principal().ID, key).Scan(&digest, &r.Outcome, &id, &revision)
+	var digest, id, revision, entry string
+	err := u.tx.QueryRow(ctx, `SELECT digest,outcome,coalesce(action_id::text,''),coalesce(revision::text,''),coalesce(nav.assignment_id::text,'') FROM staffing.hire_terminal LEFT JOIN staffing.probation_receipt_assignment nav USING(instance_id,actor,submission_id) WHERE instance_id=$1 AND actor=$2 AND submission_id=$3`, u.store.Instance, u.guard.Principal().ID, key).Scan(&digest, &r.Outcome, &id, &revision, &entry)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return r, "", nil
 	}
@@ -266,6 +266,10 @@ func (u *unit) hireReceipt(ctx context.Context, key string) (h.Receipt, string, 
 		return r, digest, err
 	}
 	if h.RelationAction(a.Kind) {
+		a.Revision = revision
+		if entry != "" {
+			a.Assignment = entry
+		}
 		scoped, visible, e := u.relationVisibleAssignment(ctx, a, "read")
 		if e != nil {
 			return r, digest, e
@@ -317,7 +321,10 @@ func (st *Store) ResolveHire(ctx context.Context, c f.Credentials, key string) (
 	return st.employmentCommand(ctx, c, key, nil, nil)
 }
 
-type employmentResult struct{ action, revision string }
+type employmentResult struct {
+	action, revision, entry string
+	reused                  bool
+}
 
 func (st *Store) hireCommand(ctx context.Context, c f.Credentials, key string, input any, work func(*unit) (string, error)) (h.Receipt, error) {
 	return st.employmentCommand(ctx, c, key, input, func(u *unit) (employmentResult, error) {
@@ -371,7 +378,7 @@ func (st *Store) employmentCommand(ctx context.Context, c f.Credentials, key str
 			business := *u
 			business.tx = child
 			result, e = work(&business)
-			if e == nil {
+			if e == nil && !result.reused {
 				_, e = child.Exec(ctx, "INSERT INTO staffing.employment_outbox(instance_id,event_id,action_id,revision) VALUES($1,$2,$3,$4) ON CONFLICT(instance_id,action_id,revision) DO NOTHING", st.Instance, f.NewID(), result.action, result.revision)
 			}
 			if e != nil {
@@ -396,6 +403,12 @@ func (st *Store) employmentCommand(ctx context.Context, c f.Credentials, key str
 		if e != nil {
 			return e
 		}
+		if result.entry != "" {
+			_, e = u.tx.Exec(ctx, `INSERT INTO staffing.probation_receipt_assignment(instance_id,actor,submission_id,assignment_id) VALUES($1,$2,$3,$4)`, st.Instance, actor, key, result.entry)
+			if e != nil {
+				return e
+			}
+		}
 		out, _, e = u.hireReceipt(ctx, key)
 		return e
 	})
@@ -416,6 +429,9 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		}
 		if h.RelationAction(a.Kind) {
 			out, e = u.relationOriginal(ctx, a, revision)
+			if e == nil {
+				out.InitialPosition, e = u.initialPosition(ctx, a)
+			}
 			return e
 		}
 
@@ -519,7 +535,7 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 		}
 		e = u.tx.QueryRow(ctx, `SELECT coalesce((SELECT adoption->>'departmentName' FROM staffing.assignment_segment
-            WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND period @> $4::date),'')`, st.Instance, a.Assignment, version, a.BusinessDate).Scan(&out.DepartmentName)
+            WHERE instance_id=$1 AND assignment_id=$2 AND version=$3 AND ($6='' OR department_id=nullif($5,'')::uuid) AND period @> coalesce(nullif($6,'')::date-1,$4::date)),'')`, st.Instance, a.Assignment, version, a.BusinessDate, a.Department, exitBoundary(out.Exit)).Scan(&out.DepartmentName)
 		if e != nil {
 			return e
 		}
@@ -658,6 +674,7 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 		}
 		out.Action = a
+		out.InitialPosition, e = u.initialPosition(ctx, a)
 		return e
 	})
 	return

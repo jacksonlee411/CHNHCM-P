@@ -16,7 +16,10 @@ func hirePermission(ref *h.ActionRef) string {
 
 func (u *unit) rehireAnchor(ctx context.Context, person, day string) (*h.ActionRef, error) {
 	var ref h.ActionRef
-	e := u.tx.QueryRow(ctx, `SELECT x.action_id,x.revision FROM staffing.employment_exit x
+	e := u.tx.QueryRow(ctx, `SELECT x.action_id,member.revision FROM staffing.employment_exit x
+ JOIN staffing.employment_action origin ON (origin.instance_id,origin.id)=(x.instance_id,x.action_id)
+ JOIN staffing.assignment_head head ON (head.instance_id,head.assignment_id)=(origin.instance_id,origin.assignment_id)
+ JOIN staffing.assignment_member member ON (member.instance_id,member.assignment_id,member.version,member.action_id)=(head.instance_id,head.assignment_id,head.version,x.action_id)
  JOIN staffing.assignment t ON t.instance_id=x.instance_id AND t.employment_id=x.employment_id AND t.record_number=0
  WHERE x.instance_id=$1 AND t.person_id=$2 AND x.first_inactive<=$3::date AND NOT EXISTS(
  SELECT FROM staffing.employment_action a JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.revision)=(a.instance_id,a.id,a.revision)
@@ -45,7 +48,11 @@ func (u *unit) checkRehireOrigin(ctx context.Context, person, day string, ref *h
 	if expected == nil || *expected != *ref {
 		return f.Fail(409, "REHIRE_SOURCE", "请核对原离职办理和拟到岗日")
 	}
-	original, e := u.action(ctx, ref.Action)
+	return u.requireRehireHistory(ctx, ref.Action)
+}
+
+func (u *unit) requireRehireHistory(ctx context.Context, action string) error {
+	original, e := u.action(ctx, action)
 	if e != nil {
 		return e
 	}

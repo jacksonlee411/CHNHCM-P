@@ -7,17 +7,27 @@ type ProbationCommand struct {
 	ExpectedSource string `json:"expectedSourceVersion"`
 	Notice         string `json:"notice"`
 	Department     string `json:"department,omitempty"`
-	// An actual same-day transfer named in the notice as an earlier fact.
-	AfterAction   string `json:"afterAction,omitempty"`
-	AfterRevision string `json:"afterRevision,omitempty"`
+	// The primary assignment's same-day decision named in the notice.
+	AfterAction   string     `json:"afterAction,omitempty"`
+	AfterRevision string     `json:"afterRevision,omitempty"`
+	Precedes      *ActionRef `json:"precedes,omitempty"`
+}
+type PrecedingOption struct {
+	ID           string `json:"id"`
+	Revision     string `json:"revision"`
+	Kind         string `json:"kind"`
+	Notice       string `json:"notice"`
+	BusinessDate string `json:"businessDate"`
 }
 type ProbationEvidence struct {
-	Start          string `json:"start"`
-	Department     string `json:"department,omitempty"`
-	DepartmentName string `json:"departmentName,omitempty"`
-	Attribution    string `json:"attribution"`
-	AfterAction    string `json:"afterAction,omitempty"`
-	AfterRevision  string `json:"afterRevision,omitempty"`
+	DepartmentSource   string `json:"departmentSource,omitempty"`
+	DepartmentRevision string `json:"departmentRevision,omitempty"`
+	Start              string `json:"start"`
+	Department         string `json:"department,omitempty"`
+	DepartmentName     string `json:"departmentName,omitempty"`
+	Attribution        string `json:"attribution"`
+	AfterAction        string `json:"afterAction,omitempty"`
+	AfterRevision      string `json:"afterRevision,omitempty"`
 }
 type ProbationState struct {
 	Start     string `json:"start,omitempty"`
@@ -55,4 +65,19 @@ func (p ProbationState) CanRecord(kind, day string, term f.Period) error {
 }
 func RelationAction(kind string) bool {
 	return kind == "ProbationStart" || kind == "ConfirmEmployment" || kind == "Leave"
+}
+
+// ProbationRepairReport describes only decisions visible to the operating principal.
+type ProbationRepairReport struct {
+	Scanned     int                   `json:"scanned"`
+	Differences int                   `json:"differences"`
+	Repaired    int                   `json:"repaired"`
+	Unresolved  int                   `json:"unresolved"`
+	Failed      int                   `json:"failed"`
+	Items       []ProbationRepairItem `json:"items"`
+}
+type ProbationRepairItem struct {
+	Action string `json:"action,omitempty"`
+	Result string `json:"result"`
+	Reason string `json:"reason,omitempty"`
 }
