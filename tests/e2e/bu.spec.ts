@@ -245,7 +245,7 @@ test("响应丢失后刷新查回原结果，并阻止新标识重复提交", as
   await expectCurrentDate(page, date);
 });
 
-test("未保存输入保护、正常取消、只读账号与窄屏退出", async ({ page }) => {
+test("未保存输入保护、正常取消、只读账号与短屏退出", async ({ page }) => {
   await login(page);
   await page.getByRole("link", { name: "新建", exact: true }).click();
   await page
@@ -262,7 +262,7 @@ test("未保存输入保护、正常取消、只读账号与窄屏退出", async
   await page.getByRole("button", { name: "放弃修改" }).click();
   await page.getByRole("button", { name: "退出", exact: true }).click();
   await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1440, height: 540 });
   await login(page, true);
   await expect(
     page.getByRole("link", { name: "新建", exact: true }),
@@ -1052,13 +1052,13 @@ test('对象导航跨服务端分页、返回定位，并在当前授权拒绝�
 });
 
 
-test('公共导航桌面键盘关闭和窄屏尺寸切换恢复焦点', async ({ page }) => {
+test('公共导航桌面键盘关闭和导航断点切换恢复焦点', async ({ page }) => {
   await login(page);
   const section = page.getByRole('button', { name: '组织配置', exact: true });
   await section.focus(); await page.keyboard.press('Enter');
   await expect(page.getByRole('menuitem', { name: '业务单元', exact: true })).toBeFocused();
   await page.keyboard.press('Escape'); await expect(section).toBeFocused();
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 899, height: 900 });
   await page.getByRole('button', { name: '打开导航', exact: true }).click();
   await expect(page.locator('#navigation-drawer').getByRole('button', { name: '业务单元', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '关闭导航', exact: true }).click();

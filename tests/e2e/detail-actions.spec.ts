@@ -105,12 +105,12 @@ test('新建与记录维护使用一致的字段样式、标签和响应式布�
     }
     await expect(page.getByRole('checkbox', { name: /明确修改/ })).toHaveCount(0);
     await expect(page.locator('.object-form')).not.toContainText(/已有后继资料保持独立快照|不填写更正原因|旧来源及原采用保持|只提交明确修改字段/);
-    await page.setViewportSize({ width: 390, height: 844 });
+    await page.setViewportSize({ width: 899, height: 540 });
     expect(await fieldAppearance(name)).toEqual(nameStyle);
     expect(await columns.evaluate(e => getComputedStyle(e).gridTemplateColumns.split(' ').length)).toBe(1);
-    await name.fill('窄屏输入保持');
+    await name.fill('重排后输入保持');
     await page.setViewportSize({ width: 1440, height: 900 });
-    await expect(name).toHaveValue('窄屏输入保持');
+    await expect(name).toHaveValue('重排后输入保持');
     await page.getByRole('button', { name: '取消编辑', exact: true }).click();
     await page.getByRole('button', { name: '放弃修改', exact: true }).click();
     await expect(page.getByRole('button', { name: '更多操作', exact: true })).toBeFocused();
@@ -186,9 +186,9 @@ test('只读主体没有空更多菜单，仍能读取生效记录', async ({pag
  await expect(page.locator('.effective-dates')).toBeVisible();
 });
 
-test('详情更多操作在桌面、短屏、窄屏可达且无查看日期', async ({page}) => {
+test('详情更多操作在桌面和短屏可达且无查看日期', async ({page}) => {
  await login(page);await create(page);
- for(const viewport of [{width:1440,height:900},{width:1440,height:540},{width:390,height:844},{width:320,height:900},{width:320,height:256}]){
+ for(const viewport of [{width:1440,height:900},{width:1440,height:540}]){
   await page.setViewportSize(viewport);const more=page.getByRole('button',{name:'更多操作',exact:true});await more.focus();await expect(more).toBeInViewport();await more.click();
   await expect(page.getByRole('menuitem',{name:'更正记录',exact:true})).toBeInViewport();await expect(page.getByRole('menuitem',{name:'查看日期…',exact:true})).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.keyboard.press('Escape');await expect(more).toBeFocused();

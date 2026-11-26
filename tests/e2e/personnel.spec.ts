@@ -1,3 +1,4 @@
+import { desktopFormViewports, desktopViewports } from './desktop-viewports.mjs';
 import {openPersonnel as menu} from './app-navigation';
 import { randomUUID } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
@@ -353,13 +354,7 @@ async function journey(page: Page, role: string, relogin: boolean) {
   expect(await page.getByLabel('姓名或人员编号').inputValue()).toBe(cohort);
 }
 for (const role of ['admin', 'reader'])
-  for (const [w, h] of [
-    [1440, 900],
-    [1440, 540],
-    [390, 844],
-    [320, 900],
-    [320, 256],
-  ]) {
+  for (const [w, h] of desktopViewports) {
     test('T01 ' + role + ' ' + w + '×' + h, async ({ page }) => {
       test.setTimeout(90000);
       await page.setViewportSize({ width: w, height: h });
@@ -1054,11 +1049,8 @@ async function check504(page: Page, section: string, variant: string, mode: stri
     expect(hint!.y + hint!.height).toBeLessThanOrEqual(btn!.y);
   }
 }
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-])
-  test('504 六种弹框与变体 ' + width, async ({ page }) => {
+for (const [width, height] of desktopViewports)
+  test('504 六种弹框与变体 ' + width + '×' + height, async ({ page }) => {
     test.setTimeout(150000);
     await page.setViewportSize({ width, height });
     await open504(page);
@@ -1094,13 +1086,8 @@ for (const [width, height] of [
           '户口性质',
           '政治面貌',
         ]);
-        if (width === 1440) {
-          expect(layout[0].y).toBe(layout[7].y);
-          expect(layout[7].x).toBeGreaterThan(layout[0].x);
-        } else {
-          expect(layout.every((f) => f.x === layout[0].x)).toBe(true);
-          expect(layout[7].y).toBeGreaterThan(layout[6].y);
-        }
+        expect(layout[0].y).toBe(layout[7].y);
+        expect(layout[7].x).toBeGreaterThan(layout[0].x);
         expect(layout[1].y - layout[0].y).toBeLessThanOrEqual(40);
         for (const f of layout) {
           expect(f.valueX).toBeGreaterThan(f.x + 90);
@@ -1117,7 +1104,7 @@ for (const [width, height] of [
         await expect(contacts.getByRole('button', { name: mode + ' · 123456', exact: true })).toBeVisible();
         await expect(contacts.getByText('主要', { exact: true })).toBeVisible();
         await expect(contacts.getByText('工作', { exact: true })).toBeVisible();
-        if (mode === '查看' && width === 390) {
+        if (mode === '查看') {
           const longValue = await basic.getByText('Alexandria'.repeat(8), { exact: true }).evaluate((el) => ({
             wraps: el.clientHeight > 32,
             fits: el.scrollWidth <= el.clientWidth + 1,
@@ -1178,16 +1165,7 @@ test('504 共用查看与长表单的视口和原生缩放', async () => {
         .getByRole('button', { name: editing ? /^编辑 · / : /^查看 · / })
         .first()
         .click();
-      for (const [w, h, z] of [
-        [1440, 900, 1],
-        [1440, 540, 1],
-        [390, 844, 1],
-        [320, 900, 1],
-        [320, 256, 1],
-        [599, 844, 1],
-        [600, 844, 1],
-        [1280, 900, 2],
-      ]) {
+      for (const [w, h, z] of desktopFormViewports) {
         await p.setViewportSize({ width: w, height: h });
         if (z > 1) await browser.setZoom(z);
         await check504(p, '身份证件', '有期限', editing ? '编辑' : '查看');
@@ -1231,7 +1209,7 @@ test('504 共用查看与长表单的视口和原生缩放', async () => {
 });
 
 test('504 受限字段重排、只读遮罩和原行焦点', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await open504(page, 'reader');
   const principal = await page.evaluate(
       async () => (await (await fetch('/api/v1/session')).json()).subjectId,
@@ -1293,13 +1271,13 @@ test('504 原文、目录采用与跨栏错误定位后整页保存', async ({ p
   await btn('应用').click();
   await btn('保存').click();
   await expect(page.getByRole('dialog')).toBeVisible();
-  await page.setViewportSize({ width: 320, height: 256 });
+  await page.setViewportSize({ width: 1440, height: 540 });
   const error = page.getByText('到期日期须不早于签发日期，长期有效时请清空到期日期', { exact: true }).last();
   await expect(error).toBeVisible();
   await error.scrollIntoViewIfNeeded();
   const e = await error.boundingBox(),
     b = await page.locator('.profile-dialog .MuiDialogContent-root').boundingBox();
-  expect(e!.height).toBeGreaterThan(19);
+  expect(e!.y).toBeGreaterThanOrEqual(b!.y - 1);
   expect(e!.y + e!.height).toBeLessThanOrEqual(b!.y + b!.height + 1);
   await page.getByLabel('到期日期', { exact: true }).fill('2040-01-01');
   await btn('应用').click();
@@ -1376,11 +1354,8 @@ async function openFamilySample(page: Page, role = 'admin') {
   await page.getByRole('link', { name, exact: true }).click();
   return { path, source: saved.body.sourceVersion, id: root.body.id };
 }
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-]) {
-  test('504 第二批两栏六个弹框及取消 ' + width, async ({ page }) => {
+for (const [width, height] of desktopViewports) {
+  test('504 第二批两栏六个弹框及取消 ' + width + '×' + height, async ({ page }) => {
     await page.setViewportSize({ width, height });
     const { path, source } = await openFamilySample(page);
     const button = (name: string) => page.getByRole('button', { name, exact: true });
@@ -1503,8 +1478,8 @@ test('504 第二批只读和受限家庭明细重排与条数', async ({ page })
   (values(array['familyName'],'${grants[0]}'::uuid,'${data.family[1].itemId}'::uuid),(array['familyBirthDate','familyEmail','familyEmail.masked'],'${grants[1]}'::uuid,null::uuid)) v(fields,grant_id,item_id) where login='reader'`);
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await expect(group).toHaveAccessibleDescription('1 条');
-    for (const width of [1440, 390]) {
-      await page.setViewportSize({ width, height: width === 1440 ? 900 : 844 });
+    for (const [width, height] of desktopViewports) {
+      await page.setViewportSize({ width, height });
       const row = group.getByRole('button', { name: '查看 · 合成甲' });
       await row.focus();
       await row.press('Enter');
@@ -1525,7 +1500,7 @@ test('504 第二批只读和受限家庭明细重排与条数', async ({ page })
       );
       expect(positions[2][0]).toBe(positions[0][0]);
       expect(positions[2][1]).toBeGreaterThan(positions[0][1]);
-      expect(positions[0][1] === positions[1][1]).toBe(width === 1440);
+      expect(positions[0][1]).toBe(positions[1][1]);
       await page.keyboard.press('Escape');
       await expect(row).toBeFocused();
     }
@@ -1534,7 +1509,7 @@ test('504 第二批只读和受限家庭明细重排与条数', async ({ page })
   }
 });
 
-test('504 第二批地址目录控件、五种视口与原生缩放', async () => {
+test('504 第二批地址目录控件、桌面视口与原生缩放', async () => {
   test.setTimeout(150000);
   const browser = await nativeZoomBrowser(),
     p = browser.page;
@@ -1542,14 +1517,7 @@ test('504 第二批地址目录控件、五种视口与原生缩放', async () =
     await openFamilySample(p);
     await p.getByRole('button', { name: '更正资料', exact: true }).click();
     const row = p.getByRole('button', { name: '编辑 · 居住地址' });
-    for (const [width, height, zoom] of [
-      [1440, 900, 1],
-      [1440, 540, 1],
-      [390, 844, 1],
-      [320, 900, 1],
-      [320, 256, 1],
-      [1280, 900, 2],
-    ]) {
+    for (const [width, height, zoom] of desktopFormViewports) {
       await p.setViewportSize({ width, height });
       if (zoom !== 1) await browser.setZoom(zoom);
       await row.focus();
@@ -1727,11 +1695,8 @@ const thirdBatchRecords = [
   { section: credentialSection, variant: '有期限', name: '有期合成资格' },
 ];
 
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-]) {
-  test('504 第三批教育凭证录入、弹框与取消 ' + width, async ({ page }) => {
+for (const [width, height] of desktopViewports) {
+  test('504 第三批教育凭证录入、弹框与取消 ' + width + '×' + height, async ({ page }) => {
     test.setTimeout(180000);
     await page.setViewportSize({ width, height });
     const { path } = await openFamilySample(page);
@@ -1842,7 +1807,7 @@ for (const [width, height] of [
   });
 }
 
-test('504 第三批学习经历五种视口及原生缩放', async () => {
+test('504 第三批学习经历桌面视口及原生缩放', async () => {
   test.setTimeout(135000);
   const browser = await nativeZoomBrowser(),
     p = browser.page;
@@ -1852,14 +1817,7 @@ test('504 第三批学习经历五种视口及原生缩放', async () => {
     const opener = p
       .getByRole('group', { name: '教育经历', exact: true })
       .getByRole('button', { name: '添加一行' });
-    for (const [width, height, zoom] of [
-      [1440, 900, 1],
-      [1440, 540, 1],
-      [390, 844, 1],
-      [320, 900, 1],
-      [320, 256, 1],
-      [1280, 900, 2],
-    ]) {
+    for (const [width, height, zoom] of desktopFormViewports) {
       await p.setViewportSize({ width, height });
       if (zoom > 1) await browser.setZoom(zoom);
       await opener.focus();
@@ -1894,11 +1852,8 @@ test('504 第三批学习经历五种视口及原生缩放', async () => {
   }
 });
 
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-]) {
-  test('504 第四批银行三态、健康与整页保存取消 ' + width, async ({ page }) => {
+for (const [width, height] of desktopViewports) {
+  test('504 第四批银行三态、健康与整页保存取消 ' + width + '×' + height, async ({ page }) => {
     await page.setViewportSize({ width, height });
     const { path } = await openFamilySample(page);
     const button = (name: string) => page.getByRole('button', { name, exact: true });
@@ -1927,7 +1882,7 @@ for (const [width, height] of [
     await expect(dlg).toContainText('********');
     await button('查看完整号码').click();
     await expect(dlg).toContainText('000abc504');
-    if (width === 1440) {
+    if (height === 900) {
       await button('隐藏号码').click();
       await expect(dlg).not.toContainText('000abc504');
       const sql = personnelSQL(), deny = randomUUID();
@@ -1968,7 +1923,7 @@ for (const [width, height] of [
     await button('编辑 · 合成银行').click();
     await expect(dlg.locator('#row-accountNumber')).toHaveValue('000abc504');
     await check504(page, '银行账户', '通用', '编辑');
-    if (width === 1440) {
+    if (height === 900) {
       await dlg.locator('#row-accountNumber').fill('000different');
       await dlg.locator('#row-accountNumber').fill('000abc504');
       await page.keyboard.press('Escape');
@@ -2003,15 +1958,16 @@ for (const [width, height] of [
     await expect(bank).toHaveCount(0);
     await expect(page.getByText('健康信息', { exact: true })).toHaveCount(0);
     await expect(page.getByText('合成摘要甲')).toHaveCount(0);
+    const maskedNumberOnly = height === 540;
     const grant = randomUUID(), sql = personnelSQL();
     expect(saved.id).toMatch(/^[0-9a-f-]{36}$/);
     try {
       sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id)
-        select instance_id,principal_id,'bank.read','personal-bank',${width === 390 ? "array['accountNumber.masked']" : "array['bankName','accountNumber.masked']"},array['${saved.id}'::uuid],'${grant}' from access.principal where login='reader'`);
+        select instance_id,principal_id,'bank.read','personal-bank',${maskedNumberOnly ? "array['accountNumber.masked']" : "array['bankName','accountNumber.masked']"},array['${saved.id}'::uuid],'${grant}' from access.principal where login='reader'`);
       await page.reload();
-      const restrictedOpener = width === 390 ? button('查看 · 银行账户') : opener;
+      const restrictedOpener = maskedNumberOnly ? button('查看 · 银行账户') : opener;
       await restrictedOpener.press('Enter');
-      await expect(dlg.locator('.object-field-label')).toHaveText(width === 390 ? ['银行账号'] : ['银行名称', '银行账号']);
+      await expect(dlg.locator('.object-field-label')).toHaveText(maskedNumberOnly ? ['银行账号'] : ['银行名称', '银行账号']);
       await expect(dlg).toContainText('********');
       await expect(dlg.getByRole('button', {name: '查看完整号码'})).toHaveCount(0);
       await expect(dlg).not.toContainText('000abc504');
@@ -2057,14 +2013,7 @@ test('504 第四批整页末栏和银行弹框的视口与原生缩放', async (
   try {
     await openFamilySample(page);
     await page.getByRole('button', { name: '更正资料', exact: true }).click();
-    for (const [width, height, zoom] of [
-      [1440, 900, 1],
-      [1440, 540, 1],
-      [390, 844, 1],
-      [320, 900, 1],
-      [320, 256, 1],
-      [1280, 900, 2],
-    ]) {
+    for (const [width, height, zoom] of desktopFormViewports) {
       await page.setViewportSize({ width, height });
       if (zoom !== 1) await browser.setZoom(zoom);
       const summary = page.getByLabel('健康状况简述');

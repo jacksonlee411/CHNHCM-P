@@ -49,4 +49,4 @@
 | f 的人员详情、职务详情、[共享表单](../../../packages/ui/src/components/ObjectForm.tsx)、[离开保护](../../../apps/web/src/shared/dated/useDraftExit.ts) | 桌面两列、窄屏单列。键盘能到末字段、保存、取消和错误提示。补证返回、更改到岗日、最后一条匹配对象返回名录时，检查草稿、焦点和已应用查询。 |
 | [共享日志](../../../apps/web/src/shared/dated/OperationLog.tsx)、[提交会话](../../../apps/web/src/shared/dated/submission.ts) | 当日适用状态、单个动作原件和受影响后继可区分。只读者无写入口，直达写请求同样拒绝。原件和查回按当前权投影。重送后稳定定位同一结果。 |
 
-产品验收覆盖五种 100% 内容视口（1440×900、1440×540、390×844、320×900、320×256），经办与只读从正常入口操作。关键流程以 1280×900 内容为 100% 基准，固定窗口外框，经浏览器原生 200% 验保存、错误、取消和返回。记录实际倍率、可达路径和对应业务结果。[视口规范](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) · [业务验收表](401-direct-hire-requirements.md#m04-ac-001)
+桌面布局及原生缩放按 012 选取，经办与只读从正常入口操作。关键流程以 1280×900 内容为 100% 基准，固定窗口外框，经浏览器原生 200% 验保存、错误、取消和返回。记录实际倍率、可达路径和对应业务结果。[视口规范](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) · [业务验收表](401-direct-hire-requirements.md#m04-ac-001)

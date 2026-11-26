@@ -1,3 +1,4 @@
+import { scenarioViewports } from '../e2e/desktop-viewports.mjs';
 import { chromium, expect } from '@playwright/test';
 import { spawn, execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, mkdtempSync, chmodSync, rmSync, mkdirSync } from 'node:fs';
@@ -9,7 +10,7 @@ import { captureViewport } from '../../docs/verification/data/100-ui-capture-fix
 
 const out = path.resolve(process.argv[2] ?? '.local/111-community-t03/matrix'); mkdirSync(out, { recursive: true });
 const fixture = JSON.parse(readFileSync(fixtureOut + '/fixtures.json', 'utf8'));
-const conditions = [['desktop',1440,900,0],['short',1440,540,0],['narrow',390,844,0],['width320',320,900,0],['stress',320,256,0],['zoom200',1280,900,5],['zoom400',1280,900,8]];
+const conditions = scenarioViewports();
 const result = { base: execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(), profile: process.env.CHNHCM_LOCAL_PROFILE, origin: connection.webOrigin, rows: [], errors: [], licenseMessages: [], stopped: false };
 const save = () => writeFileSync(path.join(out,'results.json'),JSON.stringify(result,null,2)+'\n');
 const pause = ms => new Promise(r => setTimeout(r,ms));
@@ -91,5 +92,5 @@ try {
     }catch(error){row.result='failed';row.error=String(error);if(page)try{await captureViewport(page,path.join(out,label+'-failure.png'),[page.locator('.app-account-name'),page.getByLabel('登录名'),page.getByLabel('密码')]);}catch{}save();process.exitCode=1;break;}
     finally{if(steps&&context)try{zoom(0);row.restored100=await dimensions(context.pages()[0]);}catch{}await close();save();}
   }
-}finally{await close();if(display){display.kill('SIGTERM');await new Promise(r=>display.once('exit',r));}result.stopped=true;result.status=result.rows.length===7&&result.rows.every(x=>x.result==='passed')&&!result.errors.length&&!result.licenseMessages.length?'passed':'failed';save();}
+}finally{await close();if(display){display.kill('SIGTERM');await new Promise(r=>display.once('exit',r));}result.stopped=true;result.status=result.rows.length===conditions.length&&result.rows.every(x=>x.result==='passed')&&!result.errors.length&&!result.licenseMessages.length?'passed':'failed';save();}
 console.log(JSON.stringify({status:result.status,rows:result.rows.map(({label,result,error,dimensions})=>({label,result,error,dimensions})),stopped:result.stopped},null,2));

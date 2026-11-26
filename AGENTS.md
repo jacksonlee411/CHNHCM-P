@@ -13,7 +13,7 @@
 - 页面任务先读[012共享体验与表单](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[列表与详情](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list)、[动作](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-actions)、[历史](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-history)及该对象合同；按日对象同时核对[121接入矩阵](docs/specs/m02/121-dated-object-admission-matrix.md)的适用要求。
 - 先确定已符合标准的参考页面和共用实现。复用须覆盖主题、顶栏、控制区、正文滚动、列表/详情、表单、日期维护、操作入口、来源解释、未保存保护及返回上下文；仅使用同名基础组件不代表继承标准。业务差异应在对象合同中说明。
 - 直接呈现当前任务所需且有权操作的字段；更正带入原值并自动识别变化。可选修改不默认隐藏，不以展开、勾选或重复确认表达修改意图。辅助信息按需展开；内部机制、正常保证不成为常驻说明或额外步骤。
-- 验收须对照参考页面检查实际布局和操作流程。普通页面覆盖五种 100% 视口与键盘可达性，关键流程必测原生 200%，原生 400% 按风险或客户要求专项验证，详见[共享验收规范](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)。菜单可用、保存成功、截图已采集或旧测试通过，均不能单独证明标准一致。
+- 现阶段以桌面浏览器为交付范围。普通页面在 1440×900、1440×540 的 100% 视口对照同构建参考页，实测布局、滚动和键盘操作。关键流程必测原生 200%，400% 按风险或客户要求专项验证。手机窄屏适配仅在明确立项时验收。详见[共享验收规范](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)。
 - 业务日期统一`YYYY-MM-DD`，记录时刻按北京时间显示`YYYY-MM-DD HH:mm:ss`并保留原始时刻；使用[026共享日期规范](docs/adr/026-date-display-and-input-format.md)。配置/主数据首次新建默认`1900-01-01`，允许显式修改；已有记录及后续维护不套用，见[202](docs/adr/202-master-data-default-effective-date.md)。
 
 ## 领域、数据与资产

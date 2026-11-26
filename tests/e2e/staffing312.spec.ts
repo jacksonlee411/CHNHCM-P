@@ -1,10 +1,11 @@
+import { desktopViewportCases } from './desktop-viewports.mjs';
 import { expect, test } from './fixtures';
 import { open } from './bu-support';
 import { seed308 } from './staffing308-support';
 import { positionJourney, seedPosition } from './staffing312-support';
 
 for (const role of ['admin', 'reader'])
-  for (const [cell, width, height] of [['V01',1440,900],['V02',1440,540],['V03',390,844],['V04',320,900],['V05',320,256]] as const)
+  for (const [cell, width, height] of desktopViewportCases)
     test(`312 position ${role} ${cell} 岗位维护与历史`, async ({page}) => {
       test.setTimeout(180000);
       await open(page);

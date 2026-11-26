@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { randomUUID } from 'node:crypto';
 import { test, expect, type Page } from './fixtures';
 import { open } from './bu-support';
@@ -158,13 +159,7 @@ async function journey(page: Page, sample: Awaited<ReturnType<typeof seed>>, _fa
   await expect(page.getByText(/直属岗位核定合计 9 · 待分配 1/)).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 }
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-  [1440, 540],
-  [320, 900],
-  [320, 256],
-]) {
+for (const [width, height] of desktopViewports) {
   test('315 部门同日调剂及只读复核 ' + width + 'x' + height, async ({ page }) => {
     test.setTimeout(180000);
     await open(page);

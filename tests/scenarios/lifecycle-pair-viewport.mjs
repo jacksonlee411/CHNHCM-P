@@ -1,3 +1,4 @@
+import { scenarioViewports } from '../e2e/desktop-viewports.mjs';
 import { chromium, expect } from '@playwright/test';
 import { execFileSync, spawn } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, chmodSync, rmSync, existsSync } from 'node:fs';
@@ -16,8 +17,7 @@ const native = path.join(root, 'docs/verification/data/100-ui-baseline/native-zo
 const xshot = path.join(root, 'docs/verification/data/100-ui-baseline/x11-shot.py');
 const result = { base: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), rows: [] };
 const save = () => writeFileSync(path.join(out, 'results.json'), JSON.stringify(result, null, 2) + '\n');
-const allConditions = [['desktop', 1440, 900, 0], ['short', 1440, 540, 0], ['narrow', 390, 844, 0], ['width320', 320, 900, 0], ['stress', 320, 256, 0], ['zoom200', 1280, 900, 5], ['zoom400', 1280, 900, 8]];
-const conditions = process.env.CHNHCM_UI_CONDITIONS ? allConditions.filter(x => process.env.CHNHCM_UI_CONDITIONS.split(',').includes(x[0])) : allConditions;
+const conditions = scenarioViewports();
 const code = 'PAIR109_' + Date.now().toString(36).toUpperCase();
 result.code = code;
 let created = false;

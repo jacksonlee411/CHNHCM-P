@@ -1,3 +1,4 @@
+import { desktopViewportCases } from './desktop-viewports.mjs';
 import { test, expect } from './fixtures';
 import { open } from './bu-support';
 import { grants308 } from './staffing308-grants';
@@ -6,7 +7,7 @@ import { matrixSeed310, matrixJourney310 } from './staffing310-support';
 
 for (const kind of ['gradeladder', 'job'] as const)
   for (const role of ['admin', 'reader'])
-    for (const [code, width, height] of [['V01', 1440, 900], ['V02', 1440, 540], ['V03', 390, 844], ['V04', 320, 900], ['V05', 320, 256]] as const)
+    for (const [code, width, height] of desktopViewportCases)
       test(`310 ${kind} ${role} ${code} 集合、日期与标准页面`, async ({ page }) => {
         test.setTimeout(360000); page.setDefaultTimeout(15000);
         await open(page);

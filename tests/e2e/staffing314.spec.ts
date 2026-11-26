@@ -67,7 +67,7 @@ test('314 AC082 从职类菜单建立管理类和专业类，只读者直接提�
   expect(write.status).toBe(403);
 });
 
-for (const width of [1440, 390]) {
+for (const width of [1440, 899]) {
   test(`314 T04 双维查询、返回与固定选择 ${width}px`, async ({ page }) => {
     test.setTimeout(120000);
     await open(page);

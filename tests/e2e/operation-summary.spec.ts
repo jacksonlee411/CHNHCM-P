@@ -30,7 +30,7 @@ test('TL367–375 正常菜单摘要、真实差异、删除两类原件和准�
  await screenshot(page,'deleted-original');
 });
 
-test('TL376–382 日志筛选草稿、操作分页、固定上界、历史刷新和窄屏键盘',async({page})=>{
+test('TL376–382 日志筛选草稿、操作分页、固定上界、历史刷新和短屏键盘',async({page})=>{
  await open(page);await create(page,'2026-01-01','');const initial=await displayed(page);
  // Synthetic volume is created through the authenticated public write API. The
  // actual navigation, filters, paging and links below use normal page controls.
@@ -48,8 +48,8 @@ test('TL376–382 日志筛选草稿、操作分页、固定上界、历史刷�
  const appliedURL=page.url();await page.getByRole('button',{name:'列筛选…',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'清除条件',exact:true}).click();await page.keyboard.press('Escape');expect(page.url()).toBe(appliedURL);
  await page.getByRole('button',{name:'列筛选…',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'清除条件',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'应用',exact:true}).click();await expect(page.getByText('1–20 / 45 项操作',{exact:true})).toBeVisible();
  // Width changes keep the same applied URL and groups, while values stay visible.
- for(const width of [390,320]){await page.setViewportSize({width,height:900});await expect(page.locator('.change-operation').first().getByText('样本45',{exact:true}).first()).toBeVisible();await page.getByRole('button',{name:'列筛选…',exact:true}).click();await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'列筛选…',exact:true})).toBeFocused();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)}
- await screenshot(page,'log-320');
+ await page.setViewportSize({width:1440,height:540});await expect(page.locator('.change-operation').first().getByText('样本45',{exact:true}).first()).toBeVisible();await page.getByRole('button',{name:'列筛选…',exact:true}).click();await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'列筛选…',exact:true})).toBeFocused();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await screenshot(page,'log-short');
  await page.setViewportSize({width:1440,height:900});await page.getByRole('link',{name:'查看当次资料',exact:true}).last().click();const historical=await displayed(page);await logs(page);const firstContext=new URL(page.url()).searchParams.get('sourceVersion');expect(firstContext).toBe(historical.resolvedSourceVersion);await page.getByRole('button',{name:'刷新日志',exact:true}).click();await expect(page.locator('.change-operation').first()).toBeVisible();expect(new URL(page.url()).searchParams.get('sourceVersion')).toBe(firstContext);await expect(page).toHaveURL(u=>u.searchParams.get('logThrough')===firstContext);
 });
 

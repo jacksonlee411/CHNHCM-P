@@ -1,3 +1,4 @@
+import { desktopViewportCases } from './desktop-viewports.mjs';
 import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { expect, test, type Page } from './fixtures';
@@ -8,7 +9,7 @@ import { namedMenu308, seed308 } from './staffing308-support';
 import { hierarchyJourney,seedHierarchy,structureMenu,structureDetail,queryStructure,adjust,chooseParent } from './staffing312-hierarchy-support';
 import { staffingZoomCases } from './staffing-zoom-suite';
 
-for(const role of ['admin','reader']) for(const [cell,width,height] of [['V01',1440,900],['V02',1440,540],['V03',390,844],['V04',320,900],['V05',320,256]] as const){
+for(const role of ['admin','reader']) for(const [cell,width,height] of desktopViewportCases){
  test(`312 hierarchy ${role} ${cell} 管理汇报日期与版本`,async({page})=>{
    test.setTimeout(180000);await open(page);const family=await seed308(page,'jobfamily'),sample=await seedHierarchy(page,'hierarchy',family.id);
    if(role==='reader'){await page.context().clearCookies();await open(page,role)}
@@ -24,7 +25,7 @@ const effectiveDate = '2027-04-01';
 
 test('139 查询者聚焦结构日期后收到默认日期仍可输入并查询', async ({page}) => {
   await open(page,'reader');
-  await page.setViewportSize({width:320,height:256});
+  await page.setViewportSize({width:1440,height:540});
   let release!:()=>void;
   const pending=new Promise<void>(resolve=>{release=resolve});
   await page.route('**/position-hierarchies/reporting/structure?**',async route=>{

@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import {openPersonnel} from './app-navigation';
 import { chromium } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
@@ -311,19 +312,13 @@ test('T03 原人补证后放弃入职', async ({ page }) => {
   const current = await request(page, 'GET', '/api/v1/persons/' + sample.id + '?view=edit');
   expect(current.body.documents).toHaveLength(1);
 });
-for (const [width, height] of [
-  [1440, 900],
-  [1440, 540],
-  [390, 844],
-  [320, 900],
-  [320, 256],
-]) {
+for (const [width, height] of desktopViewports) {
   test('T03 首单入职与未来撤销 ' + width + '×' + height, async ({ page }) => {
     test.setTimeout(110000);
     await signIn(page);
     const sample = await seed(page);
     await page.setViewportSize({ width, height });
-    await journey(page, sample, width === 1440 && height === 540, width <= 390);
+    await journey(page, sample, height === 540, height === 900);
   });
 }
 async function native200(run: (page: Page, sample: Awaited<ReturnType<typeof seed>>) => Promise<void>,prepare:(page:Page)=>ReturnType<typeof seed>=seed) {
@@ -561,13 +556,7 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await expect(row).toBeFocused();
   await expect(search).toHaveValue(sample.name);
 }
-for (const [width, height] of [
-  [1440, 900],
-  [1440, 540],
-  [390, 844],
-  [320, 900],
-  [320, 256],
-]) {
+for (const [width, height] of desktopViewports) {
   test(`M04 职务信息地点更改与原笔纠错 ${width}x${height}`, async ({ page }) => {
     test.setTimeout(150000);
     await signIn(page);
@@ -749,13 +738,7 @@ async function registerJourney(page: Page, sample: Awaited<ReturnType<typeof see
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
     .toBe(true);
 }
-for (const [width, height] of [
-  [1440, 900],
-  [1440, 540],
-  [390, 844],
-  [320, 900],
-  [320, 256],
-]) {
+for (const [width, height] of desktopViewports) {
   test(`M04 办理记录查询和原笔更正 ${width}x${height}`, async ({ page }) => {
     test.setTimeout(150000);
     await signIn(page);
@@ -860,7 +843,7 @@ async function historyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>)
   await expect(page.getByText([destination,sample.job,locations[0].name].join(' · '),{exact:true})).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 历史插入与按职务调动 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);
     await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});
@@ -978,13 +961,7 @@ async function concurrentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await expect(page.locator('a[data-object-link]').filter({ hasText: sample.name })).toHaveCount(3);
   return { department: training.id, primary: hire.assignment };
 }
-for (const [width, height] of [
-  [1440, 900],
-  [1440, 540],
-  [390, 844],
-  [320, 900],
-  [320, 256],
-]) {
+for (const [width, height] of desktopViewports) {
   test(`M04 新增兼岗与并行工作关系 ${width}x${height}`, async ({ page }) => {
     test.setTimeout(180000);
     await signIn(page);
@@ -1153,7 +1130,7 @@ async function probationJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
   await expect(record).toBeFocused();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 真实试用开始与关系转正 ${width}x${height}`,async({page})=>{
     test.setTimeout(150000);await signIn(page);const sample=await seed(page);
     await page.setViewportSize({width,height});await probationJourney(page,sample);
@@ -1280,7 +1257,7 @@ async function promotionJourney(page: Page, sample: Awaited<ReturnType<typeof se
   await page.getByRole('link',{name:'返回办理记录'}).click();await expect(promotion).toBeFocused();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+for(const [width,height] of desktopViewports) {
   test(`M04 同日转正晋升调动、从登记撤销 ${width}x${height}`,async({page})=>{
     test.setTimeout(210000);await signIn(page);const sample=await seed(page);
     await page.setViewportSize({width,height});await promotionJourney(page,sample);
@@ -1360,17 +1337,23 @@ async function lifecycleJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
     const exit = await request(page,'GET','/api/v1/employment-actions/'+exact.body.rehireOf.action+'?adoptedRef='+exact.body.rehireOf.revision);
     expect(exit.status).toBe(200);
     expect(exit.body.action.employment).not.toBe(exact.body.action.employment);
-    await expect(page.getByText('工作关系 '+exit.body.action.employment,{exact:true})).toBeVisible();
+    expect(exit.body.relation).toMatchObject({ employerName: sample.employer, from: '2027-04-01', until: '2027-09-01' });
+    await expect(page.getByText(`工作关系 ${sample.employer} · 2027-04-01 起，2027-09-01 起不在该关系`,{exact:true})).toBeVisible();
   }
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 实际汇报离职及原记录再聘 ${width}x${height}`,async({page})=>{
     test.setTimeout(180000);await signIn(page);const sample=await seed(page);
-    const fromHistory=width===390 && height===844;
-    await page.setViewportSize({width,height});await lifecycleJourney(page,sample,(width===1440 && height===540)||fromHistory,fromHistory);
+    await page.setViewportSize({width,height});await lifecycleJourney(page,sample,height === 540);
   });
 }
+test('M04 从本人历史再聘，回执中断后查回并返回原离职办理',async({page})=>{
+  test.setTimeout(180000);
+  await signIn(page);
+  const sample = await seed(page);
+  await lifecycleJourney(page, sample, true, true);
+});
 test('M04 实际汇报离职及原记录再聘 原生200%',async()=>{await native200(lifecycleJourney)});
 
 async function positionHireJourney(page: Page, sample: Awaited<ReturnType<typeof seed>>) {
@@ -1427,7 +1410,7 @@ async function positionHireJourney(page: Page, sample: Awaited<ReturnType<typeof
     }
   }
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 按岗免占首单与岗位补员 ${width}x${height}`,async({page})=>{
     test.setTimeout(180000);await signIn(page);const sample=await seed(page);
     await page.setViewportSize({width,height});await positionHireJourney(page,sample);
@@ -1490,7 +1473,7 @@ async function positionTransferJourney(page: Page, sample: Awaited<ReturnType<ty
     }
   }
 }
-for (const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+for (const [width,height] of desktopViewports) {
   test(`M04 按岗位调入并更正原岗 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);
     await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});
@@ -1535,7 +1518,7 @@ async function recruitingJourney(page:Page,sample:Awaited<ReturnType<typeof seed
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   return {number,position};
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+for(const [width,height] of desktopViewports) {
   test(`M05 录用预留与本人接受 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);await signIn(page);const sample=await seed(page);
     await page.setViewportSize({width,height});await recruitingJourney(page,sample);
@@ -1598,7 +1581,7 @@ async function countedPromotionJourney(page: Page, sample: Awaited<ReturnType<ty
     }
   }
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+for(const [width,height] of desktopViewports) {
   test(`M04 占编岗位晋升与调动 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);await signIn(page);const sample=await seed(page);
     await page.setViewportSize({width,height});await countedPromotionJourney(page,sample);
@@ -1675,7 +1658,7 @@ async function exchangeJourney(page: Page, first: Awaited<ReturnType<typeof seed
   });
 }
 
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 同日对调两个满编岗 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);await signIn(page);const sample=await seed(page);
     await page.setViewportSize({width,height});await exchangeJourney(page,sample);
@@ -1716,7 +1699,7 @@ async function successionJourney(page:Page, successor:Awaited<ReturnType<typeof 
     await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   });
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 内部接任十天交接 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);await signIn(page);const sample=await seed(page);
     await page.setViewportSize({width,height});await successionJourney(page,sample);
@@ -1778,7 +1761,7 @@ async function dutyJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>){
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
 const seedDuty=(page:Page)=>seed(page,true,'2026-04-01');
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 满编门店的三天实况补录 ${width}x${height}`,async({page})=>{
     test.setTimeout(150000);await signIn(page);const sample=await seedDuty(page);await page.setViewportSize({width,height});await dutyJourney(page,sample);
   });
@@ -1833,7 +1816,7 @@ async function contractJourney(page:Page,sample:Awaited<ReturnType<typeof seed>>
   await expect(page.getByText(/依通知终结本关系和续订合同 · admin/)).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`M04 工作关系合同续订与离职 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});await contractJourney(page,sample);
   });
@@ -1897,7 +1880,7 @@ async function offerHireJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
     await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   },['hire']);
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]){
+for(const [width,height] of desktopViewports){
   test(`T06 已接受录用转入职与未来撤销 ${width}x${height}`,async({page})=>{
     test.setTimeout(170000);await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});await offerHireJourney(page,sample);
   });
@@ -2062,7 +2045,7 @@ async function secondaryPositionJourney(page:Page,sample:Awaited<ReturnType<type
     }
   }
 }
-for(const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+for(const [width,height] of desktopViewports) {
   test(`M04 一人两个占编岗位 ${width}x${height}`,async({page})=>{
     test.setTimeout(160000);await signIn(page);const sample=await seed(page);await page.setViewportSize({width,height});await secondaryPositionJourney(page,sample);
   });
@@ -2074,7 +2057,7 @@ test('M04 人员名录的延迟响应保留姓名草稿及搜索返回位置',as
   await signIn(page);
   const sample=await seed(page);
   await hireAtLocation(page,sample);
-  await page.setViewportSize({width:320,height:256});
+  await page.setViewportSize({width:1440,height:540});
   await openPersonnel(page);
   const input=page.getByRole('textbox',{name:'姓名或人员编号'});
   await input.fill(sample.name);
@@ -2102,9 +2085,9 @@ test('M04 人员名录的延迟响应保留姓名草稿及搜索返回位置',as
   await expect(employee).toBeFocused(); await expect(input).toHaveValue(sample.name);
 });
 
-test('M04 窄屏按主兼岗搜索并用键盘打开未来任职',async({page})=>{
+test('M04 桌面按主兼岗搜索并用键盘打开未来任职',async({page})=>{
   await signIn(page);const sample=await seed(page);await hireAtLocation(page,sample);
-  await page.setViewportSize({width:320,height:900});await openPersonnel(page);
+  await page.setViewportSize({width:1440,height:900});await openPersonnel(page);
   const filter=page.getByRole('combobox',{name:'主兼岗'});await filter.click();
   await page.getByRole('option',{name:'主岗',exact:true}).click();
   const input=page.getByLabel('姓名或人员编号');await input.fill(sample.name);await input.press('Enter');
@@ -2118,6 +2101,14 @@ async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<type
   await page.getByLabel('姓名或人员编号').fill(sample.name);await page.getByLabel('姓名或人员编号').press('Enter');
   await expect(page.getByText('3 份任职，1 人',{exact:true})).toBeVisible();
   const rows = page.locator('a[data-object-link]').filter({ hasText: sample.name });
+  await expect(rows).toHaveCount(3);
+  const filter = page.getByRole('combobox', { name: '主兼岗' });
+  await filter.click();
+  await page.getByRole('option', { name: '兼岗', exact: true }).click();
+  await expect(page.getByText('2 份任职，1 人', { exact: true })).toBeVisible();
+  await expect(rows).toHaveCount(2);
+  await filter.click();
+  await page.getByRole('option', { name: '全部', exact: true }).click();
   await expect(rows).toHaveCount(3);
   const primary = rows.first();
   await primary.focus();
@@ -2144,7 +2135,7 @@ async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<type
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 }
 
-for (const [width, height] of [[1440, 900], [1440, 540], [390, 844], [320, 900], [320, 256]]) {
+for (const [width, height] of desktopViewports) {
   test(`M04 从人员选择本人任职并切换主岗页签 ${width}x${height}`, async ({ page }) => {
     test.setTimeout(180000);
     await signIn(page);
@@ -2224,7 +2215,7 @@ test('M05 交接应答在按下和松开之间到达时仍打开改期', async (
   test.setTimeout(90000);
   await signIn(page);
   const person = await seed(page);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1440, height: 540 });
 
   await withCountedPolicies(page, async () => {
     const { position } = await recruitingJourney(page, person);
@@ -2359,7 +2350,7 @@ async function profileAssignmentDateJourney(page:Page,sample:Awaited<ReturnType<
   }
 }
 
-for (const [width,height] of [[1440,900],[1440,540],[390,844],[320,900],[320,256]]) {
+for (const [width,height] of desktopViewports) {
   test(`M04 档案唯一任职的初入日与刷新 ${width}x${height}`, async ({page}) => {
     test.setTimeout(100000);
     await signIn(page);

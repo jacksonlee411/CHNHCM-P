@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { policy } from './community-list-support.mjs';
 import { directoryReturnJourney, geoField, openGeoFilter } from './geoarea-directory-support';
 import { test, expect, openMoreActions, type Page } from './fixtures';
@@ -231,9 +232,9 @@ test('区划138 澳门目录可切换层级并清除列条件', async ({page}) =
     await dialog.getByRole('button',{name:'清除条件'}).click();
     await apply('',3630);
 });
-test('区划203 桌面窄屏及短屏显示字段和更正表单', async ({ page }) => {
+test('区划203 桌面及短屏显示字段和更正表单', async ({ page }) => {
     await open(page);
-    for (const size of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 568 }, { width: 1280, height: 540 }]) {
+    for (const size of [{ width: 1440, height: 900 }, { width: 1440, height: 540 }]) {
         await page.setViewportSize(size);
         await menu(page, '110109');
         await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
@@ -271,8 +272,8 @@ test('区划203 香港两种性质、省直连县和台湾同名路径', async (
 });
 
 
-test('区划203 窄屏同名列表直接显示完整父路径并可下钻',async({page})=>{
- await open(page);await page.setViewportSize({width:390,height:844});await menu(page);
+test('区划203 同名摘要列直接显示完整父路径并可下钻',async({page})=>{
+ await open(page);await page.setViewportSize({width:899,height:900});await menu(page);
  await page.getByRole('textbox',{name:'搜索编码或名称'}).fill('東區');
  await page.getByRole('button',{name:'查询',exact:true}).click();
  await expect(page.getByText(/新竹市/).first()).toBeVisible();
@@ -284,7 +285,7 @@ test('区划203 窄屏同名列表直接显示完整父路径并可下钻',async
 test('区划138 查询草稿、第二页下钻和两次返回定位', async ({page}) => {
     test.setTimeout(120000);
     await open(page, 'reader');
-    for (const [width, height] of [[1440,900], [1440,540], [390,844], [320,900], [320,256]]) {
+    for (const [width, height] of desktopViewports) {
         await page.setViewportSize({width, height});
         await menu(page);
         await directoryReturnJourney(page);

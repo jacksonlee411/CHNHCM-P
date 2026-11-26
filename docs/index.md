@@ -16,7 +16,7 @@ T04「在职变动、结束与再聘」在 509 本地候选及固定 f 的 4386 
 
 M03 按岗位、按日核编。招聘可提前寻访，在发出正式录用时一并落实名额。人事从已接受且资料齐备的录用直接办理入职，从原调动办理两岗接替、改期或撤销。[编制管理合同](specs/m03/313-position-capacity-contract.md) · [调动与两岗交接](specs/m03/313-position-capacity-contract.md#m03-br-037) · [办理简化复核](verification/313-staffing-procedure-review.md)
 
-对象详情中的字段分组、多条记录摘要、可见条数及明细返回遵循[012 详情正文布局与交互](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections)。普通页面使用五种 100% 视口，关键流程必测原生 200%，400% 按条件做专项验证。[012 视口与缩放](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
+对象详情中的字段分组、多条记录摘要、可见条数及明细返回遵循[012 详情正文布局与交互](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections)。普通业务页面按共享规范验收桌面布局、短屏滚动和关键流程原生缩放。[012 视口与缩放](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
 
 M03 岗位核编和部门调剂都可在 `wt-dev-d` 的 4486 验收。管理员从「设置 → 职务配置 → 岗位」打开已有岗位，在「岗位编制」办理核编。岗位默认显示当前值，历史记录按生效日或变更日志原件定位。「部门编制分配」从统计日进入部门详情。点选时间轴可查看总额或岗位分配变动后的整份分配，也可查询任意获权日期、办理同日多岗调剂。[打开验收环境](http://127.0.0.1:4486) · [部门时间轴与 4486 现场复核](verification/315-department-quota-allocation.md#71-4486-原库更新与双角色复核) · [统一环境交接](verification/315-department-quota-allocation.md#6-统一验收环境-4486) · [岗位演示与验收](verification/315-position-quota-implementation.md) · [313 编制管理合同](specs/m03/313-position-capacity-contract.md) · [315 后台实施计划](plans/315-staffing-quota-administration.md) · [架构复核](verification/315-staffing-quota-plan-architecture-review.md)
 140 的行政区划授权、组织记录期间显示和切片登记已分别通过本地验收。T04 地点与法律实体共同历史流程待下次相关变更触发。[分项实施记录](verification/140-module-cohesion-implementation.md) · [实施路线图](plans/140-module-cohesion-roadmap.md) · [方案评审](verification/140-module-cohesion-roadmap-review.md)

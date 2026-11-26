@@ -367,15 +367,15 @@
       "modules": [
         "M02"
       ],
-      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，视口与原生缩放按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。",
+      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，桌面视口、原生缩放与手机端专项的适用范围按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。",
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 对照现行合同与人员实页验收记录复核",
-        "scope": "第 2.4.1 节详情正文的阅读顺序、可见记录摘要、行操作和范围，以及与第 6.2 节视口和缩放规则的衔接。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 按用户采纳的桌面交付范围复核",
+        "scope": "第 6.2 节桌面常规矩阵、关键流程原生缩放、专项触发与旧要求替代关系；对象合同、接入模板及用例的对应范围。",
         "result": "accepted",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/012-desktop-page-acceptance.md"
       },
       "execution_status": null,
       "superseded_by": [
@@ -3086,6 +3086,58 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/012-desktop-page-acceptance.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-023",
+          "CHNHCM-121",
+          "CHNHCM-124",
+          "CHNHCM-308",
+          "CHNHCM-310",
+          "CHNHCM-312",
+          "CHNHCM-315",
+          "CHNHCM-402",
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-502",
+          "CHNHCM-505",
+          "CHNHCM-507"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b1fbac7909b23aea44eec76afcf09b2d67a109dc",
+        "working_tree": "dirty",
+        "change_description": "采用桌面交付范围，调整共享合同、对象引用和浏览器取样。",
+        "environment": "wt-dev-f，独立本地 PostgreSQL、Chromium 和同工作树服务。",
+        "scope": "桌面标准屏、短屏、原生缩放、手机视口退出默认集及业务断言迁移。",
+        "results": [
+          {
+            "check": "默认 Playwright 实际发现由 800 项变为 678 项，均为 70 个入口文件",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "旧再聘断言查找内部编号、固定构建不提供两条夹具入口、移动配置时工作进程引用旧路径",
+            "result": "failed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "按现行用例名去重实测通过 47 项，既有失败场景均复验通过",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "岗位经办人已知风险和一级菜单显式 400% 均保留，菜单实测 640×450／320×225",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          }
+        ],
+        "limitations": [
+          "678 项属于完整收集清单，未执行全套浏览器或远程 CI。各组共享企业前置，组间通过数不可直接相加。"
+        ]
+      },
       {
         "path": "docs/verification/510-personnel-page-remediation-implementation.md",
         "related_documents": [
