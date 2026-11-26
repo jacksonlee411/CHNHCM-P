@@ -77,4 +77,4 @@ Oracle 将 Legal Employer 记录在工作关系层；其工作关系同时覆盖
 
 原术语修订结果见[009 验证记录](../verification/009-m02-terminology.md)，外部事实及项目解释见[来源核对](../reference/m02-terminology-sources.json)，采用文件的前后摘要见[本仓修订链](../reference/local-revisions.json)。原报告保留其受测范围，本次格式与内容保留情况的审阅证据由登记表链接。
 
-Organization lead 协同 M04、M14 及受影响消费域维护者维护角色映射和下游影响；本批 M02 文档准备由 [008](../plans/008-next-steps.md) 组织，其他领域任务随所属专项立项承接。2026-10-31 的[系列评审修订](../verification/013-series-review-fixes.md)仅澄清上述交接，原组织角色、关系语义及外部事实依据保持。本次未替代其他 ADR 或反转原决定；后续重要决定反转按 [014](../governance/014-document-management.md) 新增 ADR 并记录替代关系，外部依据有变化时另行核验并保留旧证据。
+Organization lead 协同 M04、M14 及受影响消费域维护者维护角色映射和下游影响；本批 M02 文档准备由 [008](../archive/plans/008-next-steps.md) 组织，其他领域任务随所属专项立项承接。2026-10-31 的[系列评审修订](../verification/013-series-review-fixes.md)仅澄清上述交接，原组织角色、关系语义及外部事实依据保持。本次未替代其他 ADR 或反转原决定；后续重要决定反转按 [014](../governance/014-document-management.md) 新增 ADR 并记录替代关系，外部依据有变化时另行核验并保留旧证据。

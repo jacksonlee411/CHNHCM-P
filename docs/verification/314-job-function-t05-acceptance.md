@@ -2,7 +2,7 @@
 
 ## 1 候选与执行范围
 
-在固定工作树 wt-dev-b 的 `1a9699dff3b57434afe6de9f236430dc26b7480b` 和开工时已有的 T04 改动上执行。开工时分支领先本地远端跟踪分支三次提交，stash 为空。业务预期取自 [308 第 14 节](../specs/m03/308-job-foundation-contract.md#m03-job-function)和 [314 计划第 4、5 节](../plans/314-m03-job-function-roadmap.md)。本轮使用仓内构建的 Go 服务、真实 PostgreSQL 和 Chromium，保存产品输入、API 二进制及 Web 产物的 SHA-256。角色走查从登录和正常菜单进入。部分前置资料由 API 建立。跨升级下载专项在浏览器中恢复旧会话及其已保存的草稿引用。
+在固定工作树 wt-dev-b 的 `1a9699dff3b57434afe6de9f236430dc26b7480b` 和开工时已有的 T04 改动上执行。开工时分支领先本地远端跟踪分支三次提交，stash 为空。业务预期取自 [308 第 14 节](../specs/m03/308-job-foundation-contract.md#m03-job-function)和 [314 计划第 4、5 节](../archive/plans/314-m03-job-function-roadmap.md)。本轮使用仓内构建的 Go 服务、真实 PostgreSQL 和 Chromium，保存产品输入、API 二进制及 Web 产物的 SHA-256。角色走查从登录和正常菜单进入。部分前置资料由 API 建立。跨升级下载专项在浏览器中恢复旧会话及其已保存的草稿引用。
 
 ## 2 两个角色的页面与受影响业务
 

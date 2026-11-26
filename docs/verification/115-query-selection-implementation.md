@@ -1,6 +1,6 @@
 # CHNHCM-115 全查询结果选择与导出实施验证
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。关联[114](../adr/114-bu-query-selection-and-export.md)、[115](../plans/115-bu-query-selection-and-export.md)、011—013及023。本报告承接用户后续实施指令，原[文档报告](115-query-selection-docs.md)保留未实施时点，不回写原结果。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。关联[114](../adr/114-bu-query-selection-and-export.md)、[115](../archive/plans/115-bu-query-selection-and-export.md)、011—013及023。本报告承接用户后续实施指令，原[文档报告](115-query-selection-docs.md)保留未实施时点，不回写原结果。
 
 ## 1 基线与范围
 

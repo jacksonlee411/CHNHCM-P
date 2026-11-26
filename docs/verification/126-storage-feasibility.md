@@ -1,7 +1,7 @@
 # CHNHCM-126 完整历史存储可行性实验
 
 登记信息：[registry.json](../governance/registry.json) `governance.verification_records`。
-适用范围：[126草案](../plans/126-compact-history-storage-research.md)的空间研究、隔离原型与反例。
+适用范围：[126草案](../archive/plans/126-compact-history-storage-research.md)的空间研究、隔离原型与反例。
 上游依据：[125](../plans/125-r6-capacity-remediation.md)、[013](../specs/m02/013-m02-technical-design.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)。
 
 ## 1 结论与受测基线

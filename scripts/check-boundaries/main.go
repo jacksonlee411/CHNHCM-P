@@ -17,7 +17,12 @@ const module = "chnhcm.local/chnhcm/"
 
 func main() {
 	failures, files, sqlFiles := 0, 0, 0
-	err := filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
+	owners, err := readSQLOwners("docs/architecture/contexts.json")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	err = filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -29,8 +34,11 @@ func main() {
 			return nil
 		}
 		owner := sqlOwner(filepath.ToSlash(path))
+		if owner != "" && !owners[owner] {
+			return fmt.Errorf("%s: unregistered SQL owner %s", path, owner)
+		}
 		checkSQL := func(source, query string) {
-			for _, table := range foreignTables(owner, query) {
+			for _, table := range owners.foreignTables(owner, query) {
 				fmt.Fprintf(os.Stderr, "%s: %s SQL references %s\n", source, owner, table)
 				failures++
 			}

@@ -8,11 +8,11 @@ flowchart TB
     C["Candidate 候选人"]:::own
     A["Application 申请"]:::own
     E["Interview / Assessment 面试评价"]:::own
-    O["OfferVersion 录用条款"]:::own
+    O["OfferVersion 录用条款及预留"]:::own
     H["HireHandoff 入职交接"]:::own
     PROC["RecruitingProcessDefinition 招聘阶段与评价规则"]:::own
   end
-  CAP["M03 招聘预留"]:::external
+  CAP["M03 岗位额度与可用名额核验"]:::external
   PER["M01 Person 身份匹配"]:::external
   STAFF["M04 Employment / Assignment"]:::external
   COMP["M09 薪酬确认"]:::external
@@ -28,8 +28,8 @@ flowchart TB
   H -->|人事保存入职或调动| STAFF
   H -->|候选薪酬条款| COMP
   PROC -->|采用过程版本与阶段规则| A
-  CAP -->|提前预留或随录用落实| R
-  H -->|适用时同事务转占用| CAP
+  CAP -->|按期核验可用名额| O
+  H -->|同笔转换已接受录用的预留| O
   classDef own fill:#e9f4ff,stroke:#3c6f99,color:#17324d;
   classDef process fill:#fff1d9,stroke:#9e6b20,color:#51390f;
   classDef external fill:#f4f5f7,stroke:#7e8996,color:#354150;

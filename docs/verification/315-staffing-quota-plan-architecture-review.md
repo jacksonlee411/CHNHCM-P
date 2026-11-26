@@ -2,7 +2,7 @@
 
 ## 1 复核范围与结论
 
-2026-11-22 复核 313 的后台实施计划。313 持有业务合同，315 持有开发顺序、接口和验收分工。本次将岗位核编与获权部门汇总列为可独立交付的一步。部门上限和同日多岗调剂列为第二步。修订稿附六栏任务表，逐行列明写入方、直接复用的实现、最小增量和验收批次。[315 修订稿](../plans/315-staffing-quota-administration.md) · [任务表](../plans/315-staffing-quota-administration.md#6-实施任务表) · [313 合同](../specs/m03/313-position-capacity-contract.md)
+2026-11-22 复核 313 的后台实施计划。313 持有业务合同，315 持有开发顺序、接口和验收分工。本次将岗位核编与获权部门汇总列为可独立交付的一步。部门上限和同日多岗调剂列为第二步。修订稿附六栏任务表，逐行列明写入方、直接复用的实现、最小增量和验收批次。[315 修订稿](../archive/plans/315-staffing-quota-administration.md) · [任务表](../archive/plans/315-staffing-quota-administration.md#6-实施任务表) · [313 合同](../specs/m03/313-position-capacity-contract.md)
 
 | 复核问题 | 对修订稿的核对结果 |
 | --- | --- |
@@ -12,7 +12,7 @@
 | 用量未知与竞争如何验 | 两人首次核编和原号查回列入首批。后续用量按来源和期间确认，改日按低额度实际延长的期间核对，停岗检查免占编任职。最后一编的两种抢锁顺序分别给出原需求、任职及预留应保留的状态。 |
 | 跨对象如何对账 | AC090 的岗位独验与两批并存分开记结果。并存样本先核编，再只更正旧职务的职类，比较三次快照。另有管理员和只读者走查同日更正、独立后继及旧版本的样本。每项分别列明 Go、数据库/API 与浏览器证据。 |
 
-AC090 的交接依据在本树可核对到 308 合同、314 路线图及 T03 实施记录。所引 `314-job-function-t05-acceptance.md` 在本地工作树、本仓已知提交和核对时的远端 wt-dev-b 分支快照中均未找到。“仅 308”的原验收结果仍归 314，315 据合同承接其余两行，实施时按实际候选登记。[308 AC090](../specs/m03/308-job-foundation-contract.md#m03-ac-090) · [314 交接条件](../plans/314-m03-job-function-roadmap.md#5-验收环境关闭与接续) · [本树 T03 记录](314-job-function-t03-upgrade.md)
+AC090 的交接依据在本树可核对到 308 合同、314 路线图及 T03 实施记录。所引 `314-job-function-t05-acceptance.md` 在本地工作树、本仓已知提交和核对时的远端 wt-dev-b 分支快照中均未找到。“仅 308”的原验收结果仍归 314，315 据合同承接其余两行，实施时按实际候选登记。[308 AC090](../specs/m03/308-job-foundation-contract.md#m03-ac-090) · [314 交接条件](../archive/plans/314-m03-job-function-roadmap.md#5-验收环境关闭与接续) · [本树 T03 记录](314-job-function-t03-upgrade.md)
 
 ## 2 复算与实际检查
 
@@ -30,4 +30,4 @@ AC090 的交接依据在本树可核对到 308 合同、314 路线图及 T03 实
 | 现有目录前端用一套输入拼动作路径，再断言为各对象请求 | 编制用生成的动作类型。既有六类目录调用的整理交原页面批次核对各动作。[现有发送器](../../apps/web/src/features/staffing/api.ts) |
 | 既有组织详情和部分维护表单使用不同的期间表述 | 组织详情已有最后适用日，部分维护表单显示独占终点“之前”。该处由 M02 独立复核。315 直接验编制详情、确认的最后适用日一致。[组织详情](../../apps/web/src/features/organization/DatedPages.tsx) · [组织维护表单](../../apps/web/src/features/organization/TimelineEditor.tsx) |
 
-315 的计划状态与产品结果分别登记。实际数据库升级与 API、两个管理员首次写、响应丢失查回及浏览器两角色签收均待实施。[岗位独立签收条件](../plans/315-staffing-quota-administration.md#5-验证与交接)
+315 的计划状态与产品结果分别登记。实际数据库升级与 API、两个管理员首次写、响应丢失查回及浏览器两角色签收均待实施。[岗位独立签收条件](../archive/plans/315-staffing-quota-administration.md#5-验证与交接)

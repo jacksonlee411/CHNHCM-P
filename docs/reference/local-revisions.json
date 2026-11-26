@@ -195,7 +195,7 @@
     },
     {
       "id": "CHNHCM-010",
-      "decision": "docs/plans/010-m02-scope-and-plan.md",
+      "decision": "docs/archive/plans/010-m02-scope-and-plan.md",
       "base_commit": "f21c99ac42d1662bd7fc077399e27fd144d7a8d0",
       "scope": "同步010/011当前日期用语：首选中文当前日期、英文说明名Current Date，保留x01-business-today身份及旧名；服务端时区、查看/生效日期和跨午夜判断不变。",
       "verification": "docs/verification/010-current-date-terminology.md",
@@ -564,7 +564,7 @@
     },
     {
       "id": "CHNHCM-201",
-      "decision": "docs/specs/m02/201-geography-and-location-design.md",
+      "decision": "docs/specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md",
       "base_commit": "0842699c9ab93acb1ab14d55c05bfdde289eb2e9",
       "scope": "G0 geographic reference object ownership and phase boundary; no implemented API or database claim.",
       "verification": "docs/verification/200-g0-source-admission.md",
@@ -1137,7 +1137,7 @@
     },
     {
       "id": "CHNHCM-315",
-      "decision": "docs/plans/315-staffing-quota-administration.md",
+      "decision": "docs/archive/plans/315-staffing-quota-administration.md",
       "base_commit": "c8b63983edf859b1eb0259a644369b3184cfb9ec",
       "scope": "将 D 分支 CHNHCM-313 第 7、8 次修订的部门与岗位核编规则，接续到主线 CHNHCM-312 管理汇报修订。原两份修订和逐文件摘要保存在 c7e6d8d42ba63e8b09e4aa0ae8fd4a4a7b8c6675。",
       "verification": "docs/verification/315-department-quota-allocation.md",
@@ -1236,6 +1236,136 @@
           "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
           "before_sha256": "8aa5daa4bef9b958b4afcc2ea2269b090e729e566e631e92fe05c625803c2e16",
           "after_sha256": "98ac76fb3f3c93c2136197ae1ef47e907db2bdbf7244545267bcef71a64bb7df"
+        }
+      ]
+    },
+    {
+      "id": "CHNHCM-004",
+      "revision": 1,
+      "decision": "docs/architecture/004-repository-layout.md",
+      "base_commit": "7854c12021b0bdd2c1fc23eadb6c3d2dd3bf8d7e",
+      "scope": "明确 M03 额度核验、M05 招聘预留和 M04 任职占编的唯一写入方，统一目标架构、概念、流程及事务图。",
+      "verification": "docs/verification/004-architecture-review-remediation.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/02-target-architecture.md",
+          "before_sha256": "648f68dcfd4e3b4e16b27cd14be2ff6c322734a285fb02dcbafb3c793871c1be",
+          "after_sha256": "54755c09c4bdaee69531d1b7a6df62ae7643566ef5b536c8ace5f10dd7080223"
+        },
+        {
+          "path": "docs/architecture/target/03-consistency-contracts.md",
+          "before_sha256": "3bae144b2e78dd9e123622686f192175a6c2b2cdf0140bcc55ca47e54da66ea5",
+          "after_sha256": "699b3954e7102626f1c27a435c3271635620644c531f2007e7a1652292d0468e"
+        },
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "98ac76fb3f3c93c2136197ae1ef47e907db2bdbf7244545267bcef71a64bb7df",
+          "after_sha256": "67250b6525de3777cea285cd663d433b94fe349f0fabc86c4fd74a485efaf431"
+        },
+        {
+          "path": "docs/architecture/target/14-aggregate-catalog.md",
+          "before_sha256": "13225dc2719ca640997b6b6aa0538103283f134839417a5ddbe41a542b0215af",
+          "after_sha256": "c15c5623d42455c59244e4fba50c3b78098f6e5d7f0ef62f07fc4f73d49b340e"
+        },
+        {
+          "path": "docs/architecture/target/17-terminology-glossary.md",
+          "before_sha256": "40bc0ee53c69e3de40762e37871020d65ca6b81acfb8ea8012577801e906988e",
+          "after_sha256": "950c9eecd906a12afcd5a97237688059e7ceb34169eb23f1dcef1ebda619a043"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "ccf55964c01b134f25f50fedd73636cd887d024e8f2796c3a3792c178748e6bf",
+          "after_sha256": "e0bfacf2693070e3546fb4b634bed018812124de425a1d9bec943741f3e188e7"
+        },
+        {
+          "path": "docs/architecture/target/data/terminology-glossary.json",
+          "before_sha256": "4daab4f3576fe2121a679f2fdc6b6ac06f346e5ffc2b9bdfbcf021d1daad975e",
+          "after_sha256": "0a4854d7282f5d85851650fdc19b6692f9976519f61fca03158f60032b2b48b3"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.mmd",
+          "before_sha256": "0779715fd71f50de74ec770a613a01f136de5493fe6b923d3ecf60aa56804b58",
+          "after_sha256": "ed2fc374bb7b5d2e1510be16707a8799499a71e9a1396277e7f0800bec922706"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/c01-core-hcm-concepts.svg",
+          "before_sha256": "971cc6cdca8ab30774cfe61a22252282660b9b27cdaa3d832e5ec33b89823315",
+          "after_sha256": "af9f4c80c8ebb1ad7e1e74a576f64928cd5303e1f7527563aa4ba693ce9c6a21"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f01-hire-first-pay.mmd",
+          "before_sha256": "3e2511c156d6cebd4f0a96c56c6c1ce947d7a93728a5c42af657b25a8f0fabaf",
+          "after_sha256": "8dad1606213515d9d696f61c7b63fc561a74897c60f888eebed3ed0a3917fb3f"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f01-hire-first-pay.svg",
+          "before_sha256": "9c951cb9876ea4872d9789e3b2e21a84a937e1a46f18fafbf2b3577d8be34eb2",
+          "after_sha256": "d173e8fcbfc6e0ebb741164fd99a8e762e970fef1df358ded4a85be4e0f6eb40"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f02-transfer.mmd",
+          "before_sha256": "2d93d7bccdb5987b63ff53d4b22276ea9f127887d400363845c03807a7e673a3",
+          "after_sha256": "d4a2595fee1b90fff9b0cba6b3eac450e079dc5a627d49e3038f401f73cb4f1b"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f02-transfer.svg",
+          "before_sha256": "3a944d3e0c6802dff85e485a8beec2b973cdd1c6267af98e4d121acbd5cb5555",
+          "after_sha256": "748bcdb982dad4416b983bb846930363598090822b5be53cc936de344eb7937a"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f07-exit-rehire.mmd",
+          "before_sha256": "1298ced8bb262711f0c05ed65450558fa0ba8621346c7a2c8a45374839c82cf6",
+          "after_sha256": "9d94a78b648f14df4f009bdb1699926736e14b6db46f890ecd0c9228332bd78c"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/f07-exit-rehire.svg",
+          "before_sha256": "eedc4d146511f04d245039db0a792f0e36c9bd58d08dab49cc75cb55af9642c8",
+          "after_sha256": "e7bb88c5062e735746438a80bf2eb0396572265516a26eba36e391288bc8c03a"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/g06-aggregate-transactions.mmd",
+          "before_sha256": "ddd19e7c7d227bd188ee405c5e4408bb33949c523443f2e1c4d072f96f765cbd",
+          "after_sha256": "810050a52496242021049dd18e6bcc716bdcb115574232bc42e43b51c4868c83"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/g06-aggregate-transactions.svg",
+          "before_sha256": "3d7307c68625613eab5bbbd7c4c8c2673442e72028daceb69e0172188cea086a",
+          "after_sha256": "45ff2e783da7c8d33c195da45860164d99246730a600a9ef8ff7fbc579907253"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m03.mmd",
+          "before_sha256": "41835b495f55a00addde62d599d8207ef472d7ec72d02f8c62bcef06e53be219",
+          "after_sha256": "47c69c1f3417ac00bdc6e50b6b53bf4b68201ab0f575ed61adff747fdedf5579"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m03.svg",
+          "before_sha256": "e4b0745a150116770ee84a52c42c8d94de006fb6c695afd4faef8846895f7cca",
+          "after_sha256": "13a6224e6a1b1902ba57f4bbfaab22c6a9a55aefa73d46b45bb1571f9b129952"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m05.mmd",
+          "before_sha256": "90aefafc217adc73432b0d8db91c49107b76b40ecb96ef8f474092ec112ee605",
+          "after_sha256": "03609453b6c9e995ea52d4dca6f3a1c3d9cfb9e13193ced0cbbc465681071670"
+        },
+        {
+          "path": "docs/architecture/target/diagrams/m05.svg",
+          "before_sha256": "fbcdc6d1262b1401b313e021e758ab7874636476dfbf2d1066710ebbdfd219dd",
+          "after_sha256": "af517d439f4ab2c7fc51cdd543796ad44e63d0d457f56f1ce8464b2c714cc6a3"
+        },
+        {
+          "path": "docs/architecture/target/modules/m03.md",
+          "before_sha256": "a9753ee8450be3473fddca797a93c8da29ae093e621aafadda980b4c3e3dedd9",
+          "after_sha256": "552eda70bacbe3d6da95cffcb1b628bd186c57bd355eb931708c2104acae6159"
+        },
+        {
+          "path": "docs/architecture/target/modules/m04.md",
+          "before_sha256": "176c2dcbcad043686ad65cd49ebc287c12b5821fdf82d32f3acee907c5c71aca",
+          "after_sha256": "d1ec69fda494c9e72a448a36c378e58d976ee27361088c3412933c925f2059e4"
+        },
+        {
+          "path": "docs/architecture/target/modules/m05.md",
+          "before_sha256": "721895bbab8d02cd1dc14771337884c24fb023736aad3f283ffa083405379e25",
+          "after_sha256": "04a6ee184af28f31153333051f387d0814d4fa0e1254e194006c70e11521843f"
         }
       ]
     }

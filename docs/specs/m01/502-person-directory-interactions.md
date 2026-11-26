@@ -2,7 +2,7 @@
 
 「人员」默认打开统一人员名录。登记人从名录发起登记，资料维护人从本人详情更正资料，只读者沿相同路径查阅获权内容。501、503 的容量约定适用于统一名录。Go 在分页前按人去重计人数，区分人员行和任职行。T04 在「人员」下增加同级的「人事事务」，跨员工查询办理记录。仅获此项列表权限的用户从「人员」直接进入「办理记录」。页面按 Go 返回的可办操作、可见字段及办理结果展示。[字段范围](501-person-registration-requirements.md#m01-fields) · [人员公开接口](503-person-registration-design.md#m01-ports) · [办理记录入口](../m04/507-job-information-tab.md#personnel-action-register) · [登记表](../../governance/registry.json)
 
-普通名录与详情只在真实生效记录上切换。本人办理历史列出获权原件。跨员工办理期间与部门编制指定日依各自专项合同。[123 日期边界](../../adr/123-current-maintenance-and-dated-query-boundary.md) · [510 查询及验收判据](../../plans/510-personnel-page-remediation.md)
+普通名录与详情只在真实生效记录上切换。本人办理历史列出获权原件。跨员工办理期间与部门编制指定日依各自专项合同。[123 日期边界](../../adr/123-current-maintenance-and-dated-query-boundary.md) · [共享查询规则](../m02/012-m02-functional-and-interaction-design.md#m02-ui-query-state) · [原 510 实测](../../verification/510-personnel-page-remediation-implementation.md)
 
 ## 1 页面与标准对照
 
@@ -47,6 +47,8 @@
 
 「人员」的任职行默认打开所选任职的「职务信息」。0 号主岗详情按「个人资料、职务信息、变更日志」排列获权面板，正号兼岗详情仅有「职务信息」。M01 的资料及日志按各自授权，M04 按实际任职或办理授权。从同一名录按人查找、登记及补件。未入职或仅有资料权时打开「个人资料」，可办首次入职时进入本人表单。本人详情直接提供获权的职务信息与办理历史。只有个人资料可见时直接展示正文。多个页签中仅一个选中，各与其命名面板双向关联。方向键移动焦点，Enter／空格激活，切换后焦点仍在页签。个人资料与任职分别保存，切换时先保护当前实际改动。[职务信息页签布局](../m04/507-job-information-tab.md#job-tab-layout) · [个人资料整页保存](505-personal-profile-contract.md#profile-maintenance)
 
+主动切签由人员与任职详情共用的路由组件聚焦选中页签。从日志原件后退时，由日志恢复原触发链接或日志标题。按当前授权恢复焦点和可读内容。[共享页签约定](../m02/012-m02-functional-and-interaction-design.md#m02-ui-tabs) · [人员路由页签](../../../apps/web/src/features/personnel/PersonTabs.tsx) · [人员详情](../../../apps/web/src/features/personnel/Detail.tsx) · [任职详情](../../../apps/web/src/features/hire/AssignmentPage.tsx)
+
 人员日志读取局部加载或重试。有权的日志地址刷新、后退仍选中日志。失去其历史权时从旧日志回到获权个人资料并聚焦标题，职务面板按其自身授权处理。显式原件按该来源独立授权，不可读时提供不可用反馈和退出入口。
 
 - 桌面按记录时间、操作者、办理动作、变更字段、原值、新值、查看排列。每笔登记、更正或改号各占一组，共用一次时间、办理人和入口；多条联系方式按实际项显示。一笔含多项修改时直接展示所有获权主要差异。姓名、人员编号使用当次获权前后值；联系方式默认按既有遮罩显示，获完整历史字段读权者可按需查看该笔敏感差异。主要证件仅显示已登记、已更换或已撤回等结果，完整证号仅按既有原件规则查看。单据正文仅在获权原件查看。记录时刻按北京时区显示并保留原值。窄屏按同一办理组纵排且保留字段标签。
@@ -55,6 +57,8 @@
 - 经办人和只读者按第 4 节矩阵从菜单实操。准备超过 20 笔的同一人记录，至少一次同时修改两项，验跨页、取消与应用、并发新增后的原页、打开原件与返回。仅有个人资料读权时核对单面板，字段或历史权收窄时核对日志、计数、子行、焦点和迟到响应。另验 M04 任职权与 M01 历史权分别授予。共用改动在同构建核验 BU 与职务消费者。
 
 ## 4 产品候选的页面验收
+
+从「人员」按唯一人员编号查有 0 号主岗和 1、2 号兼岗的同一人，应用兼岗筛选后应有两份任职、一人。用键盘打开 2 号并返回，原编号、兼岗条件和 2 号行焦点均应恢复。换成能读该人资料、无任职披露权的读者，按同号查全部类型，仅得一条人员行、零份任职。[可见范围](501-person-registration-requirements.md#m01-br-005) · [任职验收](../m04/507-job-information-tab.md#m04-ac-016) · [名录实现](../../../apps/web/src/features/hire/EmployeeDirectory.tsx)
 
 T01 登记和名录按 501 的专项目标从正常菜单验证。按[012 桌面视口与缩放](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)选取场景，经办人检查登记、更正及放弃，查询者用键盘查回资料并返回原行。记录所测角色、实际倍率、内容尺寸和办理结果。[501 正常菜单与返回](501-person-registration-requirements.md#m01-ac-008) · [已交付职务页面记录](../../verification/308-job-page-standard-implementation.md)
 

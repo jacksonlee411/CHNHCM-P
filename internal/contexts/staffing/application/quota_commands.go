@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -241,7 +242,7 @@ func quotaRedact(ctx context.Context, u QuotaTx, out *s.Result) error {
 			out.DepartmentID = target.ID
 		}
 		// Old immutable receipts also resolve the exact pre-deletion source.
-		if out.Action == "delete" && history.Allowed && has(history.ReadFields, "quota", "sourceVersion") {
+		if strings.EqualFold(out.Action, "delete") && history.Allowed && has(history.ReadFields, "quota", "sourceVersion") {
 			previous, e := u.PreviousQuotaSource(ctx, out.ObjectID, out.SourceVersion)
 			if e != nil {
 				return e
@@ -271,9 +272,6 @@ func (svc Service) ChangeStaffingQuota(ctx context.Context, creds foundation.Cre
 			out = old.Result
 			out.Replayed = true
 			return quotaRedact(ctx, u, &out)
-		}
-		if c.Action == "replay" {
-			return foundation.Fail(409, "M03_QUOTA_ACTION_RETIRED", "此提交尚未办理，请从岗位编制重新开始")
 		}
 		out = s.Result{Kind: s.Quota, Action: c.Action, SubmissionID: c.SubmissionID}
 		e = u.Business(ctx, func() error {

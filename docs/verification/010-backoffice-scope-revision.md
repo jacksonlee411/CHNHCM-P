@@ -1,6 +1,6 @@
 # CHNHCM-010 后台操作范围修订验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../plans/010-m02-scope-and-plan.md) 的范围、入口与操作路径修订，以及 [008](../plans/008-next-steps.md) 和文档导航同步；依据 [014](../governance/014-document-management.md) 保留历史证据。本报告不采纳范围、不验收业务实现。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../archive/plans/010-m02-scope-and-plan.md) 的范围、入口与操作路径修订，以及 [008](../archive/plans/008-next-steps.md) 和文档导航同步；依据 [014](../governance/014-document-management.md) 保留历史证据。本报告不采纳范围、不验收业务实现。
 
 ## 1 验证对象与受测基线
 

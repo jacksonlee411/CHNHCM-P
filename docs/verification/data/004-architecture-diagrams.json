@@ -1,0 +1,65 @@
+{
+  "renderer": "@mermaid-js/mermaid-cli",
+  "version": "12.0.0",
+  "browser": "Chrome/140.0.7339.186",
+  "generatedAt": "2026-11-26T16:47:05.743Z",
+  "partial": true,
+  "diagrams": [
+    {
+      "file": "c01-core-hcm-concepts.mmd",
+      "title": null,
+      "sourceSha256": "ed2fc374bb7b5d2e1510be16707a8799499a71e9a1396277e7f0800bec922706",
+      "svgSha256": "af9f4c80c8ebb1ad7e1e74a576f64928cd5303e1f7527563aa4ba693ce9c6a21",
+      "bytes": 95285,
+      "status": "rendered"
+    },
+    {
+      "file": "f01-hire-first-pay.mmd",
+      "title": null,
+      "sourceSha256": "8dad1606213515d9d696f61c7b63fc561a74897c60f888eebed3ed0a3917fb3f",
+      "svgSha256": "d173e8fcbfc6e0ebb741164fd99a8e762e970fef1df358ded4a85be4e0f6eb40",
+      "bytes": 42253,
+      "status": "rendered"
+    },
+    {
+      "file": "f02-transfer.mmd",
+      "title": null,
+      "sourceSha256": "d4a2595fee1b90fff9b0cba6b3eac450e079dc5a627d49e3038f401f73cb4f1b",
+      "svgSha256": "748bcdb982dad4416b983bb846930363598090822b5be53cc936de344eb7937a",
+      "bytes": 51899,
+      "status": "rendered"
+    },
+    {
+      "file": "f07-exit-rehire.mmd",
+      "title": null,
+      "sourceSha256": "9d94a78b648f14df4f009bdb1699926736e14b6db46f890ecd0c9228332bd78c",
+      "svgSha256": "e7bb88c5062e735746438a80bf2eb0396572265516a26eba36e391288bc8c03a",
+      "bytes": 42362,
+      "status": "rendered"
+    },
+    {
+      "file": "g06-aggregate-transactions.mmd",
+      "title": null,
+      "sourceSha256": "810050a52496242021049dd18e6bcc716bdcb115574232bc42e43b51c4868c83",
+      "svgSha256": "45ff2e783da7c8d33c195da45860164d99246730a600a9ef8ff7fbc579907253",
+      "bytes": 81420,
+      "status": "rendered"
+    },
+    {
+      "file": "m03.mmd",
+      "title": null,
+      "sourceSha256": "47c69c1f3417ac00bdc6e50b6b53bf4b68201ab0f575ed61adff747fdedf5579",
+      "svgSha256": "13a6224e6a1b1902ba57f4bbfaab22c6a9a55aefa73d46b45bb1571f9b129952",
+      "bytes": 45093,
+      "status": "rendered"
+    },
+    {
+      "file": "m05.mmd",
+      "title": null,
+      "sourceSha256": "03609453b6c9e995ea52d4dca6f3a1c3d9cfb9e13193ced0cbbc465681071670",
+      "svgSha256": "af517d439f4ab2c7fc51cdd543796ad44e63d0d457f56f1ce8464b2c714cc6a3",
+      "bytes": 41460,
+      "status": "rendered"
+    }
+  ]
+}

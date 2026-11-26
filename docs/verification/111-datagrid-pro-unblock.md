@@ -1,6 +1,6 @@
 # CHNHCM-111 移除缺密钥列表阻断
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[111 T02](../plans/111-bu-list-experience-upgrade.md)后续修正及[112源码/许可决定](../adr/112-datagrid-pro-source-integration.md)。用户要求移除“未配置许可密钥时列表不可用”的应用自建设置；官方许可行为保持。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[111 T02](../archive/plans/111-bu-list-experience-upgrade.md)后续修正及[112源码/许可决定](../archive/adr/112-datagrid-pro-source-integration.md)。用户要求移除“未配置许可密钥时列表不可用”的应用自建设置；官方许可行为保持。
 
 ## 1 对象与基线
 

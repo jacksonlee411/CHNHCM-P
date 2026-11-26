@@ -494,10 +494,13 @@ func (u *countryUnit) PublishCatalog(ctx context.Context, p app.CatalogPublicati
 }
 
 // AdoptCountry locks and validates the chosen catalog record in the caller's transaction.
-func (s *Store) AdoptCountry(ctx context.Context, tx pgx.Tx, g access.Guard, id, source, date string) (org.AdoptedCountry, error) {
+func (s *Store) AdoptCountry(ctx context.Context, c foundation.Credentials, id, source, date string) (org.AdoptedCountry, error) {
 	s.historyCatalog.Enter()
 	defer s.historyCatalog.Leave()
-	u := &geoareaUnit{unit: &unit{tx: tx, instance: s.Instance, guard: g, catalog: &s.historyCatalog, clock: s.Clock}}
+	u, err := s.profileCatalogUnit(ctx, c)
+	if err != nil {
+		return org.AdoptedCountry{}, err
+	}
 	rows, err := app.ResolveCountries(ctx, u, []app.ReferenceRequest{{CountryID: id, Date: date}})
 	if err != nil {
 		return org.AdoptedCountry{}, err

@@ -2,7 +2,7 @@
 
 ## 1 范围与结论
 
-2026-11-16用户明确“同时实施CI工作流，本地验证后保留待发布”。本批实现[136计划](../plans/136-actions-cost-reduction.md)的T01—T04本地部分，并同步[137规范](../governance/137-actions-and-validation.md)。工作流、反例、真实测试清单和文档验证通过；待授权发布及T06远程验证。未提交、推送、创建PR、触发Actions、修改保护或更新固定运行环境。
+2026-11-16用户明确“同时实施CI工作流，本地验证后保留待发布”。本批实现[136计划](../archive/plans/136-actions-cost-reduction.md)的T01—T04本地部分，并同步[137规范](../governance/137-actions-and-validation.md)。工作流、反例、真实测试清单和文档验证通过；待授权发布及T06远程验证。未提交、推送、创建PR、触发Actions、修改保护或更新固定运行环境。
 
 当前固定工作树wt-dev-b，HEAD为84046c17dfb123751385e7aaba821ffc28d130be；方案批次已有文档改动保留。只读fetch取得远端main 371290140d9d585b9b8d37cc89c99cd427ae91ef，PR #18已合入，无开放PR。没有将main业务代码合入当前分支；另用任务临时目录导出该SHA、安装锁定依赖并应用本批CI补丁，验证其消费者和依赖项目。此隔离验证不表示b已同步main。
 

@@ -1,6 +1,6 @@
 # CHNHCM-020 T05评审修复与复测
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：T05评审发现的共用终态反馈缺陷及当前实施说明。依据[010](../plans/010-m02-scope-and-plan.md)、[013事务恢复边界](../specs/m02/013-m02-technical-design.md)、[023案例](../specs/m02/023-m02-timeline-test-cases.md)。原[实施报告](020-delete-implementation.md)保留原结果。
+登记信息：[registry.json](../governance/registry.json)。适用范围：T05评审发现的共用终态反馈缺陷及当前实施说明。依据[010](../archive/plans/010-m02-scope-and-plan.md)、[013事务恢复边界](../specs/m02/013-m02-technical-design.md)、[023案例](../specs/m02/023-m02-timeline-test-cases.md)。原[实施报告](020-delete-implementation.md)保留原结果。
 
 ## 1 验证对象与受测基线
 

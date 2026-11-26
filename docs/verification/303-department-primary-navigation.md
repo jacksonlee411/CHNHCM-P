@@ -1,6 +1,6 @@
 # CHNHCM-303 部门一级菜单实施记录
 
-登记信息：[registry.json](../governance/registry.json)。上游：[303计划](../plans/303-department-primary-navigation.md)。
+登记信息：[registry.json](../governance/registry.json)。上游：[303计划](../archive/plans/303-department-primary-navigation.md)。
 
 ## 1 对象与基线
 

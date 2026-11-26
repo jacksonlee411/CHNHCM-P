@@ -1,10 +1,27 @@
 # 验证记录
 
+[004 架构、技术栈与数据归属整改复验](004-architecture-review-remediation.md)
+
+[025 业务实现唯一性、岗位核编旧接口退出与历史查回复验](025-position-quota-interface-retirement.md)
+
+[136 托管分钟试点接续与 206 法律实体验收归档](136-206-plan-archive.md)
+
+[500 人员路线图关闭依据、8 项验收场景的原文与现行定义](500-personnel-roadmap-closeout.md)
+
+[文档物理归档、路径迁移与六份规则交接](511-physical-archive.md)
+
+[按关联编号查全部评审、验收及历史记录](../governance/catalog/README.md#catalog-evidence) · [511 规范实施与逐份归档评估](511-project-standards-implementation.md)
+
+
+511 的修订验收包括 135 在审文稿的单项决定交接、原状态保留和错误提升被拒绝的对照。[方案采纳](511-project-standards-acceptance.md) · [复评](511-project-standards-rereview.md) · [初评](511-project-standards-review.md)
+
+510 人员页面整改的旧编号、首败、实测和复验按项记录，方案评审另有原稿与结论。[二十项实施复验](510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) · [510 方案评审](510-personnel-page-remediation-review.md)
+
 500 人员页面的实页评审登记了 11 项待修复问题，可逐项查阅复现路径、规范、截图及关闭条件。[500 人员页面布局与交互问题登记](500-personnel-page-review.md)
 
 500-UI-12 至 20 接续记录普通人员入口、职务信息页签、日期轴、通用查看日期和相邻流程的 9 项问题。四轮走查覆盖单任职、多任职、首聘、只读、返回与专项统计，并对照实施合同和旧浏览器断言。[500 人员入口与日期交互补充评审](500-personnel-entry-and-date-review.md)
 
-职务信息的设计复核覆盖首单升级与实施分批、主兼岗分行、两处查回原笔、106 的同日办理，以及普通更正、撤销和已履职补录的最少输入。当前产品证据覆盖按职务首单、原件、查回及未来撤销。[实施步骤与依赖复核](500-job-information-delivery-review.md) · [直接办理负担修订](506-job-information-direct-entry-review.md) · [106 同日办理复核](506-same-day-actions-design-review.md) · [办理列表复核](507-personnel-action-register-design-review.md) · [主兼岗复核](506-job-information-design-review.md) · [已有首单实测](400-first-hire-integration.md#decision-first-hire)
+职务信息的设计复核覆盖首单升级与实施分批、主兼岗分行、两处查回原笔、106 的同日办理，以及普通更正、撤销和已履职补录的最少输入。首单实测记录了按职务入职、原件、查回及未来撤销。后续任职变动、工作关系合同和录用交接可按阶段查验。[首单实测](400-first-hire-integration.md#decision-first-hire) · [分阶段交付结果](500-job-information-delivery-review.md#stage-delivery-results) · [直接办理负担修订](506-job-information-direct-entry-review.md) · [同日办理复核](506-same-day-actions-design-review.md) · [办理列表复核](507-personnel-action-register-design-review.md) · [主兼岗复核](506-job-information-design-review.md)
 
 M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合同已记录实际验证范围。[T02 实施及交接](400-hire-simplification.md#t02-results) · [实施复评与修复](400-hire-simplification.md#t02-implementation-review) · [办理负担复核](400-hire-simplification.md) · [原四轮评审](400-hire-readiness-review.md)
 
@@ -12,7 +29,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [主要证件号码防重实施与人事试办](500-personnel-registration-trial.md)记录旧档案升级核对和从员工名录实际办理的结果。4380 已更新至新版。[原档案页面复查](500-personnel-registration-trial.md#personnel-4380-update)
 
-人员登记现行方案只按主要证件号码判断人员重复。三种常见办理及取消同名查询后的复核见[本次方案评审](500-registration-without-name-prompts.md)。登记规则、旧档核对、页面调整和人事试办的顺序见[实施路线图](../plans/500-personnel-roadmap.md#registration-revision-steps)。
+人员登记按现用主要证件号码防重。三种常见办理和取消同名查询的原因见当时的方案评审，旧档核对、页面调整和人事试办的次序保存在归档路线图。[现行登记规则](../specs/m01/501-person-registration-requirements.md#m01-scn-001) · [方案评审](500-registration-without-name-prompts.md) · [归档路线图](../archive/plans/500-personnel-roadmap.md#registration-revision-steps)
 
 [上次主要证件方案评审](500-primary-document-registration-review.md)保留该版关于证号、同一张单再次办理和旧档升级的复核记录。当时的同名提示约定已取消。
 
@@ -20,7 +37,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [500 T00 人员首批规格评审](500-t00-personnel-specifications.md)记录原四稿关于未任职者、同名者和受限读者的走查、修订和万人样本复算。新版产品按[现行十项条件](../specs/m01/501-person-registration-requirements.md#4-t01-独立验收条件)验收。
 
-人员路线图第五稿通过评审。记录包含逐稿修订、页面继承、人员与任职的授权交集，以及未来入职撤销后旧请求重送的名额算例。[500 评审记录](500-personnel-roadmap-review.md) · [人员模块实施路线图](../plans/500-personnel-roadmap.md)
+人员路线图第五稿通过评审。记录包含逐稿修订、页面继承、人员与任职的授权交集，以及未来入职撤销后旧请求重送的名额算例。[500 评审记录](500-personnel-roadmap-review.md) · [人员模块实施路线图](../archive/plans/500-personnel-roadmap.md)
 
 
 [公共 00057 升至登记号 00058](027-public-00058-grant-upgrade.md)记录按主体对账、旧回执和撤尽重启，以及录用授权在提交前到期的回归。
@@ -44,9 +61,9 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [314 T02 职类目录](314-job-function-t02-directory.md)记录管理员和查询者菜单、六列导出、企业起日双连接竞争，以及从 00023 原备份升级的实测结果。
 
-[314 T01 职类升级基线](314-job-function-t01-baseline.md)交接原职务与岗位采用、丢响应回执、固定选择、八列文件、迁移编号与恢复步骤。[实施路线图](../plans/314-m03-job-function-roadmap.md)
+[314 T01 职类升级基线](314-job-function-t01-baseline.md)交接原职务与岗位采用、丢响应回执、固定选择、八列文件、迁移编号与恢复步骤。[实施路线图](../archive/plans/314-m03-job-function-roadmap.md)
 
-[314 职类实施路线图评审](314-job-function-roadmap-review.md)记录三稿修订、旧提交重送、双维筛选、跨升级导出和分批签收的复核结果。[实施路线图](../plans/314-m03-job-function-roadmap.md)
+[314 职类实施路线图评审](314-job-function-roadmap-review.md)记录三稿修订、旧提交重送、双维筛选、跨升级导出和分批签收的复核结果。[实施路线图](../archive/plans/314-m03-job-function-roadmap.md)
 
 315 的计划架构复核覆盖岗位独立交付、写入口、四种读取结果、AC090 及按日更正的分层验收。原方案复核保留部门和岗位额度的按日算例。[计划架构复核](315-staffing-quota-plan-architecture-review.md) · [原编制后台方案复核](315-staffing-quota-administration-review.md)
 
@@ -80,7 +97,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 - [306部门路径与集团案例](306-department-path-simplification.md)：23个DB/API根、30个浏览器分轮通过，两个固定案例双角色页面、原日期更正、219635份原来源与构建核验，首失败及资源收尾。
 
-[136 Actions发布与4390交接](136-actions-publication.md)：PR #19最终全量22项成功并合并，main实际复用、三项门禁成功；4390已更新6ce8a3e9，双角色16条旅程和原数据复核通过。首失败与598估算runner分钟保留，长期节省观察继续。
+136 首批发布中，PR #19 最终全量 22 项成功并合并，main 实际复用且三项门禁通过。4390 在该批更新至 6ce8a3e9，双角色 16 条旅程和原数据复核通过。598 个估算 runner 分钟和首败保存在原报告。首轮 10 次交付窗口已收口，80% 试点另按 137 接续。[首批发布](136-actions-publication.md) · [原窗口结果](136-actions-observation.md#6-窗口收口) · [试点责任与口径](../governance/137-actions-and-validation.md#hosted-minutes-observation)
 
 [136发布前本地收口](136-actions-prepublication.md)：原CI/规范已提交，本地同步main并保留双方功能；检查与限定业务复验单列，远程仍待发布。
 
@@ -93,8 +110,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 地点所在地区交互整改见[本次实施记录](204-location-region-picker.md)：连续选择、结果回填、上级路径、组合搜索及滚动追加，验证结果单独登记。
 
 
-本批法律实体基础维护及实际验证见[206法律实体第一阶段实施](206-legal-entity-implementation.md)；用途/组织绑定和M04消费者后续接续。
-法律实体：[206计划评审](206-legal-entity-plan-review.md)，产品结果另行登记。
+法律实体的 L1 基础维护、直接入职所需 L2 用途绑定及 L3 真实采用分别有实施记录。15 项现行验收条件和其他用途的接续责任由 207 持有。[原计划评审](206-legal-entity-plan-review.md) · [L1 实施](206-legal-entity-implementation.md) · [L2 维护](400-hire-simplification.md#t02-results) · [L3 入职保护](400-first-hire-integration.md#first-job-only-hire) · [归档交接](136-206-plan-archive.md#legal-entity-closeout)
 
 2026-11-15 G4/G5集成接续：[性能及集成记录](205-g5-publication.md)登记20会话14组中的6组达标、8组超标，D08/D09及125其他容量P1保持；用户授权提交、同步main、push/PR及最终三项CI成功后合并。已同步e359f741并补齐地点302导航，3个DB/API根及26条浏览器同轮通过；PR #16最终三项CI已通过并合入d810757b；随后按用户要求更新4383，原38表与全部历史保持，147项API及双角色8组导航通过，见[运行更新](205-g5-publication.md#7-合并构建的4383运行更新)。
 
@@ -106,7 +122,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 2026-11-15 G4地点实施及限定验收完成：方案已提交da164345，迁移00013、四地地址、完整共用维护、独立表组/API、固定选择及CSV已交付；主代理复评通过，251个DB/API根及354个浏览器用例分轮通过，8组1600次HTTP零错误、400份回执与全部原历史重启核验通过，详见[实施记录](204-g4-implementation.md)。G4限定验收已完成，自有临时环境已回收；20会话四组P95仍超500ms，按非阻断口径由200-D08接续。该批G5及运行更新尚未执行，当前结果见上条；原失败和125其他容量P1保持。
 
-2026-11-15按用户要求核对最新main并制定[G4地点实施方案](../plans/204-g4-location-implementation.md)：完整共用维护、四地地址、逐动作采用、企业授权、固定选择与CSV及可靠提交；三轮主代理文档评审通过，3项P1、3项P2文档层关闭；状态同步见[记录](../verification/204-g4-plan-review.md)。G0/G1完成、G2功能交付、G3限定验收及后续4383运行已交付；原G2三条缩放已有G3后续通过证据并关联，国家容量待补。该次方案编制时G4/G5尚未实施；当前结果见上述实施记录，125其他容量P1保持。
+2026-11-15按用户要求核对最新main并制定[G4地点实施方案](../archive/plans/204-g4-location-implementation.md)：完整共用维护、四地地址、逐动作采用、企业授权、固定选择与CSV及可靠提交；三轮主代理文档评审通过，3项P1、3项P2文档层关闭；状态同步见[记录](../verification/204-g4-plan-review.md)。G0/G1完成、G2功能交付、G3限定验收及后续4383运行已交付；原G2三条缩放已有G3后续通过证据并关联，国家容量待补。该次方案编制时G4/G5尚未实施；当前结果见上述实施记录，125其他容量P1保持。
 
 [203 万科组织固定初始化](203-vanke-fixed-runtime.md)：新环境接管4383、原库停机保留；1个BU、87343个部门及全部历史核对、重启和双角色页面验收通过。
 
@@ -132,7 +148,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 - [200 国家地区与地点方案精简及复用评审](200-geography-design-review.md)：首轮1项P1、6项P2及文档修订；能力表、源码复用、必要检查与阶段依赖，产品未实施。
 
-- [200 地理与地点方案编制核对](200-geography-plan.md)：CubeBox20份原件、Odoo只读实机、四地来源差异、200/201方案和202默认日期合同；仅文档与来源核对，产品未实施。
+- [200 地理与地点方案编制核对](200-geography-plan.md)：该次核对覆盖 CubeBox 的 20 份原件、Odoo 只读实机、四地来源差异、200 实施路线图、201 目录与企业地点维护技术合同及 202 默认日期决定。当时产品尚未实施。
 
 - [301用户提示与异常恢复方案评审](301-user-feedback-plan-review.md)：四轮主代理评审，3项P1、4项P2完成文档修订；38组问题及2项相邻表达对应8项方案、17项验收。原方案评审通过；后续产品已完成五轮实施复核、17项限定验收与315项浏览器分批覆盖，实际45300及资源交接见[实施记录](301-user-feedback-implementation.md)；原文档评审与产品验证分别记录。
 

@@ -1,6 +1,6 @@
 # CHNHCM-122 BU操作摘要与日志表格化合同评审
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[122草案](../plans/122-bu-operation-summary-and-change-log.md)、011—013及023本次对应增量，按[验证报告模板](../templates/verification.md)编写。本记录仅评审文档，不重审全M02，不证明产品已实现。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[122草案](../archive/plans/122-bu-operation-summary-and-change-log.md)、011—013及023本次对应增量，按[验证报告模板](../templates/verification.md)编写。本记录仅评审文档，不重审全M02，不证明产品已实现。
 
 ## 1 验证对象与受测基线
 

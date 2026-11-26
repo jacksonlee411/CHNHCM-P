@@ -1,0 +1,281 @@
+{
+  "base_commit": "ea8e1e7f40091886796b82c5080bd3823ed010c0",
+  "product_tree": "与基线的 apps、packages、api、cmd、internal 和 db 逐路径比对无差异。",
+  "runs": [
+    {
+      "scope": "产品页面、两角色、桌面及人员原生缩放",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/local-bu.py",
+        "smoke",
+        "--fixed-web",
+        "--",
+        "first-hire.spec.ts",
+        "personnel.spec.ts",
+        "staffing308.spec.ts",
+        "--workers=1",
+        "--reporter=line,json",
+        "--grep",
+        "按人员编号筛选兼岗并返回原行|T01 变更日志跨页|T01 (admin|reader) (1440×(900|540)|原生缩放)|M04 从人员选择本人任职并切换主岗页签|^.*308 (job|jobfamily) (admin|reader) V0[12] AC017"
+      ],
+      "start_utc": "2026-11-26T13:01:53.497Z",
+      "duration_ms": 323701,
+      "results": [
+        {
+          "project": "enterprise-maintenance",
+          "title": "140 企业首条后移预览跨闰日，取消后保留来源",
+          "status": "passed",
+          "duration_ms": 8139
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 正常菜单完整维护：首条、插入、更正、删除、固定期间、启停及历史",
+          "status": "passed",
+          "duration_ms": 19171
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 草稿取消、冲突重读和丢失响应查回",
+          "status": "passed",
+          "duration_ms": 8614
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 查询者在桌面查看唯一企业、记录与历史只读",
+          "status": "passed",
+          "duration_ms": 6155
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 企业更名保持部门当前及历史路径独立",
+          "status": "passed",
+          "duration_ms": 7790
+        },
+        {
+          "project": "chromium",
+          "title": "按人员编号筛选兼岗并返回原行，资料读者只见本人",
+          "status": "passed",
+          "duration_ms": 6230
+        },
+        {
+          "project": "chromium",
+          "title": "M04 从人员选择本人任职并切换主岗页签 1440x900",
+          "status": "passed",
+          "duration_ms": 10705
+        },
+        {
+          "project": "chromium",
+          "title": "M04 从人员选择本人任职并切换主岗页签 1440x540",
+          "status": "passed",
+          "duration_ms": 10504
+        },
+        {
+          "project": "chromium",
+          "title": "M04 从人员选择本人任职并切换主岗页签 原生200%",
+          "status": "passed",
+          "duration_ms": 13445
+        },
+        {
+          "project": "chromium",
+          "title": "T01 admin 1440×900",
+          "status": "passed",
+          "duration_ms": 11372
+        },
+        {
+          "project": "chromium",
+          "title": "T01 admin 1440×540",
+          "status": "passed",
+          "duration_ms": 9851
+        },
+        {
+          "project": "chromium",
+          "title": "T01 reader 1440×900",
+          "status": "passed",
+          "duration_ms": 6076
+        },
+        {
+          "project": "chromium",
+          "title": "T01 reader 1440×540",
+          "status": "passed",
+          "duration_ms": 5760
+        },
+        {
+          "project": "chromium",
+          "title": "T01 admin 原生缩放",
+          "status": "passed",
+          "duration_ms": 15122
+        },
+        {
+          "project": "chromium",
+          "title": "T01 reader 原生缩放",
+          "status": "passed",
+          "duration_ms": 11651
+        },
+        {
+          "project": "chromium",
+          "title": "T01 变更日志跨页、筛选、查看敏感差异与撤权",
+          "status": "passed",
+          "duration_ms": 20286
+        },
+        {
+          "project": "chromium",
+          "title": "308 jobfamily admin V01 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 20434
+        },
+        {
+          "project": "chromium",
+          "title": "308 jobfamily admin V02 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 18443
+        },
+        {
+          "project": "chromium",
+          "title": "308 jobfamily reader V01 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 17405
+        },
+        {
+          "project": "chromium",
+          "title": "308 jobfamily reader V02 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 16961
+        },
+        {
+          "project": "chromium",
+          "title": "308 job admin V01 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 19367
+        },
+        {
+          "project": "chromium",
+          "title": "308 job admin V02 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 20039
+        },
+        {
+          "project": "chromium",
+          "title": "308 job reader V01 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 18061
+        },
+        {
+          "project": "chromium",
+          "title": "308 job reader V02 AC017/020/021/022/023/028/030",
+          "status": "passed",
+          "duration_ms": 17098
+        }
+      ]
+    },
+    {
+      "scope": "公共面板编辑夹具",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/local-bu.py",
+        "smoke",
+        "--",
+        "experience.spec.ts",
+        "--no-deps",
+        "--workers=1",
+        "--reporter=line,json",
+        "--grep",
+        "跨页签错误定位展开隐藏分组"
+      ],
+      "start_utc": "2026-11-26T13:07:44.483Z",
+      "duration_ms": 5525,
+      "results": [
+        {
+          "project": "chromium",
+          "title": "跨页签错误定位展开隐藏分组，来回切换保留输入且短屏可滚动",
+          "status": "passed",
+          "duration_ms": 2809
+        }
+      ]
+    },
+    {
+      "scope": "日志原件 Enter 打开、后退还焦及两个职务对象原生缩放",
+      "command": [
+        "python3",
+        "-B",
+        "scripts/local-bu.py",
+        "smoke",
+        "--fixed-web",
+        "--",
+        "personnel.spec.ts",
+        "staffing308-zoom.spec.ts",
+        "--workers=1",
+        "--reporter=line,json",
+        "--grep",
+        "T01 变更日志跨页|308 (job|jobfamily) (admin|reader) 原生缩放"
+      ],
+      "start_utc": "2026-11-26T13:11:30.385Z",
+      "duration_ms": 158102,
+      "results": [
+        {
+          "project": "enterprise-maintenance",
+          "title": "140 企业首条后移预览跨闰日，取消后保留来源",
+          "status": "passed",
+          "duration_ms": 7348
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 正常菜单完整维护：首条、插入、更正、删除、固定期间、启停及历史",
+          "status": "passed",
+          "duration_ms": 17962
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 草稿取消、冲突重读和丢失响应查回",
+          "status": "passed",
+          "duration_ms": 8190
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 查询者在桌面查看唯一企业、记录与历史只读",
+          "status": "passed",
+          "duration_ms": 5612
+        },
+        {
+          "project": "enterprise-maintenance",
+          "title": "304 企业更名保持部门当前及历史路径独立",
+          "status": "passed",
+          "duration_ms": 8293
+        },
+        {
+          "project": "chromium",
+          "title": "T01 变更日志跨页、筛选、查看敏感差异与撤权",
+          "status": "passed",
+          "duration_ms": 16769
+        },
+        {
+          "project": "chromium",
+          "title": "308 jobfamily admin 原生缩放",
+          "status": "passed",
+          "duration_ms": 23550
+        },
+        {
+          "project": "chromium",
+          "title": "308 jobfamily reader 原生缩放",
+          "status": "passed",
+          "duration_ms": 19954
+        },
+        {
+          "project": "chromium",
+          "title": "308 job admin 原生缩放",
+          "status": "passed",
+          "duration_ms": 26305
+        },
+        {
+          "project": "chromium",
+          "title": "308 job reader 原生缩放",
+          "status": "passed",
+          "duration_ms": 20333
+        }
+      ]
+    }
+  ],
+  "total_executions": 35,
+  "unique_project_and_title": 29
+}

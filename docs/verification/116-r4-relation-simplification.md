@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json) `governance.verification_records`。
 适用范围：用户采纳的取消客户端整树版本及全树成员快照；仅修订R4设计及验收映射。
-上游依据：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[117](../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118](../specs/m02/118-department-business-requirements.md)、[119](../specs/m02/119-department-functional-design.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
+上游依据：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[117](../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118](../specs/m02/118-department-business-requirements.md)、[119](../specs/m02/119-department-functional-design.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
 
 ## 1 验证对象与受测基线
 

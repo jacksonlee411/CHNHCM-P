@@ -10,30 +10,6 @@ import (
 
 func (a *API) quotaRoutes(mux *http.ServeMux) {
 	const base = "/api/v1/staffing-quotas"
-	mux.HandleFunc("POST "+base+"/{position}", func(w http.ResponseWriter, r *http.Request) {
-		if !foundation.ValidID(r.PathValue("position")) {
-			writeError(w, foundation.Fail(404, "M03_NOT_FOUND", "岗位不存在"))
-			return
-		}
-		if _, err := queryValues(r); err != nil {
-			writeError(w, staffingError(err))
-			return
-		}
-		// Only the canonical request digest is compared with an existing receipt.
-		var original any
-		raw, err := decode(r, &original)
-		if err != nil {
-			writeError(w, staffingError(err))
-			return
-		}
-		out, err := a.Runtime.Staffing.ChangeStaffingQuota(r.Context(), credentials(r), s.QuotaCommand{
-			Action: "replay", SubmissionID: r.Header.Get("Idempotency-Key"), Digest: digest(r, raw),
-		})
-		if err == nil && out.Failure != nil {
-			err = out.Failure
-		}
-		respond(w, 200, out, staffingError(err))
-	})
 	list := func(w http.ResponseWriter, r *http.Request) {
 		options := r.URL.Path == base+"/department-options"
 		stats := r.URL.Path == base+"/statistics"

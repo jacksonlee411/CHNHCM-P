@@ -1,7 +1,7 @@
 # CHNHCM-116 R5授权与根部门创建评审修复
 
 登记信息：[registry.json](../governance/registry.json)。适用范围：R5评审的P1部门状态撤权缓存与P2根部门创建可选上级声明。
-上游依据：[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[119交互合同](../specs/m02/119-department-functional-design.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)及[121验证矩阵](../specs/m02/121-dated-object-admission-matrix.md)。[原R5报告](116-r5-department-pages-and-acceptance.md)保留原时点结果。
+上游依据：[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[119交互合同](../specs/m02/119-department-functional-design.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)及[121验证矩阵](../specs/m02/121-dated-object-admission-matrix.md)。[原R5报告](116-r5-department-pages-and-acceptance.md)保留原时点结果。
 
 ## 1 验证对象与受测基线
 

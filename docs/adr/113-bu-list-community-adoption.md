@@ -1,6 +1,6 @@
 # CHNHCM-113 BU列表改用Community并保留既定规则
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：M02业务单元列表的组件选择、源码接入及受影响验证。依据用户“除了不引入pro，其他的规则按之前已经确定的执行”，沿用[110交互决定](110-bu-list-and-datagrid.md)、[012功能合同](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)和[013接线合同](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)；由[111计划](../plans/111-bu-list-experience-upgrade.md)实施。本文从[决策模板](../templates/decision.md)起草。
+登记信息：[registry.json](../governance/registry.json)。适用范围：M02业务单元列表的组件选择、源码接入及受影响验证。依据用户“除了不引入pro，其他的规则按之前已经确定的执行”，沿用[110交互决定](110-bu-list-and-datagrid.md)、[012功能合同](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-pro)和[013接线合同](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)；由[111计划](../archive/plans/111-bu-list-experience-upgrade.md)实施。本文从[决策模板](../templates/decision.md)起草。
 
 当前普通维护按[123](123-current-maintenance-and-dated-query-boundary.md)取消通用查看日期；列表日期由服务端D确定，详情按所选记录。此前时点的采纳/检查记录保留，本决定其余列表体验与技术边界继续有效。
 
@@ -81,7 +81,7 @@ T01实际检查独立冻结安装、来源与MIT原件、类型/构建及运行�
 
 本文有关多选/导出后置的范围决定已被114部分替代；本组件及其余交互规则继续有效，111原结果不改写。
 
-本文部分替代110：Pro组件、原生List view、Pro原生多条件优先和许可推进方式退出；110剩余交互及后置边界继续适用，正文已明确更新。本文整体替代112的Pro专用接入决策，承接其未转译源码、自足构建、来源保护及不篡改第三方行为原则；112留原路径与历史正文，登记为superseded。110保持active并登记部分替代，111的本次限定计划已completed；规格和决策继续有效。
+本文部分替代110：Pro组件、原生List view、Pro原生多条件优先和许可推进方式退出；110剩余交互及后置边界继续适用，正文已明确更新。本文整体替代112的Pro专用接入决策，承接其未转译源码、自足构建、来源保护及不篡改第三方行为原则。112 登记为 `superseded`，历史正文已按原编号归档。110保持active并登记部分替代，111的本次限定计划已completed；规格和决策继续有效。[112 归档原文](../archive/adr/112-datagrid-pro-source-integration.md)
 
 012/013/023继续使用原显式锚点，包括带pro的历史锚点名，避免断开既有追踪；标题和现行正文改为Community或通用列表表述，锚点名不代表仍采用Pro。002、010、017、100的后续目标说明、文档入口、NOTICE及资产清单同步边界；旧报告、原始来源摘要和既往采用批次不改写。此前[113文档复核](../verification/113-community-adoption-docs.md)保留取消拖动/固定之前的原结果；本次补验见[部门样板修订记录](../verification/113-department-list-template-docs.md)。
 

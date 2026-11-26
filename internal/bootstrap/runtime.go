@@ -19,7 +19,6 @@ import (
 	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	staffingapp "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	"chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
-	sd "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
 	staffingdb "chnhcm.local/chnhcm/internal/contexts/staffing/infra/postgres"
 	staffing "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	"chnhcm.local/chnhcm/internal/foundation"
@@ -105,23 +104,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	st.QuotaPolicies = st.PublishedQuotaPolicies
 
 	o.Staffing = st
-	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AuthorizeDirectory: a.PersonnelDirectory, AdoptArea: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]person.CountryAdoption, string, error) {
-		nodes, err := o.AdoptProfileArea(ctx, tx, g, id, date)
-		if err != nil {
-			return nil, "", err
-		}
-		var path []person.CountryAdoption
-		for _, v := range nodes {
-			path = append(path, person.CountryAdoption{ID: v.ID, SourceVersion: v.SourceVersion, RecordID: v.RecordID, Revision: v.Revision, Date: date})
-		}
-		return path, nodes[len(nodes)-1].Name, nil
-	}, AdoptCountry: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, source, date string) (*person.CountryAdoption, string, error) {
-		value, err := o.AdoptCountry(ctx, tx, g, id, source, date)
-		if err != nil {
-			return nil, "", err
-		}
-		return &person.CountryAdoption{ID: value.ID, SourceVersion: value.SourceVersion, RecordID: value.RecordID, Revision: value.Revision, Date: value.Date}, value.Name, nil
-	}}
+	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AuthorizeDirectory: a.PersonnelDirectory, ProfileCatalog: o}
 	recruitment := &recruitdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Allowed: a.OfferAllowed, Enterprise: o, Employers: o, Person: func(ctx context.Context, c foundation.Credentials, id string) (string, error) {
 		found, _, e := people.RecognizedPeople(ctx, c, []string{id}, "")
 		if e != nil {
@@ -134,26 +117,8 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	}, Arrangement: st.CheckOfferArrangement, LockPosition: st.LockUsagePosition}
 	st.OfferHandoffs = recruitment
 	st.OfferAllowed = a.OfferAllowed
-	st.PositionOpened = recruitment.PositionOpened
-	st.Usage = func(ctx context.Context, inst, position string) (sd.QuotaUsage, error) {
-		used, e := st.AssignmentPositionUsage(ctx, inst, position)
-		if e != nil {
-			return used, e
-		}
-		reservations, e := recruitment.Usage(ctx, inst, position)
-		if e != nil {
-			return used, e
-		}
-		if reservations.Coverage != "" {
-			used.Coverage = append(used.Coverage, sd.SourceCoverage{Owner: "M05", Version: reservations.Coverage, UsageSpan: sd.UsageSpan{From: reservations.From}})
-		}
-		for _, seg := range reservations.Segments {
-			span := sd.UsageSpan{From: seg.From, Until: seg.Until}
-			used.Managed = append(used.Managed, span)
-			used.Uses = append(used.Uses, sd.PositionUse{Owner: "M05", UsageSpan: span, Source: seg.Source, Policy: seg.Policy, Effect: seg.Effect, Department: seg.Department, Job: seg.Job})
-		}
-		return used, nil
-	}
+	st.Reservations = recruitment
+	st.Usage = st.PublishedPositionUsage
 	st.HirePeople = people
 	st.HirePurposes = o
 	st.EmploymentAllowed = a.EmploymentAllowed

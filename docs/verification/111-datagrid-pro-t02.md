@@ -1,6 +1,6 @@
 # CHNHCM-111 T02基础页面接线与定向检查
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[111 T02](../plans/111-bu-list-experience-upgrade.md)、[110体验决定](../adr/110-bu-list-and-datagrid.md)、[112源码入口](../adr/112-datagrid-pro-source-integration.md)及[012/013接线合同](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)。本轮完成基础页面代码，不把合成响应、适配夹具或缺密钥保护计作真实Pro/BU业务验收。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[111 T02](../archive/plans/111-bu-list-experience-upgrade.md)、[110体验决定](../adr/110-bu-list-and-datagrid.md)、[112源码入口](../archive/adr/112-datagrid-pro-source-integration.md)及[012/013接线合同](../specs/m02/013-m02-technical-design.md#m02-tech-list-pro)。本轮完成基础页面代码，不把合成响应、适配夹具或缺密钥保护计作真实Pro/BU业务验收。
 
 ## 1 验证对象与基线
 

@@ -1,6 +1,6 @@
 # CHNHCM-115 BU全查询结果选择与导出文档评审
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[114决定](../adr/114-bu-query-selection-and-export.md)、[115计划](../plans/115-bu-query-selection-and-export.md)及受影响长期规格的本轮文档编写与评审。从[验证模板](../templates/verification.md)起草；不证明产品已实现。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：[114决定](../adr/114-bu-query-selection-and-export.md)、[115计划](../archive/plans/115-bu-query-selection-and-export.md)及受影响长期规格的本轮文档编写与评审。从[验证模板](../templates/verification.md)起草；不证明产品已实现。
 
 ## 1 对象与资料基线
 

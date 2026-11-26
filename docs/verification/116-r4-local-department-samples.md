@@ -1,6 +1,6 @@
 # CHNHCM-116 R4本地部门验证样本
 
-登记信息：[registry.json](../governance/registry.json)。依据[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[R4实施报告](116-r4-department-backend.md)及[017运行指南](../guides/017-local-bu-development.md)。本次只准备并检查真实本地数据，不扩大为R5页面验收。
+登记信息：[registry.json](../governance/registry.json)。依据[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[R4实施报告](116-r4-department-backend.md)及[017运行指南](../guides/017-local-bu-development.md)。本次只准备并检查真实本地数据，不扩大为R5页面验收。
 
 ## 1 受测基线与环境
 

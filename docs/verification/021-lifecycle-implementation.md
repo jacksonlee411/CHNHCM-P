@@ -1,6 +1,6 @@
 # CHNHCM-021 停用与重新启用实施验证
 
-登记信息：[registry.json](../governance/registry.json)。范围：[010 T04](../plans/010-m02-scope-and-plan.md)、[021决定](../adr/021-bu-lifecycle-and-record-maintenance.md)、011—013及023的本批参数。代理实施与自查，不冒充独立业务批准。
+登记信息：[registry.json](../governance/registry.json)。范围：[010 T04](../archive/plans/010-m02-scope-and-plan.md)、[021决定](../adr/021-bu-lifecycle-and-record-maintenance.md)、011—013及023的本批参数。代理实施与自查，不冒充独立业务批准。
 
 ## 1 验证对象与受测基线
 

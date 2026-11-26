@@ -1,6 +1,6 @@
 # CHNHCM-111 T01源码依赖与许可接线检查
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[111 T01](../plans/111-bu-list-experience-upgrade.md)、[112源码决定](../adr/112-datagrid-pro-source-integration.md)及110体验目标的依赖准备。T02页面替换未开始；本记录不宣称已挂载Pro或完成无水印许可验收。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：[111 T01](../archive/plans/111-bu-list-experience-upgrade.md)、[112源码决定](../archive/adr/112-datagrid-pro-source-integration.md)及110体验目标的依赖准备。T02页面替换未开始；本记录不宣称已挂载Pro或完成无水印许可验收。
 
 ## 1 验证对象与基线
 
@@ -26,7 +26,7 @@ Node24.19.0、pnpm10.24.0、React19.2.4、MUI7.3.7、TypeScript5.9.3、Vite7.3.1
 | 首次夹具浏览器 | 失败：源码包缺自动JSX编译上下文导致React is not defined；补本地tsconfig，未改上游源码 | [首次错误](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-datagrid-pro-t01/browser-guard-first-failure.json) |
 | 无密钥挂载保护 | 通过：桌面/390px均展示未挂载状态，console warning/error为空；无外部请求 | [浏览器结果](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-datagrid-pro-t01/browser-guard.json)、[截图](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-datagrid-pro-t01/no-key-guard.png) |
 | 上游源码/许可保护 | 通过：119项源码及LICENSE摘要一致，未移除水印、修改校验或过滤日志 | [来源审计](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/111-datagrid-pro-t01/source-audit.json) |
-| 有效密钥及真实Pro无水印运行 | 未运行：有效密钥未注入，Pro未挂载；缺配置保护不能替代此验收 | [112待决](../adr/112-datagrid-pro-source-integration.md#6-待决事项) |
+| 有效密钥及真实Pro无水印运行 | 未运行：有效密钥未注入，Pro未挂载；缺配置保护不能替代此验收 | [112待决](../archive/adr/112-datagrid-pro-source-integration.md#6-待决事项) |
 
 构建日志保留上游use client指令及默认分块体积提示，未屏蔽构建警告或改变阈值。用户的无许可控制台提示要求按真实浏览器结果核验，不以构建退出码推导。发布包和源码的原始失败记录均保留，没有把第一轮失败登记为通过。
 

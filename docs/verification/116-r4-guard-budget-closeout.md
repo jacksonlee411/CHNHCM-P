@@ -1,6 +1,6 @@
 # CHNHCM-116 R4守卫预算诊断与收尾复核
 
-登记信息：[registry.json](../governance/registry.json)。关联[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)及[121验收映射](../specs/m02/121-dated-object-admission-matrix.md)。原[实施评审修复报告](116-r4-implementation-review-fixes.md)保留原结果。
+登记信息：[registry.json](../governance/registry.json)。关联[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120技术合同](../specs/m02/120-dated-maintenance-technical-contract.md)及[121验收映射](../specs/m02/121-dated-object-admission-matrix.md)。原[实施评审修复报告](116-r4-implementation-review-fixes.md)保留原结果。
 
 ## 1 范围与基线
 

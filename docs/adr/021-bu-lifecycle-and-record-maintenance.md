@@ -1,10 +1,10 @@
 # CHNHCM-021 M02 多次启停与记录维护规则
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：M02 BU 的新建、资料变更、停用、重新启用，以及已有记录的更正、删除和改日。上游为[020记录维护决定](020-effective-record-delete-and-redate.md)、[018来源追溯](018-effective-records-and-source-history.md)和[010计划](../plans/010-m02-scope-and-plan.md)；业务规则由[011](../specs/m02/011-m02-business-requirements.md)唯一持有。
+登记信息：[registry.json](../governance/registry.json)。适用范围：M02 BU 的新建、资料变更、停用、重新启用，以及已有记录的更正、删除和改日。上游为[020记录维护决定](020-effective-record-delete-and-redate.md)、[018来源追溯](018-effective-records-and-source-history.md)和[010计划](../archive/plans/010-m02-scope-and-plan.md)；业务规则由[011](../specs/m02/011-m02-business-requirements.md)唯一持有。
 
 后续[022](022-joint-timeline-revision.md)已按用户采纳将有限联合修订、首条不同资料补全及显式分类纠错纳入M02；本决定的日期、完整状态链、首条删除保护及独立快照继续有效；维护已逐批接线，当前交互按101直接保存、104统一更正和107首条维护执行，实际结果见010所列报告。
 
-当前范围补充：[109](../plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
+当前范围补充：[109](../archive/plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
 
 2026-11-03位置规则补充：合法时间线中单条新增启停只能位于末尾，公开单条入口现绑定所选末条，按该条生效后状态开放停用或重新启用；中间停用期间仍由109固定配对处理。此为单条位置与准备交互的收敛，不改变完整时间线、独立恢复资料及历史不变量。默认日期/范围、初始名称、业务拒绝就地反馈与未保存保护由011—013持有，实际补验见[本轮报告](../verification/021-single-lifecycle-append.md)。下文“停用不再要求全局最后”保留原决定时点：当前来源中的既有停用可以有恢复和后继，不能据此允许单条新增忽略所选位置。
 

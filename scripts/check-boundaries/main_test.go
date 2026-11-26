@@ -44,6 +44,20 @@ func TestBoundaryViolations(t *testing.T) {
 }
 
 func TestSQLTableOwnership(t *testing.T) {
+	owners, err := readSQLOwners("../../docs/architecture/contexts.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name := range owners {
+		if name == "access" {
+			continue
+		}
+		owner := sqlOwner("db/queries/" + name + "/query.sql")
+		if owner != name || len(owners.foreignTables(owner, "select * from access.session")) == 0 ||
+			len(owners.foreignTables("access", "select * from "+name+".sample")) == 0 {
+			t.Errorf("registered context %s must be checked as both source and target", name)
+		}
+	}
 	for _, tc := range []struct {
 		path, query string
 		blocked     bool
@@ -63,10 +77,14 @@ func TestSQLTableOwnership(t *testing.T) {
 		{"db/queries/organization/query.sql", "SELECT 1 FROM organization.bu AS staffing WHERE staffing.id IS NOT DISTINCT /* same value */ FROM staffing.id", false},
 		{"db/queries/organization/query.sql", "SELECT EXTRACT(year FROM access.effective_date) FROM organization.bu AS access", false},
 		{"db/queries/organization/query.sql", "SELECT 1 FROM organization.bu b WHERE b.id IS DISTINCT FROM (SELECT instance_id FROM access.policy_guard)", true},
+		{"db/queries/personnel/address.sql", "select * from organization.geoarea", true},
+		{"internal/contexts/staffing/infra/postgres/quota.go", "select * from recruiting.offer_segment", true},
+		{"internal/contexts/recruiting/infra/postgres/reservations.go", "insert into personnel.person values (1)", true},
+		{"internal/contexts/recruiting/infra/postgres/reservations.go", "select personnel.id from recruiting.offer_segment as personnel", false},
 		{"db/migrations/00001.sql", "select * from access.policy_guard", false},
 	} {
 		owner := sqlOwner(tc.path)
-		if got := owner != "" && len(foreignTables(owner, tc.query)) != 0; got != tc.blocked {
+		if got := owner != "" && len(owners.foreignTables(owner, tc.query)) != 0; got != tc.blocked {
 			t.Errorf("%s: %q: blocked=%v", tc.path, tc.query, got)
 		}
 	}

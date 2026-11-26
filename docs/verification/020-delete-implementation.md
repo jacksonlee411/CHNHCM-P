@@ -1,6 +1,6 @@
 # CHNHCM-020 T05分类删除及依赖保护实施验证
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：T05普通、停用、重新启用记录删除及受影响回归。依据：[010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)、[024](../adr/024-timeline-implementation-simplification.md)和[025](../adr/025-greenfield-implementation-policy.md)。
+登记信息：[registry.json](../governance/registry.json)。适用范围：T05普通、停用、重新启用记录删除及受影响回归。依据：[010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)、[024](../adr/024-timeline-implementation-simplification.md)和[025](../adr/025-greenfield-implementation-policy.md)。
 
 ## 1 对象与受测基线
 

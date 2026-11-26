@@ -1,6 +1,6 @@
 # CHNHCM-314 职类实施批次路线图评审
 
-2026-11-20，Codex 主代理顺序评审三稿，接受第三稿。评审对象是 314 的实施依赖、任务出口和验收分工。职类产品实施从 T01 接续。[路线图](../plans/314-m03-job-function-roadmap.md) · [308 业务规则](../specs/m03/308-job-foundation-contract.md#m03-job-function) · [登记表](../governance/registry.json)
+2026-11-20，Codex 主代理顺序评审三稿，接受第三稿。评审对象是 314 的实施依赖、任务出口和验收分工。职类产品实施从 T01 接续。[路线图](../archive/plans/314-m03-job-function-roadmap.md) · [308 业务规则](../specs/m03/308-job-foundation-contract.md#m03-job-function) · [登记表](../governance/registry.json)
 
 ## 1 基线与方法
 
@@ -42,4 +42,4 @@
 
 ## 4 交接
 
-本次交付为路线图评审。职类产品仍待实施，真实升级库、双连接、API、浏览器和业务签收由 T01—T05 接续。此次核对使用本地文档、合成样本和既有领域单测，未建立职类产品验收环境。[任务与验收分工](../plans/314-m03-job-function-roadmap.md)
+本次交付为路线图评审。职类产品仍待实施，真实升级库、双连接、API、浏览器和业务签收由 T01—T05 接续。此次核对使用本地文档、合成样本和既有领域单测，未建立职类产品验收环境。[任务与验收分工](../archive/plans/314-m03-job-function-roadmap.md)

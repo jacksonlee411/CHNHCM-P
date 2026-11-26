@@ -1,6 +1,6 @@
 # CHNHCM-111 T04列筛选评估与复核
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[111阶段计划](../plans/111-bu-list-experience-upgrade.md)及[110列筛选范围](../adr/110-bu-list-and-datagrid.md#6-待决事项)，从[验证模板](../templates/verification.md)编写。本报告持有评估执行事实，当前选择、比较和后置边界由110第2.4/2.5节维护；不是新增业务规格。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。依据[111阶段计划](../archive/plans/111-bu-list-experience-upgrade.md)及[110列筛选范围](../adr/110-bu-list-and-datagrid.md#6-待决事项)，从[验证模板](../templates/verification.md)编写。本报告持有评估执行事实，当前选择、比较和后置边界由110第2.4/2.5节维护；不是新增业务规格。
 
 ## 1 对象、基线与结论
 

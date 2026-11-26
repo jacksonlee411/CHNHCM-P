@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json) `governance.verification_records`。
 适用范围：用户采纳的R4四包设计、精确存储/类型端口/授权输入/依赖锁/候选/路径证据，以及真实DB/API验收映射；不含产品实现。
-上游依据：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[117](../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118](../specs/m02/118-department-business-requirements.md)、[119](../specs/m02/119-department-functional-design.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)、[122](../plans/122-bu-operation-summary-and-change-log.md)、[123](../adr/123-current-maintenance-and-dated-query-boundary.md)。
+上游依据：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[117](../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118](../specs/m02/118-department-business-requirements.md)、[119](../specs/m02/119-department-functional-design.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)、[122](../archive/plans/122-bu-operation-summary-and-change-log.md)、[123](../adr/123-current-maintenance-and-dated-query-boundary.md)。
 
 ## 1 验证对象与受测基线
 

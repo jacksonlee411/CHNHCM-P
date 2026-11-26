@@ -2,13 +2,13 @@
 
 登记信息：[registry.json](../governance/registry.json)。适用范围：BU详情普通资料变更的单条新增入口。上游依据：[011新增规则](../specs/m02/011-m02-business-requirements.md#m02-br-005)、[012页面原则](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[101直接保存](101-direct-save-and-form-assistance.md)、[025全新实施](025-greenfield-implementation-policy.md)。
 
-当前范围补充：[109](../plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
+当前范围补充：[109](../archive/plans/109-lifecycle-pair-maintenance.md)已按用户决定替代公开通用联合办理：仅保留插入停用与重新启用、删除停用与重新启用。旧任意项目、跨节点交换及多目标分类纠错退出；首条两步、单条组合更正及旧历史读取保持。以下原决定和评审过程保留时点含义，当前办理以011—013及109为准。
 
 ## 1 背景与问题
 
 用户已确认八项规则及两项补充：资料自动带出但不复制操作类型/原因，日期按所选位置计算；无可插入日期只禁用按钮，不额外解释。原实现先输入日期，再按该日找到前序并带出名称，进入时日期为空、主按钮统一称新增生效记录。新规则将位置选择提前，减少重复填写及误插位置。
 
-规则采纳时仅更新文档。当前产品接线及分层验证由[105实施](../plans/105-positioned-addition-and-coverage.md)承接；[102验证](../verification/102-bu-maintenance-usability.md)等旧结果保留原基线，不作为本增量通过证据。
+规则采纳时仅更新文档。当前产品接线及分层验证由[105实施](../archive/plans/105-positioned-addition-and-coverage.md)承接；[102验证](../verification/102-bu-maintenance-usability.md)等旧结果保留原基线，不作为本增量通过证据。
 
 ## 2 决策
 

@@ -8194,7 +8194,7 @@
           "document": "CHNHCM-201",
           "scope": "本次所在地区连续选择、路径回填/上级导航、国家范围组合搜索和滚动追加；当前权/旧采用及四地真实回归，限定范围不提升完整来源资产状态。",
           "target_files": [
-            "docs/specs/m02/201-geography-and-location-design.md",
+            "docs/specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md",
             "internal/contexts/organization/infra/postgres/geoarea_query.go"
           ],
           "implemented": true,
@@ -8783,7 +8783,7 @@
           "document": "CHNHCM-504",
           "scope": "采用九组个人资料、七个多值集合及整页草稿的设计。七类记录的查看、新增、编辑布局按 4180 指定构建逐窗对照。查看个人信息变更和导出个人资料在本批范围外。",
           "target_files": [
-            "docs/plans/504-personal-profile-extension.md",
+            "docs/archive/plans/504-personal-profile-extension.md",
             "docs/specs/m01/505-personal-profile-contract.md"
           ],
           "implemented": true,
@@ -11109,7 +11109,7 @@
         "docs/verification/data/510-personnel-remediation/observations.json",
         "docs/verification/data/510-personnel-remediation/validation.json"
       ],
-      "target_files": ["docs/plans/500-personnel-roadmap.md", "docs/specs/m01/502-person-directory-interactions.md", "docs/specs/m04/507-job-information-tab.md", "tests/e2e/first-hire.spec.ts"]
+      "target_files": ["docs/archive/plans/500-personnel-roadmap.md", "docs/specs/m01/502-person-directory-interactions.md", "docs/specs/m04/507-job-information-tab.md", "tests/e2e/first-hire.spec.ts"]
     },
     {
       "id": "NATIVE-V500-T00",

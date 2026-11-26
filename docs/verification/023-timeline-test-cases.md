@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。本记录只验证[023测试案例](../specs/m02/023-m02-timeline-test-cases.md)的文档结构、追踪与旧内容保护，不记录业务案例运行结果。
 
-上游为[010实施计划](../plans/010-m02-scope-and-plan.md)、[011业务规则/验收](../specs/m02/011-m02-business-requirements.md)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)、[013技术合同](../specs/m02/013-m02-technical-design.md)及[022决定](../adr/022-joint-timeline-revision.md)。旧[健壮性修订报告](022-timeline-robustness-fixes.md)保留原结果。
+上游为[010实施计划](../archive/plans/010-m02-scope-and-plan.md)、[011业务规则/验收](../specs/m02/011-m02-business-requirements.md)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)、[013技术合同](../specs/m02/013-m02-technical-design.md)及[022决定](../adr/022-joint-timeline-revision.md)。旧[健壮性修订报告](022-timeline-robustness-fixes.md)保留原结果。
 
 ## 1 对象与受测基线
 

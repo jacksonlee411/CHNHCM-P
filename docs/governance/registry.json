@@ -74,7 +74,7 @@
     {
       "id": "CHNHCM-001",
       "title": "本地建仓交付记录",
-      "path": "docs/plans/001-repository-bootstrap.md",
+      "path": "docs/archive/plans/001-repository-bootstrap.md",
       "owner_branch": "wt-dev-a",
       "owner_role": "Repository maintainer",
       "status": "active",
@@ -96,7 +96,11 @@
         "date": "2026-10-30",
         "reason": "原建仓报告记录的范围已交付；本次仅登记历史关闭依据，不表示 M02 完成。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/001-repository-bootstrap.md"
+      }
     },
     {
       "id": "CHNHCM-002",
@@ -111,11 +115,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-03",
-        "reviewer": "主代理实施及分轮自查，非独立评审或具名业务人员验收",
-        "scope": "111 T03真实业务、七组视口/原生缩放及链接、返回修复、受影响代表回归与资料状态同步；原批次及T04/T05边界保持。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 按原评审逐项复核标准、实际写入点及验证证据",
+        "scope": "开发锁定组合、OpenAPI 类型生成及运行客户端、X03 本地会话与生产交付边界。",
         "result": "accepted",
-        "evidence": "docs/verification/111-community-t03.md"
+        "evidence": "docs/verification/004-architecture-review-remediation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -159,11 +163,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-03",
-        "reviewer": "主代理实施及定向自查，非独立评审或人工业务验收",
-        "scope": "T01固定Community源码/声明/依赖及T02-A/B/C接线、排序模型稳定和断点焦点；实际组件/合成HTTP检查，真实Go/API/DB及七组整体验收留T03。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 按原评审逐项复核标准、实际写入点及验证证据",
+        "scope": "登记域的 SQL 检查、跨域资料采用及同事务原始事实归属。含三个漏检反例与七张图面复核。",
         "result": "accepted",
-        "evidence": "docs/verification/111-community-t01-t02.md"
+        "evidence": "docs/verification/004-architecture-review-remediation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -247,7 +251,7 @@
     {
       "id": "CHNHCM-008",
       "title": "下一步：M02 四份详细文档",
-      "path": "docs/plans/008-next-steps.md",
+      "path": "docs/archive/plans/008-next-steps.md",
       "owner_branch": "wt-dev-a",
       "owner_role": "Organization lead",
       "status": "active",
@@ -271,7 +275,11 @@
         "date": "2026-10-31",
         "reason": "010—013已形成并完成多轮评审；创建/查询批次已获用户实施指令，剩余实施与业务验收由010承接，来源增量仍由原台账追踪。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/008-next-steps.md"
+      }
     },
     {
       "id": "CHNHCM-009",
@@ -304,7 +312,7 @@
     {
       "id": "CHNHCM-010",
       "title": "本版实施范围与计划",
-      "path": "docs/plans/010-m02-scope-and-plan.md",
+      "path": "docs/archive/plans/010-m02-scope-and-plan.md",
       "owner_branch": "wt-dev-a",
       "owner_role": "Organization lead",
       "status": "active",
@@ -328,7 +336,11 @@
         "date": "2026-11-02",
         "reason": "按第6.4节完成本版采纳范围：241整例、3本域部分，9未接消费者及4退役分别记录；T01/T02汇总、容量与真实引用清单逐项闭合，未接消费者/投递/生产能力转交后续独立批次。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/010-m02-scope-and-plan.md"
+      }
     },
     {
       "id": "CHNHCM-011",
@@ -345,11 +357,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-13",
-        "reviewer": "主代理按用户明确项目规则复核，非独立代理或人工产品验收",
-        "scope": "仅202首次新建默认1900-01-01及相关字段/API合同；显式日期、既有历史、后续操作和资格保护保持。旧评审元数据及产品报告保留，产品适配列入200 G1。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "共用读写、权限、选择与提示恢复的 15 项独立验收，由 301 逐项对照。",
         "result": "accepted",
-        "evidence": "docs/verification/200-geography-plan.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -372,10 +384,10 @@
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
-        "reviewer": "Codex 按用户采纳的桌面交付范围复核",
-        "scope": "第 6.2 节桌面常规矩阵、关键流程原生缩放、专项触发与旧要求替代关系；对象合同、接入模板及用例的对应范围。",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "详情页签手动激活、单草稿、原件后退与保存确认、权限及失败恢复的长期规则。",
         "result": "accepted",
-        "evidence": "docs/verification/012-desktop-page-acceptance.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [
@@ -401,11 +413,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-13",
-        "reviewer": "主代理按用户明确项目规则复核，非独立代理或人工产品验收",
-        "scope": "仅202首次新建默认1900-01-01及相关字段/API合同；显式日期、既有历史、后续操作和资格保护保持。旧评审元数据及产品报告保留，产品适配列入200 G1。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "会话、选择、传输、资源及局部故障分类和客户端消费。",
         "result": "accepted",
-        "evidence": "docs/verification/200-geography-plan.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -425,11 +437,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-10-31",
-        "reviewer": "/root/m02_plan_contract_review（独立只读复核本轮增补），/root（执行检查与证据核对）",
-        "scope": "新增同文档连续修订序号、历史缺省1、重复/跳号拒绝及全链文件摘要衔接；其余014条款未重审，保留此前格式治理评审范围。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
+        "scope": "归档条件、原目录镜像、登记日期、同号迁移和定稿引用搬迁。",
         "result": "accepted",
-        "evidence": "docs/verification/011-effective-date-terminology.md"
+        "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -463,7 +475,7 @@
     {
       "id": "CHNHCM-016",
       "title": "M02 生效记录与修订历史决策",
-      "path": "docs/adr/016-m02-effective-record-history.md",
+      "path": "docs/archive/adr/016-m02-effective-record-history.md",
       "owner_branch": "wt-dev-a",
       "owner_role": "Organization lead",
       "status": "superseded",
@@ -490,7 +502,11 @@
         "date": "2026-10-31",
         "reason": "用户采纳取消任意knownAt截点与采集设施；018完整承接仍有效的来源、期间、分类及简单页面合同，旧正文与评审原件保留。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "018 已整体承接有效决策，原决定及评审随同编号留档。",
+        "previous_path": "docs/adr/016-m02-effective-record-history.md"
+      }
     },
     {
       "id": "CHNHCM-017",
@@ -508,11 +524,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-16",
-        "reviewer": "Codex主代理合并及本地验证复核，非独立代理或人工评审",
-        "scope": "CI发布前本地收口、main整合、运行说明与原证据保护；远程待发布，固定环境不更新。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
+        "scope": "固定验证环境 V127-I01—07 及已获采纳的并发重建、续跑与普通服务边界。",
         "result": "accepted",
-        "evidence": "docs/verification/136-actions-prepublication.md"
+        "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -552,7 +568,7 @@
     {
       "id": "CHNHCM-019",
       "title": "CubeBox共享体验迁移与页面对比计划",
-      "path": "docs/plans/019-cubebox-experience-migration.md",
+      "path": "docs/archive/plans/019-cubebox-experience-migration.md",
       "owner_branch": "wt-dev-a",
       "owner_role": "体验维护者",
       "owner": null,
@@ -573,7 +589,11 @@
       "superseded_by": [
         "CHNHCM-123"
       ],
-      "archive": null,
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/019-cubebox-experience-migration.md"
+      },
       "execution_status": "completed",
       "closure": {
         "date": "2026-11-01",
@@ -745,17 +765,18 @@
       "type": "decision",
       "modules": [
         "M02",
+        "M03",
         "X03"
       ],
-      "scope": "全新实施不承担旧存储、旧协议或旧程序兼容；同步当前模型与垂直批次，保留业务历史和既有验证证据。",
+      "scope": "同一事实由一个领域负责并共用一套现行实现。旧接口默认随替换撤下，暂留须有具体依赖与退出条件。通过当前入口保护原办理结果、准确来源和验证证据。",
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-01",
-        "reviewer": "/root（按用户明确决定修订后静态复核，非独立评审或业务验收）",
-        "scope": "落实用户全新实施且无需向后兼容的决定：同步AGENTS、阶段/迁移规则、当前模型/格式、T01/T02/T03首批交付及四项旧版本案例退役；只审阅文档，业务实现和运行验证未进行。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 按原评审逐项复核标准、实际写入点及验证证据",
+        "scope": "全新实施唯一性、旧接口退出与原结果查回见 025 专项报告。本次复核业务单元首批安排、固定启停、首条两步及单条分类更正。",
         "result": "accepted",
-        "evidence": "docs/verification/025-greenfield-implementation-policy.md"
+        "evidence": "docs/verification/004-architecture-review-remediation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -835,7 +856,7 @@
     {
       "id": "CHNHCM-100",
       "title": "页面体验优化实施计划",
-      "path": "docs/plans/100-ui-experience-improvement.md",
+      "path": "docs/archive/plans/100-ui-experience-improvement.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "体验维护者",
       "owner": null,
@@ -862,7 +883,11 @@
         "date": "2026-11-01",
         "reason": "当前创建/查询UI范围T01至T06完成；未来记录维护、日志姓名与完整差异由010/013继续承接。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/100-ui-experience-improvement.md"
+      }
     },
     {
       "id": "CHNHCM-101",
@@ -895,7 +920,7 @@
     {
       "id": "CHNHCM-102",
       "title": "M02维护日志与专用表单体验修订",
-      "path": "docs/plans/102-bu-maintenance-usability.md",
+      "path": "docs/archive/plans/102-bu-maintenance-usability.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "体验维护者",
       "owner": null,
@@ -919,7 +944,11 @@
         "date": "2026-11-02",
         "reason": "四项维护体验修订完成；六项专项、106项完整Chromium、两种表单七组视口及原样本保护复核通过。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/102-bu-maintenance-usability.md"
+      }
     },
     {
       "id": "CHNHCM-103",
@@ -952,7 +981,7 @@
     {
       "id": "CHNHCM-104",
       "title": "统一更正记录入口实施",
-      "path": "docs/plans/104-unified-record-correction.md",
+      "path": "docs/archive/plans/104-unified-record-correction.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization及体验实现者",
       "owner": null,
@@ -978,12 +1007,16 @@
         "date": "2026-11-02",
         "reason": "统一更正本轮完成：静态/构建、完整DB/API、116浏览器实例最终结果及7组视口、原7对象保持；首轮失败及定点复验如实记录，不扩为全M02或103完成。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/104-unified-record-correction.md"
+      }
     },
     {
       "id": "CHNHCM-105",
       "title": "位置新增插入实施与更正覆盖补全",
-      "path": "docs/plans/105-positioned-addition-and-coverage.md",
+      "path": "docs/archive/plans/105-positioned-addition-and-coverage.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization及体验测试维护者",
       "owner": null,
@@ -999,7 +1032,7 @@
         "reviewer": "用户明确要求一并实施并补充测试；主代理执行及自查",
         "scope": "103已确认规则产品接线与104覆盖补全，历史报告保持。",
         "result": "accepted",
-        "evidence": "docs/plans/105-positioned-addition-and-coverage.md"
+        "evidence": "docs/archive/plans/105-positioned-addition-and-coverage.md"
       },
       "execution_status": "completed",
       "superseded_by": [
@@ -1009,7 +1042,11 @@
         "date": "2026-11-02",
         "reason": "103接线及104八组补例完成；检查/构建/完整DB、132浏览器最近结果、7视口和原样本保护通过。参数限制见105，不声明全301例或独立验收。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/105-positioned-addition-and-coverage.md"
+      }
     },
     {
       "id": "CHNHCM-106",
@@ -1074,7 +1111,7 @@
     {
       "id": "CHNHCM-108",
       "title": "M02维护改造多轮一致性复核",
-      "path": "docs/plans/108-maintenance-consistency-review.md",
+      "path": "docs/archive/plans/108-maintenance-consistency-review.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization及文档测试维护者",
       "owner": null,
@@ -1090,7 +1127,7 @@
         "reviewer": "用户要求多轮检查；主代理执行及自查，非独立评审",
         "scope": "现行合同、产品及测试一致性，历史原件保护和证据完整性。",
         "result": "accepted",
-        "evidence": "docs/plans/108-maintenance-consistency-review.md"
+        "evidence": "docs/archive/plans/108-maintenance-consistency-review.md"
       },
       "execution_status": "completed",
       "superseded_by": [],
@@ -1098,12 +1135,16 @@
         "date": "2026-11-02",
         "reason": "四轮一致性复核完成：现行文档/旧入口与状态、两处页面问题、10项浏览器补充、证据归档及历史保护关闭；完整144+最终28、7视口及定向11个DB/API函数通过，不扩为全M02或独立验收。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/108-maintenance-consistency-review.md"
+      }
     },
     {
       "id": "CHNHCM-109",
       "title": "启停期间专用维护与通用联合退出",
-      "path": "docs/plans/109-lifecycle-pair-maintenance.md",
+      "path": "docs/archive/plans/109-lifecycle-pair-maintenance.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization及文档测试维护者",
       "owner": null,
@@ -1119,7 +1160,7 @@
         "reviewer": "主代理实施、多轮自查及复测，非独立评审或人工批准",
         "scope": "固定双记录启停维护及通用写入口退出，不补偿边缘编排能力。",
         "result": "accepted",
-        "evidence": "docs/plans/109-lifecycle-pair-maintenance.md"
+        "evidence": "docs/archive/plans/109-lifecycle-pair-maintenance.md"
       },
       "execution_status": "completed",
       "superseded_by": [],
@@ -1127,7 +1168,11 @@
         "date": "2026-11-03",
         "reason": "仅两项固定启停维护及通用公开编排退出；五轮接线/复测/反查，最后两轮无新增主要发现。check/build、完整DB/API、132项顺序Chromium、受控午夜及7视口通过；原4382/4527来源及旧结果保持。不计全M02、消费者、生产或新容量验收。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/109-lifecycle-pair-maintenance.md"
+      }
     },
     {
       "id": "CHNHCM-110",
@@ -1162,7 +1207,7 @@
     {
       "id": "CHNHCM-111",
       "title": "BU列表体验改造实施计划",
-      "path": "docs/plans/111-bu-list-experience-upgrade.md",
+      "path": "docs/archive/plans/111-bu-list-experience-upgrade.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization及体验实现与验证维护者",
       "owner": null,
@@ -1186,12 +1231,16 @@
         "date": "2026-11-03",
         "reason": "Community T01/T02、T03、T04及后续单列增量已按各批实际范围交付；T05核对日常运行、资料/资产/历史证据和资源；Excel/跨列等后置不在本计划交付范围。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/111-bu-list-experience-upgrade.md"
+      }
     },
     {
       "id": "CHNHCM-112",
       "title": "DataGrid Pro未转译源码接入",
-      "path": "docs/adr/112-datagrid-pro-source-integration.md",
+      "path": "docs/archive/adr/112-datagrid-pro-source-integration.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "体验技术及依赖维护者",
       "owner": null,
@@ -1217,7 +1266,11 @@
         "date": "2026-11-03",
         "reason": "用户撤销Pro，113改用Community并承接继续适用的源码与构建原则；原许可未验项因范围退出撤销，不计通过。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "113 已整体承接 Community 及源码选择，原 Pro 取舍与未验项随同编号留档。",
+        "previous_path": "docs/adr/112-datagrid-pro-source-integration.md"
+      }
     },
     {
       "id": "CHNHCM-113",
@@ -1279,7 +1332,7 @@
     {
       "id": "CHNHCM-115",
       "title": "BU全查询结果选择与导出实施计划",
-      "path": "docs/plans/115-bu-query-selection-and-export.md",
+      "path": "docs/archive/plans/115-bu-query-selection-and-export.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization及体验实现与验证维护者",
       "owner": null,
@@ -1303,12 +1356,16 @@
         "date": "2026-11-03",
         "reason": "114/115限定全查询结果选择、跨页/排除、所选CSV及Go/API/DB/浏览器/真实缩放验证完成，日常4382同步和资源收尾已核对；生产、全M02及复杂多来源专项不在本结论。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/115-bu-query-selection-and-export.md"
+      }
     },
     {
       "id": "CHNHCM-116",
       "title": "M02共用按日维护实现路线图",
-      "path": "docs/plans/116-m02-shared-dated-maintenance-roadmap.md",
+      "path": "docs/archive/plans/116-m02-shared-dated-maintenance-roadmap.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、Access及体验实现与验证维护者",
       "owner": null,
@@ -1333,7 +1390,11 @@
         "date": "2026-11-15",
         "reason": "用户明确要求“保留125统一收口，登记并关闭116/131/133”。已交付实现和阶段交接保持，剩余容量/成本/最终验证责任逐项转CHNHCM-125第8.7节；原失败及目标不变，本计划执行关闭，文档active和原历史保留。见docs/verification/125-roadmap-consolidation.md"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/116-m02-shared-dated-maintenance-roadmap.md"
+      }
     },
     {
       "id": "CHNHCM-117",
@@ -1380,11 +1441,11 @@
       "scope": "BU/部门独立表组、单值BU归属、同日一条、最小行政关系、路径、分类及恢复；R4后端与R5页面按独立证据验收，R6容量后置。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-13",
-        "reviewer": "主代理按用户明确项目规则复核，非独立代理或人工产品验收",
-        "scope": "仅202首次新建默认1900-01-01及相关字段/API合同；显式日期、既有历史、后续操作和资格保护保持。旧评审元数据及产品报告保留，产品适配列入200 G1。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "部门关键词、范围与游标恢复的两项对象专用验收。",
         "result": "accepted",
-        "evidence": "docs/verification/200-geography-plan.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -1407,11 +1468,11 @@
       "scope": "部门正常菜单、列表/详情/维护、关系候选、路径、日志及恢复；R5页面落地与双对象实测，容量留R6。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-13",
-        "reviewer": "主代理按用户明确项目规则复核，非独立代理或人工产品验收",
-        "scope": "仅202首次新建默认1900-01-01及相关字段/API合同；显式日期、既有历史、后续操作和资格保护保持。旧评审元数据及产品报告保留，产品适配列入200 G1。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "部门读写恢复、会话与局部错误的现行验收入口。",
         "result": "accepted",
-        "evidence": "docs/verification/200-geography-plan.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -1434,11 +1495,11 @@
       "scope": "独立存储/类型端口、当前授权和共同锁序、路径证据；R5新增筛选引用模式、展示日期及链接权限，R6容量后置。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-15",
-        "reviewer": "用户采纳目标；Codex主代理核对合同与判定器影响，非独立评审或产品性能验收",
-        "scope": "仅复核部门路径筛选20会话阶段1000ms、长期300ms及单会话300ms；同步判定工具/125统一责任，保留此前实施范围和证据。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
+        "scope": "唯一企业初始化、引用期间、并发守卫和现行对外路径。",
         "result": "accepted",
-        "evidence": "docs/verification/125-path-stage-target-adoption.md"
+        "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -1461,11 +1522,11 @@
       "scope": "双对象分层验收；R4真实后端及R5菜单/视口映射已按实际报告闭合，R6容量未运行；旧报告保持。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-17",
-        "reviewer": "Codex /root 主代理标准、源码与合同顺序复核，非独立代理或人工产品验收",
-        "scope": "仅新增第24节页面继承/独立验收路由及第21节301旧标题锚点修正；M03稳定ID留308，原M02业务与历史验收未重审。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "BU/部门 17 项有效条件及逐项接入映射。",
         "result": "accepted",
-        "evidence": "docs/verification/308-job-page-admission-contract.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -1475,7 +1536,7 @@
     {
       "id": "CHNHCM-122",
       "title": "BU资料操作摘要与变更日志表格化实施计划",
-      "path": "docs/plans/122-bu-operation-summary-and-change-log.md",
+      "path": "docs/archive/plans/122-bu-operation-summary-and-change-log.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、Access及体验和验证合同维护者",
       "owner": null,
@@ -1500,7 +1561,11 @@
         "date": "2026-11-04",
         "reason": "限定P1—P3交付后，补闭成功收窄权限的详情缓存、键盘焦点和S/P/F删除浏览器参数；最终19项回归及DB专项分别留证，不含全M02、部门或生产。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/122-bu-operation-summary-and-change-log.md"
+      }
     },
     {
       "id": "CHNHCM-123",
@@ -1545,11 +1610,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-17",
-        "reviewer": "Codex /root 主代理标准、源码与合同顺序复核，非独立代理或人工产品验收",
-        "scope": "第2/7节及接入模板的逐页继承、业务差异、偏差整改和独立预期；保留跨域边界，不将M02耦合流程标为已中性提炼，不重验旧容量。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
+        "scope": "BU V15 诊断与正式测量、部门存储增长和树查询的责任交接。",
         "result": "accepted",
-        "evidence": "docs/verification/308-job-page-admission-contract.md"
+        "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -1572,11 +1637,11 @@
       "scope": "R6容量P01/P02仍开放；统一接收116、131、133剩余容量/成本及最终证据交接，C125-01—C125-10持有唯一执行责任。保留完整两形状、角色/工况、176查询单元、20条及模型5决定、原目标和阶段接受；最新12单元结果另列，原19400后置及1827观察不机械重跑。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-15",
-        "reviewer": "用户采纳目标；Codex主代理核对合同与判定器影响，非独立评审或产品性能验收",
-        "scope": "仅复核部门路径筛选20会话阶段1000ms、长期300ms及单会话300ms；同步判定工具/125统一责任，保留此前实施范围和证据。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
+        "scope": "原 129、130、300 的后续测量与现行目标归属，执行状态仍在办。",
         "result": "accepted",
-        "evidence": "docs/verification/125-path-stage-target-adoption.md"
+        "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": "in_progress",
       "superseded_by": [],
@@ -1586,7 +1651,7 @@
     {
       "id": "CHNHCM-126",
       "title": "完整历史紧凑存储研究与实施",
-      "path": "docs/plans/126-compact-history-storage-research.md",
+      "path": "docs/archive/plans/126-compact-history-storage-research.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、Access及存储验证维护者",
       "owner": null,
@@ -1603,7 +1668,7 @@
         "reviewer": "用户明确要求按126方案执行并验证效果；主代理负责实施及证据核验",
         "scope": "采用126技术路线并实施S126-02—06；191.5MB仍仅为研究结果，产品容量需重新实测",
         "result": "accepted",
-        "evidence": "docs/plans/126-compact-history-storage-research.md"
+        "evidence": "docs/archive/plans/126-compact-history-storage-research.md"
       },
       "execution_status": "completed",
       "superseded_by": [],
@@ -1611,12 +1676,16 @@
         "date": "2026-11-07",
         "reason": "按用户最新决定取消200MB硬性要求；本轮研究、强类型实现及规定案例测量完成并提交。空间和延迟首失败保留；性能P1由125持有，万科全量验证另立报告。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/126-compact-history-storage-research.md"
+      }
     },
     {
       "id": "CHNHCM-127",
       "title": "万科全量组织及历史验证",
-      "path": "docs/plans/127-vanke-full-history-verification.md",
+      "path": "docs/archive/plans/127-vanke-full-history-verification.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization及容量验证维护者",
       "owner": null,
@@ -1633,7 +1702,7 @@
         "reviewer": "用户明确要求全量组织及三份文件全部历史验证；主代理执行",
         "scope": "126提交后的独立数据集验证；不要求固定200MB；用户追加固定保留、大幅并发重建及尽量并发重放历史。",
         "result": "accepted",
-        "evidence": "docs/plans/127-vanke-full-history-verification.md"
+        "evidence": "docs/archive/plans/127-vanke-full-history-verification.md"
       },
       "execution_status": "completed",
       "superseded_by": [],
@@ -1641,7 +1710,11 @@
         "date": "2026-11-07",
         "reason": "三文件全部历史迁入与独立核对、实际API/页面及容量结果记录完成；追加64路重建固定库、普通入口和重启复验完成并持久保留。容量P1及未建模扩展字段另列，不声明全M02或生产完成。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已采纳的历史名称、来源映射、并发与重建条件由 017 承接。",
+        "previous_path": "docs/plans/127-vanke-full-history-verification.md"
+      }
     },
     {
       "id": "CHNHCM-128",
@@ -1673,7 +1746,7 @@
     {
       "id": "CHNHCM-129",
       "title": "业务单元去过度设计与部门合理实现对齐计划",
-      "path": "docs/plans/129-bu-simplification-and-department-alignment.md",
+      "path": "docs/archive/plans/129-bu-simplification-and-department-alignment.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization领域、存储、体验及验证维护者",
       "owner": null,
@@ -1697,12 +1770,16 @@
         "date": "2026-11-14",
         "reason": "按129第6.4节分别判定限定实现、容量和固定环境；六项及T00—T06已有实施和复验，16组历史证据已核对，V15未达性能由125统一持有，原首失败和原目标保留。见133-capacity-closeout-preparation。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "V15 正式测量与诊断口径归 124，未达项交在办的 125。",
+        "previous_path": "docs/plans/129-bu-simplification-and-department-alignment.md"
+      }
     },
     {
       "id": "CHNHCM-130",
       "title": "部门存储去重与索引收敛优化方案",
-      "path": "docs/plans/130-department-storage-optimization.md",
+      "path": "docs/archive/plans/130-department-storage-optimization.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、存储及容量验证维护者",
       "owner": null,
@@ -1726,12 +1803,16 @@
         "date": "2026-11-09",
         "reason": "R130-T00—T06必做实现、全量保护/功能、两形状静态/增长、规定容量矩阵、资料及资源收尾完成；依据6.3限定交付，容量P1和WAL细分归因限制明示，不计全部性能通过或固定新基准交付。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "两形状静态空间、两周期增长及成本判据归 124，容量待办由 125 接收。",
+        "previous_path": "docs/plans/130-department-storage-optimization.md"
+      }
     },
     {
       "id": "CHNHCM-131",
       "title": "部门列表与父候选查询减负计划",
-      "path": "docs/plans/131-department-query-reduction.md",
+      "path": "docs/archive/plans/131-department-query-reduction.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、Access、存储、体验及容量验证维护者",
       "owner": null,
@@ -1756,7 +1837,11 @@
         "date": "2026-11-15",
         "reason": "用户明确要求“保留125统一收口，登记并关闭116/131/133”。已交付实现和阶段交接保持，剩余容量/成本/最终验证责任逐项转CHNHCM-125第8.7节；原失败及目标不变，本计划执行关闭，文档active和原历史保留。见docs/verification/125-roadmap-consolidation.md"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "查询、A/B 与父候选归 120、121，容量待验由 125 接续。",
+        "previous_path": "docs/plans/131-department-query-reduction.md"
+      }
     },
     {
       "id": "CHNHCM-132",
@@ -1782,7 +1867,7 @@
     {
       "id": "CHNHCM-133",
       "title": "过度防御与高成本处理整改路线图",
-      "path": "docs/plans/133-overdefensive-processing-remediation.md",
+      "path": "docs/archive/plans/133-overdefensive-processing-remediation.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、Access、存储、体验、容量验证及仓库维护者",
       "owner": null,
@@ -1807,7 +1892,11 @@
         "date": "2026-11-15",
         "reason": "用户明确要求“保留125统一收口，登记并关闭116/131/133”。已交付实现和阶段交接保持，剩余容量/成本/最终验证责任逐项转CHNHCM-125第8.7节；原失败及目标不变，本计划执行关闭，文档active和原历史保留。见docs/verification/125-roadmap-consolidation.md"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/133-overdefensive-processing-remediation.md"
+      }
     },
     {
       "id": "CHNHCM-134",
@@ -1839,7 +1928,7 @@
     {
       "id": "CHNHCM-135",
       "title": "真实对象头产品接入与验收计划",
-      "path": "docs/plans/135-real-head-product-integration.md",
+      "path": "docs/archive/plans/135-real-head-product-integration.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、存储、查询及验证维护者",
       "owner": null,
@@ -1858,7 +1947,11 @@
         "date": "2026-11-14",
         "reason": "用户明确采用20记录场景和模型5；模型6评估收尾并退出主线，原10000场景按需求纠正撤销，不改写原失败为通过。"
       },
-      "archive": null,
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "模型 5 及 20 条已由 017 承接，模型 6 退出与整稿在审结论按原证据留档。",
+        "previous_path": "docs/plans/135-real-head-product-integration.md"
+      },
       "adoption_decision": {
         "date": "2026-11-14",
         "model": "m02-compact-5",
@@ -1870,7 +1963,7 @@
     {
       "id": "CHNHCM-136",
       "title": "GitHub Actions节流实施计划",
-      "path": "docs/plans/136-actions-cost-reduction.md",
+      "path": "docs/archive/plans/136-actions-cost-reduction.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Repository maintainer",
       "owner": null,
@@ -1886,10 +1979,17 @@
         "result": "accepted",
         "evidence": "docs/verification/136-hosted-minutes-pilot.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "本期节流接线、首批发布及原 T06 交付观察已收口。25%–33% 整体降幅证据不足，80% 试点的投放、观察和成本结论由 137 第 12.1 节接续。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "用户要求按已交付范围归档，137 持有现行门禁、分片、测量规则及未实测试点的责任和触发条件。",
+        "previous_path": "docs/plans/136-actions-cost-reduction.md"
+      }
     },
     {
       "id": "CHNHCM-137",
@@ -1901,14 +2001,14 @@
       "status": "active",
       "type": "governance",
       "modules": [],
-      "scope": "Actions 触发、DB/API 与浏览器选测、同 PR 分片复用、等价 main 复用及正常交付观察。#19 首批复用与 4390 交接已完成。全量前置和一次性 runner 以每次交付减少 80% 托管分钟为试点目标，实际收益待验证。",
+      "scope": "Actions 门禁、影响范围、分片与复用、每次交付成本，以及一次性 runner 试点的责任、观察窗口和收益判定。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理本地复核",
-        "scope": "第14节后续候选逐片验证、历史失败和等价 main 复用。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按用户归档要求、原采纳合同及验收证据复核）",
+        "scope": "136 原门禁与观察规则的现行归属、两个窗口的分母和结论、80% 试点责任与收口条件。",
         "result": "accepted",
-        "evidence": "docs/verification/136-hosted-minutes-pilot.md"
+        "evidence": "docs/verification/136-206-plan-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -1918,7 +2018,7 @@
     {
       "id": "CHNHCM-138",
       "title": "行政区划目录交互实施方案",
-      "path": "docs/plans/138-geo-area-interactions.md",
+      "path": "docs/archive/plans/138-geo-area-interactions.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "M02资料与共享体验维护者",
       "owner": null,
@@ -1942,12 +2042,16 @@
         "date": "2026-11-19",
         "reason": "区划查询、下钻返回、详情与权限已实施并通过本地限定验收，证据见 138。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "区划目录交互及澳门层级归 201、012，原运行见 138 验证记录。",
+        "previous_path": "docs/plans/138-geo-area-interactions.md"
+      }
     },
     {
       "id": "CHNHCM-139",
       "title": "岗位列表、岗位关系与结构视图实施方案",
-      "path": "docs/plans/139-position-workspace.md",
+      "path": "docs/archive/plans/139-position-workspace.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Staffing、Organization、Access、共享体验及验证维护者",
       "owner": null,
@@ -1973,7 +2077,11 @@
         "date": "2026-11-20",
         "reason": "原批次完成 H01—H14 本地验证。岗位单一菜单、按部门找岗、按生效日调整管理上级及历史读取见 139 实施验证，2026-11-21 修订后的实际验收单列。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "岗位与层级归 312，原受评资产仍按固定提交、原路径和摘要定位。",
+        "previous_path": "docs/plans/139-position-workspace.md"
+      }
     },
     {
       "id": "CHNHCM-140",
@@ -2006,7 +2114,7 @@
     {
       "id": "CHNHCM-141",
       "title": "本地预检结果与生成物核对优化计划",
-      "path": "docs/plans/141-local-preflight.md",
+      "path": "docs/archive/plans/141-local-preflight.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "CI 与本地验证维护者",
       "owner": null,
@@ -2028,12 +2136,16 @@
         "date": "2026-11-23",
         "reason": "三项本地措施完成，受测输入、首次失败及验证边界见 141 验证记录。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/141-local-preflight.md"
+      }
     },
     {
       "id": "CHNHCM-200",
       "title": "国家地区行政区划与地点实施路线图",
-      "path": "docs/plans/200-geography-and-location-roadmap.md",
+      "path": "docs/archive/plans/200-geography-and-location-roadmap.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、体验、数据来源及验证维护者",
       "owner": null,
@@ -2058,12 +2170,16 @@
         "date": "2026-11-15",
         "reason": "首批实际能力及G5联合交付完成，状态/资产证据同步、自有资源回收；D08/D09和125其他容量P1及后置能力保持。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/200-geography-and-location-roadmap.md"
+      }
     },
     {
       "id": "CHNHCM-201",
-      "title": "国家地区行政区划与地点建设方案",
-      "path": "docs/specs/m02/201-geography-and-location-design.md",
+      "title": "国家/地区目录、行政区划目录与企业地点维护技术合同",
+      "path": "docs/specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、体验、数据来源及验证维护者",
       "owner": null,
@@ -2073,7 +2189,7 @@
         "M02",
         "X03"
       ],
-      "scope": "地理参考对象和地点的资料、日期、关系、独立存储、类型API、页面与验证方案。",
+      "scope": "全球国家/地区目录，以及中国大陆、香港、澳门、台湾的行政区划与地址分区目录、企业地点维护。覆盖来源准入、按日维护、地点地址引用、独立存储、类型 API、权限、页面和验收条件。",
       "format": "numbered",
       "review": {
         "date": "2026-11-19",
@@ -2117,7 +2233,7 @@
     {
       "id": "CHNHCM-203",
       "title": "G3必要行政区划接入实施方案",
-      "path": "docs/plans/203-g3-geo-area-admission.md",
+      "path": "docs/archive/plans/203-g3-geo-area-admission.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、数据来源、体验及验证维护者",
       "owner": null,
@@ -2142,12 +2258,16 @@
         "date": "2026-11-14",
         "reason": "G3-T00—T05交付及限定验收完成，自有资源回收；G4/G5与固定环境发布另行接续。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "G3 来源装载、准入与验证由 201 承接，原批记录可达。",
+        "previous_path": "docs/plans/203-g3-geo-area-admission.md"
+      }
     },
     {
       "id": "CHNHCM-204",
       "title": "G4地点纵向交付实施方案",
-      "path": "docs/plans/204-g4-location-implementation.md",
+      "path": "docs/archive/plans/204-g4-location-implementation.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、体验、存储及验证维护者",
       "owner": null,
@@ -2172,12 +2292,16 @@
         "date": "2026-11-15",
         "reason": "G4限定实施验收、主代理复评、状态/资产同步及自有资源回收完成；G5、国家目录容量、125其他容量P1和固定环境更新另行接续。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "G4 地点与准确地址归 201，接入归 120、121，原批 V01—18 保留。",
+        "previous_path": "docs/plans/204-g4-location-implementation.md"
+      }
     },
     {
       "id": "CHNHCM-205",
       "title": "G5地理联合验收与固定运行交付",
-      "path": "docs/plans/205-g5-geography-acceptance-and-runtime.md",
+      "path": "docs/archive/plans/205-g5-geography-acceptance-and-runtime.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、体验、存储及验证维护者",
       "owner": null,
@@ -2202,12 +2326,16 @@
         "date": "2026-11-15",
         "reason": "首批实际能力及G5联合交付完成，状态/资产证据同步、自有资源回收；D08/D09和125其他容量P1及后置能力保持。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "G5 联合验收及固定库交付归原报告、017，余下容量回交 200、125。",
+        "previous_path": "docs/plans/205-g5-geography-acceptance-and-runtime.md"
+      }
     },
     {
       "id": "CHNHCM-206",
       "title": "法律实体分阶段实施计划",
-      "path": "docs/plans/206-legal-entity-implementation.md",
+      "path": "docs/archive/plans/206-legal-entity-implementation.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、体验及验证维护者",
       "owner": null,
@@ -2226,10 +2354,17 @@
         "result": "accepted",
         "evidence": "docs/verification/206-legal-entity-plan-review.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "L1 完成限定验收，直接入职所需 L2 与 L3 均有实库证据。基础验收条件和其余主体用途已交接到 207，扩大范围按真实消费需求接续。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "用户要求按已交付范围归档，原编号及受评章节保留。207 持有 L1-V01 至 V15 及后续用途分工，当前调用方已切换。",
+        "previous_path": "docs/plans/206-legal-entity-implementation.md"
+      }
     },
     {
       "id": "CHNHCM-207",
@@ -2244,14 +2379,14 @@
         "M02",
         "X03"
       ],
-      "scope": "法律实体基础维护、后续用途声明及组织上下文绑定的阶段边界；本轮实施第一阶段。",
+      "scope": "法律实体基础资料与 L1-V01 至 V15 验收，用途与必要组织绑定、直接入职采用保护，以及其他真实消费场景的接续责任。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-15",
-        "reviewer": "Codex主代理文档复评，非独立代理或人工批准",
-        "scope": "法律实体首阶段完整合同及后续用途/绑定/M04边界，首轮两项P2已修订复核",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按用户归档要求、原采纳合同及验收证据复核）",
+        "scope": "206 基础维护 15 项验收条件、容量判据、直接入职 L2/L3 范围以及其他组织用途与运营分工。",
         "result": "accepted",
-        "evidence": "docs/verification/206-legal-entity-plan-review.md"
+        "evidence": "docs/verification/136-206-plan-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2261,7 +2396,7 @@
     {
       "id": "CHNHCM-300",
       "title": "部门列表左侧部门树实施计划",
-      "path": "docs/plans/300-department-tree-implementation.md",
+      "path": "docs/archive/plans/300-department-tree-implementation.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Organization、Access、存储、体验及验证维护者",
       "owner": null,
@@ -2286,16 +2421,20 @@
         "date": "2026-11-15",
         "reason": "用户要求按建议推进300关闭。完整输入、6份CSV、800浏览器和132290来源保护通过；60组正式12000请求零错误，41组达原目标、10组阶段接受、9组未达及36共用待验组转125第8.8节，原合成851次503及写入守卫失败保持。文档active，见docs/verification/300-closeout.md。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "部门树现行规则归 118—121，60 组历史及后续判据、未达项分别由 124、125 接续。",
+        "previous_path": "docs/plans/300-department-tree-implementation.md"
+      }
     },
     {
       "id": "CHNHCM-301",
       "title": "用户提示与异常恢复整改方案",
-      "path": "docs/plans/301-user-feedback-and-recovery.md",
+      "path": "docs/archive/plans/301-user-feedback-and-recovery.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Organization、Access、共享前端及验证维护者",
       "owner": null,
-      "status": "active",
+      "status": "superseded",
       "type": "plan",
       "modules": [
         "M02",
@@ -2311,17 +2450,30 @@
         "evidence": "docs/verification/301-user-feedback-plan-review.md"
       },
       "execution_status": "completed",
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-011",
+        "CHNHCM-012",
+        "CHNHCM-013",
+        "CHNHCM-114",
+        "CHNHCM-118",
+        "CHNHCM-119",
+        "CHNHCM-120",
+        "CHNHCM-121"
+      ],
       "closure": {
         "date": "2026-11-14",
-        "reason": "T00—T04及M02-AC-057—073限定完成，五轮主代理实施复核通过；真实DB/API、浏览器分批复验、原数据与环境交接完成，原失败保留。"
+        "reason": "T00—T04及M02-AC-057—073限定完成，五轮主代理实施复核通过；真实DB/API、浏览器分批复验、原数据与环境交接完成，原失败保留。 2026-11-26 整份有效规则已由所列合同承接，原位保留两个 6.1 入口和历史定义。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "17 项有效验收已有采纳后继，两个 6.1 历史与实施定位随原编号迁移。",
+        "previous_path": "docs/plans/301-user-feedback-and-recovery.md"
+      }
     },
     {
       "id": "CHNHCM-302",
       "title": "详情对象导航位置与响应整改",
-      "path": "docs/plans/302-detail-navigation.md",
+      "path": "docs/archive/plans/302-detail-navigation.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Organization、共享前端及验证维护者",
       "owner": null,
@@ -2346,12 +2498,16 @@
         "date": "2026-11-15",
         "reason": "位置／匹配总数及重复读取缺陷已修复，最终DB/API、相关浏览器、45300双角色十组及数据保护通过；少量诊断改善不关闭125整体容量P1。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/302-detail-navigation.md"
+      }
     },
     {
       "id": "CHNHCM-303",
       "title": "部门一级菜单调整",
-      "path": "docs/plans/303-department-primary-navigation.md",
+      "path": "docs/archive/plans/303-department-primary-navigation.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "共享前端及验证维护者",
       "owner": null,
@@ -2375,12 +2531,16 @@
         "date": "2026-11-15",
         "reason": "部门一级菜单及45300部署完成；14项选定浏览器分轮、实际双角色十项、原15表及身份摘要和构建核验通过；原失败和容量遗留保持。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/303-department-primary-navigation.md"
+      }
     },
     {
       "id": "CHNHCM-304",
       "title": "企业完整按日维护",
-      "path": "docs/plans/304-enterprise-maintenance.md",
+      "path": "docs/archive/plans/304-enterprise-maintenance.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Organization及共用前端维护者",
       "owner": null,
@@ -2405,12 +2565,16 @@
         "date": "2026-11-15",
         "reason": "唯一企业完整维护实施及限定验收完成：255根DB/API分轮通过、6条件项跳过，另3个query131专项根通过；98个不同浏览器用例、生成/检查/构建及资源收尾通过。首失败保留，固定环境未更新。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "唯一企业的初始化、期间覆盖、权限与并发判断由 120 承接，对外部门路径归 118。",
+        "previous_path": "docs/plans/304-enterprise-maintenance.md"
+      }
     },
     {
       "id": "CHNHCM-306",
       "title": "部门路径精简与案例集团根部门补全",
-      "path": "docs/plans/306-department-path-simplification.md",
+      "path": "docs/archive/plans/306-department-path-simplification.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Organization及共用前端维护者",
       "owner": null,
@@ -2434,12 +2598,16 @@
         "date": "2026-11-16",
         "reason": "部门路径精简及两个固定案例集团补全完成：23个不同DB/API根、30个浏览器用例分轮通过；219635份原BU/部门来源保持，67/63条原日期更正，双角色实际页面与构建核验通过。首失败和离线维护限制保留，原容量问题不关闭。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "部门路径、字段权限归 118—120，两个固定案例运行归 017。",
+        "previous_path": "docs/plans/306-department-path-simplification.md"
+      }
     },
     {
       "id": "CHNHCM-307",
       "title": "M03职务基础实施方案",
-      "path": "docs/plans/307-m03-job-foundation.md",
+      "path": "docs/archive/plans/307-m03-job-foundation.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Staffing、Organization、Access、体验及验证维护者",
       "owner": null,
@@ -2465,7 +2633,11 @@
         "date": "2026-11-17",
         "reason": "T01—T05及308首批16项验收完成；38根DB/API、6根领域、29项浏览器及check/build/generate通过。3100正式样本零语义错误、28个有目标组达标；3个无目标观察组容量待定，2488回执/原来源重启及资源回收通过。未提交、推送或更新固定环境。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "职务与系列的规模、角色、分组、目标和观察项由 308 第 8.1 节承接。",
+        "previous_path": "docs/plans/307-m03-job-foundation.md"
+      }
     },
     {
       "id": "CHNHCM-308",
@@ -2484,11 +2656,11 @@
       "scope": "持有 JobFamily、Job 及独立 JobFunction 的基础维护、企业日期保护、按日分类、存量与权限。职类扩展与 313 编制管理首批分别实施、分别验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-19",
-        "reviewer": "Codex 独立评审代理 job_function_review1、job_function_review2、job_function_review3",
-        "scope": "三轮独立评审。第14节 BR030—033、AC082—093，含双维候选与筛选、旧数据及准确采用、逐段判权、事务守卫和两批独立验收。原页面合同及产品证据见原评审记录。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
+        "scope": "职务基础 AC016 的输入规模、负载分组、角色、目标和观察项。",
         "result": "accepted",
-        "evidence": "docs/verification/308-job-function-contract-review.md"
+        "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2498,7 +2670,7 @@
     {
       "id": "CHNHCM-309",
       "title": "M03职级与职级阶梯实施方案",
-      "path": "docs/plans/309-m03-grade-ladder.md",
+      "path": "docs/archive/plans/309-m03-grade-ladder.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Staffing、Organization、Access、体验及验证维护者",
       "owner": null,
@@ -2524,7 +2696,11 @@
         "date": "2026-11-18",
         "reason": "T01—T04完成；G2三轮主代理评审、42尺寸角色单元、32项专项/共享页面回归、最终50根受影响分片（49PASS/1条件SKIP）、53组5300正式HTTP及4756份回执/来源重启保护通过。临时资源回收，4382保留；实际证据及限制见309-grade-g2-implementation。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/309-m03-grade-ladder.md"
+      }
     },
     {
       "id": "CHNHCM-310",
@@ -2557,7 +2733,7 @@
     {
       "id": "CHNHCM-311",
       "title": "M03岗位定义与岗位层级实施方案",
-      "path": "docs/plans/311-m03-positions.md",
+      "path": "docs/archive/plans/311-m03-positions.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Staffing、Organization、Access及体验维护者",
       "owner": null,
@@ -2583,7 +2759,11 @@
         "date": "2026-11-18",
         "reason": "完成岗位定义AC049—052、岗位层级AC053—055，两批候选分别交付。用户委托Codex在独立候选上依次完成业务签收，签收单已分别登记。正式CI与发布另行执行。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/311-m03-positions.md"
+      }
     },
     {
       "id": "CHNHCM-312",
@@ -2606,7 +2786,7 @@
         "reviewer": "Codex 主代理合同复核",
         "scope": "按日期逐案推演开放及有限引用、相互设父与历史版本；非人工业务验收。",
         "result": "accepted",
-        "evidence": "docs/plans/311-m03-positions.md"
+        "evidence": "docs/archive/plans/311-m03-positions.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2634,11 +2814,11 @@
       "scope": "首批交付部门总额、岗位定额、分配时间轴、指定日调剂和准确原件。招聘预留、任职占编、交接与差额随真实业务分批接入。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-22",
-        "reviewer": "Codex 主代理方案复核",
-        "scope": "以按日额度复核独立定额、同日调剂、未来减编、岗位改隶及部分可见范围。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 按原评审逐项复核标准、实际写入点及验证证据",
+        "scope": "部门和岗位额度、M05 招聘预留及 M04 任职占编的写入方与共同守卫；原结果查回另见 025 专项。",
         "result": "accepted",
-        "evidence": "docs/verification/315-staffing-quota-administration-review.md"
+        "evidence": "docs/verification/004-architecture-review-remediation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2648,7 +2828,7 @@
     {
       "id": "CHNHCM-314",
       "title": "M03 职类实施批次路线图",
-      "path": "docs/plans/314-m03-job-function-roadmap.md",
+      "path": "docs/archive/plans/314-m03-job-function-roadmap.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Staffing、Organization、Access、体验及验证维护者",
       "owner": null,
@@ -2675,12 +2855,16 @@
         "reason": "T01—T05 已在 308 范围完成。T05 在同一集成候选复验 AC082—089、091—093 并签收 AC090 仅 308。仅 313 与并存联验由编制首批接续。",
         "evidence": "docs/verification/314-job-function-t05-acceptance.md"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/314-m03-job-function-roadmap.md"
+      }
     },
     {
       "id": "CHNHCM-315",
       "title": "部门与岗位编制后台实施计划",
-      "path": "docs/plans/315-staffing-quota-administration.md",
+      "path": "docs/archive/plans/315-staffing-quota-administration.md",
       "owner_branch": "wt-dev-d",
       "owner_role": "Staffing、Organization、Access、体验及验证维护者",
       "owner": null,
@@ -2706,7 +2890,11 @@
         "date": "2026-11-22",
         "reason": "岗位与部门额度两批已通过本地验收。2026-11-23 在升级副本完成 AC090 跨职类菜单联验，并在隔离新岗核对零起点及最后一编。真实招聘、任职和人员事件由各源域交接，正式 CI 与发布另行记录。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/315-staffing-quota-administration.md"
+      }
     },
     {
       "id": "CHNHCM-400",
@@ -2752,16 +2940,17 @@
         "M01",
         "M02",
         "M03",
+        "M05",
         "X03"
       ],
-      "scope": "直接入职的材料、主体、岗位模式、主选择、同日动作及分批验收。",
+      "scope": "直接及未来入职的材料、主体、岗位模式、主选择、同日动作，以及从已接受录用转入职、撤销和重送的跨域验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-24",
-        "reviewer": "Codex 主代理文档复核",
-        "scope": "复核普通更正的原依据、原通知或一条误录原因撤销晋升，以及独立调动、必要依赖和旧来源。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按已采纳合同、实测及用户本轮授权复核）",
+        "scope": "两种入职来源的边界、分模式直接与未来入职、录用的准确采用、名额转换及撤销重送。",
         "result": "accepted",
-        "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+        "evidence": "docs/verification/500-personnel-roadmap-closeout.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2831,7 +3020,7 @@
     {
       "id": "CHNHCM-500",
       "title": "人员模块实施路线图",
-      "path": "docs/plans/500-personnel-roadmap.md",
+      "path": "docs/archive/plans/500-personnel-roadmap.md",
       "owner_branch": "wt-dev-f",
       "owner_role": "Personnel、Staffing、Organization、Recruiting、Access、体验及验证维护者",
       "owner": null,
@@ -2848,16 +3037,23 @@
       "scope": "人员名录与登记、用工任职、跨员工办理记录及招聘交接的交付顺序、页面继承、事实归属及独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-25",
-        "reviewer": "Codex 主代理文档复核",
-        "scope": "复核第 6.3 节十阶段的产品范围、106 同日来源、岗位及录用衔接、4386 操作样本与最终候选和主线结果。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "在办 8 个场景的原定义、合同接收方及 T05/T06 的接续条件。",
         "result": "accepted",
-        "evidence": "docs/verification/500-job-information-delivery-review.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "T00、T02 的规格与依赖已有评审，T01、T03—T06 的产品与后续整改已有逐批验收。工作关系合同与录用交接另经实库复核。501、401、506、512 已承接 8 个验收场景，范围外事项已落实接续角色与条件。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "按 014 第 8.2 节在规则采纳时同步更新现行引用，保留 500 的原锚点、方案采纳和各批验收。",
+        "previous_path": "docs/plans/500-personnel-roadmap.md"
+      }
     },
     {
       "id": "CHNHCM-501",
@@ -2875,11 +3071,11 @@
       "scope": "独立登记、主要证件防重、授权与保留、永久人员编号和业务验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-22",
-        "reviewer": "Codex 主代理顺序规格评审",
-        "scope": "复核两人同名、两人同时录入同一证号和同一张登记单再次办理，明确无证号时可登记。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按已采纳合同、实测及用户本轮授权复核）",
+        "scope": "登记防重、编号、资料权限两个现行场景及原业务验收和页面调用。",
         "result": "accepted",
-        "evidence": "docs/verification/500-registration-without-name-prompts.md"
+        "evidence": "docs/verification/500-personnel-roadmap-closeout.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2902,11 +3098,11 @@
       "scope": "人员菜单、详情各面板授权、登记、个人资料与明细、证件维护、改号、人员历史与返回。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-24",
-        "reviewer": "Codex 主代理文档复核",
-        "scope": "复核人员菜单按授权进入员工或人事事务、人员档案与任职行的原有入口。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "人员主动切签与日志返回的焦点分工，按人员编号过滤兼岗及受限读者。",
         "result": "accepted",
-        "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2943,7 +3139,7 @@
     {
       "id": "CHNHCM-504",
       "title": "M01 个人资料扩展实施方案",
-      "path": "docs/plans/504-personal-profile-extension.md",
+      "path": "docs/archive/plans/504-personal-profile-extension.md",
       "owner_branch": "wt-dev-f",
       "owner_role": "Personnel、人事业务、Access、体验及验证维护者",
       "owner": null,
@@ -2960,7 +3156,7 @@
         "reviewer": "Codex 主代理",
         "scope": "复核第一批实际依赖、同号旧库升级、分批复验、容量联验及交付记录的复用。",
         "result": "accepted",
-        "evidence": "docs/plans/504-personal-profile-extension.md"
+        "evidence": "docs/archive/plans/504-personal-profile-extension.md"
       },
       "execution_status": "completed",
       "superseded_by": [],
@@ -2968,7 +3164,11 @@
         "date": "2026-11-24",
         "reason": "四批完成当前 M01 的九栏维护、21 个弹框组合和万人容量验收。真实主岗与兼岗共享由 T04 接续。"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/504-personal-profile-extension.md"
+      }
     },
     {
       "id": "CHNHCM-505",
@@ -2986,11 +3186,11 @@
       "scope": "九栏字段和多条资料、同人共享、敏感字段授权、整页办理、事务边界与独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-24",
-        "reviewer": "Codex 主代理文档复核",
-        "scope": "核对一人一份资料、0 号及人员档案入口、兼岗详情的页签边界与九栏整页保存。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 按原评审逐项复核标准、实际写入点及验证证据",
+        "scope": "人员目录采用端口、M02 权限和事务内锁定准确来源、M01 存原采用及失败回滚。",
         "result": "accepted",
-        "evidence": "docs/verification/506-job-information-design-review.md"
+        "evidence": "docs/verification/004-architecture-review-remediation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3006,15 +3206,19 @@
       "owner": null,
       "status": "active",
       "type": "business_spec",
-      "modules": ["M04", "M03", "X03"],
-      "scope": "主兼岗、再聘、记录操作与类型绑定，以及同日晋升、调动、转正的日状态、来源、计数与部门归属。",
+      "modules": [
+        "M04",
+        "M03",
+        "X03"
+      ],
+      "scope": "主兼岗与授权计数、调动离职再聘、经理与同日动作，以及记录操作、日状态、来源和发生部门。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-24",
-        "reviewer": "Codex 主代理文档复核",
-        "scope": "核对同日联验所需试用、职级及兼岗的业务来源，以及分批使用原有验收样本的范围。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按已采纳合同、实测及用户本轮授权复核）",
+        "scope": "兼岗计数、调动离职再聘、同日动作及实际经理三个原场景与跨合同边界。",
         "result": "accepted",
-        "evidence": "docs/verification/500-job-information-delivery-review.md"
+        "evidence": "docs/verification/500-personnel-roadmap-closeout.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3030,15 +3234,19 @@
       "owner": null,
       "status": "active",
       "type": "functional_spec",
-      "modules": ["M01", "M04", "X03"],
+      "modules": [
+        "M01",
+        "M04",
+        "X03"
+      ],
       "scope": "部门树联动的任职行、主兼岗职务信息、日期轴、跨员工办理列表、原笔维护及两个入口的返回与验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-24",
-        "reviewer": "Codex 主代理文档复核",
-        "scope": "核对各阶段的档案、任职与原笔入口，离职间隔的再聘路径及跨人办理查询分批验收。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（本批修订与复核）",
+        "scope": "主兼岗面板授权、正常菜单路径、路由与原行焦点。",
         "result": "accepted",
-        "evidence": "docs/verification/500-job-information-delivery-review.md"
+        "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3048,13 +3256,18 @@
     {
       "id": "CHNHCM-508",
       "title": "人员职务信息评审问题修复实施方案",
-      "path": "docs/plans/508-job-information-remediation.md",
+      "path": "docs/archive/plans/508-job-information-remediation.md",
       "owner_branch": "wt-dev-f",
       "owner_role": "Staffing、Personnel、Recruiting、体验及验证维护者",
       "owner": null,
       "status": "active",
       "type": "plan",
-      "modules": ["M04", "M01", "M05", "X03"],
+      "modules": [
+        "M04",
+        "M01",
+        "M05",
+        "X03"
+      ],
       "scope": "500 第 6.3 节六项实测问题的修复次序、旧数据及授权保护、正常菜单与实库重新验收。",
       "format": "numbered",
       "review": {
@@ -3066,19 +3279,32 @@
       },
       "execution_status": "completed",
       "superseded_by": [],
-      "closure": {"date": "2026-11-25", "reason": "六项修复及相关回归已通过，固定 f 原库完成 00056 升级和 24 项菜单复验。"},
-      "archive": null
+      "closure": {
+        "date": "2026-11-25",
+        "reason": "六项修复及相关回归已通过，固定 f 原库完成 00056 升级和 24 项菜单复验。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/508-job-information-remediation.md"
+      }
     },
     {
       "id": "CHNHCM-509",
       "title": "在职变动、结束与再聘复评问题修复方案",
-      "path": "docs/plans/509-t04-remediation.md",
+      "path": "docs/archive/plans/509-t04-remediation.md",
       "owner_branch": "wt-dev-f",
       "owner_role": "Staffing、Personnel、Recruiting、体验与验证维护者",
       "owner": null,
       "status": "active",
       "type": "plan",
-      "modules": ["M04", "M01", "M03", "M05", "X03"],
+      "modules": [
+        "M04",
+        "M01",
+        "M03",
+        "M05",
+        "X03"
+      ],
       "scope": "500 第 6.3 节新发现的 27 项问题的 Go 业务、跨域和交互修复、旧数据处置及原环境验收。",
       "format": "numbered",
       "review": {
@@ -3090,19 +3316,31 @@
       },
       "execution_status": "completed",
       "superseded_by": [],
-      "closure": {"date": "2026-11-25", "reason": "27 项修复及 508 原六项回归通过，固定 f 原库前向升级至 00057 并完成菜单复验。"},
-      "archive": null
+      "closure": {
+        "date": "2026-11-25",
+        "reason": "27 项修复及 508 原六项回归通过，固定 f 原库前向升级至 00057 并完成菜单复验。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/509-t04-remediation.md"
+      }
     },
     {
       "id": "CHNHCM-510",
       "title": "人员页面二十项问题整改与验收",
-      "path": "docs/plans/510-personnel-page-remediation.md",
+      "path": "docs/archive/plans/510-personnel-page-remediation.md",
       "owner_branch": "wt-dev-f",
       "owner_role": "Personnel、Staffing、Recruiting、体验与验证维护者",
       "owner": null,
       "status": "active",
       "type": "plan",
-      "modules": ["M01", "M04", "M05", "X03"],
+      "modules": [
+        "M01",
+        "M04",
+        "M05",
+        "X03"
+      ],
       "scope": "500-UI-01 至 20 的人员入口、按权名录、详情与准确来源、交互及固定环境验收。",
       "format": "numbered",
       "review": {
@@ -3114,7 +3352,72 @@
       },
       "execution_status": "completed",
       "superseded_by": [],
-      "closure": {"date": "2026-11-26", "reason": "二十项页面整改已逐项复验，固定 f 原库完成桌面交接，定向业务回归及两套万人容量试验通过。"},
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "二十项页面整改已逐项复验，固定 f 原库完成桌面交接，定向业务回归及两套万人容量试验通过。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "已按 511 逐份交接持续适用条款及原批证据，依 014 按原编号物理归档。",
+        "previous_path": "docs/plans/510-personnel-page-remediation.md"
+      }
+    },
+    {
+      "id": "CHNHCM-511",
+      "title": "项目规范体系建设与文档治理方案",
+      "path": "docs/archive/plans/511-project-standards.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Repository maintainer，协同受影响的领域、体验和验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [],
+      "scope": "全仓标准覆盖面、现行合同检索、修订实施与评审的引用方式，以及已关闭计划的规则提取与归档。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（方案编写者复核）",
+        "scope": "初评四项及复评遗留的 P2。以 135 与 017 的已采纳场景、已否决候选、原文审阅和执行关闭状态核定归档前的提炼条件。",
+        "result": "accepted",
+        "evidence": "docs/verification/511-project-standards-acceptance.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "规范、模板、导航、视口与页签合同完成，008/301 试点和基线 43 份逐项交接完成；6 份物理归档，31 份原位保留，6 份暂缓有责任与触发条件。候选浏览器、文档及语义复核见实施记录。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "规范和实施方法已由 014 及模板承接，原审阅与验收引用随原编号迁移。",
+        "previous_path": "docs/plans/511-project-standards.md"
+      }
+    },
+    {
+      "id": "CHNHCM-512",
+      "title": "工作关系合同业务规格",
+      "path": "docs/specs/m04/512-employment-contracts.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Staffing 与工作关系合同经办业务维护者",
+      "owner": null,
+      "status": "active",
+      "type": "business_spec",
+      "modules": [
+        "M04",
+        "X03"
+      ],
+      "scope": "工作关系下合同的订立、续订、单独终结及离职处置，关系隔离、授权、原件和失败恢复。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按已采纳合同、实测及用户本轮授权复核）",
+        "scope": "工作关系下的合同身份、期限、前后继、独立续订、退出处置、授权与恢复。",
+        "result": "accepted",
+        "evidence": "docs/verification/500-personnel-roadmap-closeout.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
       "archive": null
     }
   ],
@@ -3380,6 +3683,417 @@
         ]
       },
       {
+        "path": "docs/verification/004-architecture-review-remediation.md",
+        "related_documents": [
+          "CHNHCM-004",
+          "CHNHCM-002",
+          "CHNHCM-025",
+          "CHNHCM-313",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "7854c12021b0bdd2c1fc23eadb6c3d2dd3bf8d7e",
+        "working_tree": "dirty",
+        "change_description": "对照评审的五项问题，修订事实归属、查询检查、目录采用、固定启停与开发技术组合。",
+        "environment": "wt-dev-f，PostgreSQL、Go、Chromium 及固定验收环境 m01-profile-f。",
+        "scope": "原评审第 1、3、4、5、6 项，含七张目标架构图和两个公开端口。",
+        "results": [
+          {
+            "check": "三个越界 SQL 反例首次复现，登记驱动的检查和本域对照通过",
+            "result": "passed",
+            "evidence": "docs/verification/004-architecture-review-remediation.md"
+          },
+          {
+            "check": "招聘录用转换、释放、免占编与身份不足，313、315 岗位和部门核编实库复验",
+            "result": "passed",
+            "evidence": "docs/verification/004-architecture-review-remediation.md"
+          },
+          {
+            "check": "M01 地址保存锁住 M02 国家、省、区县至人员发布，撤权、换版、原采用与整体失败保护",
+            "result": "passed",
+            "evidence": "docs/verification/004-architecture-review-remediation.md"
+          },
+          {
+            "check": "固定启停及原提交恢复、九项真实浏览器用例、4386 双角色和 35 张表对账",
+            "result": "passed",
+            "evidence": "docs/verification/004-architecture-review-remediation.md"
+          },
+          {
+            "check": "七张架构图中文、领域节点及箭头复核，生成产物与来源修订链核验",
+            "result": "passed",
+            "evidence": "docs/verification/004-architecture-review-remediation.md"
+          },
+          {
+            "check": "002 工具锁、本地身份及生产范围，025 历史与现行维护入口逐项核对",
+            "result": "passed",
+            "evidence": "docs/verification/004-architecture-review-remediation.md"
+          }
+        ],
+        "limitations": [
+          "已接通的录用与任职按真实接口验证。远期招聘需求和交接产品能力仍按原计划验收。"
+        ]
+      },
+      {
+        "path": "docs/verification/025-position-quota-interface-retirement.md",
+        "related_documents": [
+          "CHNHCM-025",
+          "CHNHCM-005",
+          "CHNHCM-313",
+          "CHNHCM-315"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "7854c12021b0bdd2c1fc23eadb6c3d2dd3bf8d7e",
+        "working_tree": "dirty",
+        "change_description": "承接025五条提案并撤下岗位核编旧写地址，复核已办理结果和原件。",
+        "environment": "wt-dev-f，真实旧版程序备份、独立 PostgreSQL、Go API、Chromium 和本树手工验收环境。",
+        "scope": "标准采纳、接口与客户端退出、跨版本原件及当前权限、持久环境交接。",
+        "results": [
+          {
+            "check": "00026、00027 原版备份前向恢复，四份核编回执、删除原件、原号冲突及历史权限",
+            "result": "passed",
+            "evidence": "docs/verification/025-position-quota-interface-retirement.md"
+          },
+          {
+            "check": "313 岗位核编、315 岗位核编与部门分配实库回归，旧地址返回 404",
+            "result": "passed",
+            "evidence": "docs/verification/025-position-quota-interface-retirement.md"
+          },
+          {
+            "check": "Chromium 在还原的 00027 库打开四份原件，10 项浏览器回归覆盖桌面、短屏、原生缩放和撤权",
+            "result": "passed",
+            "evidence": "docs/verification/025-position-quota-interface-retirement.md"
+          },
+          {
+            "check": "make check 及 OpenAPI 类型独立再生成比对",
+            "result": "passed",
+            "evidence": "docs/verification/025-position-quota-interface-retirement.md"
+          },
+          {
+            "check": "4386 的 API、在线构建、两角色菜单、原件及六张核编表和迁移账本对账",
+            "result": "passed",
+            "evidence": "docs/verification/025-position-quota-interface-retirement.md"
+          }
+        ],
+        "limitations": [
+          "限于岗位核编旧接口与其实际调用链。"
+        ]
+      },
+      {
+        "path": "docs/verification/136-206-plan-archive.md",
+        "related_documents": [
+          "CHNHCM-136",
+          "CHNHCM-206",
+          "CHNHCM-137",
+          "CHNHCM-207",
+          "CHNHCM-014",
+          "CHNHCM-121",
+          "CHNHCM-124",
+          "CHNHCM-125",
+          "CHNHCM-401",
+          "CHNHCM-403"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "7f71e22fba934481fb9b00dbe02298e381a9c258",
+        "working_tree": "dirty",
+        "change_description": "承接 206 验收矩阵和 136 的 CI 观察责任，在同一批次物理归档两份计划并更新引用。",
+        "environment": "wt-dev-f，本地文档、Git 原件与历史账本、独立 PostgreSQL 测试容器和真实 API。",
+        "scope": "两份计划的执行关闭与规则交接，法律实体基础、用途和直接入职的定向复验，以及两个成本窗口的范围核对。",
+        "results": [
+          {
+            "check": "法律实体基础维护、成对操作与权限、入职准备和真实采用保护四项实库/API 用例",
+            "result": "passed",
+            "evidence": "docs/verification/136-206-plan-archive.md"
+          },
+          {
+            "check": "目标配置实际承接正常业务交付后的 80% 试点测量",
+            "result": "not_run",
+            "evidence": "docs/verification/136-hosted-minutes-pilot.md"
+          },
+          {
+            "check": "尚待业务接入的其他法律实体用途及其运营办理",
+            "result": "not_run",
+            "evidence": "docs/specs/m02/207-legal-entity-design.md"
+          },
+          {
+            "check": "原 T06 十次交付及五次试点基线的固定账本复算",
+            "result": "passed",
+            "evidence": "docs/verification/136-206-plan-archive.md"
+          },
+          {
+            "check": "15 项业务验收、11 项 CI 场景及后续触发语义，归档章节、历史报告、现行入口、登记目录及仓库检查",
+            "result": "passed",
+            "evidence": "docs/verification/136-206-plan-archive.md"
+          }
+        ],
+        "limitations": [
+          "历史窗口仅支持原报告载明的结论。80% 试点仍待按 137 取得自然交付样本。全量 DB/API、浏览器、容量和固定环境沿用所引批次，其他法律实体用途由消费域在接入时验证。"
+        ]
+      },
+      {
+        "path": "docs/verification/500-personnel-roadmap-closeout.md",
+        "related_documents": [
+          "CHNHCM-500",
+          "CHNHCM-014",
+          "CHNHCM-401",
+          "CHNHCM-501",
+          "CHNHCM-506",
+          "CHNHCM-512",
+          "CHNHCM-313",
+          "CHNHCM-511"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "a54481991d7c2d0c3e4d81d113faf2d7512b37af",
+        "working_tree": "dirty",
+        "change_description": "以已采纳的 500 及各批验收为基线，承接 8 个现行场景，补入工作关系合同规格，关闭并物理归档 500。",
+        "environment": "wt-dev-f，独立 PostgreSQL 测试容器、真实 API、Git 原件及仓库文档检查。",
+        "scope": "500 执行关闭、规范与后置事项交接、归档追溯，以及劳动合同与录用入职定向复验。",
+        "results": [
+          {
+            "check": "工作关系合同及招聘录用转入职的四项实库/API 集成",
+            "result": "passed",
+            "evidence": "docs/verification/500-personnel-roadmap-closeout.md"
+          },
+          {
+            "check": "八个原场景逐项比较、唯一现行定义、长期规则和后置事项接续",
+            "result": "passed",
+            "evidence": "docs/verification/500-personnel-roadmap-closeout.md"
+          },
+          {
+            "check": "规范导航、原报告、章节锚点、登记目录与固定提交来源双向核验，仓库检查及差异检查",
+            "result": "passed",
+            "evidence": "docs/verification/500-personnel-roadmap-closeout.md"
+          }
+        ],
+        "limitations": [
+          "浏览器、全量 DB/API、容量和固定 4386 的验收沿用所引各批记录，本次定向复验仅覆盖列出的四项。"
+        ]
+      },
+      {
+        "path": "docs/verification/511-physical-archive.md",
+        "related_documents": [
+          "CHNHCM-511",
+          "CHNHCM-014",
+          "CHNHCM-016",
+          "CHNHCM-017",
+          "CHNHCM-112",
+          "CHNHCM-120",
+          "CHNHCM-124",
+          "CHNHCM-125",
+          "CHNHCM-127",
+          "CHNHCM-129",
+          "CHNHCM-130",
+          "CHNHCM-135",
+          "CHNHCM-139",
+          "CHNHCM-300",
+          "CHNHCM-301",
+          "CHNHCM-304",
+          "CHNHCM-307",
+          "CHNHCM-308"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b7526cfe0f344ee72744eeb40e911ce83d33f02a",
+        "working_tree": "dirty",
+        "change_description": "在 511 首轮交付上按用户要求变更归档规则，镜像原目录并取消年份层，更新本仓导航与定稿引用。",
+        "environment": "wt-dev-f；Python 文档检查、Git 基线和受评资料只读核对。",
+        "scope": "46 份编号文档的归档位置、历史引用等效性、六份原暂缓计划的规则和工作交接。",
+        "results": [
+          {
+            "check": "按原编号及目录归档、无年份目录和旧正文",
+            "result": "passed",
+            "evidence": "docs/verification/511-physical-archive.md"
+          },
+          {
+            "check": "已定稿报告仅改链接目的地，原锚点、受评快照与来源可回查",
+            "result": "passed",
+            "evidence": "docs/verification/511-physical-archive.md"
+          },
+          {
+            "check": "六份原暂缓计划有效条款与开放事项分别交接；文档门禁和回归夹具通过",
+            "result": "passed",
+            "evidence": "docs/verification/511-physical-archive.md"
+          }
+        ],
+        "limitations": [
+          "本次为文档及其检查工具的修订。产品办理、容量与运行结果沿用各自受测基线。"
+        ]
+      },
+      {
+        "path": "docs/verification/511-project-standards-implementation.md",
+        "related_documents": [
+          "CHNHCM-511",
+          "CHNHCM-014",
+          "CHNHCM-008",
+          "CHNHCM-011",
+          "CHNHCM-012",
+          "CHNHCM-013",
+          "CHNHCM-118",
+          "CHNHCM-119",
+          "CHNHCM-120",
+          "CHNHCM-121",
+          "CHNHCM-131",
+          "CHNHCM-138",
+          "CHNHCM-203",
+          "CHNHCM-204",
+          "CHNHCM-205",
+          "CHNHCM-301",
+          "CHNHCM-306",
+          "CHNHCM-308",
+          "CHNHCM-500",
+          "CHNHCM-502",
+          "CHNHCM-507"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "ea8e1e7f40091886796b82c5080bd3823ed010c0",
+        "working_tree": "dirty",
+        "change_description": "在已采纳的 511 上实施规范、导航和存量交接；正常菜单与键盘使用本批浏览器断言。",
+        "environment": "wt-dev-f，Python、Go、Chromium、Xvfb，本工作树另建的临时 PostgreSQL/API/Web。",
+        "scope": "511 全部实施批次、首批对象与组件、43 份存量及持续维护入口。",
+        "results": [
+          {
+            "check": "两条检索路径、独立状态分类及已关闭存量 43/43 逐份交接",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-implementation.md"
+          },
+          {
+            "check": "301 全部 17 项单一有效定义、原稿历史锚点及 008、135、500 的不同状态",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-implementation.md"
+          },
+          {
+            "check": "人员兼岗正常菜单、受限读者、日志返回、公共编辑页签、职务消费者与原生缩放",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-implementation.md"
+          },
+          {
+            "check": "文档、目录生成、相对引用和补丁检查",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-implementation.md"
+          }
+        ],
+        "limitations": [
+          "方案作者与本批复核为同一主代理。历史运行结果保留原基线。6 份暂缓的复查由表内责任方接续。"
+        ]
+      },
+      {
+        "path": "docs/verification/511-project-standards-acceptance.md",
+        "related_documents": [
+          "CHNHCM-511"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "02cb1fe40893ac6322a91bab80448d3ba0d31237",
+        "working_tree": "dirty",
+        "change_description": "以复评存证的输入为前态，修订 511 第 5.3、6.1 节。受评正文摘要及逐项核对见报告。",
+        "environment": "wt-dev-f、Python 文档治理夹具、临时目录。",
+        "scope": "方案采纳，核对 135 的部分承接及原文状态。",
+        "results": [
+          {
+            "check": "查回 017 已采纳场景、135 否决结论及原登记",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-acceptance.md"
+          },
+          {
+            "check": "草稿及在审原文交接单项通过，无整份审阅时提升状态被拒绝",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-acceptance.md"
+          }
+        ],
+        "limitations": [
+          "由方案编写者复核，治理批次及页面实测在实施记录中单独判定。"
+        ]
+      },
+      {
+        "path": "docs/verification/511-project-standards-rereview.md",
+        "related_documents": [
+          "CHNHCM-511"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "02cb1fe40893ac6322a91bab80448d3ba0d31237",
+        "working_tree": "dirty",
+        "change_description": "受评输入是未提交的 511 修订稿、任务导航及登记表、首页、规格和验证目录的增量。六份输入的可重放差异、前态和摘要见复评记录。",
+        "environment": "wt-dev-f 本地工作树、Git、jq、Python 文档治理检查器及临时目录。",
+        "scope": "初评两项 P1 和两项 P2，另用 135 的真实登记状态及已采纳、已否决决定检验逐条提炼。",
+        "results": [
+          {
+            "check": "核对 012 和 308 的视口及历史矩阵、301 条款和原稿交接、页签两种焦点预期、首页完整在办及待审分类",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-rereview.md"
+          },
+          {
+            "check": "隔离验证取得条款依据后保留在审原文可通过，缺少整份接受结论时将原文改为 active 被拒绝",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-rereview.md"
+          },
+          {
+            "check": "按 511 第 5.3 节为在审且执行已完成的原文选择部分承接路径",
+            "result": "failed",
+            "evidence": "docs/verification/511-project-standards-rereview.md"
+          },
+          {
+            "check": "受评候选的 make docs、git diff --check、四项定向治理回归及六份输入逐字节重放",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-rereview.md"
+          }
+        ],
+        "limitations": [
+          "由方案编写者复评。范围为文档和治理规则。301 原仓的受评原稿由获权维护者在试点核验，产品实测和存量归档由实施批次留证。"
+        ]
+      },
+      {
+        "path": "docs/verification/511-project-standards-review.md",
+        "related_documents": [
+          "CHNHCM-511"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "4488d58c7029a69be36d360f1f9cdaf27357893b",
+        "working_tree": "dirty",
+        "change_description": "受评输入含未提交的 511 正文与规范导航，以及登记表、文档首页、规格目录的 511 批次增量。正文及导航摘要见报告。",
+        "environment": "wt-dev-f 本地工作树，Git 快照、Python 标准库、文档治理检查器及隔离临时目录。",
+        "scope": "方案盘点、入口定位、现行条款一致性、定稿报告对已完成计划的引用、原位提取稳定 ID、组件用法与批次验收。",
+        "results": [
+          {
+            "check": "原盘点基线、稳定定义计数和三条两跳规范查询",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-review.md"
+          },
+          {
+            "check": "扫描 291 份定稿报告的仓内直链，复核 301 旧片段，验证现行定义重复拒绝及整体替代后原位保留两种情形",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-review.md"
+          },
+          {
+            "check": "受评初稿的 make docs、git diff --check 与三项定向治理回归",
+            "result": "passed",
+            "evidence": "docs/verification/511-project-standards-review.md"
+          },
+          {
+            "check": "方案采纳条件的语义评审，现行冲突、原位提取、组件交付及四类入口验收各有待修订项",
+            "result": "failed",
+            "evidence": "docs/verification/511-project-standards-review.md"
+          }
+        ],
+        "limitations": [
+          "由方案编写者复核。反向引用统计限于已登记定稿报告中的仓内 Markdown 直接链接。产品运行、私有附件及实际批量归档属于各自交付范围。"
+        ]
+      },
+      {
         "path": "docs/verification/012-desktop-page-acceptance.md",
         "related_documents": [
           "CHNHCM-012",
@@ -3536,7 +4250,20 @@
       },
       {
         "path": "docs/verification/500-personnel-entry-and-date-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-123", "CHNHCM-124", "CHNHCM-313", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-121",
+          "CHNHCM-123",
+          "CHNHCM-124",
+          "CHNHCM-313",
+          "CHNHCM-402",
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-502",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-509"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-26",
@@ -3546,16 +4273,46 @@
         "environment": "wt-dev-f 的固定 m01-profile-f，Web 4386、API 8386、DB 54376，有界面 Chromium 140.0.7339.186，本地合成样本。",
         "scope": "正常菜单中的人员列表和详情、职务信息、本人多任职与办理历史，按四轮核对同构建的参考页面、专项日期任务、实施合同及浏览器断言。本人和任职详情覆盖五种 100% 视口及关键流程原生 200%。",
         "results": [
-          {"check": "用户指出的四项，500-UI-12 至 15，普通人员入口、本人页签、日期轴对齐及常驻查看日期", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
-          {"check": "500-UI-16 至 20，多任职选择、菜单当前项、办理历史日期、返回动作名称及日期轴顺序", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
-          {"check": "只读者的资料入口、首聘到岗日、办理期间筛选、部门编制指定日统计及参考日期轴", "result": "passed", "evidence": "docs/verification/data/500-personnel-entry-and-date-review/observations.json"},
-          {"check": "本次 9 项问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"}
+          {
+            "check": "用户指出的四项，500-UI-12 至 15，普通人员入口、本人页签、日期轴对齐及常驻查看日期",
+            "result": "failed",
+            "evidence": "docs/verification/500-personnel-entry-and-date-review.md"
+          },
+          {
+            "check": "500-UI-16 至 20，多任职选择、菜单当前项、办理历史日期、返回动作名称及日期轴顺序",
+            "result": "failed",
+            "evidence": "docs/verification/500-personnel-entry-and-date-review.md"
+          },
+          {
+            "check": "只读者的资料入口、首聘到岗日、办理期间筛选、部门编制指定日统计及参考日期轴",
+            "result": "passed",
+            "evidence": "docs/verification/data/500-personnel-entry-and-date-review/observations.json"
+          },
+          {
+            "check": "本次 9 项问题的修复后复验",
+            "result": "not_run",
+            "evidence": "docs/verification/500-personnel-entry-and-date-review.md"
+          }
         ],
-        "limitations": ["固定环境使用现有合成样本，仅执行浏览、读取、选择及取消。", "固定清单与本树另有 4 个后端集成测试和 3 个生成模型不同。此次未复跑全套业务、权限动态变更或原生 400%，结论限定在记录的实页路径。"]
+        "limitations": [
+          "固定环境使用现有合成样本，仅执行浏览、读取、选择及取消。",
+          "固定清单与本树另有 4 个后端集成测试和 3 个生成模型不同。此次未复跑全套业务、权限动态变更或原生 400%，结论限定在记录的实页路径。"
+        ]
       },
       {
         "path": "docs/verification/500-personnel-page-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-505", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-121",
+          "CHNHCM-402",
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-502",
+          "CHNHCM-505",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-509"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-26",
@@ -3565,13 +4322,41 @@
         "environment": "wt-dev-f，固定 m01-profile-f（Web 4386 / API 8386 / DB 54376），有界面 Chromium 140.0.7339.186，管理员、只读账号及合成样本。正式保存与动态授权另用一次性 PostgreSQL 环境。",
         "scope": "对照业务单元及职务参考页，审查人员、任职、跨员工办理、合同及录用的列表、详情、页签、时间轴、表单和返回。五种 100% 视口，关键交互原生 200%，只读明细补查 400%。",
         "results": [
-          {"check": "500-UI-01 至 02，跨员工更正的本人标识、旧办理修订与当次任职的来源", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
-          {"check": "500-UI-03 至 10，跨页定位、撤销状态、生效日期、详情和页签、整单操作、列表筛选与排序", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
-          {"check": "500-UI-11，登记姓名的可见及辅助技术必填标识", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
-          {"check": "两岗一人的去重计数、档案草稿放弃、合同前后继与原件返回的指定样本", "result": "passed", "evidence": "docs/verification/500-personnel-page-review.md"},
-          {"check": "首轮企业维护前置 4 项通过、1 项请求失败，人员 3 项未启动", "result": "failed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
-          {"check": "人员 3 项独立浏览器复跑，包括地点保存及更正、仅见兼岗、动态授权", "result": "passed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
-          {"check": "11 项页面问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-page-review.md"}
+          {
+            "check": "500-UI-01 至 02，跨员工更正的本人标识、旧办理修订与当次任职的来源",
+            "result": "failed",
+            "evidence": "docs/verification/500-personnel-page-review.md"
+          },
+          {
+            "check": "500-UI-03 至 10，跨页定位、撤销状态、生效日期、详情和页签、整单操作、列表筛选与排序",
+            "result": "failed",
+            "evidence": "docs/verification/500-personnel-page-review.md"
+          },
+          {
+            "check": "500-UI-11，登记姓名的可见及辅助技术必填标识",
+            "result": "failed",
+            "evidence": "docs/verification/500-personnel-page-review.md"
+          },
+          {
+            "check": "两岗一人的去重计数、档案草稿放弃、合同前后继与原件返回的指定样本",
+            "result": "passed",
+            "evidence": "docs/verification/500-personnel-page-review.md"
+          },
+          {
+            "check": "首轮企业维护前置 4 项通过、1 项请求失败，人员 3 项未启动",
+            "result": "failed",
+            "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"
+          },
+          {
+            "check": "人员 3 项独立浏览器复跑，包括地点保存及更正、仅见兼岗、动态授权",
+            "result": "passed",
+            "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"
+          },
+          {
+            "check": "11 项页面问题的修复后复验",
+            "result": "not_run",
+            "evidence": "docs/verification/500-personnel-page-review.md"
+          }
         ],
         "limitations": [
           "固定验收库使用现有合成样本，草稿取消。原生 400% 仅核对只读资料行明细及退出归焦。",
@@ -3580,7 +4365,15 @@
       },
       {
         "path": "docs/verification/509-t04-remediation-implementation.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508", "CHNHCM-509"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-508",
+          "CHNHCM-509"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-25",
@@ -3590,17 +4383,48 @@
         "environment": "固定 f 工作树，隔离 PostgreSQL 和 Chromium，手工环境 4386。",
         "scope": "T04 十阶段及 508 六项的相关人员、岗位、录用、页面与保留数据。验证 27 项修复及固定 4386 交接。",
         "results": [
-          {"check": "早期实库及菜单回归暴露调入部门、办理导航和员工列表返回等问题", "result": "failed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
-          {"check": "49 项 PostgreSQL 回归、旧库升级与重跑、稳定决定及字段授权专项", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
-          {"check": "最新候选 143 项完整菜单、五种 100% 视口、原生 200% 及独立反例复验", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
-          {"check": "固定原库 00057、原样本及 24 项菜单、36 张业务表和四张授权表全行比对", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"},
-          {"check": "文档、边界、Go、前端类型、OpenAPI 客户端一致性及差异检查", "result": "passed", "evidence": "docs/verification/509-t04-remediation-implementation.md"}
+          {
+            "check": "早期实库及菜单回归暴露调入部门、办理导航和员工列表返回等问题",
+            "result": "failed",
+            "evidence": "docs/verification/509-t04-remediation-implementation.md"
+          },
+          {
+            "check": "49 项 PostgreSQL 回归、旧库升级与重跑、稳定决定及字段授权专项",
+            "result": "passed",
+            "evidence": "docs/verification/509-t04-remediation-implementation.md"
+          },
+          {
+            "check": "最新候选 143 项完整菜单、五种 100% 视口、原生 200% 及独立反例复验",
+            "result": "passed",
+            "evidence": "docs/verification/509-t04-remediation-implementation.md"
+          },
+          {
+            "check": "固定原库 00057、原样本及 24 项菜单、36 张业务表和四张授权表全行比对",
+            "result": "passed",
+            "evidence": "docs/verification/509-t04-remediation-implementation.md"
+          },
+          {
+            "check": "文档、边界、Go、前端类型、OpenAPI 客户端一致性及差异检查",
+            "result": "passed",
+            "evidence": "docs/verification/509-t04-remediation-implementation.md"
+          }
         ],
-        "limitations": ["2026-11-25 的实测覆盖本地工作树和固定 f。原生 400% 沿用 508 已确认范围，本次未执行。主线集成以随后 PR 的正式检查为准。"]
+        "limitations": [
+          "2026-11-25 的实测覆盖本地工作树和固定 f。原生 400% 沿用 508 已确认范围，本次未执行。主线集成以随后 PR 的正式检查为准。"
+        ]
       },
       {
         "path": "docs/verification/509-t04-remediation-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-313", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508", "CHNHCM-509"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-313",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-508",
+          "CHNHCM-509"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-25",
@@ -3610,10 +4434,20 @@
         "environment": "固定 f 的产品源码、现行合同及前轮实库和菜单记录。",
         "scope": "509 的分批依赖、交易边界、历史和数据处置、交互与逐项验收。",
         "results": [
-          {"check": "首轮领域、同日动作及页面三方独立审查", "result": "failed", "evidence": "docs/verification/509-t04-remediation-review.md"},
-          {"check": "修订分项回审及第二轮整案独立评审", "result": "passed", "evidence": "docs/verification/509-t04-remediation-review.md"}
+          {
+            "check": "首轮领域、同日动作及页面三方独立审查",
+            "result": "failed",
+            "evidence": "docs/verification/509-t04-remediation-review.md"
+          },
+          {
+            "check": "修订分项回审及第二轮整案独立评审",
+            "result": "passed",
+            "evidence": "docs/verification/509-t04-remediation-review.md"
+          }
         ],
-        "limitations": ["此记录评价实施方案。产品结果由本次产品验证记录单列。"]
+        "limitations": [
+          "此记录评价实施方案。产品结果由本次产品验证记录单列。"
+        ]
       },
       {
         "path": "docs/verification/500-t04-implementation-rereview.md",
@@ -3730,7 +4564,15 @@
       },
       {
         "path": "docs/verification/508-job-information-remediation-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-106",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507",
+          "CHNHCM-508"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-25",
@@ -3740,16 +4582,43 @@
         "environment": "固定 f 本地文档工作区、d981fed8 产品源码与上轮同版实库和菜单的复核证据。",
         "scope": "六项产品反例的根因、实施可行性、已有数据处置、复验判据和业务交接。",
         "results": [
-          {"check": "六项原反例、业务合同和当前代码逐项对照", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
-          {"check": "首轮方案意见修订、六种登记顺序及归属与授权计数复算", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
-          {"check": "文档治理、源码边界、变更链接锚点及空白检查", "result": "passed", "evidence": "docs/verification/508-job-information-remediation-review.md"},
-          {"check": "修复版本的数据库、API 和菜单验收", "result": "not_run", "evidence": "docs/plans/508-job-information-remediation.md"}
+          {
+            "check": "六项原反例、业务合同和当前代码逐项对照",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-remediation-review.md"
+          },
+          {
+            "check": "首轮方案意见修订、六种登记顺序及归属与授权计数复算",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-remediation-review.md"
+          },
+          {
+            "check": "文档治理、源码边界、变更链接锚点及空白检查",
+            "result": "passed",
+            "evidence": "docs/verification/508-job-information-remediation-review.md"
+          },
+          {
+            "check": "修复版本的数据库、API 和菜单验收",
+            "result": "not_run",
+            "evidence": "docs/archive/plans/508-job-information-remediation.md"
+          }
         ],
-        "limitations": ["本次交付实施方案及其文档评审。新实现、旧库纠正和产品重新验收随实施执行。"]
+        "limitations": [
+          "本次交付实施方案及其文档评审。新实现、旧库纠正和产品重新验收随实施执行。"
+        ]
       },
       {
         "path": "docs/verification/500-job-information-delivery-review.md",
-        "related_documents": ["CHNHCM-106", "CHNHCM-313", "CHNHCM-400", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "related_documents": [
+          "CHNHCM-106",
+          "CHNHCM-313",
+          "CHNHCM-400",
+          "CHNHCM-401",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-25",
@@ -3759,20 +4628,64 @@
         "environment": "独立 PostgreSQL、API 与浏览器。固定 f 的 m01-profile-f，Web 4386、API 8386、DB 54376。",
         "scope": "实施顺序、旧库前向升级、正常办理、撤权、重送、并发回滚、跨模块样本与原验收库交接。",
         "results": [
-          {"check": "比对现有首单约束、单笔接口和 404 交接，逐项对照实施步骤与业务样本", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
-          {"check": "核对依赖图无环，分别移去后续能力复核查询、共同办理及组合联验能否独立交付", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
-          {"check": "首轮仓库检查发现三个四级标题缺少编号", "result": "failed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
-          {"check": "补齐编号后文档治理、仓库资料、领域边界、改写链接及差异空白复验", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
-          {"check": "方案复核当日的 T04 产品升级、接口、数据库及正常菜单实施验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"},
-          {"check": "十阶段真实办理、旧库升级、数据库约束、API 及权限恢复场景", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
-          {"check": "五种常规视口及关键原生 200% 的正常菜单和固定 4386 原库样本", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"},
-          {"check": "各阶段最终候选三项汇总、必要分片、实际合并树及主线三项验证", "result": "passed", "evidence": "docs/verification/500-job-information-delivery-review.md"}
+          {
+            "check": "比对现有首单约束、单笔接口和 404 交接，逐项对照实施步骤与业务样本",
+            "result": "passed",
+            "evidence": "docs/verification/500-job-information-delivery-review.md"
+          },
+          {
+            "check": "核对依赖图无环，分别移去后续能力复核查询、共同办理及组合联验能否独立交付",
+            "result": "passed",
+            "evidence": "docs/verification/500-job-information-delivery-review.md"
+          },
+          {
+            "check": "首轮仓库检查发现三个四级标题缺少编号",
+            "result": "failed",
+            "evidence": "docs/verification/500-job-information-delivery-review.md"
+          },
+          {
+            "check": "补齐编号后文档治理、仓库资料、领域边界、改写链接及差异空白复验",
+            "result": "passed",
+            "evidence": "docs/verification/500-job-information-delivery-review.md"
+          },
+          {
+            "check": "方案复核当日的 T04 产品升级、接口、数据库及正常菜单实施验收",
+            "result": "not_run",
+            "evidence": "docs/archive/plans/500-personnel-roadmap.md"
+          },
+          {
+            "check": "十阶段真实办理、旧库升级、数据库约束、API 及权限恢复场景",
+            "result": "passed",
+            "evidence": "docs/verification/500-job-information-delivery-review.md"
+          },
+          {
+            "check": "五种常规视口及关键原生 200% 的正常菜单和固定 4386 原库样本",
+            "result": "passed",
+            "evidence": "docs/verification/500-job-information-delivery-review.md"
+          },
+          {
+            "check": "各阶段最终候选三项汇总、必要分片、实际合并树及主线三项验证",
+            "result": "passed",
+            "evidence": "docs/verification/500-job-information-delivery-review.md"
+          }
         ],
-        "limitations": ["范围为 500 第 6.3 节，其他路线图项目按各自专项推进。"]
+        "limitations": [
+          "范围为 500 第 6.3 节，其他路线图项目按各自专项推进。"
+        ]
       },
       {
         "path": "docs/verification/506-job-information-direct-entry-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-313", "CHNHCM-401", "CHNHCM-402", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-106",
+          "CHNHCM-313",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-24",
@@ -3782,18 +4695,55 @@
         "environment": "wt-dev-f 本地文档工作区。",
         "scope": "普通维护、误录撤销、已履职补录、共同通知及同日归属的操作负担与业务边界。",
         "results": [
-          {"check": "五项修订的业务、页面、技术合同及路线图互查", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
-          {"check": "地点更正、门店岗实际用量和 106 的同日状态、顺序与次数复算", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
-          {"check": "文档治理与仓库、领域边界、变更链接、锚点及差异空白", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
-          {"check": "附加本地分支引用检查，缺少 wt-dev-a 至 wt-dev-d 的本地分支", "result": "failed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
-          {"check": "与登记表核对 main 及六个固定分支的 origin 跟踪引用", "result": "passed", "evidence": "docs/verification/506-job-information-direct-entry-review.md"},
-          {"check": "T04 页面、Go、数据库及 API 的产品验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+          {
+            "check": "五项修订的业务、页面、技术合同及路线图互查",
+            "result": "passed",
+            "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+          },
+          {
+            "check": "地点更正、门店岗实际用量和 106 的同日状态、顺序与次数复算",
+            "result": "passed",
+            "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+          },
+          {
+            "check": "文档治理与仓库、领域边界、变更链接、锚点及差异空白",
+            "result": "passed",
+            "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+          },
+          {
+            "check": "附加本地分支引用检查，缺少 wt-dev-a 至 wt-dev-d 的本地分支",
+            "result": "failed",
+            "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+          },
+          {
+            "check": "与登记表核对 main 及六个固定分支的 origin 跟踪引用",
+            "result": "passed",
+            "evidence": "docs/verification/506-job-information-direct-entry-review.md"
+          },
+          {
+            "check": "T04 页面、Go、数据库及 API 的产品验收",
+            "result": "not_run",
+            "evidence": "docs/archive/plans/500-personnel-roadmap.md"
+          }
         ],
-        "limitations": ["复核限于设计合同及合成资料，T04 功能按路线图另行签收。"]
+        "limitations": [
+          "复核限于设计合同及合成资料，T04 功能按路线图另行签收。"
+        ]
       },
       {
         "path": "docs/verification/506-same-day-actions-design-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-310", "CHNHCM-312", "CHNHCM-313", "CHNHCM-401", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-106",
+          "CHNHCM-310",
+          "CHNHCM-312",
+          "CHNHCM-313",
+          "CHNHCM-401",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-506",
+          "CHNHCM-507"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-24",
@@ -3803,16 +4753,42 @@
         "environment": "wt-dev-f 本地文档工作区。",
         "scope": "逐项核对晋升、专用共同提交、原笔撤销、业务先后与关系转正发生部门。",
         "results": [
-          {"check": "106 反例、M03 资格与首单实物对照", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
-          {"check": "五步日状态及次数、顺序互换、岗位职级组合与关系转正部门的独立复算", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
-          {"check": "文档治理回归、仓库资料、领域边界、变更链接与锚点、差异和新文稿空白", "result": "passed", "evidence": "docs/verification/506-same-day-actions-design-review.md"},
-          {"check": "T04 同日办理的真实数据库、接口与正常菜单验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+          {
+            "check": "106 反例、M03 资格与首单实物对照",
+            "result": "passed",
+            "evidence": "docs/verification/506-same-day-actions-design-review.md"
+          },
+          {
+            "check": "五步日状态及次数、顺序互换、岗位职级组合与关系转正部门的独立复算",
+            "result": "passed",
+            "evidence": "docs/verification/506-same-day-actions-design-review.md"
+          },
+          {
+            "check": "文档治理回归、仓库资料、领域边界、变更链接与锚点、差异和新文稿空白",
+            "result": "passed",
+            "evidence": "docs/verification/506-same-day-actions-design-review.md"
+          },
+          {
+            "check": "T04 同日办理的真实数据库、接口与正常菜单验收",
+            "result": "not_run",
+            "evidence": "docs/archive/plans/500-personnel-roadmap.md"
+          }
         ],
-        "limitations": ["本次复核文档及设计样本。T04 的事务、授权、页面、运行成本和前向升级随产品交付验证。"]
+        "limitations": [
+          "本次复核文档及设计样本。T04 的事务、授权、页面、运行成本和前向升级随产品交付验证。"
+        ]
       },
       {
         "path": "docs/verification/507-personnel-action-register-design-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-403", "CHNHCM-500", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-106",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-502",
+          "CHNHCM-506",
+          "CHNHCM-507"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-24",
@@ -3822,16 +4798,45 @@
         "environment": "wt-dev-f 本地文档工作区。",
         "scope": "区分任职行与办理行，复核跨人、跨日期、同一办理身份、发生部门和授权范围。",
         "results": [
-          {"check": "对照当前人员路由、原笔接口及待办归属", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
-          {"check": "两人四笔样本、关系级办理去重、发生部门、日期与受限一笔的独立复算", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
-          {"check": "文档及治理回归、领域边界、链接与锚点、差异及未跟踪文件空白", "result": "passed", "evidence": "docs/verification/507-personnel-action-register-design-review.md"},
-          {"check": "跨人员办理列表的真实 DB/API 与菜单验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+          {
+            "check": "对照当前人员路由、原笔接口及待办归属",
+            "result": "passed",
+            "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+          },
+          {
+            "check": "两人四笔样本、关系级办理去重、发生部门、日期与受限一笔的独立复算",
+            "result": "passed",
+            "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+          },
+          {
+            "check": "文档及治理回归、领域边界、链接与锚点、差异及未跟踪文件空白",
+            "result": "passed",
+            "evidence": "docs/verification/507-personnel-action-register-design-review.md"
+          },
+          {
+            "check": "跨人员办理列表的真实 DB/API 与菜单验收",
+            "result": "not_run",
+            "evidence": "docs/archive/plans/500-personnel-roadmap.md"
+          }
         ],
-        "limitations": ["本记录限于文稿、已有源代码和接口基线。新页面及跨人查询按 T04 分批实施。"]
+        "limitations": [
+          "本记录限于文稿、已有源代码和接口基线。新页面及跨人查询按 T04 分批实施。"
+        ]
       },
       {
         "path": "docs/verification/506-job-information-design-review.md",
-        "related_documents": ["CHNHCM-012", "CHNHCM-106", "CHNHCM-401", "CHNHCM-402", "CHNHCM-403", "CHNHCM-500", "CHNHCM-502", "CHNHCM-505", "CHNHCM-506", "CHNHCM-507"],
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-106",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-502",
+          "CHNHCM-505",
+          "CHNHCM-506",
+          "CHNHCM-507"
+        ],
         "format": "numbered",
         "status": "final",
         "date": "2026-11-24",
@@ -3841,13 +4846,35 @@
         "environment": "公共 wt-dev-f 文档工作区，本地 Bugs-And-Blossoms 固定提交、Oracle 官方文档、Odoo 固定提交。",
         "scope": "设计采用、按人发号、再聘沿用 0、部门筛选、页签授权、同日处理、首单升级及分批验收预期。",
         "results": [
-          {"check": "对照原始依据、首单实物并逐项核对业务与页面预期", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
-          {"check": "初次补充链接扫描重复读取文件清单，主动中止", "result": "interrupted", "evidence": "docs/verification/506-job-information-design-review.md"},
-          {"check": "文档回归和仓库资料、领域边界、差异空白、链接与锚点及来源摘要复核", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
-          {"check": "主岗终身 0 号与再聘、兼岗不回收、部门内多行及页签样本的文档复核", "result": "passed", "evidence": "docs/verification/506-job-information-design-review.md"},
-          {"check": "职务信息新页签、多笔办理与主兼岗的产品验收", "result": "not_run", "evidence": "docs/plans/500-personnel-roadmap.md"}
+          {
+            "check": "对照原始依据、首单实物并逐项核对业务与页面预期",
+            "result": "passed",
+            "evidence": "docs/verification/506-job-information-design-review.md"
+          },
+          {
+            "check": "初次补充链接扫描重复读取文件清单，主动中止",
+            "result": "interrupted",
+            "evidence": "docs/verification/506-job-information-design-review.md"
+          },
+          {
+            "check": "文档回归和仓库资料、领域边界、差异空白、链接与锚点及来源摘要复核",
+            "result": "passed",
+            "evidence": "docs/verification/506-job-information-design-review.md"
+          },
+          {
+            "check": "主岗终身 0 号与再聘、兼岗不回收、部门内多行及页签样本的文档复核",
+            "result": "passed",
+            "evidence": "docs/verification/506-job-information-design-review.md"
+          },
+          {
+            "check": "职务信息新页签、多笔办理与主兼岗的产品验收",
+            "result": "not_run",
+            "evidence": "docs/archive/plans/500-personnel-roadmap.md"
+          }
         ],
-        "limitations": ["本次为 Codex 主代理文稿复核。实施、运行时分权及用户菜单验收随相应产品批次进行。"]
+        "limitations": [
+          "本次为 Codex 主代理文稿复核。实施、运行时分权及用户菜单验收随相应产品批次进行。"
+        ]
       },
       {
         "path": "docs/verification/504-personal-profile-fourth-batch.md",
@@ -3910,7 +4937,7 @@
           {
             "check": "真实主岗与兼岗的共享资料",
             "result": "not_run",
-            "evidence": "docs/plans/504-personal-profile-extension.md"
+            "evidence": "docs/archive/plans/504-personal-profile-extension.md"
           }
         ],
         "limitations": [
@@ -3958,7 +4985,7 @@
           {
             "check": "第四批账户、健康、九栏容量及 T04 兼岗共享",
             "result": "not_run",
-            "evidence": "docs/plans/504-personal-profile-extension.md"
+            "evidence": "docs/archive/plans/504-personal-profile-extension.md"
           },
           {
             "check": "公共基线及旧 f 账本升级、教育凭证与首单回归，17 个实库测试根和 12 项 Chromium 通过",
@@ -4193,7 +5220,7 @@
           {
             "check": "第三、四批栏目、完整九栏容量及真实兼岗",
             "result": "not_run",
-            "evidence": "docs/plans/504-personal-profile-extension.md"
+            "evidence": "docs/archive/plans/504-personal-profile-extension.md"
           }
         ],
         "limitations": [
@@ -4244,7 +5271,7 @@
           {
             "check": "后续六栏、其余十五个弹框和真实兼岗共享",
             "result": "not_run",
-            "evidence": "docs/plans/504-personal-profile-extension.md"
+            "evidence": "docs/archive/plans/504-personal-profile-extension.md"
           }
         ],
         "limitations": [
@@ -4291,7 +5318,7 @@
           {
             "check": "CHNHCM 七类弹框产品对照验收",
             "result": "not_run",
-            "evidence": "docs/plans/504-personal-profile-extension.md"
+            "evidence": "docs/archive/plans/504-personal-profile-extension.md"
           }
         ],
         "limitations": [
@@ -4343,7 +5370,7 @@
           {
             "check": "CHNHCM 九栏产品实施、真实 DB/API、菜单及容量业务验收",
             "result": "not_run",
-            "evidence": "docs/plans/504-personal-profile-extension.md"
+            "evidence": "docs/archive/plans/504-personal-profile-extension.md"
           }
         ],
         "limitations": [
@@ -4484,7 +5511,7 @@
           {
             "check": "新版系统实施与产品验收",
             "result": "not_run",
-            "evidence": "docs/plans/500-personnel-roadmap.md"
+            "evidence": "docs/archive/plans/500-personnel-roadmap.md"
           }
         ],
         "limitations": [
@@ -4526,7 +5553,7 @@
           {
             "check": "修订后的真实产品、数据库升级与浏览器验收",
             "result": "not_run",
-            "evidence": "docs/plans/500-personnel-roadmap.md"
+            "evidence": "docs/archive/plans/500-personnel-roadmap.md"
           }
         ],
         "limitations": [
@@ -5591,7 +6618,7 @@
           {
             "check": "核编产品、真实 PostgreSQL/API 与正常菜单验收",
             "result": "not_run",
-            "evidence": "docs/plans/315-staffing-quota-administration.md"
+            "evidence": "docs/archive/plans/315-staffing-quota-administration.md"
           }
         ],
         "limitations": [
@@ -5642,7 +6669,7 @@
           {
             "check": "产品实现与真实业务验收",
             "result": "not_run",
-            "evidence": "docs/plans/315-staffing-quota-administration.md"
+            "evidence": "docs/archive/plans/315-staffing-quota-administration.md"
           }
         ],
         "limitations": [
@@ -5731,7 +6758,7 @@
           {
             "check": "T03—T05 的职务双维写入、九列导出和集成签收",
             "result": "not_run",
-            "evidence": "docs/plans/314-m03-job-function-roadmap.md"
+            "evidence": "docs/archive/plans/314-m03-job-function-roadmap.md"
           }
         ],
         "limitations": [
@@ -5794,7 +6821,7 @@
           {
             "check": "真实职类上线后的目录、迁移与原提交、九列导出和浏览器验收",
             "result": "not_run",
-            "evidence": "docs/plans/314-m03-job-function-roadmap.md"
+            "evidence": "docs/archive/plans/314-m03-job-function-roadmap.md"
           }
         ],
         "limitations": [
@@ -5846,7 +6873,7 @@
           {
             "check": "职类产品实施、真实升级库及 PostgreSQL/API、浏览器和业务签收",
             "result": "not_run",
-            "evidence": "docs/plans/314-m03-job-function-roadmap.md"
+            "evidence": "docs/archive/plans/314-m03-job-function-roadmap.md"
           }
         ],
         "limitations": [
@@ -18794,7 +19821,7 @@
           {
             "check": "AC045—056产品／DB/API／浏览器／新容量",
             "result": "not_run",
-            "evidence": "docs/plans/300-department-tree-implementation.md"
+            "evidence": "docs/archive/plans/300-department-tree-implementation.md"
           }
         ],
         "limitations": [
@@ -19040,7 +20067,7 @@
           {
             "check": "产品实施及M02-AC-057—073真实验收",
             "result": "not_run",
-            "evidence": "docs/plans/301-user-feedback-and-recovery.md"
+            "evidence": "docs/archive/plans/301-user-feedback-and-recovery.md"
           }
         ],
         "limitations": [

@@ -1,6 +1,6 @@
 # CHNHCM-500 T00 人员登记与名录规格评审
 
-2026-11-22，T00 完成。三份规格经 Codex 主代理四轮顺序评审定稿，T01 可以据此独立实施。人员登记不依赖用人单位、岗位、录用或任职。正常登记经办人的样本同时具备登记、核对和基本查阅权，能在重新登录后找回该人。[业务及验收](../specs/m01/501-person-registration-requirements.md) · [页面继承](../specs/m01/502-person-directory-interactions.md#m01-page-map) · [技术及容量](../specs/m01/503-person-registration-design.md) · [路线图](../plans/500-personnel-roadmap.md)
+2026-11-22，T00 完成。三份规格经 Codex 主代理四轮顺序评审定稿，T01 可以据此独立实施。人员登记不依赖用人单位、岗位、录用或任职。正常登记经办人的样本同时具备登记、核对和基本查阅权，能在重新登录后找回该人。[业务及验收](../specs/m01/501-person-registration-requirements.md) · [页面继承](../specs/m01/502-person-directory-interactions.md#m01-page-map) · [技术及容量](../specs/m01/503-person-registration-design.md) · [路线图](../archive/plans/500-personnel-roadmap.md)
 
 ## 1 基线与范围
 

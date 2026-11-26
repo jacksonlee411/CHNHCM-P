@@ -1,6 +1,6 @@
 # CHNHCM-011 记录分类与原因输入简化验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。关联 [010 计划](../plans/010-m02-scope-and-plan.md)、[011 业务需求](../specs/m02/011-m02-business-requirements.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[016 决策](../adr/016-m02-effective-record-history.md)和 [17 术语表](../architecture/target/17-terminology-glossary.md)。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。关联 [010 计划](../archive/plans/010-m02-scope-and-plan.md)、[011 业务需求](../specs/m02/011-m02-business-requirements.md)、[012 页面合同](../specs/m02/012-m02-functional-and-interaction-design.md)、[016 决策](../archive/adr/016-m02-effective-record-history.md)和 [17 术语表](../architecture/target/17-terminology-glossary.md)。
 
 ## 1 基线、前置与范围
 

@@ -1,6 +1,6 @@
 # CHNHCM-020 T06全类别改日实施验证
 
-登记信息：[registry.json](../governance/registry.json)。范围：T06单条首条、普通、停用和重新启用记录改日。依据[010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)及024/025。T08联合、分类纠错、首条补全和T07全容量仍后置。
+登记信息：[registry.json](../governance/registry.json)。范围：T06单条首条、普通、停用和重新启用记录改日。依据[010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)及024/025。T08联合、分类纠错、首条补全和T07全容量仍后置。
 
 ## 1 对象与基线
 

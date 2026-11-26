@@ -10131,26 +10131,6 @@ paths:
         default:
           description: Rejected or unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/StaffingError'}}}
-  /api/v1/staffing-quotas/{position}:
-    parameters:
-    - {in: path, name: position, required: true, schema: {type: string, format: uuid}}
-    post:
-      deprecated: true
-      operationId: replayPublishedPositionQuota
-      description: Recover a submission made on this address before migration using its original body and idempotency key.
-      parameters:
-      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
-      - {in: header, name: Idempotency-Key, required: true, schema: {type: string, format: uuid}}
-      requestBody:
-        required: true
-        content: {application/json: {schema: {$ref: '#/components/schemas/StaffingQuotaChange'}}}
-      responses:
-        '200':
-          description: Existing terminal result
-          content: {application/json: {schema: {$ref: '#/components/schemas/StaffingResult'}}}
-        default:
-          description: Unknown submission, changed payload or missing authority
-          content: {application/json: {schema: {$ref: '#/components/schemas/StaffingError'}}}
   /api/v1/staffing-quotas/preview:
     post:
       operationId: previewStaffingQuotaCreate
@@ -22307,18 +22287,6 @@ components:
         referencePage:
           type: integer
       required: []
-    StaffingQuotaChange:
-      type: object
-      additionalProperties: false
-      required: [action, reason]
-      properties:
-        action: {type: string, enum: [SET, WITHDRAW, CORRECT, REDATE, DELETE]}
-        reason: {type: string, maxLength: 200}
-        quantity: {type: integer, minimum: 0, maximum: 2147483647}
-        effectiveDate: {type: string, format: date}
-        expectedSourceVersion: {type: string, format: uuid}
-        recordId: {type: string, format: uuid}
-        expectedRecordRevision: {type: string, format: uuid}
     StaffingResult:
       type: object
       additionalProperties: false

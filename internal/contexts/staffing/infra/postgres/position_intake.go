@@ -9,9 +9,9 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// AssignmentPositionUsage reads M04's takeover from the original creation and
+// assignmentPositionUsage reads M04's takeover from the original creation and
 // the actual segments of the published assignment source. No M05 coverage is implied.
-func (st *Store) AssignmentPositionUsage(ctx context.Context, instance, position string) (out d.QuotaUsage, err error) {
+func (st *Store) assignmentPositionUsage(ctx context.Context, instance, position string) (out d.QuotaUsage, err error) {
 	tx, ok := dbtx.From(ctx)
 	if !ok || instance != st.Instance {
 		return out, errors.New("position usage requires caller transaction")
@@ -60,4 +60,25 @@ func (st *Store) AssignmentPositionUsage(ctx context.Context, instance, position
 		out.Managed = append(out.Managed, v.UsageSpan)
 	}
 	return out, e
+}
+
+// PublishedPositionUsage combines the owners' original segments for the quota check.
+func (st *Store) PublishedPositionUsage(ctx context.Context, instance, position string) (d.QuotaUsage, error) {
+	used, e := st.assignmentPositionUsage(ctx, instance, position)
+	if e != nil {
+		return used, e
+	}
+	reservations, e := st.Reservations.Usage(ctx, instance, position)
+	if e != nil {
+		return used, e
+	}
+	if reservations.Coverage != "" {
+		used.Coverage = append(used.Coverage, d.SourceCoverage{Owner: "M05", Version: reservations.Coverage, UsageSpan: d.UsageSpan{From: reservations.From}})
+	}
+	for _, seg := range reservations.Segments {
+		span := d.UsageSpan{From: seg.From, Until: seg.Until}
+		used.Managed = append(used.Managed, span)
+		used.Uses = append(used.Uses, d.PositionUse{Owner: "M05", UsageSpan: span, Source: seg.Source, Policy: seg.Policy, Effect: seg.Effect, Department: seg.Department, Job: seg.Job})
+	}
+	return used, nil
 }

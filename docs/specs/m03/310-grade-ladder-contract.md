@@ -1,6 +1,6 @@
 # CHNHCM-310 职级与职级阶梯对象接入合同
 
-登记信息：[registry.json](../../governance/registry.json)。本合同承接[M03目标](../../architecture/target/modules/m03.md)及[309实施方案](../../plans/309-m03-grade-ladder.md)，按[124接入模板](../../templates/dated-object-admission.md)定义Grade、GradeLadder及Job可用职级。页面标准仍由012／026持有，首批Job／Family未受本合同明确扩展的规则仍由[308](308-job-foundation-contract.md)持有。G1 Grade已完成实施及独立环境验收，实际状态见[职级实施记录](../../verification/309-grade-g1-implementation.md)；G2阶梯及Job关联已完成全栈实施、三轮主代理评审及本地完整验收；正式CI、推送／合并和人工业务验收未执行，见[G2实施记录](../../verification/309-grade-g2-implementation.md)。
+登记信息：[registry.json](../../governance/registry.json)。本合同承接[M03目标](../../architecture/target/modules/m03.md)及[309实施方案](../../archive/plans/309-m03-grade-ladder.md)，按[124接入模板](../../templates/dated-object-admission.md)定义Grade、GradeLadder及Job可用职级。页面标准仍由012／026持有，首批Job／Family未受本合同明确扩展的规则仍由[308](308-job-foundation-contract.md)持有。G1 Grade已完成实施及独立环境验收，实际状态见[职级实施记录](../../verification/309-grade-g1-implementation.md)；G2阶梯及Job关联已完成全栈实施、三轮主代理评审及本地完整验收；正式CI、推送／合并和人工业务验收未执行，见[G2实施记录](../../verification/309-grade-g2-implementation.md)。
 
 ## 1 角色、对象与适用范围
 

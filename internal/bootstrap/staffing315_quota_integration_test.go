@@ -110,6 +110,14 @@ func TestStaffing315Quota(t *testing.T) {
 	}
 	check(detail(reader, a, jan)["quotaState"], "unset")
 	check(detail(reader, a, jan)["usageState"], "unknown")
+	retiredKey := foundation.NewID()
+	// The unregistered address returns ServeMux's plain-text 404.
+	status, _, err := b.response("POST", base+"/"+a, map[string]any{"action": "SET", "effectiveDate": jan, "quantity": 2, "reason": "首次核编"}, retiredKey)
+	if status != http.StatusNotFound {
+		t.Fatalf("retired quota address: HTTP %d, want 404 (%v)", status, err)
+	}
+	check(f.scalar("SELECT count(*) FROM staffing.quota_terminal WHERE submission_id=$1", retiredKey), 0)
+	check(detail(b, a, jan)["quotaState"], "unset")
 	reader.call("POST", base, body(a, jan, 2), foundation.NewID(), 403)
 	for _, bad := range []any{-1, 0.5} {
 		b.call("POST", base, body(a, jan, bad), foundation.NewID(), 400)

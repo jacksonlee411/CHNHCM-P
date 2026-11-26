@@ -52,7 +52,7 @@ T02b 处理其余两个入口。当前明确产生 `newNoFactRange` 的是 BU �
 
 下一份实质修改 M02 历史写入、修订组装、同号恢复或按日历史维护的任务，在开工清单引用 140/T04。只要涉及两处重复规则中的一处，就在该批让两个真实对象调用同一实现，无需等待两边分别报错。若变更确属其他对象专有规则，须在该任务记录核对位置、原因、T04 仍待触发及接续角色。T02 的文字和读取投影单独交付。两对象的维护命令与历史组装可直接对读。[地点命令](../../internal/contexts/organization/application/location/commands.go) · [法律实体命令](../../internal/contexts/organization/application/legalentity/commands.go)
 
-先核对现有 M02 `domain/dated` 与 `application/submission`。从两对象同时需要的同一段规则入手，例如按影响集保留或分配修订、删除前像与历史摘要。复用处限定在 Organization 内，传入明确类型并保留两条对象入口。地点独有地址采用、区划/邮编与岗位引用保护，法律实体独有登记国家/地区采用与法律身份，分别由对象负责。权限、持久化、提交终态、Outbox 和原采用继续按对象归属。[M02 按日合同](../specs/m02/120-dated-maintenance-technical-contract.md) · [地点合同](../specs/m02/201-geography-and-location-design.md) · [法律实体合同](../specs/m02/207-legal-entity-design.md) · [历史保护](../adr/025-greenfield-implementation-policy.md)
+先核对现有 M02 `domain/dated` 与 `application/submission`。从两对象同时需要的同一段规则入手，例如按影响集保留或分配修订、删除前像与历史摘要。复用处限定在 Organization 内，传入明确类型并保留两条对象入口。地点独有地址采用、区划/邮编与岗位引用保护，法律实体独有登记国家/地区采用与法律身份，分别由对象负责。权限、持久化、提交终态、Outbox 和原采用继续按对象归属。[M02 按日合同](../specs/m02/120-dated-maintenance-technical-contract.md) · [企业地点维护合同](../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md) · [法律实体合同](../specs/m02/207-legal-entity-design.md) · [历史保护](../adr/025-greenfield-implementation-policy.md)
 
 实施前先对各对象手算业务预期，再跑修改前后的同输入。比较不同样本时按对象、记录和来源的引用关系比对，使两轮独立生成的 UUID 或时刻不影响判断。同一库的旧修订、原采用和回执则以准确标识逐份核对原文或摘要。若某个公共步骤需要依对象种类分支来决定地址、登记地或授权，把该步骤留在各自对象内，只抽已证明相同的部分。[既有提交协调](../../internal/contexts/organization/application/submission/transaction.go) · [地点岗位引用检查](../../internal/contexts/organization/infra/postgres/location.go)
 

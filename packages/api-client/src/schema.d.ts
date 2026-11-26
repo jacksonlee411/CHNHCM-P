@@ -3860,28 +3860,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/staffing-quotas/{position}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                position: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * @deprecated
-         * @description Recover a submission made on this address before migration using its original body and idempotency key.
-         */
-        post: operations["replayPublishedPositionQuota"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/staffing-quotas/preview": {
         parameters: {
             query?: never;
@@ -10190,20 +10168,6 @@ export interface components {
             classification?: components["schemas"]["StaffingClassification"];
             referenceQ?: string;
             referencePage?: number;
-        };
-        StaffingQuotaChange: {
-            /** @enum {string} */
-            action: "SET" | "WITHDRAW" | "CORRECT" | "REDATE" | "DELETE";
-            reason: string;
-            quantity?: number;
-            /** Format: date */
-            effectiveDate?: string;
-            /** Format: uuid */
-            expectedSourceVersion?: string;
-            /** Format: uuid */
-            recordId?: string;
-            /** Format: uuid */
-            expectedRecordRevision?: string;
         };
         StaffingResult: {
             positionId?: string;
@@ -21751,44 +21715,6 @@ export interface operations {
                 };
             };
             /** @description Rejected or unavailable */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StaffingError"];
-                };
-            };
-        };
-    };
-    replayPublishedPositionQuota: {
-        parameters: {
-            query?: never;
-            header: {
-                "X-CSRF-Token": string;
-                "Idempotency-Key": string;
-            };
-            path: {
-                position: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StaffingQuotaChange"];
-            };
-        };
-        responses: {
-            /** @description Existing terminal result */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StaffingResult"];
-                };
-            };
-            /** @description Unknown submission, changed payload or missing authority */
             default: {
                 headers: {
                     [name: string]: unknown;

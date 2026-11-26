@@ -8,7 +8,7 @@
 
 国家/地区251条运行资料已纳入Git：[可审阅JSON](../../internal/contexts/organization/infra/countryseed/countries.json)、[版次及许可说明](../../internal/contexts/organization/infra/countryseed/NOTICE.txt)。提供方来源资料保存在版本资产中；国家HTTP资源及页面不再重复展示，业务修订历史保持。
 
-2026-11-13补充国家/地区与四地资料：[200来源索引](200-geography-sources.json)登记本机CubeBox20份原字节及[离线包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-geography-2deaf927.zip)；[Odoo只读观察](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/200-geography-plan/odoo-observation.json)分别记录当前运行库与旧导出数据的差异。来源使用范围见[200路线图](../plans/200-geography-and-location-roadmap.md)，本轮未将旧原型通过或源数据数量计为本仓产品验收。
+2026-11-13补充国家/地区与四地资料：[200来源索引](200-geography-sources.json)登记本机CubeBox20份原字节及[离线包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-geography-2deaf927.zip)；[Odoo只读观察](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/200-geography-plan/odoo-observation.json)分别记录当前运行库与旧导出数据的差异。来源使用范围见[200路线图](../archive/plans/200-geography-and-location-roadmap.md)，本轮未将旧原型通过或源数据数量计为本仓产品验收。
 
 截至 2026-10-30 建仓采集时，采用的 FSCR 提交为 `d88c993d13d325b18943549f120c5f03e7864205`，核对的 CubeBox origin/main 为 `2deaf9276086f68e07aaa0c2cf7f35025046a9ee`。这些是固定输入，不持续跟随来源仓 HEAD。本仓保存离线资料及逐文件 SHA256，不依赖相邻工作区。
 
@@ -33,6 +33,6 @@ M02 后续按用户决定统一为“删除记录”；17 中“删除未来记�
 
 源包不可原地覆盖。未来采用新来源应新增包/记录，评估差异并更新受影响合同。源 JSON 中的路径和历史状态属于原记录，不作为本仓可执行指令；源包内的 AGENTS 也不替代根 AGENTS。建仓时未重新核验 Oracle 在线文档或当前属地政策；CHNHCM-009 仅核对上述组织角色与工作关系的直接依据，继承的其他资料链接不是现行政策准确性的证明。
 
-019补充共享导航、日期轴、布局与离线字体来源；独立原件和摘要见[补充来源](ui-sources.json)、[UI来源包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-ui-2deaf927.zip)及[字体来源包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-font-2deaf927.zip)。原初始包及其摘要不变，实际采用和验证由[019](../plans/019-cubebox-experience-migration.md)追踪。
+019补充共享导航、日期轴、布局与离线字体来源；独立原件和摘要见[补充来源](ui-sources.json)、[UI来源包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-ui-2deaf927.zip)及[字体来源包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-font-2deaf927.zip)。原初始包及其摘要不变，实际采用和验证由[019](../archive/plans/019-cubebox-experience-migration.md)追踪。
 
 122操作摘要与日志表格化的[来源索引](122-operation-summary-sources.json)记录Microsoft/Oracle官方依据、PeopleSoft职务代码概要实机观察及不采用项；[概要截图](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/122-operation-summary/job-code-profile-overview.png)和[底部局部](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/122-operation-summary/job-code-update-footer.png)保留原字节。来源观察不构成本仓功能、权限或多修订验收。

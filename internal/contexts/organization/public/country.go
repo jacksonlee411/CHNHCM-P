@@ -194,3 +194,10 @@ type CountryService interface {
 
 // AdoptedCountry identifies the exact active record selected by another context.
 type AdoptedCountry struct{ ID, SourceVersion, RecordID, Revision, Date, Name string }
+
+// ProfileCatalog resolves published address references under the caller's current
+// permissions and holds their source locks through the profile submission.
+type ProfileCatalog interface {
+	AdoptCountry(ctx context.Context, credentials foundation.Credentials, id, expectedSource, day string) (AdoptedCountry, error)
+	AdoptProfileArea(ctx context.Context, credentials foundation.Credentials, id, day string) ([]GeoAreaPathNode, error)
+}

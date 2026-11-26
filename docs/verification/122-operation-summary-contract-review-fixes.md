@@ -1,6 +1,6 @@
 # CHNHCM-122 操作摘要与日志合同评审修订
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：用户采纳的三项122评审意见及其对应011—013/023合同和案例增量。上游为[122草案](../plans/122-bu-operation-summary-and-change-log.md)、[BR035](../specs/m02/011-m02-business-requirements.md#m02-br-035)、[012日志表格](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-change-log-table)、[013读取合同](../specs/m02/013-m02-technical-design.md#m02-tech-operation-summary)及[023案例](../specs/m02/023-m02-timeline-test-cases.md#m02-tests-operation-summary)。本文从验证模板起草，另建记录，保留[初稿评审](122-operation-summary-contract-review.md)及其失败/复验证据。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：用户采纳的三项122评审意见及其对应011—013/023合同和案例增量。上游为[122草案](../archive/plans/122-bu-operation-summary-and-change-log.md)、[BR035](../specs/m02/011-m02-business-requirements.md#m02-br-035)、[012日志表格](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-change-log-table)、[013读取合同](../specs/m02/013-m02-technical-design.md#m02-tech-operation-summary)及[023案例](../specs/m02/023-m02-timeline-test-cases.md#m02-tests-operation-summary)。本文从验证模板起草，另建记录，保留[初稿评审](122-operation-summary-contract-review.md)及其失败/复验证据。
 
 ## 1 验证对象与受测基线
 
