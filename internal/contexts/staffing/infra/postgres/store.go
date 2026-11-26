@@ -34,6 +34,7 @@ type Store struct {
 	PositionOpened func(context.Context, string, string, string, string) error
 	HirePeople     interface {
 		hireprep.Personnel
+		OpenDirectory(context.Context, foundation.Credentials, person.Query) (person.DirectoryLookup, error)
 		RecognizedPeople(context.Context, foundation.Credentials, []string, string) ([]person.Summary, string, error)
 		CheckHirePerson(context.Context, foundation.Credentials, string) error
 	}

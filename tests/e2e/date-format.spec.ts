@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { expectLogChange } from './fixtures';
 import {test, expect, openMoreActions} from './fixtures';
 import { cancelLeapDayPreview } from './dated-object-support';
@@ -76,12 +77,12 @@ for (const locale of ['zh-CN', 'en-US']) {
       await expect(page.getByRole('button', {name:'选择日期',exact:true}).nth(2)).toBeDisabled();
       await expect(page.getByText('2026-01-13 00:30:05（北京时间 UTC+08:00）', {exact:true})).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
-      for (const width of [390, 320]) {
-        await page.setViewportSize({width, height:844});
+      for (const [width, height] of desktopViewports) {
+        await page.setViewportSize({width, height});
         await expect(input).toHaveValue('2026-01-13');
         await expect.poll(() => input.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
         await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-        await page.screenshot({path:`.local/date-format-20261103/component-${locale}-${width}.png`});
+        await page.screenshot({path:`.local/date-format-20261103/component-${locale}-${width}x${height}.png`});
       }
     } finally { await context.close(); }
   });
@@ -114,7 +115,7 @@ test('140 BU 首条后移跨闰日，受限查询者看不到期间', async ({pa
   await open(page);
   const code = await create(page, '2024-02-28');
   const before = await read(page);
-  await page.setViewportSize({width:390,height:844});
+  await page.setViewportSize({width:1440,height:540});
   await openMoreActions(page);
   await cancelLeapDayPreview(page);
   expect((await read(page)).headSourceVersion).toBe(before.headSourceVersion);

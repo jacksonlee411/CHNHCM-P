@@ -12299,6 +12299,22 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/personnel/directory/query:
+    post:
+      operationId: listPersonnelDirectory
+      security: [{session: []}]
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/PersonnelDirectoryQuery'}}}
+      responses:
+        '200':
+          description: Authorized personnel and current or future assignments
+          content: {application/json: {schema: {$ref: '#/components/schemas/PersonnelDirectory'}}}
+        default:
+          description: Unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
   /api/v1/assignments/query:
     post:
       operationId: listEmployeeAssignments
@@ -13686,6 +13702,8 @@ components:
             type: object
             required: [assignment, recordNumber, from]
             properties:
+              employerName: {type: string}
+              until: {type: string, format: date}
               assignment: {type: string, format: uuid}
               recordNumber: {type: integer}
               from: {type: string, format: date}
@@ -13949,6 +13967,60 @@ components:
       properties:
         person: {type: string, format: uuid}
         assignment: {type: string, format: uuid}
+    PersonnelDirectoryQuery:
+      type: object
+      additionalProperties: false
+      required: [page, pageSize]
+      properties:
+        anchor: {type: string, format: uuid}
+        department: {type: string, format: uuid}
+        primary: {type: string, enum: [primary, secondary]}
+        ref: {type: string, format: uuid}
+        page: {type: integer, minimum: 1}
+        pageSize: {type: integer, enum: [20, 50, 100]}
+        sort: {type: string}
+    PersonnelDirectoryLink:
+      type: object
+      required: [person]
+      properties:
+        person: {type: string, format: uuid}
+        assignment: {type: string, format: uuid}
+    PersonnelDirectoryRow:
+      type: object
+      required: [id, person, name, number]
+      properties:
+        id: {type: string, format: uuid}
+        person: {type: string, format: uuid}
+        name: {type: string}
+        number: {type: string}
+        historical: {type: boolean}
+        assignment: {$ref: '#/components/schemas/EmployeeAssignmentRow'}
+        future: {type: boolean}
+    PersonnelDirectory:
+      type: object
+      required: [rows, departments, people, total, assignments, keyword]
+      properties:
+        navigation:
+          type: object
+          required: [position]
+          properties:
+            position: {type: integer}
+            previous: {$ref: '#/components/schemas/PersonnelDirectoryLink'}
+            next: {$ref: '#/components/schemas/PersonnelDirectoryLink'}
+        rows: {type: array, items: {$ref: '#/components/schemas/PersonnelDirectoryRow'}}
+        departments:
+          type: array
+          items:
+            type: object
+            required: [id, name]
+            properties:
+              id: {type: string, format: uuid}
+              name: {type: string}
+              parent: {type: string, format: uuid}
+        people: {type: integer}
+        total: {type: integer}
+        assignments: {type: integer}
+        keyword: {type: string}
     EmployeeAssignmentDirectory:
       type: object
       required: [rows, departments, people, total, businessAt, keyword]
@@ -13977,8 +14049,9 @@ components:
     AssignmentView:
       type: object
       additionalProperties: false
-      required: [from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canReadContracts, canRecordDuty, canVerifyDuty, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave, canAddRecord, canInsertRecord]
+      required: [effectiveDates, from, employerName, relationship, name, number, person, assignment, employment, recordNumber, primaryJob, sourceVersion, businessAt, actions, canChangeLocation, canTransfer, canReadContracts, canRecordDuty, canVerifyDuty, canHandover, canAddSecondary, canAddParallel, relationshipPrimary, canStartProbation, canConfirm, probation, canPromote, canRecordGrade, managers, canSetManager, canEnd, canLeave, canAddRecord, canInsertRecord]
       properties:
+        effectiveDates: {type: array, items: {type: string, format: date}}
         canAddRecord: {type: boolean}
         canInsertRecord: {type: boolean}
         canReadContracts: {type: boolean}
@@ -14118,6 +14191,8 @@ components:
       additionalProperties: false
       required: [action]
       properties:
+        personName: {type: string}
+        personNumber: {type: string}
         initialRecordPosition:
           type: object
           additionalProperties: false
@@ -14454,6 +14529,8 @@ components:
             type: object
             required: [assignment, recordNumber, from]
             properties:
+              employerName: {type: string}
+              until: {type: string, format: date}
               assignment: {type: string, format: uuid}
               recordNumber: {type: integer}
               from: {type: string, format: date}

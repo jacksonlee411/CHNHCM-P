@@ -59,6 +59,9 @@ func (a *API) readinessRoutes(mux *http.ServeMux) {
 		allowed, e := hires.CanListAssignments(r.Context(), credentials(r))
 		respond(w, 200, map[string]bool{"canList": allowed}, e)
 	})
+	mux.HandleFunc("POST /api/v1/personnel/directory/query", ruleBody(func(r *http.Request, in h.PersonnelQuery) (any, error) {
+		return hires.PersonnelDirectory(r.Context(), credentials(r), in)
+	}))
 	mux.HandleFunc("POST /api/v1/assignments/query", ruleBody(func(r *http.Request, in h.AssignmentQuery) (any, error) {
 		return hires.ListAssignments(r.Context(), credentials(r), in)
 	}))

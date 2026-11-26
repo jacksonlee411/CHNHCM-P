@@ -17,11 +17,13 @@ import (
 
 type adoptCountry func(context.Context, pgx.Tx, access.Guard, string, string, string) (*p.CountryAdoption, string, error)
 type adoptArea func(context.Context, pgx.Tx, access.Guard, string, string) ([]p.CountryAdoption, string, error)
+type authorizePersonnel func(context.Context, pgx.Tx, f.Credentials) (access.PersonAccess, access.Guard, error)
 type Store struct {
-	AdoptArea    adoptArea
-	AdoptCountry adoptCountry
-	Pool         *pgxpool.Pool
-	Authorize    func(context.Context, pgx.Tx, f.Credentials) (access.PersonAccess, access.Guard, error)
+	AdoptArea          adoptArea
+	AdoptCountry       adoptCountry
+	Pool               *pgxpool.Pool
+	Authorize          authorizePersonnel
+	AuthorizeDirectory authorizePersonnel
 }
 type request struct {
 	adoptArea    adoptArea
@@ -34,13 +36,16 @@ type request struct {
 }
 
 func run[T any](ctx context.Context, s *Store, c f.Credentials, fn func(*request) (T, error)) (T, error) {
+	return runAuthorized(ctx, s, c, s.Authorize, fn)
+}
+func runAuthorized[T any](ctx context.Context, s *Store, c f.Credentials, authorize authorizePersonnel, fn func(*request) (T, error)) (T, error) {
 	var zero T
 	tx, e := s.Pool.Begin(ctx)
 	if e != nil {
 		return zero, e
 	}
 	defer tx.Rollback(ctx)
-	a, g, e := s.Authorize(ctx, tx, c)
+	a, g, e := authorize(ctx, tx, c)
 	if e != nil {
 		return zero, e
 	}

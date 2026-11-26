@@ -1,3 +1,4 @@
+import { desktopViewportCases, desktopViewports } from './desktop-viewports.mjs';
 import { grants308 } from './staffing308-grants';
 import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -60,7 +61,7 @@ for (const kind of kinds) {
     await expect(page.getByText('1–1 / 1', { exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: o.name, exact: true })).toBeVisible();
   });
-  for (const [width, height] of [[1440, 900], [320, 256]])
+  for (const [width, height] of desktopViewports)
     test(`${batch} ${kind} AC021/022 从日志直接维护 ${width}x${height}`, async ({ page }) => {
       await open(page);
       const family = await seed308(page, 'jobfamily'),
@@ -167,7 +168,7 @@ for (const kind of kinds) {
     await page.setViewportSize({ width: 1200, height: 540 });
     await expect(page.getByRole('textbox', { name: '值', exact: true })).toHaveValue(tag);
     // 012 §3.1.5 closes the local panel draft across 900px. A and search D remain.
-    await page.setViewportSize({ width: 390, height: 844 });
+    await page.setViewportSize({ width: 899, height: 900 });
     await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(page.getByRole('button', { name: '更多操作', exact: true })).toBeFocused();
     await expect(search).toHaveValue('华东');
@@ -217,7 +218,7 @@ for (const kind of kinds) {
     await click308(page, page.getByRole('button', { name: '更多操作', exact: true }));
     await expect(page.getByRole('menuitem', { name: '导出所选（1）', exact: true })).toBeEnabled();
     await page.keyboard.press('Escape');
-    await page.setViewportSize({ width: 390, height: 844 });
+    await page.setViewportSize({ width: 899, height: 900 });
     await expect(row.getByRole('checkbox')).toBeChecked();
     await expect(row).toContainText('2026-01-01');
     await expect(search).toHaveValue(tag);
@@ -509,13 +510,7 @@ for (const kind of kinds) {
       });
     });
   for (const role of ['admin', 'reader'])
-    for (const [code, width, height] of [
-      ['V01', 1440, 900],
-      ['V02', 1440, 540],
-      ['V03', 390, 844],
-      ['V04', 320, 900],
-      ['V05', 320, 256],
-    ] as const)
+    for (const [code, width, height] of desktopViewportCases)
       test(`${batch} ${kind} ${role} ${code} AC017/020/021/022/023/028/030`, async ({ page }) => {
         await open(page);
         const ref = await seed308(page, 'jobfamily'),

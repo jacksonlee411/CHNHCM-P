@@ -1,8 +1,23 @@
-import { chromium, expect } from '@playwright/test';
+import { chromium, expect, type Page } from '@playwright/test';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { localConnection } from '../../scripts/local-runtime.mjs';
+
+export async function calibrateDesktopWindow(page: Page) {
+  const cdp = await page.context().newCDPSession(page);
+  try {
+    const { windowId, bounds } = await cdp.send('Browser.getWindowForTarget');
+    const size = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+    await cdp.send('Browser.setWindowBounds', { windowId, bounds: {
+      width: bounds.width! + 1280 - size.width,
+      height: bounds.height! + 900 - size.height,
+    } });
+    await expect.poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio])).toEqual([1280, 900, 1]);
+  } finally {
+    await cdp.detach();
+  }
+}
 
 // Set the browser's native tab zoom. A private extension avoids dependence on
 // X11 keystroke injection; CSS zoom and device scale are never substituted.

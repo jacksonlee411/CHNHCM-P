@@ -4,11 +4,9 @@ import { createPortal } from 'react-dom';
 import { Alert, Box, Button, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { api, ApiError, unwrap, type Models } from '@chnhcm/api-client';
 import {
-  EffectiveDates,
   HistoryNotice,
   ObjectDetailField,
   ObjectDetailSection,
-  ObjectTextField,
   UnsavedChangesDialog,
   recordedTime,
 } from '@chnhcm/ui';
@@ -57,7 +55,6 @@ export function JobInformation({
 }: {
   assignment: string;
   day: string;
-  onDay: (date: string) => void;
   session: Models['Principal'];
   onSave: () => void;
   actionSlot: HTMLElement | null;
@@ -82,8 +79,6 @@ export function JobInformation({
     }
     setParams(next, {replace});
   }
-  const [dayInput, setDayInput] = useState(day);
-  useEffect(() => setDayInput(day), [day]);
   const [contractDraft,setContractDraft]=useState<Models['EmploymentContractCommand']>();
   const contractInitial=useRef<Models['EmploymentContractCommand']|undefined>(undefined);
   const [draft, setDraft] = useState<JobDraft>();
@@ -139,6 +134,12 @@ export function JobInformation({
         }),
       ),
   );
+  const originalSource = historical && revision ? original.data?.action : undefined;
+  const exact = useRead(originalSource && originalSource.sourceVersion!==data?.sourceVersion ?
+    JSON.stringify([originalSource.assignment,originalSource.businessDate,originalSource.sourceVersion]) : undefined, async () =>
+      unwrap(await api.GET('/api/v1/assignments/{id}', {params:{path:{id:originalSource!.assignment},
+        query:{businessAt:originalSource!.businessDate,sourceVersion:originalSource!.sourceVersion}}})));
+  const facts = historical && revision ? (originalSource && (originalSource.sourceVersion===data?.sourceVersion ? data : exact.data)) : data;
   const unavailable = !!chosenId && !!data && (!opened || original.status === 403 || original.status === 404);
   const mode: JobPageMode = historical || unavailable ? 'history' : draft || removal || contractDraft ? 'editing' : 'browse';
   useLayoutEffect(() => { onModeChange?.(mode); }, [mode, onModeChange]);
@@ -464,19 +465,17 @@ export function JobInformation({
     original.invalidate();
     if (!current) onSave();
     const next = new URLSearchParams(params);
-    for (const key of ['sourceVersion', 'adoptedRef', 'sourceEntry']) next.delete(key);
+    for (const key of ['sourceVersion', 'adoptedRef', 'sourceEntry','returnDay','returnJobAction']) next.delete(key);
+    if (params.has('returnDay')) next.set('assignmentDay',params.get('returnDay')!);
+    if (params.has('returnJobAction')) next.set('action',params.get('returnJobAction')!);
     if (!selectedAction && unavailable && !source) next.delete('action');
     const options = {state:{...route.state, focusJobOriginal:true}};
     if (entry && personId && entry !== assignment && /^[a-f\d-]{36}$/i.test(entry)) {
       navigate('/personnel/employees/' + personId + '/assignments/' + entry + '?' + next, options);
     } else setParams(next, options);
   }
-  const at = data?.actions.filter((a) => a.businessDate === day) ?? [];
-  const availableDays = Array.from(new Set(data?.actions.map((a) => a.businessDate) ?? []));
+  const at = facts?.actions.filter(a => a.businessDate === facts.businessAt) ?? [];
   const historyNotice = <HistoryNotice onReturn={returnCurrent} label="返回当前职务信息" />;
-  function changeDay(value: string) {
-    select({assignmentDay:value, action:undefined, adoptedRef:undefined});
-  }
   const evidence = original.data;
   const canCorrect = opened && !evidence?.exchange && (opened.canCorrectDuty || opened.canCorrectLocation || opened.canCorrectTransfer || opened.canCorrectPromotion);
   const canRedate = opened?.canMaintain && (!evidence?.exchange || evidence.exchange.canRedate);
@@ -489,7 +488,9 @@ export function JobInformation({
     next.set('assignmentDay', target.businessDate);
     next.set('action', target.id);
     next.set('adoptedRef', target.revision);
-    if (assignment !== target.assignment) next.set('sourceEntry', assignment);
+    if (!next.has('returnDay') && day) next.set('returnDay',day);
+    if (!next.has('returnJobAction') && chosenId) next.set('returnJobAction',chosenId);
+    if (assignment !== target.assignment && !next.has('sourceEntry')) next.set('sourceEntry', assignment);
     return '/personnel/employees/' + target.person + '/assignments/' + target.assignment + '?' + next;
   }
   return (
@@ -544,40 +545,28 @@ export function JobInformation({
             <>
               {!contractDraft && (!selectedAction || source) && (
                 <>
-                  {availableDays.length > 0 && (
-                    <EffectiveDates
-                      dates={availableDays}
-                      selected={day}
-                      onSelect={changeDay}
-                    />
-                  )}
-                  <ObjectTextField
-                    type="date"
-                    label="查看业务日"
-                    value={dayInput}
-                    onChange={(e) => {
-                      setDayInput(e.target.value);
-                      if (e.target.value.length !== 10 || !e.target.validity.valid) return;
-                      changeDay(e.target.value);
-                    }}
-                  />
+                  {exact.error && <Alert severity="error" action={<Button onClick={exact.refresh}>重试</Button>}>{exact.error}</Alert>}
+                  {facts && <div className="object-detail-columns"><ObjectDetailSection title="任职安排">
                   <ObjectDetailField label="该日任职">
-                    {data.state
-                      ? [data.state.department, data.state.job, data.state.location?.name]
+                    {facts.state
+                      ? [facts.state.department, facts.state.job, facts.state.location?.name]
                           .filter(Boolean)
                           .join(' · ')
                       : '该日无有效任职'}
                   </ObjectDetailField>
-                  {data.managers.map(fact=><ObjectDetailField key={fact.purpose} label={managerPurposes[fact.purpose]}>{fact.name} · {fact.recordNumber} 号</ObjectDetailField>)}
-                  {data.lastActive && <ObjectDetailField label="最后任职日">{data.lastActive}</ObjectDetailField>}
-                  {data.state?.positionName && <ObjectDetailField label="岗位">{data.state.positionName} · {data.state.handover ? "交接占编" : data.state.seats ? "占编" : "免占编"}</ObjectDetailField>}
-                  {data.state?.position && !historical && <DutyUsage position={data.state.position} day={day} version={data.sourceVersion}/>}
-                  {data.state && <ObjectDetailField label="个人职级">{data.state.grade?.name ?? '未记载'}</ObjectDetailField>}
-                  {data.state && data.probation.status !== 'unrecorded' && (
+                  {facts.managers.map(fact=><ObjectDetailField key={fact.purpose} label={managerPurposes[fact.purpose]}>{fact.name} · {fact.recordNumber} 号</ObjectDetailField>)}
+                  {facts.lastActive && <ObjectDetailField label="最后任职日">{facts.lastActive}</ObjectDetailField>}
+                  {facts.state?.positionName && <ObjectDetailField label="岗位">{facts.state.positionName} · {facts.state.handover ? "交接占编" : facts.state.seats ? "占编" : "免占编"}</ObjectDetailField>}
+                  {facts.state?.position && !historical && <DutyUsage position={facts.state.position} day={day} version={facts.sourceVersion}/>}
+                  </ObjectDetailSection><ObjectDetailSection title="记录信息">
+                  <ObjectDetailField label="生效日期">{facts.businessAt}</ObjectDetailField>
+                  {facts.state && <ObjectDetailField label="个人职级">{facts.state.grade?.name ?? '未记载'}</ObjectDetailField>}
+                  {facts.state && facts.probation.status !== 'unrecorded' && (
                     <ObjectDetailField label="试用状态">
-                      {data.probation.status === 'confirmed' ? '已转正' : '试用中'}
+                      {facts.probation.status === 'confirmed' ? '已转正' : '试用中'}
                     </ObjectDetailField>
                   )}
+                  </ObjectDetailSection></div>}
                   <Typography component="h3">当日办理</Typography>
                   <Stack direction="row" flexWrap="wrap" gap={1}>
                     {at.map((a) =>
@@ -585,12 +574,13 @@ export function JobInformation({
                         <Button
                           key={a.id}
                           id={chosenId === a.id ? controlId + '-record' : undefined}
-                          onClick={() => select({action:a.id, assignmentDay:a.businessDate, adoptedRef:undefined})}
+                          onClick={() => select({action:a.id, assignmentDay:a.businessDate, adoptedRef:historical?a.revision:undefined, sourceVersion:historical?facts?.sourceVersion:undefined,
+                            returnDay:historical?(params.get('returnDay')||day):undefined,returnJobAction:historical?(params.get('returnJobAction')||chosenId||undefined):undefined})}
                         >
-                          {actionLabel(a)} · {a.businessDate}
+                          {actionLabel(a)}{a.operation==='Withdraw'?'（已撤销）':a.operation==='Delete'?'（已删除）':''} · {a.businessDate}
                         </Button>
                       ) : (
-                        <Typography key={a.id}>{actionLabel(a)}</Typography>
+                        <Typography key={a.id}>{actionLabel(a)}{a.operation==='Withdraw'?'（已撤销）':a.operation==='Delete'?'（已删除）':''}</Typography>
                       ),
                     )}
                     {!at.length && <Typography>没有当日办理</Typography>}
@@ -658,7 +648,7 @@ export function JobInformation({
         </Alert>
       )}
       {notice && <Alert severity="success">{notice}</Alert>}
-      {data?.canReadContracts && !draft && !removal && !selectedAction && !historical && !unavailable && <RelationshipContracts view={data} session={session} draft={contractDraft} update={setContractDraft}
+      {data?.canReadContracts && !draft && !removal && !selectedAction && !historical && !unavailable && <RelationshipContracts actionSlot={actionSlot} view={data} session={session} draft={contractDraft} update={setContractDraft}
         begin={(cmd,b)=>{if (!b.id) b.id=controlId+'-contract';focusTarget.current=b.id;saved.current=false;contractInitial.current=cmd;setContractDraft(cmd)}} cancel={()=>exit.request(close)} finish={()=>{saved.current=true;close()}}/>}
       {!historical && submit.pending.map((ref) => (
         <Button key={ref.submissionId} onClick={() => void submit.recover(ref)}>
@@ -804,9 +794,9 @@ export function OriginalEvidence({
       {order && <NoticeSource key={order.revision} reference={order} label="查看前序办理" />}
       {original.noticeRef && <NoticeSource key={original.noticeRef.revision} reference={original.noticeRef} label="查看通知来源" />}
       {original.promotion?.withdrawalBasis && <NoticeSource key={original.promotion.withdrawalBasis.revision} reference={original.promotion.withdrawalBasis} label="查看撤销依据来源" />}
-      {setRevision && original.revisions?.map((r) => (
+      {setRevision && original.revisions?.map((r,index) => (
         <Button key={r.id} onClick={() => setRevision(r.id)} aria-pressed={r.id === original.action.revision}>
-          查看修订 · {recordedTime(r.recordedAt)}
+          查看修订 · {recordedTime(r.recordedAt)} · 第 {(original.revisions?.length ?? 0)-index} 次
         </Button>
       ))}
       {operator && <ObjectDetailField label="经办人">{operator}</ObjectDetailField>}

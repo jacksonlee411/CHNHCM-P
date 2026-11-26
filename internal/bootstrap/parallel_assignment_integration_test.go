@@ -5,6 +5,7 @@ package bootstrap_test
 import (
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"maps"
+	"os"
 	"testing"
 )
 
@@ -68,6 +69,33 @@ func TestPersonOwnsConcurrentAssignmentNumbersAcrossRelationships(t *testing.T) 
 	two := b.call("POST", write, second, f.NewID(), 200)
 	if two["recordNumber"] != 2.0 || two["employment"] == one["employment"] {
 		t.Fatal("独立关系仍按人编号", two)
+	}
+	// The ordinary directory also includes people without a readable term and
+	// selects each record number independently, even before the earliest hire.
+	bare := b.call("POST", "/api/v1/persons", M{"submissionId": f.NewID(), "name": "尚无任职的检索样本"}, "", 200)["id"]
+	directory := func(filters M) M {
+		query := M{"page": 1, "pageSize": 20, "sort": "number"}
+		maps.Copy(query, filters)
+		return b.call("POST", "/api/v1/personnel/directory/query", query, "", 200)
+	}
+	current := directory(M{"anchor": bare})
+	if current["assignments"] != 3.0 || current["people"] != 2.0 || current["total"] != 4.0 {
+		t.Fatal("名录遗漏人员或未来任职", current)
+	}
+	if first := current["rows"].([]any)[0].(M); first["assignment"].(M)["recordNumber"] != 0.0 || first["id"] != x.hire["assignment"] {
+		t.Fatal("主岗锚点", first)
+	}
+	bareRow := current["rows"].([]any)[3].(M)
+	if bareRow["id"] != bare || bareRow["assignment"] != nil || current["navigation"].(M)["previous"].(M)["assignment"] != two["assignment"] {
+		t.Fatal("人员行及上一个任职", current)
+	}
+	secondary := directory(M{"primary": "secondary", "department": x.dep})
+	if secondary["total"] != 1.0 || secondary["rows"].([]any)[0].(M)["id"] != one["assignment"] {
+		t.Fatal("按部门及主兼岗过滤", secondary)
+	}
+	b.call("POST", "/api/v1/personnel/directory/query", M{"page": 1, "pageSize": 20, "businessAt": "2027-04-01"}, "", 400)
+	if os.Getenv("CHNHCM_PERSONNEL_CAPACITY") == "1" {
+		measureMixedDirectory(t, x, x.hire["assignment"].(string), one["assignment"].(string), bare.(string))
 	}
 	for _, r := range []struct {
 		result  M

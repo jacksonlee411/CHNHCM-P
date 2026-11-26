@@ -68,7 +68,7 @@ test('TL380/382 在途日志失效、历史切换和原上界刷新',async({page
  await page.getByRole('button',{name:'返回当前资料',exact:true}).click();await expect(page).not.toHaveURL(/sourceVersion=/);await expect(page.locator('.change-operation')).toHaveCount(2);expect(url).toContain('/business-units/');
 });
 
-test('TL383 桌面、390宽与原生Chromium 200%长姓名账号及字段值',async()=>{
+test('TL383 桌面与原生Chromium 200%长姓名账号及字段值',async()=>{
  let n=1500+process.pid%1000;while(existsSync(`/tmp/.X11-unix/X${n}`)||existsSync(`/tmp/.X${n}-lock`))n++;
  const env={...process.env,DISPLAY:`:${n}`},xvfb=spawn('Xvfb',[`:${n}`,'-screen','0','2200x1400x24','-nolisten','tcp','-nolisten','unix'],{stdio:'ignore'});
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined;let rights:Awaited<ReturnType<typeof accessFixture>>|undefined;
@@ -83,13 +83,13 @@ test('TL383 桌面、390宽与原生Chromium 200%长姓名账号及字段值',as
   const dimensions=()=>page.evaluate(()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,outer:[outerWidth,outerHeight]}));
   const zoom=(steps:number)=>execFileSync('python3',['docs/verification/data/100-ui-baseline/native-zoom.py',String(steps)],{env,stdio:'pipe'});
   zoom(0);mkdirSync(evidence,{recursive:true});const matrix=[];
-  for(const [width,height] of [[1920,1080],[1366,768],[390,844]]){
-   const current=await dimensions();if(width<500)await cdp.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});else await cdp.send('Browser.setWindowBounds',{windowId,bounds:{width:current.outer[0]+width-current.width,height:current.outer[1]+height-current.height}});await expect.poll(async()=>(await dimensions()).width).toBe(width);
+  for(const [width,height] of [[1920,1080],[1366,768]]){
+   const current=await dimensions();await cdp.send('Browser.setWindowBounds',{windowId,bounds:{width:current.outer[0]+width-current.width,height:current.outer[1]+height-current.height}});await expect.poll(async()=>(await dimensions()).width).toBe(width);
    await page.getByRole('tab',{name:'基本资料',exact:true}).click();await expect(page.locator('.operation-summary')).toBeVisible();await page.getByRole('tab',{name:'变更日志',exact:true}).click();await expect(page.locator('.change-operation').first()).toContainText('包含较长中文组织名称');
    await page.getByRole('button',{name:'来源明细',exact:true}).first().focus();await page.keyboard.press('Enter');await expect(page.getByRole('button',{name:'来源明细',exact:true}).first()).toHaveAttribute('aria-expanded','true');await page.keyboard.press('Enter');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
    await page.screenshot({path:`${evidence}/viewport-${width}.png`,mask:[page.locator('.app-account-name')]});matrix.push({...await dimensions(),result:'passed'});
   }
-  await cdp.send('Emulation.clearDeviceMetricsOverride');const current=await dimensions();await cdp.send('Browser.setWindowBounds',{windowId,bounds:{width:current.outer[0]+1366-current.width,height:current.outer[1]+768-current.height}});zoom(5);await expect.poll(async()=>(await dimensions()).dpr).toBe(2);
+  const current=await dimensions();await cdp.send('Browser.setWindowBounds',{windowId,bounds:{width:current.outer[0]+1366-current.width,height:current.outer[1]+768-current.height}});zoom(5);await expect.poll(async()=>(await dimensions()).dpr).toBe(2);
   await page.getByRole('button',{name:'列筛选…',exact:true}).focus();await page.keyboard.press('Enter');await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'列筛选…',exact:true})).toBeFocused();await page.mouse.wheel(0,450);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);matrix.push({...await dimensions(),zoom:'native 200%',result:'passed'});const target=page.locator('.change-operation').first().getByRole('link',{name:'查看当次资料',exact:true}).first();await target.scrollIntoViewIfNeeded();await expect(target).toBeInViewport();await expect(page.locator('.change-operation').first().locator('[data-label="新值"]').first()).toBeInViewport();
   const mask=await page.addStyleTag({content:'.app-account-name{visibility:hidden!important}'});const screenshot=await cdp.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true});const pixels=Buffer.from(screenshot.data,'base64');expect(pixels.readUInt32BE(16)).toBe(1366);expect(pixels.readUInt32BE(20)).toBe(768);writeFileSync(`${evidence}/native-200.png`,pixels);await mask.evaluate(e=>e.remove());zoom(0);await expect.poll(async()=>(await dimensions()).dpr).toBe(1);writeFileSync(`${evidence}/viewport-matrix.json`,JSON.stringify(matrix,null,2)+'\n');
  } finally {if(rights){rights.restore();rights.sql(`UPDATE access.principal SET display_name=NULL WHERE ${rights.where}`)}await browser?.close();xvfb.kill('SIGTERM');await new Promise<void>(resolve=>{if(xvfb.exitCode!==null)resolve();else xvfb.once('exit',()=>resolve())})}

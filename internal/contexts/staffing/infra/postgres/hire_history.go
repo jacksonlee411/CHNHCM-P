@@ -120,7 +120,11 @@ func (st *Store) PersonEmployment(ctx context.Context, c f.Credentials, person, 
 					return e
 				}
 				if visible {
-					out.Terms = append(out.Terms, h.TermLink{Assignment: a.Assignment, RecordNumber: a.RecordNumber, From: a.From})
+					summary, err := u.relationshipSummary(ctx, a, a, false)
+					if err != nil {
+						return err
+					}
+					out.Terms = append(out.Terms, h.TermLink{Assignment: a.Assignment, RecordNumber: a.RecordNumber, From: a.From, Until: a.Until, EmployerName: summary.EmployerName})
 					if active {
 						out.Seats += seats
 						out.People = 1
@@ -430,7 +434,7 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if h.RelationAction(a.Kind) {
 			out, e = u.relationOriginal(ctx, a, revision)
 			if e == nil {
-				out.InitialPosition, e = u.initialPosition(ctx, a)
+				e = u.identifyOriginal(ctx, c, a, &out)
 			}
 			return e
 		}
@@ -464,7 +468,13 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 		if !disclosure.from && !disclosure.to {
 			return f.Fail(403, "HIRE_DENIED", "当前权限不允许读取本次修订")
 		}
-		rows, e := u.tx.Query(ctx, `SELECT coalesce(nullif(operator_snapshot->>'displayName',''),operator_snapshot->>'login',actor::text),revision,actor,to_char(recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM staffing.employment_action_revision WHERE instance_id=$1 AND action_id=$2 ORDER BY recorded_at DESC`, st.Instance, id)
+		rows, e := u.tx.Query(ctx, `WITH RECURSIVE revisions AS (
+ SELECT r.*, 1 AS depth FROM staffing.employment_action_revision r
+ WHERE r.instance_id=$1 AND r.action_id=$2 AND r.previous_revision IS NULL
+ UNION ALL SELECT r.*, prev.depth+1 FROM revisions prev
+ JOIN staffing.employment_action_revision r ON (r.instance_id,r.action_id,r.previous_revision)=(prev.instance_id,prev.action_id,prev.revision))
+ SELECT coalesce(nullif(operator_snapshot->>'displayName',''),operator_snapshot->>'login',actor::text),revision,actor,
+ to_char(recorded_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM revisions ORDER BY depth DESC,recorded_at DESC,revision`, st.Instance, id)
 		if e != nil {
 			return e
 		}
@@ -674,10 +684,30 @@ func (st *Store) OriginalAction(ctx context.Context, c f.Credentials, id, revisi
 			}
 		}
 		out.Action = a
-		out.InitialPosition, e = u.initialPosition(ctx, a)
+		e = u.identifyOriginal(ctx, c, a, &out)
 		return e
 	})
 	return
+}
+
+func (u *unit) identifyOriginal(ctx context.Context, c f.Credentials, a h.Action, out *h.Original) error {
+	position, e := u.initialPosition(ctx, a)
+	if e != nil {
+		return e
+	}
+	out.InitialPosition = position
+	names, _, e := u.store.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), c, []string{a.Person}, "")
+	var fault *f.Fault
+	if errors.As(e, &fault) && (fault.Status == 403 || fault.Status == 404) {
+		return nil
+	}
+	if e != nil {
+		return e
+	}
+	if len(names) == 1 {
+		out.PersonName, out.PersonNumber = names[0].Name, names[0].Number
+	}
+	return nil
 }
 
 func (u *unit) revisionVisible(ctx context.Context, a h.Action, revision string) (bool, error) {

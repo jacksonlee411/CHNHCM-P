@@ -105,7 +105,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	st.QuotaPolicies = st.PublishedQuotaPolicies
 
 	o.Staffing = st
-	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AdoptArea: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]person.CountryAdoption, string, error) {
+	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AuthorizeDirectory: a.PersonnelDirectory, AdoptArea: func(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]person.CountryAdoption, string, error) {
 		nodes, err := o.AdoptProfileArea(ctx, tx, g, id, date)
 		if err != nil {
 			return nil, "", err

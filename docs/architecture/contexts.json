@@ -224,8 +224,8 @@
           "capability": "职务信息与任职办理",
           "state": "verified_slice",
           "scope": "本人任职与日状态、历史维护、关系转正、晋升调动、兼岗、实际汇报、退出再聘、按岗占用及工作关系合同。",
-          "entry": "/personnel/assignments",
-          "entry_source": "apps/web/src/features/hire/EmployeeDirectory.tsx",
+          "entry": "/personnel/employees",
+          "entry_source": "apps/web/src/features/personnel/api.ts",
           "source": "internal/contexts/staffing/infra/postgres/job_information.go",
           "evidence": "docs/verification/500-job-information-delivery-review.md"
         },

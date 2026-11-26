@@ -81,6 +81,8 @@ type Action struct {
 	CanHistory bool `json:"canHistory"`
 }
 type TermLink struct {
+	EmployerName string `json:"employerName,omitempty"`
+	Until        string `json:"until,omitempty"`
 	Assignment   string `json:"assignment"`
 	RecordNumber int    `json:"recordNumber"`
 	From         string `json:"from"`
@@ -142,6 +144,8 @@ type InitialRecordPosition struct {
 }
 
 type Original struct {
+	PersonName        string                 `json:"personName,omitempty"`
+	PersonNumber      string                 `json:"personNumber,omitempty"`
 	InitialPosition   *InitialRecordPosition `json:"initialRecordPosition,omitempty"`
 	Exchange          *ExchangeLink          `json:"exchange,omitempty"`
 	Manager           *ManagerFact           `json:"manager,omitempty"`

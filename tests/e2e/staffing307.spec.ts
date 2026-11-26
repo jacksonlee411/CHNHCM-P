@@ -1,3 +1,4 @@
+import { desktopViewports, nativeZoomCases } from './desktop-viewports.mjs';
 import { action308, date308, family308, chooseClassification308, jobFunction308, menu308, reach308 } from './staffing308-support';
 import { randomUUID } from 'node:crypto';
 import { test, expect, type Page } from './fixtures';
@@ -410,7 +411,7 @@ test('Staffing307 候选迟到和失败不覆盖新日期及已有输入', async
 import { nativeZoomBrowser } from './native-zoom-support';
 import { mkdirSync, writeFileSync } from 'node:fs';
 for (const role of ['admin', 'reader']) {
-  test(`Staffing307 ${role} 双对象桌面窄屏短屏布局和取消`, async ({ page, browser }) => {
+  test(`Staffing307 ${role} 双对象桌面和短屏布局及取消`, async ({ page, browser }) => {
     await open(page);
     const f = await apiObject(page, 'jobfamily'),
       j = await apiObject(page, 'job', { family: f.id });
@@ -422,16 +423,11 @@ for (const role of ['admin', 'reader']) {
       await open(p, 'reader');
     }
     try {
-      await p.setViewportSize({ width: 390, height: 844 });
+      await p.setViewportSize({ width: 1440, height: 540 });
       await menu308(p, 'jobfamily');
       await menu308(p, 'job');
       for (const o of [f, j])
-        for (const [width, height] of [
-          [1440, 900],
-          [390, 844],
-          [320, 700],
-          [1280, 320],
-        ]) {
+        for (const [width, height] of desktopViewports) {
           await p.setViewportSize({ width, height });
           await p.goto(o.web + '?q=' + o.code);
           const link = p.getByRole('link', { name: o.name, exact: true }).first();
@@ -463,7 +459,7 @@ for (const role of ['admin', 'reader']) {
       await c?.close();
     }
   });
-  test(`Staffing307 ${role} 原生200%及400%双对象正常旅程`, async ({ page }) => {
+  test(`Staffing307 ${role} 原生缩放双对象正常旅程`, async ({ page }) => {
     test.setTimeout(180000);
     await open(page);
     const f = await apiObject(page, 'jobfamily'),
@@ -473,7 +469,7 @@ for (const role of ['admin', 'reader']) {
     const matrix = [];
     try {
       await open(p, role);
-      for (const factor of [2, 4]) {
+      for (const [, factor] of nativeZoomCases()) {
         await p.goto(f.web);
         await native.setZoom(factor);
         for (const o of [f, j]) {

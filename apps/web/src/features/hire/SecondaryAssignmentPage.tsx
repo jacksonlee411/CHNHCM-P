@@ -82,7 +82,7 @@ export function SecondaryAssignmentPage({ session }: { session: Principal }) {
   const { id = '', assignment = '' } = useParams(),
     [params] = useSearchParams(),
     navigate = useNavigate();
-  const initialDay = params.get('assignmentDay') ?? params.get('businessAt') ?? '';
+  const initialDay = params.get('assignmentDay') ?? '';
   const [from, setFrom] = useState(initialDay),
     [last, setLast] = useState(''),
     [notice, setNotice] = useState('');

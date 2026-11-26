@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { chromium } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
@@ -40,13 +41,7 @@ async function publish(page: Page, category: string) {
   await expect(page.getByRole('heading', { name: category + ' · hire' })).toBeVisible();
   await layout(page);
 }
-for (const [width, height] of [
-  [1440, 900],
-  [1440, 540],
-  [390, 844],
-  [320, 900],
-  [320, 256],
-]) {
+for (const [width, height] of desktopViewports) {
   test(`400 用途与任职政策 ${width}×${height}`, async ({ page }) => {
     test.setTimeout(150000);
     await open(page);

@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { test, expect } from './fixtures';
@@ -8,13 +9,7 @@ import { request } from './dated-object-support';
 import { withPolicy } from './grants';
 import { staffingZoomCases } from './staffing-zoom-suite';
 
-for (const [width, height] of [
-  [1440, 900],
-  [390, 844],
-  [1440, 540],
-  [320, 900],
-  [320, 256],
-])
+for (const [width, height] of desktopViewports)
   test('315 岗位核编与只读原件 ' + width + 'x' + height, async ({ page }) => {
     test.setTimeout(180000);
     await open(page);
@@ -311,6 +306,8 @@ staffingZoomCases(
     expect(receipt.status).toBe(200);
     return sample;
   },
+  // The position quota form previously lost input between two lookups at 400%.
+  role => role === 'admin',
 );
 
 test('315 两位管理员从同一未核编表单分别保存', async ({ page, browser, baseURL }) => {

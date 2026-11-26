@@ -2,53 +2,45 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent 
 import { Alert, Box, Button, MenuItem, Stack, Typography, useMediaQuery } from '@mui/material';
 import { Link, useLocation, useNavigationType, useSearchParams } from 'react-router-dom';
 import { useGridApiRef, type GridColDef, type GridSortModel } from '@mui/x-data-grid';
-import { api, sessionGuard, unwrap, type Models } from '@chnhcm/api-client';
+import { sessionGuard, type Models } from '@chnhcm/api-client';
 import { DataGridPage, ListControl, ListPager, ObjectTextField, SearchControl } from '@chnhcm/ui';
-import { useListReturn, usePageTitle } from '../../shared/navigation';
+import { useListReturn } from '../../shared/navigation';
 import * as person from '../personnel/api';
 
-export const employees = '/personnel/assignments';
-type Row = Models['EmployeeAssignmentRow'];
+type Row = Models['PersonnelDirectoryRow'];
 type Branch = Models['EmployeeAssignmentDirectory']['departments'][number];
 
-export function EmployeeDirectory({ session }: { session: Models['Principal'] }) {
-  usePageTitle('员工');
+export function EmployeeDirectory({
+  session,
+  register,
+}: {
+  session: Models['Principal'];
+  register: React.ReactNode;
+}) {
   const compact = useMediaQuery('(max-width:899px)');
   const [searching, setSearching] = useState(false);
   const [params, setParams] = useSearchParams(),
-    route = useLocation(), navigation = useNavigationType();
-  const query = {
-    ...person.parse(params),
-    businessAt: params.get('businessAt') ?? undefined,
-    department: params.get('department') ?? undefined,
-    person: params.get('person') ?? undefined,
-  };
-  const listing = person.useRead(JSON.stringify([route.key, query]), async () =>
-    unwrap(
-      await api.POST('/api/v1/assignments/query', {
-        params: { header: { 'X-CSRF-Token': session.csrf } },
-        body: { ...query, pageSize: query.pageSize as 20 | 50 | 100 },
-      }),
-    ),
-  );
+    route = useLocation(),
+    navigation = useNavigationType();
+  const query = person.directoryQuery(params);
+  const listing = person.useRead(JSON.stringify([route.key, query]), () => person.directory(session, params));
   const data = searching ? undefined : listing.data;
   const countKey = JSON.stringify({ ...query, page: undefined });
   const lastCount = useRef<{ key: string; total: number } | undefined>(undefined);
   useLayoutEffect(() => {
     if (listing.error) lastCount.current = undefined;
-    else if (data) lastCount.current = {key: countKey, total: data.total};
+    else if (data) lastCount.current = { key: countKey, total: data.total };
   }, [countKey, data, listing.error]);
-  const rowCount = data?.total ?? (!listing.error && lastCount.current?.key === countKey ? lastCount.current.total : undefined);
-  const sortModel = useMemo<GridSortModel>(() => [
-    { field: query.sort.replace(/^-/, ''), sort: query.sort.startsWith('-') ? 'desc' : 'asc' },
-  ], [query.sort]);
+  const rowCount =
+    data?.total ??
+    (!listing.error && lastCount.current?.key === countKey ? lastCount.current.total : undefined);
+  const sortModel = useMemo<GridSortModel>(
+    () => [{ field: query.sort.replace(/^-/, ''), sort: query.sort.startsWith('-') ? 'desc' : 'asc' }],
+    [query.sort],
+  );
   const apiRef = useGridApiRef(),
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
-  const [dateEdit, setDateEdit] = useState<{ base?: string; value: string }>();
-  const [dateAtFocus, setDateAtFocus] = useState<string>();
-  const dateField = useRef<HTMLInputElement>(null);
-  const dateInput = dateEdit && dateEdit.base === query.businessAt ? dateEdit.value : undefined;
   const appliedParams = useRef(params);
   useLayoutEffect(() => {
     appliedParams.current = params;
@@ -95,13 +87,12 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   );
   const returned = useListReturn({
     key: [
-      'employees',
+      'personnel',
       session.instanceId,
       session.subjectId,
       query.ref,
       query.department,
-      query.person,
-      query.businessAt,
+      query.primary,
     ].join(':'),
     ready: !!data,
     apiRef,
@@ -145,94 +136,123 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   }
   const visibleRows = useRef<Set<string>>(new Set());
   useLayoutEffect(() => {
-    visibleRows.current = new Set(data?.rows.map(row => row.id));
+    visibleRows.current = new Set(data?.rows.map((row) => row.id));
   }, [data]);
   function openRow(event: MouseEvent<HTMLAnchorElement>, row: Row) {
-    if (new URLSearchParams(window.location.search).toString() !== params.toString() || !visibleRows.current.has(row.id)) {
+    if (
+      new URLSearchParams(window.location.search).toString() !== params.toString() ||
+      !visibleRows.current.has(row.id)
+    ) {
       event.preventDefault();
       return;
     }
     returned.rememberRow(row.id);
   }
-  const columns = useMemo<GridColDef<Row>[]>(() => {
-    const link = (r: Row) => {
-      const next = new URLSearchParams(params);
-      next.set('selected', r.id);
-      next.set('from', 'assignments');
-      if (!next.has('businessAt') && data) next.set('businessAt', data.businessAt);
-      return (
-        <Link
-          data-object-link
-          className="object-name-link"
-          onClick={event => openRow(event, r)}
-          to={person.path + '/' + r.person + '/assignments/' + r.id + '?' + next}
-        >
-          {r.name}
-        </Link>
-      );
-    };
-    return [
-      { field: 'name', headerName: '姓名', flex: 1, minWidth: 120, renderCell: ({ row }) => link(row) },
-      { field: 'number', headerName: '人员编号', width: 124 },
-      { field: 'recordNumber', headerName: '雇用记录编号', width: 118, sortable: false },
+  function rowLink(row: Row, compactRow = false) {
+    const term = row.assignment;
+    return (
+      <Link
+        data-object-link
+        className="object-name-link"
+        onClick={(e) => openRow(e, row)}
+        to={person.directoryTarget(params, row.person, term?.id)}
+      >
+        {row.name}
+        {compactRow && term && ` · ${term.recordNumber} 号${term.primaryJob ? '主岗' : '兼岗'}`}
+      </Link>
+    );
+  }
+  const columns = useMemo<GridColDef<Row>[]>(
+    () => [
+      { field: 'name', headerName: '姓名', flex: 1, minWidth: 120, renderCell: ({ row }) => rowLink(row) },
+      {
+        field: 'number',
+        headerName: '人员编号',
+        width: 146,
+        renderCell: ({ row }) => row.number + (row.historical ? '（历史编号命中）' : ''),
+      },
+      {
+        field: 'recordNumber',
+        headerName: '雇用记录编号',
+        width: 118,
+        sortable: false,
+        renderCell: ({ row }) => row.assignment?.recordNumber ?? '—',
+      },
       {
         field: 'primaryJob',
         headerName: '主兼岗',
         width: 82,
         sortable: false,
-        renderCell: ({ row }) => (row.primaryJob ? '主岗' : '兼岗'),
+        renderCell: ({ row }) => (row.assignment ? (row.assignment.primaryJob ? '主岗' : '兼岗') : '—'),
       },
-      { field: 'departmentName', headerName: '部门', flex: 1, minWidth: 115, sortable: false },
       {
-        field: 'jobName',
+        field: 'department',
+        headerName: '部门',
+        flex: 1,
+        minWidth: 105,
+        sortable: false,
+        renderCell: ({ row }) => row.assignment?.departmentName || '—',
+      },
+      {
+        field: 'job',
         headerName: '职务 / 岗位',
         flex: 1,
         minWidth: 110,
         sortable: false,
-        renderCell: ({ row }) => (
-          <Stack>
-            {row.jobName}
-            <small>{row.positionName || '—'}</small>
-          </Stack>
-        ),
+        renderCell: ({ row }) =>
+          row.assignment ? (
+            <Stack>
+              {row.assignment.jobName}
+              <small>{row.assignment.positionName || '—'}</small>
+            </Stack>
+          ) : (
+            '—'
+          ),
       },
       {
-        field: 'from',
+        field: 'period',
         headerName: '任职期间',
-        minWidth: 170,
+        width: 185,
         sortable: false,
         renderCell: ({ row }) =>
-          row.until ? `${row.from} 起，${row.until} 起不在任` : '自 ' + row.from + ' 起',
+          row.assignment
+            ? row.assignment.from +
+              ' 起' +
+              (row.assignment.until ? '，' + row.assignment.until + ' 起不在任' : '')
+            : '—',
       },
-      { field: 'state', headerName: '状态', width: 75, sortable: false, renderCell: () => '在任' },
-    ];
-  }, [params, data?.businessAt, returned.rememberRow]);
+      {
+        field: 'status',
+        headerName: '状态',
+        width: 95,
+        sortable: false,
+        renderCell: ({ row }) => (row.assignment ? (row.future ? '尚未生效' : '在任') : '—'),
+      },
+    ],
+    [params, returned.rememberRow],
+  );
   const summary = useMemo<GridColDef<Row>>(
     () => ({
       field: 'summary',
-      headerName: '员工任职',
-      renderCell: ({ row }) => {
-        const q = new URLSearchParams(params);
-        q.set('from', 'assignments');
-        q.set('selected', row.id);
-        if (data) q.set('businessAt', data.businessAt);
-        return (
-          <Stack>
-            <Link
-              data-object-link
-              to={person.path + '/' + row.person + '/assignments/' + row.id + '?' + q}
-              onClick={event => openRow(event, row)}
-            >
-              {row.name} · {row.recordNumber} 号{row.primaryJob ? '主岗' : '兼岗'}
-            </Link>
-            <small>
-              {[row.number, row.departmentName, row.jobName, row.positionName].filter(Boolean).join(' · ')}
-            </small>
-          </Stack>
-        );
-      },
+      headerName: '人员',
+      renderCell: ({ row }) => (
+        <Stack>
+          {rowLink(row, true)}
+          <small>
+            {[
+              row.number,
+              row.historical ? '历史编号命中' : '',
+              row.assignment?.departmentName,
+              row.assignment?.jobName,
+              row.future ? '尚未生效' : '',
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </small>
+        </Stack>
+      ),
     }),
-    [params, data?.businessAt, returned.rememberRow],
+    [params, returned.rememberRow],
   );
   function branch(nodes: Branch[], parent = ''): React.ReactNode {
     return nodes
@@ -252,14 +272,14 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
   return (
     <div className="standard-page">
       <DataGridPage<Row>
-        label="员工任职列表"
+        label="人员"
         apiRef={apiRef}
         scrollerRef={returned.scroller}
         selected={returned.selected}
         rows={data?.rows ?? []}
         ready={!!data}
         loading={!data && !listing.error}
-        empty="该日没有可查看的任职"
+        empty="没有匹配的人员"
         columns={columns}
         summaryColumn={summary}
         paginationModel={{ page: query.page - 1, pageSize: query.pageSize }}
@@ -278,12 +298,8 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
         }}
         toolbar={
           <ListControl
-            title="员工"
-            action={
-              <Button component={Link} to={person.path}>
-                人员档案
-              </Button>
-            }
+            title="人员"
+            action={register}
             pager={<ListPager />}
             search={
               <SearchControl
@@ -299,28 +315,30 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
             }
           >
             <Stack direction="row" flexWrap="wrap" gap={2} alignItems="center">
-              {query.person && (
-                <Button onClick={() => update({ person: '', page: '1', selected: '' })}>查看全部员工</Button>
-              )}
               <ObjectTextField
-                inputRef={dateField}
-                type="date"
-                label="业务日期"
-                value={dateInput ?? query.businessAt ?? dateAtFocus ?? data?.businessAt ?? ''}
-                onFocus={(e) => setDateAtFocus(e.target.value)}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setDateEdit({ base: query.businessAt, value });
-                  if (value && e.target.validity.valid) update({ businessAt: value, page: '1' });
-                }}
-                onBlur={() => {
-                  setDateAtFocus(undefined);
-                  const field = dateField.current;
-                  if (field && dateInput !== undefined && field.validity.valid && field.value !== (appliedParams.current.get('businessAt') ?? '')) {
-                    update({ businessAt: field.value, page: '1' });
-                  }
-                }}
-              />
+                select
+                label="主兼岗"
+                value={query.primary || ''}
+                slotProps={{ select: { displayEmpty: true } }}
+                onChange={(e) => update({ primary: e.target.value, page: '1' })}
+              >
+                <MenuItem value="">全部</MenuItem>
+                <MenuItem value="primary">主岗</MenuItem>
+                <MenuItem value="secondary">兼岗</MenuItem>
+              </ObjectTextField>
+              {compact && (
+                <ObjectTextField
+                  select
+                  label="排序"
+                  value={query.sort}
+                  onChange={(e) => update({ sort: e.target.value, page: '1' })}
+                >
+                  <MenuItem value="number">人员编号升序</MenuItem>
+                  <MenuItem value="-number">人员编号降序</MenuItem>
+                  <MenuItem value="name">姓名升序</MenuItem>
+                  <MenuItem value="-name">姓名降序</MenuItem>
+                </ObjectTextField>
+              )}
               {compact && (
                 <ObjectTextField
                   select
@@ -339,7 +357,7 @@ export function EmployeeDirectory({ session }: { session: Models['Principal'] })
               )}
               {data && (
                 <Typography>
-                  {data.total} 份任职，{data.people} 人
+                  {data.assignments} 份任职，{data.people} 人
                 </Typography>
               )}
             </Stack>

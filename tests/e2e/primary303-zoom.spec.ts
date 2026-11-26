@@ -1,3 +1,5 @@
+import { calibrateDesktopWindow } from './native-zoom-support';
+import { nativeZoomCases } from './desktop-viewports.mjs';
 import { chromium } from '@playwright/test';
 import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -5,7 +7,7 @@ import { test, expect } from './fixtures';
 import { open } from './bu-support';
 import { chooseApplication } from './app-navigation';
 
-test('303 一级菜单原生200%和400%缩放、顺序与直接进入', async () => {
+test('303 一级菜单原生缩放、顺序与直接进入', async () => {
   test.setTimeout(120000);
   let number = 1700 + process.pid % 1000;
   while (existsSync(`/tmp/.X11-unix/X${number}`) || existsSync(`/tmp/.X${number}-lock`)) number++;
@@ -21,9 +23,11 @@ test('303 一级菜单原生200%和400%缩放、顺序与直接进入', async ()
     await open(page);
     const zoom = (steps: number) => execFileSync('python3', ['docs/verification/data/100-ui-baseline/native-zoom.py', String(steps)], { env, stdio: 'pipe' });
     const observations = [];
-    for (const [steps, dpr] of [[5, 2], [8, 4]]) {
+    zoom(0);
+    await calibrateDesktopWindow(page);
+    for (const [steps, dpr] of nativeZoomCases()) {
       zoom(steps);
-      await expect.poll(() => page.evaluate(() => devicePixelRatio)).toBe(dpr);
+      await expect.poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio])).toEqual([1280 / dpr, 900 / dpr, dpr]);
       await page.getByRole('button', { name: '打开导航', exact: true }).click();
       const drawer = page.locator('#navigation-drawer');
       await expect(drawer.getByRole('button', { name: /^(部门|人员|设置)$/ })).toHaveText(['部门', '人员', '设置']);

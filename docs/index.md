@@ -2,9 +2,13 @@
 
 此索引保留公开项目前身的技术文档和验收导航。历史运行附件由原仓保管，对应链接需要私仓权限。
 
-人员方案设「员工」与「人事事务」两个入口。员工列表按部门列各份任职，同人同部门也分行。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。实施先把已有按职务首单接入 0 号页签，再交地点变更与原笔更正。人事事务从这笔变更开始复用任职中的办理，兼岗和同日动作按各自前置接入。[分批实施及依赖图](plans/500-personnel-roadmap.md#job-information-delivery) · [编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [设计复核与参考来源](verification/506-job-information-design-review.md)
+经办人从「人员」按姓名或现旧编号查询，获权任职逐份列出。没有可列任职的本人按名录授权显示一行。本人资料与职务信息直接切签，跨人办理从「人事事务」进入。主岗终身为 0，再聘沿用 0 号，新兼岗按人递增且已发号不回收。实施先把已有按职务首单接入 0 号页签，再交地点变更与原笔更正。人事事务从这笔变更开始复用任职中的办理，兼岗和同日动作按各自前置接入。[分批实施及依赖图](plans/500-personnel-roadmap.md#job-information-delivery) · [编号与再聘](specs/m04/506-job-information-records.md#m04-br-009) · [职务信息页签](specs/m04/507-job-information-tab.md#job-tab-layout) · [办理记录列表](specs/m04/507-job-information-tab.md#personnel-action-register) · [记录操作、类型与原因](specs/m04/506-job-information-records.md#m04-br-010) · [设计复核与参考来源](verification/506-job-information-design-review.md)
 
 T04「在职变动、结束与再聘」在 509 本地候选及固定 f 的 4386 原库验收通过。509 已关闭对 `39660e7` 七轮复评发现的 27 项问题，涵盖实际汇报、同日与跨岗办理、退出与再聘、岗位实占及页面交互。508 原六项也已回归。[27 项原反例](verification/500-t04-implementation-rereview.md) · [509 分批修复方案](plans/509-t04-remediation.md) · [方案独立评审](verification/509-t04-remediation-review.md) · [509 产品验收及固定环境](verification/509-t04-remediation-implementation.md#fixed-environment) · [508 原批验证](verification/508-job-information-implementation.md)
+
+2026-11-26，500 页面专项在 `b67cb72` 实测发现 11 项待修复问题，当时建议暂缓该专项验收。两项高优先级涉及跨员工更正时确认本人，以及旧修订中判断当次任职地点。[页面布局与交互问题登记](verification/500-personnel-page-review.md)
+
+同基线又确认「人员」入口、本人职务信息页签、时间轴与通用查看日期四项问题，并查出多任职选择等五项同类问题。补查报告收录 9 项问题、35 张原图、规范追溯及逐项关闭条件。[人员入口、职务信息与日期交互补充评审](verification/500-personnel-entry-and-date-review.md) 510 已完成上述 20 项整改，固定 f 的 4386 已更新并通过桌面实操。整改步骤和逐项结果见[510 整改计划](plans/510-personnel-page-remediation.md)及[二十项实施复验](verification/510-personnel-page-remediation-implementation.md)。
 
 [M01 个人资料扩展](plans/504-personal-profile-extension.md)单列 T01 之后的九栏维护。字段、整页保存及七类弹框布局由[九栏目合同](specs/m01/505-personal-profile-contract.md)规定。[九栏方案评审](verification/504-personal-profile-review.md) · [弹框布局核对](verification/504-personal-profile-dialog-layout.md) · [第一批三栏实测与验收地址](verification/504-personal-profile-first-batch.md) · [第二批地址与家庭联系人实测及验收地址](verification/504-personal-profile-second-batch.md) · [第三批教育经历与专业凭证](verification/504-personal-profile-third-batch.md) · [第四批银行、健康及九栏联验](verification/504-personal-profile-fourth-batch.md)
 
@@ -12,7 +16,7 @@ T04「在职变动、结束与再聘」在 509 本地候选及固定 f 的 4386 
 
 M03 按岗位、按日核编。招聘可提前寻访，在发出正式录用时一并落实名额。人事从已接受且资料齐备的录用直接办理入职，从原调动办理两岗接替、改期或撤销。[编制管理合同](specs/m03/313-position-capacity-contract.md) · [调动与两岗交接](specs/m03/313-position-capacity-contract.md#m03-br-037) · [办理简化复核](verification/313-staffing-procedure-review.md)
 
-对象详情中的字段分组、多条记录摘要、可见条数及明细返回遵循[012 详情正文布局与交互](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections)。普通页面使用五种 100% 视口，关键流程必测原生 200%，400% 按条件做专项验证。[012 视口与缩放](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
+对象详情中的字段分组、多条记录摘要、可见条数及明细返回遵循[012 详情正文布局与交互](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections)。普通业务页面按共享规范验收桌面布局、短屏滚动和关键流程原生缩放。[012 视口与缩放](specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
 
 M03 岗位核编和部门调剂都可在 `wt-dev-d` 的 4486 验收。管理员从「设置 → 职务配置 → 岗位」打开已有岗位，在「岗位编制」办理核编。岗位默认显示当前值，历史记录按生效日或变更日志原件定位。「部门编制分配」从统计日进入部门详情。点选时间轴可查看总额或岗位分配变动后的整份分配，也可查询任意获权日期、办理同日多岗调剂。[打开验收环境](http://127.0.0.1:4486) · [部门时间轴与 4486 现场复核](verification/315-department-quota-allocation.md#71-4486-原库更新与双角色复核) · [统一环境交接](verification/315-department-quota-allocation.md#6-统一验收环境-4486) · [岗位演示与验收](verification/315-position-quota-implementation.md) · [313 编制管理合同](specs/m03/313-position-capacity-contract.md) · [315 后台实施计划](plans/315-staffing-quota-administration.md) · [架构复核](verification/315-staffing-quota-plan-architecture-review.md)
 140 的行政区划授权、组织记录期间显示和切片登记已分别通过本地验收。T04 地点与法律实体共同历史流程待下次相关变更触发。[分项实施记录](verification/140-module-cohesion-implementation.md) · [实施路线图](plans/140-module-cohesion-roadmap.md) · [方案评审](verification/140-module-cohesion-roadmap-review.md)

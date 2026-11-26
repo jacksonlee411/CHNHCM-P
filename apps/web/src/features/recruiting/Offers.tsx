@@ -227,7 +227,8 @@ export function OfferDetail({
   const saved = useRef(false),
     failure = useRef<HTMLDivElement>(null),
     opener = useRef<HTMLButtonElement | null>(null),
-    lastOperation = useRef('');
+    lastOperation = useRef(''),
+    openedOffer = useRef<Pick<Models['RecruitingOffer'], 'version' | 'arrival' | 'reserveFrom' | 'lastDay'>>(undefined);
   const entry = useRead(creating ? person : undefined, () =>
     offerAccess(person),
   );
@@ -265,9 +266,9 @@ export function OfferDetail({
     () => readMode(options.position?.id),
   );
   const scheduleChanged =
-    arrival !== item?.arrival ||
-    start !== item?.reserveFrom ||
-    last !== (item?.lastDay ?? '');
+    arrival !== openedOffer.current?.arrival ||
+    start !== openedOffer.current?.reserveFrom ||
+    last !== (openedOffer.current?.lastDay ?? '');
   const dirty = !!(
     day ||
     basis ||
@@ -337,6 +338,15 @@ export function OfferDetail({
   useEffect(() => {
     if (error) failure.current?.focus();
   }, [error]);
+  const deniedDraft = !!op && !creating && ([401,403,404].includes(view.status ?? 0) || !!item && !item.actions?.includes(op));
+  useEffect(() => {
+    if (!deniedDraft) return;
+    setOp(undefined);
+    setDay(''); setBasis(''); setArrival(''); setStart(''); setLast('');
+    openedOffer.current=undefined;
+    setError('已重新核对权限和录用状态，当前不可办理。');
+  },[deniedDraft]);
+  const staleDraft=!!op && !creating && !!item && openedOffer.current?.version !== item.version;
   const title = creating ? '发出录用' : (item?.number ?? '招聘录用');
   usePageTitle(title);
   const backParams = new URLSearchParams(params);
@@ -345,7 +355,7 @@ export function OfferDetail({
   backParams.delete('returnTo');
   const back = fromPersonnel ?? offerPath + '?' + backParams.toString();
   const ready =
-    !!op &&
+    !!op && !deniedDraft &&
     !!day &&
     !!basis.trim() &&
     (op !== 'reschedule' || (!!arrival && !!start && scheduleChanged)) &&
@@ -382,12 +392,12 @@ export function OfferDetail({
     );
   }
   function submit() {
-    if (!ready || !op || send.busy) return;
+    if (!ready || !op || send.busy || staleDraft) return;
     void send.submit({
       operation: op,
       businessDate: day,
       basis,
-      expected: item?.version,
+      expected: creating ? undefined : openedOffer.current?.version,
       dates:
         op === 'reschedule'
           ? { arrival, reserveFrom: start, lastDay: last || undefined }
@@ -417,7 +427,24 @@ export function OfferDetail({
             招聘录用
           </>
         }
-        actions={null}
+        actions={op && !deniedDraft && (!creating || entry.data?.canIssue) && (
+                <Stack direction="row" gap={1}>
+                  <Button
+                    type="submit" form="offer-record-form"
+                    variant="contained"
+                    disabled={!ready || send.busy || staleDraft}
+                  >
+                    保存
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      leave.request(() => (creating ? navigate(back) : close()))
+                    }
+                  >
+                    取消
+                  </Button>
+                </Stack>
+        )}
       />
       <Box
         className="page-scroll"
@@ -503,6 +530,7 @@ export function OfferDetail({
                       key={action}
                       ref={node => { if (action === lastOperation.current) opener.current = node; }}
                       onClick={(e) => {
+                        openedOffer.current = item;
                         lastOperation.current = action;
                         opener.current = e.currentTarget;
                         saved.current = false;
@@ -560,15 +588,17 @@ export function OfferDetail({
               )}
             </ObjectForm>
           )}
-          {op && (!creating || entry.data?.canIssue) && (
+          {staleDraft && <Alert severity="warning">这份录用已被修改。请取消草稿，核对当前录用后重新办理。</Alert>}
+          {op && !deniedDraft && (!creating || entry.data?.canIssue) && (
             <Box
-              component="form"
+              id="offer-record-form" component="form"
               onSubmit={(e) => {
                 e.preventDefault();
                 submit();
               }}
             >
-              <ObjectForm>
+              <ObjectForm><div className="object-detail-columns"><ObjectDetailSection title="录用安排">
+
                 {!creating && (
                   <Typography component="h2" variant="h6">
                     {operations[op]}
@@ -633,6 +663,7 @@ export function OfferDetail({
                     )}
                   </>
                 )}
+                </ObjectDetailSection><ObjectDetailSection title="本次办理">
                 <ObjectTextField
                   required
                   type="date"
@@ -646,22 +677,8 @@ export function OfferDetail({
                   value={basis}
                   onChange={(e) => setBasis(e.target.value)}
                 />
-                <Stack direction="row" gap={1}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={!ready || send.busy}
-                  >
-                    保存
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      leave.request(() => (creating ? navigate(back) : close()))
-                    }
-                  >
-                    取消
-                  </Button>
-                </Stack>
+
+                </ObjectDetailSection></div>
               </ObjectForm>
             </Box>
           )}

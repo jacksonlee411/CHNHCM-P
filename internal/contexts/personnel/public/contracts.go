@@ -2,6 +2,7 @@ package public
 
 import (
 	"chnhcm.local/chnhcm/internal/foundation"
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -179,6 +180,33 @@ type Query struct {
 	Ref, Sort  string
 	Page, Size int
 }
+
+// DirectoryKey expands one visible person into caller-authorized rows. The
+// consumer owns those row identities and their order within that person.
+type DirectoryKey struct {
+	Person, ID string
+	Order      int
+}
+
+// DirectoryLookup holds a single authorized query in the caller's database
+// transaction. Both projections use the same retention and grant cutoff.
+type DirectoryLookup interface {
+	Renew(context.Context) error
+	Candidates(ids []string) ([]Summary, string, error)
+	Page(keys []DirectoryKey, anchor string) (IndexedDirectory, error)
+}
+
+type IndexedPerson struct {
+	Summary
+	Key string
+}
+type IndexedDirectory struct {
+	Rows    []IndexedPerson
+	Total   int
+	Keyword string
+	Nav     Nav
+}
+
 type Source struct {
 	Version  string    `json:"sourceVersion"`
 	At       time.Time `json:"recordedAt"`

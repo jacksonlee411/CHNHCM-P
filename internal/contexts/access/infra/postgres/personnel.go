@@ -10,6 +10,16 @@ import (
 )
 
 func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+	return s.personnel(ctx, tx, c, false)
+}
+
+// PersonnelDirectory restricts the grant projection to ordinary identity reads.
+// A large per-person scope on unrelated profile or history rights is not needed
+// to authorize a directory search or its session-owned reference.
+func (s *Store) PersonnelDirectory(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+	return s.personnel(ctx, tx, c, true)
+}
+func (s *Store) personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials, directoryOnly bool) (access.PersonAccess, access.Guard, error) {
 	var a access.PersonAccess
 	g, e := s.Guard(ctx, tx, c)
 	if e != nil {
@@ -49,7 +59,7 @@ func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentia
 	if e = tx.QueryRow(ctx, "select clock_timestamp()").Scan(&a.At); e != nil {
 		return a, nil, e
 	}
-	rows, e := tx.Query(ctx, `select action,purpose,fields,person_ids::text[],denied,expires_at,coalesce(source_version::text,''),coalesce(item_id::text,'') from access.person_grant where instance_id=$1 and principal_id=$2 and (expires_at is null or expires_at>$3)`, s.Instance, a.Principal.ID, a.At)
+	rows, e := tx.Query(ctx, `select action,purpose,fields,person_ids::text[],denied,expires_at,coalesce(source_version::text,''),coalesce(item_id::text,'') from access.person_grant where instance_id=$1 and principal_id=$2 and (expires_at is null or expires_at>$3) and (not $4 or (action='read' and purpose='directory' and source_version is null and item_id is null))`, s.Instance, a.Principal.ID, a.At, directoryOnly)
 	if e != nil {
 		return a, nil, e
 	}

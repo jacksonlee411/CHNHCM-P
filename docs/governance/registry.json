@@ -367,15 +367,15 @@
       "modules": [
         "M02"
       ],
-      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，视口与原生缩放按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。",
+      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，桌面视口、原生缩放与手机端专项的适用范围按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。",
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 对照现行合同与人员实页验收记录复核",
-        "scope": "第 2.4.1 节详情正文的阅读顺序、可见记录摘要、行操作和范围，以及与第 6.2 节视口和缩放规则的衔接。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 按用户采纳的桌面交付范围复核",
+        "scope": "第 6.2 节桌面常规矩阵、关键流程原生缩放、专项触发与旧要求替代关系；对象合同、接入模板及用例的对应范围。",
         "result": "accepted",
-        "evidence": "docs/verification/504-personal-profile-first-batch.md"
+        "evidence": "docs/verification/012-desktop-page-acceptance.md"
       },
       "execution_status": null,
       "superseded_by": [
@@ -3048,6 +3048,30 @@
       "superseded_by": [],
       "closure": {"date": "2026-11-25", "reason": "27 项修复及 508 原六项回归通过，固定 f 原库前向升级至 00057 并完成菜单复验。"},
       "archive": null
+    },
+    {
+      "id": "CHNHCM-510",
+      "title": "人员页面二十项问题整改与验收",
+      "path": "docs/plans/510-personnel-page-remediation.md",
+      "owner_branch": "wt-dev-f",
+      "owner_role": "Personnel、Staffing、Recruiting、体验与验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": ["M01", "M04", "M05", "X03"],
+      "scope": "500-UI-01 至 20 的人员入口、按权名录、详情与准确来源、交互及固定环境验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-26",
+        "reviewer": "Codex 两组独立方案评审",
+        "scope": "二十项逐项整改、名录授权与容量、办理原件可达性和分步验收",
+        "result": "accepted",
+        "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {"date": "2026-11-26", "reason": "二十项页面整改已逐项复验，固定 f 原库完成桌面交接，定向业务回归及两套万人容量试验通过。"},
+      "archive": null
     }
   ],
   "first_slice": {
@@ -3062,6 +3086,205 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/012-desktop-page-acceptance.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-023",
+          "CHNHCM-121",
+          "CHNHCM-124",
+          "CHNHCM-308",
+          "CHNHCM-310",
+          "CHNHCM-312",
+          "CHNHCM-315",
+          "CHNHCM-402",
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-502",
+          "CHNHCM-505",
+          "CHNHCM-507"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b1fbac7909b23aea44eec76afcf09b2d67a109dc",
+        "working_tree": "dirty",
+        "change_description": "采用桌面交付范围，调整共享合同、对象引用和浏览器取样。",
+        "environment": "wt-dev-f，独立本地 PostgreSQL、Chromium 和同工作树服务。",
+        "scope": "桌面标准屏、短屏、原生缩放、手机视口退出默认集及业务断言迁移。",
+        "results": [
+          {
+            "check": "默认 Playwright 实际发现由 800 项变为 678 项，均为 70 个入口文件",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "旧再聘断言查找内部编号、固定构建不提供两条夹具入口、移动配置时工作进程引用旧路径",
+            "result": "failed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "按现行用例名去重实测通过 47 项，既有失败场景均复验通过",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          },
+          {
+            "check": "岗位经办人已知风险和一级菜单显式 400% 均保留，菜单实测 640×450／320×225",
+            "result": "passed",
+            "evidence": "docs/verification/012-desktop-page-acceptance.md"
+          }
+        ],
+        "limitations": [
+          "678 项属于完整收集清单，未执行全套浏览器或远程 CI。各组共享企业前置，组间通过数不可直接相加。"
+        ]
+      },
+      {
+        "path": "docs/verification/510-personnel-page-remediation-implementation.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-123",
+          "CHNHCM-500",
+          "CHNHCM-502",
+          "CHNHCM-507",
+          "CHNHCM-510"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b03a20b10cc01f0cdde08b717d31cdf79c60832a",
+        "working_tree": "clean",
+        "change_description": "受测产品为 b03a20b，固定构建 eb44651 仅多出证据提交；补录固定环境 27 张与副本 7 张实操截图。",
+        "environment": "固定 f 原库 m01-profile-f（4386／8386／54376）、其一次性副本及独立 PostgreSQL、Chromium。",
+        "scope": "本人名录、页签、日期、跨人办理、表单、来源与原行恢复。",
+        "results": [
+          {
+            "check": "两组复核初版发现授权、原行、草稿与零交集问题",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "56e59cd 两组分别复核原问题通过，后续 b03a20b 复用已获权分页",
+            "result": "passed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "多人名录负载首测及和其它重负载同时运行时超过 500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "隔离运行两套万人容量试验共 3600 次，18 组全部通过",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          },
+          {
+            "check": "181 项浏览器组合首跑在第 25 项中断，包含失败",
+            "result": "interrupted",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "19 项定向 Chromium 和两包中 12 项数据库用例",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          },
+          {
+            "check": "首次默认全量集成运行 20 分钟超时",
+            "result": "interrupted",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "二十项逐项操作和共享页面对照、34 张截图",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/observations.json"
+          },
+          {
+            "check": "4386 实际桌面、短屏、200% 及 131 张原数据表升级前后比对",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          }
+        ],
+        "limitations": [
+          "全量数据库和最初的 181 项浏览器组合未取得整组通过结果。后续按影响范围复跑。",
+          "固定库实操使用合成样本，双窗保存于原库副本进行。未运行远程 CI。"
+        ]
+      },
+      {
+        "path": "docs/verification/510-personnel-page-remediation-review.md",
+        "related_documents": [
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-503",
+          "CHNHCM-507",
+          "CHNHCM-510"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "6a196cbc7ae9a034587e1281bf5b09e62f0015a8",
+        "working_tree": "clean",
+        "change_description": "记录初审要求、修订与同版本独立复审。",
+        "environment": "固定 f，本地代码、合同和浏览器调查证据。",
+        "scope": "二十项整改、依赖次序、名录容量和取消后历史可达性。",
+        "results": [
+          {
+            "check": "初审 a598922",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+          },
+          {
+            "check": "两组复审 6a196cb",
+            "result": "passed",
+            "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+          }
+        ],
+        "limitations": [
+          "方案评审通过，产品验收另行记录。"
+        ]
+      },
+      {
+        "path": "docs/verification/500-personnel-entry-and-date-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-123", "CHNHCM-124", "CHNHCM-313", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+        "working_tree": "dirty",
+        "change_description": "受测时工作树已有上一轮 500 页面问题登记、截图及索引的未提交改动。固定构建清单的起点为 39660e7，1,157 个前端和共享源文件与本树相符，在线的 28 个文件均匹配。接续登记入口、页签、生效日期和相邻流程的 9 项开放问题。",
+        "environment": "wt-dev-f 的固定 m01-profile-f，Web 4386、API 8386、DB 54376，有界面 Chromium 140.0.7339.186，本地合成样本。",
+        "scope": "正常菜单中的人员列表和详情、职务信息、本人多任职与办理历史，按四轮核对同构建的参考页面、专项日期任务、实施合同及浏览器断言。本人和任职详情覆盖五种 100% 视口及关键流程原生 200%。",
+        "results": [
+          {"check": "用户指出的四项，500-UI-12 至 15，普通人员入口、本人页签、日期轴对齐及常驻查看日期", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
+          {"check": "500-UI-16 至 20，多任职选择、菜单当前项、办理历史日期、返回动作名称及日期轴顺序", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
+          {"check": "只读者的资料入口、首聘到岗日、办理期间筛选、部门编制指定日统计及参考日期轴", "result": "passed", "evidence": "docs/verification/data/500-personnel-entry-and-date-review/observations.json"},
+          {"check": "本次 9 项问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"}
+        ],
+        "limitations": ["固定环境使用现有合成样本，仅执行浏览、读取、选择及取消。", "固定清单与本树另有 4 个后端集成测试和 3 个生成模型不同。此次未复跑全套业务、权限动态变更或原生 400%，结论限定在记录的实页路径。"]
+      },
+      {
+        "path": "docs/verification/500-personnel-page-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-505", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+        "working_tree": "clean",
+        "change_description": "登记 500 页面专项实测的 11 项开放问题，高 2 项、中 8 项、低 1 项，建议暂缓页面专项验收。",
+        "environment": "wt-dev-f，固定 m01-profile-f（Web 4386 / API 8386 / DB 54376），有界面 Chromium 140.0.7339.186，管理员、只读账号及合成样本。正式保存与动态授权另用一次性 PostgreSQL 环境。",
+        "scope": "对照业务单元及职务参考页，审查人员、任职、跨员工办理、合同及录用的列表、详情、页签、时间轴、表单和返回。五种 100% 视口，关键交互原生 200%，只读明细补查 400%。",
+        "results": [
+          {"check": "500-UI-01 至 02，跨员工更正的本人标识、旧办理修订与当次任职的来源", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "500-UI-03 至 10，跨页定位、撤销状态、生效日期、详情和页签、整单操作、列表筛选与排序", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "500-UI-11，登记姓名的可见及辅助技术必填标识", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "两岗一人的去重计数、档案草稿放弃、合同前后继与原件返回的指定样本", "result": "passed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "首轮企业维护前置 4 项通过、1 项请求失败，人员 3 项未启动", "result": "failed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
+          {"check": "人员 3 项独立浏览器复跑，包括地点保存及更正、仅见兼岗、动态授权", "result": "passed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
+          {"check": "11 项页面问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-page-review.md"}
+        ],
+        "limitations": [
+          "固定验收库使用现有合成样本，草稿取消。原生 400% 仅核对只读资料行明细及退出归焦。",
+          "三个用例的 Playwright 结果为通过，外层进程返回 143。临时资源已回收。此次为页面专项，未重验全套业务、并发或数据库不变量。"
+        ]
+      },
       {
         "path": "docs/verification/509-t04-remediation-implementation.md",
         "related_documents": ["CHNHCM-012", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508", "CHNHCM-509"],

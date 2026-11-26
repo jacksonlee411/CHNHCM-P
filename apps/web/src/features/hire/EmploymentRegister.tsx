@@ -95,11 +95,29 @@ function Filters({
   const options={department:data?.departments,fromDepartment:data?.fromDepartments,toDepartment:data?.toDepartments,operator:data?.operators};
   const named = (record: Record<string, string>) =>
     Object.entries(record).map(([id, name]) => ({ id, name }));
+  const panel=useRef<HTMLDetailsElement>(null), trigger=useRef<HTMLElement>(null);
+  const [open,setOpen]=useState(false);
+  function close() {
+    if(panel.current)panel.current.open=false;
+    setOpen(false);
+    trigger.current?.focus();
+  }
+  const summary=fields.flatMap(key=>{
+    const value=params.get(key);
+    if(!value)return [];
+    if(key==='kind')return kinds[value as keyof typeof kinds] || [];
+    if(key==='status')return statuses[value as keyof typeof statuses] || [];
+    if(key in dates)return dates[key as keyof typeof dates]+' '+value;
+    const option=options[key as keyof typeof options]?.find(x=>x.id===value);
+    return option ? scopes[key as keyof typeof scopes]+' '+option.name : [];
+  }).join('、');
   return (
-    <details>
-      <summary>筛选条件</summary>
-      <Stack
-        key={params.toString()}
+    <details ref={panel} onToggle={e=>setOpen(e.currentTarget.open)} onKeyDown={e=>{
+      if(e.key==='Escape' && open){e.preventDefault();close();}
+    }}>
+      <summary ref={trigger}>筛选条件{summary && ' · '+summary}</summary>
+      {open && <Stack
+        key={params.toString()+JSON.stringify(options)}
         component="form"
         direction="row"
         flexWrap="wrap"
@@ -109,6 +127,7 @@ function Filters({
           e.preventDefault();
           const values = new FormData(e.currentTarget);
           apply(Object.fromEntries(fields.map((name) => [name, String(values.get(name) ?? '')])));
+          close();
         }}
       >
         {select('kind', '办理类型', named(kinds))}
@@ -120,8 +139,9 @@ function Filters({
           select(name, label, options[name as keyof typeof options] ?? []),
         )}
         <Button type="submit">应用筛选</Button>
-        <Button onClick={() => apply(Object.fromEntries(fields.map((key) => [key, ''])))}>清除筛选</Button>
-      </Stack>
+        <Button onClick={()=>{apply(Object.fromEntries(fields.map(key=>[key,''])));close();}}>清除筛选</Button>
+        <Button onClick={close}>取消</Button>
+      </Stack>}
     </details>
   );
 }
@@ -177,6 +197,31 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
   const data = listing.data,
     [draft, setDraft] = useState(''),
     [error, setError] = useState('');
+  // A name, type or date filter can legitimately have no intersection with
+  // a selected department. Check the authorized scope on its own before
+  // removing an applied selection or discarding its display name.
+  const scopeFields = {department:'departments',fromDepartment:'fromDepartments',toDepartment:'toDepartments',operator:'operators'} as const;
+  const missingScopes = (Object.keys(scopeFields) as (keyof typeof scopeFields)[]).filter(name =>
+    data && params.has(name) && !data[scopeFields[name]]?.some(o=>o.id===params.get(name)));
+  const scopeQuery = person.useRead(missingScopes.length ? JSON.stringify([route.key, query]) : undefined, () =>
+    api.GET('/api/v1/employment-actions',{params:{query:{page:1,pageSize:20}}}).then(unwrap), 'fresh');
+  const filterData = data && {...data};
+  if (filterData && scopeQuery.data) {
+    for (const name of missingScopes) {
+      const field=scopeFields[name];
+      const option=scopeQuery.data[field]?.find(o=>o.id===params.get(name));
+      if (option) filterData[field]=[...(filterData[field]??[]),option];
+    }
+  }
+  const unavailable = missingScopes.filter(name =>
+    scopeQuery.data && !scopeQuery.data[scopeFields[name]]?.some(option=>option.id===params.get(name))).join(',');
+  useEffect(()=>{
+    if (!unavailable) return;
+    const next=new URLSearchParams(params);
+    for(const name of unavailable.split(',')) next.delete(name);
+    next.delete('selected'); next.set('page','1');
+    setParams(next,{replace:true});
+  },[unavailable,params,setParams]);
   const countKey=JSON.stringify({...query,page:undefined});
   const lastCount=useRef<{key:string;total:number} | undefined>(undefined);
   useEffect(()=>{if(data)lastCount.current={key:countKey,total:data.total};},[countKey,data]);
@@ -402,7 +447,7 @@ export function EmploymentRegister({ session }: { session: Models['Principal'] }
               />
             }
           >
-            {!denied && <Filters params={params} data={data} apply={(values) => void apply(values)} />}
+            {!denied && <Filters params={params} data={filterData} apply={(values) => void apply(values)} />}
             {data && draft.trim() !== data.keyword && <Typography role="status" variant="body2">姓名或人员编号已修改，查询后生效。</Typography>}
             {data && <Typography>{data.total} 笔办理</Typography>}
           </ListControl>

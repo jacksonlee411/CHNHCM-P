@@ -29,13 +29,21 @@ function pick(params: URLSearchParams, names: string[]) {
 }
 export const registerListParams = (params: URLSearchParams) => pick(params, registerKeys);
 
+export function profileReturn(target: string | null | undefined, person: string) {
+  if(!target || !new RegExp('^'+id+'$','i').test(person))return undefined;
+  const path='/personnel/employees/'+person;
+  if(target!==path && !target.startsWith(path+'?'))return undefined;
+  const url=new URL(target,location.origin);
+  const query=pick(url.searchParams,['ref','page','pageSize','sort','selected','department','primary','from','assignment','assignmentDay','tab']);
+  return path+(query.size?'?'+query:'');
+}
 export function employmentHistoryReturn(target: string | null | undefined, person: string) {
   const path = '/personnel/employees/' + person + '/employment';
   if (!target?.startsWith(path + '?')) return undefined;
   const url = new URL(target, location.origin);
   if (url.origin !== location.origin || url.pathname !== path || url.searchParams.get('view') !== 'history') return undefined;
-  const query = pick(url.searchParams, [...registerKeys, 'view', 'action', 'assignmentDay', 'businessAt', 'from', 'person', 'primary', 'assignment', 'employer']);
-  const parent = personnelReturn(url.searchParams.get('returnTo'));
+  const query = pick(url.searchParams, [...registerKeys, 'view', 'action', 'assignmentDay', 'from', 'person', 'primary', 'assignment', 'employer']);
+  const parent = personnelReturn(url.searchParams.get('returnTo')) || profileReturn(url.searchParams.get('returnTo'),person);
   if (parent) query.set('returnTo', parent);
   return path + '?' + query;
 }
@@ -57,9 +65,10 @@ export function personnelReturn(target?: string | null) {
     'adoptedRef',
     'sourceVersion',
     'sourceEntry',
+    'returnDay',
+    'returnJobAction',
     'from',
     'view',
-    'businessAt',
     'person',
     'primary',
     'assignment',
