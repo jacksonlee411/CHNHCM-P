@@ -11097,8 +11097,8 @@
       "preserved_in": {"file": "docs/verification/data/500-personnel-page-review/page-criteria.txt"},
       "target_owner": "Personnel、Staffing、Recruiting 与体验维护者",
       "disposition": "按受测版本的独立预期实走合成人员菜单，保存 11 项反例的操作步骤、成对原图、键盘与布局读数，供修复后按原编号复验。",
-      "state": {"registered": true, "extracted": true, "implemented": true, "verified": false},
-      "verified_scope": "首轮三项定向人员用例通过，页面登记 11 项待修复。入口与日期补查在同一产品基线登记 9 项（高 3、中 4、低 2），按本次用户要求纠正首轮 500-UI-05 的普通页查看日判据。",
+      "state": {"registered": true, "extracted": true, "implemented": true, "verified": true},
+      "verified_scope": "首轮三项定向人员用例通过，页面登记 11 项待修复。入口与日期补查在同一产品基线登记 9 项（高 3、中 4、低 2），纠正首轮 500-UI-05 的普通页查看日判据。510 已按原编号复验这 20 项，固定原库和副本合计 34 张实操截图。此验收限于已登记的页面专项。",
       "new_evidence": [
         "docs/verification/500-personnel-page-review.md",
         "docs/verification/data/500-personnel-page-review/measurements.json",
@@ -11106,7 +11106,8 @@
         "docs/verification/500-personnel-entry-and-date-review.md",
         "docs/verification/data/500-personnel-entry-and-date-review/observations.json",
         "docs/verification/510-personnel-page-remediation-implementation.md",
-        "docs/verification/data/510-personnel-remediation/observations.json"
+        "docs/verification/data/510-personnel-remediation/observations.json",
+        "docs/verification/data/510-personnel-remediation/validation.json"
       ],
       "target_files": ["docs/plans/500-personnel-roadmap.md", "docs/specs/m01/502-person-directory-interactions.md", "docs/specs/m04/507-job-information-tab.md", "tests/e2e/first-hire.spec.ts"]
     },

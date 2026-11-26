@@ -3068,9 +3068,9 @@
         "result": "accepted",
         "evidence": "docs/verification/510-personnel-page-remediation-review.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
+      "closure": {"date": "2026-11-26", "reason": "二十项页面整改已逐项复验，固定 f 原库完成桌面交接，定向业务回归及两套万人容量试验通过。"},
       "archive": null
     }
   ],
@@ -3097,27 +3097,63 @@
           "CHNHCM-510"
         ],
         "format": "numbered",
-        "status": "draft",
+        "status": "final",
         "date": "2026-11-26",
-        "base_commit": "56e59cdbff8dca6f3a7f0715be064dab403f7d56",
-        "working_tree": "dirty",
-        "change_description": "补录二十项措施、正常菜单截图、跨到期及并发改日回归。",
-        "environment": "固定 f 原库副本及独立 PostgreSQL、Chromium 实库浏览器。",
+        "base_commit": "b03a20b10cc01f0cdde08b717d31cdf79c60832a",
+        "working_tree": "clean",
+        "change_description": "受测产品为 b03a20b，固定构建 eb44651 仅多出证据提交；补录固定环境 27 张与副本 7 张实操截图。",
+        "environment": "固定 f 原库 m01-profile-f（4386／8386／54376）、其一次性副本及独立 PostgreSQL、Chromium。",
         "scope": "本人名录、页签、日期、跨人办理、表单、来源与原行恢复。",
         "results": [
           {
-            "check": "两轮原反例与共享页面对照",
+            "check": "两组复核初版发现授权、原行、草稿与零交集问题",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "56e59cd 两组分别复核原问题通过，后续 b03a20b 复用已获权分页",
+            "result": "passed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "多人名录负载首测及和其它重负载同时运行时超过 500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "隔离运行两套万人容量试验共 3600 次，18 组全部通过",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          },
+          {
+            "check": "181 项浏览器组合首跑在第 25 项中断，包含失败",
+            "result": "interrupted",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "19 项定向 Chromium 和两包中 12 项数据库用例",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
+          },
+          {
+            "check": "首次默认全量集成运行 20 分钟超时",
+            "result": "interrupted",
+            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+          },
+          {
+            "check": "二十项逐项操作和共享页面对照、34 张截图",
             "result": "passed",
             "evidence": "docs/verification/data/510-personnel-remediation/observations.json"
           },
           {
-            "check": "首次全量集成运行 20 分钟超时",
-            "result": "interrupted",
-            "evidence": "docs/verification/510-personnel-page-remediation-implementation.md"
+            "check": "4386 实际桌面、短屏、200% 及 131 张原数据表升级前后比对",
+            "result": "passed",
+            "evidence": "docs/verification/data/510-personnel-remediation/validation.json"
           }
         ],
         "limitations": [
-          "本阶段截图来自原库副本，固定 f 更新与最终验收另行核验。"
+          "全量数据库和最初的 181 项浏览器组合未取得整组通过结果。后续按影响范围复跑。",
+          "固定库实操使用合成样本，双窗保存于原库副本进行。未运行远程 CI。"
         ]
       },
       {

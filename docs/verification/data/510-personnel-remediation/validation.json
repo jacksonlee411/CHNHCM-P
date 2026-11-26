@@ -1,0 +1,193 @@
+{
+  "product": "b03a20b10cc01f0cdde08b717d31cdf79c60832a",
+  "formalCapacity": [
+    {
+      "group": "directory",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "54.782399ms",
+      "p95": "61.613199ms",
+      "p99": "65.792199ms"
+    },
+    {
+      "group": "restricted",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "56.460405ms",
+      "p95": "64.838306ms",
+      "p99": "76.641507ms"
+    },
+    {
+      "group": "oldNumber",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "50.406801ms",
+      "p95": "57.219801ms",
+      "p99": "61.565102ms"
+    },
+    {
+      "group": "detail",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "11.2084ms",
+      "p95": "14.2033ms",
+      "p99": "15.8343ms"
+    },
+    {
+      "group": "source",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "11.9161ms",
+      "p95": "14.601201ms",
+      "p99": "17.7517ms"
+    },
+    {
+      "group": "save",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "37.723304ms",
+      "p95": "46.362304ms",
+      "p99": "51.366805ms"
+    },
+    {
+      "group": "directory",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "214.637203ms",
+      "p95": "387.289904ms",
+      "p99": "428.726405ms"
+    },
+    {
+      "group": "restricted",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "219.627103ms",
+      "p95": "257.503903ms",
+      "p99": "278.349303ms"
+    },
+    {
+      "group": "oldNumber",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "212.195102ms",
+      "p95": "247.271803ms",
+      "p99": "259.288803ms"
+    },
+    {
+      "group": "detail",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "41.507901ms",
+      "p95": "53.490201ms",
+      "p99": "76.851701ms"
+    },
+    {
+      "group": "source",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "42.603201ms",
+      "p95": "51.0338ms",
+      "p99": "54.301501ms"
+    },
+    {
+      "group": "save",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "254.652603ms",
+      "p95": "335.642004ms",
+      "p99": "402.406505ms"
+    }
+  ],
+  "mixedCapacity": [
+    {
+      "group": "混合名录",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "56.908701ms",
+      "p95": "68.1196ms",
+      "p99": "75.077301ms"
+    },
+    {
+      "group": "任职锚点",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "56.599ms",
+      "p95": "62.807801ms",
+      "p99": "67.278901ms"
+    },
+    {
+      "group": "人员锚点",
+      "sessions": 1,
+      "N": 200,
+      "errors": 0,
+      "p50": "57.127401ms",
+      "p95": "68.9559ms",
+      "p99": "74.101801ms"
+    },
+    {
+      "group": "混合名录",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "273.979302ms",
+      "p95": "366.209203ms",
+      "p99": "458.626704ms"
+    },
+    {
+      "group": "任职锚点",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "281.923603ms",
+      "p95": "335.861603ms",
+      "p99": "358.243304ms"
+    },
+    {
+      "group": "人员锚点",
+      "sessions": 20,
+      "N": 200,
+      "errors": 0,
+      "p50": "270.244903ms",
+      "p95": "349.997904ms",
+      "p99": "401.577604ms"
+    }
+  ],
+  "browser": {
+    "profile": "personnel-510-flows4",
+    "build": "fixed",
+    "passed": 19,
+    "failed": 0
+  },
+  "database": {
+    "impactedGoTests": 12,
+    "status": "passed",
+    "fullDefault20min": "timed_out"
+  },
+  "fixed": {
+    "profile": "m01-profile-f",
+    "web": 4386,
+    "api": 8386,
+    "database": 54376,
+    "tablesCompared": 131,
+    "sameRowCountsAndContent": true,
+    "origin": "http://127.0.0.1:4386",
+    "buildCommit": "eb44651f5b4723b8534cc49b3fa75db470294af4",
+    "sourceFilesMatched": 1963,
+    "servedFilesMatched": 29,
+    "apiSHA256": "04d3b65bcc5067677dda7af3121bad4fcd8f3e015d48337068495bf33790e4d3"
+  }
+}

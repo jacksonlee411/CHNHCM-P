@@ -44,3 +44,7 @@
 统一查询沿用 [501-AC-010](../specs/m01/501-person-registration-requirements.md#m01-ac-010) 和 [503 容量合同](../specs/m01/503-person-registration-design.md#m01-capacity)。真实 HTTP 一万名合成人员，独立复算全范围、受限同名末页、旧号命中和各类锚点。1 与 20 会话各预热 20 次、每组计时 200 次，六条链路共 2400 次。单会话名录及当前详情 P95 ≤300ms、旧来源及更正 ≤500ms，20 会话各项 ≤500ms，记录意外错误数及所有超标组。
 
 在一次性环境完成业务写入、取消、冲突与查回。覆盖五种 100% 视口及键盘、原生 200% 的首聘或更正和历史返回，根据本批改动复查原 400% 只读明细。按影响运行 docs、boundaries、check、integration、smoke，保存逐项首败和复验。候选通过后按 003 保全固定 f 现有库和运行资产、更新 4386，从正常菜单按原样本截图并交接。独立补验记录列出二十项结果、版本、角色及证据。实施与原库实测完成后提交，经办人验收环境继续保留。[003 验收环境](../adr/003-implementation-stages.md#acceptance-environment-update) · [固定 f 交接](../verification/509-t04-remediation-implementation.md#fixed-environment)
+
+## 4 实施结果
+
+2026-11-26，20 项整改按 A 至 E 实施并逐项复验。固定 f 的 4386 已更新，原库实操和一次性副本共保留 34 张截图。选定的 19 项浏览器用例、12 项数据库用例及两套万人容量试验通过。首败、未跑完的全量组合及固定环境交接一并登记。[逐项实施与实页证据](../verification/510-personnel-page-remediation-implementation.md) · [固定原库交接](../verification/510-personnel-page-remediation-implementation.md#fixed-environment)
