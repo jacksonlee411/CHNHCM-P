@@ -358,7 +358,8 @@ func (r *request) resolvePlace(k string, c p.PlaceChoice, existing map[string]p.
 	if !f.ValidID(c.ID) || !f.ValidID(c.SourceVersion) {
 		return nil, "", d.Invalid(k, "请选择有效地区")
 	}
-	path, name, err := r.adoptArea(r.ctx, r.tx, r.guard, c.ID, r.a.At.In(f.Shanghai).Format("2006-01-02"))
+	day := r.a.At.In(f.Shanghai).Format("2006-01-02")
+	path, err := r.profileCatalog.AdoptProfileArea(r.ctx, r.credentials, c.ID, day)
 	if err != nil {
 		return nil, "", err
 	}
@@ -374,13 +375,14 @@ func (r *request) resolvePlace(k string, c p.PlaceChoice, existing map[string]p.
 	if k == "area" && (len(path) < 3 || path[1].ID != existing["province"].ID) {
 		return nil, "", placeChanged()
 	}
+	adopted := p.CountryAdoption{ID: leaf.ID, SourceVersion: leaf.SourceVersion, RecordID: leaf.RecordID, Revision: leaf.Revision, Date: day}
 	for i, parent := range c.Ancestors {
 		if path[i].ID != parent.ID || path[i].SourceVersion != parent.SourceVersion {
 			return nil, "", placeChanged()
 		}
-		leaf.Parents = append(leaf.Parents, parent)
+		adopted.Parents = append(adopted.Parents, parent)
 	}
-	return &leaf, name, nil
+	return &adopted, leaf.Name, nil
 }
 
 func (r *request) editItemFields(s d.ItemSection, id string, n int, row *profileItem, edit p.ProfileItemEdit) error {

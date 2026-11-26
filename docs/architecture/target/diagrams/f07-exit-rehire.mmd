@@ -17,7 +17,7 @@ sequenceDiagram
     E-->>H: 保留输入并阻止不一致终结
   else 明确办理EndEmployment或EndAssignment
     Note over E,Q: Staffing短事务 固定锁序及expectedRevision
-    E->>Q: 按有效终结日结束对应占用 到生效日释放编制
+    E->>E: 按有效终结日结束任职占编
     E->>E: 终结目标；结束/重选必要主选择及经理关系
     E->>E: 明确合同动作；保存动作记录和各根Outbox
     Note over E,Q: 全部提交或全部回滚；保留旧版本与历史
@@ -29,7 +29,7 @@ sequenceDiagram
   end
   opt 未来终结撤销或终结日期更正
     H->>E: 提交原动作版本、新日期与必要决定
-    E->>Q: 同事务重验并调整恢复或释放期间的编制
+    E->>Q: 重验恢复或释放期间的可用编制
     alt 席位已重分配或受影响版本失效
       E-->>H: 整笔拒绝；按新安排另行办理调岗
     else 联合守卫通过
@@ -40,8 +40,8 @@ sequenceDiagram
   H->>P: 再聘核对原Person及人员编号
   P-->>H: 复用稳定身份
   H->>E: 通过F01 Hire建立新关系与任职
-  E->>Q: 同事务按模式建立资源占用
-  E->>E: 保存新关系/任职、必要主选择及Outbox
+  E->>Q: 同事务核验岗位可用编制
+  E->>E: 保存新关系、任职及占编、必要主选择及Outbox
   E-->>S: 新关系资格独立办理
   E-->>Y: 新计薪归属，旧未结事项仍引用旧关系
   Note over P,B: 退休资格、劳动关系终结、养老金领取、工资支付分别判断；Person保持

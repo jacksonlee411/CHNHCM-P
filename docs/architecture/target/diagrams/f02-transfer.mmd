@@ -27,7 +27,8 @@ sequenceDiagram
       E->>E: 明确旧关系/任职终结<br/>建立新关系/任职
       Note over E: Person保持<br/>合同独立核对<br/>不删除旧关系
     end
-    E->>Q: C按模式协调旧释放与新占用
+    E->>Q: 核验新旧岗位的额度和受影响期间
+    E->>E: 按任职变动释放旧岗占编并记录新岗占编
     E->>E: C结束或重选主选择<br/>核对经理关系期间
     E->>E: C保存各根变化<br/>同事务写Outbox
     Note over Q,E: 全部提交或全部回滚

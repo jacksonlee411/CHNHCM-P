@@ -32,7 +32,7 @@
 | [Grade（职级）](17-terminology-glossary.md#term-m03-grade) / [Ladder（职级阶梯）](17-terminology-glossary.md#term-m03-gradeladder) | Grade与GradeLadder独立根 / MaintainGrade |
 | [Position（岗位）](17-terminology-glossary.md#term-m03-position) | Position定义根 / MaintainPosition |
 | [WorkforcePlan（人员编制计划）](17-terminology-glossary.md#term-m03-workforceplan) | WorkforcePlan根 / PublishWorkforcePlan |
-| [StaffingQuota（编制额度）](17-terminology-glossary.md#term-m03-positioncapacity) / [Reservation（招聘编制预留）](17-terminology-glossary.md#term-m03-positionreservation) / [Occupancy（任职占编）](17-terminology-glossary.md#term-m03-positionoccupancy) | StaffingQuota 按部门或岗位维护核定数，同日调剂一次提交所有变动对象 / ChangeStaffingQuota。岗位后续办理补员状态、限期交接、预留及占编 / SetRecruitmentStatus、ReserveStaffingQuota、ReleaseReservation、ConvertReservation、ReleaseOccupancy |
+| [StaffingQuota（编制额度）](17-terminology-glossary.md#term-m03-positioncapacity) / [Reservation（招聘编制预留）](17-terminology-glossary.md#term-m03-positionreservation) / [Occupancy（任职占编）](17-terminology-glossary.md#term-m03-positionoccupancy) | M03 StaffingQuota 根维护核定数 / ChangeStaffingQuota，同日调剂一次提交。M05 写招聘预留、释放及转换，M04 写任职占编，M03 在共同事务内校验额度并按来源计算余量。 |
 | [PositionHierarchy（岗位层级关系）](17-terminology-glossary.md#term-m03-positionhierarchy) / [HierarchyVersion（岗位层级关系版本）](17-terminology-glossary.md#term-m03-positionhierarchyversion) | PositionHierarchy根含版本及边 / PublishPositionHierarchy |
 | [StaffingPolicy（任职与编制管理规则）](17-terminology-glossary.md#term-m03-staffingpolicy) | StaffingPolicy根 / PublishStaffingPolicy |
 

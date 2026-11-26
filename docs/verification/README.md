@@ -1,5 +1,9 @@
 # 验证记录
 
+[004 架构、技术栈与数据归属整改复验](004-architecture-review-remediation.md)
+
+[025 业务实现唯一性、岗位核编旧接口退出与历史查回复验](025-position-quota-interface-retirement.md)
+
 [136 托管分钟试点接续与 206 法律实体验收归档](136-206-plan-archive.md)
 
 [500 人员路线图关闭依据、8 项验收场景的原文与现行定义](500-personnel-roadmap-closeout.md)

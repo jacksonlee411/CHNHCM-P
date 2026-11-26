@@ -11,6 +11,7 @@ import (
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	"chnhcm.local/chnhcm/internal/foundation"
 	"chnhcm.local/chnhcm/internal/platform/compact"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"context"
 	"crypto/sha256"
 	"encoding/binary"
@@ -409,9 +410,24 @@ func (u *geoareaUnit) LoadSources(ctx context.Context, want map[string]string) (
 	return out, nil
 }
 
-func (s *Store) AdoptProfileArea(ctx context.Context, tx pgx.Tx, g access.Guard, id, date string) ([]org.GeoAreaPathNode, error) {
+func (s *Store) profileCatalogUnit(ctx context.Context, c foundation.Credentials) (*geoareaUnit, error) {
+	tx, ok := dbtx.From(ctx)
+	if !ok {
+		return nil, errors.New("profile catalog adoption requires the caller's transaction")
+	}
+	g, err := s.Guard(ctx, tx, c)
+	if err != nil {
+		return nil, err
+	}
+	return &geoareaUnit{unit: &unit{tx: tx, instance: s.Instance, guard: g, catalog: &s.historyCatalog, clock: s.Clock}}, nil
+}
+
+func (s *Store) AdoptProfileArea(ctx context.Context, c foundation.Credentials, id, date string) ([]org.GeoAreaPathNode, error) {
 	s.historyCatalog.Enter()
 	defer s.historyCatalog.Leave()
-	u := &geoareaUnit{unit: &unit{tx: tx, instance: s.Instance, guard: g, catalog: &s.historyCatalog, clock: s.Clock}}
+	u, err := s.profileCatalogUnit(ctx, c)
+	if err != nil {
+		return nil, err
+	}
 	return app.ResolveProfileArea(ctx, u, id, date)
 }

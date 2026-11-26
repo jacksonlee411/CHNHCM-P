@@ -168,6 +168,8 @@
 
 | 关联编号 | 记录 | 日期 | 状态 |
 | --- | --- | --- | --- |
+| 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 | final |
+| 004、002、025、313、505 | [CHNHCM-004 架构、技术栈与数据归属整改复验](../../verification/004-architecture-review-remediation.md) | 2026-11-27 | final |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案评审](../../verification/511-project-standards-review.md) | 2026-11-26 | final |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案复评](../../verification/511-project-standards-rereview.md) | 2026-11-26 | final |
 | 511、014、008、011、012、013、118、119、120、121、131、138、203、204、205、301、306、308、500、502、507 | [CHNHCM-511 项目规范实施、归档评估与验收](../../verification/511-project-standards-implementation.md) | 2026-11-26 | final |
