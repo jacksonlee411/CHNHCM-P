@@ -2809,7 +2809,7 @@
         "result": "accepted",
         "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
       },
-      "execution_status": "not_started",
+      "execution_status": "in_progress",
       "superseded_by": [],
       "closure": null,
       "archive": null
@@ -23196,6 +23196,72 @@
         ],
         "limitations": [
           "本次为同一主代理顺序文档评审。产品执行尚未开始。"
+        ]
+      },
+      {
+        "path": "docs/verification/404-main-sync-reassessment.md",
+        "related_documents": [
+          "CHNHCM-404",
+          "CHNHCM-400",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "5c478c43d46eb3e9cf1d4db4d48c2752f884a051",
+        "working_tree": "dirty",
+        "change_description": "产品、迁移及仓内用例与同步后的基线一致。复评期间仅改计划、登记及索引，补充场景使用仓外临时 Go 试件。",
+        "environment": "wt-dev-e 使用 Go 1.26.0、一次性 PostgreSQL 18.6、固定前端构建及 Chromium。4496 仅作只读核对。",
+        "scope": "复评三种直接入职、按岗免占的实际交付、跨模式竞争、旧岗升级及 e 固定环境接续。",
+        "results": [
+          {
+            "check": "八个既有 DB/API 测试根，含两种暂停竞争及两项旧库升级",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "临时试件尝试删除已生效的招聘接管以准备旧岗，数据库拒绝",
+            "result": "failed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "同名单异岗、防重、同岗两人撤一人及两种跨模式最后一编",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "使用 00049 程序设岗，升级两次到 00057 后免占首单保存及撤销",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "免占首单与补员的两个桌面视口及原生 200%，另有五项企业前置",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "4496 构建、运行入口与账本的只读核对",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "4496 原卷升级及新旧样本业务签收",
+            "result": "not_run",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "本机全部固定分支 refs 存在性检查，缺 a 至 d",
+            "result": "failed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          }
+        ],
+        "limitations": [
+          "浏览器只执行所列三个首单场景及其前置。主线、4386 及原方案的历史验收分别保留原范围。",
+          "4496 本轮仍为 bc769ff、00039。升级及用户地址实操归 e 的第 4 阶段。"
         ]
       }
     ]

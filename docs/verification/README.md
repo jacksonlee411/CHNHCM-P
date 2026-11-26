@@ -1,6 +1,6 @@
 # 验证记录
 
-按岗位免占编首单的办理、并发与验收方案已完成[404 多轮评审](404-position-exempt-first-hire-review.md)。原决定按职务首单的产品证据见[400 第 13 节](400-first-hire-integration.md#13-公共-e-从已有任用决定办理首单)。
+e 树已在同步后的主线复验免占编首单、暂停补员竞争、跨模式占编及旧岗升级。4496 仍运行按职务首单的旧构建。[本次复评与交接](404-main-sync-reassessment.md) · [404 原方案评审](404-position-exempt-first-hire-review.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire)
 
 500 人员页面的实页评审登记了 11 项待修复问题，可逐项查阅复现路径、规范、截图及关闭条件。[500 人员页面布局与交互问题登记](500-personnel-page-review.md)
 
