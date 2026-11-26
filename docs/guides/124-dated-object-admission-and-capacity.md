@@ -98,9 +98,9 @@
 
 ## 6 法律实体接入实例
 
-2026-11-15本轮[206](../plans/206-legal-entity-implementation.md)按本指南形成[207接入合同](../specs/m02/207-legal-entity-design.md)，采用M02内现有按日内核并建立独立类型、表/API、授权与恢复空间。国家采用只依赖窄国家端口，不套用地点四地/区划规则；登记资料只表达基础声明，后续用途/组织绑定与真实M04消费者独立推进。
+法律实体通过 M02 现有按日内核接入，拥有独立类型、表、API、授权与恢复空间。国家采用经过窄国家端口，基础身份、用途声明和具体人员关系分别维护。L1-V01 至 L1-V15 的现行预期及直接入职的全期资格、必要组织绑定和引用保护均可在 207 查到。[基础验收矩阵](../specs/m02/207-legal-entity-design.md#legal-entity-l1-acceptance) · [主体用途与采用](../specs/m02/207-legal-entity-design.md#legal-entity-purpose-handoff)
 
-该对象独立容量为1000背景主体加20个20记录主体，单/20会话各四组100次真实HTTP，并重启核对全部原来源和保存回执；这一输入不替代原BU/部门容量规模。实际验证、首错及206-D01—03等非阻断延迟由[实施记录](../verification/206-legal-entity-implementation.md)持有，D08/D09及125其他容量P1保持。临时环境限定本任务创建的资源，既有持久环境不自动升级。
+该对象独立容量为 1,000 个背景主体加 20 个各有 20 条记录的主体，单会话和 20 会话各四组、每组至少 100 次真实 HTTP 请求，重启后核对全部原来源和保存回执。原批记录保存 206-D01 至 D03 的 P95 时延超标结果，125 同口径的后续复测单列。BU、部门、地点 D08、区划 D09 和 125 其他容量事项按各自输入接续。临时环境限定本任务创建的资源，既有持久环境不自动升级。[原批结果](../verification/206-legal-entity-implementation.md) · [后续限定复测](../verification/125-target-adoption-and-current-validation.md)
 
 <a id="page-standard-admission"></a>
 ## 7 页面标准接入及M03样本

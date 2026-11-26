@@ -73,9 +73,7 @@
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
-| [136 GitHub Actions节流实施计划](../../plans/136-actions-cost-reduction.md) | active | in_progress | 原位 |
 | [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
-| [206 法律实体分阶段实施计划](../../plans/206-legal-entity-implementation.md) | active | in_progress | 原位 |
 | [400 M04 T02 入职规则与准备实施方案](../../plans/400-hire-readiness.md) | active | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
@@ -120,6 +118,7 @@
 | [131 部门列表与父候选查询减负计划](../../archive/plans/131-department-query-reduction.md) | active | completed | 物理归档 |
 | [133 过度防御与高成本处理整改路线图](../../archive/plans/133-overdefensive-processing-remediation.md) | active | completed | 物理归档 |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
+| [136 GitHub Actions节流实施计划](../../archive/plans/136-actions-cost-reduction.md) | active | completed | 物理归档 |
 | [138 行政区划目录交互实施方案](../../archive/plans/138-geo-area-interactions.md) | active | completed | 物理归档 |
 | [139 岗位列表、岗位关系与结构视图实施方案](../../archive/plans/139-position-workspace.md) | active | completed | 物理归档 |
 | [141 本地预检结果与生成物核对优化计划](../../archive/plans/141-local-preflight.md) | active | completed | 物理归档 |
@@ -127,6 +126,7 @@
 | [203 G3必要行政区划接入实施方案](../../archive/plans/203-g3-geo-area-admission.md) | active | completed | 物理归档 |
 | [204 G4地点纵向交付实施方案](../../archive/plans/204-g4-location-implementation.md) | active | completed | 物理归档 |
 | [205 G5地理联合验收与固定运行交付](../../archive/plans/205-g5-geography-acceptance-and-runtime.md) | active | completed | 物理归档 |
+| [206 法律实体分阶段实施计划](../../archive/plans/206-legal-entity-implementation.md) | active | completed | 物理归档 |
 | [300 部门列表左侧部门树实施计划](../../archive/plans/300-department-tree-implementation.md) | active | completed | 物理归档 |
 | [301 用户提示与异常恢复整改方案](../../archive/plans/301-user-feedback-and-recovery.md) | superseded | completed | 物理归档 |
 | [302 详情对象导航位置与响应整改](../../archive/plans/302-detail-navigation.md) | active | completed | 物理归档 |
@@ -178,6 +178,7 @@
 | 500、014、401、501、506、512、313、511 | [CHNHCM-500 人员模块实施路线图关闭与场景交接](../../verification/500-personnel-roadmap-closeout.md) | 2026-11-26 | final |
 | 012、121、402、500、501、502、505、506、507、509 | [CHNHCM-500 人员页面布局与交互问题登记](../../verification/500-personnel-page-review.md) | 2026-11-26 | final |
 | 012、121、123、124、313、402、500、501、502、506、507、509 | [CHNHCM-500 人员入口、职务信息与日期交互补充评审](../../verification/500-personnel-entry-and-date-review.md) | 2026-11-26 | final |
+| 136、206、137、207、014、121、124、125、401、403 | [CHNHCM-136、CHNHCM-206 计划关闭与归档交接](../../verification/136-206-plan-archive.md) | 2026-11-26 | final |
 | 012、023、121、124、308、310、312、315、402、500、501、502、505、507 | [CHNHCM-012 桌面页面验收范围调整](../../verification/012-desktop-page-acceptance.md) | 2026-11-26 | final |
 | 012、313、403、500、506、507、508、509 | [CHNHCM-509 在职变动、结束与再聘修复方案评审](../../verification/509-t04-remediation-review.md) | 2026-11-25 | final |
 | 012、403、500、506、507、508、509 | [CHNHCM-509 在职变动、结束与再聘产品修复验证](../../verification/509-t04-remediation-implementation.md) | 2026-11-25 | final |

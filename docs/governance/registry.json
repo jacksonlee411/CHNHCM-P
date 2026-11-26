@@ -1918,7 +1918,7 @@
     {
       "id": "CHNHCM-136",
       "title": "GitHub Actions节流实施计划",
-      "path": "docs/plans/136-actions-cost-reduction.md",
+      "path": "docs/archive/plans/136-actions-cost-reduction.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Repository maintainer",
       "owner": null,
@@ -1934,10 +1934,17 @@
         "result": "accepted",
         "evidence": "docs/verification/136-hosted-minutes-pilot.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "本期节流接线、首批发布及原 T06 交付观察已收口。25%–33% 整体降幅证据不足，80% 试点的投放、观察和成本结论由 137 第 12.1 节接续。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "用户要求按已交付范围归档，137 持有现行门禁、分片、测量规则及未实测试点的责任和触发条件。",
+        "previous_path": "docs/plans/136-actions-cost-reduction.md"
+      }
     },
     {
       "id": "CHNHCM-137",
@@ -1949,14 +1956,14 @@
       "status": "active",
       "type": "governance",
       "modules": [],
-      "scope": "Actions 触发、DB/API 与浏览器选测、同 PR 分片复用、等价 main 复用及正常交付观察。#19 首批复用与 4390 交接已完成。全量前置和一次性 runner 以每次交付减少 80% 托管分钟为试点目标，实际收益待验证。",
+      "scope": "Actions 门禁、影响范围、分片与复用、每次交付成本，以及一次性 runner 试点的责任、观察窗口和收益判定。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-23",
-        "reviewer": "Codex 主代理本地复核",
-        "scope": "第14节后续候选逐片验证、历史失败和等价 main 复用。",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按用户归档要求、原采纳合同及验收证据复核）",
+        "scope": "136 原门禁与观察规则的现行归属、两个窗口的分母和结论、80% 试点责任与收口条件。",
         "result": "accepted",
-        "evidence": "docs/verification/136-hosted-minutes-pilot.md"
+        "evidence": "docs/verification/136-206-plan-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -2283,7 +2290,7 @@
     {
       "id": "CHNHCM-206",
       "title": "法律实体分阶段实施计划",
-      "path": "docs/plans/206-legal-entity-implementation.md",
+      "path": "docs/archive/plans/206-legal-entity-implementation.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "Organization、Access、体验及验证维护者",
       "owner": null,
@@ -2302,10 +2309,17 @@
         "result": "accepted",
         "evidence": "docs/verification/206-legal-entity-plan-review.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "L1 完成限定验收，直接入职所需 L2 与 L3 均有实库证据。基础验收条件和其余主体用途已交接到 207，扩大范围按真实消费需求接续。"
+      },
+      "archive": {
+        "date": "2026-11-26",
+        "reason": "用户要求按已交付范围归档，原编号及受评章节保留。207 持有 L1-V01 至 V15 及后续用途分工，当前调用方已切换。",
+        "previous_path": "docs/plans/206-legal-entity-implementation.md"
+      }
     },
     {
       "id": "CHNHCM-207",
@@ -2320,14 +2334,14 @@
         "M02",
         "X03"
       ],
-      "scope": "法律实体基础维护、后续用途声明及组织上下文绑定的阶段边界；本轮实施第一阶段。",
+      "scope": "法律实体基础资料与 L1-V01 至 V15 验收，用途与必要组织绑定、直接入职采用保护，以及其他真实消费场景的接续责任。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-15",
-        "reviewer": "Codex主代理文档复评，非独立代理或人工批准",
-        "scope": "法律实体首阶段完整合同及后续用途/绑定/M04边界，首轮两项P2已修订复核",
+        "date": "2026-11-26",
+        "reviewer": "Codex 主代理（按用户归档要求、原采纳合同及验收证据复核）",
+        "scope": "206 基础维护 15 项验收条件、容量判据、直接入职 L2/L3 范围以及其他组织用途与运营分工。",
         "result": "accepted",
-        "evidence": "docs/verification/206-legal-entity-plan-review.md"
+        "evidence": "docs/verification/136-206-plan-archive.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3338,6 +3352,59 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/136-206-plan-archive.md",
+        "related_documents": [
+          "CHNHCM-136",
+          "CHNHCM-206",
+          "CHNHCM-137",
+          "CHNHCM-207",
+          "CHNHCM-014",
+          "CHNHCM-121",
+          "CHNHCM-124",
+          "CHNHCM-125",
+          "CHNHCM-401",
+          "CHNHCM-403"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "7f71e22fba934481fb9b00dbe02298e381a9c258",
+        "working_tree": "dirty",
+        "change_description": "承接 206 验收矩阵和 136 的 CI 观察责任，在同一批次物理归档两份计划并更新引用。",
+        "environment": "wt-dev-f，本地文档、Git 原件与历史账本、独立 PostgreSQL 测试容器和真实 API。",
+        "scope": "两份计划的执行关闭与规则交接，法律实体基础、用途和直接入职的定向复验，以及两个成本窗口的范围核对。",
+        "results": [
+          {
+            "check": "法律实体基础维护、成对操作与权限、入职准备和真实采用保护四项实库/API 用例",
+            "result": "passed",
+            "evidence": "docs/verification/136-206-plan-archive.md"
+          },
+          {
+            "check": "目标配置实际承接正常业务交付后的 80% 试点测量",
+            "result": "not_run",
+            "evidence": "docs/verification/136-hosted-minutes-pilot.md"
+          },
+          {
+            "check": "尚待业务接入的其他法律实体用途及其运营办理",
+            "result": "not_run",
+            "evidence": "docs/specs/m02/207-legal-entity-design.md"
+          },
+          {
+            "check": "原 T06 十次交付及五次试点基线的固定账本复算",
+            "result": "passed",
+            "evidence": "docs/verification/136-206-plan-archive.md"
+          },
+          {
+            "check": "15 项业务验收、11 项 CI 场景及后续触发语义，归档章节、历史报告、现行入口、登记目录及仓库检查",
+            "result": "passed",
+            "evidence": "docs/verification/136-206-plan-archive.md"
+          }
+        ],
+        "limitations": [
+          "历史窗口仅支持原报告载明的结论。80% 试点仍待按 137 取得自然交付样本。全量 DB/API、浏览器、容量和固定环境沿用所引批次，其他法律实体用途由消费域在接入时验证。"
+        ]
+      },
       {
         "path": "docs/verification/500-personnel-roadmap-closeout.md",
         "related_documents": [

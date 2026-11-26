@@ -8,7 +8,7 @@
 
 | 当前可用的依据 | 对交付顺序的影响 |
 | --- | --- |
-| M02 已有企业、部门、地点及法律实体基础维护。法律实体的用途声明与必要绑定在 L2，M04 的真实采用在 L3。[206 分批](../../plans/206-legal-entity-implementation.md) | 可以开始 M01。办理劳动关系须先取得业务期间内的用人单位资格及依据。派遣分别核实用人、实际用工角色，按关系性质确定需要的资料。 |
+| M02 已有企业、部门、地点及法律实体基础维护。法律实体的用途声明与必要绑定在 L2，M04 的真实采用在 L3。[206 分批](206-legal-entity-implementation.md) | 可以开始 M01。办理劳动关系须先取得业务期间内的用人单位资格及依据。派遣分别核实用人、实际用工角色，按关系性质确定需要的资料。 |
 | M03 已交付职务、职级、阶梯及岗位定义，314 的职类验收已关闭。313 的首批核编已实测，实际任职使用和人员调动随相应批次接入。[314 签收](../../verification/314-job-function-t05-acceptance.md) · [岗位签收](../../verification/311-position-definition-signoff.md) · [313 首批实测](../../verification/313-quota-implementation.md) | 按职务办理可用现有职务与职级。按岗办理另需该次用途下的有效岗位、政策及真实使用来源。 |
 | 路线图初立时的基线为 `063c92fd`。当前已有 M01 档案和 M04 按职务首次入职，后续从真实首单接入新页签。[现有路由](../../../apps/web/src/app/App.tsx) · [首单实测](../../verification/400-first-hire-integration.md#decision-first-hire) | [第 6.3 节](#job-information-delivery)区分已交付的入口、下一项产品增量和条件性联验。 |
 

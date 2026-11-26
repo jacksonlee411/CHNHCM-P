@@ -1,5 +1,7 @@
 # 验证记录
 
+[136 托管分钟试点接续与 206 法律实体验收归档](136-206-plan-archive.md)
+
 [500 人员路线图关闭依据、8 项验收场景的原文与现行定义](500-personnel-roadmap-closeout.md)
 
 [文档物理归档、路径迁移与六份规则交接](511-physical-archive.md)
@@ -85,7 +87,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 - [306部门路径与集团案例](306-department-path-simplification.md)：23个DB/API根、30个浏览器分轮通过，两个固定案例双角色页面、原日期更正、219635份原来源与构建核验，首失败及资源收尾。
 
-[136 Actions发布与4390交接](136-actions-publication.md)：PR #19最终全量22项成功并合并，main实际复用、三项门禁成功；4390已更新6ce8a3e9，双角色16条旅程和原数据复核通过。首失败与598估算runner分钟保留，长期节省观察继续。
+136 首批发布中，PR #19 最终全量 22 项成功并合并，main 实际复用且三项门禁通过。4390 在该批更新至 6ce8a3e9，双角色 16 条旅程和原数据复核通过。598 个估算 runner 分钟和首败保存在原报告。首轮 10 次交付窗口已收口，80% 试点另按 137 接续。[首批发布](136-actions-publication.md) · [原窗口结果](136-actions-observation.md#6-窗口收口) · [试点责任与口径](../governance/137-actions-and-validation.md#hosted-minutes-observation)
 
 [136发布前本地收口](136-actions-prepublication.md)：原CI/规范已提交，本地同步main并保留双方功能；检查与限定业务复验单列，远程仍待发布。
 
@@ -98,8 +100,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 地点所在地区交互整改见[本次实施记录](204-location-region-picker.md)：连续选择、结果回填、上级路径、组合搜索及滚动追加，验证结果单独登记。
 
 
-本批法律实体基础维护及实际验证见[206法律实体第一阶段实施](206-legal-entity-implementation.md)；用途/组织绑定和M04消费者后续接续。
-法律实体：[206计划评审](206-legal-entity-plan-review.md)，产品结果另行登记。
+法律实体的 L1 基础维护、直接入职所需 L2 用途绑定及 L3 真实采用分别有实施记录。15 项现行验收条件和其他用途的接续责任由 207 持有。[原计划评审](206-legal-entity-plan-review.md) · [L1 实施](206-legal-entity-implementation.md) · [L2 维护](400-hire-simplification.md#t02-results) · [L3 入职保护](400-first-hire-integration.md#first-job-only-hire) · [归档交接](136-206-plan-archive.md#legal-entity-closeout)
 
 2026-11-15 G4/G5集成接续：[性能及集成记录](205-g5-publication.md)登记20会话14组中的6组达标、8组超标，D08/D09及125其他容量P1保持；用户授权提交、同步main、push/PR及最终三项CI成功后合并。已同步e359f741并补齐地点302导航，3个DB/API根及26条浏览器同轮通过；PR #16最终三项CI已通过并合入d810757b；随后按用户要求更新4383，原38表与全部历史保持，147项API及双角色8组导航通过，见[运行更新](205-g5-publication.md#7-合并构建的4383运行更新)。
 

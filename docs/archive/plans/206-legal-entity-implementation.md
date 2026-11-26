@@ -1,6 +1,8 @@
 # CHNHCM-206 法律实体分阶段实施计划
 
-登记信息：[registry.json](../governance/registry.json)。本轮按用户指令制定、评审完善计划并实施第一阶段；长期对象合同由[207](../specs/m02/207-legal-entity-design.md)持有。上游为[M02](../architecture/target/modules/m02.md)、[009](../adr/009-mainland-organization-terms.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)、[124](../guides/124-dated-object-admission-and-capacity.md)及[202](../adr/202-master-data-default-effective-date.md)。
+2026-11-26，206 按原编号归档。L1 的 15 项验收条件和其余用途的接续责任由 207 持有，直接入职所需的 L2、L3 已有实库依据。以下保留各阶段当时的判断。[207 验收矩阵](../../specs/m02/207-legal-entity-design.md#legal-entity-l1-acceptance) · [主体用途与采用](../../specs/m02/207-legal-entity-design.md#legal-entity-purpose-handoff) · [关闭记录](../../verification/136-206-plan-archive.md#legal-entity-closeout)
+
+登记信息：[registry.json](../../governance/registry.json)。本轮按用户指令制定、评审完善计划并实施第一阶段；长期对象合同由[207](../../specs/m02/207-legal-entity-design.md)持有。上游为[M02](../../architecture/target/modules/m02.md)、[009](../../adr/009-mainland-organization-terms.md)、[120](../../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../../specs/m02/121-dated-object-admission-matrix.md)、[124](../../guides/124-dated-object-admission-and-capacity.md)及[202](../../adr/202-master-data-default-effective-date.md)。
 
 ## 1 用户目标
 
@@ -67,15 +69,15 @@ L1使用全球CountryRegion目录，不要求行政区划或地点。资料中�
 
 基础1000对象覆盖四种主体类别和CN/HK/MO/TW/其他国家；20记录是验收输入，不是产品硬上限。普通列表/详情单会话目标300ms，保存/查回500ms，20会话统一500ms；性能按用户既定非阻断口径登记，但HTTP/语义/历史/授权/恢复正确性必须通过。容量期间不并行构建/其他自有重负载，不声明无法证明的全机独占。
 
-每次运行使用自有独占临时profile及真实PostgreSQL，收尾依据[003](../adr/003-implementation-stages.md#development-environment-cleanup)和[017](../guides/017-local-bu-development.md#local-runtime-cleanup)停止并删除自有可丢弃资源、核对进程/容器/卷。4383及其他原环境不操作。保留首次失败原件，复验只能追加结果。
+每次运行使用自有独占临时profile及真实PostgreSQL，收尾依据[003](../../adr/003-implementation-stages.md#development-environment-cleanup)和[017](../../guides/017-local-bu-development.md#local-runtime-cleanup)停止并删除自有可丢弃资源、核对进程/容器/卷。4383及其他原环境不操作。保留首次失败原件，复验只能追加结果。
 
 ## 7 进度记录与交接
 
-2026-11-15：用户授权计划、评审完善并实施L1；计划及合同已评审通过，当前L1实施结果及分批验证见[实施记录](../verification/206-legal-entity-implementation.md)。L1完成不代表206三阶段路线全部完成，计划execution_status保持in_progress直到后续阶段各自关闭。D08/D09及125容量P1维持原目标、原失败及非阻断决定。
+2026-11-15：用户授权计划、评审完善并实施L1；计划及合同已评审通过，当前L1实施结果及分批验证见[实施记录](../../verification/206-legal-entity-implementation.md)。L1完成不代表206三阶段路线全部完成，计划execution_status保持in_progress直到后续阶段各自关闭。D08/D09及125容量P1维持原目标、原失败及非阻断决定。
 
 L1-T00—T05现已完成，最终通过范围、原失败及后续责任见206实施记录第9节；L2/L3未开始。
 
-2026-11-16由125接续当前构建L1-V15限定复测：同样1000背景／20记录、8组800次零错误，全部满足原目标；20会话详情／保存／查回P95为211.432／204.729／51.717ms，原1400份来源与200回执重启保持。原206-D01—03失败保留，当前独立场景复测通过；不是固定环境或完整万科组织背景的验收，不改变L2/L3、D08/D09及125其他容量责任。见[本批记录](../verification/125-target-adoption-and-current-validation.md#34-法律实体当前限定补验)。
+2026-11-16由125接续当前构建L1-V15限定复测：同样1000背景／20记录、8组800次零错误，全部满足原目标；20会话详情／保存／查回P95为211.432／204.729／51.717ms，原1400份来源与200回执重启保持。原206-D01—03失败保留，当前独立场景复测通过；不是固定环境或完整万科组织背景的验收，不改变L2/L3、D08/D09及125其他容量责任。见[本批记录](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/125-target-adoption-and-current-validation.md#34-法律实体当前限定补验)。
 
 
-2026-11-23，400 T02 从原法律实体菜单接入直接入职所需 L2，可按全期查询及在调用方事务重核。首次真实人事采用和用途收窄与已办关系的双向保护由 T03 验收。[L2 实施结果](../verification/400-hire-simplification.md#t02-results)
+2026-11-23，400 T02 从原法律实体菜单接入直接入职所需 L2，可按全期查询及在调用方事务重核。首次真实人事采用和用途收窄与已办关系的双向保护由 T03 验收。[L2 实施结果](../../verification/400-hire-simplification.md#t02-results)
