@@ -204,7 +204,7 @@ def check_ready(plan, record, root=ROOT, preflight_only=False):
             record.save()
             options = ['--output', str(record.folder / 'browser'),
                        '--reporter', 'list,' + str(root / 'scripts/ci-ready-reporter.cjs')]
-            run_check(['python3', 'scripts/local-bu.py', 'smoke', '--', *options, *args], cwd=root)
+            run_check(['python3', 'scripts/local-bu.py', 'smoke', '--fixed-web', '--', *options, *args], cwd=root)
             rows = read_cases(record.folder / 'browser.jsonl')
             expected = {(project, test_id) for project, _, test_id in inventory}
             actual = {(row['project'], row['id']) for row in rows if row['status'] == 'passed'}
