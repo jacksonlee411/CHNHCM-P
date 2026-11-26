@@ -6,6 +6,10 @@
 
 T04「在职变动、结束与再聘」在 509 本地候选及固定 f 的 4386 原库验收通过。509 已关闭对 `39660e7` 七轮复评发现的 27 项问题，涵盖实际汇报、同日与跨岗办理、退出与再聘、岗位实占及页面交互。508 原六项也已回归。[27 项原反例](verification/500-t04-implementation-rereview.md) · [509 分批修复方案](plans/509-t04-remediation.md) · [方案独立评审](verification/509-t04-remediation-review.md) · [509 产品验收及固定环境](verification/509-t04-remediation-implementation.md#fixed-environment) · [508 原批验证](verification/508-job-information-implementation.md)
 
+2026-11-26，500 页面专项在 `b67cb72` 实测发现 11 项待修复问题，建议暂缓该专项验收。两项高优先级涉及跨员工更正时确认本人，以及旧修订中判断当次任职地点。[页面布局与交互问题登记](verification/500-personnel-page-review.md)
+
+同基线又确认「人员」入口、本人职务信息页签、时间轴与通用查看日期四项问题，并查出多任职选择等五项同类问题。补查 9 项均待修复，报告附 35 张原图、规范追溯及逐项关闭条件。[人员入口、职务信息与日期交互补充评审](verification/500-personnel-entry-and-date-review.md)
+
 [M01 个人资料扩展](plans/504-personal-profile-extension.md)单列 T01 之后的九栏维护。字段、整页保存及七类弹框布局由[九栏目合同](specs/m01/505-personal-profile-contract.md)规定。[九栏方案评审](verification/504-personal-profile-review.md) · [弹框布局核对](verification/504-personal-profile-dialog-layout.md) · [第一批三栏实测与验收地址](verification/504-personal-profile-first-batch.md) · [第二批地址与家庭联系人实测及验收地址](verification/504-personal-profile-second-batch.md) · [第三批教育经历与专业凭证](verification/504-personal-profile-third-batch.md) · [第四批银行、健康及九栏联验](verification/504-personal-profile-fourth-batch.md)
 
 人员登记已按主要证件号码判断重复，同名可直接建档。旧档案升级核对和人事试办记录见[本次实施与试办](verification/500-personnel-registration-trial.md)。[三种登记情况](specs/m01/501-person-registration-requirements.md#m01-registration-examples) · [人员详情与变更日志](verification/500-personnel-change-log.md) · [4380 手工验收环境](verification/500-personnel-change-log.md#personnel-log-4380)

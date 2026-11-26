@@ -3063,6 +3063,50 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/500-personnel-entry-and-date-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-123", "CHNHCM-124", "CHNHCM-313", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+        "working_tree": "dirty",
+        "change_description": "受测时工作树已有上一轮 500 页面问题登记、截图及索引的未提交改动。固定构建清单的起点为 39660e7，1,157 个前端和共享源文件与本树相符，在线的 28 个文件均匹配。接续登记入口、页签、生效日期和相邻流程的 9 项开放问题。",
+        "environment": "wt-dev-f 的固定 m01-profile-f，Web 4386、API 8386、DB 54376，有界面 Chromium 140.0.7339.186，本地合成样本。",
+        "scope": "正常菜单中的人员列表和详情、职务信息、本人多任职与办理历史，按四轮核对同构建的参考页面、专项日期任务、实施合同及浏览器断言。本人和任职详情覆盖五种 100% 视口及关键流程原生 200%。",
+        "results": [
+          {"check": "用户指出的四项，500-UI-12 至 15，普通人员入口、本人页签、日期轴对齐及常驻查看日期", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
+          {"check": "500-UI-16 至 20，多任职选择、菜单当前项、办理历史日期、返回动作名称及日期轴顺序", "result": "failed", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"},
+          {"check": "只读者的资料入口、首聘到岗日、办理期间筛选、部门编制指定日统计及参考日期轴", "result": "passed", "evidence": "docs/verification/data/500-personnel-entry-and-date-review/observations.json"},
+          {"check": "本次 9 项问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-entry-and-date-review.md"}
+        ],
+        "limitations": ["固定环境使用现有合成样本，仅执行浏览、读取、选择及取消。", "固定清单与本树另有 4 个后端集成测试和 3 个生成模型不同。此次未复跑全套业务、权限动态变更或原生 400%，结论限定在记录的实页路径。"]
+      },
+      {
+        "path": "docs/verification/500-personnel-page-review.md",
+        "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-505", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+        "working_tree": "clean",
+        "change_description": "登记 500 页面专项实测的 11 项开放问题，高 2 项、中 8 项、低 1 项，建议暂缓页面专项验收。",
+        "environment": "wt-dev-f，固定 m01-profile-f（Web 4386 / API 8386 / DB 54376），有界面 Chromium 140.0.7339.186，管理员、只读账号及合成样本。正式保存与动态授权另用一次性 PostgreSQL 环境。",
+        "scope": "对照业务单元及职务参考页，审查人员、任职、跨员工办理、合同及录用的列表、详情、页签、时间轴、表单和返回。五种 100% 视口，关键交互原生 200%，只读明细补查 400%。",
+        "results": [
+          {"check": "500-UI-01 至 02，跨员工更正的本人标识、旧办理修订与当次任职的来源", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "500-UI-03 至 10，跨页定位、撤销状态、生效日期、详情和页签、整单操作、列表筛选与排序", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "500-UI-11，登记姓名的可见及辅助技术必填标识", "result": "failed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "两岗一人的去重计数、档案草稿放弃、合同前后继与原件返回的指定样本", "result": "passed", "evidence": "docs/verification/500-personnel-page-review.md"},
+          {"check": "首轮企业维护前置 4 项通过、1 项请求失败，人员 3 项未启动", "result": "failed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
+          {"check": "人员 3 项独立浏览器复跑，包括地点保存及更正、仅见兼岗、动态授权", "result": "passed", "evidence": "docs/verification/data/500-personnel-page-review/browser-regression.txt"},
+          {"check": "11 项页面问题的修复后复验", "result": "not_run", "evidence": "docs/verification/500-personnel-page-review.md"}
+        ],
+        "limitations": [
+          "固定验收库使用现有合成样本，草稿取消。原生 400% 仅核对只读资料行明细及退出归焦。",
+          "三个用例的 Playwright 结果为通过，外层进程返回 143。临时资源已回收。此次为页面专项，未重验全套业务、并发或数据库不变量。"
+        ]
+      },
+      {
         "path": "docs/verification/509-t04-remediation-implementation.md",
         "related_documents": ["CHNHCM-012", "CHNHCM-403", "CHNHCM-500", "CHNHCM-506", "CHNHCM-507", "CHNHCM-508", "CHNHCM-509"],
         "format": "numbered",

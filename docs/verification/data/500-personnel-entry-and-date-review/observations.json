@@ -1,0 +1,2089 @@
+{
+  "reviewedCommit": "b67cb724f759473a761e7153796a5a1acd4b2bdf",
+  "worktree": "wt-dev-f",
+  "capturedOn": "2026-11-26",
+  "profile": "m01-profile-f",
+  "ports": {
+    "web": 4386,
+    "api": 8386,
+    "db": 54376
+  },
+  "browser": "Chromium 140.0.7339.186",
+  "sourceFilesMatched": 1157,
+  "servedFilesMatched": 28,
+  "priorReportSHA256": "57b04e517847724d013036ac15c4e1f9402b7a270475c2516337ce2ebb36ceda",
+  "measurement": "gapCSSpx 为选择条或收起按钮左边界减同一行生效日期标题右边界，单位 CSS px。tabs 第二列为 aria-selected，menuCurrent 第二列为 aria-current。路线中的对象值省略。只保存日期与页面类别的参数值。100% 为内容区原图，原生 200% 使用固定外框的 X11 原图。",
+  "screenshotsCaptured": 36,
+  "screenshotsFiled": 35,
+  "screenshots": [
+    {
+      "file": "01-people-default.png",
+      "scene": "管理员点开人员应用，当日任职名录为空",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "fc0df829cd4b4bb03b5c062070b455801a785eb475db33c234953046df6752fd",
+      "route": "/personnel/assignments",
+      "heading": [
+        "员工"
+      ],
+      "gridNames": [
+        "员工任职列表"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n0–0 / 0"
+      ],
+      "visibleDateFields": [
+        [
+          "业务日期",
+          "2026-11-26"
+        ]
+      ]
+    },
+    {
+      "file": "02-desktop-menu.png",
+      "scene": "员工菜单的两个末级入口",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "154e5f16a08d6c593b08cc60da98c39c1991deaf5629b7715d094eed6b7bdb3d",
+      "route": "/personnel/assignments",
+      "heading": [
+        "员工"
+      ],
+      "menuCurrent": [
+        [
+          "员工列表",
+          "page"
+        ],
+        [
+          "人员档案",
+          null
+        ]
+      ],
+      "gridNames": [
+        "员工任职列表"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n0–0 / 0"
+      ],
+      "visibleDateFields": [
+        [
+          "业务日期",
+          "2026-11-26"
+        ]
+      ]
+    },
+    {
+      "file": "03-archive.png",
+      "scene": "按人查询的名录显示 24 人",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "c4dcd8ace2ceb8d35bc02e6ea2cd3d2d492238a2d37ea9c18f296d5da05a2d5a",
+      "route": "/personnel/employees",
+      "heading": [
+        "人员档案"
+      ],
+      "gridNames": [
+        "员工名录"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n1–20 / 24"
+      ]
+    },
+    {
+      "file": "04-person-direct.png",
+      "scene": "直接按人打开 P00000002",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "5d296cb8ba9667015b3dc2e3c68a2eb4e280ad25932534852ae3216162a58a95",
+      "route": "/personnel/employees/:id",
+      "heading": [
+        "职务信息验收a9df68d2"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ]
+    },
+    {
+      "file": "05-person-link-destination.png",
+      "scene": "该人在人员详情点击工作关系与任职",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "3ff5bfcf7f77b7fe52258c579fb4d3fc2a6b19f7c773ab2546a1c2141ca07e98",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 351,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-04-01"
+      }
+    },
+    {
+      "file": "06-assignment-list-day.png",
+      "scene": "在列表查询 P00000002、指定 04-15",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "bd256be439a5b519175f8603209b21dbb6abdc76069acdc0c7d1b587d9e1fc72",
+      "route": "/personnel/assignments",
+      "heading": [
+        "员工"
+      ],
+      "queryKeys": [
+        "businessAt",
+        "page",
+        "ref"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15"
+      },
+      "gridNames": [
+        "员工任职列表"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n1–1 / 1"
+      ],
+      "visibleDateFields": [
+        [
+          "业务日期",
+          "2027-04-15"
+        ]
+      ]
+    },
+    {
+      "file": "07-from-list-day.png",
+      "scene": "从该任职行进入详情",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "84ad0af23ebfdb13c1e4b9c2ac820e2e7f1817383211af2ae8d15ff6d4b7a51a",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "businessAt",
+        "page",
+        "ref",
+        "selected",
+        "from"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15"
+      },
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-15"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 351,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": null
+      }
+    },
+    {
+      "file": "08-explicit-view-day.png",
+      "scene": "在职务信息改看 05-01",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "84f38978751788d275e68e690841de75565b4701c125b3d68382d7c1a883a139",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "businessAt",
+        "page",
+        "ref",
+        "selected",
+        "from",
+        "assignmentDay"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15",
+        "assignmentDay": "2027-05-01"
+      },
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-05-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 351,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-05-01"
+      }
+    },
+    {
+      "file": "09-detail-menu-active.png",
+      "scene": "从任职行下钻后展开桌面菜单",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "508b7dead4df31340f2030c2257a524a9ad1434823c787e75af9c291353d9179",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "businessAt",
+        "page",
+        "ref",
+        "selected",
+        "from",
+        "assignmentDay"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15",
+        "assignmentDay": "2027-05-01"
+      },
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "menuCurrent": [
+        [
+          "员工列表",
+          null
+        ],
+        [
+          "人员档案",
+          "page"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-05-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 351,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-05-01"
+      }
+    },
+    {
+      "file": "10-bu-reference.png",
+      "scene": "同构建业务单元普通详情",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "ac49b065423aec785b882b25805a789c71b0e09b74da895081812505a9f2a0cd",
+      "route": "/settings/organization/business-units/:id",
+      "heading": [
+        "BP031b425e · 管理单元031b425e"
+      ],
+      "queryKeys": [
+        "back"
+      ],
+      "tabs": [
+        [
+          "基本资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": true,
+        "align": "flex-start",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 115.5,
+          "y": 294.7,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 187.5,
+          "y": 289.2,
+          "w": 101.6,
+          "h": 33
+        },
+        "gapCSSpx": 16,
+        "selected": "2026-01-01"
+      }
+    },
+    {
+      "file": "11-job-reference.png",
+      "scene": "同构建职务普通详情",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "20f3fe6fd8655ade88704af171f72739d98f82e444be61025edf791ef1b26687",
+      "route": "/settings/staffing/jobs/:id",
+      "heading": [
+        "专员d07f9929"
+      ],
+      "queryKeys": [
+        "back"
+      ],
+      "tabs": [
+        [
+          "基本资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": true,
+        "align": "flex-start",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 115.5,
+          "y": 284.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 187.5,
+          "y": 279,
+          "w": 101.6,
+          "h": 33
+        },
+        "gapCSSpx": 16,
+        "selected": "2026-01-01"
+      }
+    },
+    {
+      "file": "12-multiple-person-profile.png",
+      "scene": "直接按人打开 P00000005",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "133506efb144de95238a888d60acbc04404d083c6228560c2c5334d73dd44cfe",
+      "route": "/personnel/employees/:id",
+      "heading": [
+        "并行任职验收960605bb"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ]
+    },
+    {
+      "file": "13-multiple-choice-default.png",
+      "scene": "从 P00000005 选择其任职，当前日为空",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "ba3db1141ee79a7df0f695438832a5b00fcd891e81937cc42476255a43369301",
+      "route": "/personnel/assignments",
+      "heading": [
+        "员工"
+      ],
+      "queryKeys": [
+        "person"
+      ],
+      "gridNames": [
+        "员工任职列表"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n0–0 / 0"
+      ],
+      "visibleDateFields": [
+        [
+          "业务日期",
+          "2026-11-26"
+        ]
+      ]
+    },
+    {
+      "file": "14-multiple-choice-with-date.png",
+      "scene": "输入 04-15，0、1、2 号出现",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "7cac1e06e58d2b845f7c025400bdaed446a156702fba7a094db9065acb2f6ab3",
+      "route": "/personnel/assignments",
+      "heading": [
+        "员工"
+      ],
+      "queryKeys": [
+        "person",
+        "businessAt",
+        "page"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15"
+      },
+      "gridNames": [
+        "员工任职列表"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n1–3 / 3"
+      ],
+      "visibleDateFields": [
+        [
+          "业务日期",
+          "2027-04-15"
+        ]
+      ]
+    },
+    {
+      "file": "15-person-history.png",
+      "scene": "从该主岗的 04-15 打开办理历史",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "a77e63ed5fab7889190930ea26e80dd3a444abda43db4d116b8ab7c7ae35a999",
+      "route": "/personnel/employees/:id/employment",
+      "heading": [
+        "工作关系与任职"
+      ],
+      "queryKeys": [
+        "person",
+        "businessAt",
+        "page",
+        "selected",
+        "from",
+        "view",
+        "returnTo"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15",
+        "view": "history"
+      },
+      "visibleDateFields": [
+        [
+          "查询日期",
+          ""
+        ]
+      ]
+    },
+    {
+      "file": "17-history-date-restored.png",
+      "scene": "在历史页重输 04-15",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "412d42c5d8a317af8a2502d3ab8c6f2154b18599aba39dd7906e40f0517a6707",
+      "route": "/personnel/employees/:id/employment",
+      "heading": [
+        "工作关系与任职"
+      ],
+      "queryKeys": [
+        "person",
+        "businessAt",
+        "page",
+        "selected",
+        "from",
+        "view",
+        "returnTo"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15",
+        "view": "history"
+      },
+      "visibleDateFields": [
+        [
+          "查询日期",
+          "2027-04-15"
+        ]
+      ]
+    },
+    {
+      "file": "18-first-hire-person.png",
+      "scene": "P00000001 尚可办理首次入职",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "168287af29dd5f833baff010f6b896b042c3e1d3a0cbd1b18e9db7d575be32fa",
+      "route": "/personnel/employees/:id",
+      "heading": [
+        "个人资料第四批九栏验收样本"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ]
+    },
+    {
+      "file": "19-hire-date-positive.png",
+      "scene": "从本人打开首次入职的表单",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "031fa9bafcc7c9e79b7de06a58c8db3f55cdab88fc4a63fb74e6d19753a2395b",
+      "route": "/personnel/employees/:id/employment",
+      "heading": [
+        "办理入职"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "visibleDateFields": [
+        [
+          "到岗日*",
+          ""
+        ]
+      ]
+    },
+    {
+      "file": "20-quota-date-positive.png",
+      "scene": "部门编制详情按需打开指定日统计",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "d72eb97418fe0490fea1ed3e52cb11430fa2eaab187a1cf6db6b259137244799",
+      "route": "/settings/staffing/quotas/departments/:id",
+      "heading": [
+        "部门0856ce09"
+      ],
+      "queryKeys": [
+        "departmentId",
+        "page",
+        "businessAt"
+      ],
+      "queryValues": {
+        "businessAt": "2026-11-26"
+      },
+      "timeline": {
+        "withinDetailTimeline": true,
+        "align": "flex-start",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 115.5,
+          "y": 255.7,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 187.5,
+          "y": 250.2,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 16,
+        "selected": null
+      }
+    },
+    {
+      "file": "21-reader-directory.png",
+      "scene": "只读账号从人员应用直接落到按人名录",
+      "role": "reader",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "08ef559d2ce1af8cdea8440b148e2737d36ecd90cb4e82d68dd69e775a28b64e",
+      "route": "/personnel/employees",
+      "heading": [
+        "人员档案"
+      ],
+      "gridNames": [
+        "员工名录"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n1–20 / 24"
+      ]
+    },
+    {
+      "file": "22-reader-person.png",
+      "scene": "只读账号的 P00000002 详情",
+      "role": "reader",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "c58a6d42f601a5cf9cd2c14a3b38cb8481e6533e915cfd9e96a7d3d6be55b5f6",
+      "route": "/personnel/employees/:id",
+      "heading": [
+        "职务信息验收a9df68d2"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "relationshipLink": 0,
+      "edit": 0
+    },
+    {
+      "file": "23-mobile-person.png",
+      "scene": "窄屏本人详情",
+      "role": "admin",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewportCSSpx": [
+        390,
+        844
+      ],
+      "dpr": 1,
+      "sha256": "f4f864a6c30fcd556b6a713a0a073ec200cdc9020960b6ee5662f68da12ffbda",
+      "route": "/personnel/employees/:id",
+      "heading": [
+        "职务信息验收a9df68d2"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ]
+    },
+    {
+      "file": "24-mobile-job.png",
+      "scene": "窄屏主岗详情",
+      "role": "admin",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewportCSSpx": [
+        390,
+        844
+      ],
+      "dpr": 1,
+      "sha256": "19def8030d6f7ec19130c50ffa3fd1b32f74570c5a8788d83e129a57ee0d1571",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "compact",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 381.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 255.4,
+          "y": 375.5,
+          "w": 119.6,
+          "h": 34
+        },
+        "gapCSSpx": 199.4,
+        "selected": "2027-04-01"
+      }
+    },
+    {
+      "file": "25-history-back-label.png",
+      "scene": "从 P00000002 主岗打开办理历史并查看返回链接",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "ae327a75b1e80b3ff02a8bdf4c68874fed1d5d6a6d60175d3b7bcf78283ff074",
+      "route": "/personnel/employees/:id/employment",
+      "heading": [
+        "工作关系与任职"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected",
+        "view",
+        "returnTo"
+      ],
+      "queryValues": {
+        "view": "history"
+      },
+      "visibleDateFields": [
+        [
+          "查询日期",
+          ""
+        ]
+      ]
+    },
+    {
+      "file": "26-history-back-result.png",
+      "scene": "点击历史页的返回列表后实际到达的任职详情",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "4cd3a7a63b4f383f8ff128acb9c27b8599d1a6b119fafe8da95f7d51a5a2d5be",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 351,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-04-01"
+      }
+    },
+    {
+      "file": "27-historical-view-date.png",
+      "scene": "从地点旧修订打开查看当次任职",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "22d060ab57ffad9757295d4fd635d81413c444d37d473d6f3b36092f20276346",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected",
+        "assignmentDay",
+        "action",
+        "adoptedRef",
+        "sourceVersion"
+      ],
+      "queryValues": {
+        "assignmentDay": "2027-05-01"
+      },
+      "tabs": [
+        [
+          "职务信息",
+          "true"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-05-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 396.3,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 390.8,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-05-01"
+      }
+    },
+    {
+      "file": "28-historical-date-after.png",
+      "scene": "在同一历史来源改看次日后原办理收起",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "f85be4029afdbfc52bd7b1863f41b3d12cafa31260e0e85866986a84d5b7d46d",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected",
+        "assignmentDay",
+        "sourceVersion"
+      ],
+      "queryValues": {
+        "assignmentDay": "2027-05-02"
+      },
+      "tabs": [
+        [
+          "职务信息",
+          "true"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-05-02"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 396.3,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 390.8,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": null
+      }
+    },
+    {
+      "file": "29-native-profile.png",
+      "scene": "原生 200% 的本人详情，中转链接得到键盘焦点",
+      "role": "admin",
+      "pixels": [
+        1280,
+        987
+      ],
+      "viewportCSSpx": [
+        640,
+        450
+      ],
+      "dpr": 2,
+      "sha256": "621bc87ad2ec89f38edd5364992a4c8469dd6af0d82a973d8ff6e3595239abd0",
+      "route": "/personnel/employees/:id",
+      "heading": [
+        "职务信息验收a9df68d2"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "keyboardFocus": "工作关系与任职"
+    },
+    {
+      "file": "30-native-job.png",
+      "scene": "用 Enter 进入主岗后聚焦查看业务日",
+      "role": "admin",
+      "pixels": [
+        1280,
+        987
+      ],
+      "viewportCSSpx": [
+        640,
+        450
+      ],
+      "dpr": 2,
+      "sha256": "a2ce50d45cc98e1ebc66fe1908f0cb9ee32c69672f69855d3e9006d6a702afa5",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "compact",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 373,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 512.9,
+          "y": 367,
+          "w": 119.6,
+          "h": 34
+        },
+        "gapCSSpx": 456.9,
+        "selected": "2027-04-01"
+      },
+      "keyboardFocus": "查看业务日"
+    },
+    {
+      "file": "31-register-date-positive.png",
+      "scene": "跨员工办理记录的生效及办理期间筛选",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "22a5ff16df792df54debb2963782163fb14eb20a0d26fbc410f6f45ebb1cde9f",
+      "route": "/personnel/actions",
+      "heading": [
+        "办理记录"
+      ],
+      "gridNames": [
+        "办理记录列表"
+      ],
+      "pagination": [
+        "每页\n\n20\n\n1–20 / 48"
+      ]
+    },
+    {
+      "file": "32-hire-back-result.png",
+      "scene": "首聘用 Enter 激活返回列表，实际回到本人详情",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "e22c552f63b03722aaeb132b1f33e257c3849d8befdffbc31bc9fe922f11e309",
+      "route": "/personnel/employees/:id",
+      "heading": [
+        "个人资料第四批九栏验收样本"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ]
+    },
+    {
+      "file": "33-job-date-order.png",
+      "scene": "两节点任职使用右键和 Enter 切到较早日期",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "3ff5bfcf7f77b7fe52258c579fb4d3fc2a6b19f7c773ab2546a1c2141ca07e98",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected",
+        "assignmentDay"
+      ],
+      "queryValues": {
+        "assignmentDay": "2027-04-01"
+      },
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 351,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-04-01"
+      },
+      "datesLeftToRight": [
+        "2027-05-01",
+        "2027-04-01"
+      ],
+      "keyFrom": "2027-05-01",
+      "key": "ArrowRight、Enter",
+      "nextFocus": "2027-04-01"
+    },
+    {
+      "file": "34-transfer-date-order.png",
+      "scene": "三节点任职的实际排列",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "9b25af76363e2e92c93b6c92c321d3f815a486caba843f1944c0fb53a3ec218a",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "历史调动验收4ff7d690 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "ref",
+        "page",
+        "from",
+        "selected"
+      ],
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-01"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1132.1,
+          "y": 351,
+          "w": 292.9,
+          "h": 33
+        },
+        "gapCSSpx": 1076.1,
+        "selected": "2027-04-01"
+      },
+      "datesLeftToRight": [
+        "2027-07-01",
+        "2027-06-10",
+        "2027-04-01"
+      ]
+    },
+    {
+      "file": "35-reference-date-order.png",
+      "scene": "部门编制参考使用右键和 Enter 切到较晚日期",
+      "role": "admin",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "dpr": 1,
+      "sha256": "06259e76444e52b1443cbee0f97b5a187859cc567a7f3ebb35988038c70ce724",
+      "route": "/settings/staffing/quotas/departments/:id",
+      "heading": [
+        "部门0856ce09"
+      ],
+      "queryKeys": [
+        "departmentId",
+        "page",
+        "businessAt",
+        "at"
+      ],
+      "queryValues": {
+        "businessAt": "2026-11-26"
+      },
+      "timeline": {
+        "withinDetailTimeline": true,
+        "align": "flex-start",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 115.5,
+          "y": 255.7,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 187.5,
+          "y": 250.2,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 16,
+        "selected": "2026-04-01"
+      },
+      "datesLeftToRight": [
+        "2026-01-01",
+        "2026-04-01"
+      ],
+      "keyFrom": "2026-01-01",
+      "key": "ArrowRight、Enter",
+      "nextFocus": "2026-04-01"
+    },
+    {
+      "file": "36-mobile-menu-active.png",
+      "scene": "窄屏抽屉的当前菜单",
+      "role": "admin",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewportCSSpx": [
+        390,
+        844
+      ],
+      "dpr": 1,
+      "sha256": "b804abfd943e1afe72f4dc1a97593c0c3cc596e1ae97e3ec9aa47e97c3a23e0f",
+      "route": "/personnel/employees/:id/assignments/:id",
+      "heading": [
+        "职务信息验收a9df68d2 · 0 号主岗"
+      ],
+      "queryKeys": [
+        "businessAt",
+        "page",
+        "ref",
+        "selected",
+        "from"
+      ],
+      "queryValues": {
+        "businessAt": "2027-04-15"
+      },
+      "tabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "visibleDateFields": [
+        [
+          "查看业务日",
+          "2027-04-15"
+        ]
+      ],
+      "timeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "compact",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 381.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 255.4,
+          "y": 375.5,
+          "w": 119.6,
+          "h": 34
+        },
+        "gapCSSpx": 199.4,
+        "selected": "2027-04-15"
+      },
+      "activeLeaf": [
+        "人员档案"
+      ]
+    }
+  ],
+  "viewportMatrix100": [
+    {
+      "viewportCSSpx": [
+        1440,
+        900
+      ],
+      "directTabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "directRelationshipLink": true,
+      "jobTabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "jobViewDate": "查看业务日",
+      "jobTimeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 356.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 351,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-04-01"
+      },
+      "documentScrollWidth": [
+        1440,
+        1440
+      ]
+    },
+    {
+      "viewportCSSpx": [
+        1440,
+        540
+      ],
+      "directTabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "directRelationshipLink": true,
+      "jobTabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "jobViewDate": "查看业务日",
+      "jobTimeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "strip",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 357.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 1227.8,
+          "y": 352,
+          "w": 197.3,
+          "h": 33
+        },
+        "gapCSSpx": 1171.8,
+        "selected": "2027-04-01"
+      },
+      "documentScrollWidth": [
+        1425,
+        1425
+      ]
+    },
+    {
+      "viewportCSSpx": [
+        390,
+        844
+      ],
+      "directTabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "directRelationshipLink": true,
+      "jobTabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "jobViewDate": "查看业务日",
+      "jobTimeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "compact",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 381.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 255.4,
+          "y": 375.5,
+          "w": 119.6,
+          "h": 34
+        },
+        "gapCSSpx": 199.4,
+        "selected": "2027-04-01"
+      },
+      "documentScrollWidth": [
+        375,
+        375
+      ]
+    },
+    {
+      "viewportCSSpx": [
+        320,
+        900
+      ],
+      "directTabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "directRelationshipLink": true,
+      "jobTabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "jobViewDate": "查看业务日",
+      "jobTimeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "compact",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 437.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 185.4,
+          "y": 431.5,
+          "w": 119.6,
+          "h": 34
+        },
+        "gapCSSpx": 129.4,
+        "selected": "2027-04-01"
+      },
+      "documentScrollWidth": [
+        305,
+        305
+      ]
+    },
+    {
+      "viewportCSSpx": [
+        320,
+        256
+      ],
+      "directTabs": [
+        [
+          "个人资料",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "directRelationshipLink": true,
+      "jobTabs": [
+        [
+          "个人资料",
+          "false"
+        ],
+        [
+          "职务信息",
+          "true"
+        ],
+        [
+          "变更日志",
+          "false"
+        ]
+      ],
+      "jobViewDate": "查看业务日",
+      "jobTimeline": {
+        "withinDetailTimeline": false,
+        "align": "flex-end",
+        "mode": "compact",
+        "headingBoxCSSpx": {
+          "x": 0,
+          "y": 433.5,
+          "w": 56,
+          "h": 22
+        },
+        "controlBoxCSSpx": {
+          "x": 185.4,
+          "y": 427.5,
+          "w": 119.6,
+          "h": 34
+        },
+        "gapCSSpx": 129.4,
+        "selected": "2027-04-01"
+      },
+      "documentScrollWidth": [
+        305,
+        305
+      ]
+    }
+  ],
+  "nativeWindow": {
+    "baselineInnerOuterDpr": [
+      1280,
+      900,
+      1280,
+      987,
+      1
+    ],
+    "zoomedInner": [
+      640,
+      450
+    ],
+    "zoomedOuter": [
+      1280,
+      987
+    ],
+    "zoomedDpr": 2,
+    "keys": [
+      "聚焦工作关系与任职",
+      "Enter 打开职务信息",
+      "聚焦查看业务日"
+    ]
+  },
+  "historyReadback": {
+    "listDay": "2027-04-15",
+    "historyBefore": {
+      "visibleDayInput": "",
+      "visiblePeople": 0,
+      "visibleAssignments": 0,
+      "seats": 0
+    },
+    "historyAfter": {
+      "visibleDayInput": "2027-04-15",
+      "visiblePeople": 1,
+      "visibleAssignments": 3,
+      "seats": 0
+    }
+  },
+  "datedSource": {
+    "before": {
+      "path": "/personnel/employees/:id/assignments/:id",
+      "keys": [
+        "ref",
+        "page",
+        "from",
+        "selected",
+        "assignmentDay",
+        "action",
+        "adoptedRef",
+        "sourceVersion"
+      ],
+      "day": {
+        "label": "查看业务日",
+        "type": "text",
+        "value": "2027-05-01"
+      },
+      "banner": 1,
+      "controls": [
+        "返回列表"
+      ]
+    },
+    "after": {
+      "keys": [
+        "ref",
+        "page",
+        "from",
+        "selected",
+        "assignmentDay",
+        "sourceVersion"
+      ],
+      "day": {
+        "label": "查看业务日",
+        "type": "text",
+        "value": "2027-05-02"
+      },
+      "banner": 1,
+      "original": 0,
+      "source": true
+    }
+  },
+  "compactDateMenu": {
+    "viewport": [
+      390,
+      844
+    ],
+    "options": [
+      "2027-05-01",
+      "2027-04-01"
+    ],
+    "downFrom": "2027-05-01",
+    "focusAfter": "2027-04-01",
+    "selected": "2027-04-01"
+  },
+  "ordinaryReferences": {
+    "BU 列表": {
+      "path": "/settings/organization/business-units",
+      "h1": [
+        "业务单元"
+      ],
+      "dateInputs": []
+    },
+    "职务列表": {
+      "path": "/settings/staffing/jobs",
+      "h1": [
+        "职务"
+      ],
+      "dateInputs": []
+    }
+  },
+  "fixedBuild": {
+    "manifestBaseCommit": "39660e70ded3257fe0c3e483e694dbe12f81bc2b",
+    "manifestSHA256": "3d6755d5c35b11b38758fbcf45f6c0e362994c60a446fedda1d6ff7a5e5072f9",
+    "manifestSourceFiles": 1961,
+    "sourceFilesWithDifferentDigest": [
+      "internal/bootstrap/legal_entity206_acceptance_integration_test.go",
+      "internal/bootstrap/location_address_migration_integration_test.go",
+      "internal/bootstrap/probation_restore_integration_test.go",
+      "internal/bootstrap/staffing309_migration_integration_test.go",
+      "internal/contexts/access/infra/postgres/generated/models.go",
+      "internal/contexts/organization/infra/postgres/generated/models.go",
+      "internal/contexts/staffing/infra/postgres/generated/models.go"
+    ],
+    "frontendAndSharedSourcesMatched": 1157,
+    "servedWebAssetsMatched": 28,
+    "localServerExecutableMatchesManifest": true
+  }
+}
