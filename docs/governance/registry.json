@@ -3056,13 +3056,19 @@
       "owner_branch": "wt-dev-f",
       "owner_role": "Personnel、Staffing、Recruiting、体验与验证维护者",
       "owner": null,
-      "status": "in_review",
+      "status": "active",
       "type": "plan",
       "modules": ["M01", "M04", "M05", "X03"],
       "scope": "500-UI-01 至 20 的人员入口、按权名录、详情与准确来源、交互及固定环境验收。",
       "format": "numbered",
-      "review": null,
-      "execution_status": "not_started",
+      "review": {
+        "date": "2026-11-26",
+        "reviewer": "Codex 两组独立方案评审",
+        "scope": "二十项逐项整改、名录授权与容量、办理原件可达性和分步验收",
+        "result": "accepted",
+        "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+      },
+      "execution_status": "in_progress",
       "superseded_by": [],
       "closure": null,
       "archive": null
@@ -3080,6 +3086,39 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/510-personnel-page-remediation-review.md",
+        "related_documents": [
+          "CHNHCM-500",
+          "CHNHCM-501",
+          "CHNHCM-503",
+          "CHNHCM-507",
+          "CHNHCM-510"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "6a196cbc7ae9a034587e1281bf5b09e62f0015a8",
+        "working_tree": "clean",
+        "change_description": "记录初审要求、修订与同版本独立复审。",
+        "environment": "固定 f，本地代码、合同和浏览器调查证据。",
+        "scope": "二十项整改、依赖次序、名录容量和取消后历史可达性。",
+        "results": [
+          {
+            "check": "初审 a598922",
+            "result": "failed",
+            "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+          },
+          {
+            "check": "两组复审 6a196cb",
+            "result": "passed",
+            "evidence": "docs/verification/510-personnel-page-remediation-review.md"
+          }
+        ],
+        "limitations": [
+          "方案评审通过，产品验收另行记录。"
+        ]
+      },
       {
         "path": "docs/verification/500-personnel-entry-and-date-review.md",
         "related_documents": ["CHNHCM-012", "CHNHCM-121", "CHNHCM-123", "CHNHCM-124", "CHNHCM-313", "CHNHCM-402", "CHNHCM-500", "CHNHCM-501", "CHNHCM-502", "CHNHCM-506", "CHNHCM-507", "CHNHCM-509"],
