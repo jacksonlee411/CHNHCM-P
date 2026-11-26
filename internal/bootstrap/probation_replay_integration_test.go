@@ -360,8 +360,11 @@ func TestAssignmentDefaultDayUsesActualTerm(t *testing.T) {
 	}
 	clock.Clock = func() time.Time { return time.Date(2027, 7, 15, 0, 0, 0, 0, f.Shanghai) }
 	active := get("")
-	if active["businessAt"] != "2027-07-15" || active["futureTerm"] == true {
-		t.Fatal("在职默认日期", active)
+	if active["businessAt"] != "2027-04-01" || active["futureTerm"] == true || active["state"].(M)["departmentId"] != x.dep {
+		t.Fatal("在职时默认定位适用的生效节点", active)
+	}
+	if explicit := get("?businessAt=2027-07-15"); explicit["businessAt"] != "2027-07-15" || explicit["state"].(M)["departmentId"] != x.dep {
+		t.Fatal("显式查询节点之间的在职日期", explicit)
 	}
 	b.call("POST", root+"/leave", M{"date": "2027-08-31", "meaning": "last-active", "notice": "任期结束", "expectedSourceVersion": active["sourceVersion"]}, f.NewID(), 200)
 	clock.Clock = func() time.Time { return time.Date(2027, 9, 5, 0, 0, 0, 0, f.Shanghai) }
