@@ -1,6 +1,6 @@
 # CHNHCM-022 T08有限联合修订实施与独立评审
 
-登记信息：[registry.json](../governance/registry.json)。依据：[010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)和022/024/025。
+登记信息：[registry.json](../governance/registry.json)。依据：[010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)和022/024/025。
 
 ## 1 对象与基线
 

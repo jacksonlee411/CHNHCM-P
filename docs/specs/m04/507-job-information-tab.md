@@ -2,7 +2,7 @@
 
 从「人员」查本人，从「人事事务」查跨人办理。找某份任职，从人员名录进入「职务信息」直接办理。核查某段时间办过哪些事，从「人事事务 → 办理记录」跨员工查询。两处打开同一笔 M04 办理，个人资料及其变更日志归 M01。首次入职从本人档案沿用 402。[502 人员详情](../m01/502-person-directory-interactions.md#m01-change-log) · [402 入职表单](402-hire-interactions.md) · [506 业务规则](506-job-information-records.md#m04-br-012) · [登记表](../../governance/registry.json)
 
-普通名录与详情只在真实生效记录上切换。本人办理历史列出获权原件。跨员工办理期间与部门编制指定日依各自专项合同。[123 日期边界](../../adr/123-current-maintenance-and-dated-query-boundary.md) · [510 查询及验收判据](../../plans/510-personnel-page-remediation.md)
+普通名录与详情只在真实生效记录上切换。本人办理历史列出获权原件。跨员工办理期间与部门编制指定日依各自专项合同。[123 日期边界](../../adr/123-current-maintenance-and-dated-query-boundary.md) · [510 查询及验收判据](../../archive/plans/510-personnel-page-remediation.md)
 
 <a id="job-tab-layout"></a>
 ## 1 入口与页内布局

@@ -2,7 +2,7 @@
 
 ## 1 对象、版本与范围
 
-2026-11-23，Codex 主代理在 `wt-dev-f` 上对 [504 计划](../plans/504-personal-profile-extension.md)和 [505 九栏目合同](../specs/m01/505-personal-profile-contract.md)作分轮文档审阅。开工 HEAD 为 `d1fdb9532656eac0840da69713335d0547a55ff7`，工作区和 stash 起初为空。评审覆盖人事办理、字段与权限、页面、升级及验收设计。既有实现的证据限于 [T01 登记试办](500-personnel-registration-trial.md)和[个人资料详情交接](500-personnel-change-log.md)。
+2026-11-23，Codex 主代理在 `wt-dev-f` 上对 [504 计划](../archive/plans/504-personal-profile-extension.md)和 [505 九栏目合同](../specs/m01/505-personal-profile-contract.md)作分轮文档审阅。开工 HEAD 为 `d1fdb9532656eac0840da69713335d0547a55ff7`，工作区和 stash 起初为空。评审覆盖人事办理、字段与权限、页面、升级及验收设计。既有实现的证据限于 [T01 登记试办](500-personnel-registration-trial.md)和[个人资料详情交接](500-personnel-change-log.md)。
 
 用 Chromium 140.0.7339.186 在 1440×900 打开用户指定的 4180 个人信息页签，核对九个标题、两组单值字段和七个表格。逐个打开该档案的 12 个行明细并退出。只留存标签、构建标识和 HTML 摘要。[现场字段清单](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/504-personal-profile/reference.json)
 
@@ -17,7 +17,7 @@
 | 一行在读、一行已取得学历、一行学位授予。首稿列齐字段，但不同类型适用字段及可选最高的条件仍不够具体。 | 按类型区分三行。后两行分别标最高学历、最高学位，未知年月仍空。在读的拟获学位不能标最高。变更类型须核实被清除字段的写权。通过。[教育字段](../specs/m01/505-personal-profile-contract.md#profile-nine-sections) |
 | 选行政区后目录换版、另一已采用的地址后来停用。首稿缺少新选的采用日和换版时的确定结果。 | 新选按保存时北京业务日重验，换版整笔拒绝并保留可编辑草稿。已有停用引用在只改电话时保持原采用。目录故障不会将引用改存为手工原文。通过。[目录与间接修改](../specs/m01/505-personal-profile-contract.md#m01-ac-019) |
 | 更换主要电话。首稿有旧标记核权，但没有区分仍在当前集合的隐藏行和已经退出普通使用的旧修订。 | 需改动仍在用的受限行时整笔拒绝。旧行已退出时可指定当前电话为主要，原来源仍能解释当时标记。仍有依据持有的现用主要证号单独按 501 判重。通过。[标记与授权](../specs/m01/505-personal-profile-contract.md#profile-items-and-access) |
-| 旧容量样本只有联系方式，用其读回时间衡量九栏会漏掉六个新增集合。 | 20 人各有七栏各两条，共 280 条。当前详情及更正至读回两条链路各按两档会话测 200 次，共 800 次。复算输入与组数通过，计时在产品批执行。[504 验收条件](../plans/504-personal-profile-extension.md#5-验收与交接) |
+| 旧容量样本只有联系方式，用其读回时间衡量九栏会漏掉六个新增集合。 | 20 人各有七栏各两条，共 280 条。当前详情及更正至读回两条链路各按两档会话测 200 次，共 800 次。复算输入与组数通过，计时在产品批执行。[504 验收条件](../archive/plans/504-personal-profile-extension.md#5-验收与交接) |
 
 ## 3 终稿覆盖与业务走查
 
@@ -32,7 +32,7 @@
 
 交付前逐条复读时又发现 504 曾将两个单值栏概括为可清空。现已将必填姓名与曾用名、健康摘要区分，并在 505 的 [011](../specs/m01/505-personal-profile-contract.md#m01-ac-011) 增加清空姓名整笔拒绝的预期，和 501 逐项复核通过。
 
-已从 Git 对象核对本分支与远端 main `c8b63983`、wt-dev-d `793c14ad` 的 00026–00028 文件名。同号对应不同模型，504 将识别旧库路径及备份副本升级交给第一批，方案未预占新的迁移号。[旧档升级安排](../plans/504-personal-profile-extension.md#4-技术依赖与旧档升级)
+已从 Git 对象核对本分支与远端 main `c8b63983`、wt-dev-d `793c14ad` 的 00026–00028 文件名。同号对应不同模型，504 将识别旧库路径及备份副本升级交给第一批，方案未预占新的迁移号。[旧档升级安排](../archive/plans/504-personal-profile-extension.md#4-技术依赖与旧档升级)
 
 ## 4 检查范围与结论
 

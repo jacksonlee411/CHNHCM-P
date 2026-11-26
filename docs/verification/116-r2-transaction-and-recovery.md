@@ -2,7 +2,7 @@
 
 登记信息：[登记表](../governance/registry.json) `governance.verification_records`。
 适用范围：R2-A共用事务端口和PostgreSQL事务设施；R2-B提交重试、查回、当前读取授权。BU必须真实使用，部门运行时后置。
-上游依据：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)、[合同评审](116-r2-contract-review.md)。
+上游依据：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)、[合同评审](116-r2-contract-review.md)。
 
 ## 1 验证对象与受测基线
 

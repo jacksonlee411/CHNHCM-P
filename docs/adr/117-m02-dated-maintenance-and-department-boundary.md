@@ -1,6 +1,6 @@
 # CHNHCM-117 M02共用按日维护与部门边界
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：116的R0及后续BU/部门接入。依据用户2026-11-04采纳方案及四项明确指令；承接[116路线图](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[025全新实施](025-greenfield-implementation-policy.md)、[109固定启停](../plans/109-lifecycle-pair-maintenance.md)和[M02目标](../architecture/target/modules/m02.md)。实际R0检查见[报告](../verification/116-r0-contract-preparation.md)，不表示R1—R6实现完成。
+登记信息：[registry.json](../governance/registry.json)。适用范围：116的R0及后续BU/部门接入。依据用户2026-11-04采纳方案及四项明确指令；承接[116路线图](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[025全新实施](025-greenfield-implementation-policy.md)、[109固定启停](../archive/plans/109-lifecycle-pair-maintenance.md)和[M02目标](../architecture/target/modules/m02.md)。实际R0检查见[报告](../verification/116-r0-contract-preparation.md)，不表示R1—R6实现完成。
 
 当前普通维护日期语义由[123](../adr/123-current-maintenance-and-dated-query-boundary.md)调整：列表按服务端D，详情按所选记录，取消通用查看日期；原阶段完成及验证记录保留。部门仍待116 R4/R5实现。
 

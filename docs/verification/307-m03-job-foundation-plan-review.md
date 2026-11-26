@@ -1,6 +1,6 @@
 # CHNHCM-307 M03职务基础方案与合同评审
 
-登记信息：[registry.json](../governance/registry.json)。对象为[307实施方案](../plans/307-m03-job-foundation.md)及[308首批合同](../specs/m03/308-job-foundation-contract.md)。本记录仅证明主代理文档评审及实际文档检查，不是独立代理评审、人工业务签收或产品验收。
+登记信息：[registry.json](../governance/registry.json)。对象为[307实施方案](../archive/plans/307-m03-job-foundation.md)及[308首批合同](../specs/m03/308-job-foundation-contract.md)。本记录仅证明主代理文档评审及实际文档检查，不是独立代理评审、人工业务签收或产品验收。
 
 ## 1 任务、基线与保护范围
 

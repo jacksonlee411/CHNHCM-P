@@ -1,6 +1,6 @@
 # CHNHCM-010 方案评审修订验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../plans/010-m02-scope-and-plan.md) 方案评审提出的一项范围问题和三项后续规格要求；按 [014](../governance/014-document-management.md) 保存新结果及历史版本。本报告不代替整个范围采纳或产品验收。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../archive/plans/010-m02-scope-and-plan.md) 方案评审提出的一项范围问题和三项后续规格要求；按 [014](../governance/014-document-management.md) 保存新结果及历史版本。本报告不代替整个范围采纳或产品验收。
 
 ## 1 验证对象与受测基线
 

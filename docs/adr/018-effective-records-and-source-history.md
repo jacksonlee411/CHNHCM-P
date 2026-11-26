@@ -1,6 +1,6 @@
 # CHNHCM-018 生效记录与来源追溯决策
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：M02 BU 首批创建/查询实现、后续记录维护规格，以及 X01 共享历史查询合同。2026-10-31 用户确认取消 knownAt，并要求按分析方案完成调整；本文完整承接并替代 [016 原决策](016-m02-effective-record-history.md)。实际检查与限制见[本次验证](../verification/018-source-history-simplification.md)。
+登记信息：[registry.json](../governance/registry.json)。适用范围：M02 BU 首批创建/查询实现、后续记录维护规格，以及 X01 共享历史查询合同。2026-10-31 用户确认取消 knownAt，并要求按分析方案完成调整；本文完整承接并替代 [016 原决策](../archive/adr/016-m02-effective-record-history.md)。实际检查与限制见[本次验证](../verification/018-source-history-simplification.md)。
 
 普通维护的日期入口由[123](123-current-maintenance-and-dated-query-boundary.md)部分调整：列表按服务端D，详情按具体记录；内部按日解析、确切来源和本决定的历史保护保持。
 

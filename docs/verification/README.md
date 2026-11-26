@@ -1,5 +1,7 @@
 # 验证记录
 
+[文档物理归档、路径迁移与六份规则交接](511-physical-archive.md)
+
 [按关联编号查全部评审、验收及历史记录](../governance/catalog/README.md#catalog-evidence) · [511 规范实施与逐份归档评估](511-project-standards-implementation.md)
 
 
@@ -45,9 +47,9 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [314 T02 职类目录](314-job-function-t02-directory.md)记录管理员和查询者菜单、六列导出、企业起日双连接竞争，以及从 00023 原备份升级的实测结果。
 
-[314 T01 职类升级基线](314-job-function-t01-baseline.md)交接原职务与岗位采用、丢响应回执、固定选择、八列文件、迁移编号与恢复步骤。[实施路线图](../plans/314-m03-job-function-roadmap.md)
+[314 T01 职类升级基线](314-job-function-t01-baseline.md)交接原职务与岗位采用、丢响应回执、固定选择、八列文件、迁移编号与恢复步骤。[实施路线图](../archive/plans/314-m03-job-function-roadmap.md)
 
-[314 职类实施路线图评审](314-job-function-roadmap-review.md)记录三稿修订、旧提交重送、双维筛选、跨升级导出和分批签收的复核结果。[实施路线图](../plans/314-m03-job-function-roadmap.md)
+[314 职类实施路线图评审](314-job-function-roadmap-review.md)记录三稿修订、旧提交重送、双维筛选、跨升级导出和分批签收的复核结果。[实施路线图](../archive/plans/314-m03-job-function-roadmap.md)
 
 315 的计划架构复核覆盖岗位独立交付、写入口、四种读取结果、AC090 及按日更正的分层验收。原方案复核保留部门和岗位额度的按日算例。[计划架构复核](315-staffing-quota-plan-architecture-review.md) · [原编制后台方案复核](315-staffing-quota-administration-review.md)
 
@@ -107,7 +109,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 2026-11-15 G4地点实施及限定验收完成：方案已提交da164345，迁移00013、四地地址、完整共用维护、独立表组/API、固定选择及CSV已交付；主代理复评通过，251个DB/API根及354个浏览器用例分轮通过，8组1600次HTTP零错误、400份回执与全部原历史重启核验通过，详见[实施记录](204-g4-implementation.md)。G4限定验收已完成，自有临时环境已回收；20会话四组P95仍超500ms，按非阻断口径由200-D08接续。该批G5及运行更新尚未执行，当前结果见上条；原失败和125其他容量P1保持。
 
-2026-11-15按用户要求核对最新main并制定[G4地点实施方案](../archive/2026/plans/204-g4-location-implementation.md)：完整共用维护、四地地址、逐动作采用、企业授权、固定选择与CSV及可靠提交；三轮主代理文档评审通过，3项P1、3项P2文档层关闭；状态同步见[记录](../verification/204-g4-plan-review.md)。G0/G1完成、G2功能交付、G3限定验收及后续4383运行已交付；原G2三条缩放已有G3后续通过证据并关联，国家容量待补。该次方案编制时G4/G5尚未实施；当前结果见上述实施记录，125其他容量P1保持。
+2026-11-15按用户要求核对最新main并制定[G4地点实施方案](../archive/plans/204-g4-location-implementation.md)：完整共用维护、四地地址、逐动作采用、企业授权、固定选择与CSV及可靠提交；三轮主代理文档评审通过，3项P1、3项P2文档层关闭；状态同步见[记录](../verification/204-g4-plan-review.md)。G0/G1完成、G2功能交付、G3限定验收及后续4383运行已交付；原G2三条缩放已有G3后续通过证据并关联，国家容量待补。该次方案编制时G4/G5尚未实施；当前结果见上述实施记录，125其他容量P1保持。
 
 [203 万科组织固定初始化](203-vanke-fixed-runtime.md)：新环境接管4383、原库停机保留；1个BU、87343个部门及全部历史核对、重启和双角色页面验收通过。
 

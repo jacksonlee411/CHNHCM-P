@@ -195,7 +195,7 @@
     },
     {
       "id": "CHNHCM-010",
-      "decision": "docs/plans/010-m02-scope-and-plan.md",
+      "decision": "docs/archive/plans/010-m02-scope-and-plan.md",
       "base_commit": "f21c99ac42d1662bd7fc077399e27fd144d7a8d0",
       "scope": "同步010/011当前日期用语：首选中文当前日期、英文说明名Current Date，保留x01-business-today身份及旧名；服务端时区、查看/生效日期和跨午夜判断不变。",
       "verification": "docs/verification/010-current-date-terminology.md",
@@ -1137,7 +1137,7 @@
     },
     {
       "id": "CHNHCM-315",
-      "decision": "docs/plans/315-staffing-quota-administration.md",
+      "decision": "docs/archive/plans/315-staffing-quota-administration.md",
       "base_commit": "c8b63983edf859b1eb0259a644369b3184cfb9ec",
       "scope": "将 D 分支 CHNHCM-313 第 7、8 次修订的部门与岗位核编规则，接续到主线 CHNHCM-312 管理汇报修订。原两份修订和逐文件摘要保存在 c7e6d8d42ba63e8b09e4aa0ae8fd4a4a7b8c6675。",
       "verification": "docs/verification/315-department-quota-allocation.md",

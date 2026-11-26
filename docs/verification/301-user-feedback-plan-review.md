@@ -1,7 +1,7 @@
 # CHNHCM-301 用户提示与异常恢复方案评审
 
 登记信息：[registry.json](../governance/registry.json)的governance.verification_records。
-适用范围：[301整改方案](../plans/301-user-feedback-and-recovery.md)的用户表达、恢复动作、状态边界、实施任务与验收条件。
+适用范围：[301整改方案](../archive/plans/301-user-feedback-and-recovery.md)的用户表达、恢复动作、状态边界、实施任务与验收条件。
 上游依据：[38组排查及补查](133-user-facing-message-audit.md)、[012页面原则](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[119部门交互](../specs/m02/119-department-functional-design.md)、[文档管理](../governance/014-document-management.md)。
 
 ## 1 验证对象与受测基线
@@ -39,7 +39,7 @@
 | 源码与原排查保护 | 通过：235份源码及3份原排查文件与本次起点摘要一致 | [范围基线](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/301-user-feedback-plan-review/initial-scope.json)、评审清单 |
 | make docs | 通过：74项脚本测试、313份Markdown及10365条本地链接检查 | [完整日志](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/301-user-feedback-plan-review/make-docs.txt.gz)、[执行结果](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/301-user-feedback-plan-review/make-docs-result.json) |
 | git diff --check及新建文档空白检查 | 通过：跟踪文件差异检查通过，新建两份Markdown无行末空白 | [检查输出](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/301-user-feedback-plan-review/diff-check.txt)、评审清单 |
-| 产品验收M02-AC-057—073 | 未运行：当前仅方案登记与评审 | [待执行验收](../plans/301-user-feedback-and-recovery.md#61-待执行验收) |
+| 产品验收M02-AC-057—073 | 未运行：当前仅方案登记与评审 | [待执行验收](../archive/plans/301-user-feedback-and-recovery.md#61-待执行验收) |
 
 补录实际结果后再执行只读结构及差异检查，收尾结果记录在评审清单；不重复产品测试，也不以结构通过代替语义评审。
 

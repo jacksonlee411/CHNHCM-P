@@ -1,6 +1,6 @@
 # CHNHCM-123 基础资料维护取消通用查看日期与按日查询边界
 
-2026-11-16：[306](../archive/2026/plans/306-department-path-simplification.md)精简路径展示，企业不隐式拼接，未生效/停用说明不进入路径内容。以下按日解析及历史来源规则保持。
+2026-11-16：[306](../archive/plans/306-department-path-simplification.md)精简路径展示，企业不隐式拼接，未生效/停用说明不进入路径内容。以下按日解析及历史来源规则保持。
 
 登记信息：[registry.json](../governance/registry.json)。适用范围：当前BU、116规划中的部门及后续采用相同模式的基础资料维护。依据用户2026-11-04采纳的取消通用查看日期原则、未来对象列表补充及文档先行后实施指令；从[决策模板](../templates/decision.md)起草。业务、页面、技术合同由[011—013入口](../specs/README.md)持有，部门差异由118—121持有，实际检查与实施范围见[本批报告](../verification/123-current-maintenance.md)。
 

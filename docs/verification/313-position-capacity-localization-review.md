@@ -4,7 +4,7 @@
 
 ## 1 修订范围和交付取舍
 
-复核基线为 wt-dev-d 的 `51db97531e6c6d56115f6801bd000083ce4081b6`。开始时工作区已有 313 首版合同、复算、评审和登记导航，stash 为空。两批岗位定义与层级已有各自签收记录。首版合同尚未提交，修订前保存了原文，解压后的 SHA-256 为 `dd1bfeb35ddedad494ca057ae0f380e6ba26b088539dfbbb4862f05b9d161709`，对应首版评审。原评审及其复算脚本沿用各自原件。[首版合同原件](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/313-position-capacity/contract-before-localization.md.gz) · [311 交付顺序](../plans/311-m03-positions.md)
+复核基线为 wt-dev-d 的 `51db97531e6c6d56115f6801bd000083ce4081b6`。开始时工作区已有 313 首版合同、复算、评审和登记导航，stash 为空。两批岗位定义与层级已有各自签收记录。首版合同尚未提交，修订前保存了原文，解压后的 SHA-256 为 `dd1bfeb35ddedad494ca057ae0f380e6ba26b088539dfbbb4862f05b9d161709`，对应首版评审。原评审及其复算脚本沿用各自原件。[首版合同原件](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/313-position-capacity/contract-before-localization.md.gz) · [311 交付顺序](../archive/plans/311-m03-positions.md)
 
 | 方案 | 对业务和交付的影响 | 决定 |
 | --- | --- | --- |

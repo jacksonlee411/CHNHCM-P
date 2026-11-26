@@ -227,15 +227,23 @@ class DocumentGovernanceTests(unittest.TestCase):
         plan['execution_status'] = 'completed'
         self.assert_rejected('CHNHCM-015: closure required')
         plan['closure'] = {'date': '2026-10-30', 'reason': 'Scoped work delivered.'}
+        self.assert_rejected('physical archive or substantive handoff deferral required')
+        plan['archive_deferral'] = dict(kind='historical_links', reason='Referenced by a final report.',
+                                        owner_role='Maintainer', recheck='On next revision')
+        self.assert_rejected('deferral requires a pending rule or handoff')
+        plan['archive_deferral'].update(kind='rules_pending', reason='Existing contract lacks the import date rule.')
         self.assertEqual([], self.errors())
+        plan['archive_deferral']['recheck'] = ''
+        self.assert_rejected('deferral requires a pending rule or handoff')
+
         original = self.policy['path']
-        self.policy['path'] = 'docs/archive/2026/014-sample.md'
+        self.policy['path'] = 'docs/archive/governance/014-sample.md'
         self.policy['archive'] = {'date': '2026-10-30', 'reason': 'Attempt to archive a current rule.', 'previous_path': original}
         self.write(self.policy['path'], (self.root / original).read_text())
         (self.root / original).unlink()
         self.assert_rejected('effective specification cannot be archived')
 
-    def test_closed_plan_can_be_moved_to_its_year_and_category_archive(self):
+    def test_closed_plan_moves_to_its_mirrored_path_and_keeps_original_number(self):
         plan = self.add_document(15, 'plan', status='active', directory='plans')
         report = self.add_report()
         report['related_documents'].append('CHNHCM-015')
@@ -244,7 +252,7 @@ class DocumentGovernanceTests(unittest.TestCase):
         plan['execution_status'] = 'completed'
         plan['closure'] = {'date': '2026-10-30', 'reason': 'Scoped work complete; lasting rules extracted.'}
         original = plan['path']
-        plan['path'] = 'docs/archive/2026/plans/015-sample.md'
+        plan['path'] = 'docs/archive/plans/015-sample.md'
         plan['archive'] = {'date': '2026-10-30', 'reason': 'Closed plan retained.', 'previous_path': original}
         self.write(plan['path'], (self.root / original).read_text())
         (self.root / original).unlink()
@@ -257,7 +265,29 @@ class DocumentGovernanceTests(unittest.TestCase):
                 self.assert_rejected('invalid archive previous_path')
         plan['archive']['previous_path'] = original
         plan['archive']['date'] = '2025-10-30'
-        self.assert_rejected('archive path must match archive year and original category')
+        self.assertEqual([], self.errors())  # Dates do not determine the directory.
+        self.write(original, '# Historical placeholder')
+        self.assert_rejected('original file still exists after physical archival')
+
+    def archive_document(self, document):
+        original = document['path']
+        target = 'docs/archive/' + original.removeprefix('docs/')
+        self.write(target, (self.root / original).read_text())
+        (self.root / original).unlink()
+        index = (self.root / 'docs/index.md').read_text()
+        self.write('docs/index.md', index.replace(original.removeprefix('docs/'), target.removeprefix('docs/')))
+        document.update(path=target, archive={'date': '2026-10-30', 'reason': 'Handoff complete.', 'previous_path': original})
+
+    def test_archived_module_spec_preserves_every_directory_and_filename(self):
+        spec = self.add_document(15, 'functional_spec', status='retired', directory='specs/m02/detail')
+        spec['closure'] = {'date': '2026-10-30', 'reason': 'Rule retired.'}
+        self.archive_document(spec)
+        self.assertEqual([], self.errors())
+        for target in ('docs/archive/2026/specs/m02/detail/015-sample.md',
+                       'docs/archive/specs/015-sample.md', 'docs/archive/specs/m02/detail/015-renamed.md'):
+            with self.subTest(target=target):
+                spec['path'] = target
+                self.assert_rejected('archive path must mirror the full original path')
 
     def test_unwritten_cancelled_document_cannot_claim_an_archive(self):
         plan = self.add_document(15, 'plan', status='planned', directory='plans')
@@ -265,7 +295,7 @@ class DocumentGovernanceTests(unittest.TestCase):
                     closure={'date': '2026-10-30', 'reason': 'Cancelled before drafting.'})
         self.assertEqual([], self.errors())
         original = plan['path']
-        plan['path'] = 'docs/archive/2026/plans/015-sample.md'
+        plan['path'] = 'docs/archive/plans/015-sample.md'
         plan['archive'] = {'date': '2026-10-30', 'reason': 'Invalid archive claim.', 'previous_path': original}
         self.assert_rejected('archive requires an existing regular document file')
 
@@ -277,6 +307,7 @@ class DocumentGovernanceTests(unittest.TestCase):
                             'result': 'accepted', 'evidence': report['path']}
         self.policy.update(status='superseded', superseded_by=['CHNHCM-015'],
                            closure={'date': '2026-10-30', 'reason': 'Replaced scope.'})
+        self.archive_document(self.policy)
         self.assertEqual([], self.errors())
         second.update(status='superseded', superseded_by=['CHNHCM-014'], closure={'date': '2026-10-30', 'reason': 'Bad cycle.'})
         self.assert_rejected('cyclic document replacement')
@@ -299,6 +330,8 @@ class DocumentGovernanceTests(unittest.TestCase):
         second['closure'] = {'date': '2026-10-30', 'reason': 'Historical rule retired.'}
         self.policy.update(status='superseded', superseded_by=['CHNHCM-015'],
                            closure={'date': '2026-10-30', 'reason': 'Historical replacement.'})
+        self.archive_document(self.policy)
+        self.archive_document(second)
         self.assertEqual([], self.errors())
         (self.root / second['path']).unlink()
         self.assert_rejected('replacement document file required')
@@ -325,10 +358,10 @@ class DocumentGovernanceTests(unittest.TestCase):
         original = plan['path']
         plan.update(execution_status='completed', closure={'date': '2026-10-30', 'reason': 'Lasting rule extracted.'},
                     archive={'date': '2026-10-30', 'reason': 'Retain historical rule.', 'previous_path': original},
-                    path='docs/archive/2026/plans/015-sample.md')
+                    path='docs/archive/plans/015-sample.md')
         rule = '\n\n## 1 M02-BR-001 Rule\n\n<a id="m02-br-001"></a>\n\nOriginal rule retained.\n'
         self.write(plan['path'], '# CHNHCM-015 Sample' + rule +
-                   '\n[Current rule](../../../specs/m02/016-sample.md#m02-br-001)\n')
+                   '\n[Current rule](../../specs/m02/016-sample.md#m02-br-001)\n')
         self.write(specification['path'], '# CHNHCM-016 Sample' + rule)
         (self.root / original).unlink()
         index = (self.root / 'docs/index.md').read_text()
@@ -337,7 +370,7 @@ class DocumentGovernanceTests(unittest.TestCase):
         self.write(plan['path'], '# CHNHCM-015 Sample' + rule + '\n<a id="m02-br-001"></a>\n')
         self.assert_rejected('duplicate stable ID anchor in document')
 
-    def test_closed_documents_can_retain_rule_history_without_being_moved(self):
+    def test_historical_rule_alone_does_not_replace_physical_archival(self):
         current = self.add_document(15, status='active')
         report = self.add_report()
         report['related_documents'].append('CHNHCM-015')
@@ -350,7 +383,7 @@ class DocumentGovernanceTests(unittest.TestCase):
             with self.subTest(status=status):
                 self.policy.update(status=status, closure={'date': '2026-10-30', 'reason': 'Historical definition retained.'},
                                    superseded_by=['CHNHCM-015'] if status == 'superseded' else [])
-                self.assertEqual([], self.errors())
+                self.assert_rejected('physical archive or substantive handoff deferral required')
         self.policy.update(status='draft', closure=None, superseded_by=[])
         self.assert_rejected('duplicate stable ID anchor')
 

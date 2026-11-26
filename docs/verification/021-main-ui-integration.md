@@ -1,6 +1,6 @@
 # CHNHCM-021 main页面与T04整合验证
 
-登记信息：[registry.json](../governance/registry.json)。依据为[010](../plans/010-m02-scope-and-plan.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)与[021](../adr/021-bu-lifecycle-and-record-maintenance.md)，仅记录a吸收main后已接通批次的整合与复测。
+登记信息：[registry.json](../governance/registry.json)。依据为[010](../archive/plans/010-m02-scope-and-plan.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)与[021](../adr/021-bu-lifecycle-and-record-maintenance.md)，仅记录a吸收main后已接通批次的整合与复测。
 
 ## 1 基线与范围
 

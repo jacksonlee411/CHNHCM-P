@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json) `governance.verification_records`。
 适用范围：上轮仍存在的拟分类引用查询、授权与安全诊断顺序两项设计问题；保留单部门关系来源简化。
-上游依据：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[119](../specs/m02/119-department-functional-design.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)。
+上游依据：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[119](../specs/m02/119-department-functional-design.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)、[023](../specs/m02/023-m02-timeline-test-cases.md)。
 
 ## 1 验证对象与受测基线
 

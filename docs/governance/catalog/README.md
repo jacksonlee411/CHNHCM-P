@@ -91,7 +91,7 @@
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
-| [135 真实对象头产品接入与验收计划](../../plans/135-real-head-product-integration.md) | in_review | completed | 原位 |
+| [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
 
 <a id="catalog-closed"></a>
 
@@ -99,50 +99,50 @@
 
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
-| [001 本地建仓交付记录](../../plans/001-repository-bootstrap.md) | active | completed | 原位 |
-| [008 下一步：M02 四份详细文档](../../plans/008-next-steps.md) | active | completed | 原位 |
-| [010 本版实施范围与计划](../../plans/010-m02-scope-and-plan.md) | active | completed | 原位 |
-| [019 CubeBox共享体验迁移与页面对比计划](../../plans/019-cubebox-experience-migration.md) | active | completed | 原位 |
-| [100 页面体验优化实施计划](../../plans/100-ui-experience-improvement.md) | active | completed | 原位 |
-| [102 M02维护日志与专用表单体验修订](../../plans/102-bu-maintenance-usability.md) | active | completed | 原位 |
-| [104 统一更正记录入口实施](../../plans/104-unified-record-correction.md) | active | completed | 原位 |
-| [105 位置新增插入实施与更正覆盖补全](../../plans/105-positioned-addition-and-coverage.md) | active | completed | 原位 |
-| [108 M02维护改造多轮一致性复核](../../plans/108-maintenance-consistency-review.md) | active | completed | 原位 |
-| [109 启停期间专用维护与通用联合退出](../../plans/109-lifecycle-pair-maintenance.md) | active | completed | 原位 |
-| [111 BU列表体验改造实施计划](../../plans/111-bu-list-experience-upgrade.md) | active | completed | 原位 |
-| [115 BU全查询结果选择与导出实施计划](../../plans/115-bu-query-selection-and-export.md) | active | completed | 原位 |
-| [116 M02共用按日维护实现路线图](../../plans/116-m02-shared-dated-maintenance-roadmap.md) | active | completed | 原位 |
-| [122 BU资料操作摘要与变更日志表格化实施计划](../../plans/122-bu-operation-summary-and-change-log.md) | active | completed | 原位 |
-| [126 完整历史紧凑存储研究与实施](../../plans/126-compact-history-storage-research.md) | active | completed | 原位 |
-| [127 万科全量组织及历史验证](../../plans/127-vanke-full-history-verification.md) | active | completed | 原位 |
-| [129 业务单元去过度设计与部门合理实现对齐计划](../../plans/129-bu-simplification-and-department-alignment.md) | active | completed | 原位 |
-| [130 部门存储去重与索引收敛优化方案](../../plans/130-department-storage-optimization.md) | active | completed | 原位 |
-| [131 部门列表与父候选查询减负计划](../../archive/2026/plans/131-department-query-reduction.md) | active | completed | 物理归档 |
-| [133 过度防御与高成本处理整改路线图](../../plans/133-overdefensive-processing-remediation.md) | active | completed | 原位 |
-| [135 真实对象头产品接入与验收计划](../../plans/135-real-head-product-integration.md) | in_review | completed | 原位 |
-| [138 行政区划目录交互实施方案](../../archive/2026/plans/138-geo-area-interactions.md) | active | completed | 物理归档 |
-| [139 岗位列表、岗位关系与结构视图实施方案](../../plans/139-position-workspace.md) | active | completed | 原位 |
-| [141 本地预检结果与生成物核对优化计划](../../plans/141-local-preflight.md) | active | completed | 原位 |
-| [200 国家地区行政区划与地点实施路线图](../../plans/200-geography-and-location-roadmap.md) | active | completed | 原位 |
-| [203 G3必要行政区划接入实施方案](../../archive/2026/plans/203-g3-geo-area-admission.md) | active | completed | 物理归档 |
-| [204 G4地点纵向交付实施方案](../../archive/2026/plans/204-g4-location-implementation.md) | active | completed | 物理归档 |
-| [205 G5地理联合验收与固定运行交付](../../archive/2026/plans/205-g5-geography-acceptance-and-runtime.md) | active | completed | 物理归档 |
-| [300 部门列表左侧部门树实施计划](../../plans/300-department-tree-implementation.md) | active | completed | 原位 |
-| [301 用户提示与异常恢复整改方案](../../plans/301-user-feedback-and-recovery.md) | superseded | completed | 原位 |
-| [302 详情对象导航位置与响应整改](../../plans/302-detail-navigation.md) | active | completed | 原位 |
-| [303 部门一级菜单调整](../../plans/303-department-primary-navigation.md) | active | completed | 原位 |
-| [304 企业完整按日维护](../../plans/304-enterprise-maintenance.md) | active | completed | 原位 |
-| [306 部门路径精简与案例集团根部门补全](../../archive/2026/plans/306-department-path-simplification.md) | active | completed | 物理归档 |
-| [307 M03职务基础实施方案](../../plans/307-m03-job-foundation.md) | active | completed | 原位 |
-| [309 M03职级与职级阶梯实施方案](../../plans/309-m03-grade-ladder.md) | active | completed | 原位 |
-| [311 M03岗位定义与岗位层级实施方案](../../plans/311-m03-positions.md) | active | completed | 原位 |
-| [314 M03 职类实施批次路线图](../../plans/314-m03-job-function-roadmap.md) | active | completed | 原位 |
-| [315 部门与岗位编制后台实施计划](../../plans/315-staffing-quota-administration.md) | active | completed | 原位 |
-| [504 M01 个人资料扩展实施方案](../../plans/504-personal-profile-extension.md) | active | completed | 原位 |
-| [508 人员职务信息评审问题修复实施方案](../../plans/508-job-information-remediation.md) | active | completed | 原位 |
-| [509 在职变动、结束与再聘复评问题修复方案](../../plans/509-t04-remediation.md) | active | completed | 原位 |
-| [510 人员页面二十项问题整改与验收](../../plans/510-personnel-page-remediation.md) | active | completed | 原位 |
-| [511 项目规范体系建设与文档治理方案](../../plans/511-project-standards.md) | active | completed | 原位 |
+| [001 本地建仓交付记录](../../archive/plans/001-repository-bootstrap.md) | active | completed | 物理归档 |
+| [008 下一步：M02 四份详细文档](../../archive/plans/008-next-steps.md) | active | completed | 物理归档 |
+| [010 本版实施范围与计划](../../archive/plans/010-m02-scope-and-plan.md) | active | completed | 物理归档 |
+| [019 CubeBox共享体验迁移与页面对比计划](../../archive/plans/019-cubebox-experience-migration.md) | active | completed | 物理归档 |
+| [100 页面体验优化实施计划](../../archive/plans/100-ui-experience-improvement.md) | active | completed | 物理归档 |
+| [102 M02维护日志与专用表单体验修订](../../archive/plans/102-bu-maintenance-usability.md) | active | completed | 物理归档 |
+| [104 统一更正记录入口实施](../../archive/plans/104-unified-record-correction.md) | active | completed | 物理归档 |
+| [105 位置新增插入实施与更正覆盖补全](../../archive/plans/105-positioned-addition-and-coverage.md) | active | completed | 物理归档 |
+| [108 M02维护改造多轮一致性复核](../../archive/plans/108-maintenance-consistency-review.md) | active | completed | 物理归档 |
+| [109 启停期间专用维护与通用联合退出](../../archive/plans/109-lifecycle-pair-maintenance.md) | active | completed | 物理归档 |
+| [111 BU列表体验改造实施计划](../../archive/plans/111-bu-list-experience-upgrade.md) | active | completed | 物理归档 |
+| [115 BU全查询结果选择与导出实施计划](../../archive/plans/115-bu-query-selection-and-export.md) | active | completed | 物理归档 |
+| [116 M02共用按日维护实现路线图](../../archive/plans/116-m02-shared-dated-maintenance-roadmap.md) | active | completed | 物理归档 |
+| [122 BU资料操作摘要与变更日志表格化实施计划](../../archive/plans/122-bu-operation-summary-and-change-log.md) | active | completed | 物理归档 |
+| [126 完整历史紧凑存储研究与实施](../../archive/plans/126-compact-history-storage-research.md) | active | completed | 物理归档 |
+| [127 万科全量组织及历史验证](../../archive/plans/127-vanke-full-history-verification.md) | active | completed | 物理归档 |
+| [129 业务单元去过度设计与部门合理实现对齐计划](../../archive/plans/129-bu-simplification-and-department-alignment.md) | active | completed | 物理归档 |
+| [130 部门存储去重与索引收敛优化方案](../../archive/plans/130-department-storage-optimization.md) | active | completed | 物理归档 |
+| [131 部门列表与父候选查询减负计划](../../archive/plans/131-department-query-reduction.md) | active | completed | 物理归档 |
+| [133 过度防御与高成本处理整改路线图](../../archive/plans/133-overdefensive-processing-remediation.md) | active | completed | 物理归档 |
+| [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
+| [138 行政区划目录交互实施方案](../../archive/plans/138-geo-area-interactions.md) | active | completed | 物理归档 |
+| [139 岗位列表、岗位关系与结构视图实施方案](../../archive/plans/139-position-workspace.md) | active | completed | 物理归档 |
+| [141 本地预检结果与生成物核对优化计划](../../archive/plans/141-local-preflight.md) | active | completed | 物理归档 |
+| [200 国家地区行政区划与地点实施路线图](../../archive/plans/200-geography-and-location-roadmap.md) | active | completed | 物理归档 |
+| [203 G3必要行政区划接入实施方案](../../archive/plans/203-g3-geo-area-admission.md) | active | completed | 物理归档 |
+| [204 G4地点纵向交付实施方案](../../archive/plans/204-g4-location-implementation.md) | active | completed | 物理归档 |
+| [205 G5地理联合验收与固定运行交付](../../archive/plans/205-g5-geography-acceptance-and-runtime.md) | active | completed | 物理归档 |
+| [300 部门列表左侧部门树实施计划](../../archive/plans/300-department-tree-implementation.md) | active | completed | 物理归档 |
+| [301 用户提示与异常恢复整改方案](../../archive/plans/301-user-feedback-and-recovery.md) | superseded | completed | 物理归档 |
+| [302 详情对象导航位置与响应整改](../../archive/plans/302-detail-navigation.md) | active | completed | 物理归档 |
+| [303 部门一级菜单调整](../../archive/plans/303-department-primary-navigation.md) | active | completed | 物理归档 |
+| [304 企业完整按日维护](../../archive/plans/304-enterprise-maintenance.md) | active | completed | 物理归档 |
+| [306 部门路径精简与案例集团根部门补全](../../archive/plans/306-department-path-simplification.md) | active | completed | 物理归档 |
+| [307 M03职务基础实施方案](../../archive/plans/307-m03-job-foundation.md) | active | completed | 物理归档 |
+| [309 M03职级与职级阶梯实施方案](../../archive/plans/309-m03-grade-ladder.md) | active | completed | 物理归档 |
+| [311 M03岗位定义与岗位层级实施方案](../../archive/plans/311-m03-positions.md) | active | completed | 物理归档 |
+| [314 M03 职类实施批次路线图](../../archive/plans/314-m03-job-function-roadmap.md) | active | completed | 物理归档 |
+| [315 部门与岗位编制后台实施计划](../../archive/plans/315-staffing-quota-administration.md) | active | completed | 物理归档 |
+| [504 M01 个人资料扩展实施方案](../../archive/plans/504-personal-profile-extension.md) | active | completed | 物理归档 |
+| [508 人员职务信息评审问题修复实施方案](../../archive/plans/508-job-information-remediation.md) | active | completed | 物理归档 |
+| [509 在职变动、结束与再聘复评问题修复方案](../../archive/plans/509-t04-remediation.md) | active | completed | 物理归档 |
+| [510 人员页面二十项问题整改与验收](../../archive/plans/510-personnel-page-remediation.md) | active | completed | 物理归档 |
+| [511 项目规范体系建设与文档治理方案](../../archive/plans/511-project-standards.md) | active | completed | 物理归档 |
 
 <a id="catalog-history"></a>
 
@@ -150,8 +150,8 @@
 
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
-| [016 M02 生效记录与修订历史决策](../../adr/016-m02-effective-record-history.md) | superseded | — | 原位 |
-| [112 DataGrid Pro未转译源码接入](../../adr/112-datagrid-pro-source-integration.md) | superseded | — | 原位 |
+| [016 M02 生效记录与修订历史决策](../../archive/adr/016-m02-effective-record-history.md) | superseded | — | 物理归档 |
+| [112 DataGrid Pro未转译源码接入](../../archive/adr/112-datagrid-pro-source-integration.md) | superseded | — | 物理归档 |
 
 <a id="catalog-reserved"></a>
 
@@ -171,6 +171,7 @@
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案复评](../../verification/511-project-standards-rereview.md) | 2026-11-26 | final |
 | 511、014、008、011、012、013、118、119、120、121、131、138、203、204、205、301、306、308、500、502、507 | [CHNHCM-511 项目规范实施、归档评估与验收](../../verification/511-project-standards-implementation.md) | 2026-11-26 | final |
 | 511 | [CHNHCM-511 项目规范体系建设方案修订验收](../../verification/511-project-standards-acceptance.md) | 2026-11-26 | final |
+| 511、014、016、017、112、120、124、125、127、129、130、135、139、300、301、304、307、308 | [CHNHCM-511 文档物理归档与历史引用迁移](../../verification/511-physical-archive.md) | 2026-11-26 | final |
 | 500、501、503、507、510 | [CHNHCM-510 人员页面整改方案评审](../../verification/510-personnel-page-remediation-review.md) | 2026-11-26 | final |
 | 012、123、500、502、507、510 | [CHNHCM-510 人员页面整改实施与实页复验](../../verification/510-personnel-page-remediation-implementation.md) | 2026-11-26 | final |
 | 012、121、402、500、501、502、505、506、507、509 | [CHNHCM-500 人员页面布局与交互问题登记](../../verification/500-personnel-page-review.md) | 2026-11-26 | final |

@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)的附属验证记录。
 适用范围：当前BU、部门、部门树、登录及共享提交恢复中的提示、错误和操作文案。
-上游依据：[012页面表达原则](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[119部门页面](../specs/m02/119-department-functional-design.md)、[133去过度处理路线图](../plans/133-overdefensive-processing-remediation.md)。
+上游依据：[012页面表达原则](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[119部门页面](../specs/m02/119-department-functional-design.md)、[133去过度处理路线图](../archive/plans/133-overdefensive-processing-remediation.md)。
 
 ## 1 范围与基线
 

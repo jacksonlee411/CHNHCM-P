@@ -8783,7 +8783,7 @@
           "document": "CHNHCM-504",
           "scope": "采用九组个人资料、七个多值集合及整页草稿的设计。七类记录的查看、新增、编辑布局按 4180 指定构建逐窗对照。查看个人信息变更和导出个人资料在本批范围外。",
           "target_files": [
-            "docs/plans/504-personal-profile-extension.md",
+            "docs/archive/plans/504-personal-profile-extension.md",
             "docs/specs/m01/505-personal-profile-contract.md"
           ],
           "implemented": true,

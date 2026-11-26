@@ -18,7 +18,7 @@
 
 BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)定位 011 与 118 的定义。人员登记、资料权限分别见[500 登记场景](../plans/500-personnel-roadmap.md#m01-scn-001)和[500 权限场景](../plans/500-personnel-roadmap.md#m01-scn-002)。
 
-已关闭计划中仍有待交接的具体条款。维护唯一企业时查 [304 的初始化、期间与守卫](../plans/304-enterprise-maintenance.md#21-维护合同)，重建专用历史验证库时查 [127 的导入规则](../plans/127-vanke-full-history-verification.md#7-已批准的历史导入规则)。容量复测由 [125](../plans/125-r6-capacity-remediation.md) 接续，职务原负载分组按 [307 第 6 节](../plans/307-m03-job-foundation.md#6-验收容量与关闭条件) 查。六份暂缓项的条款范围、负责角色和复查时机在[逐份交接](../verification/511-project-standards-implementation.md#archive-deferred)。
+唯一企业的初始化与期间覆盖归 [120 企业约束](../specs/m02/120-dated-maintenance-technical-contract.md#enterprise-dated-contract)，固定验证库的历史导入与重建归 [017](../guides/017-local-bu-development.md#history-import-rebuild)。BU 与部门的容量复测见 [124 测量口径](../guides/124-dated-object-admission-and-capacity.md#bu-department-capacity-comparison)和[在办的 125](../plans/125-r6-capacity-remediation.md)，职务系列和职务见 [308 容量分组](../specs/m03/308-job-foundation-contract.md#job-capacity-matrix)。
 
 按对象查条款可从[规格目录](../specs/README.md)进入。查某次交付的实际结果，可按文档号在[登记表](registry.json)的 `governance.verification_records` 中找关联报告，再核对其受测版本、结果和限制。
 
@@ -29,8 +29,8 @@ BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-a
 | 入口 | 筛选方法 | 走查样本 |
 | --- | --- | --- |
 | 在办计划 | 取 `type=plan` 且 `execution_status=in_progress`。尚待启动的计划另查 `not_started` | [500 人员路线及批次](../plans/500-personnel-roadmap.md#2-批次前置与交付结果) |
-| 待审文稿 | 按文档 `status` 查 `draft` 或 `in_review`。计划另读 `execution_status` | [135 对象头接入方案](../plans/135-real-head-product-integration.md) |
-| 已关闭批次 | 按 `type=plan` 查执行 `completed` 或 `cancelled`，并读 `closure` 和 `archive` | [510 整改结果](../plans/510-personnel-page-remediation.md#4-实施结果) · [首页历史入口](../index.md#验证与历史批次) |
+| 待审文稿 | 按文档 `status` 查 `draft` 或 `in_review`。计划另读 `execution_status` | [135 对象头接入方案](../archive/plans/135-real-head-product-integration.md) |
+| 已关闭批次 | 按 `type=plan` 查执行 `completed` 或 `cancelled`，并读 `closure` 和 `archive` | [510 整改结果](../archive/plans/510-personnel-page-remediation.md#4-实施结果) · [首页历史入口](../index.md#验证与历史批次) |
 | 原始验收 | 在 `governance.verification_records` 中按 `related_documents` 查同一编号，按范围选择实施复验，再读逐项结果和限制 | [510 的二十项实测](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) |
 
 例如，从仓库根目录可以直接列出在办计划及其两种状态和正文路径。

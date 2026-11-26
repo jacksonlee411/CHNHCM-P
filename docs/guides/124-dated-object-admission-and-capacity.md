@@ -1,12 +1,12 @@
 # CHNHCM-124 按日维护对象接入及容量验证指南
 
-2026-11-15当前接入状态：国家及区划已分别由G2/G3完成真实接入；Location按[204方案](../archive/2026/plans/204-g4-location-implementation.md)第2.2节填写共用规则适用性，专属合同归201，产品实施及限定验收完成，见[204实施记录](../verification/204-g4-implementation.md)。地理路线的规模及20会话500ms目标按[200第4.3节](../plans/200-geography-and-location-roadmap.md#43-验证规模与计时口径)，不将本指南旧BU/部门容量矩阵直接复制为地点门槛。
+2026-11-15当前接入状态：国家及区划已分别由G2/G3完成真实接入；Location按[204方案](../archive/plans/204-g4-location-implementation.md)第2.2节填写共用规则适用性，专属合同归201，产品实施及限定验收完成，见[204实施记录](../verification/204-g4-implementation.md)。地理路线的规模及20会话500ms目标按[200第4.3节](../archive/plans/200-geography-and-location-roadmap.md#43-验证规模与计时口径)，不将本指南旧BU/部门容量矩阵直接复制为地点门槛。
 
 2026-11-13新对象准入须核对[202默认日期决定](../adr/202-master-data-default-effective-date.md)：配置与主数据首次新建默认1900-01-01，明确输入、原记录及后续操作日期规则保持。当前BU/部门的产品适配及分批回归已由[200 G1报告](../verification/200-g1-default-date.md)持有；原交付证据不改写，未来对象仍须随自身切片验证。
 
 2026-11-14用户明确纠正单对象10000条生效记录的不合理验收场景，正式采用单个BU／部门各20条记录，并保留模型5（m02-compact-5／read-segment-4／query-seal /3，迁移00001—00008）。10000条专用保存P95／分页及其驱动的模型6改造退出当前任务，不再列为待修复容量项；原测量和失败仍保留为历史证据。20条是验收场景，不是产品硬上限，不缩减企业对象总量、完整来源历史或并发规模；原500ms目标及125其他容量P1保持。 本条覆盖下文旧阶段的单对象超长时间线要求，历史数字不回填；见[采纳记录](../verification/135-model5-and-20-record-adoption.md)。
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：Organization中BU和部门已经交付的共用维护机制。上游：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
+登记信息：[registry.json](../governance/registry.json)。适用范围：Organization中BU和部门已经交付的共用维护机制。上游：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
 
 ## 1 任务与结果
 
@@ -63,6 +63,16 @@
 执行前确认profile归属、容量、磁盘和内存；证据文件使用新路径。禁止清主机全局缓存，冷测只作用于停止后的自有临时数据库文件。运行步骤及最终数据以[本批报告](../verification/116-r6-standards-and-capacity.md)中的实际命令和结果为准，本轮容量实测已交付但未达到全部目标，R6-P01/P02仍为P1；指南可用不等于容量验收通过。
 
 125整改的工具与实际状态见[实施记录](../verification/125-implementation.md)。物理冻结前必须同时检查WSL来宾及其真实宿主盘余量，冻结一次后通过改名保留旧版结果库并消费未写入副本作为候选，不重复建立第三份全库。冷测使用[r6-api.py](../../scripts/r6-api.py)重启固定摘要的测试二进制，不重编译当前工作区替换旧版基线；仍只操作本工作树明确临时的R6 profile。完整负载前先运行oracle-read-check，以真实详情响应验证独立判定器的身份/当前记录/确切源合同。125尚未关闭容量P1，按用户要求在本轮修复提交后暂停。
+
+<a id="bu-department-capacity-comparison"></a>
+
+#### 3.3.1 BU 保存、部门存储增长和部门树的复测输入
+
+**BU 保存与预览。** 针对原 V15，组织和容量维护者分两种输入形状比较（2,000 BU/20,000 部门的合成形状，以及 1 BU/87,343 部门的固定验证形状），单对象沿用 BU、部门各 20 条记录的正式场景。按动作拆分无变化预览、普通名称保存、覆盖变化及固定期间。先取各 20 个请求定位读取、计算、锁、分配及响应开销；正式比较使用相同构建、输入、资源和 12 个连接，关闭详细诊断，分别测 1／20 会话。预览按动作与形状各测暖态 200、冷态 100 个请求（5 轮，每轮 20 个），覆盖变化另列。成功保存须独立回读实际来源，重启后核对原结果；超时后未应用计入原分母。预览的已采纳目标为普通读取 P95≤300ms。其他各组目标、阶段例外和后续执行由 125 分组持有。[120 的 BU 预览约束](../specs/m02/120-dated-maintenance-technical-contract.md#12-r129共用边界与日志按页装配) · [125 当前目标](../plans/125-r6-capacity-remediation.md#r125-current-targets)
+
+**部门存储与成本。** 两种形状使用等价输入、同一维护状态的 A/B 库，分别记录静态空间和两个连续写入周期。每周期 1,000 笔串行真实写入，含 600 次资料更正（新值、恢复各 300）、200 次日期／资料维护及 200 次关系／固定启停及恢复。逐个身份核对来源数量、操作及结果。每周期分别比较写前、写后、普通维护后和停写回收再维护后的部门表、普通索引、TOAST、孤立字典、整库、WAL 和锁成本，周期间不做 FULL。按原增长判据，同状态 B 的普通维护后部门表组不大于 A，回收后部门表组及整库小于 A，目标实例无引用字典归零。失败与超时留在原分母，WAL 或锁成本增长另作解释。各次实测及原失败按各自基线查回。[130 实施记录](../verification/130-implementation.md)
+
+**部门树。** 读取、固定范围和导出依 [121 矩阵](../specs/m02/121-dated-object-admission-matrix.md) 验证。原 60 组、9 组明显未达及 36 组共用待验按原批结果保存。其后各组实测、阶段接受、剩余超标及更高目标按 125 的接续记录分别判定。组织与容量维护者在对应工况复测时按同一输入说明原判据、阶段判据及实际结果。[树查询的容量接续](../plans/125-r6-capacity-remediation.md#88-300部门树的容量接续) · [原批收尾](../verification/300-closeout.md)
 
 ## 4 失败与恢复
 

@@ -1,6 +1,6 @@
 # CHNHCM-011 术语修正与登记验证
 
-登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md) 与 [17 术语表](../architecture/target/17-terminology-glossary.md)的本轮术语修正、源数据登记及一致性检查。
+登记信息：[registry.json](../governance/registry.json) 的 `governance.verification_records`。适用范围：[010](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md) 与 [17 术语表](../architecture/target/17-terminology-glossary.md)的本轮术语修正、源数据登记及一致性检查。
 
 ## 1 受测基线与授权范围
 

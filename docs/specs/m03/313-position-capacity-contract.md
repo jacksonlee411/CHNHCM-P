@@ -1,6 +1,6 @@
 # CHNHCM-313 编制管理合同
 
-首批交付 HR 后台定额与分配。有权 HR 可只给部门定总额、只给岗位定额，或在已定部门总额内给岗位分配名额。在同一入口直接保存生效日、额度和原因。招聘预留、任职占编及人员入转离按后续批次接入。[部门定义](../m02/118-department-business-requirements.md) · [岗位定义](312-position-contract.md) · [315 后台实施计划](../../plans/315-staffing-quota-administration.md) · [方案复核](../../verification/315-staffing-quota-administration-review.md) · [登记表](../../governance/registry.json)
+首批交付 HR 后台定额与分配。有权 HR 可只给部门定总额、只给岗位定额，或在已定部门总额内给岗位分配名额。在同一入口直接保存生效日、额度和原因。招聘预留、任职占编及人员入转离按后续批次接入。[部门定义](../m02/118-department-business-requirements.md) · [岗位定义](312-position-contract.md) · [315 后台实施计划](../../archive/plans/315-staffing-quota-administration.md) · [方案复核](../../verification/315-staffing-quota-administration-review.md) · [登记表](../../governance/registry.json)
 
 ## 1 核编范围与交付顺序
 

@@ -1,6 +1,6 @@
 # CHNHCM-111 Community列表T05交付与收尾
 
-登记信息：[registry.json](../governance/registry.json)。上游为[111计划](../plans/111-bu-list-experience-upgrade.md)、[110](../adr/110-bu-list-and-datagrid.md)/[113](../adr/113-bu-list-community-adoption.md)及012/013/023。本记录按[验证模板](../templates/verification.md)追加，不覆盖既往报告。交付范围为Community列表及用户另行采纳的单列条件增量。
+登记信息：[registry.json](../governance/registry.json)。上游为[111计划](../archive/plans/111-bu-list-experience-upgrade.md)、[110](../adr/110-bu-list-and-datagrid.md)/[113](../adr/113-bu-list-community-adoption.md)及012/013/023。本记录按[验证模板](../templates/verification.md)追加，不覆盖既往报告。交付范围为Community列表及用户另行采纳的单列条件增量。
 
 ## 1 对象与受测基线
 

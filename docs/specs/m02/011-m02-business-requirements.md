@@ -4,7 +4,7 @@
 
 当前普通维护查询按[123决定](../../adr/123-current-maintenance-and-dated-query-boundary.md)执行：取消通用查看日期；列表按服务端D，详情按所选记录，明确来源仍只读。原修订日志及旧验证报告保留其时点；当前合同以下述正文为准。
 
-上游依据：[010 范围与计划](../../plans/010-m02-scope-and-plan.md)、[007 M02 边界](../../architecture/007-m02-entry.md)、[009 组织角色术语](../../adr/009-mainland-organization-terms.md)、[M02 目标合同](../../architecture/target/modules/m02.md)、[一致性合同](../../architecture/target/03-consistency-contracts.md)、[DDD 合同](../../architecture/target/10-ddd-and-state-contracts.md)、[006 资产保留](../../assets/006-preservation-contract.md)及[014 文档规范](../../governance/014-document-management.md)。源包与设计增量状态以[来源说明](../../reference/README.md)为准。
+上游依据：[010 范围与计划](../../archive/plans/010-m02-scope-and-plan.md)、[007 M02 边界](../../architecture/007-m02-entry.md)、[009 组织角色术语](../../adr/009-mainland-organization-terms.md)、[M02 目标合同](../../architecture/target/modules/m02.md)、[一致性合同](../../architecture/target/03-consistency-contracts.md)、[DDD 合同](../../architecture/target/10-ddd-and-state-contracts.md)、[006 资产保留](../../assets/006-preservation-contract.md)及[014 文档规范](../../governance/014-document-management.md)。源包与设计增量状态以[来源说明](../../reference/README.md)为准。
 
 本稿已有历史要求按用户采纳的 [018 来源追溯决策](../../adr/018-effective-records-and-source-history.md)落实；[012 功能交互](012-m02-functional-and-interaction-design.md)固定简单页面和只读来源历史，[013 技术设计](013-m02-technical-design.md)持有实现合同。2026-11-01按用户要求允许过去生效的普通资料变更补登记，同步010及下游合同；普通更正/改日/删除继续继承原分类、无处理原因，稳定条目 ID 保持。[020决定](../../adr/020-effective-record-delete-and-redate.md)允许已生效删除和改日，首条禁止删除但允许改日；本轮按[021决定](../../adr/021-bu-lifecycle-and-record-maintenance.md)纳入独立重新启用和多次启停，并统一允许过去、当天及未来新增资料变更、停用和重新启用。[022决定](../../adr/022-joint-timeline-revision.md)进一步纳入有限固定启停期间办理、首条历史补全及显式分类纠错，普通处理默认继承原分类的规则保留。范围采纳不代表记录维护已实现或业务验收通过。
 
@@ -13,17 +13,17 @@
 当前交互按[101直接保存](../../adr/101-direct-save-and-form-assistance.md)执行：全部场景取消手动预览及预览许可门槛，填写后直接提交；只读计算用于自动默认/必要影响，Go在保存事务内重新核验。下文“预览”在仍有计算含义处指只读辅助，不再指用户按钮或必经步骤；历史实施记录保留原时点。
 
 
-2026-11-02新增采纳：[103位置新增/插入决策](../../adr/103-positioned-record-addition.md)将普通单条新增改为先选位置、自动带出资料与日期；无可插入日期只禁用按钮，不增加原因说明。以下为已确认的目标规则，产品、OpenAPI与客户端的本轮接线及验证由[105](../../plans/105-positioned-addition-and-coverage.md)承接，旧报告不计入其验收；[本轮记录](../../verification/103-positioned-record-addition.md)仅验证文档。
+2026-11-02新增采纳：[103位置新增/插入决策](../../adr/103-positioned-record-addition.md)将普通单条新增改为先选位置、自动带出资料与日期；无可插入日期只禁用按钮，不增加原因说明。以下为已确认的目标规则，产品、OpenAPI与客户端的本轮接线及验证由[105](../../archive/plans/105-positioned-addition-and-coverage.md)承接，旧报告不计入其验收；[本轮记录](../../verification/103-positioned-record-addition.md)仅验证文档。
 
-2026-11-02按[104统一更正](../../plans/104-unified-record-correction.md)合并单条名称、日期及业务分类编辑，规则见BR006/017/021及AC031。104批次未实施103位置新增，后由105接线；联合入口及历史停用再启用交互保持，旧验证报告保留原合同与结果。
+2026-11-02按[104统一更正](../../archive/plans/104-unified-record-correction.md)合并单条名称、日期及业务分类编辑，规则见BR006/017/021及AC031。104批次未实施103位置新增，后由105接线；联合入口及历史停用再启用交互保持，旧验证报告保留原合同与结果。
 
-2026-11-04：[122计划](../../plans/122-bu-operation-summary-and-change-log.md)已获用户批准并接通SCN027、BR034/035、AC041—044对应实现，实际分层检查见[122实施报告](../../verification/122-operation-summary-implementation.md)；原[合同复核](../../verification/122-operation-summary-contract-review.md)和116 R0结论保留各自范围。
+2026-11-04：[122计划](../../archive/plans/122-bu-operation-summary-and-change-log.md)已获用户批准并接通SCN027、BR034/035、AC041—044对应实现，实际分层检查见[122实施报告](../../verification/122-operation-summary-implementation.md)；原[合同复核](../../verification/122-operation-summary-contract-review.md)和116 R0结论保留各自范围。
 
 2026-11-08按[128](../../adr/128-authorization-evidence-removal.md)局部修订：保留每次当前判权、业务操作及原结果保护，取消永久保存完整授权过程的要求。下述128目标合同尚未实施，旧批次验证结果不改写。
 
 ## 1 业务目标与边界
 
-列表体验按[113](../../adr/113-bu-list-community-adoption.md)、110剩余交互及[111](../../plans/111-bu-list-experience-upgrade.md)接入Community，本轮T01/T02有实际组件及合成HTTP定向检查，T03真实业务与七组条件另见[本轮报告](../../verification/111-community-t03.md)。编码/名称q、单值状态、服务端D、排序、授权及历史规则保持，不新增BR/SCN/AC或接口。列拖动/固定取消；列条件等未采纳时不增加业务承诺。上述“不新增BR/SCN/AC或接口”仅指111基础批次；后续114/115另采纳SCN018、BR022/023及AC032/033，选择/导出已由115接线，实际证据另见本轮实施报告。
+列表体验按[113](../../adr/113-bu-list-community-adoption.md)、110剩余交互及[111](../../archive/plans/111-bu-list-experience-upgrade.md)接入Community，本轮T01/T02有实际组件及合成HTTP定向检查，T03真实业务与七组条件另见[本轮报告](../../verification/111-community-t03.md)。编码/名称q、单值状态、服务端D、排序、授权及历史规则保持，不新增BR/SCN/AC或接口。列拖动/固定取消；列条件等未采纳时不增加业务承诺。上述“不新增BR/SCN/AC或接口”仅指111基础批次；后续114/115另采纳SCN018、BR022/023及AC032/033，选择/导出已由115接线，实际证据另见本轮实施报告。
 
 ### 1.1 用户目标
 
@@ -49,7 +49,7 @@
 
 上述是本稿对已选动作的业务约束，不是新增实现完成记录。新增资料变更、停用及重新启用均可使用过去、当天或未来日期，按完整候选时间线与引用校验。首条删除、整BU作废、误建身份/错误编码处置、恢复已删除记录及跨BU联合办理仍不在本批。首条之前不同资料通过BR020更正首条，后续资料按需另次新增；固定启停期间办理按BR019纳入，首条可改日但始终最早。补登记表示业务发生在过去、现在才登记；普通字段更正、改日和删除分别处理已有记录错误，不能相互替代或伪造新的业务变化。
 
-010 原批次暂缓申请/撤回申请/审批/独立人工发布、工作台、其他组织对象完整维护、组织树及上级BU、复杂适用与默认配置、真实消费域、通用投递平台、批量导入导出与生产交付。后续[114](../../adr/114-bu-query-selection-and-export.md)仅采纳本BU列表完整授权结果选择与CSV导出所选，由[115](../../plans/115-bu-query-selection-and-export.md)另批实施；不改变010原完成证据，其余暂缓范围保持。
+010 原批次暂缓申请/撤回申请/审批/独立人工发布、工作台、其他组织对象完整维护、组织树及上级BU、复杂适用与默认配置、真实消费域、通用投递平台、批量导入导出与生产交付。后续[114](../../adr/114-bu-query-selection-and-export.md)仅采纳本BU列表完整授权结果选择与CSV导出所选，由[115](../../archive/plans/115-bu-query-selection-and-export.md)另批实施；不改变010原完成证据，其余暂缓范围保持。
 
 ### 1.3 来源提炼与目标差异
 
@@ -361,7 +361,7 @@ B&B 的更正可在同一对象操作方式内修改原分类并按规则改日�
 <a id="m02-br-002"></a>
 ### 4.2 M02-BR-002 必填资料与状态操作
 
-组织名称是正式主数据文本：允许多语言文字、生僻及扩展汉字、数字和技术设计明确列举的名称标点；至少包含一个文字或数字。禁止emoji及组合序列、目录外装饰图形、控制/换行/制表字符，以及不符合文字上下文的不可见字符。中文/英文为语言字段，不强制汉字或ASCII字符集；BU不按企业登记名称办理法定名称审核。新输入先校验原文本，裁剪首尾空格、做NFC，再按200码点上限判断；英文可为空。仅处理显式输入，不清洗未声明继承字段、后继独立快照、旧来源或原终态，已有不合规名称可通过有权的普通更正处理。具体码位、文字上下文及外部依据由013第2.3节持有，验证见[名称规则复测](../../verification/011-organization-name-policy.md)。用户批准的127历史验证按[来源绑定及原名保留规则](../../plans/127-vanke-full-history-verification.md#7-已批准的历史导入规则)执行，仅在隔离导入工具中接线；不改变日常新输入规则，不预建兼容平台。
+组织名称是正式主数据文本：允许多语言文字、生僻及扩展汉字、数字和技术设计明确列举的名称标点；至少包含一个文字或数字。禁止emoji及组合序列、目录外装饰图形、控制/换行/制表字符，以及不符合文字上下文的不可见字符。中文/英文为语言字段，不强制汉字或ASCII字符集；BU不按企业登记名称办理法定名称审核。新输入先校验原文本，裁剪首尾空格、做NFC，再按200码点上限判断；英文可为空。仅处理显式输入，不清洗未声明继承字段、后继独立快照、旧来源或原终态，已有不合规名称可通过有权的普通更正处理。具体码位、文字上下文及外部依据由013第2.3节持有，验证见[名称规则复测](../../verification/011-organization-name-policy.md)。用户批准的127历史验证按[来源绑定及原名保留规则](../../archive/plans/127-vanke-full-history-verification.md#7-已批准的历史导入规则)执行，仅在隔离导入工具中接线；不改变日常新输入规则，不预建兼容平台。
 
 新建、资料变更要求完整中文名称、生效日期及操作原因；重新启用须确认完整资料快照及业务原因，可在字段权限内调整名称；停用只填日期及原因，名称继承前序明确资料。英文名称可选，类型/原因与记录处理见[分类规则](#m02-br-016)。普通更正/改日/删除继承原分类，不输入处理原因；改日另输入新日期。
 
@@ -866,7 +866,7 @@ T1的1月首条中文A、英文“Nroth”；6月CHANGE只输入中文B，因此
 
 初始带值及仅自动加载不触发取消/离开确认，真实编辑仍保护，恢复原值可直接退出；自动响应不覆盖手工输入。同值资料不生成新身份/版本，原因仍须明确选择；英文清空与未编辑字段分别处理。保存定位新记录、保留查看/返回上下文，后继独立快照及旧来源保持，停用继承按规则重算。发生来源冲突需重读核对，不重新套默认后自动重放。
 
-本增量实施见[105](../../plans/105-positioned-addition-and-coverage.md)，关联[TL-258—281](023-m02-timeline-test-cases.md#m02-tl-position-addition)，规则已采纳，实际执行按105分层记录，旧T07和102证据不计本增量通过。
+本增量实施见[105](../../archive/plans/105-positioned-addition-and-coverage.md)，关联[TL-258—281](023-m02-timeline-test-cases.md#m02-tl-position-addition)，规则已采纳，实际执行按105分层记录，旧T07和102证据不计本增量通过。
 
 <a id="m02-ac-031"></a>
 ### 5.32 M02-AC-031 统一更正记录
@@ -963,7 +963,7 @@ T1的1月首条中文A、英文“Nroth”；6月CHANGE只输入中文B，因此
 
 初稿编写及原稳定规则/场景/验收 ID 的资料检查见[011 编写验证](../../verification/011-business-requirements-draft.md)。2026-10-31 按用户决定修订操作分类、原因及生效日期用语，新增分类规则和验收，检查见[本次验证](../../verification/011-operation-classification.md)；原报告与修订前快照保留。编号在本文唯一定义，012/013 及后续验证通过锚点引用，不复制规则或重新占号。
 
-2026-10-31，按用户采纳建立 [016 决策](../../adr/016-m02-effective-record-history.md)及 [012 页面合同](012-m02-functional-and-interaction-design.md)，本稿仅同步承接入口和编写状态；检查见[本次记录](../../verification/016-history-decision-and-012.md)。
+2026-10-31，按用户采纳建立 [016 决策](../../archive/adr/016-m02-effective-record-history.md)及 [012 页面合同](012-m02-functional-and-interaction-design.md)，本稿仅同步承接入口和编写状态；检查见[本次记录](../../verification/016-history-decision-and-012.md)。
 
 初稿交接时由013承接011/012/018形成Go/存储/API合同；现已按010分批实施，后续变化继续同步合同并按影响验证。文档检查或文本复核不计为业务验收，不改变三类资产的实现/验证状态。
 
@@ -1000,7 +1000,7 @@ T1的1月首条中文A、英文“Nroth”；6月CHANGE只输入中文B，因此
 
 2026-11-02：用户明确收窄为109两项专用启停操作，取消任意编排及边缘关联纠错；BR019/SCN015/AC016持有当前固定两条合同，AC020/022退役，稳定ID保留。当前实施及多轮验证见109，旧T08/T07/108报告不改写。
 
-2026-11-04：[122计划草案](../../plans/122-bu-operation-summary-and-change-log.md)承接资料操作摘要和日志表格化，本次新增SCN027、BR034/035、AC041—044为待实施目标；不改变旧批次验收或116 R0结论。对应合同复核见[122记录](../../verification/122-operation-summary-contract-review.md)，不是产品验收。
+2026-11-04：[122计划草案](../../archive/plans/122-bu-operation-summary-and-change-log.md)承接资料操作摘要和日志表格化，本次新增SCN027、BR034/035、AC041—044为待实施目标；不改变旧批次验收或116 R0结论。对应合同复核见[122记录](../../verification/122-operation-summary-contract-review.md)，不是产品验收。
 
 2026-11-04：按[122评审修订](../../verification/122-operation-summary-contract-review-fixes.md)明确获权记录上下文与差异分离、历史上下文和分页上界的传递/校验；独立样本与验收同步023。仅合同修订，产品未实施，原报告保持。
 

@@ -1,6 +1,6 @@
 # CHNHCM-201 国家地区行政区划与地点建设方案
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。分批交付由[200路线图](../../plans/200-geography-and-location-roadmap.md)持有；本方案经[减少过度设计与共用能力评审](../../verification/200-geography-design-review.md)修订；文档评审与产品实施分别登记，不把拟议对象、表和API记作已实现。G3细化经[203专项评审](../../verification/203-g3-plan-review.md)通过；G3已完成实施、主代理复评及限定范围验收，实际结果见[203实施记录](../../verification/203-g3-implementation.md)，G4实施及限定验收完成，实际结果见[204实施记录](../../verification/204-g4-implementation.md)，G5已完成首批联合验收及4383运行交付，见[205](../../verification/205-g5-implementation.md)；G4具体分批及准入映射由[204实施方案](../../archive/2026/plans/204-g4-location-implementation.md)持有。
+登记信息：[registry.json](../../governance/registry.json)。适用范围：国家/地区参考目录，以及中国大陆、香港、澳门、台湾的必要行政区划和M02地点。分批交付由[200路线图](../../archive/plans/200-geography-and-location-roadmap.md)持有；本方案经[减少过度设计与共用能力评审](../../verification/200-geography-design-review.md)修订；文档评审与产品实施分别登记，不把拟议对象、表和API记作已实现。G3细化经[203专项评审](../../verification/203-g3-plan-review.md)通过；G3已完成实施、主代理复评及限定范围验收，实际结果见[203实施记录](../../verification/203-g3-implementation.md)，G4实施及限定验收完成，实际结果见[204实施记录](../../verification/204-g4-implementation.md)，G5已完成首批联合验收及4383运行交付，见[205](../../verification/205-g5-implementation.md)；G4具体分批及准入映射由[204实施方案](../../archive/plans/204-g4-location-implementation.md)持有。
 
 上游：[M02目标](../../architecture/target/modules/m02.md)、[120共用技术合同](120-dated-maintenance-technical-contract.md)、[124接入指南](../../guides/124-dated-object-admission-and-capacity.md)、[202默认日期决定](../../adr/202-master-data-default-effective-date.md)、[来源索引](../../reference/200-geography-sources.json)。
 
@@ -189,7 +189,7 @@ Data持有业务字段与独立采用结构；Patch只包含可编辑资料，�
 | 分页查询、详情、按日记录、原来源、日志、原提交恢复 | 接共用流程 | 接共用流程，增加区域性质及单日路径 | 接共用流程，增加地址 |
 | 资料变更/更正、单条停止/恢复使用 | 接共用算法；显示资料可办，来源代码受控 | 接共用算法；显示资料可办，代码/层级/父关系受控 | 接共用算法及地点字段规则 |
 | 插入、改日、分类删除、固定启停期间 | 来源修订有依据时复用现有算法；首批普通菜单不开放高级时间线重排 | 同左；结构变化另核必要关系 | 保留完整既有维护流程 |
-| 返回上下文、详情前后导航 | 复用既有返回及锚点导航；按[302](../../plans/302-detail-navigation.md)一次返回当前位置、匹配总数及双向邻居 | 同左；统计及顺序保留完整查询条件 | 同左 |
+| 返回上下文、详情前后导航 | 复用既有返回及锚点导航；按[302](../../archive/plans/302-detail-navigation.md)一次返回当前位置、匹配总数及双向邻居 | 同左；统计及顺序保留完整查询条件 | 同左 |
 | 全查询选择、跨页排除及CSV | 首批后置 | 首批后置 | 复用现有固定身份选择及CSV机制 |
 
 目录首批任务是查阅、显示资料维护及停止/恢复选用，未提出由普通用户回溯编排来源历史或大批量导出目录的任务，因此不建设相应公开入口、选择草稿表和浏览器组合。后续确需这些入口时接已有能力，不重写算法；受控来源修订也必须遵循同一领域、权限和历史规则。此范围不删改既有BU/部门功能。
@@ -449,13 +449,13 @@ G4已将GeoArea引用方法提取为ReferenceUnit，并由Location在原pgx事�
 | <a id="m02-ac-208"></a>M02-AC-208 数据装载 | 缺父/坏码拒绝、不完整区域不发布候选、其他完整范围可用、复跑幂等及原结果查回 | [SCN209](#m02-scn-209) |
 | <a id="m02-ac-209"></a>M02-AC-209 用户界面 | 必需字段可见、直接保存、日期一致；国家无提供方来源区，业务历史可读，窄屏层级/路径不截断 | [SCN201](#m02-scn-201)、[SCN202](#m02-scn-202)、[SCN205](#m02-scn-205)、[SCN210](#m02-scn-210) |
 | <a id="m02-ac-210"></a>M02-AC-210 共性回归 | make check/build/integration/smoke及生成一致性按实际影响执行，BU/部门受影响结果齐备 | [SCN211](#m02-scn-211) |
-| <a id="m02-ac-211"></a>M02-AC-211 容量与收尾 | 按200规模及目标逐组记录结果；2026-11-14用户决定20会话统一P95≤500ms且性能非阻断，单会话及正确性要求保持；原125边界保留，自有资源核验完成 | [200第4.3节](../../plans/200-geography-and-location-roadmap.md#43-验证规模与计时口径) |
+| <a id="m02-ac-211"></a>M02-AC-211 容量与收尾 | 按200规模及目标逐组记录结果；2026-11-14用户决定20会话统一P95≤500ms且性能非阻断，单会话及正确性要求保持；原125边界保留，自有资源核验完成 | [200第4.3节](../../archive/plans/200-geography-and-location-roadmap.md#43-验证规模与计时口径) |
 
-以上为跨G2—G5的验收定义。G2功能及G3限定范围已交付，实际结果分别见200 G2报告和[203实施报告](../../verification/203-g3-implementation.md)；G4采用[204实施方案](../../archive/2026/plans/204-g4-location-implementation.md)的18项清单，产品已完成限定验收，G5首批综合验收与4383运行交付已由[205](../../verification/205-g5-implementation.md)完成，D08/D09非阻断性能项保持。旧报告只覆盖其实际构建与范围。
+以上为跨G2—G5的验收定义。G2功能及G3限定范围已交付，实际结果分别见200 G2报告和[203实施报告](../../verification/203-g3-implementation.md)；G4采用[204实施方案](../../archive/plans/204-g4-location-implementation.md)的18项清单，产品已完成限定验收，G5首批综合验收与4383运行交付已由[205](../../verification/205-g5-implementation.md)完成，D08/D09非阻断性能项保持。旧报告只覆盖其实际构建与范围。
 
 ## 10 待决事项与实施边界
 
-来源最新性、澳门名称/分类、代码命名空间、现有晚起依赖、公共类型/存储及分支冲突由[200第5节](../../plans/200-geography-and-location-roadmap.md#5-风险与待决事项)唯一追踪。G2已使用00009国家独立表，实际OpenAPI及强类型历史接入由[200 G2报告](../../verification/200-g2-country-catalog.md)持有；G3使用00011区划表，00012持部门树索引；G4使用00013地点独立表及授权，当前开发迁移为00001—00013。三对象实际公开合同以OpenAPI为准，固定4383已按205追加00013并完成原历史保护及双角色运行验收。
+来源最新性、澳门名称/分类、代码命名空间、现有晚起依赖、公共类型/存储及分支冲突由[200第5节](../../archive/plans/200-geography-and-location-roadmap.md#5-风险与待决事项)唯一追踪。G2已使用00009国家独立表，实际OpenAPI及强类型历史接入由[200 G2报告](../../verification/200-g2-country-catalog.md)持有；G3使用00011区划表，00012持部门树索引；G4使用00013地点独立表及授权，当前开发迁移为00001—00013。三对象实际公开合同以OpenAPI为准，固定4383已按205追加00013并完成原历史保护及双角色运行验收。
 
 方案不改变4390固定环境，不接真实员工或客户地址，不依赖远程地理服务。用户已确定的四地范围与1900默认不再作为未决项；没有引入发布确认、审批或兼容平台。
 

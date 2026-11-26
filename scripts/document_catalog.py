@@ -59,6 +59,8 @@ def render(registry):
             label = f"{doc['id'][-3:]} {doc['title']}"
             label = link(label, doc["path"]) if doc["path"] and (ROOT / doc["path"]).is_file() else label
             location = "物理归档" if doc["archive"] else ("已预留" if doc["status"] == "planned" else "原位")
+            if doc.get("archive_deferral"):
+                location = "暂缓归档"
             lines.append(f"| {label} | {doc['status']} | {doc['execution_status'] or '—'} | {location} |")
     lines.extend(["", '<a id="catalog-evidence"></a>', "", "## 验收记录", "",
                   "按关联编号查到方案评审、实施复验及其他记录。打开正文核对受测基线、实际结果和限制。", "",

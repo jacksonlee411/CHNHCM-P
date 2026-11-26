@@ -1,6 +1,6 @@
 # CHNHCM-309 职级与职级阶梯方案评审
 
-登记信息：[registry.json](../governance/registry.json)。对象为[309方案](../plans/309-m03-grade-ladder.md)及[310接入合同](../specs/m03/310-grade-ladder-contract.md)。本记录只证明文档语义复核和文档检查，不是独立代理评审、人工批准或产品验收。
+登记信息：[registry.json](../governance/registry.json)。对象为[309方案](../archive/plans/309-m03-grade-ladder.md)及[310接入合同](../specs/m03/310-grade-ladder-contract.md)。本记录只证明文档语义复核和文档检查，不是独立代理评审、人工批准或产品验收。
 
 ## 1 基线、授权与保护
 

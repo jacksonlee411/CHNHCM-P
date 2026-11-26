@@ -1,6 +1,6 @@
 # CHNHCM-012 功能规格与交互设计
 
-2026-11-15企业完整维护按[304](../../plans/304-enterprise-maintenance.md)接入设置→组织配置→企业；唯一企业直接详情，支持共用完整记录操作，无列表返回/多企业新建、BU或行政上级字段。
+2026-11-15企业完整维护按[304](../../archive/plans/304-enterprise-maintenance.md)接入设置→组织配置→企业；唯一企业直接详情，支持共用完整记录操作，无列表返回/多企业新建、BU或行政上级字段。
 
 2026-11-13首次新建默认日期按用户确定的[202项目规则](../../adr/202-master-data-default-effective-date.md)统一为1900-01-01，由Go创建上下文提供defaultEffectiveDate；currentDate仍表示今日，明确输入、原日期、后续位置/启停规则及依赖资格保持。默认非法时准确拒绝并允许用户明确改日，不静默换今天或改写父对象。本轮合同已接入现有BU/部门，产品适配及受影响分批回归见[200 G1报告](../../verification/200-g1-default-date.md)，原实施报告不改写。
 
@@ -8,7 +8,7 @@
 
 当前普通维护查询按[123决定](../../adr/123-current-maintenance-and-dated-query-boundary.md)执行：取消通用查看日期；列表按服务端D，详情按所选记录，明确来源仍只读。原修订日志及旧验证报告保留其时点；当前合同以下述正文为准。
 
-上游依据：[010 范围](../../plans/010-m02-scope-and-plan.md)、[011 业务需求](011-m02-business-requirements.md)、[17 术语表](../../architecture/target/17-terminology-glossary.md)、[006 资产保留](../../assets/006-preservation-contract.md)。业务规则、场景与验收 ID 仍在 011 唯一定义，本文通过链接引用；[013 技术设计](013-m02-technical-design.md)已提出 DTO、API 与存储草案，本文中的字段标识继续表达交互含义，创建/查询及新增/更正的实际接口源见[OpenAPI](../../../api/openapi.yaml)，其余动作仍为后续合同。
+上游依据：[010 范围](../../archive/plans/010-m02-scope-and-plan.md)、[011 业务需求](011-m02-business-requirements.md)、[17 术语表](../../architecture/target/17-terminology-glossary.md)、[006 资产保留](../../assets/006-preservation-contract.md)。业务规则、场景与验收 ID 仍在 011 唯一定义，本文通过链接引用；[013 技术设计](013-m02-technical-design.md)已提出 DTO、API 与存储草案，本文中的字段标识继续表达交互含义，创建/查询及新增/更正的实际接口源见[OpenAPI](../../../api/openapi.yaml)，其余动作仍为后续合同。
 
 2026-11-01 的 [100 T02 基线与修订](../../verification/100-ui-baseline.md)补入查询草稿、短屏退让、焦点、历史标识及显示格式合同。修订针对现有创建/查询切片，产品修复由 100 的 T03/T04 承接；基线原发现及当时结果保持；后续修复见[100交付](../../verification/100-ui-experience-improvement.md)，既有018/019通过结果不自动覆盖新增要求。
 
@@ -17,9 +17,9 @@
 当前交互按[101直接保存](../../adr/101-direct-save-and-form-assistance.md)执行：全部场景取消手动预览及预览许可门槛，填写后直接提交；只读计算用于自动默认/必要影响，Go在保存事务内重新核验。下文“自动辅助”在仍有计算含义处指只读辅助，不再指用户按钮或必经步骤；历史实施记录保留原时点。
 
 
-2026-11-02新增采纳：[103位置新增/插入决策](../../adr/103-positioned-record-addition.md)将普通单条新增改为先选位置、自动带出资料与日期；无可插入日期只禁用按钮，不增加原因说明。以下规则已由[105](../../plans/105-positioned-addition-and-coverage.md)接入Go、OpenAPI及客户端，实际执行参数见[105验证](../../verification/105-positioned-addition-and-coverage.md)；[103记录](../../verification/103-positioned-record-addition.md)保留原文档验证范围。
+2026-11-02新增采纳：[103位置新增/插入决策](../../adr/103-positioned-record-addition.md)将普通单条新增改为先选位置、自动带出资料与日期；无可插入日期只禁用按钮，不增加原因说明。以下规则已由[105](../../archive/plans/105-positioned-addition-and-coverage.md)接入Go、OpenAPI及客户端，实际执行参数见[105验证](../../verification/105-positioned-addition-and-coverage.md)；[103记录](../../verification/103-positioned-record-addition.md)保留原文档验证范围。
 
-当前单条维护按[104统一更正](../../plans/104-unified-record-correction.md)合并入口：仅保留更正记录，名称/日期/分类一次保存；联合入口及历史停用对入口本轮不优化。103位置新增由105接线并分层验证。
+当前单条维护按[104统一更正](../../archive/plans/104-unified-record-correction.md)合并入口：仅保留更正记录，名称/日期/分类一次保存；联合入口及历史停用对入口本轮不优化。103位置新增由105接线并分层验证。
 
 2026-11-03按[113](../../adr/113-bu-list-community-adoption.md)接入Community，保留110剩余规则和#066b68，取消列拖动/固定。本轮T01/T02-A/B/C已完成代码及实际组件/合成HTTP定向检查，见[111报告](../../verification/111-community-t01-t02.md)。T03真实Go/API/DB及七组视口整体验收未运行，旧019/100/T07不计新通过；列条件和Excel形态仍评估。
 
@@ -140,9 +140,9 @@
 <a id="m02-ui-expression"></a>
 页面设计必须避免过度表达。默认只展示完成当前任务所需的字段、选择和结果；内部机制、正常系统保证及可自动处理的提交意图不得成为常驻说明或额外确认。错误和风险在实际相关的情境出现，复杂业务影响按需查看，不用技术解释代替清楚的操作。
 
-[019迁移](../../plans/019-cubebox-experience-migration.md)将公共展示放入`packages/ui`，将路由、会话、列表返回及服务端查询适配放入`apps/web`。顶栏主体64px，控制区固定在其下，正文在独立区域滚动；桌面详情居中、最大宽1260px，窄屏改为单列。桌面采用应用菜单及设置内组织配置/基础资料下拉，窄屏使用导航抽屉；按[303](../../plans/303-department-primary-navigation.md)，一级应用按部门、设置排列，部门直接进入列表，部门全部页面按路由归属且无重复子菜单；关闭与尺寸切换恢复触发按钮焦点。
+[019迁移](../../archive/plans/019-cubebox-experience-migration.md)将公共展示放入`packages/ui`，将路由、会话、列表返回及服务端查询适配放入`apps/web`。顶栏主体64px，控制区固定在其下，正文在独立区域滚动；桌面详情居中、最大宽1260px，窄屏改为单列。桌面采用应用菜单及设置内组织配置/基础资料下拉，窄屏使用导航抽屉；按[303](../../archive/plans/303-department-primary-navigation.md)，一级应用按部门、设置排列，部门直接进入列表，部门全部页面按路由归属且无重复子菜单；关闭与尺寸切换恢复触发按钮焦点。
 
-按110，列表目标控制区为新建/标题/更多操作、现有搜索组合和紧凑分页；状态筛选按需打开，非默认条件显示简短摘要，不保留常驻日期/状态/排序行。桌面由支持的表头执行服务端排序，窄屏用Community摘要列展示名称/元数据，保留选中反馈；具体见[列表目标](#m02-ui-list-pro)。详情按[302](../../plans/302-detail-navigation.md)在原查询及当前授权范围内显示“当前位置 / 匹配总数”、前后对象及跨页导航；窄屏保留数字，普通切换不等待列表重读；移动前重新核对当前授权范围；辅助导航暂时失败或位置失效时显示“暂时无法切换记录”并提供局部重试，保留当前可读详情；仅详情自身无权时清空受限内容。直达链接没有列表上下文时不伪造对象总数。
+按110，列表目标控制区为新建/标题/更多操作、现有搜索组合和紧凑分页；状态筛选按需打开，非默认条件显示简短摘要，不保留常驻日期/状态/排序行。桌面由支持的表头执行服务端排序，窄屏用Community摘要列展示名称/元数据，保留选中反馈；具体见[列表目标](#m02-ui-list-pro)。详情按[302](../../archive/plans/302-detail-navigation.md)在原查询及当前授权范围内显示“当前位置 / 匹配总数”、前后对象及跨页导航；窄屏保留数字，普通切换不等待列表重读；移动前重新核对当前授权范围；辅助导航暂时失败或位置失效时显示“暂时无法切换记录”并提供局部重试，保留当前可读详情；仅详情自身无权时清空受限内容。直达链接没有列表上下文时不伪造对象总数。
 
 <a id="m02-ui-object-form"></a>
 BU对象表单必须采用同一公共紧凑样式，适用于新建业务单元及详情内新增记录／插入记录、普通更正；后续维护动作接线时沿用，不另设一套外观。标签位于字段左侧，标签13px，输入及只读值14px，字段旁帮助/错误12px；普通文本及选择输入区32px、下划线边框，复选框文案14px并沿用small密度。原生日期控件以同一浏览器中新建表单的实际尺寸为对照，保留原生编辑能力。桌面按“基本资料/记录信息”两列，窄屏上下排列。文本、日期、原因选择器、复选框、只读分类、帮助和错误均使用同一表单上下文，不能仅复用同名输入组件却回退到浮动标签或描边样式。
@@ -254,7 +254,7 @@ BU对象表单必须采用同一公共紧凑样式，适用于新建业务单元
 <a id="m02-ui-query-selection"></a>
 #### 3.1.6 完整查询结果选择与导出工具条
 
-按[114](../../adr/114-bu-query-selection-and-export.md)和[选择规则](011-m02-business-requirements.md#m02-br-022)新增目标交互，由[115](../../plans/115-bu-query-selection-and-export.md)实施。勾选列、全量选择核对和导出已接线，实际分层范围见[115实施报告](../../verification/115-query-selection-implementation.md)；原文档采纳不作为产品证据。全集是当前条件/服务端D下全部获权BU，跨所有分页，不是当前页或一个BU的历史记录。
+按[114](../../adr/114-bu-query-selection-and-export.md)和[选择规则](011-m02-business-requirements.md#m02-br-022)新增目标交互，由[115](../../archive/plans/115-bu-query-selection-and-export.md)实施。勾选列、全量选择核对和导出已接线，实际分层范围见[115实施报告](../../verification/115-query-selection-implementation.md)；原文档采纳不作为产品证据。全集是当前条件/服务端D下全部获权BU，跨所有分页，不是当前页或一个BU的历史记录。
 
 桌面最左增加Community勾选列，宽度沿用原生50px，不参与排序、筛选、列显隐设置或导出。行勾选只选择，不导航；名称仍是真实链接，其他单元格不导航。表头可访问名称为“全选查询结果／取消全选查询结果”，未选、半选、全选分别按全局已核对数量0、介于0与totalCount、等于totalCount判断；空结果禁用，不能因为本页全勾就显示全选。半选需向辅助技术表达mixed，不能只显示横线图标。
 
@@ -329,7 +329,7 @@ BU对象表单必须采用同一公共紧凑样式，适用于新建业务单元
 <a id="m02-ui-history"></a>
 ### 3.4 变更日志与来源历史
 
-本节按[122](../../plans/122-bu-operation-summary-and-change-log.md)持有当前合同，页面已接线，实际参数和检查见[实施报告](../../verification/122-operation-summary-implementation.md)。基本资料消费Go的operationSummary；日志消费确切前后上下文和差异，前端不从当前详情或当前账户补造。
+本节按[122](../../archive/plans/122-bu-operation-summary-and-change-log.md)持有当前合同，页面已接线，实际参数和检查见[实施报告](../../verification/122-operation-summary-implementation.md)。基本资料消费Go的operationSummary；日志消费确切前后上下文和差异，前端不从当前详情或当前账户补造。
 
 <a id="m02-ui-operation-summary"></a>
 #### 3.4.1 基本资料操作摘要
@@ -614,7 +614,7 @@ Playwright 通用缩放用例默认执行 200%。复核具体 400% 风险时，�
 
 2026-11-03：按026统一完整日期显示与输入格式，时间部分及业务日/来源边界保持；实际结果见[日期格式验证](../../verification/026-date-display-and-input-format.md)。
 
-2026-11-04：按[122](../../plans/122-bu-operation-summary-and-change-log.md)补充第3.4节记录摘要、操作分组表格及准确查看目标，合同见[AC041—044](011-m02-business-requirements.md#m02-ac-041)、案例见[023第25章](023-m02-timeline-test-cases.md#m02-tests-operation-summary)。本轮仅合同评审，产品未实施，旧报告及来源观察保留各自边界。
+2026-11-04：按[122](../../archive/plans/122-bu-operation-summary-and-change-log.md)补充第3.4节记录摘要、操作分组表格及准确查看目标，合同见[AC041—044](011-m02-business-requirements.md#m02-ac-041)、案例见[023第25章](023-m02-timeline-test-cases.md#m02-tests-operation-summary)。本轮仅合同评审，产品未实施，旧报告及来源观察保留各自边界。
 
 2026-11-04：按[122评审修订](../../verification/122-operation-summary-contract-review-fixes.md)明确获权记录上下文与差异分离、历史上下文和分页上界的传递/校验；独立样本与验收同步023。仅合同修订，产品未实施，原报告保持。
 
@@ -631,7 +631,7 @@ Playwright 通用缩放用例默认执行 200%。复核具体 400% 风险时，�
 
 ## 9 301用户反馈接续
 
-2026-11-14用户授权实施[301方案](../../plans/301-user-feedback-and-recovery.md)。当时第3节规定的目标：保存请求结束未知后至多自动确认一次，手动确认与同内容重试互斥；刷新只恢复身份；会话校验与业务权限分流；局部失败保留合法条件和可读输入。现行错误分类见[013](013-m02-technical-design.md#m02-feedback-errors)，筛选、选择与提示恢复的逐项判据见[121](121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)；本节替代旧长提示、强制返回列表和旧统一错误分流要求。Go业务规则、当前授权及不可变历史保持。实际完成范围见[实施记录](../../verification/301-user-feedback-implementation.md)，未完成验收不作已交付声明。
+2026-11-14用户授权实施[301方案](../../archive/plans/301-user-feedback-and-recovery.md)。当时第3节规定的目标：保存请求结束未知后至多自动确认一次，手动确认与同内容重试互斥；刷新只恢复身份；会话校验与业务权限分流；局部失败保留合法条件和可读输入。现行错误分类见[013](013-m02-technical-design.md#m02-feedback-errors)，筛选、选择与提示恢复的逐项判据见[121](121-dated-object-admission-matrix.md#21-用户反馈与异常恢复验收)；本节替代旧长提示、强制返回列表和旧统一错误分流要求。Go业务规则、当前授权及不可变历史保持。实际完成范围见[实施记录](../../verification/301-user-feedback-implementation.md)，未完成验收不作已交付声明。
 
 301提示等级：正在保存、正在确认以及没有修改内容使用信息级；结果未知使用警告，已保存使用成功级，实际读取失败使用错误级。正常保存过程不以黄色警告呈现；状态结束后按真实结果更新同一区域。
 

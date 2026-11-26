@@ -2,7 +2,7 @@
 
 ## 1 业务与权限
 
-公共 `wt-dev-f` 从 `1126c2b6` 接续前三批，按约定先快进到 e 的任用决定提交 `bc769ff`。本批产品改动和验证基于该提交的本地工作区。经办人从「人员 → 员工 → 个人资料」进入原档，更正银行账户及健康状况简述。行内「应用」暂存本页，页顶「保存」产生一次人员更正。[实施计划](../plans/504-personal-profile-extension.md) · [字段、账户身份和用途合同](../specs/m01/505-personal-profile-contract.md#profile-items-and-access)
+公共 `wt-dev-f` 从 `1126c2b6` 接续前三批，按约定先快进到 e 的任用决定提交 `bc769ff`。本批产品改动和验证基于该提交的本地工作区。经办人从「人员 → 员工 → 个人资料」进入原档，更正银行账户及健康状况简述。行内「应用」暂存本页，页顶「保存」产生一次人员更正。[实施计划](../archive/plans/504-personal-profile-extension.md) · [字段、账户身份和用途合同](../specs/m01/505-personal-profile-contract.md#profile-items-and-access)
 
 | 实库及 HTTP 样本 | 结果 |
 | --- | --- |

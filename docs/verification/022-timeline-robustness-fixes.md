@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：022及010—013五项健壮性缺口的合同、验收和待办修订，仅文档与静态核对。
 
-上游：[022决定](../adr/022-joint-timeline-revision.md)、[010待办](../plans/010-m02-scope-and-plan.md)、[011验收](../specs/m02/011-m02-business-requirements.md#m02-ac-025)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)与[013技术合同](../specs/m02/013-m02-technical-design.md)。[上一轮完备性报告](022-timeline-review-fixes.md)及更早报告保持原结果，不扩为本次证据。
+上游：[022决定](../adr/022-joint-timeline-revision.md)、[010待办](../archive/plans/010-m02-scope-and-plan.md)、[011验收](../specs/m02/011-m02-business-requirements.md#m02-ac-025)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)与[013技术合同](../specs/m02/013-m02-technical-design.md)。[上一轮完备性报告](022-timeline-review-fixes.md)及更早报告保持原结果，不扩为本次证据。
 
 ## 1 验证对象与受测基线
 

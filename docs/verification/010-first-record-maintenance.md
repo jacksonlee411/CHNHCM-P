@@ -1,6 +1,6 @@
 # CHNHCM-010 M02第一批资料维护实施验证
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[010第一批](../plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)及[023案例](../specs/m02/023-m02-timeline-test-cases.md)。本报告为代理实施、自查与本地开发验证，不冒充独立人工评审或业务批准。
+登记信息：[registry.json](../governance/registry.json)。适用范围：[010第一批](../archive/plans/010-m02-scope-and-plan.md)、[011](../specs/m02/011-m02-business-requirements.md)、[012](../specs/m02/012-m02-functional-and-interaction-design.md)、[013](../specs/m02/013-m02-technical-design.md)及[023案例](../specs/m02/023-m02-timeline-test-cases.md)。本报告为代理实施、自查与本地开发验证，不冒充独立人工评审或业务批准。
 
 ## 1 验证对象与受测基线
 

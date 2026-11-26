@@ -1,6 +1,6 @@
 # CHNHCM-122 123实施后的合同复核与完善
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：用户采纳的122删除原件归因、未来首条空态及关联基线/案例/计数修订。上游为[122计划](../plans/122-bu-operation-summary-and-change-log.md)、[BR034/035](../specs/m02/011-m02-business-requirements.md#m02-br-034)、[012摘要](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-operation-summary)、[013技术合同](../specs/m02/013-m02-technical-design.md#m02-tech-operation-summary)、[023案例](../specs/m02/023-m02-timeline-test-cases.md#m02-tests-operation-summary)及[123决定](../adr/123-current-maintenance-and-dated-query-boundary.md)。本文按验证模板另建记录，保留初稿、三项评审修订及123报告原件。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：用户采纳的122删除原件归因、未来首条空态及关联基线/案例/计数修订。上游为[122计划](../archive/plans/122-bu-operation-summary-and-change-log.md)、[BR034/035](../specs/m02/011-m02-business-requirements.md#m02-br-034)、[012摘要](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-operation-summary)、[013技术合同](../specs/m02/013-m02-technical-design.md#m02-tech-operation-summary)、[023案例](../specs/m02/023-m02-timeline-test-cases.md#m02-tests-operation-summary)及[123决定](../adr/123-current-maintenance-and-dated-query-boundary.md)。本文按验证模板另建记录，保留初稿、三项评审修订及123报告原件。
 
 ## 1 验证对象与受测基线
 

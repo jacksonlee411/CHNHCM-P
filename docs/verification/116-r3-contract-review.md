@@ -2,7 +2,7 @@
 
 登记信息：[登记表](../governance/registry.json) `governance.verification_records`。
 适用范围：R3-A共用流程及R3-B BU闭环；不含部门运行时、R4—R6或生产验收。
-上游依据：[116](../plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
+上游依据：[116](../archive/plans/116-m02-shared-dated-maintenance-roadmap.md)、[120](../specs/m02/120-dated-maintenance-technical-contract.md)、[121](../specs/m02/121-dated-object-admission-matrix.md)。
 
 ## 1 验证对象与受测基线
 

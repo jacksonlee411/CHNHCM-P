@@ -1,6 +1,6 @@
 # CHNHCM-114 BU全查询结果选择与导出决定
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：M02业务单元列表的勾选、完整查询结果全选和首个消费动作“导出所选”。依据用户对CubeBox对标建议的采纳及“全选覆盖当前查询条件下、当前用户有权读取的全部列表结果”的明确修正。从[决策模板](../templates/decision.md)起草；实施由[115计划](../plans/115-bu-query-selection-and-export.md)承接。
+登记信息：[registry.json](../governance/registry.json)。适用范围：M02业务单元列表的勾选、完整查询结果全选和首个消费动作“导出所选”。依据用户对CubeBox对标建议的采纳及“全选覆盖当前查询条件下、当前用户有权读取的全部列表结果”的明确修正。从[决策模板](../templates/decision.md)起草；实施由[115计划](../archive/plans/115-bu-query-selection-and-export.md)承接。
 
 当前普通维护日期语义由[123](../adr/123-current-maintenance-and-dated-query-boundary.md)调整：列表按服务端D，详情按所选记录，取消通用查看日期；原阶段完成及验证记录保留。部门仍待116 R4/R5实现。
 

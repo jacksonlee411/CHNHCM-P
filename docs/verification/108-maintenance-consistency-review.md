@@ -1,6 +1,6 @@
 # CHNHCM-108 M02维护改造多轮复核记录
 
-登记信息：[registry.json](../governance/registry.json)。适用范围：[108计划](../plans/108-maintenance-consistency-review.md)、101直接保存、103/105位置新增、104统一更正及107首条通用维护。原报告、稳定ID及历史事实保持。
+登记信息：[registry.json](../governance/registry.json)。适用范围：[108计划](../archive/plans/108-maintenance-consistency-review.md)、101直接保存、103/105位置新增、104统一更正及107首条通用维护。原报告、稳定ID及历史事实保持。
 
 ## 1 验证对象与受测基线
 

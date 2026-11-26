@@ -1,6 +1,6 @@
 # CHNHCM-113 Community采用文档多轮复核
 
-登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：113替代决定及相关文档；依据[113](../adr/113-bu-list-community-adoption.md)、[111](../plans/111-bu-list-experience-upgrade.md)和[014](../governance/014-document-management.md)，从[验证模板](../templates/verification.md)起草。
+登记信息：[registry.json](../governance/registry.json)的governance.verification_records。适用范围：113替代决定及相关文档；依据[113](../adr/113-bu-list-community-adoption.md)、[111](../archive/plans/111-bu-list-experience-upgrade.md)和[014](../governance/014-document-management.md)，从[验证模板](../templates/verification.md)起草。
 
 ## 1 验证对象与受测基线
 

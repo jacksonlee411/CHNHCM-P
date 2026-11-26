@@ -1,6 +1,6 @@
 # CHNHCM-018 多轮独立评审与修复验证
 
-登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：当前BU创建/查询切片及010/012/013/017现行说明。上游为[010计划](../plans/010-m02-scope-and-plan.md)、[011验收条件](../specs/m02/011-m02-business-requirements.md)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)、[013技术合同](../specs/m02/013-m02-technical-design.md)和[018决策](../adr/018-effective-records-and-source-history.md)。
+登记信息：[registry.json](../governance/registry.json)的`governance.verification_records`。适用范围：当前BU创建/查询切片及010/012/013/017现行说明。上游为[010计划](../archive/plans/010-m02-scope-and-plan.md)、[011验收条件](../specs/m02/011-m02-business-requirements.md)、[012交互](../specs/m02/012-m02-functional-and-interaction-design.md)、[013技术合同](../specs/m02/013-m02-technical-design.md)和[018决策](../adr/018-effective-records-and-source-history.md)。
 
 ## 1 验证对象与受测基线
 

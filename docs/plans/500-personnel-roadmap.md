@@ -28,7 +28,7 @@ Personnel 牵头登记与名录，Staffing 牵头用工办理。先确定切片�
 
 联系人关系、更多个人资料集、银行账户身份可在 T01 后按资料用途独立安排。账户用途及支付分配由 M14 承接。教育或证书用于岗位资格时，由 M16 核验资格。M05 的录用、M20 的办理待办和工资配置均独立交付。另有明确的非工作关联时，在 M04 以 RegisterAssociation 核验身份、组织角色及选择政策，可只建关系。承担实际工作的派驻仍须有首任职。T03 先验直接入职，非工作关联在其专项接入时单验。[工作关系类型](../architecture/target/modules/m04.md) · [岗位模式与事务](../architecture/target/10-ddd-and-state-contracts.md#staffing-quota-transaction) · [编制分批验收](../specs/m03/313-position-capacity-contract.md) · [106 待决事项](../adr/106-same-day-personnel-actions-and-daily-state.md#6-待决事项)
 
-九栏个人资料的后续实施已单列 [504 M01 个人资料扩展](504-personal-profile-extension.md)。从员工名录进入原档案维护，可与 T02 并行。栏目及操作范围由 [505](../specs/m01/505-personal-profile-contract.md) 持有。
+九栏个人资料的后续实施已单列 [504 M01 个人资料扩展](../archive/plans/504-personal-profile-extension.md)。从员工名录进入原档案维护，可与 T02 并行。栏目及操作范围由 [505](../specs/m01/505-personal-profile-contract.md) 持有。
 
 ## 3 领域与接口的归属
 
@@ -59,7 +59,7 @@ Personnel 牵头登记与名录，Staffing 牵头用工办理。先确定切片�
 
 2026-11-26，固定 f 的 4386 在 `b67cb72` 上完成页面专项评审，11 项待修复（高 2、中 8、低 1），建议暂缓页面专项验收。优先核对跨员工更正时的本人身份，以及旧修订与当次任职的地点。各项均有实页截图和关闭条件。[500 页面问题登记](../verification/500-personnel-page-review.md)
 
-同日补查按用户明确的普通「人员」入口和本人「职务信息」页签复验，登记 500-UI-12 至 20 共 9 项（高 3、中 4、低 2）。该基线的双名录、中转页及常驻查看日期与该要求冲突。补充报告列出涉及的 502、506、507 条款、组件接线和旧用例，也更正首轮 500-UI-05 的普通页查看日判据。[入口与日期补充评审](../verification/500-personnel-entry-and-date-review.md) 510 按五步完成上述 20 项整改。固定 f 原库复验、写入反例和逐项截图见[实施记录](../verification/510-personnel-page-remediation-implementation.md)，整改依赖及判据见[510 计划](510-personnel-page-remediation.md)。
+同日补查按用户明确的普通「人员」入口和本人「职务信息」页签复验，登记 500-UI-12 至 20 共 9 项（高 3、中 4、低 2）。该基线的双名录、中转页及常驻查看日期与该要求冲突。补充报告列出涉及的 502、506、507 条款、组件接线和旧用例，也更正首轮 500-UI-05 的普通页查看日判据。[入口与日期补充评审](../verification/500-personnel-entry-and-date-review.md) 510 按五步完成上述 20 项整改。固定 f 原库复验、写入反例和逐项截图见[实施记录](../verification/510-personnel-page-remediation-implementation.md)，整改依赖及判据见[510 计划](../archive/plans/510-personnel-page-remediation.md)。
 
 T00 要把「人员登记与核对」的授权对象、用途和保留范围写入首批合同。仅有 A 部门任职范围的负责人，不能据此检索没有任职的人。经办人在员工名录按姓名查人时，只看得到有权查看的档案。名录、汇总和直接链接均按各自授权展示。同一人仅 A 任职可见时，界面只呈现 A。真实主任职受限时保持受限信息边界，不能把 A 改标为主。若没有获权任职摘要，不据此断言此人“尚未入职”。首批名录只提供履行登记任务的查询。批量导出在用途、字段、固定成员及下载时授权有明确需求后另行接入。[X03 授权](../architecture/target/modules/x03.md) · [普通维护与专项按日查询](../adr/123-current-maintenance-and-dated-query-boundary.md)
 
@@ -115,9 +115,9 @@ Personnel 的 `CheckIdentity` 从当前会话取客户，依本人、入职用�
 
 2026-11-25，本节十个阶段已合入 main，并在固定 f 的 4386 环境从正常菜单验收。本轮沿用 f 的 `3771272` 已交付的人员九栏、按职务首聘及未来撤销，按 e 的 `ec4572a` 实施 404 岗位方案。Staffing 负责办理、存储和查询，Personnel 与体验负责人员菜单及返回，Access 随每个入口交付其权限。[阶段提交、主线检查与操作样本](../verification/500-job-information-delivery-review.md#stage-delivery-results) · [九栏交接](../verification/504-personal-profile-fourth-batch.md) · [按职务首单实测](../verification/400-first-hire-integration.md#decision-first-hire) · [分模式准入](400-hire-readiness.md#hire-gates)
 
-同日对产品合并 `dfd49554` 的后续复核发现六项缺陷，其中历史调动后转正归属错误、有据可查的同日顺序无法完整办理，均影响整体验收。上述发现使原版本暂缓接受。508 六项修复及交叉回归现已通过，固定 f 的 4386 已更新，第 6.3 节在本地修复候选上重新验收通过。[修复版本与原库复验](../verification/508-job-information-implementation.md) · [修复次序与验收用例](508-job-information-remediation.md) · [复核事实](../verification/508-job-information-remediation-review.md)
+同日对产品合并 `dfd49554` 的后续复核发现六项缺陷，其中历史调动后转正归属错误、有据可查的同日顺序无法完整办理，均影响整体验收。上述发现使原版本暂缓接受。508 六项修复及交叉回归现已通过，固定 f 的 4386 已更新，第 6.3 节在本地修复候选上重新验收通过。[修复版本与原库复验](../verification/508-job-information-implementation.md) · [修复次序与验收用例](../archive/plans/508-job-information-remediation.md) · [复核事实](../verification/508-job-information-remediation-review.md)
 
-包含 508 的提交 `39660e7` 经七轮独立评审确认 27 项问题，其中 P1 有 11 项，P2 有 16 项，末轮无新增。该提交当时暂缓接受。509 方案经多轮独立评审修订后实施，经理接任、退出与再聘、兼岗与占编、同日办理及原件交互等 27 项现均已关闭。第 6.3 节已在本地 509 候选和固定 f 的 4386 原库重新验收通过。[原反例及阶段 7 专查](../verification/500-t04-implementation-rereview.md#stage-seven-verdict) · [509 分批实施](509-t04-remediation.md#delivery-order) · [独立方案评审](../verification/509-t04-remediation-review.md) · [产品复验与 4386 交接](../verification/509-t04-remediation-implementation.md#fixed-environment)
+包含 508 的提交 `39660e7` 经七轮独立评审确认 27 项问题，其中 P1 有 11 项，P2 有 16 项，末轮无新增。该提交当时暂缓接受。509 方案经多轮独立评审修订后实施，经理接任、退出与再聘、兼岗与占编、同日办理及原件交互等 27 项现均已关闭。第 6.3 节已在本地 509 候选和固定 f 的 4386 原库重新验收通过。[原反例及阶段 7 专查](../verification/500-t04-implementation-rereview.md#stage-seven-verdict) · [509 分批实施](../archive/plans/509-t04-remediation.md#delivery-order) · [独立方案评审](../verification/509-t04-remediation-review.md) · [产品复验与 4386 交接](../verification/509-t04-remediation-implementation.md#fixed-environment)
 
 #### 6.3.1 先交付一份按职务任职的日常维护
 
