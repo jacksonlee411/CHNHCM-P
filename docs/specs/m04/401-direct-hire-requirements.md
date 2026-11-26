@@ -1,6 +1,6 @@
 # CHNHCM-401 直接入职业务规则与验收
 
-本规格用于人事从已有人员档案办理直接入职，也持有从已接受录用建立工作关系的验收场景。直接入职凭任用依据办理，录用转入职采用招聘核对过的该份录用。下文普通劳动关系采用一个客户样本。其他客户按其已生效的用工规则取用所需资料。[实施方案](../../plans/400-hire-readiness.md) · [录用交接](#m04-scn-005) · [登记表](../../governance/registry.json) · [M04 领域边界](../../architecture/target/modules/m04.md)
+本规格用于人事从已有人员档案办理直接入职，也持有从已接受录用建立工作关系的验收场景。直接入职凭任用依据办理，录用转入职采用招聘核对过的该份录用。下文普通劳动关系采用一个客户样本。其他客户按其已生效的用工规则取用所需资料。[原实施方案](../../archive/plans/400-hire-readiness.md) · [录用交接](#m04-scn-005) · [登记表](../../governance/registry.json) · [M04 领域边界](../../architecture/target/modules/m04.md)
 
 首笔入职在「职务信息」形成所属关系和首任职的创建记录。本人的雇用记录编号、后续兼岗、转正、变动及更正由 506 持有。401 继续持有首次入职的资格、原单、两层主选择与未来首单撤销规则。[职务信息业务效果](506-job-information-records.md#m04-br-011)
 
@@ -62,7 +62,7 @@
 | <a id="m04-scn-012"></a>M04-SCN-012 独立与依赖 · <a id="m04-ac-006"></a>M04-AC-006 | 同日从甲部调至乙部，并登记一级升二级。晋升系误录时，有撤销权的人从原笔引用只载调动的原通知，或简述误录原因，一次保存。调动资格独立则当日为乙部一级，旧来源仍有原晋升。当调往乙部以二级为资格前提，缺少合法后继处置则拒绝。逆序补录、同字段矛盾及重送旧请求均须保留独立动作。 | T04 同日专项，T02 文档走查。[任职前后值与计数](506-job-information-records.md#m04-scn-018) · [正常菜单](507-job-information-tab.md#m04-ac-018) |
 | <a id="m04-scn-013"></a>M04-SCN-013 失权与结果未知 · <a id="m04-ac-007"></a>M04-AC-007 | 经办人在保存后失联。原主体用原号查回同一结果。只有写权被撤时仍可按现有读权确认。失去人员或字段读权后，直达、历史、回执、数量、草稿和迟到响应均不再披露受限内容。只读账号直接写入被拒。 | T02 上游写入口，T03 入职原件与回执 |
 
-[办理入口与可见反馈](402-hire-interactions.md#hire-form) · [采用与事务](403-hire-technical-contract.md#hire-transaction) · [分批关闭条件](../../plans/400-hire-readiness.md#hire-gates)
+[办理入口与可见反馈](402-hire-interactions.md#hire-form) · [采用与事务](403-hire-technical-contract.md#hire-transaction) · [原分批关闭条件](../../archive/plans/400-hire-readiness.md#hire-gates)
 
 ## 5 规则到验证的追踪
 

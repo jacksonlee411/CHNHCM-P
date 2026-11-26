@@ -2,7 +2,7 @@
 
 ## 1 对象、基线与方法
 
-2026-11-23，Codex 主代理在 wt-dev-e 依次审阅原评估与三稿方案。工作树起点为 `72becffb840457e6cd519a054410110393952144`，包含主线 `45a4c227` 及本地 136 归档。受测输入还包括当时未提交的 400 评估、登记及导航。f 的人员代码为 `d1fdb953`，终审时 504／505 已随 `75b0fee0ba1d2f043574551f54bd0da631cbcbc4` 提交，504 产品实施登记为未开始。参与本轮的审阅人为同一主代理，按业务、供给与事务、办理体验及终稿反例分轮检查。[400 实施方案](../plans/400-hire-readiness.md) · [登记表](../governance/registry.json) · [f 路线图 T02 原行](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/400-hire-readiness/roadmap-scope.txt)
+2026-11-23，Codex 主代理在 wt-dev-e 依次审阅原评估与三稿方案。工作树起点为 `72becffb840457e6cd519a054410110393952144`，包含主线 `45a4c227` 及本地 136 归档。受测输入还包括当时未提交的 400 评估、登记及导航。f 的人员代码为 `d1fdb953`，终审时 504／505 已随 `75b0fee0ba1d2f043574551f54bd0da631cbcbc4` 提交，504 产品实施登记为未开始。参与本轮的审阅人为同一主代理，按业务、供给与事务、办理体验及终稿反例分轮检查。[400 实施方案](../archive/plans/400-hire-readiness.md) · [登记表](../governance/registry.json) · [f 路线图 T02 原行](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/400-hire-readiness/roadmap-scope.txt)
 
 R1 保存原始评估。R2 和 R3 各保存 400–403 与当时的 106 原文。R4 对应本次交付的五份正文。压缩包内清单记录逐文件 SHA-256。对按文件名排序的每行「文件名、一个空格、该文件 SHA-256、换行符」取 SHA-256 得到下表的整稿摘要。[各轮输入与完整摘要](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/400-hire-readiness/review-inputs.zip)
 

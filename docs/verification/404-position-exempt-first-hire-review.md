@@ -2,7 +2,7 @@
 
 ## 1 对象与基线
 
-2026-11-24 在固定树 wt-dev-e 评审 [404 实施方案](../plans/404-position-exempt-first-hire.md)。开工时本地及公共 e 为 dae4b1e0，公共 main 为 eb5948bc137e236100b67e88ed150cb9a8c89912，文件树相同。核对 origin、工作区、未跟踪文件、stash、文档登记和开放 PR，确认工作树干净后将本地 e 快进到该 main。评审对象是此基线之上的工作区文档。方案、400 交接、索引及[文档登记](../governance/registry.json)共同保存本次差异。
+2026-11-24 在固定树 wt-dev-e 评审 [404 实施方案](../archive/plans/404-position-exempt-first-hire.md)。开工时本地及公共 e 为 dae4b1e0，公共 main 为 eb5948bc137e236100b67e88ed150cb9a8c89912，文件树相同。核对 origin、工作区、未跟踪文件、stash、文档登记和开放 PR，确认工作树干净后将本地 e 快进到该 main。评审对象是此基线之上的工作区文档。方案、400 交接、索引及[文档登记](../governance/registry.json)共同保存本次差异。
 
 ## 2 方法与既有证据
 

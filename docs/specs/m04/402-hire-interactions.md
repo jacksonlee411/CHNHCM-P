@@ -1,6 +1,6 @@
 # CHNHCM-402 入职准备与办理页面合同
 
-下列入口是本次方案的交付目标。T02 的组织和政策管理员维护办理条件，T03 的人事经办人从原人员档案办理。当前用户能看到的动作、候选、范围及错误均由 Go 返回。[实施方案](../../plans/400-hire-readiness.md) · [业务规则与验收](401-direct-hire-requirements.md) · [登记表](../../governance/registry.json)
+组织和政策管理员维护办理条件，人事经办人从原人员档案办理直接入职。当前用户能看到的动作、候选、范围及错误均由 Go 返回。[原实施方案](../../archive/plans/400-hire-readiness.md) · [业务规则与验收](401-direct-hire-requirements.md) · [登记表](../../governance/registry.json)
 
 ## 1 从哪一页办理
 

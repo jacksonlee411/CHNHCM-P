@@ -4,7 +4,7 @@
 
 ## 1 首批范围与依赖结论
 
-2026-11-23，wt-dev-e 从干净的 T02 基线 `d2212f84` 开工，stash 为空。共同产品提交 `f1f32836` 纳入 f 的 `2de2ba43`，随后接入 f 的验证交接 `d45dc60d`。交接时的 `cd931048` 之后，f 新增了地址和家庭资料，使用 00034。e 已汇合两类账本，并在同一个正常菜单和真实数据库上复核人员原档及入职所需的两项规则。[400 计划](../plans/400-hire-readiness.md#63-t03-仅按职务首单的开工核对) · [f 同版资料实测](504-personal-profile-second-batch.md)
+2026-11-23，wt-dev-e 从干净的 T02 基线 `d2212f84` 开工，stash 为空。共同产品提交 `f1f32836` 纳入 f 的 `2de2ba43`，随后接入 f 的验证交接 `d45dc60d`。交接时的 `cd931048` 之后，f 新增了地址和家庭资料，使用 00034。e 已汇合两类账本，并在同一个正常菜单和真实数据库上复核人员原档及入职所需的两项规则。[400 计划](../archive/plans/400-hire-readiness.md#63-t03-仅按职务首单的开工核对) · [f 同版资料实测](504-personal-profile-second-batch.md)
 
 **106 的决定已形成。** 开工时，本地各固定分支及已有远端跟踪引用的登记均为 draft，未见其他维护者已会签的记录。用户在本次任务中授权当前负责人自行判断。Codex 据此作为本次负责人采纳 106 对首笔 Employee、仅按职务入职的日级状态、独立办理、两层主选择、原采用与未来撤销口径。工时、合同试用约定、实际转正、年资、薪酬与多动作的适用边界分别登记。该决定的责任及范围可从 ADR 和登记表查到。[106 第 8 节](../adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) · [登记表](../governance/registry.json)
 
@@ -161,7 +161,7 @@ make smoke SMOKE_ARGS="tests/e2e/correction-coverage.spec.ts tests/e2e/lifecycle
 | 公开版本另有修改 | 37 | 28 项文档、1 项 AGENTS 入口、4 项 CI 配置及脚本，另有 PR #1 修改的 2 项 Personnel 页面和 2 项浏览器测试。 |
 | 原件保存在私仓 | 46 | 45 项历史验证附件及 1 个受再分发限制的上游参考包。公开仓保留文档中的来源说明。 |
 
-另对两个仓库完整目录核对，`internal/`、`cmd/`、`db/`、`api/` 和 `tests/integration/` 下的 766 个文件内容及文件模式全部相同。公开端使用原 Go 办理逻辑、数据库迁移和 API 合同。普通首单用无编号通知的一条可追溯说明，已有编号决定的直接引用、按岗免占和占编仍按 400 后续范围接入。[入职迁移](../../db/migrations/00037_employee_hire.sql) · [首单范围](../plans/400-hire-readiness.md#65-t03-仅按职务首单交付)
+另对两个仓库完整目录核对，`internal/`、`cmd/`、`db/`、`api/` 和 `tests/integration/` 下的 766 个文件内容及文件模式全部相同。公开端使用原 Go 办理逻辑、数据库迁移和 API 合同。普通首单用无编号通知的一条可追溯说明，已有编号决定的直接引用、按岗免占和占编仍按 400 后续范围接入。[入职迁移](../../db/migrations/00037_employee_hire.sql) · [首单范围](../archive/plans/400-hire-readiness.md#65-t03-仅按职务首单交付)
 
 2026-11-24 在公开提交 `b60d0ce` 的独立检出中以 `go test -tags=integration -count=1` 实际运行两个 PostgreSQL/API 测试根。人员原档及用途权限测试通过，耗时 11.67 秒。首单测试通过，耗时 22.19 秒，含保存前换证与撤权、成功回执故障回滚、重复办理与原号查回、2027-04-01 生效前后的零占编人数及未来撤销。两个实际数据库连接分别按先收窄资格和先提交入职的顺序竞争，断言覆盖最终资格、关系与原采用。[原人及权限测试](../../tests/integration/personnel_hire_test.go) · [首单及双连接测试](../../internal/bootstrap/first_hire_integration_test.go)
 

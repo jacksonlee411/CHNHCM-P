@@ -2855,7 +2855,7 @@
     {
       "id": "CHNHCM-400",
       "title": "M04 T02 入职规则与准备实施方案",
-      "path": "docs/plans/400-hire-readiness.md",
+      "path": "docs/archive/plans/400-hire-readiness.md",
       "owner_branch": "wt-dev-e",
       "owner_role": "人事业务与 Staffing 维护者",
       "owner": null,
@@ -2884,7 +2884,11 @@
         "reason": "T02 准备及 T03 三种首单已分模式签收，4496 原卷完成历史与新免占首单联验。",
         "evidence": "docs/verification/404-4496-acceptance.md"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "首单三种模式的业务、页面和事务规则由 401–403 与 106 承接，政策换版的复查条件及 4496 验收已交接。",
+        "previous_path": "docs/plans/400-hire-readiness.md"
+      }
     },
     {
       "id": "CHNHCM-401",
@@ -2980,7 +2984,7 @@
     {
       "id": "CHNHCM-404",
       "title": "T03 按岗位免占编首次入职实施方案",
-      "path": "docs/plans/404-position-exempt-first-hire.md",
+      "path": "docs/archive/plans/404-position-exempt-first-hire.md",
       "owner_branch": "wt-dev-e",
       "owner_role": "人事业务与 Staffing 维护者",
       "owner": null,
@@ -3009,7 +3013,11 @@
         "reason": "四个实施阶段已验收，4496 原卷升级、旧单与私人回执回查、新实岗免占首单及岗位用量均已交接。",
         "evidence": "docs/verification/404-4496-acceptance.md"
       },
-      "archive": null
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "401–403 和 313 已承接按岗免占、分段占用、补员和原件恢复，4496 原卷及后续复查责任已交接。",
+        "previous_path": "docs/plans/404-position-exempt-first-hire.md"
+      }
     },
     {
       "id": "CHNHCM-500",
@@ -24362,6 +24370,41 @@
         "limitations": [
           "4496 写入一个限定业务日的合成首单；占编竞争使用先前同业务实现的独立 PostgreSQL 验证。",
           "旧账号未获试用修复预览权限，库中试用动作数为零。本地候选的远程提交与门禁另行办理。"
+        ]
+      },
+      {
+        "path": "docs/verification/400-404-plan-archive.md",
+        "related_documents": [
+          "CHNHCM-400",
+          "CHNHCM-404",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-313",
+          "CHNHCM-014"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "ffe2c82e9609b1298d22ee110e0f48edfb66ff4f",
+        "working_tree": "dirty",
+        "change_description": "在同步主线 #29 的候选上复验业务，按 014 迁移两份已关闭计划及引用，并在 403 明确撤销状态的读取语义。",
+        "environment": "wt-dev-e，Go 与独立 PostgreSQL 测试数据库，真实 HTTP 与数据库事务。",
+        "scope": "400、404 已采纳条款、执行关闭和接续责任，以及主线与首单原件、岗位使用的交叉行为。",
+        "results": [
+          {
+            "check": "两份归档保留原关闭依据，业务、体验、技术及交付条款均有现行承接位置",
+            "result": "passed",
+            "evidence": "docs/verification/400-404-plan-archive.md"
+          },
+          {
+            "check": "五项实库集成测试覆盖原办理与准确修订、旧库升级、用途及岗位补员保护、招聘和入职争末份编制",
+            "result": "passed",
+            "evidence": "docs/verification/400-404-plan-archive.md"
+          }
+        ],
+        "limitations": [
+          "4496 的持久原卷及页面验收以 2026-11-26 的实际签收版本为准。客户主选择政策换版时由 M04 复验激活。"
         ]
       }
     ]
