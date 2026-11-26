@@ -307,8 +307,8 @@ test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查�
     .toBeGreaterThan(0);
   for (const dirty of [false, true]) {
     const createLink = page.getByRole("link", { name: "新建", exact: true });
-    await createLink.focus();
-    // Focusing the toolbar can scroll the short page before the link is activated.
+    await createLink.evaluate(link => link.focus({ preventScroll: true }));
+    // Capture the document position at keyboard activation, after the real wheel.
     const departure = await createLink.evaluateHandle(link => {
       const position = { top: null as number | null };
       link.addEventListener('click', () => { position.top = document.scrollingElement!.scrollTop; }, { once: true });
@@ -318,11 +318,21 @@ test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查�
     const leaveScroll = await departure.evaluate(position => position.top);
     await departure.dispose();
     expect(leaveScroll).not.toBeNull();
+    expect(leaveScroll).toBeGreaterThan(0);
     await expect(page.getByRole("heading", { name: "新建业务单元", exact: true })).toBeVisible();
     if (dirty) await page.getByRole("textbox", { name: "编码", exact: true }).fill("SCROLL_CANCEL");
+    // Reproduce rows arriving before the auto-height grid has been measured.
+    const pendingLayout = !dirty && await page.addStyleTag({ content: '.list-grid { max-height: 48px !important; overflow: hidden !important; }' });
     await page.getByRole("link", { name: "取消", exact: true }).click();
     if (dirty) await page.getByRole("button", { name: "放弃修改" }).click();
     await expect(page.getByText(recordRange(page, 20, 1))).toBeVisible();
+    if (pendingLayout) {
+      await expect.poll(() => page.evaluate(() => {
+        const doc = document.scrollingElement!;
+        return doc.scrollHeight - doc.clientHeight;
+      })).toBeLessThan(leaveScroll!);
+      await pendingLayout.evaluate(style => style.remove());
+    }
     await expect.poll(() => page.evaluate(() => document.scrollingElement!.scrollTop)).toBe(leaveScroll);
   }
   const target = page.getByRole("link", {

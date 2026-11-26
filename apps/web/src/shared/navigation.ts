@@ -98,7 +98,17 @@ export function useListReturn({ key, ready, apiRef, selected, rows, pageOffset }
     };
     restoreTop();
     const index = rows.findIndex(row => row.id === targetId);
-    if (index < 0) { fallback(); return; }
+    if (index < 0) {
+      focusing.current = true;
+      try { fallback(); } finally { focusing.current = false; }
+      if (!natural || targetId || !rows.length || !saved?.documentTop) return;
+      // Returning from Create has no row to focus. The auto-height grid can
+      // still be one viewport tall when the authorized rows first arrive.
+      const observer = new ResizeObserver(restoreTop);
+      observer.observe(node);
+      cancelRestore.current = () => observer.disconnect();
+      return () => { observer.disconnect(); cancelRestore.current = () => {}; };
+    }
     let frame = 0, focused = false;
     let unsubscribe: (() => void) | undefined;
     const stop = () => { observer.disconnect(); unsubscribe?.(); cancelAnimationFrame(frame); };
