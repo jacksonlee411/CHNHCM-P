@@ -116,7 +116,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（78）](#evidence-acceptance) · [问题复验（45）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（17）](#evidence-governance)
+[业务验收（78）](#evidence-acceptance) · [问题复验（45）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（18）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -465,6 +465,7 @@
 | --- | --- | --- | --- | --- |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 定稿 | 400、404 归档后条款与责任可追溯，主线 5 项实库测试通过。4496 持久卷与页面沿用原签收基线。 | 本仓报告 |
 | 014 | [CHNHCM-014 验收记录目录与历史接续复验](../../verification/014-verification-catalog.md) | 2026-11-27 定稿 | 312 份原记录已补齐用途、结论及证据位置，原报告和原有字段保留。默认检索仍仅命中现行规范，本轮只验文档。 | 本仓报告 |
+| 014、308、310、312、313、012、026、121、123 | [CHNHCM-014 M03 模块合同与共享条款导航复核](../../verification/014-m03-shared-clause-navigation.md) | 2026-11-27 定稿 | 5 类办理对象可从 M03 入口查到 4 份对象合同及共享条款。41 处链接均可定位，默认检索仍为 55 份现行规范。本次只验文档。 | 本仓报告 |
 | 014 | [CHNHCM-014 现行规范默认检索复验](../../verification/014-current-standards-search.md) | 2026-11-27 定稿 | 默认检索与登记的 55 份规范逐份一致，“未保存”命中 23 份，“再聘”命中 8 份。部分替代范围须核对正文。 [后续记录](../../verification/014-verification-catalog.md) | 本仓报告 |
 | 014、011、013、023、114、118、119、120、121、128 | [CHNHCM-014 现行适用范围与 128 部分替代核对](../../verification/014-128-scope-and-replacement.md) | 2026-11-27 定稿 | 8 份原规范可查到 128 的部分替代，114 同时保留 123。默认全文检索覆盖相同的 55 份现行规范，历史产品结果按原批次查证。 | 本仓报告 |
 | 511、014、008、011、012、013、118、119、120、121、131、138、203、204、205、301、306、308、500、502、507 | [CHNHCM-511 项目规范实施、归档评估与验收](../../verification/511-project-standards-implementation.md) | 2026-11-26 定稿 | 43 份存量逐份评估交接，301 的 17 项规则核到唯一现行定义。该批 6 份暂缓物理归档，另有后续迁移记录。 [后续记录](../../verification/511-physical-archive.md) | 本仓报告，部分原件需权限 |

@@ -3568,6 +3568,46 @@
         "evidence_access": "repository"
       },
       {
+        "path": "docs/verification/014-m03-shared-clause-navigation.md",
+        "related_documents": [
+          "CHNHCM-014",
+          "CHNHCM-308",
+          "CHNHCM-310",
+          "CHNHCM-312",
+          "CHNHCM-313",
+          "CHNHCM-012",
+          "CHNHCM-026",
+          "CHNHCM-121",
+          "CHNHCM-123"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "6e12ba8d7a798180a66eb172c1491f36bed34fca",
+        "working_tree": "dirty",
+        "change_description": "M03 模块导航按对象并列合同、适用的共享条款及差异，同步生成目录并登记本次复核。",
+        "environment": "wt-dev-f，本地 Git、Python 3 和 ripgrep。",
+        "scope": "从模块入口查职务、职类、职级、岗位和编制的合同与共享条款，核对章节、生成目录与默认检索范围。",
+        "results": [
+          {
+            "check": "从模块入口逐行核对 4 份对象合同、5 类办理对象及 012、026、121、123 的适用条款",
+            "result": "passed",
+            "evidence": "docs/verification/014-m03-shared-clause-navigation.md"
+          },
+          {
+            "check": "核对链接的目标文件与章节、现行规范目录及默认全文检索的文件集合",
+            "result": "passed",
+            "evidence": "docs/verification/014-m03-shared-clause-navigation.md"
+          }
+        ],
+        "limitations": [
+          "本次验证文档导航和检索。未执行产品页面、数据库或容量用例。"
+        ],
+        "purpose": "governance",
+        "conclusion": "5 类办理对象可从 M03 入口查到 4 份对象合同及共享条款。41 处链接均可定位，默认检索仍为 55 份现行规范。本次只验文档。",
+        "evidence_access": "repository"
+      },
+      {
         "path": "docs/verification/014-current-standards-search.md",
         "related_documents": [
           "CHNHCM-014"
