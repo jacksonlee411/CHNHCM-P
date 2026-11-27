@@ -526,22 +526,35 @@ func TestLocation204Acceptance(t *testing.T) {
 		if e == nil {
 			t.Fatal("rollback accepted")
 		}
+		checkSubmission140(t, f, "location", cmd.Create.Code, cmd.SubmissionID, 0, 0, "")
 		r, e := svc.Resolve(f.ctx, c, cmd.SubmissionID)
 		must(t, e)
 		if r.Outcome != "not_applied" {
 			t.Fatal(r)
 		}
+		if _, err := svc.Maintain(f.ctx, c, cmd); err == nil || err.Error() != "M02_REQUEST_CLOSED" {
+			t.Fatal("rolled-back submission reopened", err)
+		}
+		checkSubmission140(t, f, "location", cmd.Create.Code, cmd.SubmissionID, 0, 0, "not_applied")
 		cmd = makeCmd("LOSTACK")
 		lost := app.Service{Store: locationFault204{Store: svc.Store, lostAck: true}}
 		_, e = lost.Maintain(f.ctx, c, cmd)
 		if e == nil {
 			t.Fatal("ack fault missing")
 		}
+		checkSubmission140(t, f, "location", cmd.Create.Code, cmd.SubmissionID, 1, 1, "")
 		r, e = svc.Resolve(f.ctx, c, cmd.SubmissionID)
 		must(t, e)
 		if r.Outcome != "accepted" {
 			t.Fatal(r)
 		}
+		retry, err := svc.Maintain(f.ctx, c, cmd)
+		must(t, err)
+		if !retry.Replayed || retry.SourceVersion == nil || *retry.SourceVersion != *r.SourceVersion {
+			t.Fatal("lost acknowledgement created another source")
+		}
+		checkSubmission140(t, f, "location", cmd.Create.Code, cmd.SubmissionID, 1, 1, "")
+
 		restartTimelineReceipts(t, f, h.b, []string{cmd.SubmissionID}, "location")
 		svc = f.runtime.Location.(app.Service)
 
