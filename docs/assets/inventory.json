@@ -844,6 +844,18 @@
           "verified": true,
           "complete_asset_verified": false,
           "evidence": "docs/verification/210-compensation-i1.md"
+        },
+        {
+          "document": "CHNHCM-210",
+          "scope": "计划经办人从变更日志与组成行打开计划或职级标准原件，再返回原行或所查业务日。",
+          "target_files": [
+            "tests/e2e/compensation-plans210.spec.ts",
+            "apps/web/src/features/compensation/PlanDetail.tsx"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i2.md"
         }
       ],
       "planned_adoptions": [
@@ -2443,6 +2455,18 @@
           "verified": true,
           "complete_asset_verified": false,
           "evidence": "docs/verification/210-compensation-i1.md"
+        },
+        {
+          "document": "CHNHCM-211",
+          "scope": "将计划组成、范围及同笔采用保留在变更前后原件中，按当前权限重读时可解释十月津贴及保存时的薪标。",
+          "target_files": [
+            "internal/contexts/compensation/infra/postgres/plan_projection.go",
+            "internal/bootstrap/compensation_plan_integration_test.go"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i2.md"
         }
       ],
       "planned_adoptions": [
@@ -7478,6 +7502,18 @@
           "verified": true,
           "complete_asset_verified": false,
           "evidence": "docs/verification/210-compensation-i1.md"
+        },
+        {
+          "document": "CHNHCM-212",
+          "scope": "计划日期轴定位真实计划记录，十月调整后沿一月记录查回原额。",
+          "target_files": [
+            "apps/web/src/features/compensation/PlanDetail.tsx",
+            "tests/e2e/compensation-plans210.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i2.md"
         }
       ],
       "planned_adoptions": [

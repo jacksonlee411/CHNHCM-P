@@ -3580,6 +3580,48 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/210-compensation-i2.md",
+        "related_documents": [
+          "CHNHCM-210",
+          "CHNHCM-211",
+          "CHNHCM-212",
+          "CHNHCM-213"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "266496cc96c10cd5fc7012090219c112770ae604",
+        "working_tree": "dirty",
+        "change_description": "在 I1 职级标准上接入薪酬计划、组成、显式适用范围和按日来源。",
+        "environment": "wt-dev-c，任务自有 PostgreSQL 18.6、真实登录和 Go HTTP。",
+        "scope": "I2 计划组成、共享薪标、范围采用、变更及当前权限。",
+        "results": [
+          {
+            "check": "实库和真实 HTTP 办理企业通用固定额、共享薪带、按计划调整津贴、年目标、范围及权限。",
+            "result": "passed",
+            "evidence": "internal/bootstrap/compensation_plan_integration_test.go"
+          },
+          {
+            "check": "X02 同维任选、跨维同时满足、排除优先。180,000.04 元按 12.50% 在最终一步取 22,500.01 元。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-i2.md"
+          },
+          {
+            "check": "两个桌面视口、原生 200%、成员草稿后退与取消、原件返回、并发重读及失联查回共五项 Chromium 用例。",
+            "result": "passed",
+            "evidence": "tests/e2e/compensation-plans210.spec.ts"
+          },
+          {
+            "check": "固定环境 4521 保留原薪标，由管理员录入 PRO-M、OPS-M、MGT-Y 并由查询账号核对年目标、权限和跳转。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-i2.md"
+          }
+        ],
+        "limitations": [
+          "联合容量与八组场景的逐项交接由 I3 完成。固定环境保留至用户验收或本树下次更新时复查。"
+        ]
+      },
+      {
         "path": "docs/verification/210-compensation-i1.md",
         "related_documents": [
           "CHNHCM-210",

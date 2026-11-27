@@ -180,6 +180,7 @@
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 213、210、211、212、003、012 | [CHNHCM-213 管理员维护生效与薪酬首期范围核对](../../verification/213-administrator-maintenance-and-compensation.md) | 2026-11-27 | final |
+| 210、211、212、213 | [CHNHCM-210 I2 薪酬计划与组成实施验证](../../verification/210-compensation-i2.md) | 2026-11-27 | final |
 | 210、211、212、213 | [CHNHCM-210 I1 职级薪酬标准实施验证](../../verification/210-compensation-i1.md) | 2026-11-27 | final |
 | 210、211、212 | [CHNHCM-210 薪酬体系业务方案与页面原型走查](../../verification/210-compensation-design-walkthrough.md) | 2026-11-27 | final |
 | 210、211、212、213 | [CHNHCM-210 薪酬体系路线图与方案多轮评审](../../verification/210-compensation-design-review.md) | 2026-11-27 | final |

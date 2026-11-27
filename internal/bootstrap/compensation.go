@@ -6,6 +6,7 @@ import (
 )
 
 func (a *API) compensationRoutes(mux *http.ServeMux) {
+	a.compensationPlanRoutes(mux)
 	const base = "/api/v1/compensation/grade-rates"
 	mux.HandleFunc("GET /api/v1/compensation/access", func(w http.ResponseWriter, r *http.Request) {
 		v, e := a.Runtime.Compensation.Menu(r.Context(), credentials(r))

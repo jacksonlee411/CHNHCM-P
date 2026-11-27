@@ -365,7 +365,12 @@ func (s *Store) RateHistory(ctx context.Context, cred foundation.Credentials, id
 func (s *Store) Menu(ctx context.Context, cred foundation.Credentials) (out c.MenuAccess, err error) {
 	err = s.within(ctx, cred, false, func(ctx context.Context, u *unit) error {
 		grant, e := u.decision(ctx, "graderate.read", nil)
+		if e != nil {
+			return e
+		}
 		out.GradeRates = grant.Allowed
+		plan, e := u.decision(ctx, "compplan.read", nil)
+		out.Plans = plan.Allowed
 		return e
 	})
 	return

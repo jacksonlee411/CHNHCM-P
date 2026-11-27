@@ -36,6 +36,14 @@
   "domains": {
     "compensation": {
       "frontend": [
+        "apps/web/src/features/compensation/PlanDetail.tsx",
+        "apps/web/src/features/compensation/PlanComponents.tsx",
+        "apps/web/src/features/compensation/PlanScope.tsx",
+        "apps/web/src/features/compensation/PlanEditor.tsx",
+        "apps/web/src/features/compensation/PlanFacts.tsx",
+        "apps/web/src/features/compensation/PlanList.tsx",
+        "apps/web/src/features/compensation/plans.ts",
+        "apps/web/src/features/compensation/planDraft.ts",
         "apps/web/src/features/compensation/RateDetail.tsx",
         "apps/web/src/features/compensation/RateEditor.tsx",
         "apps/web/src/features/compensation/RateList.tsx",
@@ -44,10 +52,12 @@
         "apps/web/src/features/compensation/rates.ts"
       ],
       "browser_files": [
-        "compensation210.spec.ts"
+        "compensation210.spec.ts",
+        "compensation-plans210.spec.ts"
       ],
       "backend_prefixes": [
-        "internal/contexts/compensation/"
+        "internal/contexts/compensation/",
+        "internal/contexts/configuration/"
       ],
       "backend_consumers": [
         "compensation"

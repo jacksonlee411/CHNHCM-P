@@ -337,6 +337,81 @@ type CompensationGradeRateVersion struct {
 	RecordedAt       pgtype.Timestamptz
 }
 
+type CompensationPlan struct {
+	InstanceID   string
+	EnterpriseID string
+	ID           string
+	Code         string
+	Head         string
+}
+
+type CompensationPlanOutbox struct {
+	InstanceID string
+	PlanID     string
+	Version    string
+	Event      []byte
+}
+
+type CompensationPlanPeriod struct {
+	InstanceID  string
+	PlanID      string
+	RecordID    string
+	Revision    string
+	Name        string
+	StartDate   pgtype.Date
+	UntilDate   pgtype.Date
+	Active      bool
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationPlanRateUse struct {
+	InstanceID  string
+	RateID      string
+	PlanID      string
+	RecordID    string
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationPlanReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	Result       []byte
+}
+
+type CompensationPlanRevision struct {
+	InstanceID string
+	PlanID     string
+	RecordID   string
+	Revision   string
+	Fact       []byte
+}
+
+type CompensationPlanVersion struct {
+	InstanceID       string
+	PlanID           string
+	ID               string
+	Predecessor      pgtype.UUID
+	Action           string
+	RecordID         string
+	Revision         string
+	PreviousRecordID pgtype.UUID
+	PreviousRevision pgtype.UUID
+	UntilDate        pgtype.Date
+	PreviousUntil    pgtype.Date
+	Operator         []byte
+	RecordedAt       pgtype.Timestamptz
+}
+
+type ConfigurationPlanScopeVersion struct {
+	InstanceID   string
+	EnterpriseID string
+	PlanID       string
+	Version      string
+	Policy       []byte
+}
+
 type MigrationBinding struct {
 	InstanceID    string
 	GrantID       string

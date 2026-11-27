@@ -23,3 +23,21 @@ func initializeGradeRateGrants(batch *pgx.Batch, instance, enterprise, subject s
 		queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, "graderate."+action, read, write)
 	}
 }
+
+func initializeCompensationPlanGrants(batch *pgx.Batch, instance, enterprise, subject string, reader bool) {
+	write := []string{"name", "description", "scope", "components", "amount", "rates", "percentage", "effectiveDate", "reason"}
+	read := append(slices.Clone(write), "code", "status", "operator")
+	for _, act := range []string{"read", "history.read"} {
+		queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, "compplan."+act, read, []string{})
+	}
+	if reader {
+		return
+	}
+	for _, act := range []string{"create", "add", "correct", "delete", "deactivate", "reactivate"} {
+		fields := write
+		if act == "create" {
+			fields = append(slices.Clone(fields), "code")
+		}
+		queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, "compplan."+act, read, fields)
+	}
+}

@@ -118,6 +118,7 @@ type RateContext struct {
 	Writable    []string          `json:"writable"`
 }
 type MenuAccess struct {
+	Plans      bool `json:"plans"`
 	GradeRates bool `json:"gradeRates"`
 }
 type RateService interface {

@@ -1,9 +1,7 @@
 package postgres
 
 import (
-	"bytes"
 	"context"
-	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"slices"
@@ -12,143 +10,16 @@ import (
 	d "chnhcm.local/chnhcm/internal/contexts/compensation/domain"
 	c "chnhcm.local/chnhcm/internal/contexts/compensation/public"
 	"chnhcm.local/chnhcm/internal/foundation"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type storedReceipt struct {
-	c.Receipt
-	Failure *foundation.Fault `json:"failure,omitempty"`
-	Status  int               `json:"httpStatus,omitempty"`
-	Action  string            `json:"action"`
-	Fields  []string          `json:"fields,omitempty"`
-}
-
-func (s *Store) receipt(ctx context.Context, u *unit, id string) (storedReceipt, []byte, error) {
-	var receipt storedReceipt
-	var raw, digest []byte
-	err := u.tx.QueryRow(ctx, "SELECT digest,result FROM compensation.grade_rate_receipt WHERE instance_id=$1 AND subject_id=$2 AND submission_id=$3", s.Instance, u.guard.Principal().ID, id).Scan(&digest, &raw)
-	if err != nil {
-		return receipt, nil, err
-	}
-	err = json.Unmarshal(raw, &receipt)
-	if receipt.Failure != nil {
-		receipt.Failure.Status = receipt.Status
-	}
-	return receipt, digest, err
-}
-func readReceipt(ctx context.Context, u *unit, r storedReceipt) (c.Receipt, error) {
-	if _, err := u.requireRateRead(ctx); err != nil {
-		return c.Receipt{}, err
-	}
-	if r.Failure != nil {
-		if _, err := u.rateWriteGrant(ctx, r.Action, r.Fields); err != nil {
-			return c.Receipt{}, err
-		}
-		return c.Receipt{}, r.Failure
-	}
-	return r.Receipt, nil
-}
-func (s *Store) RateReceipt(ctx context.Context, cred foundation.Credentials, id string) (out c.Receipt, err error) {
-	if !foundation.ValidID(id) {
-		return out, unavailable()
-	}
-	err = s.within(ctx, cred, false, func(ctx context.Context, u *unit) error {
-		if _, e := u.requireRateRead(ctx); e != nil {
-			return e
-		}
-		r, _, e := s.receipt(ctx, u, id)
-		if errors.Is(e, pgx.ErrNoRows) {
-			return unavailable()
-		}
-		if e != nil {
-			return e
-		}
-		out, e = readReceipt(ctx, u, r)
-		return e
-	})
-	return
-}
-
-func (s *Store) SaveRate(ctx context.Context, cred foundation.Credentials, id, submission string, input c.WriteRate) (out c.Receipt, err error) {
-	if !foundation.ValidID(submission) || id != "" && !foundation.ValidID(id) || (id == "") != (input.Action == "CREATE") {
-		return out, d.Invalid("submissionId", "提交或目标身份无效")
-	}
+func (s *Store) SaveRate(ctx context.Context, cred foundation.Credentials, id, submission string, input c.WriteRate) (c.Receipt, error) {
 	fields, err := app.Fields(input)
 	if err != nil {
-		return out, err
+		return c.Receipt{}, err
 	}
-	b, err := json.Marshal(struct {
-		ID    string
-		Input c.WriteRate
-	}{id, input})
-	if err != nil {
-		return out, err
-	}
-	sum := sha256.Sum256(b)
-	var outcomeErr error
-	err = s.within(ctx, cred, true, func(ctx context.Context, u *unit) error {
-		if _, e := u.requireRateRead(ctx); e != nil {
-			return e
-		}
-		if e := u.lock(ctx, "compensation.receipt/"+s.Instance+"/"+u.guard.Principal().ID+"/"+submission); e != nil {
-			return e
-		}
-		saved, digest, e := s.receipt(ctx, u, submission)
-		if e == nil {
-			if saved.Outcome == "not_applied" {
-				return foundation.Fail(409, "M09_SUBMISSION_CLOSED", "本次提交已确认未执行，请重新办理")
-			}
-			if !bytes.Equal(digest, sum[:]) {
-				return foundation.Fail(409, "M09_SUBMISSION_CONFLICT", "此提交号已用于其他内容")
-			}
-			out, outcomeErr = readReceipt(ctx, u, saved)
-			return nil
-		}
-		if !errors.Is(e, pgx.ErrNoRows) {
-			return e
-		}
-		if _, e = u.rateWriteGrant(ctx, input.Action, fields); e != nil {
-			return e
-		}
-		// Reject a business failure atomically without retaining its partial
-		// writes. Infrastructure errors remain retryable under this submission.
-		child, e := u.tx.Begin(ctx)
-		if e != nil {
-			return e
-		}
-		work := *u
-		work.tx = child
-		out, e = s.applyRate(ctx, &work, id, input, fields)
-		out.SubmissionID = submission
-		receipt := storedReceipt{Receipt: out, Action: input.Action, Fields: fields}
-		if e != nil {
-			if rollbackErr := child.Rollback(ctx); rollbackErr != nil {
-				return rollbackErr
-			}
-			f, ok := fault(e)
-			if !ok || f.Status >= 500 || f.Status == 403 || f.Status == 404 {
-				return e
-			}
-			receipt.Failure, receipt.Status = f, f.Status
-			receipt.Outcome = "rejected"
-			outcomeErr = e
-		} else if e = child.Commit(ctx); e != nil {
-			return e
-		}
-		payload, e := json.Marshal(receipt)
-		if e != nil {
-			return e
-		}
-		_, e = u.tx.Exec(ctx, "INSERT INTO compensation.grade_rate_receipt(instance_id,subject_id,submission_id,digest,result) VALUES($1,$2,$3,$4,$5)", s.Instance, u.guard.Principal().ID, submission, sum[:], payload)
-		return e
-	})
-	if err == nil {
-		err = outcomeErr
-	}
-	return
+	return saveCommand(ctx, s, cred, rateCommands, id, submission, input.Action, fields, input, s.applyRate)
 }
-
 func (s *Store) applyRate(ctx context.Context, u *unit, id string, in c.WriteRate, explicit []string) (c.Receipt, error) {
 	var out c.Receipt
 	var state app.RateState
@@ -201,6 +72,11 @@ func (s *Store) applyRate(ctx context.Context, u *unit, id string, in c.WriteRat
 	out = c.Receipt{ObjectID: state.ID, RecordID: change.Target.ID, Revision: change.Target.Revision, Version: state.Version, Outcome: "no_change"}
 	if !change.Changed {
 		return out, nil
+	}
+	if id != "" {
+		if err = s.protectPlanUse(ctx, u, state, change.Records); err != nil {
+			return out, err
+		}
 	}
 	op, err := u.guard.OperatorSnapshot(ctx)
 	if err != nil {
@@ -266,42 +142,4 @@ func (s *Store) applyRate(ctx context.Context, u *unit, id string, in c.WriteRat
 	}
 	_, err = u.tx.Exec(ctx, `INSERT INTO compensation.grade_rate_outbox VALUES($1,$2,$3,jsonb_build_object('type','GradeRateChanged','sourceVersion',$3::uuid,'recordId',$4::uuid))`, s.Instance, state.ID, out.Version, change.Target.ID)
 	return out, err
-}
-
-// Resolve serializes with the original write. Closing an absent submission is
-// safe only while holding that same subject and submission lock.
-func (s *Store) ResolveRate(ctx context.Context, cred foundation.Credentials, id string) (out c.Receipt, err error) {
-	if !foundation.ValidID(id) {
-		return out, unavailable()
-	}
-	err = s.within(ctx, cred, true, func(ctx context.Context, u *unit) error {
-		if _, e := u.visibility(ctx, false); e != nil {
-			return e
-		}
-		if e := u.lock(ctx, "compensation.receipt/"+s.Instance+"/"+u.guard.Principal().ID+"/"+id); e != nil {
-			return e
-		}
-		r, _, e := s.receipt(ctx, u, id)
-		if errors.Is(e, pgx.ErrNoRows) {
-			out = c.Receipt{SubmissionID: id, Outcome: "not_applied"}
-			raw, e := json.Marshal(storedReceipt{Receipt: out})
-			if e != nil {
-				return e
-			}
-			_, e = u.tx.Exec(ctx, "INSERT INTO compensation.grade_rate_receipt(instance_id,subject_id,submission_id,result) VALUES($1,$2,$3,$4)", s.Instance, u.guard.Principal().ID, id, raw)
-			return e
-		}
-		if e != nil {
-			return e
-		}
-		out = r.Receipt
-		if r.Failure != nil {
-			if _, e = u.rateWriteGrant(ctx, r.Action, r.Fields); e != nil {
-				return e
-			}
-			out.Message = r.Failure.Message
-		}
-		return nil
-	})
-	return
 }

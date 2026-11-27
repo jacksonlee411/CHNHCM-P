@@ -1,6 +1,9 @@
 import { RateList } from '../features/compensation/RateList';
 import { RateDetailPage } from '../features/compensation/RateDetail';
-import { RateRecovery } from '../features/compensation/Recovery';
+import { PlanList } from '../features/compensation/PlanList';
+import { PlanDetailPage } from '../features/compensation/PlanDetail';
+import { planTitle, planPath } from '../features/compensation/plans';
+import { CompensationRecovery } from '../features/compensation/Recovery';
 import { menuAccess as compensationAccess, ratePath, rateTitle } from '../features/compensation/rates';
 import {OfferList, OfferDetail, offerAccess,offerPath} from '../features/recruiting/Offers';
 import { AssignmentPolicyPage, PurposePage, policyPath } from '../features/readiness/RulesPages';
@@ -79,7 +82,9 @@ export function App() {
   const registerAccess=person.useRead(session ? session.instanceId+session.subjectId : undefined,async()=>unwrap(await api.GET('/api/v1/employment-actions/context')));
   const recruiting=person.useRead(session?session.instanceId+session.subjectId:undefined,()=>offerAccess());
   const compensation = person.useRead(session ? session.instanceId + session.subjectId : undefined, compensationAccess);
-  const compensationSection = compensation.data?.gradeRates ? [{ label: '薪酬配置', items: [{ label: rateTitle, path: ratePath }] }] : [];
+  const compensationItems = [...(compensation.data?.plans ? [{label:planTitle, path:planPath}] : []),
+    ...(compensation.data?.gradeRates ? [{label:rateTitle, path:ratePath}] : [])];
+  const compensationSection = compensationItems.length ? [{label:'薪酬配置', items:compensationItems}] : [];
   const settingsApp: NavigationApp = { ...baseSettingsApp, sections: [...baseSettingsApp.sections, ...compensationSection] };
   const compensationPage = location.pathname.startsWith('/settings/compensation/');
   const canRegister=!!registerAccess.data?.canList;
@@ -207,9 +212,9 @@ export function App() {
   return (
     <SessionRecoveryContext.Provider value={Boolean(session && (loading || sessionError))}>
     <AppShell
-      navigation={session ? <AppNavigation apps={apps} activeApp={activeApp} activeSection={activeSection} activePath={compensationPage?ratePath:onOffer?offerPath:onRegister?registerPath:personPage?person.path:location.pathname===policyPath?policyPath:location.pathname.startsWith(quotaPath)?quotaPath:location.pathname===hierarchyPath||location.pathname.startsWith(staffingPaths.position)?staffingPaths.position:location.pathname.startsWith(staffingPaths.gradeladder)?staffingPaths.gradeladder:location.pathname.startsWith(staffingPaths.grade)?staffingPaths.grade:location.pathname.startsWith(staffingPaths.jobfunction)?staffingPaths.jobfunction:location.pathname.startsWith(staffingPaths.jobfamily)?staffingPaths.jobfamily:location.pathname.startsWith(staffingPaths.job)?staffingPaths.job:location.pathname.startsWith(LEGAL_ENTITY_PATH)?LEGAL_ENTITY_PATH:location.pathname.startsWith(ENTERPRISE_PATH)?ENTERPRISE_PATH:location.pathname.startsWith(LOCATION_PATH)?LOCATION_PATH:location.pathname.startsWith(GEOAREA_PATH)?GEOAREA_PATH:location.pathname.startsWith(COUNTRY_PATH) ? COUNTRY_PATH : departmentPage ? DEPARTMENT_PATH : BU_PATH} desktop={desktop} go={navigate} /> : undefined}
+      navigation={session ? <AppNavigation apps={apps} activeApp={activeApp} activeSection={activeSection} activePath={compensationPage?(location.pathname.startsWith(planPath)?planPath:ratePath):onOffer?offerPath:onRegister?registerPath:personPage?person.path:location.pathname===policyPath?policyPath:location.pathname.startsWith(quotaPath)?quotaPath:location.pathname===hierarchyPath||location.pathname.startsWith(staffingPaths.position)?staffingPaths.position:location.pathname.startsWith(staffingPaths.gradeladder)?staffingPaths.gradeladder:location.pathname.startsWith(staffingPaths.grade)?staffingPaths.grade:location.pathname.startsWith(staffingPaths.jobfunction)?staffingPaths.jobfunction:location.pathname.startsWith(staffingPaths.jobfamily)?staffingPaths.jobfamily:location.pathname.startsWith(staffingPaths.job)?staffingPaths.job:location.pathname.startsWith(LEGAL_ENTITY_PATH)?LEGAL_ENTITY_PATH:location.pathname.startsWith(ENTERPRISE_PATH)?ENTERPRISE_PATH:location.pathname.startsWith(LOCATION_PATH)?LOCATION_PATH:location.pathname.startsWith(GEOAREA_PATH)?GEOAREA_PATH:location.pathname.startsWith(COUNTRY_PATH) ? COUNTRY_PATH : departmentPage ? DEPARTMENT_PATH : BU_PATH} desktop={desktop} go={navigate} /> : undefined}
       account={session && <><Typography className="app-account-name">{session.login}</Typography><Button color="inherit" onClick={() => void exit()}>退出</Button></>}
-      notices={session && <>{loading && <Alert severity="info">正在恢复登录状态…</Alert>}{sessionError && <Alert severity="error" action={<Button disabled={loading} onClick={() => void refresh()}>重试</Button>}>{sessionError}</Alert>}{error && <Alert severity="error">{error}</Alert>}<RateRecovery key={session.instanceId+session.subjectId} session={session}/><QuotaRecovery key={session.instanceId+session.subjectId} session={session}/><StaffingRecovery session={session}/><Recovery key={`recovery:${session.instanceId}:${session.subjectId}`} session={session} /><GeoAreaRecovery key={`geoarea-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LegalEntityRecovery key={`legalentity-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><EnterpriseRecovery key={`enterprise-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LocationRecovery key={`location-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><CountryRecovery key={`country-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><PersonRecovery key={`person-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><DepartmentRecovery key={`department-recovery:${session.instanceId}:${session.subjectId}`} session={session} /></>}
+      notices={session && <>{loading && <Alert severity="info">正在恢复登录状态…</Alert>}{sessionError && <Alert severity="error" action={<Button disabled={loading} onClick={() => void refresh()}>重试</Button>}>{sessionError}</Alert>}{error && <Alert severity="error">{error}</Alert>}<CompensationRecovery key={"rate"+session.instanceId+session.subjectId} session={session} kind="rate"/><CompensationRecovery key={"plan"+session.instanceId+session.subjectId} session={session} kind="plan"/><QuotaRecovery key={session.instanceId+session.subjectId} session={session}/><StaffingRecovery session={session}/><Recovery key={`recovery:${session.instanceId}:${session.subjectId}`} session={session} /><GeoAreaRecovery key={`geoarea-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LegalEntityRecovery key={`legalentity-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><EnterpriseRecovery key={`enterprise-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LocationRecovery key={`location-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><CountryRecovery key={`country-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><PersonRecovery key={`person-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><DepartmentRecovery key={`department-recovery:${session.instanceId}:${session.subjectId}`} session={session} /></>}
     >
       {sessionError && !session ? (
         <Alert
@@ -251,6 +256,9 @@ export function App() {
       ) : (
         <>
           <Routes key={`routes:${session.instanceId}:${session.subjectId}`}>
+            <Route path={planPath} element={<PlanList session={session}/>}/>
+            <Route path={planPath + '/new'} element={<PlanDetailPage key="new-plan" creating session={session}/>}/>
+            <Route path={planPath + '/:id'} element={<PlanDetailPage key={location.pathname} session={session}/>}/>
             <Route path={ratePath} element={<RateList session={session}/>}/>
             <Route path={ratePath + '/new'} element={<RateDetailPage key="new-rate" creating session={session}/>}/>
             <Route path={ratePath + '/:id'} element={<RateDetailPage key={location.pathname} session={session}/>}/>

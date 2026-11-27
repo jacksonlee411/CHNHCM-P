@@ -8,6 +8,7 @@ import (
 	"time"
 
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	cfg "chnhcm.local/chnhcm/internal/contexts/configuration/public"
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	st "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	"chnhcm.local/chnhcm/internal/foundation"
@@ -17,12 +18,14 @@ import (
 )
 
 type Store struct {
-	Pool       *pgxpool.Pool
-	Instance   string
-	Guard      func(context.Context, pgx.Tx, foundation.Credentials) (access.Guard, error)
-	Enterprise org.EnterpriseFloor
-	Grades     st.CompensationGrades
-	Clock      func() time.Time
+	Pool          *pgxpool.Pool
+	Instance      string
+	Guard         func(context.Context, pgx.Tx, foundation.Credentials) (access.Guard, error)
+	Enterprise    org.EnterpriseFloor
+	Grades        st.CompensationGrades
+	LegalEntities org.CompensationLegalEntities
+	Scopes        cfg.Applicability
+	Clock         func() time.Time
 }
 
 type unit struct {
@@ -114,24 +117,30 @@ func fault(err error) (*foundation.Fault, bool) {
 	return f, ok
 }
 
-// Object discovery is hidden on a denied read. Session and infrastructure faults retain their meaning.
 func (u *unit) requireRateRead(ctx context.Context) (access.Decision, error) {
-	result, err := u.decision(ctx, "graderate.read", nil)
+	return u.requireObjectRead(ctx, rateCommands)
+}
+func (u *unit) rateWriteGrant(ctx context.Context, action string, fields []string) (access.Decision, error) {
+	return u.objectWriteGrant(ctx, rateCommands, action, fields)
+}
+
+// Object discovery is hidden on a denied read. Session and infrastructure faults retain their meaning.
+func (u *unit) requireObjectRead(ctx context.Context, entity commandOwner) (access.Decision, error) {
+	result, err := u.decision(ctx, entity.permission+".read", nil)
 	if err == nil && !result.Allowed {
 		err = unavailable()
 	}
 	return result, err
 }
-
-func (u *unit) rateWriteGrant(ctx context.Context, action string, fields []string) (access.Decision, error) {
-	read, err := u.requireRateRead(ctx)
+func (u *unit) objectWriteGrant(ctx context.Context, entity commandOwner, action string, fields []string) (access.Decision, error) {
+	read, err := u.requireObjectRead(ctx, entity)
 	if err != nil {
 		return read, err
 	}
-	for _, field := range fields {
-		if !has(read.ReadFields, field) {
+	for _, f := range fields {
+		if !has(read.ReadFields, f) {
 			return read, denied()
 		}
 	}
-	return u.require(ctx, "graderate."+strings.ToLower(action), fields)
+	return u.require(ctx, entity.permission+"."+strings.ToLower(action), fields)
 }
