@@ -514,9 +514,14 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await expect(page.getByRole('link', {name:'新增兼岗'})).toHaveCount(0);
   if (await page.evaluate(() => innerWidth >= 900)) {
     const groups = page.locator('form .object-detail-columns > *');
-    const left = await groups.first().boundingBox(), right = await groups.last().boundingBox();
-    expect(right!.x).toBeGreaterThan(left!.x + left!.width);
-    expect(Math.abs(right!.y - left!.y)).toBeLessThan(2);
+    await expect(groups).toHaveCount(2);
+    // Compare both columns in the same layout snapshot.
+    const [left, right] = await groups.evaluateAll(columns => columns.map(column => {
+      const { x, y, right } = column.getBoundingClientRect();
+      return { x, y, right };
+    }));
+    expect(right.x).toBeGreaterThan(left.right);
+    expect(Math.abs(right.y - left.y)).toBeLessThan(2);
   }
   await page.getByRole('button',{name:'取消',exact:true}).click();
   await expect(page.getByRole('button',{name:'更多操作',exact:true})).toBeFocused();
