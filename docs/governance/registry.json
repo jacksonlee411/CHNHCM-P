@@ -3469,7 +3469,7 @@
     {
       "id": "CHNHCM-405",
       "title": "人员名录交互、部门层级与验收样本整改",
-      "path": "docs/plans/405-personnel-directory.md",
+      "path": "docs/archive/plans/405-personnel-directory.md",
       "owner_branch": "wt-dev-e",
       "owner_role": "人员与任职名录维护者",
       "owner": null,
@@ -3490,10 +3490,17 @@
         "result": "accepted",
         "evidence": "docs/verification/405-personnel-directory.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-27",
+        "reason": "七项整改经定向回归、两套万人容量及4496三种桌面视口核验，原件和新增样本均已复核。"
+      },
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "规则由502、503、507接续，实页验收与环境责任由405验证记录接续。",
+        "previous_path": "docs/plans/405-personnel-directory.md"
+      }
     }
   ],
   "first_slice": {
@@ -24781,11 +24788,11 @@
           "CHNHCM-119"
         ],
         "format": "numbered",
-        "status": "draft",
+        "status": "final",
         "date": "2026-11-27",
-        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "base_commit": "547a70dced30aa3d0069d71d6e73bd90a014b151",
         "working_tree": "clean",
-        "change_description": "原问题来自4496的交付版本，复验分批记载。",
+        "change_description": "由1284f50e原实页复现，236a913完成整改，547a70d保留全隐藏后的公共选择入口并在4496复验。",
         "environment": "wt-dev-e，t03-first-e 4496 / 8496 / 54496，Chromium 140 与 PostgreSQL 18。",
         "scope": "两轮问题、定稿评审、业务回归及固定菜单验收。",
         "results": [
@@ -24793,9 +24800,31 @@
             "check": "原菜单重现查询、筛选、选择、部门栏和样本问题",
             "result": "failed",
             "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "方案修订及按012、119、502、507顺序评审",
+            "result": "passed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "首轮并行负载和业务单元隐藏全部列",
+            "result": "failed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "七项问题、公共列表及实库授权与成员变化复核",
+            "result": "passed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "两套万人容量及固定原件、样本与三视口复验",
+            "result": "passed",
+            "evidence": "docs/verification/data/405-personnel-directory/validation.json"
           }
         ],
-        "limitations": []
+        "limitations": [
+          "样本在任数按2026-11-27计算。验收为本地固定环境和定向回归，远程CI未运行。"
+        ]
       }
     ]
   },

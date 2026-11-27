@@ -75,7 +75,6 @@
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
 | [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
-| [405 人员名录交互、部门层级与验收样本整改](../../plans/405-personnel-directory.md) | active | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
 
@@ -143,6 +142,7 @@
 | [315 部门与岗位编制后台实施计划](../../archive/plans/315-staffing-quota-administration.md) | active | completed | 物理归档 |
 | [400 M04 T02 入职规则与准备实施方案](../../archive/plans/400-hire-readiness.md) | active | completed | 物理归档 |
 | [404 T03 按岗位免占编首次入职实施方案](../../archive/plans/404-position-exempt-first-hire.md) | active | completed | 物理归档 |
+| [405 人员名录交互、部门层级与验收样本整改](../../archive/plans/405-personnel-directory.md) | active | completed | 物理归档 |
 | [500 人员模块实施路线图](../../archive/plans/500-personnel-roadmap.md) | active | completed | 物理归档 |
 | [504 M01 个人资料扩展实施方案](../../archive/plans/504-personal-profile-extension.md) | active | completed | 物理归档 |
 | [508 人员职务信息评审问题修复实施方案](../../archive/plans/508-job-information-remediation.md) | active | completed | 物理归档 |
@@ -173,7 +173,7 @@
 
 | 关联编号 | 记录 | 日期 | 状态 |
 | --- | --- | --- | --- |
-| 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 | draft |
+| 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 | final |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 | final |
