@@ -60,19 +60,33 @@ for (const kind of objects) {
 
 test('301列表读取故障保留条件且不显示保存指令', async ({ page }) => {
   await open(page);
-  await menu(page, objects[0]);
-  let fail = true;
-  await page.route('**/api/v1/business-units?**', route => fail
-    ? route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ code: 'M02_DEPENDENCY_UNAVAILABLE', message: '服务暂时不可用，请稍后重试' }) })
-    : route.continue());
-  await page.getByRole('textbox', { name: '搜索编码或名称', exact: true }).fill('保留条件');
-  await page.getByRole('button', { name: '查询', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('服务暂时不可用');
+  const query = '保留条件';
+  const filteredList = (url: URL) => url.pathname === '/api/v1/business-units' && url.searchParams.get('q') === query;
+  await page.route(filteredList, route => route.fulfill({
+    status: 503, json: { code: 'M02_DEPENDENCY_UNAVAILABLE', message: '服务暂时不可用，请稍后重试' },
+  }));
+  const search = page.getByRole('textbox', { name: '搜索编码或名称', exact: true });
+  const empty = page.getByText('没有符合条件的业务单元', { exact: true });
+  await search.fill(query);
+  const [failed] = await Promise.all([
+    page.waitForResponse(response => response.request().method() === 'GET' && filteredList(new URL(response.url()))),
+    page.getByRole('button', { name: '查询', exact: true }).click(),
+  ]);
+  expect(failed.status()).toBe(503);
+  const alert = page.getByRole('alert').filter({ hasText: '服务暂时不可用' });
+  await expect(alert).toBeVisible();
+  await expect(search).toHaveValue(query);
+  await expect(empty).toHaveCount(0);
   await expect(page.getByText(/已提交|原标识|查回/)).toHaveCount(0);
-  fail = false;
-  await page.getByRole('button', { name: '重试', exact: true }).click();
-  await expect(page.getByText('没有符合条件的业务单元', { exact: true })).toBeVisible();
-  expect(new URL(page.url()).searchParams.get('q')).toBe('保留条件');
+  await page.unroute(filteredList);
+  const [recovered] = await Promise.all([
+    page.waitForResponse(response => response.request().method() === 'GET' && response.url() === failed.url()),
+    alert.getByRole('button', { name: '重试', exact: true }).click(),
+  ]);
+  expect(recovered.status()).toBe(200);
+  await expect(alert).toHaveCount(0);
+  await expect(empty).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('q')).toBe(query);
 });
 
 test('301未知保存只确认一次，离开和刷新后由用户查看结果', async ({ page }) => {
