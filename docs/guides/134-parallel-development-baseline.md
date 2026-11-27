@@ -14,14 +14,14 @@ Git同步不会启动或升级数据库。当前4390由wt-dev-b维护，供用�
 
 ## 2 新主机准备代码工作树
 
-需要当前私有仓库的访问权限、Git及SSH认证。SSH密钥由本机管理，不写入仓库。以下只用于尚无该检出的主机；已有目录先检查，不覆盖。
+新主机可通过 HTTPS 克隆公开的 P 仓。推送使用本机已有的 GitHub 认证。以下命令用于首次检出，已有检出先用 `git remote get-url origin` 核对仓库。
 
 ```bash
 CHNHCM_WORKSPACE="$HOME/projects"
 CHNHCM_BRANCH=wt-dev-c
 mkdir -p "$CHNHCM_WORKSPACE"
-git clone --branch main ssh://git@ssh.github.com:443/jacksonlee411/CHNHCM.git "$CHNHCM_WORKSPACE/CHNHCM"
-cd "$CHNHCM_WORKSPACE/CHNHCM"
+git clone --branch main https://github.com/jacksonlee411/CHNHCM-P.git "$CHNHCM_WORKSPACE/CHNHCM-P"
+cd "$CHNHCM_WORKSPACE/CHNHCM-P"
 git fetch origin
 git status --short
 git worktree list
@@ -37,8 +37,8 @@ git rev-list --left-right --count "origin/main...$CHNHCM_BRANCH"
 首次共同基线同步完成后，最后一行应为`0 0`。若分支已有新提交，先确认负责者和起点，不移动已有ref来伪造相同基线。确认所选分支未在该仓其他工作树检出、目标目录不存在后：
 
 ```bash
-git worktree add "$CHNHCM_WORKSPACE/CHNHCM-$CHNHCM_BRANCH" "$CHNHCM_BRANCH"
-cd "$CHNHCM_WORKSPACE/CHNHCM-$CHNHCM_BRANCH"
+git worktree add "$CHNHCM_WORKSPACE/CHNHCM-P-$CHNHCM_BRANCH" "$CHNHCM_BRANCH"
+cd "$CHNHCM_WORKSPACE/CHNHCM-P-$CHNHCM_BRANCH"
 pwd
 git branch --show-current
 git rev-parse HEAD
@@ -118,6 +118,12 @@ PR 面向 main。CI 维护者按 137 确定正式门禁、分片及运行时长�
 三项门禁成功后保留提交历史合并。获得固定分支同步授权时，fetch后逐个核对本地/远程祖先关系；main及已建工作树在各自目录快进，未检出ref核验旧值后快进，再非强制推送开发分支。任何独有提交、脏工作区或并发ref变化均保留现场。其他主机需要由其负责者再次fetch并按第2节同步；本机同步不等于远端主机工作区已更新。
 
 正式容量计时须独占主机资源，避免同时构建、smoke、数据导入或其他负载；普通功能CI在独立runner并行。容量失败继续保留首失败与复验，不与功能准入混算。
+
+### 5.1 项目技能的版本与分发
+
+P 仓统一在 `.agents/skills/chnhcm-p-<名称>/SKILL.md` 维护项目技能，引用材料和辅助脚本随同提交，路径相对于检出目录。用户目录、机器管理员目录、工作树公共父目录及其他分支不作为项目技能的安装或读取入口。工具只在发起任务的工作树内创建项目技能。仓库检查覆盖入口、链接和公共安装路径。
+
+技能内容以独立提交评审，合入 main 后各分支按需采用。能快进的分支按第 2 节更新。有独有业务提交的分支，由负责人先确认技能引用的合同与命令在本分支可用，再在干净工作区执行 `git cherry-pick -x <技能提交>`。其他主机更新自己的 P 仓检出。用 `git rev-parse HEAD:.agents/skills` 比对整个技能目录的版本，使用新会话核对实际发现的名称及来源路径。单独 fetch 只更新远端跟踪引用。
 
 ## 6 组织来源与公开范围
 
