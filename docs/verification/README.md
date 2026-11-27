@@ -49,7 +49,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 [原仓 027 X03 授予内核与旧库切换](027-x03-grant-cutover.md)记录逐主体对账、原提交查回、重叠授权及真实事务提交顺序。
 [313 岗位核编首批实施验证](313-quota-implementation.md)记录按日核编、部门汇总、数据库重启查回，以及 AC090 中核编独验和补登旧职务职类的并存联验。
 
-140 的方案评审按授权翻页、业务日期、切片登记和历史回执逐轮复核，记录各稿差异。[分项实施验收](140-module-cohesion-implementation.md)覆盖 T01—T03，[阶段评审修复](140-module-cohesion-review-fixes.md)记录 SQL 归属及准确采用名称的反例与复验。[方案评审](140-module-cohesion-roadmap-review.md) · [实施路线图](../plans/140-module-cohesion-roadmap.md)
+140 已完成。T01–T03 的授权翻页、日期和切片登记保留原批结论。T04 随地点与法律实体的删除回执修复完成，两类对象的原件和原号恢复已核对。[分项验收](140-module-cohesion-implementation.md) · [阶段反例](140-module-cohesion-review-fixes.md) · [T04 验证与归档交接](140-history-receipt-closeout.md) · [方案评审](140-module-cohesion-roadmap-review.md) · [归档计划](../archive/plans/140-module-cohesion-roadmap.md)
 
 岗位关系仅保留管理汇报。当前验证包括旧接口及书签失效、存量数据库升级边界、两种角色的浏览器操作和 4390 实际更新。[139 岗位工作区实施验证](139-position-workspace-implementation.md#139-reporting-4390)
 

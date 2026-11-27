@@ -1,6 +1,6 @@
 # CHNHCM-140 阶段评审修复与复验
 
-2026-11-22，wt-dev-b，基线 `b647031b8f64abf7447d81888d1dd399354bb4d5`。工作区及 stash 开始时为空。[路线图](../plans/140-module-cohesion-roadmap.md)的 A02、A04 在原分项验收后收到以下反例。[原签收](140-module-cohesion-implementation.md)
+2026-11-22，wt-dev-b，基线 `b647031b8f64abf7447d81888d1dd399354bb4d5`。工作区及 stash 开始时为空。[路线图](../archive/plans/140-module-cohesion-roadmap.md)的 A02、A04 在原分项验收后收到以下反例。[原签收](140-module-cohesion-implementation.md)
 
 ## 1 SQL 归属
 

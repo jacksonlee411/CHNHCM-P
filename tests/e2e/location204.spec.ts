@@ -1,3 +1,4 @@
+import { checkMiddleDelete } from './delete-history-support';
 import { desktopViewports } from './desktop-viewports.mjs';
 import { readFileSync } from "node:fs";
 import { randomUUID } from 'node:crypto';
@@ -476,4 +477,8 @@ test('140 地点成对删除显示准确采用的区划路径', async ({page}) =
   await open(page);
   await create(page, '中国', '西乡塘');
   await checkAdoptedLabelOnPairDelete(page, 'locations', true);
+});
+
+test('140 地点删除中段后选中适用记录，查询者可回看删除前原件', async ({page}) => {
+  await checkMiddleDelete(page, 'locations', 'ADDRESS_ADJUSTMENT', create, menu);
 });

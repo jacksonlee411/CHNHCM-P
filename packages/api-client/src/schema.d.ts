@@ -9514,6 +9514,7 @@ export interface components {
         LocationResult: {
             action?: string;
             currentChanged: boolean;
+            /** @description 单条删除成功时指被删记录的原生效日，按当前字段权限返回。 */
             effectiveDate?: string | null;
             errorCode?: string | null;
             locationId?: string | null;
@@ -9521,10 +9522,13 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_change" | "not_applied" | "pending";
             recordedAt?: string | null;
             replayed: boolean;
+            /** @description 单条删除成功后，在本次新来源中接管被删记录原生效日的记录。 */
             selectedRecordId?: string | null;
             sourceVersion?: string | null;
             submissionId: string;
+            /** @description 单条删除成功时指被删记录。 */
             targetRecordId?: string | null;
+            /** @description 单条删除成功时指被删记录的删除前修订。 */
             targetRevision?: string | null;
         };
         LocationSelectionInput: {
@@ -10005,6 +10009,7 @@ export interface components {
         LegalEntityResult: {
             action?: string;
             currentChanged: boolean;
+            /** @description 单条删除成功时指被删记录的原生效日，按当前字段权限返回。 */
             effectiveDate?: string | null;
             errorCode?: string | null;
             legalEntityId?: string | null;
@@ -10012,10 +10017,13 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_change" | "not_applied" | "pending";
             recordedAt?: string | null;
             replayed: boolean;
+            /** @description 单条删除成功后，在本次新来源中接管被删记录原生效日的记录。 */
             selectedRecordId?: string | null;
             sourceVersion?: string | null;
             submissionId: string;
+            /** @description 单条删除成功时指被删记录。 */
             targetRecordId?: string | null;
+            /** @description 单条删除成功时指被删记录的删除前修订。 */
             targetRevision?: string | null;
         };
         LegalEntitySelectionInput: {
