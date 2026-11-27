@@ -2,7 +2,7 @@
 
 登记信息：[registry.json](../governance/registry.json)。适用范围：M02业务单元列表的勾选、完整查询结果全选和首个消费动作“导出所选”。依据用户对CubeBox对标建议的采纳及“全选覆盖当前查询条件下、当前用户有权读取的全部列表结果”的明确修正。从[决策模板](../templates/decision.md)起草；实施由[115计划](../archive/plans/115-bu-query-selection-and-export.md)承接。
 
-当前普通维护日期语义由[123](../adr/123-current-maintenance-and-dated-query-boundary.md)调整：列表按服务端D，详情按所选记录，取消通用查看日期；原阶段完成及验证记录保留。部门仍待116 R4/R5实现。
+[123](123-current-maintenance-and-dated-query-boundary.md)规定普通维护的日期语义。BU 列表按服务端业务日查询，详情按所选记录展示。部门的查询和选择适用[部门页面合同](../specs/m02/119-department-functional-design.md)。
 
 ## 1 背景与问题
 
@@ -43,11 +43,13 @@ CubeBox部门样板的勾选与selected_department返回定位分离，选择后
 
 ## 4 影响与验证
 
-新增正常场景、BR022/023及AC032/033由011定义；012维护交互，013维护唯一目标协议、查询复用和事务，023追加TL-349—366。既有维护命令、不可变修订、确切来源、采用及幂等结果不变；选择/导出不新增组织事件、Outbox或来源版本。2026-11-08按[128](128-authorization-evidence-removal.md)局部修订：当前判权继续执行，不保存逐次完整过程；已有明确敏感操作只记录必要最小事件。完整查询集合及CSV全部或失败的要求保持，128产品整改尚未实施。
+正常场景、BR022/023 及 AC032/033 由 011 定义，012 维护交互，013 维护协议、查询复用和事务，023 定义 TL-349—366。选择和导出不产生新的组织事件、Outbox 或来源版本，既有维护命令、不可变修订、确切来源、采用和幂等结果仍受保护。
+
+按[128 第 5 节](128-authorization-evidence-removal.md#authorization-evidence-replacement)，普通读取、选择和导出均按当前权限判定。全选覆盖完整授权查询集合，导出逐项核验所选对象的导出权，CSV 完整交付或整次失败。仅对有明确用途的敏感操作记录必要的最小事件，普通访问不保存逐次完整判权过程。当批验证见[2026-11-08 实施记录](../verification/128-implementation.md)。
 
 实施必须验证137条结果/20条每页的全选、跨页排除和计数；对象/字段撤权、并发新命中或资料变化不得静默扩大范围；CSV需防公式注入、正确转义和失败零文件。正常菜单、查询草稿、原名称链接和返回定位继续验收。视口、关键流程及原生缩放按[012 第 6.2 节](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)执行。容量沿用013现有2000BU规模测量，不把正常分页100上限变成选择总数上限，不默加业务硬上限或截断结果。
 
-本次文档检查和分轮语义复核见[115文档报告](../verification/115-query-selection-docs.md)。产品各层检查尚未运行，不能以本报告代替业务验收。
+115 的文档检查和分轮语义复核见[设计报告](../verification/115-query-selection-docs.md)，产品接线、分层检查及 2000 BU 测量见[2026-11-03 实施报告](../verification/115-query-selection-implementation.md)。
 
 ## 5 适用与替代关系
 

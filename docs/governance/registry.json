@@ -353,7 +353,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "M02 BU SCN001—018/027、BR001—023/034—035、AC001—033/041—044；原维护、选择/导出及分类单组字段的实际范围按既有报告；122操作摘要/日志目标待实施。 2026-11-08按CHNHCM-128取消逐次完整授权过程持久化及其断言，保留当前授权/业务历史/恢复保护；新验收参数未运行，旧报告保持。",
+      "scope": "规定 M02 业务单元按日维护、查询选择与导出、分类、操作摘要和变更日志的场景、规则及验收条件。授权规则和 AC009 按 CHNHCM-128 第 5 节取消逐次完整判权存档，仍要求当前判权、业务历史、必要事件和原结果恢复。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -364,7 +364,9 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
       "archive": null
     },
@@ -409,7 +411,7 @@
         "X01",
         "X03"
       ],
-      "scope": "M02当前Go/API/存储/来源/事务及授权；唯一当前模型，固定两项启停；Community受控列表及单列谓词三参数接线，非Pro或通用查询框架。 114/115新增全结果选择/CSV协议与权限/单SQL快照已接线并按115验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。",
+      "scope": "规定 M02 业务单元的 Go、API、存储、来源与事务合同，包括固定两项启停、Community 列表的单列三参数筛选、完整集合选择与 CSV 的单语句快照，以及按权读取更正分类和差异。第 2、3.1.3、3.1.4、4—6 和 8 节按 CHNHCM-128 第 5 节撤除逐次完整判权存档及终态对它的依赖。当前授权、请求绑定、四种终态和来源保护继续适用。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -420,7 +422,9 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
       "archive": null
     },
@@ -439,9 +443,9 @@
       "review": {
         "date": "2026-11-27",
         "reviewer": "Codex 主代理",
-        "scope": "验收记录的主要用途、当次结论与公开限制、原件访问范围、接续链接及与现行规范的检索边界。",
+        "scope": "现行规范适用范围的写法、历史批次的查证入口，以及部分替代在正文、登记和生成目录的一致性。",
         "result": "accepted",
-        "evidence": "docs/verification/014-verification-catalog.md"
+        "evidence": "docs/verification/014-128-scope-and-replacement.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -711,7 +715,7 @@
         "M02",
         "X03"
       ],
-      "scope": "M02时间轴及列表案例；394编号、350现行、44退役；BU122/123/R1—R3结果保留各自报告边界。部门TL-394及122适用参数分别映射R4后端与R5正常菜单，按实际报告验收；R6容量后置。 2026-11-08按CHNHCM-128取消逐次完整授权过程持久化及其断言，保留当前授权/业务历史/恢复保护；新验收参数未运行，旧报告保持。",
+      "scope": "规定 M02 时间轴、列表选择与导出、操作摘要及变更日志的测试输入和独立预期，区分 BU、部门及后端、页面和容量参数。TL-178、TL-212 及反例 14 按 CHNHCM-128 第 5 节核验当前判权、原结果独立恢复、必要事实原子性及普通判权零过程写入。",
       "format": "numbered",
       "review": {
         "date": "2026-11-05",
@@ -721,7 +725,9 @@
         "evidence": "docs/verification/116-r5-department-pages-and-acceptance.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
       "archive": null
     },
@@ -1313,7 +1319,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "全查询授权结果选择及CSV所选导出已由115实施；只替代110/113相关后置边界，实际结果见实施报告。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。",
+      "scope": "规定 BU 列表完整授权查询结果的选择和所选 CSV 全部导出或整次失败，部分替代 110、113 对这两项功能的后置决定。普通维护日期按 CHNHCM-123。第 4 节按 CHNHCM-128 第 5 节取消普通读取、选择和导出的逐次完整判权存档，保留当前授权及明确敏感操作的最小事件。",
       "format": "numbered",
       "review": {
         "date": "2026-11-04",
@@ -1324,7 +1330,8 @@
       },
       "execution_status": null,
       "superseded_by": [
-        "CHNHCM-123"
+        "CHNHCM-123",
+        "CHNHCM-128"
       ],
       "closure": null,
       "archive": null
@@ -1438,7 +1445,7 @@
         "M02",
         "X03"
       ],
-      "scope": "BU/部门独立表组、单值BU归属、同日一条、最小行政关系、路径、分类及恢复；R4后端与R5页面按独立证据验收，R6容量后置。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
+      "scope": "规定 BU 与部门使用独立表组，以及部门的单值 BU 归属、同日一条生效记录、行政上级、路径、分类和原结果恢复。第 4.8 节按 CHNHCM-128 第 5 节撤除关联快捷跳转和专属判权。引用名称与编码按权展示，关系维护资格及历史路径真实性继续适用。",
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
@@ -1448,7 +1455,9 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
       "archive": null
     },
@@ -1465,7 +1474,7 @@
         "M02",
         "X03"
       ],
-      "scope": "部门正常菜单、列表/详情/维护、关系候选、路径、日志及恢复；R5页面落地与双对象实测，容量留R6。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
+      "scope": "规定部门正常菜单、列表与详情、维护表单、关系候选、路径、日志及恢复交互。第 3、8 节按 CHNHCM-128 第 5 节撤除管理 BU、行政上级及路径祖先的快捷链接和打开能力预判，保留获权文本、本对象导航及准确来源定位。",
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
@@ -1475,7 +1484,9 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
       "archive": null
     },
@@ -1492,7 +1503,7 @@
         "M02",
         "X03"
       ],
-      "scope": "独立存储/类型端口、当前授权和共同锁序、路径证据；R5新增筛选引用模式、展示日期及链接权限，R6容量后置。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
+      "scope": "规定 M02 按日维护的独立存储、类型化接口、当前权限、共同锁序、提交恢复和路径来源保护。逐次判权过程存档、业务终态对该档案的依赖，以及部门关联快捷跳转的专属判权、摘要、缓存和返回字段，按 CHNHCM-128 第 5 节列明的范围撤除。",
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
@@ -1502,7 +1513,9 @@
         "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
       "archive": null
     },
@@ -1519,7 +1532,7 @@
         "M02",
         "X03"
       ],
-      "scope": "双对象分层验收；R4真实后端及R5菜单/视口映射已按实际报告闭合，R6容量未运行；旧报告保持。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。",
+      "scope": "规定 BU 与部门按日维护的分层验收条件，包括 R4 后端、R5 正常菜单和 R6 容量，以及其他对象适用的接入映射。第 11 节 R6-08 的逐次判权存档要求按 CHNHCM-128 第 5 节替代。验收覆盖当前范围和字段判权、撤权保护、原结果恢复及操作者身份快照。",
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
@@ -1529,7 +1542,9 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
       "archive": null
     },
@@ -1729,7 +1744,7 @@
         "X03",
         "M02"
       ],
-      "scope": "授权过程存储、业务终态耦合及关联跳转专属判权/摘要/DTO已按128实施记录完成删除及分层验证，原历史结果保留。容量、浏览器稳定性及固定环境交付由125恢复整改分别验收，不能以128完成代表容量关闭。",
+      "scope": "规定 X03 当前判权及必要安全事件、M02 业务终态独立恢复和部门关联名称展示。第 5 节逐项列出撤除的完整判权存档、终态依赖、关联快捷跳转及专属机制，保留当前授权、业务历史与准确来源。适用于采用相同机制的后续对象，容量验收由 125 负责。",
       "format": "numbered",
       "review": {
         "date": "2026-11-08",
@@ -3509,6 +3524,47 @@
         ],
         "purpose": "governance",
         "conclusion": "312 份原记录已补齐用途、结论及证据位置，原报告和原有字段保留。默认检索仍仅命中现行规范，本轮只验文档。",
+        "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/014-128-scope-and-replacement.md",
+        "related_documents": [
+          "CHNHCM-014",
+          "CHNHCM-011",
+          "CHNHCM-013",
+          "CHNHCM-023",
+          "CHNHCM-114",
+          "CHNHCM-118",
+          "CHNHCM-119",
+          "CHNHCM-120",
+          "CHNHCM-121",
+          "CHNHCM-128"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "a363e104394f27e8066afb8ae63400df5a62c9c0",
+        "working_tree": "dirty",
+        "change_description": "修订 014 的登记与复核要求，对照 128 第 5 节修订现行规范正文、适用范围及生成目录。",
+        "environment": "wt-dev-f，本地 Git、Python 3 和 ripgrep。",
+        "scope": "128 及其直接部分替代的 8 份现行规范，122 与 R6 的关联历史记录，现行目录和默认全文检索。",
+        "results": [
+          {
+            "check": "逐条核对 128 第 5 节、8 份原规范的保留与替代范围、登记状态和目录入口",
+            "result": "passed",
+            "evidence": "docs/verification/014-128-scope-and-replacement.md"
+          },
+          {
+            "check": "核对 122、R6、128 的日期与实际结论，对照基线检查 313 份既有记录及 55 份现行规范的默认检索集合",
+            "result": "passed",
+            "evidence": "docs/verification/014-128-scope-and-replacement.md"
+          }
+        ],
+        "limitations": [
+          "本次检查仓内文档、导航和公开登记。历史产品及容量用例未重跑，128 原报告及附件由原仓按权限保管。"
+        ],
+        "purpose": "governance",
+        "conclusion": "8 份原规范可查到 128 的部分替代，114 同时保留 123。默认全文检索覆盖相同的 55 份现行规范，历史产品结果按原批次查证。",
         "evidence_access": "repository"
       },
       {

@@ -4,11 +4,11 @@
 
 2026-11-13首次新建默认日期按用户确定的[202项目规则](../../adr/202-master-data-default-effective-date.md)统一为1900-01-01，由Go创建上下文提供defaultEffectiveDate；currentDate仍表示今日，明确输入、原日期、后续位置/启停规则及依赖资格保持。默认非法时准确拒绝并允许用户明确改日，不静默换今天或改写父对象。本轮合同已接入现有BU/部门，产品适配及受影响分批回归见[200 G1报告](../../verification/200-g1-default-date.md)，原实施报告不改写。
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：116的R0部门目标合同，依[117决定](../../adr/117-m02-dated-maintenance-and-department-boundary.md)明确；页面、技术与验证分别见[119](119-department-functional-design.md)、[120](120-dated-maintenance-technical-contract.md)、[121](121-dated-object-admission-matrix.md)。部门后端和正常菜单已分别按R4/R5接通并完成限定验收，实际映射见121第9/10节；现有BU结果不代替部门证据。
+本规范依[117 决定](../../adr/117-m02-dated-maintenance-and-department-boundary.md)规定部门按日维护、BU 归属、行政关系和路径的业务规则。页面、技术及分层验收条件分别见[119](119-department-functional-design.md)、[120](120-dated-maintenance-technical-contract.md)、[121](121-dated-object-admission-matrix.md)。文档元数据见[登记表](../../governance/registry.json)。
 
-当前日期/记录/路径合同按[123](../../adr/123-current-maintenance-and-dated-query-boundary.md)调整；本次只同步部门设计，不表示部门或Hierarchy已经实现。
+普通维护中的日期、记录和路径按[123](../../adr/123-current-maintenance-and-dated-query-boundary.md)读取。部门后端和正常菜单的实际覆盖分别见 2026-11-05 的[R4 报告](../../verification/116-r4-department-backend.md)和[R5 报告](../../verification/116-r5-department-pages-and-acceptance.md)。
 
-2026-11-08按[128第2.6节](../../adr/128-authorization-evidence-removal.md)取消管理BU、行政上级及路径祖先的关联快捷跳转和专属检验；名称/编码以获权文本展示，关系维护与历史真实性保护保持。此增量尚待实施，原验证报告不改写。
+第 4.8 节按[128 替代对照](../../adr/128-authorization-evidence-removal.md#authorization-evidence-replacement)撤除管理 BU、行政上级和路径祖先的关联快捷跳转及目标详情权预判。名称和编码按当前引用读权展示为文本，编辑关系时校验资格，历史路径仍须能还原到准确来源。当批验证见[2026-11-08 实施记录](../../verification/128-implementation.md)。
 
 ## 1 业务目标与边界
 
