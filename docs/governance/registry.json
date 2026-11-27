@@ -2897,6 +2897,30 @@
       }
     },
     {
+      "id": "CHNHCM-316",
+      "title": "业务对象与配置数据建模规范",
+      "path": "docs/architecture/316-object-and-configuration-models.md",
+      "owner_branch": "wt-dev-d",
+      "owner_role": "架构与各事实所属领域维护者",
+      "owner": null,
+      "status": "active",
+      "type": "architecture",
+      "modules": [],
+      "scope": "跨模块选择业务对象、受控参考对象、轻量词表、规则配置与产品枚举，约定轻量配置的维护、采用、成本验证及演进。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理分轮自审并修订",
+        "scope": "五类模型选型、最小数据、日期与并发采用、权限、历史、成本比较及存量演进。",
+        "result": "accepted",
+        "evidence": "docs/verification/316-object-and-configuration-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
       "id": "CHNHCM-400",
       "title": "M04 T02 入职规则与准备实施方案",
       "path": "docs/archive/plans/400-hire-readiness.md",
@@ -24740,6 +24764,45 @@
         ],
         "limitations": [
           "4496 既有管理员无办理记录列表权限，获权的名单查询和跨页原件使用独立验收库。最终远程汇总按 PR 当前提交核验。"
+        ]
+      },
+      {
+        "path": "docs/verification/316-object-and-configuration-review.md",
+        "related_documents": [
+          "CHNHCM-316"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "新增 316 正文和评审记录，更新登记、规范导航与生成的分类目录。各轮正文摘要见报告。",
+        "environment": "wt-dev-d 本地工作树，Python 3.14.4，仓库文档检查。",
+        "scope": "316 跨模块架构规范与治理接入，按既有合同走查样本。",
+        "results": [
+          {
+            "check": "第一轮：选择后换版与补办日期依据不足",
+            "result": "failed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          },
+          {
+            "check": "第二轮：撤权草稿、期间排重及成本对照需补齐",
+            "result": "failed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          },
+          {
+            "check": "第三轮：两轮问题的语义复核与定稿走查",
+            "result": "passed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          },
+          {
+            "check": "make docs 的 189 项回归与仓库检查、覆盖新增文件的差异空白检查",
+            "result": "passed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          }
+        ],
+        "limitations": [
+          "主代理自审。未实施产品，未执行数据库、浏览器或性能试验。"
         ]
       }
     ]
