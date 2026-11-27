@@ -456,6 +456,7 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
   await expect(page.locator('.object-detail-identity h1')).toHaveText(sample.name);
   if (count === 0) await page.getByRole('tab', { name: '职务信息', exact: true }).click();
   if(businessAt!=='2027-04-01'){
+    await expect(page).toHaveURL(url => url.pathname.includes('/assignments/'));
     const projection=await request(page,'GET','/api/v1/assignments/'+new URL(page.url()).pathname.split('/').pop());
     const node=projection.body.effectiveDates.filter((d:string)=>d<=businessAt).at(-1);
     if(node)await chooseEffectiveDate(page,node);
@@ -464,6 +465,7 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
 }
 async function chooseEffectiveDate(page: Page, day: string) {
   const axis=page.getByRole('navigation',{name:'生效日期'});
+  await expect(axis.getByRole('button').first()).toBeVisible();
   const point=axis.locator('button[data-day="'+day+'"]');
   if(await point.isVisible()) await point.click();
   else {
