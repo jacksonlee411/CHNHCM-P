@@ -8,6 +8,7 @@ import (
 	app "chnhcm.local/chnhcm/internal/contexts/staffing/application"
 	s "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	"chnhcm.local/chnhcm/internal/foundation"
+	"fmt"
 	"slices"
 	"strings"
 	"testing"
@@ -169,6 +170,51 @@ func TestStaffing315DepartmentAllocation(t *testing.T) {
 			t.Fatal("范围泄露", k)
 		}
 	}
+	checkVisiblePositions := func() {
+		// The second grant can name its position, but cannot identify its department.
+		f.exec(`INSERT INTO access.subject_grant
+			SELECT instance_id, gen_random_uuid(), principal_id, 'position', $1, action,
+				array_remove(read_fields,'departmentId'), write_fields
+			FROM access.subject_grant WHERE principal_id=$2 AND scope_id=$3
+				AND action IN ('staffingquota.read','staffingquota.history.read')`, z, reader.subject, a)
+		defer f.exec("DELETE FROM access.subject_grant WHERE principal_id=$1 AND scope_id=$2 AND action LIKE 'staffingquota.%'", reader.subject, z)
+		list := func(query string) map[string]any {
+			return reader.call("GET", base+"/statistics?businessAt="+jan+"&pageSize=1&"+query, nil, "", 200)
+		}
+		for i, id := range []string{a, z} {
+			page := list(fmt.Sprintf("page=%d", i+1))
+			check(page["totalCount"], float64(2))
+			item := page["items"].([]any)[0].(map[string]any)
+			check(item["positionId"], id)
+			if id == z {
+				check(item["departmentId"], nil)
+			}
+			check(page["positionSummary"].(map[string]any)["total"], float64(4))
+			check(page["departments"].([]any)[0].(map[string]any)["total"], float64(3))
+		}
+		onlyZ := list("q=MG315&anchor=" + z)
+		check(onlyZ["positionSummary"].(map[string]any)["total"], float64(1))
+		nav := onlyZ["navigation"].(map[string]any)
+		check(nav["position"], float64(1))
+		check(nav["totalCount"], float64(1))
+		check(nav["previousId"], nil)
+		check(nav["nextId"], nil)
+		check(list("q=FUT315")["positionSummary"], nil)
+		f.exec("UPDATE access.subject_grant SET read_fields=array_remove(read_fields,'status') WHERE principal_id=$1 AND scope_id=$2 AND action='staffingquota.history.read'", reader.subject, a)
+		defer f.exec("UPDATE access.subject_grant SET read_fields=array_append(read_fields,'status') WHERE principal_id=$1 AND scope_id=$2 AND action='staffingquota.history.read'", reader.subject, a)
+		page := list("page=1")
+		check(len(page["positionSummary"].(map[string]any)), 0)
+		// Now both positions can identify the same department. One publishable
+		// amount must not become that department's displayed subtotal.
+		f.exec("UPDATE access.subject_grant SET read_fields=array_append(read_fields,'departmentId') WHERE principal_id=$1 AND scope_id=$2 AND action IN ('staffingquota.read','staffingquota.history.read')", reader.subject, z)
+		detail := get(reader, finance, jan)
+		for _, key := range []string{"total", "unsetCount", "remaining"} {
+			if _, shown := detail[key]; shown {
+				t.Fatalf("缺少岗位状态读权时返回了 %s", key)
+			}
+		}
+	}
+	checkVisiblePositions()
 	save(finance, input(may, row("", nil, v["sourceVersion"])), 200)
 	check(get(b, finance, may)["quotaState"], "unset")
 	check(get(b, finance, may)["remaining"], nil)

@@ -42,6 +42,8 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 人员路线图第五稿通过评审。记录包含逐稿修订、页面继承、人员与任职的授权交集，以及未来入职撤销后旧请求重送的名额算例。[500 评审记录](500-personnel-roadmap-review.md) · [人员模块实施路线图](../archive/plans/500-personnel-roadmap.md)
 
 
+[027 T03 部门与指定岗位授权](027-t03-department-and-position-access.md)记录甲可维护乙只读、固定选择导出、单岗小计与 4627 双角色手工入口。
+
 [公共 00057 升至登记号 00058](027-public-00058-grant-upgrade.md)记录按主体对账、旧回执和撤尽重启，以及录用授权在提交前到期的回归。
 
 [公共主线 00039 升至逐份授予 00041](027-public-main-grant-upgrade.md)保留当时的升级、权限和原回执证据。[00038 首轮实测](027-public-grant-cutover.md)保留原候选结果。

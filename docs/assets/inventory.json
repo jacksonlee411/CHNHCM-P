@@ -10120,7 +10120,8 @@
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/300-closeout/current-capacity-summary.json",
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/300-closeout/history-comparison.json",
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/300-closeout/resource-closeout.json",
-        "docs/verification/125-path-stage-target-adoption.md"
+        "docs/verification/125-path-stage-target-adoption.md",
+        "docs/verification/027-t03-department-and-position-access.md"
       ],
       "target_files": [
         "internal/bootstrap/department_tree300_prototype_integration_test.go",
@@ -10966,7 +10967,8 @@
         "verified": true
       },
       "new_evidence": [
-        "docs/verification/315-department-quota-allocation.md"
+        "docs/verification/315-department-quota-allocation.md",
+        "docs/verification/027-t03-department-and-position-access.md"
       ],
       "target_files": [
         "internal/contexts/staffing/domain/allocation_test.go",
@@ -11000,7 +11002,8 @@
         "verified": true
       },
       "new_evidence": [
-        "docs/verification/315-position-quota-implementation.md"
+        "docs/verification/315-position-quota-implementation.md",
+        "docs/verification/027-t03-department-and-position-access.md"
       ],
       "target_files": [
         "internal/contexts/staffing/domain/quota_test.go",

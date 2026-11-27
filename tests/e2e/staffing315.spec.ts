@@ -1,6 +1,8 @@
+import { withScopedGrants } from './scoped-grants';
 import { desktopViewports } from './desktop-viewports.mjs';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { writeFile } from 'node:fs/promises';
 import { test, expect } from './fixtures';
 import { open } from './bu-support';
 import { click308, date308, namedMenu308, seed308 } from './staffing308-support';
@@ -489,5 +491,131 @@ test('315 所选记录删除、字段撤权与岗位定义独立授权', async (
     await click308(page, page.getByRole('link', { name: sample.name, exact: true }));
     await expect(page.getByRole('tab', { name: '基本资料' })).toBeVisible();
     await expect(page.getByRole('tab', { name: '岗位编制' })).toHaveCount(0);
+  });
+});
+
+test('027 指定岗位的本职与代理、可见小计、旧表单和原调整', async ({ page }) => {
+  test.setTimeout(90000);
+  await open(page);
+  const family = await seed308(page, 'jobfamily');
+  const first = await seedPosition(page, 'position', family.id);
+  const definition = await request(page, 'GET', '/api/v1/positions/' + first.id);
+  const { departmentId, jobId, locationId } = definition.body.selectedRecord;
+  const secondName = '隔离乙岗' + first.code;
+  const second = await request(page, 'POST', '/api/v1/positions', {
+    departmentId, jobId, locationId, name: secondName, code: 'B' + first.code, effectiveDate: '2026-01-01',
+    operationType: 'CREATE', operationReason: 'NEW_POSITION'
+  }, randomUUID());
+  expect(second.status).toBe(201);
+  const base = '/api/v1/staffing-quotas';
+  const initial = await request(page, 'POST', base + '/departments/' + departmentId + '/allocations', {
+    effectiveDate: '2026-03-01', reason: '年度核定', total: { quota: 10 },
+    positions: [{ positionId: first.id, quota: 2 }, { positionId: second.body.objectId, quota: 3 }]
+  }, randomUUID());
+  expect(initial.status).toBe(200);
+  await page.context().clearCookies();
+  await open(page, 'reader');
+  await withScopedGrants(page, async publish => {
+    const fields = ['code', 'name', 'departmentId', 'status', 'effectiveDate', 'quota', 'reason', 'sourceVersion', 'audit'];
+    const binding = { scope: 'position' as const, target: first.id, read: fields };
+    const role = publish({ ...binding, actions: ['staffingquota.read', 'staffingquota.history.read', 'staffingquota.adjust'], write: ['effectiveDate', 'quota', 'reason'] });
+    const duty = role.issue(), proxy = role.issue('proxy');
+    const menu = () => namedMenu308(page, '部门编制分配', '职务配置', '/settings/staffing/quotas', '部门编制统计');
+    const subtotal = (n: number) => expect(page.getByText('可见范围 · 岗位核定小计 ' + n, { exact: true })).toBeVisible();
+    const form = async (day: string, n: number) => {
+      await page.getByRole('button', { name: '调编', exact: true }).click();
+      await page.getByLabel('生效日期').and(page.locator('input')).fill(day);
+      await page.getByRole('spinbutton', { name: /核定编制/ }).fill(String(n));
+      await page.getByRole('textbox', { name: /调整原因/ }).fill('按岗调整');
+    };
+    const save = async () => {
+      const response = page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname.endsWith('/adjust'));
+      await page.getByRole('button', { name: '保存', exact: true }).click();
+      return response;
+    };
+    await menu();
+    await subtotal(2);
+    expect((await request(page, 'GET', '/api/v1/positions/' + first.id)).status).toBe(403);
+    const selected = (await request(page, 'GET', base + '/statistics')).body;
+    expect(selected.items.map((row: { positionId: string }) => row.positionId)).toEqual([first.id]);
+    expect(selected.departments).toEqual([]);
+    expect(selected.items[0]).not.toHaveProperty('departmentId');
+    expect(selected.positionSummary).toEqual({ total: 2 });
+    expect(JSON.stringify(selected)).not.toContain(secondName);
+    await page.getByRole('link', { name: first.name, exact: true }).click();
+    await form('2026-04-01', 3);
+    proxy();
+    const accepted = await save();
+    expect(accepted.status()).toBe(200);
+    const submission = (await accepted.json()) as { submissionId: string, sourceVersion: string };
+    await menu();
+    await subtotal(3);
+    await expect(page.getByText(secondName, { exact: true })).toHaveCount(0);
+    await page.getByRole('link', { name: first.name, exact: true }).click();
+    await form('2026-05-01', 4);
+    duty();
+    expect((await save()).status()).toBe(403);
+    await expect(page.getByRole('spinbutton', { name: /核定编制/ })).toHaveCount(0);
+    expect((await request(page, 'GET', base + '/statistics')).status).toBe(403);
+    const original = base + '/positions/' + first.id + '?sourceVersion=' + submission.sourceVersion;
+    expect((await request(page, 'GET', original)).status).toBe(403);
+
+    const restoredDuty = role.issue();
+    await menu();
+    await page.getByRole('link', { name: first.name, exact: true }).click();
+    await form('2026-05-01', 4);
+    const now = Date.now();
+    const expiry = now + 15000;
+    role.issue('proxy', { from: new Date(now - 60000), until: new Date(expiry) });
+    restoredDuty();
+    const readOriginal = () => request(page, 'GET', original);
+    const beforeExpiry = await readOriginal();
+    const remaining = expiry - Date.now();
+    expect(remaining, '首次读取完成时代理应仍在有效期内').toBeGreaterThan(0);
+    expect(beforeExpiry.status, '代理截止前剩余毫秒 ' + remaining).toBe(200);
+    await expect.poll(async () => (await readOriginal()).status, { timeout: 25000 }).toBe(403);
+    const afterExpiry = Date.now() - expiry;
+    expect(afterExpiry, '应在代理截止时刻后拒绝读取').toBeGreaterThanOrEqual(0);
+    const evidence = test.info().outputPath('proxy-expiry.json');
+    await writeFile(evidence, JSON.stringify({ read200BeforeExpiryMs: remaining, read403AfterExpiryMs: afterExpiry }));
+    await test.info().attach('代理截止前后读取', { path: evidence, contentType: 'application/json' });
+    expect((await save()).status()).toBe(403);
+    await expect(page.getByRole('textbox', { name: /调整原因/ })).toHaveCount(0);
+
+    const readHistory = publish({ ...binding, actions: ['staffingquota.read', 'staffingquota.history.read'] });
+    readHistory.issue();
+    await menu();
+    await subtotal(3);
+    const result = await request(page, 'POST', base + '/submissions/' + submission.submissionId + '/resolve', {});
+    expect(result.status).toBe(200);
+    expect(result.body.sourceVersion).toBe(submission.sourceVersion);
+    await page.getByRole('link', { name: first.name, exact: true }).click();
+    await page.getByRole('tab', { name: '变更日志', exact: true }).click();
+    await page.getByRole('link', { name: '查看当次资料', exact: true }).first().click();
+    await expect(page.getByText('正在查看只读历史资料')).toBeVisible();
+    expect(new URL(page.url()).searchParams.get('sourceVersion')).toBe(submission.sourceVersion);
+    publish({ ...binding, actions: ['staffingquota.adjust'], write: ['quota'] }).issue();
+    publish({ ...binding, actions: ['staffingquota.adjust'], write: ['effectiveDate', 'reason'] }).issue();
+    const current = await request(page, 'GET', base + '/positions/' + first.id);
+    expect(current.body.actions).not.toContain('adjust');
+    const splitWrite = await request(page, 'POST', base + '/' + current.body.quotaId + '/adjust', {
+      expectedSourceVersion: submission.sourceVersion, effectiveDate: '2026-05-01', quota: 4, reason: '字段不齐'
+    }, randomUUID());
+    expect(splitWrite.status).toBe(403);
+    expect((await request(page, 'GET', base + '/positions/' + first.id)).body.sourceVersion).toBe(submission.sourceVersion);
+
+    publish({ scope: 'department', target: departmentId, actions: ['department.read'], read: ['name'] }).issue();
+    publish({ scope: 'position', target: second.body.objectId, actions: ['staffingquota.read'], read: ['code', 'name', 'quota', 'status'] }).issue();
+    const mixedList = page.waitForResponse(response => {
+      const url = new URL(response.url());
+      return url.pathname === base + '/statistics' && !url.searchParams.has('anchor');
+    });
+    await menu();
+    const mixed = await (await mixedList).json();
+    expect(mixed.items.map((row: { positionId: string }) => row.positionId).sort()).toEqual([first.id, second.body.objectId].sort());
+    expect(mixed.positionSummary).toEqual({ total: 6 });
+    await subtotal(6);
+    await expect(page.getByRole('link', { name: first.name, exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: secondName, exact: true })).toBeVisible();
   });
 });

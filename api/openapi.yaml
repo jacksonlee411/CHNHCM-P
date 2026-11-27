@@ -26003,6 +26003,12 @@ components:
           description: Visible groups for positions, department quotas and the selected department
           type: array
           items: {$ref: '#/components/schemas/StaffingQuotaDepartment'}
+        positionSummary:
+          description: Matching authorized positions across all pages when a department group cannot represent the selection or a scoped user searches positions. Department identities are omitted. The subtotal requires quota and status read access for every matching position.
+          type: object
+          additionalProperties: false
+          properties:
+            total: {type: integer, minimum: 0}
         totalCount: {type: integer}
     PositionStructureNode:
       type: object

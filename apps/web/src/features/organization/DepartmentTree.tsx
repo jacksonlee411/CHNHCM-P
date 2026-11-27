@@ -133,11 +133,11 @@ export function DepartmentTree(props: ListSidebarProps) {
   useEffect(() => { requests.current.get('location')?.abort(); relocated.current = false; latest.current.onLabel(undefined); if (props.unavailable) { reset(); if (props.day) nodes(); } if (props.scopeId && props.day && !props.unavailable) { const target = chainRef.current.at(-1); if (target?.id === props.scopeId) latest.current.onLabel(target.name); else locate(props.scopeId); } else setChain([]); }, [props.scopeId, props.day, props.unavailable]);
   useEffect(() => {
     requests.current.get('search')?.abort(); setMatches(undefined);
-    if (!search.trim()) return;
+    if (!props.day || !search.trim()) return;
     requests.current.get('location')?.abort();
     const timer = setTimeout(() => void read('search', async signal => unwrap(await api.GET('/api/v1/departments/tree/search', { params: { query: { q: search, pageSize: 20 } }, signal })), page => setMatches(page)), 200);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, props.day]);
   const actions = useRef(new Map<string, () => void>());
   const rows = useMemo(() => {
     actions.current = new Map(); const result: DepartmentTreeRow[] = [];

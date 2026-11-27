@@ -304,6 +304,28 @@ func completeQuotaScope(ctx context.Context, u QuotaTx, ent, day string) (bool, 
 	}
 	return complete, nil
 }
+
+type quotaSubtotal struct {
+	total      big.Int
+	unset      int
+	restricted bool
+}
+
+func (sum *quotaSubtotal) add(row QuotaCandidate, readable bool) {
+	if !readable {
+		sum.restricted = true
+		return
+	}
+	if !row.Position.Active {
+		return
+	}
+	if row.Amount < 0 {
+		sum.unset++
+		return
+	}
+	sum.total.Add(&sum.total, big.NewInt(row.Amount))
+}
+
 func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.View, error) {
 	rows, e := u.QuotaCandidates(ctx, q.Day)
 	if e != nil {
@@ -312,8 +334,7 @@ func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.Vi
 	items := []s.View{}
 	departments := []s.View{}
 	groups := map[string]s.View{}
-	sums := map[string]*big.Int{}
-	filteredAmounts := map[string]bool{}
+	sums := map[string]*quotaSubtotal{}
 	names := map[string]string{}
 	// A position-scoped grant always labels its subtotal as partial, independent
 	// of how many other positions actually exist in that department.
@@ -322,6 +343,8 @@ func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.Vi
 		return nil, e
 	}
 	needle := strings.ToLower(strings.TrimSpace(q.Search))
+	var matched quotaSubtotal
+	showPositionSummary := needle != "" && !complete
 	for _, row := range rows {
 		if q.DepartmentDetail && row.Position.DepartmentID != q.DepartmentID {
 			continue
@@ -346,6 +369,7 @@ func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.Vi
 		}
 
 		dep := row.Position.DepartmentID
+		canSum := has(dec.ReadFields, "quota", "status")
 		if has(dec.ReadFields, "departmentId") {
 			name, ok := names[dep]
 			if !ok {
@@ -365,27 +389,10 @@ func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.Vi
 						group["scope"] = "complete"
 					}
 					groups[dep] = group
+					sums[dep] = &quotaSubtotal{}
 					departments = append(departments, group)
 				}
-				if has(dec.ReadFields, "quota", "status") {
-					n := sums[dep]
-					if n == nil {
-						n = new(big.Int)
-						sums[dep] = n
-					}
-					if _, ok := group["unsetCount"]; !ok {
-						group["unsetCount"] = 0
-					}
-					if row.Position.Active && row.Amount < 0 {
-						group["unsetCount"] = group["unsetCount"].(int) + 1
-					}
-					if row.Amount >= 0 && row.Position.Active {
-						n.Add(n, big.NewInt(row.Amount))
-					}
-					group["total"] = n
-				} else {
-					filteredAmounts[dep] = true
-				}
+				sums[dep].add(row, canSum)
 			}
 		}
 		if q.DepartmentID != "" && v["departmentId"] != q.DepartmentID {
@@ -395,6 +402,16 @@ func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.Vi
 			continue
 		}
 		items = append(items, v)
+		if q.DepartmentID == "" {
+			matched.add(row, canSum)
+			showPositionSummary = showPositionSummary || v["departmentId"] == nil
+		}
+	}
+	for id, sum := range sums {
+		if !sum.restricted {
+			groups[id]["total"] = &sum.total
+			groups[id]["unsetCount"] = sum.unset
+		}
 	}
 	if complete {
 		ids := []string{q.DepartmentID}
@@ -440,8 +457,11 @@ func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.Vi
 				group["quotaState"] = "set"
 				group["quota"] = *cap.Records[i].Amount
 				remaining := big.NewInt(int64(*cap.Records[i].Amount))
-				if n := sums[id]; n != nil {
-					remaining.Sub(remaining, n)
+				if sum := sums[id]; sum != nil {
+					if sum.restricted {
+						continue
+					}
+					remaining.Sub(remaining, &sum.total)
 				}
 				group["remaining"] = remaining
 			}
@@ -450,15 +470,16 @@ func quotaList(ctx context.Context, u QuotaTx, ent string, q s.QuotaQuery) (s.Vi
 	if q.DepartmentDetail {
 		return allocationDetail(ctx, u, ent, q, groups[q.DepartmentID], items)
 	}
-	for id := range filteredAmounts {
-		delete(groups[id], "total")
-		delete(groups[id], "unsetCount")
-		delete(groups[id], "remaining")
-	}
-
 	count := len(items)
 	start := min((q.Page-1)*q.PageSize, count)
 	out := s.View{"businessAt": q.Day, "items": items[start:min(start+q.PageSize, count)], "canBrowseDepartments": complete, "totalCount": count, "departments": departments}
+	if q.DepartmentID == "" && count > 0 && showPositionSummary {
+		summary := s.View{}
+		if !matched.restricted {
+			summary["total"] = &matched.total
+		}
+		out["positionSummary"] = summary
+	}
 	if q.Anchor != "" {
 		i := slices.IndexFunc(items, func(v s.View) bool { return v["positionId"] == q.Anchor })
 		nav := s.View{"position": i + 1, "totalCount": count, "businessAt": q.Day, "previousId": nil, "nextId": nil}

@@ -1,6 +1,6 @@
 # CHNHCM-027 X03 本地账号与首批业务授权实施计划
 
-公共仓 T02 合入 `main@560cea88`，逐份授予迁移使用 00058。原 CHNHCM 的 00029 验收保留原基线。公共库的升级、重启和回执证据见第 7 节。
+公共仓 T02 从 `00057` 基线 `560cea88` 升至逐份授予 `00058`，经 PR #32 合入 `main@f3ef227`。原 CHNHCM 的 00029 验收保留原基线。公共库的升级、重启和回执证据见第 7 节。
 
 本计划面向客户实例的本地账号管理、M02 部门授权及 M03 指定岗位核编授权。目标是让经办人从正常菜单验证「授予后能办、只办获权事项、撤尽后持续失权」。客户可观察的规则和验收样本由[028 管理员合同](../specs/x03/028-local-account-and-authorization.md)持有。基线为 `wt-dev-a@45a4c227`。T01、T02 从方案提交 `7f6fc89f` 接续。实施与验收进度见第 7 节。[登记表](../governance/registry.json) · [X03 目标边界](../architecture/target/modules/x03.md)
 
@@ -67,7 +67,7 @@
 | --- | --- |
 | 一份授权能做什么，哪些组合要拒绝？ | 用 Go 表驱动用例验证委派上限、完整授权、字段不可跨授予拼接、拒绝优先、时刻边界。用对应入口的允许、拒绝用例检查可授予项有消费者、独立受保护分支确实判权。同一共用规则可由一组用例覆盖。[028 业务条目](../specs/x03/028-local-account-and-authorization.md#5-验收条目) |
 | 保存和撤权相遇时，谁先发生？ | 用两个真实 PostgreSQL 连接控制相冲突的守卫，验证业务先提交能保留、撤权先提交则无业务写入。对主体撤权、共享版本停用和等待中到期覆盖各自不同的生效路径。另由真实 API 检查旧会话失效、管理越界、结果未知重试及原子失败。[并发验收](../specs/x03/028-local-account-and-authorization.md#x03-ac-005) |
-| 客户在正常菜单看到什么？ | 用 028 的[跨 BU](../specs/x03/028-local-account-and-authorization.md#x03-scn-001)、[单岗及重叠授予](../specs/x03/028-local-account-and-authorization.md#x03-scn-002)、[共享版本及重启](../specs/x03/028-local-account-and-authorization.md#x03-scn-003)三组样例，查看页面及相应响应、实际 CSV 和核编小计。页面走查覆盖各自独立的显示、提交与拒绝路径。共用布局和操作复用代表流程的视口结果，按 [012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)检查五种 100% 视口、关键流程原生 200%，满足触发条件再做 400% |
+| 客户在正常菜单看到什么？ | 用 028 的[跨 BU](../specs/x03/028-local-account-and-authorization.md#x03-scn-001)、[单岗及重叠授予](../specs/x03/028-local-account-and-authorization.md#x03-scn-002)、[共享版本及重启](../specs/x03/028-local-account-and-authorization.md#x03-scn-003)三组样例，查看页面及相应响应、实际 CSV 和核编小计。页面走查覆盖各自独立的显示、提交与拒绝路径。共用布局和操作复用代表流程的视口结果，按 [012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)检查 1440×900、1440×540 两种桌面 100% 视口，关键流程原生 200%，按风险专项复验 400% |
 | 升级是否改变了权限或使已撤权限复生？ | 直接引用第 4 节的全量权限对账、原回执查回及一次真实重启结果。成功的普通读取沿用 128 的零逐次授权审计写入回归 |
 | 授权查询或锁是否拖慢业务？ | 对受本次变更影响的高频查询和保存，用相同业务输入比较前后表现，已有容量目标的路径按原专项分组复测。低频开户、授予、撤销先验证操作结果。若发现慢查询、锁竞争或客户已有时延要求，再测相应路径。原组织容量专项继续按 [125](125-r6-capacity-remediation.md) 跟踪 |
 
@@ -83,6 +83,6 @@
 | --- | --- |
 | T01 | 已确定甲乙 BU、甲部门两岗、账号管理归属、可委派动作与字段、首位引导和恢复责任。[职责与入口](../specs/x03/028-local-account-and-authorization.md#11-t01-隔离实例的职责与办理入口) |
 | T02 | 公共 00058 将实际持有的授权迁为固定角色、范围、字段版本及独立授予。Go 在同一业务事务内处理重叠、撤销、停用和到期，人员、入职规则及首单入职沿用各自的权限入口。[00057 → 00058 验证](../verification/027-public-00058-grant-upgrade.md) · [公共主线 00039 升级实测](../verification/027-public-main-grant-upgrade.md) · [00038 首轮实测](../verification/027-public-grant-cutover.md) · [原仓 00029 验证](../verification/027-x03-grant-cutover.md) |
-| T03 | 部门沿 `Guard.Decide`、`DecideReads`、`ReadPlanner` 接续对象、字段、固定选择和 CSV。核编通过相同守卫检查岗位及实际写入字段，继续验正常菜单、历史与可见小计，并复查[部门上下文晚于定位输入](../verification/027-public-main-grant-upgrade.md#3-合流回归)时的查询。 |
-| T04 | 在同库管理事务内使用 `LockManagement`、`PublishVersion`、`ChangeAssignment` 和 `DisableVersion`。接入管理动作目录、账号管理归属、真实管理会话、委派上限及全体受影响引用检查，再交付受控引导／恢复和管理回执。 |
+| T03 | 已在公共 `00058` 工作树验证甲 BU 名称更正、乙只读、固定选择逐份撤权与 CSV、指定岗位核编及原调整查回。部门树能接续先输入的定位词。没有部门名称读权时也能查看获权岗位小计。按两种经办角色交接 4627。[正常菜单、复验与手工入口](../verification/027-t03-department-and-position-access.md) |
+| T04 | 客户管理入口及受控恢复待交付。在同库管理事务内使用 `LockManagement`、`PublishVersion`、`ChangeAssignment` 和 `DisableVersion`。接入管理动作目录、账号管理归属、真实管理会话、委派上限及全体受影响引用检查，再交付受控引导／恢复和管理回执。 |
 | T05 | 页面撤尽原账号默认读权、重走实际启动、重新登录及三组正常菜单全程验收待执行。 |

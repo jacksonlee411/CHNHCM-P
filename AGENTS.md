@@ -6,7 +6,7 @@
 
 - 先核对当前用户指令、cwd、分支、HEAD、工作区、stash及[登记表](docs/governance/registry.json)，保护已有修改和未跟踪文件。固定工作树不得切换分支；路径以本机实际检出为准，规则见[005](docs/governance/005-branches-and-documents.md)。
 - 按本次任务读取现行合同、对应计划及最新交接；文档状态、计划执行状态和实际验收结果分别判断。旧批次摘要不能重新打开已关闭事项，也不能证明当前实现完成。
-- **保留用户验收环境**。`wt-dev-d` 日常使用[统一入口 4486](docs/verification/315-department-quota-allocation.md#6-统一验收环境-4486)（API 8486 / DB 54486）。原 45300 及岗位、部门专项库停机保留。`m03-manual-d` 的 4380（API 8380 / DB 54370）、`m03-grade-d` 的 4381（API 8381 / DB 54371）及 `m03-grade-g2-d` 的 4382（API 8382 / DB 54372）仍由本树负责，用户验收结束或下次更新时复查，禁止按自动测试结束回收。4383、4388、[4390](docs/verification/136-actions-publication.md#8-原4390固定环境更新与交接)等持久环境同样保护。[运行接续](docs/verification/307-m03-job-foundation-implementation.md#10-用户授权的独立页面验收环境)
+- **保留用户验收环境**。`wt-dev-d` 日常使用[统一入口 4486](docs/verification/315-department-quota-allocation.md#6-统一验收环境-4486)（API 8486 / DB 54486）。原 45300 及岗位、部门专项库停机保留。`m03-manual-d` 的 4380（API 8380 / DB 54370）、`m03-grade-d` 的 4381（API 8381 / DB 54371）及 `m03-grade-g2-d` 的 4382（API 8382 / DB 54372）仍由本树负责，用户验收结束或下次更新时复查，禁止按自动测试结束回收。4383、4388、[4390](docs/verification/136-actions-publication.md#8-原4390固定环境更新与交接)、4627 等持久环境同样保护。[运行接续](docs/verification/307-m03-job-foundation-implementation.md#10-用户授权的独立页面验收环境)
 
 ## 页面与交互：实施前必读
 

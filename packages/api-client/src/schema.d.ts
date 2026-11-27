@@ -11690,6 +11690,10 @@ export interface components {
             canBrowseDepartments: boolean;
             /** @description Visible groups for positions, department quotas and the selected department */
             departments: components["schemas"]["StaffingQuotaDepartment"][];
+            /** @description Matching authorized positions across all pages when a department group cannot represent the selection or a scoped user searches positions. Department identities are omitted. The subtotal requires quota and status read access for every matching position. */
+            positionSummary?: {
+                total?: number;
+            };
             totalCount: number;
         };
         PositionStructureNode: {

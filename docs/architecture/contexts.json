@@ -376,6 +376,16 @@
           "source": "internal/contexts/access/infra/postgres/assignment.go",
           "evidence": "docs/verification/027-public-main-grant-upgrade.md",
           "entry_source": "internal/bootstrap/api.go"
+        },
+        {
+          "module": "X03",
+          "capability": "部门与指定岗位的业务授权",
+          "state": "verified_slice",
+          "scope": "部门跨 BU 维护、历史与导出，以及指定岗位核编、逐份收回、历史查回和可见小计。",
+          "entry": "/api/v1/staffing-quotas/statistics",
+          "source": "internal/contexts/access/infra/postgres/access.go",
+          "entry_source": "apps/web/src/features/staffing/QuotaList.tsx",
+          "evidence": "docs/verification/027-t03-department-and-position-access.md"
         }
       ]
     },
