@@ -71,7 +71,7 @@ export function DataGridPage<T extends { id: string }>({
   }], [columns, summaryColumn, Boolean(selection)]);
   const visibility = useMemo(() => compact
     ? Object.fromEntries(gridColumns.map(column => [column.field, column.field === summaryColumn.field || column.field === GRID_CHECKBOX_SELECTION_FIELD]))
-    : { ...desktopVisibility, [summaryColumn.field]: false }, [compact, gridColumns, summaryColumn.field, desktopVisibility]);
+    : { ...desktopVisibility, [summaryColumn.field]: false, [GRID_CHECKBOX_SELECTION_FIELD]: columns.some(column => desktopVisibility[column.field] !== false) }, [compact, columns, gridColumns, summaryColumn.field, desktopVisibility]);
   const root = useRef<HTMLDivElement>(null);
   const pagerFocus = useRef<HTMLElement | null>(null);
   const focusedRow = useRef<{ id: string; link: boolean } | null>(null);
@@ -153,7 +153,7 @@ export function DataGridPage<T extends { id: string }>({
       disableColumnFilter={!filterModel} filterMode="server" filterModel={filterModel}
       hideFooter showToolbar slots={{ ...slots, toolbar: ListToolbar }}
       localeText={{
-        noRowsLabel: empty,
+        noRowsLabel: empty, noColumnsOverlayLabel: '没有显示的列', noColumnsOverlayManageColumns: '管理列',
         checkboxSelectionHeaderName: '选择', checkboxSelectionSelectRow: `选择${label.replace(/列表$/, '')}`, checkboxSelectionUnselectRow: `取消选择${label.replace(/列表$/, '')}`,
         noResultsOverlayLabel: empty,
         columnHeaderSortIconLabel: '排序',

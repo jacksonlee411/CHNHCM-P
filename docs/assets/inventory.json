@@ -8731,7 +8731,7 @@
         "member": "apps/prototype/src/operations/staffing-list.tsx"
       },
       "target_owner": "M01-personnel",
-      "disposition": "提炼行定位、任职与人数粒度差异；人员名录沿本仓公共列表按获权 Person 列行。",
+      "disposition": "人员名录沿用 CubeBox 的部门侧栏、行勾选及任职行定位。按获权人员和任职组合，分别统计任职份数与人数。",
       "state": {
         "registered": true,
         "extracted": true,
@@ -8741,11 +8741,15 @@
       "new_evidence": [
         "docs/specs/m01/502-person-directory-interactions.md",
         "docs/verification/500-t00-personnel-specifications.md",
-        "docs/verification/500-t01-personnel-registration.md"
+        "docs/verification/500-t01-personnel-registration.md",
+        "docs/verification/405-personnel-directory.md"
       ],
       "target_files": [
         "apps/web/src/features/personnel/List.tsx",
-        "tests/e2e/personnel.spec.ts"
+        "tests/e2e/personnel.spec.ts",
+        "apps/web/src/features/hire/EmployeeDirectory.tsx",
+        "apps/web/src/shared/DepartmentTreePanel.tsx",
+        "tests/e2e/first-hire.spec.ts"
       ]
     },
     {

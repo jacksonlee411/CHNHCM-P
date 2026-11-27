@@ -50,7 +50,7 @@ MSG-05必须分别处理存储被禁止、引用格式损坏等原因，不能�
 | MSG-10 | 搜索词尚未应用；查询后生效，离开列表或刷新后不保留。已应用关键词…… | 保留必要的草稿／生效条件区分，缩为“输入已修改，点击查询后生效”；不常驻介绍内存生命周期；[列表控件](../../apps/web/src/features/organization/BusinessUnitListControls.tsx) |
 | MSG-11 | 原页码已失效，已返回有效页 | 当前分页控件已反映实际页码，可取消独立提示条；[列表](../../apps/web/src/features/organization/DatedPages.tsx) |
 | MSG-12 | 原对象已不在当前查询中，请返回列表重新查询；对象导航暂时不可用，请返回列表重新查询 | 自动辅助导航失败不应让用户误以为当前详情不可用；保留当前资料，按需局部提示无法切换并提供重试；[详情导航](../../apps/web/src/features/organization/dated/useObjectNavigation.ts) |
-| MSG-13 | 路径上下文；请重读本层；请重新定位或选择全部 | 节点不可选择时说明“不可选择”；树变化对应刷新树，不要求理解缓存层，也不把扩大范围当成默认修复；[树面板](../../apps/web/src/features/organization/DepartmentTreePanel.tsx)、[树读取](../../apps/web/src/features/organization/DepartmentTree.tsx) |
+| MSG-13 | 路径上下文；请重读本层；请重新定位或选择全部 | 节点不可选择时说明“不可选择”；树变化对应刷新树，不要求理解缓存层，也不把扩大范围当成默认修复；[树面板](../../apps/web/src/shared/DepartmentTreePanel.tsx)、[树读取](../../apps/web/src/features/organization/DepartmentTree.tsx) |
 | MSG-14 | 来源已变化，请重新核对资料；所选记录修订已变化，请重新核对 | 保留并发冲突，表达为“资料已更新，请核对最新内容后保存”；使用获权名称／日期定位，不要求理解来源或修订；[命令](../../internal/contexts/organization/application/commands.go)、[候选](../../internal/contexts/organization/domain/dated/candidate.go) |
 | MSG-16 | 导出内容超过本次处理预算，请缩小查询范围；选择暂存额度不足；导出暂存空间不足 | 这里至少三种原因，不应统一改成数量过多。实际文件超过大小限制时建议减少所选项或分批导出；改变查询范围不等于改变已有固定选择。临时资源不足说明暂时不可用；[导出](../../internal/contexts/organization/application/selection.go)、[选择](../../internal/contexts/organization/application/department/draft.go)、[暂存](../../internal/contexts/organization/infra/exportfile/file.go) |
 | MSG-20 | 开放终点；至某日（不含当日） | 使用Go提供的包含结束日或“自某日起”。真实期间影响仍要展示，不在前端新增业务日历；[删除及日期影响](../../apps/web/src/features/organization/TimelineEditor.tsx) |

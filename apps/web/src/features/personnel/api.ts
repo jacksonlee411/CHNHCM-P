@@ -25,7 +25,7 @@ export function parse(params: URLSearchParams): DirectoryQuery {
 }
 export function directoryParams(params: URLSearchParams) {
   const result = new URLSearchParams();
-  for (const key of ['ref', 'department', 'primary', 'sort', 'selected', 'page', 'pageSize']) {
+  for (const key of ['ref', 'department', 'directOnly', 'primary', 'sort', 'selected', 'page', 'pageSize']) {
     const value = params.get(key);
     if (value) result.set(key, value);
   }
@@ -36,11 +36,12 @@ export function directoryQuery(params: URLSearchParams): Models['PersonnelDirect
   const primary = params.get('primary');
   return { ...query, pageSize: query.pageSize as 20 | 50 | 100,
     department: params.get('department') || undefined,
+    directOnly: params.has('department') && params.get('directOnly') === '1' || undefined,
     primary: primary === 'primary' || primary === 'secondary' ? primary : undefined };
 }
-export async function directory(s: Principal, params: URLSearchParams, anchor?: string) {
+export async function directory(s: Principal, params: URLSearchParams, anchor?: string, selection?: Models['PersonnelDirectoryQuery']['selection']) {
   return unwrap(await api.POST('/api/v1/personnel/directory/query', {
-    params: { header: headers(s) }, body: { ...directoryQuery(params), anchor },
+    params: { header: headers(s) }, body: { ...directoryQuery(params), anchor, selection },
   }));
 }
 export function directoryTarget(params: URLSearchParams, personId: string, assignment?: string) {

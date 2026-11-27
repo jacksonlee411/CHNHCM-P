@@ -1,14 +1,51 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
-import { Alert, Box, Button, MenuItem, Stack, Typography, useMediaQuery } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Stack,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { Link, useLocation, useNavigationType, useSearchParams } from 'react-router-dom';
-import { useGridApiRef, type GridColDef, type GridSortModel } from '@mui/x-data-grid';
-import { sessionGuard, type Models } from '@chnhcm/api-client';
-import { DataGridPage, ListControl, ListPager, ObjectTextField, SearchControl } from '@chnhcm/ui';
+import {
+  GridPreferencePanelsValue,
+  useGridApiRef,
+  type GridColDef,
+  type GridSortModel,
+} from '@mui/x-data-grid';
+import { ApiError, sessionGuard, type Models } from '@chnhcm/api-client';
+import { DataGridPage, ListControl, ListPager, SearchControl } from '@chnhcm/ui';
 import { useListReturn } from '../../shared/navigation';
+import MoreVert from '@mui/icons-material/MoreVert';
+import {
+  ColumnFilterDialog,
+  ColumnFilterEditor,
+  columnFilterSlots,
+  type FilterRequest,
+} from '../../shared/dated/ColumnFilter';
+import { PersonnelDepartmentTree } from './PersonnelDepartmentTree';
+import { usePersonnelDirectory } from './usePersonnelDirectory';
 import * as person from '../personnel/api';
 
 type Row = Models['PersonnelDirectoryRow'];
-type Branch = Models['EmployeeAssignmentDirectory']['departments'][number];
+const primaryOptions = [
+  { value: 'primary', label: '主岗' },
+  { value: 'secondary', label: '兼岗' },
+];
+const filterColumns = [
+  {
+    field: 'primaryJob',
+    label: '主兼岗',
+    operators: [{ value: 'is', label: '等于' }],
+    values: primaryOptions,
+  },
+];
+const sorts = { number: '人员编号升序', '-number': '人员编号降序', name: '姓名升序', '-name': '姓名降序' };
 
 export function EmployeeDirectory({
   session,
@@ -23,8 +60,45 @@ export function EmployeeDirectory({
     route = useLocation(),
     navigation = useNavigationType();
   const query = person.directoryQuery(params);
-  const listing = person.useRead(JSON.stringify([route.key, query]), () => person.directory(session, params));
-  const data = searching ? undefined : listing.data;
+  const {
+    listing,
+    data: pageData,
+    selection,
+    selecting,
+    notice,
+    dismiss,
+  } = usePersonnelDirectory(session, params, route.key);
+  const [failure, setFailure] = useState<{ text: string; status?: number; keyword: string }>();
+  const data = searching || failure ? undefined : pageData;
+  const expired = listing.status === 404 && !!query.ref;
+  const forbidden = listing.status === 403 || listing.status === 401;
+  const failed = !!failure || !!listing.error;
+  const [menu, setMenu] = useState<HTMLElement | null>(null);
+  const more = useRef<HTMLButtonElement>(null),
+    queryButton = useRef<HTMLButtonElement>(null);
+  const [filter, setFilter] = useState<FilterRequest>();
+  const filterModel = useMemo(
+    () => ({ items: query.primary ? [{ field: 'primaryJob', operator: 'is', value: query.primary }] : [] }),
+    [query.primary],
+  );
+  const lastDirectory = useRef<Models['PersonnelDirectory'] | undefined>(undefined);
+  useLayoutEffect(() => {
+    if (failed) lastDirectory.current = undefined;
+    else if (data) lastDirectory.current = data;
+  }, [data, failed]);
+  const display = data ?? (!failed ? lastDirectory.current : undefined);
+  const staffing = !!display?.canListAssignments;
+  const staleScope =
+    data &&
+    ((!staffing && !!(query.primary || query.department)) ||
+      (query.department && !data.departments.some((d) => d.id === query.department)));
+  function closeFilter() {
+    const source = filter?.source;
+    setFilter(undefined);
+    requestAnimationFrame(() =>
+      (source?.isConnected && source.getClientRects().length ? source : more.current)?.focus(),
+    );
+  }
   const countKey = JSON.stringify({ ...query, page: undefined });
   const lastCount = useRef<{ key: string; total: number } | undefined>(undefined);
   useLayoutEffect(() => {
@@ -33,14 +107,13 @@ export function EmployeeDirectory({
   }, [countKey, data, listing.error]);
   const rowCount =
     data?.total ??
-    (!listing.error && lastCount.current?.key === countKey ? lastCount.current.total : undefined);
+    (!failed && !searching && lastCount.current?.key === countKey ? lastCount.current.total : undefined);
   const sortModel = useMemo<GridSortModel>(
     () => [{ field: query.sort.replace(/^-/, ''), sort: query.sort.startsWith('-') ? 'desc' : 'asc' }],
     [query.sort],
   );
   const apiRef = useGridApiRef(),
-    [draft, setDraft] = useState(''),
-    [error, setError] = useState('');
+    [draft, setDraft] = useState('');
   const appliedParams = useRef(params);
   useLayoutEffect(() => {
     appliedParams.current = params;
@@ -59,7 +132,7 @@ export function EmployeeDirectory({
       readyRef.current = undefined;
       setSearching(false);
       setDraft('');
-      setError('');
+      setFailure(undefined);
     }
   }, [route.key, route.search, navigation]);
   useLayoutEffect(() => {
@@ -93,6 +166,7 @@ export function EmployeeDirectory({
       query.ref,
       query.department,
       query.primary,
+      query.directOnly,
     ].join(':'),
     ready: !!data,
     apiRef,
@@ -114,22 +188,27 @@ export function EmployeeDirectory({
     localSearch.current = '?' + next;
     setParams(next);
   }
-  async function search() {
+  async function search(keyword = draft) {
     const token = ++request.current,
       revision = edit.current,
       current = sessionGuard();
     setSearching(true);
     waitingForRef.current = undefined;
     try {
-      const { ref } = await person.queryRef(session, draft);
+      const { ref } = await person.queryRef(session, keyword);
       if (token === request.current && current()) {
-        setError('');
-        if (revision !== edit.current) readyRef.current = ref;
+        setFailure(undefined);
+        if (revision !== edit.current || keyword !== draft) readyRef.current = ref;
         waitingForRef.current = ref;
         update({ ref, page: '1' });
       }
     } catch (e) {
-      if (token === request.current && current()) setError(person.message(e));
+      if (token === request.current && current())
+        setFailure({
+          text: person.message(e),
+          status: e instanceof ApiError ? e.status : undefined,
+          keyword,
+        });
     } finally {
       if (token === request.current && current() && !waitingForRef.current) setSearching(false);
     }
@@ -162,8 +241,8 @@ export function EmployeeDirectory({
       </Link>
     );
   }
-  const columns = useMemo<GridColDef<Row>[]>(
-    () => [
+  const columns = useMemo<GridColDef<Row>[]>(() => {
+    const fields: GridColDef<Row>[] = [
       { field: 'name', headerName: '姓名', flex: 1, minWidth: 120, renderCell: ({ row }) => rowLink(row) },
       {
         field: 'number',
@@ -180,6 +259,9 @@ export function EmployeeDirectory({
       },
       {
         field: 'primaryJob',
+        type: 'singleSelect',
+        valueOptions: primaryOptions,
+        filterable: true,
         headerName: '主兼岗',
         width: 82,
         sortable: false,
@@ -195,19 +277,19 @@ export function EmployeeDirectory({
       },
       {
         field: 'job',
-        headerName: '职务 / 岗位',
+        headerName: '职务',
         flex: 1,
-        minWidth: 110,
+        minWidth: 100,
         sortable: false,
-        renderCell: ({ row }) =>
-          row.assignment ? (
-            <Stack>
-              {row.assignment.jobName}
-              <small>{row.assignment.positionName || '—'}</small>
-            </Stack>
-          ) : (
-            '—'
-          ),
+        renderCell: ({ row }) => row.assignment?.jobName || '—',
+      },
+      {
+        field: 'position',
+        headerName: '岗位',
+        flex: 1,
+        minWidth: 100,
+        sortable: false,
+        renderCell: ({ row }) => row.assignment?.positionName || '—',
       },
       {
         field: 'period',
@@ -215,11 +297,14 @@ export function EmployeeDirectory({
         width: 185,
         sortable: false,
         renderCell: ({ row }) =>
-          row.assignment
-            ? row.assignment.from +
-              ' 起' +
-              (row.assignment.until ? '，' + row.assignment.until + ' 起不在任' : '')
-            : '—',
+          row.assignment ? (
+            <Stack>
+              <span>{row.assignment.from} 起</span>
+              {row.assignment.until && <span>{row.assignment.until} 起不在任</span>}
+            </Stack>
+          ) : (
+            '—'
+          ),
       },
       {
         field: 'status',
@@ -228,9 +313,9 @@ export function EmployeeDirectory({
         sortable: false,
         renderCell: ({ row }) => (row.assignment ? (row.future ? '尚未生效' : '在任') : '—'),
       },
-    ],
-    [params, returned.rememberRow],
-  );
+    ];
+    return (staffing ? fields : fields.slice(0, 2)).map((column) => ({ filterable: false, ...column }));
+  }, [params, returned.rememberRow, staffing]);
   const summary = useMemo<GridColDef<Row>>(
     () => ({
       field: 'summary',
@@ -243,7 +328,8 @@ export function EmployeeDirectory({
               row.number,
               row.historical ? '历史编号命中' : '',
               row.assignment?.departmentName,
-              row.assignment?.jobName,
+              row.assignment && '职务 ' + row.assignment.jobName,
+              row.assignment?.positionName && '岗位 ' + row.assignment.positionName,
               row.future ? '尚未生效' : '',
             ]
               .filter(Boolean)
@@ -254,135 +340,233 @@ export function EmployeeDirectory({
     }),
     [params, returned.rememberRow],
   );
-  function branch(nodes: Branch[], parent = ''): React.ReactNode {
-    return nodes
-      .filter((n) => (n.parent ?? '') === parent)
-      .map((n) => (
-        <Box key={n.id} sx={{ pl: parent ? 1.5 : 0 }}>
-          <Button
-            aria-pressed={query.department === n.id}
-            onClick={() => update({ department: n.id, page: '1' })}
-          >
-            {n.name}
-          </Button>
-          {branch(nodes, n.id)}
-        </Box>
-      ));
+  function scope(id?: string, directOnly?: boolean) {
+    update({ department: id ?? '', directOnly: id && directOnly ? '1' : '', page: '1' });
   }
+  const restoreSearch = () =>
+    requestAnimationFrame(() =>
+      document.querySelector<HTMLInputElement>('input[aria-label="姓名或人员编号"]')?.focus(),
+    );
   return (
-    <div className="standard-page">
-      <DataGridPage<Row>
-        label="人员"
-        apiRef={apiRef}
-        scrollerRef={returned.scroller}
-        selected={returned.selected}
-        rows={data?.rows ?? []}
-        ready={!!data}
-        loading={!data && !listing.error}
-        empty="没有匹配的人员"
-        columns={columns}
-        summaryColumn={summary}
-        paginationModel={{ page: query.page - 1, pageSize: query.pageSize }}
-        rowCount={rowCount}
-        onPaginationModelChange={(m) => {
-          if (!data || (m.page === query.page - 1 && m.pageSize === query.pageSize)) return;
-          update({
-            page: String(m.pageSize === query.pageSize ? m.page + 1 : 1),
-            pageSize: String(m.pageSize),
-          });
-        }}
-        sortModel={sortModel}
-        onSortModelChange={(m) => {
-          const sort = (m[0]?.sort === 'desc' ? '-' : '') + (m[0]?.field ?? 'number');
-          if (sort !== query.sort) update({ sort, page: '1' });
-        }}
-        toolbar={
-          <ListControl
-            title="人员"
-            action={register}
-            pager={<ListPager />}
-            search={
-              <SearchControl
-                value={draft}
-                onChange={(value) => {
-                  edit.current++;
-                  readyRef.current = query.ref ?? '';
-                  setDraft(value);
-                }}
-                onSearch={search}
-                label="姓名或人员编号"
-              />
-            }
-          >
-            <Stack direction="row" flexWrap="wrap" gap={2} alignItems="center">
-              <ObjectTextField
-                select
-                label="主兼岗"
-                value={query.primary || ''}
-                slotProps={{ select: { displayEmpty: true } }}
-                onChange={(e) => update({ primary: e.target.value, page: '1' })}
-              >
-                <MenuItem value="">全部</MenuItem>
-                <MenuItem value="primary">主岗</MenuItem>
-                <MenuItem value="secondary">兼岗</MenuItem>
-              </ObjectTextField>
-              {compact && (
-                <ObjectTextField
-                  select
-                  label="排序"
-                  value={query.sort}
-                  onChange={(e) => update({ sort: e.target.value, page: '1' })}
-                >
-                  <MenuItem value="number">人员编号升序</MenuItem>
-                  <MenuItem value="-number">人员编号降序</MenuItem>
-                  <MenuItem value="name">姓名升序</MenuItem>
-                  <MenuItem value="-name">姓名降序</MenuItem>
-                </ObjectTextField>
+    <ColumnFilterEditor.Provider value={setFilter}>
+      <div className="standard-page">
+        <DataGridPage<Row>
+          label="人员"
+          apiRef={apiRef}
+          scrollerRef={returned.scroller}
+          selected={returned.selected}
+          rows={data?.rows ?? []}
+          ready={!!data}
+          loading={!data && !failed}
+          empty={data && !staleScope ? '没有匹配的人员' : ''}
+          filterModel={staffing ? filterModel : undefined}
+          slots={columnFilterSlots}
+          selection={{ ...selection, disabled: !data || selection.disabled }}
+          columns={columns}
+          summaryColumn={summary}
+          paginationModel={{ page: query.page - 1, pageSize: query.pageSize }}
+          rowCount={rowCount}
+          onPaginationModelChange={(m) => {
+            if (!data || (m.page === query.page - 1 && m.pageSize === query.pageSize)) return;
+            update({
+              page: String(m.pageSize === query.pageSize ? m.page + 1 : 1),
+              pageSize: String(m.pageSize),
+            });
+          }}
+          sortModel={sortModel}
+          onSortModelChange={(m) => {
+            const sort = (m[0]?.sort === 'desc' ? '-' : '') + (m[0]?.field ?? 'number');
+            if (sort !== query.sort) update({ sort, page: '1' });
+          }}
+          toolbar={
+            <ListControl
+              title="人员"
+              action={register}
+              more={
+                <>
+                  <Tooltip title="更多操作">
+                    <IconButton
+                      ref={more}
+                      size="small"
+                      aria-label="更多操作"
+                      aria-haspopup="menu"
+                      aria-expanded={!!menu}
+                      onClick={(e) => setMenu(e.currentTarget)}
+                    >
+                      <MoreVert />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu anchorEl={menu} open={!!menu} onClose={() => setMenu(null)}>
+                    {staffing && (
+                      <MenuItem
+                        onClick={() => {
+                          setMenu(null);
+                          setFilter({ field: 'primaryJob', source: more.current! });
+                        }}
+                      >
+                        列筛选…
+                      </MenuItem>
+                    )}
+                    {!compact && (
+                      <MenuItem
+                        onClick={() => {
+                          setMenu(null);
+                          apiRef.current?.showPreferences(GridPreferencePanelsValue.columns);
+                        }}
+                      >
+                        列设置…
+                      </MenuItem>
+                    )}
+                    {compact &&
+                      Object.entries(sorts).map(([value, label]) => (
+                        <MenuItem
+                          key={value}
+                          selected={value === query.sort}
+                          onClick={() => {
+                            setMenu(null);
+                            update({ sort: value, page: '1' });
+                          }}
+                        >
+                          排序 · {label}
+                        </MenuItem>
+                      ))}
+                  </Menu>
+                </>
+              }
+              pager={<ListPager />}
+              search={
+                <Box className="list-search-controls">
+                  {data && (
+                    <Typography component="span" variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+                      {data.assignments} 份任职，{data.people} 人
+                    </Typography>
+                  )}
+                  {selecting && !failed ? (
+                    <Stack direction="row" alignItems="center" gap={1}>
+                      <Typography role="status">
+                        {listing.data?.selection ? `已选择${selection.count}项` : '正在核对选择…'}
+                      </Typography>
+                      <Button
+                        size="small"
+                        onClick={() => {
+                          selection.clear();
+                          restoreSearch();
+                        }}
+                      >
+                        取消选择
+                      </Button>
+                    </Stack>
+                  ) : (
+                    <SearchControl
+                      buttonRef={queryButton}
+                      value={draft}
+                      onChange={(value) => {
+                        edit.current++;
+                        readyRef.current = query.ref ?? '';
+                        setDraft(value);
+                      }}
+                      onSearch={() => search()}
+                      label="姓名或人员编号"
+                    />
+                  )}
+                </Box>
+              }
+            >
+              {data && !staleScope && (query.primary || query.department) && (
+                <Box className="list-applied-summary">
+                  {query.department && (
+                    <Button size="small" onClick={() => scope()}>
+                      清除部门范围 · {data.departments.find((d) => d.id === query.department)?.name}
+                    </Button>
+                  )}
+                  {query.primary && (
+                    <Button size="small" onClick={(e) => setFilter({ source: e.currentTarget })}>
+                      主兼岗：{primaryOptions.find((o) => o.value === query.primary)?.label}
+                    </Button>
+                  )}
+                </Box>
               )}
-              {compact && (
-                <ObjectTextField
-                  select
-                  label="任职部门"
-                  value={query.department ?? ''}
-                  onChange={(e) => update({ department: e.target.value, page: '1' })}
-                  slotProps={{ select: { displayEmpty: true } }}
-                >
-                  <MenuItem value="">全部部门</MenuItem>
-                  {data?.departments.map((d) => (
-                    <MenuItem key={d.id} value={d.id}>
-                      {d.name}
-                    </MenuItem>
-                  ))}
-                </ObjectTextField>
-              )}
-              {data && (
-                <Typography>
-                  {data.assignments} 份任职，{data.people} 人
+              {data && draft !== data.keyword && (
+                <Typography className="list-query-summary" role="status">
+                  输入已修改，点击查询后生效。已应用关键词：{data.keyword || '无'}
                 </Typography>
               )}
-            </Stack>
-          </ListControl>
-        }
-        sidebar={
-          <Box
-            component="nav"
-            aria-label="任职部门"
-            sx={{ display: compact ? 'none' : 'block', width: 204, flexShrink: 0, overflow: 'auto' }}
-          >
-            <Button aria-pressed={!query.department} onClick={() => update({ department: '', page: '1' })}>
-              全部部门
-            </Button>
-            {branch(data?.departments ?? [])}
-          </Box>
-        }
-        messages={
-          (error || listing.error) && (
-            <Alert severity="error" action={<Button onClick={listing.refresh}>重试</Button>}>
-              {error || listing.error}
-            </Alert>
-          )
-        }
-      />
-    </div>
+              {filter && staffing && (
+                <ColumnFilterDialog
+                  columns={filterColumns}
+                  request={filter}
+                  applied={filterModel}
+                  onApply={(values) => update({ primary: values.filterValue, page: '1' })}
+                  onClose={closeFilter}
+                />
+              )}
+            </ListControl>
+          }
+          sidebar={
+            <>
+              {staffing && !!display?.departments.length && (
+                <PersonnelDepartmentTree
+                  nodes={display.departments}
+                  selected={query.department}
+                  directOnly={query.directOnly}
+                  onScope={scope}
+                />
+              )}
+            </>
+          }
+          messages={
+            <>
+              {failed && (
+                <Alert
+                  severity="error"
+                  action={
+                    expired && !failure ? (
+                      <Button
+                        onClick={() => {
+                          setDraft('');
+                          update({ ref: '', page: '1' });
+                          restoreSearch();
+                        }}
+                      >
+                        重新查询
+                      </Button>
+                    ) : failure && [400, 422].includes(failure.status ?? 0) ? (
+                      <Button onClick={restoreSearch}>修改输入</Button>
+                    ) : (
+                      !forbidden && (
+                        <Button onClick={() => (failure ? search(failure.keyword) : listing.refresh())}>
+                          重试
+                        </Button>
+                      )
+                    )
+                  }
+                >
+                  {failure?.text || (expired ? '原查询已失效，请重新输入姓名或人员编号。' : listing.error)}
+                </Alert>
+              )}
+              {staleScope && (
+                <Alert
+                  severity="info"
+                  action={
+                    <Button
+                      onClick={() => update({ primary: '', department: '', directOnly: '', page: '1' })}
+                    >
+                      清除任职条件
+                    </Button>
+                  }
+                >
+                  当前权限下无法使用此任职条件。
+                </Alert>
+              )}
+              {notice && (
+                <Alert severity="info" onClose={dismiss}>
+                  {notice}
+                </Alert>
+              )}
+            </>
+          }
+        />
+      </div>
+    </ColumnFilterEditor.Provider>
   );
 }

@@ -117,14 +117,26 @@ type AssignmentQuery struct {
 	PageSize   int    `json:"pageSize"`
 	Sort       string `json:"sort,omitempty"`
 }
+type DirectorySelection struct {
+	All     bool     `json:"all"`
+	IDs     []string `json:"ids"`
+	Version string   `json:"version,omitempty"`
+}
+type DirectorySelectionResult struct {
+	Version string `json:"version"`
+	Count   int    `json:"count"`
+	Changed bool   `json:"changed"`
+}
 type PersonnelQuery struct {
-	Anchor     string `json:"anchor,omitempty"`
-	Department string `json:"department,omitempty"`
-	Primary    string `json:"primary,omitempty"`
-	Ref        string `json:"ref,omitempty"`
-	Page       int    `json:"page"`
-	PageSize   int    `json:"pageSize"`
-	Sort       string `json:"sort,omitempty"`
+	DirectOnly bool                `json:"directOnly,omitempty"`
+	Selection  *DirectorySelection `json:"selection,omitempty"`
+	Anchor     string              `json:"anchor,omitempty"`
+	Department string              `json:"department,omitempty"`
+	Primary    string              `json:"primary,omitempty"`
+	Ref        string              `json:"ref,omitempty"`
+	Page       int                 `json:"page"`
+	PageSize   int                 `json:"pageSize"`
+	Sort       string              `json:"sort,omitempty"`
 }
 type PersonnelRow struct {
 	ID         string       `json:"id"`
@@ -136,15 +148,19 @@ type PersonnelRow struct {
 	Future     bool         `json:"future,omitempty"`
 }
 type PersonnelDirectory struct {
-	Navigation  *AssignmentNav       `json:"navigation,omitempty"`
-	Rows        []PersonnelRow       `json:"rows"`
-	Departments []EmployeeDepartment `json:"departments"`
-	People      int                  `json:"people"`
-	Assignments int                  `json:"assignments"`
-	Total       int                  `json:"total"`
-	Keyword     string               `json:"keyword"`
+	CanListAssignments bool                      `json:"canListAssignments"`
+	Selection          *DirectorySelectionResult `json:"selection,omitempty"`
+	Navigation         *AssignmentNav            `json:"navigation,omitempty"`
+	Rows               []PersonnelRow            `json:"rows"`
+	Departments        []EmployeeDepartment      `json:"departments"`
+	People             int                       `json:"people"`
+	Assignments        int                       `json:"assignments"`
+	Total              int                       `json:"total"`
+	Keyword            string                    `json:"keyword"`
 }
 type EmployeeRow struct {
+	PersonVersion  string `json:"-"`
+	SourceVersion  string `json:"-"`
 	Historical     bool   `json:"-"`
 	ID             string `json:"id"`
 	Person         string `json:"person"`
@@ -174,14 +190,16 @@ type AssignmentNav struct {
 	Next     *AssignmentLink `json:"next,omitempty"`
 }
 type EmployeeDirectory struct {
-	Navigation  *AssignmentNav       `json:"navigation,omitempty"`
-	Rows        []EmployeeRow        `json:"rows"`
-	Departments []EmployeeDepartment `json:"departments"`
-	Assignments int                  `json:"-"`
-	People      int                  `json:"people"`
-	Total       int                  `json:"total"`
-	BusinessAt  string               `json:"businessAt"`
-	Keyword     string               `json:"keyword"`
+	CanListAssignments bool                      `json:"-"`
+	Selection          *DirectorySelectionResult `json:"-"`
+	Navigation         *AssignmentNav            `json:"navigation,omitempty"`
+	Rows               []EmployeeRow             `json:"rows"`
+	Departments        []EmployeeDepartment      `json:"departments"`
+	Assignments        int                       `json:"-"`
+	People             int                       `json:"people"`
+	Total              int                       `json:"total"`
+	BusinessAt         string                    `json:"businessAt"`
+	Keyword            string                    `json:"keyword"`
 }
 type TransferArrangementQuery struct {
 	BusinessDate string `json:"businessDate"`

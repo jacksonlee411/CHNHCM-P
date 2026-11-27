@@ -67,7 +67,7 @@ async function seed(page: Page, withDocument = true, employerFrom='2027-04-01') 
   const policy = await request(page, 'GET', '/api/v1/assignment-policies');
   if (
     !policy.body.rows.some(
-      (r: { category: string; purpose: string }) => r.category === 'Employee' && r.purpose === 'hire',
+      (r: { category: string; purpose: string; from: string; until?: string }) => r.category === 'Employee' && r.purpose === 'hire' && r.from <= '2027-04-01' && (!r.until || '2027-04-01' < r.until),
     )
   ) {
     await send(
@@ -2151,11 +2151,22 @@ test('M04 人员名录的延迟响应保留姓名草稿及搜索返回位置',as
   await expect(employee).toBeFocused(); await expect(input).toHaveValue(sample.name);
 });
 
+async function filterPrimary(page: Page, value?: string) {
+  await page.getByRole('button', {name:'更多操作', exact:true}).click();
+  await page.getByRole('menuitem', {name:'列筛选…'}).click();
+  const dialog = page.getByRole('dialog', {name:'列筛选'});
+  if (value) {
+    await dialog.getByRole('combobox', {name:'值'}).click();
+    await page.getByRole('option', {name:value, exact:true}).click();
+  } else await dialog.getByRole('button', {name:'清除条件'}).click();
+  await dialog.getByRole('button', {name:'应用'}).click();
+}
+
 test('M04 桌面按主兼岗搜索并用键盘打开未来任职',async({page})=>{
   await signIn(page);const sample=await seed(page);await hireAtLocation(page,sample);
   await page.setViewportSize({width:1440,height:900});await openPersonnel(page);
-  const filter=page.getByRole('combobox',{name:'主兼岗'});await filter.click();
-  await page.getByRole('option',{name:'主岗',exact:true}).click();
+  await expect(page.getByRole('columnheader',{name:'主兼岗'})).toBeVisible();
+  await filterPrimary(page,'主岗');
   const input=page.getByLabel('姓名或人员编号');await input.fill(sample.name);await input.press('Enter');
   const row=page.locator('a[data-object-link]').filter({hasText:sample.name});await row.focus();await row.press('Enter');
   await expect(page.getByRole('tab',{name:'职务信息'})).toHaveAttribute('aria-selected','true');
@@ -2188,9 +2199,7 @@ test('按人员编号筛选兼岗并返回原行，资料读者只见本人', as
   await search.fill(number);
   await search.press('Enter');
   await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
-  const filter = page.getByRole('combobox', { name: '主兼岗' });
-  await filter.click();
-  await page.getByRole('option', { name: '兼岗', exact: true }).click();
+  await filterPrimary(page, '兼岗');
   await expect(page.getByText('2 份任职，1 人', { exact: true })).toBeVisible();
   const second = page.getByRole('row').filter({ has: page.getByRole('gridcell', { name: '2', exact: true }) })
     .getByRole('link', { name: sample.name, exact: true });
@@ -2200,7 +2209,7 @@ test('按人员编号筛选兼岗并返回原行，资料读者只见本人', as
   await page.getByRole('link', { name: '返回人员', exact: true }).click();
   await expect(second).toBeFocused();
   await expect(search).toHaveValue(number);
-  await expect(filter).toHaveText('兼岗');
+  await expect(page.getByRole('button',{name:'主兼岗：兼岗'})).toBeVisible();
 
   const reader = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   try {
@@ -2227,13 +2236,10 @@ async function assignmentTabsJourney(page: Page, sample: Awaited<ReturnType<type
   await expect(page.getByText('3 份任职，1 人',{exact:true})).toBeVisible();
   const rows = page.locator('a[data-object-link]').filter({ hasText: sample.name });
   await expect(rows).toHaveCount(3);
-  const filter = page.getByRole('combobox', { name: '主兼岗' });
-  await filter.click();
-  await page.getByRole('option', { name: '兼岗', exact: true }).click();
+  await filterPrimary(page, '兼岗');
   await expect(page.getByText('2 份任职，1 人', { exact: true })).toBeVisible();
   await expect(rows).toHaveCount(2);
-  await filter.click();
-  await page.getByRole('option', { name: '全部', exact: true }).click();
+  await filterPrimary(page);
   await expect(rows).toHaveCount(3);
   const primary = rows.first();
   await primary.focus();
@@ -2751,4 +2757,35 @@ test('M04 办理原件沿姓名与类型跨第 20 和 21 笔', async ({page}) =>
   await expect(page.getByLabel('第1个，共1个匹配对象')).toBeVisible();
   await expect(page.getByRole('button',{name:'下一个对象'})).toBeDisabled();
   await expect(page).toHaveURL(current.href);
+});
+
+test('人员名录跨页选择、排除及集合变动', async ({ page }) => {
+  await signIn(page);
+  const prefix = '跨页名录' + randomUUID().slice(0, 8);
+  const add = async (i: number) => {
+    const r = await request(page, 'POST', '/api/v1/persons', {
+      name: prefix + String(i).padStart(2, '0'), submissionId: randomUUID(),
+    });
+    expect(r.status, r.body.message).toBe(200);
+  };
+  for (let i=0; i<22; i++) await add(i);
+  await openPersonnel(page);
+  const input = page.getByRole('textbox', {name:'姓名或人员编号'});
+  await input.fill(prefix);
+  await input.press('Enter');
+  await expect(page.getByText('0 份任职，22 人')).toBeVisible();
+  await page.getByRole('checkbox', {name:'全选查询结果'}).click();
+  await expect(page.getByText('已选择22项')).toBeVisible();
+  await page.getByRole('checkbox', {name:'取消选择人员',exact:true}).first().click();
+  await expect(page.getByText('已选择21项')).toBeVisible();
+  await page.getByRole('button', {name:'下一页'}).click();
+  await expect(page.getByRole('checkbox', {name:'取消选择人员',exact:true})).toHaveCount(2);
+  await expect(page.getByText('已选择21项')).toBeVisible();
+  await page.locator('[role=columnheader][data-field=name]').click();
+  await expect(page.getByText('已选择21项')).toBeVisible();
+  await add(22);
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect(page.getByText('查询结果已变化，请重新选择。')).toBeVisible();
+  await expect(input).toHaveValue(prefix);
+  await expect(page.getByRole('checkbox', {name:'取消选择人员',exact:true})).toHaveCount(0);
 });

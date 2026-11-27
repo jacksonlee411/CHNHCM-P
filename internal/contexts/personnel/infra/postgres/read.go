@@ -30,11 +30,11 @@ func (s *Store) CreateQuery(ctx context.Context, c f.Credentials, keyword string
 }
 
 const directorySQL = `with visible as (
- select b.person_id,n.name,b.number,(x.number is not null and x.number<>b.number and strpos(n.name,$5)=0) historical
+ select b.person_id,n.name,b.number,b.head,(x.number is not null and x.number<>b.number and strpos(n.name,$5)=0) historical
  from personnel.person b join personnel.identity_payload n on (b.instance_id,b.person_id,b.head)=(n.instance_id,n.person_id,n.version)
  left join personnel.number x on x.instance_id=b.instance_id and x.person_id=b.person_id and x.number=$6
  where b.instance_id=$1 and b.ordinary_until>$7 and ($2 or b.person_id=any($3::uuid[]))
- and not (b.person_id=any(coalesce($4::uuid[],'{}'))) and (strpos(n.name,$5)>0 or x.number is not null)
+ and not (b.person_id=any(coalesce($4::uuid[],'{}'))) and ($5='' or strpos(n.name,$5)>0 or x.number is not null)
 ) `
 
 func (r *request) directory(q p.Query, renew bool) (string, []any, string, error) {
@@ -356,6 +356,22 @@ func (s *Store) GetRecordedNumber(ctx context.Context, c f.Credentials, id, vers
 	return source.Number, nil
 }
 
+// SelectionState checks the expanded row set without returning the full personnel directory.
+func (v *directoryLookup) SelectionState(keys []p.DirectoryKey, selected []string) (version string, matched int, err error) {
+	var people, ids []string
+	for _, key := range keys {
+		people = append(people, key.Person)
+		ids = append(ids, key.ID)
+	}
+	args := append(slices.Clone(v.args), people, ids, selected)
+	err = v.tx.QueryRow(v.ctx, directorySQL+`, indexed AS (
+ SELECT coalesce(k.id,v.person_id) row_id,v.head FROM visible v
+ LEFT JOIN unnest($8::uuid[],$9::uuid[]) k(person,id) ON k.person=v.person_id
+ ) SELECT encode(sha256(convert_to(coalesce(string_agg(row_id::text || head::text, '' ORDER BY row_id),''),'UTF8')),'hex'),
+ count(*) FILTER (WHERE row_id=ANY($10::uuid[])) FROM indexed`, args...).Scan(&version, &matched)
+	return
+}
+
 // Page expands only caller-authorized rows before counting and paging.
 func (v *directoryLookup) Page(keys []p.DirectoryKey, anchor string) (out p.IndexedDirectory, err error) {
 	ctx, tx, order, q := v.ctx, v.tx, v.order, v.q
@@ -382,17 +398,26 @@ func (v *directoryLookup) Page(keys []p.DirectoryKey, anchor string) (out p.Inde
 		orders = append(orders, k.Order)
 	}
 	args = append(args, ids, people, orders)
-	base := directorySQL + `, indexed AS (
- SELECT v.*,coalesce(k.id,v.person_id) row_id,coalesce(k.ordinal,0) ordinal FROM visible v
- LEFT JOIN unnest($8::uuid[],$9::uuid[],$10::int[]) k(id,person,ordinal) ON k.person=v.person_id
- ) `
+	keysSQL := `, replacement AS (
+ SELECT * FROM unnest($8::uuid[],$9::uuid[],$10::int[]) k(id,person,ordinal))`
+	expand := func(from string) string {
+		return `SELECT v.person_id,v.name,v.number,v.historical,coalesce(k.id,v.person_id) row_id,coalesce(k.ordinal,0) ordinal
+    FROM ` + from + ` v LEFT JOIN replacement k ON k.person=v.person_id`
+	}
+	base := directorySQL + keysSQL + ", indexed AS (" + expand("visible") + ") "
+	personOrder := order
 	order += ",ordinal,row_id"
-	// Read one neighbour on each side of the requested page. A selected row
-	// on this page can return its exact navigation without ranking every row.
 	offset := (q.Page - 1) * q.Size
 	start := max(0, offset-1)
-	rows, err := tx.Query(ctx, base+`SELECT counts.total,v.person_id,v.name,v.number,v.historical,v.row_id
- FROM (SELECT count(*) total FROM indexed)counts LEFT JOIN (SELECT * FROM indexed ORDER BY `+order+` LIMIT $11 OFFSET $12)v ON true ORDER BY `+order, append(args, q.Size+1+offset-start, start)...)
+	// Every visible person contributes at least one row. People beyond the
+	// requested prefix cannot enter this page or either neighbour.
+	stmt := directorySQL + keysSQL + `, prefix AS (SELECT * FROM visible ORDER BY ` + personOrder + ` LIMIT ($11::integer+$12::integer)),
+    counts AS (SELECT count(*)+(SELECT coalesce(sum(n-1),0)::bigint FROM
+    (SELECT r.person,count(*) n FROM replacement r JOIN visible v ON v.person_id=r.person GROUP BY r.person)t) total FROM visible),
+    expanded AS (` + expand("prefix") + `)
+    SELECT counts.total,v.person_id,v.name,v.number,v.historical,v.row_id FROM counts LEFT JOIN
+    (SELECT * FROM expanded ORDER BY ` + order + ` LIMIT $11 OFFSET $12)v ON true ORDER BY ` + order
+	rows, err := tx.Query(ctx, stmt, append(args, q.Size+1+offset-start, start)...)
 	if err != nil {
 		return out, err
 	}
@@ -452,7 +477,7 @@ func (v *directoryLookup) Candidates(ids []string) ([]p.Summary, string, error) 
 	if len(ids) == 0 {
 		return nil, v.keyword, nil
 	}
-	rows, err := v.tx.Query(v.ctx, directorySQL+` SELECT person_id,name,number,historical FROM visible WHERE person_id=ANY($8::uuid[])`, append(slices.Clone(v.args), ids)...)
+	rows, err := v.tx.Query(v.ctx, directorySQL+` SELECT head,person_id,name,number,historical FROM visible WHERE person_id=ANY($8::uuid[])`, append(slices.Clone(v.args), ids)...)
 	if err != nil {
 		return nil, "", err
 	}

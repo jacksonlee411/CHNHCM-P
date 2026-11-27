@@ -3465,6 +3465,35 @@
       "superseded_by": [],
       "closure": null,
       "archive": null
+    },
+    {
+      "id": "CHNHCM-405",
+      "title": "人员名录交互、部门层级与验收样本整改",
+      "path": "docs/plans/405-personnel-directory.md",
+      "owner_branch": "wt-dev-e",
+      "owner_role": "人员与任职名录维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "M01",
+        "M04",
+        "M02",
+        "X03"
+      ],
+      "scope": "统一名录的查询恢复、可见任职树、行选择、列展示及4496在任样本。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理顺序评审",
+        "scope": "七项原问题、查询异常、获权树和全选、原件保留及固定环境样本。",
+        "result": "accepted",
+        "evidence": "docs/verification/405-personnel-directory.md"
+      },
+      "execution_status": "in_progress",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
     }
   ],
   "first_slice": {
@@ -24741,6 +24770,32 @@
         "limitations": [
           "4496 既有管理员无办理记录列表权限，获权的名单查询和跨页原件使用独立验收库。最终远程汇总按 PR 当前提交核验。"
         ]
+      },
+      {
+        "path": "docs/verification/405-personnel-directory.md",
+        "related_documents": [
+          "CHNHCM-405",
+          "CHNHCM-502",
+          "CHNHCM-507",
+          "CHNHCM-012",
+          "CHNHCM-119"
+        ],
+        "format": "numbered",
+        "status": "draft",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "clean",
+        "change_description": "原问题来自4496的交付版本，复验分批记载。",
+        "environment": "wt-dev-e，t03-first-e 4496 / 8496 / 54496，Chromium 140 与 PostgreSQL 18。",
+        "scope": "两轮问题、定稿评审、业务回归及固定菜单验收。",
+        "results": [
+          {
+            "check": "原菜单重现查询、筛选、选择、部门栏和样本问题",
+            "result": "failed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          }
+        ],
+        "limitations": []
       }
     ]
   },
