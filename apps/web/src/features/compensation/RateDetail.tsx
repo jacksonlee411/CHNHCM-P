@@ -61,7 +61,7 @@ export function RateDetailPage({ session, creating = false }: { session: Princip
   const update = (values: Record<string,string | undefined>, replace = false) => {
     const next = new URLSearchParams(params);
     for (const [k, v] of Object.entries(values)) { if (v) next.set(k, v); else next.delete(k); }
-    setParams(next, { replace });
+    setParams(next, { replace, flushSync: true });
   };
   const canEdit = !source && !!data && Object.keys(data.actions).length > 0;
   const start = (action: Action, button?: HTMLButtonElement) => {

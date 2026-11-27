@@ -82,6 +82,14 @@ test('210 职级薪标原生 200% 菜单与表单保存', async () => {
   try {
     const {page}=zoom; await open(page); await calibrateDesktopWindow(page); await zoom.setZoom(2);
     const code='Z210'+randomUUID().slice(0,8).toUpperCase(); await gradeFixture(page,code); await createRate(page,code);
+    await menu(page);
+    await page.getByRole('textbox', { name: '搜索职级编码或名称' }).fill(code);
+    await more(page, '列筛选…');
+    await choose(page, '列', '约定频率');
+    await choose(page, '值', '月');
+    await page.getByRole('dialog', { name: '列筛选' }).getByRole('button', { name: '应用' }).press('Enter');
+    await expect(page.getByRole('link', { name: code + ' 薪标验收职级' })).toBeVisible();
+    await expect(page.getByRole('grid')).toContainText('下限 10,000.00');
     expect(await page.evaluate(()=>devicePixelRatio)).toBe(2);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   } finally { await zoom.close(); }
@@ -199,5 +207,59 @@ test('210 重复建标返回原件、错误取消、仅目录角色及撤权后�
     await page.getByRole('button', { name: '切换应用', exact: true }).click();
     await page.getByRole('menuitem', { name: '设置', exact: true }).click();
     await expect(page.getByRole('button', { name: '薪酬配置', exact: true })).toHaveCount(0);
+  });
+});
+
+test('210 薪标列表独立金额列、组合条件、取消还焦及受限投影', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  const code = 'L210' + randomUUID().slice(0, 8).toUpperCase();
+  await gradeFixture(page, code);
+  await createRate(page, code);
+  await menu(page);
+  const header = (field: string) => page.locator('[role="columnheader"][data-field="' + field + '"]');
+  for (const field of ['amount', 'minimum', 'guidance', 'maximum']) await expect(header(field)).toBeVisible();
+  const query = page.getByRole('textbox', { name: '搜索职级编码或名称' });
+  await query.fill(code);
+  await expect(page.getByText(/输入已修改/)).toBeVisible();
+  let reads = 0;
+  page.on('request', r => { if (r.method() === 'GET' && new URL(r.url()).pathname === '/api/v1/compensation/grade-rates') reads++; });
+  await header('frequency').hover();
+  await header('frequency').getByRole('button', { name: '列操作' }).click();
+  await page.getByRole('menuitem', { name: '筛选…' }).click();
+  const panel = page.getByRole('dialog', { name: '列筛选' });
+  await expect(panel.getByRole('combobox', { name: '列', exact: true })).toHaveText('约定频率');
+  await choose(page, '值', '年');
+  await panel.getByRole('button', { name: '取消' }).click();
+  await expect(header('frequency')).toBeFocused();
+  expect(reads).toBe(0);
+  await more(page, '列筛选…');
+  await choose(page, '列', '约定频率');
+  await choose(page, '值', '月');
+  await panel.getByRole('button', { name: '应用' }).click();
+  await expect(page.getByRole('link', { name: code + ' 薪标验收职级' })).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('q')).toBe(code);
+  await more(page, '列筛选…');
+  await choose(page, '列', '标准形式');
+  await choose(page, '值', '连续薪带');
+  await panel.getByRole('button', { name: '应用' }).click();
+  await expect(page.getByRole('button', { name: '标准形式：连续薪带' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '约定频率：月' })).toBeVisible();
+  await page.getByRole('button', { name: '编辑约定频率筛选' }).click();
+  await panel.getByRole('button', { name: '清除条件' }).click();
+  await panel.getByRole('button', { name: '应用' }).click();
+  await expect(page.getByRole('button', { name: '约定频率：月' })).toHaveCount(0);
+  expect(new URL(page.url()).searchParams.get('form')).toBe('RANGE');
+  await withPolicy(page, async (where, mutate) => {
+    mutate("UPDATE access.subject_grant SET read_fields=array_remove(read_fields,'maximum') WHERE " + where + " AND action='graderate.read'");
+    await page.reload();
+    await expect(page.getByRole('link', { name: code + ' 薪标验收职级' })).toBeVisible();
+    await expect(header('maximum')).toHaveCount(0);
+    await expect(header('minimum')).toBeVisible();
+    await page.setViewportSize({ width: 800, height: 540 });
+    await expect(page.getByRole('grid')).toContainText('指导值 12,500.00');
+    await expect(page.getByRole('grid')).not.toContainText('15,000.00');
+    await more(page, '列筛选…');
+    await expect(panel.getByRole('combobox', { name: '列', exact: true })).toHaveText('标准形式');
   });
 });

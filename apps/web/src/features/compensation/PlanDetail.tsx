@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Alert, Box, Button, IconButton, Menu, MenuItem, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   DateField,
   EffectiveDates,
@@ -24,6 +25,9 @@ import { actionLabel, type Action, type Receipt, type Principal } from './rates'
 export function PlanDetailPage({ session, creating = false }: { session: Principal; creating?: boolean }) {
   const { id = '' } = useParams(),
     navigate = useNavigate();
+  const location = useLocation();
+  const [leaving, setLeaving] = useState<string>();
+  useLayoutEffect(() => setLeaving(undefined), [location.key]);
   const [params, setParams] = useMaintenanceSearchParams(planPath);
   const candidate = params.get('back') ?? planPath;
   const back = candidate.split('?')[0] === planPath ? candidate : planPath;
@@ -38,7 +42,7 @@ export function PlanDetailPage({ session, creating = false }: { session: Princip
   const opener = useRef<HTMLButtonElement | null>(null);
   const editing = creating ? 'CREATE' : edit;
   const context = useRead(creating ? 'create' : undefined, planContext);
-  const read = useRead(!creating && id ? JSON.stringify([id, selected, referenceDate]) : undefined, () =>
+  const read = useRead(!creating && id && leaving !== location.key ? JSON.stringify([id, selected, referenceDate]) : undefined, () =>
     readPlan(id, selected, selected ? undefined : referenceDate),
   );
   const data = read.data;
@@ -63,7 +67,12 @@ export function PlanDetailPage({ session, creating = false }: { session: Princip
       if (v) next.set(k, v);
       else next.delete(k);
     }
-    setParams(next, { replace });
+    // Withdraw the previous day's source links before Router changes the address.
+    if (next.get('referenceDate') !== params.get('referenceDate') ||
+        next.get('selectedRecordId') !== params.get('selectedRecordId')) {
+      flushSync(() => setLeaving(location.key));
+    }
+    setParams(next, { replace, flushSync: true });
   };
   const canEdit = !source && !!data && Object.keys(data.actions).length > 0;
   const start = (action: Action, button?: HTMLButtonElement) => {

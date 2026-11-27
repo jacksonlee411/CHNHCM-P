@@ -147,7 +147,9 @@ test('210 计划引用年标准、百分比年目标及保存时的薪标原件'
       .filter({ has: page.getByText('定额', { exact: true }) })
       .last(),
   ).toContainText('180,000.00');
-  await page.getByRole('link', { name: '返回薪酬计划' }).click();
+  const returnToPlan = page.getByRole('link', { name: '返回薪酬计划' });
+  await expect(returnToPlan).toHaveAttribute('href', /referenceDate=2027-06-30/);
+  await returnToPlan.click();
   await expect(text(page, '适用日期')).toHaveValue('2027-06-30');
   await table.getByRole('button', { name: '来源说明' }).click();
   await table.getByRole('link', { name: /查看保存时依据/ }).click();
@@ -420,4 +422,60 @@ test('210 计划撤去金额权后保留可维护的名称与原津贴', async (
   const latest = await (await page.request.get(path)).json();
   expect(latest.record.name).toBe(name);
   expect(latest.record.components[0].amount).toBe('300.00');
+});
+
+test('210 计划列表按状态查询、失败重试与保留搜索草稿', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 540 });
+  await open(page);
+  const code = code210('LP'), name = '列表计划 ' + code;
+  await start(page, code, name);
+  await fixed(page, '200');
+  await save(page);
+  await menu(page);
+  const q = text(page, '搜索计划编码或名称');
+  await q.fill(code);
+  await more(page, '列筛选…');
+  const panel = page.getByRole('dialog', { name: '列筛选' });
+  await select(page, '值', '尚未生效');
+  const dbURL = (url: URL) => url.pathname === base && url.searchParams.get('q') === code && url.searchParams.get('status') === 'FUTURE';
+  const applied = page.waitForResponse(r => dbURL(new URL(r.url())));
+  await panel.getByRole('button', { name: '应用' }).click();
+  expect((await applied).status()).toBe(200);
+  await expect(page.getByRole('link', { name })).toBeVisible();
+  await expect(button(page, '状态：尚未生效')).toBeVisible();
+  let failed = false;
+  await page.route(dbURL, async route => {
+    if (failed) return route.continue();
+    failed = true;
+    await route.fulfill({ status: 503, json: { code: 'test_transient', message: '查询暂时失败' } });
+  });
+  const failure = page.waitForResponse(r => dbURL(new URL(r.url())) && r.status() === 503);
+  await button(page, '查询').click();
+  await failure;
+  await expect(page.getByRole('alert')).toBeVisible();
+  await expect(page.getByText('没有符合条件的薪酬计划')).toHaveCount(0);
+  await q.fill('下一次输入');
+  await button(page, '重试').click();
+  await expect(page.getByRole('link', { name })).toBeVisible();
+  await expect(q).toHaveValue('下一次输入');
+  expect(new URL(page.url()).searchParams.get('q')).toBe(code);
+  await button(page, '状态：尚未生效').click();
+  await panel.getByRole('button', { name: '取消' }).click();
+  await expect(button(page, '状态：尚未生效')).toBeFocused();
+  await expect(q).toHaveValue('下一次输入');
+  const nameColumn = page.locator('[role="columnheader"][data-field="name"]');
+  const originalWidth = await nameColumn.evaluate(el => el.getBoundingClientRect().width);
+  await more(page, '列设置…');
+  await page.getByRole('checkbox', { name: '显示/隐藏全部', exact: true }).uncheck();
+  await page.keyboard.press('Escape');
+  await button(page, '管理列').click();
+  await page.getByRole('checkbox', { name: '计划名称', exact: true }).check();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('link', { name })).toBeVisible();
+  await expect(q).toHaveValue('下一次输入');
+  expect(new URL(page.url()).searchParams.get('q')).toBe(code);
+  await more(page, '列设置…');
+  await page.getByRole('checkbox', { name: '显示/隐藏全部', exact: true }).check();
+  await page.keyboard.press('Escape');
+  await expect.poll(() => nameColumn.evaluate(el => el.getBoundingClientRect().width)).toBeCloseTo(originalWidth, 0);
 });

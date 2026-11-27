@@ -32,6 +32,8 @@ const ToolbarHost = createContext<HTMLElement | null>(null);
 const ToolbarContent = createContext<ReactNode>(null);
 // A stable slot type keeps search inputs, menus and the pager mounted during requests.
 function ListToolbar() { const content = useContext(ToolbarContent), host = useContext(ToolbarHost); return host ? createPortal(content, host) : <>{content}</>; }
+// When all business columns are hidden, their recovery control lives in the toolbar.
+function NoColumnsInGridBody() { return null; }
 type SelectionControl = { selectable?: (id: string) => boolean; ids: Set<string>; onChange: (ids: Set<string>) => void; count?: number; checked: boolean; mixed: boolean; total: number; disabled: boolean; all: () => void; clear: () => void };
 const SelectionContext = createContext<SelectionControl | undefined>(undefined);
 function FullSelectionHeader() {
@@ -72,7 +74,7 @@ export function DataGridPage<T extends { id: string }>({
   const visibility = useMemo(() => compact
     ? Object.fromEntries(gridColumns.map(column => [column.field, column.field === summaryColumn.field || column.field === GRID_CHECKBOX_SELECTION_FIELD]))
     : { ...desktopVisibility, [summaryColumn.field]: false }, [compact, gridColumns, summaryColumn.field, desktopVisibility]);
-  const onlySelection = selection && !compact && columns.length > 0 && columns.every(column => desktopVisibility[column.field] === false);
+  const allBusinessColumnsHidden = !compact && columns.length > 0 && columns.every(column => desktopVisibility[column.field] === false);
   const root = useRef<HTMLDivElement>(null);
   const pagerFocus = useRef<HTMLElement | null>(null);
   const focusedRow = useRef<{ id: string; link: boolean } | null>(null);
@@ -152,7 +154,7 @@ export function DataGridPage<T extends { id: string }>({
       onCellKeyDown={(_, event) => { if (selection && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a' && !(event.target as HTMLElement).closest('input:not([type=checkbox]), textarea, [contenteditable=true]')) { event.defaultMuiPrevented = true; event.preventDefault(); if (!selection.disabled) selection.all(); } }}
       disableRowSelectionOnClick
       disableColumnFilter={!filterModel} filterMode="server" filterModel={filterModel}
-      hideFooter showToolbar slots={{ ...slots, toolbar: ListToolbar }}
+      hideFooter showToolbar slots={{ ...(allBusinessColumnsHidden && { noColumnsOverlay: NoColumnsInGridBody }), ...slots, toolbar: ListToolbar }}
       localeText={{
         noRowsLabel: empty, noColumnsOverlayLabel: '没有显示的列', noColumnsOverlayManageColumns: '管理列',
         checkboxSelectionHeaderName: '选择', checkboxSelectionSelectRow: `选择${label.replace(/列表$/, '')}`, checkboxSelectionUnselectRow: `取消选择${label.replace(/列表$/, '')}`,
@@ -189,7 +191,7 @@ export function DataGridPage<T extends { id: string }>({
       } } }}
       sx={{ border: 0, borderRadius: 0, minHeight: 160, '--DataGrid-overlayHeight': '100px', '--DataGrid-containerBackground': '#fff' }}
     />;
-  return <SelectionContext.Provider value={selection}><ToolbarHost.Provider value={toolbarHost}><ToolbarContent.Provider value={<>{toolbar}{messages}{onlySelection && <Box className="list-applied-summary" role="status" sx={{px: 2}}>
+  return <SelectionContext.Provider value={selection}><ToolbarHost.Provider value={toolbarHost}><ToolbarContent.Provider value={<>{toolbar}{messages}{allBusinessColumnsHidden && <Box className="list-applied-summary" role="status" sx={{px: 2}}>
     <Typography component="span" variant="body2">没有显示的列</Typography>
     <Button size="small" onClick={() => apiRef.current?.showPreferences(GridPreferencePanelsValue.columns)}>管理列</Button>
   </Box>}</>}>
