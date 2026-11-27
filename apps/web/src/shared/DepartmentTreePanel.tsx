@@ -12,14 +12,17 @@ export type DepartmentTreeRow = {
   action?: boolean; context: boolean; hasChildren: boolean; expanded: boolean; loading?: boolean;
 };
 type Props = {
+  viewKey?: string;
   reveal?: {id: string; sequence: number}; message?: ReactNode; searching?: boolean; rows: DepartmentTreeRow[]; selectedId?: string; includeDescendants: boolean;
   search: string; onSearch: (value: string) => void;
   onSelect: (id?: string) => void; onExpand: (id: string) => void;
   onIncludeDescendants: (value: boolean) => void;
 };
 const rowHeight = 28;
-let returnView = { collapsed: false, offset: 0 };
+const views = new Map<string, {collapsed: boolean; offset: number}>();
 export function DepartmentTreePanel(props: Props) {
+  const key = props.viewKey ?? 'departments';
+  const returnView = views.get(key) ?? {collapsed: false, offset: 0};
   const narrow = useMediaQuery('(max-width:899px)');
   const [open, setOpen] = useState(false), [collapsed, setCollapsed] = useState(returnView.collapsed);
   const [offset, setOffset] = useState(returnView.offset);
@@ -27,10 +30,10 @@ export function DepartmentTreePanel(props: Props) {
   const scroll = useRef<HTMLDivElement>(null);
   const view = useRef({collapsed, offset}); view.current = {collapsed, offset};
   useEffect(() => {
-    const invalidate = () => { returnView = {collapsed: false, offset: 0}; view.current = returnView; setCollapsed(false); setOffset(0); };
+    const invalidate = () => { views.clear(); view.current = {collapsed: false, offset: 0}; setCollapsed(false); setOffset(0); };
     window.addEventListener('chnhcm-session-invalidated', invalidate);
-    return () => { returnView = view.current; window.removeEventListener('chnhcm-session-invalidated', invalidate); };
-  }, []);
+    return () => { views.set(key, view.current); window.removeEventListener('chnhcm-session-invalidated', invalidate); };
+  }, [key]);
   useEffect(() => { if (scroll.current && offset && !scroll.current.scrollTop) scroll.current.scrollTop = offset; }, [collapsed, open]);
   const trigger = useRef<HTMLButtonElement>(null);
   const close = () => { setOpen(false); requestAnimationFrame(() => trigger.current?.focus()); };
@@ -80,7 +83,7 @@ export function DepartmentTreePanel(props: Props) {
           }}
           sx={{ position: 'absolute', top: (start + i) * rowHeight, height: rowHeight, left: row.depth * 16, right: 0, minWidth: 80, display: 'flex', alignItems: 'center', borderLeft: row.depth ? '1px solid #e0e6e8' : undefined, borderRadius: '6px', bgcolor: row.id === props.selectedId ? '#e6f2f3' : undefined, color: row.id === props.selectedId ? '#066b68' : row.context ? 'text.secondary' : 'inherit', '&:hover': { bgcolor: row.id === props.selectedId ? '#e6f2f3' : 'rgba(0, 0, 0, .04)' }, '&:focus-visible': { outline: '2px solid #066b68', outlineOffset: -2 } }}>
           <Box sx={{ width: 24, flexShrink: 0 }}>{!row.context && row.hasChildren && <IconButton tabIndex={-1} size="small" disabled={row.loading} aria-label={`${row.expanded ? '收起' : '展开'}${row.name}`} onClick={e => { e.stopPropagation(); props.onExpand(row.id); }} sx={{ p: .5 }}>{row.expanded ? <ExpandMore sx={{ fontSize: 16 }} /> : <ChevronRight sx={{ fontSize: 16 }} />}</IconButton>}</Box>
-          <Tooltip disableInteractive title={`${row.name}（${row.code}）${row.context ? ' · 不可选择' : ''}`}>
+          <Tooltip disableInteractive title={`${row.name}${row.code ? `（${row.code}）` : ''}${row.context ? ' · 不可选择' : ''}`}>
             <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 14, lineHeight: '20px', fontWeight: row.id === props.selectedId ? 600 : 400, cursor: row.context ? 'default' : 'pointer' }}>{row.name}{props.searching && row.code ? `（${row.code}）` : ''}</Box>
           </Tooltip>
         </Box>)}

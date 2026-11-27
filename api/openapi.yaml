@@ -13954,6 +13954,15 @@ components:
       properties:
         anchor: {type: string, format: uuid}
         department: {type: string, format: uuid}
+        directOnly: {type: boolean}
+        selection:
+          type: object
+          additionalProperties: false
+          required: [all, ids]
+          properties:
+            all: {type: boolean}
+            ids: {type: array, uniqueItems: true, items: {type: string, format: uuid}}
+            version: {type: string}
         primary: {type: string, enum: [primary, secondary]}
         ref: {type: string, format: uuid}
         page: {type: integer, minimum: 1}
@@ -13978,8 +13987,16 @@ components:
         future: {type: boolean}
     PersonnelDirectory:
       type: object
-      required: [rows, departments, people, total, assignments, keyword]
+      required: [rows, departments, people, total, assignments, keyword, canListAssignments]
       properties:
+        canListAssignments: {type: boolean}
+        selection:
+          type: object
+          required: [version, count, changed]
+          properties:
+            version: {type: string}
+            count: {type: integer}
+            changed: {type: boolean}
         navigation:
           type: object
           required: [position]

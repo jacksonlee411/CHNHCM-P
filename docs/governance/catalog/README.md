@@ -88,6 +88,7 @@
 | [315 部门与岗位编制后台实施计划](../../archive/plans/315-staffing-quota-administration.md) | active | completed | 物理归档 |
 | [400 M04 T02 入职规则与准备实施方案](../../archive/plans/400-hire-readiness.md) | active | completed | 物理归档 |
 | [404 T03 按岗位免占编首次入职实施方案](../../archive/plans/404-position-exempt-first-hire.md) | active | completed | 物理归档 |
+| [405 人员名录交互、部门层级与验收样本整改](../../archive/plans/405-personnel-directory.md) | active | completed | 物理归档 |
 | [500 人员模块实施路线图](../../archive/plans/500-personnel-roadmap.md) | active | completed | 物理归档 |
 | [504 M01 个人资料扩展实施方案](../../archive/plans/504-personal-profile-extension.md) | active | completed | 物理归档 |
 | [508 人员职务信息评审问题修复实施方案](../../archive/plans/508-job-information-remediation.md) | active | completed | 物理归档 |
@@ -118,7 +119,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（78）](#evidence-acceptance) · [问题复验（46）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（19）](#evidence-governance)
+[业务验收（78）](#evidence-acceptance) · [问题复验（47）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -211,6 +212,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 定稿 | 人员名录七项问题复验通过。4496 原库保留原人员、办理和回执，并补验五级部门、在任及未来样本。实测业务日为 2026-11-27。 [后续记录](../../verification/405-list-standards-review.md) | 本仓报告，部分原件需权限 |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 定稿 | PR #30 远程首轮 4 项失败。修复后本地 5 项前置、8 项 Chromium 业务用例通过，4496 已更新。远程终验另查 PR。 | 本仓报告及公开 CI |
 | 140、004、013、026、120、201、207、014 | [CHNHCM-140 地点与法律实体删除回执验证及计划交接](../../verification/140-history-receipt-closeout.md) | 2026-11-27 定稿 | 地点和法律实体的删除回执首轮均指错记录，修复后两对象、原号查回、升级前原件和 4490 菜单复验通过。原有回执按原样保留。 | 本仓报告，部分原件需权限 |
 | 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 定稿 | 岗位核编旧地址返回 404，两版备份升级后可查原回执，4386 原表对账通过。仅验该接口及实际调用链。 | 本仓报告，部分原件需权限 |
@@ -466,6 +468,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 405、012、119、003、502、124 | [CHNHCM-405 从人员名录提炼列表标准的评审与复验](../../verification/405-list-standards-review.md) | 2026-11-27 定稿 | 从人员名录提炼列表、部门树和验收样本标准。勾选时序及跨页返回两轮首败均保留。第 21 人及第 21 份任职返回经隔离实库复验，4496 已更新。 | 本仓报告，部分原件需权限 |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 定稿 | 400、404 归档后条款与责任可追溯，主线 5 项实库测试通过。4496 持久卷与页面沿用原签收基线。 | 本仓报告 |
 | 014 | [CHNHCM-014 验收记录目录与历史接续复验](../../verification/014-verification-catalog.md) | 2026-11-27 定稿 | 312 份原记录已补齐用途、结论及证据位置，原报告和原有字段保留。默认检索仍仅命中现行规范，本轮只验文档。 | 本仓报告 |
 | 014、308、310、312、313、012、026、121、123 | [CHNHCM-014 M03 模块合同与共享条款导航复核](../../verification/014-m03-shared-clause-navigation.md) | 2026-11-27 定稿 | 5 类办理对象可从 M03 入口查到 4 份对象合同及共享条款。41 处链接均可定位，默认检索仍为 55 份现行规范。本次只验文档。 | 本仓报告 |

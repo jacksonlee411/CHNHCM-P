@@ -2,6 +2,8 @@
 
 查某批做过什么，从[全部验收记录](../governance/catalog/README.md#catalog-evidence)按用途或关联编号找报告。目录列出每批的结论、限制和证据位置。下列专题按各批受测时的情况叙述。查目前还要做什么，见[在办计划](../governance/catalog/README.md#catalog-in-progress)。查开发时应遵循的条款，见[现行规范](../governance/catalog/standards/README.md)。
 
+4496 人员名录的七项问题、方案和实页交接见[405 人员名录整改](405-personnel-directory.md)。由此提炼的列表、部门树与验收样本条款，以及跨部门任职回归见[405 标准评审与复验](405-list-standards-review.md)。
+
 404 的按岗免占编首单先在主线同步后复验，再在 4496 原卷升级至 00057 时签收。该批确认旧单及私人回执可查，新首单实岗一份、常规占编零。后续 PR #30 的记录保留远程首败、本地复验和当批 4496 构建。[原方案评审](404-position-exempt-first-hire-review.md) · [同步复评](404-main-sync-reassessment.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire) · [4496 原卷签收](404-4496-acceptance.md) · [PR #30 浏览器复验](404-pr30-browser-recheck.md) · [400、404 归档及主线复验](400-404-plan-archive.md)
 
 [004 架构、技术栈与数据归属整改复验](004-architecture-review-remediation.md)
