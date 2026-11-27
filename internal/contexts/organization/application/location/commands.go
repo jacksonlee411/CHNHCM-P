@@ -1,16 +1,17 @@
 package location
 
 import (
+	"context"
+	"errors"
+	"time"
+
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	"chnhcm.local/chnhcm/internal/contexts/organization/application/recordhistory"
 	"chnhcm.local/chnhcm/internal/contexts/organization/application/submission"
 	domain "chnhcm.local/chnhcm/internal/contexts/organization/domain"
 	d "chnhcm.local/chnhcm/internal/contexts/organization/domain/location"
 	org "chnhcm.local/chnhcm/internal/contexts/organization/public"
 	"chnhcm.local/chnhcm/internal/foundation"
-	"context"
-	"errors"
-	"slices"
-	"time"
 )
 
 func ptr(v string) *string {
@@ -136,65 +137,19 @@ func assemble(before State, candidate d.Candidate, cmd org.LocationCommand, term
 	t := before.Timeline
 	t.Source = foundation.NewID()
 	t.SourceNo++
-	t.Records = d.Kernel.CloneRecords(candidate.Records)
-	op := Operation{ID: t.Source, Previous: before.Timeline.Source, Subject: operator.SubjectID, Submission: terminal.ID, Action: cmd.Action, EventID: foundation.NewID(), Number: t.SourceNo, RecordedAt: now.UTC().Truncate(time.Microsecond), Operator: org.OperatorSnapshot(operator), Revisions: []Revision{}}
-	summaries := slices.Clone(before.Summaries)
-	selected := cmd.RecordID
-	for i := range t.Records {
-		r := &t.Records[i]
-		changed := cmd.Action == "CREATE" || slices.Contains(candidate.Impact.AffectedRecordIDs, r.ID)
-		if !foundation.ValidID(r.ID) {
-			r.ID = foundation.NewID()
-			selected = r.ID
-		}
-		if changed {
-			r.Revision = foundation.NewID()
-			r.RevisionNo++
-		}
-		if r.Type == "DEACTIVATE" && i > 0 {
-			r.Data = (d.Policy{}).Clone(t.Records[i-1].Data)
-			r.InheritedRecord = t.Records[i-1].ID
-			r.InheritedRevision = t.Records[i-1].Revision
-		}
-		if changed {
-			var previous *d.Record
-			for _, v := range before.Timeline.Records {
-				if v.ID == r.ID {
-					x := v
-					previous = &x
-					break
-				}
-			}
-			if previous == nil {
-				selected = r.ID
-			}
-			next := *r
-			op.Revisions = append(op.Revisions, Revision{Before: previous, After: &next})
-			summaries = slices.DeleteFunc(summaries, func(v org.OperationSummary) bool { return v.RecordID == r.ID })
-			summaries = append(summaries, org.OperationSummary{RecordID: r.ID, Revision: r.Revision, OperationSourceVersion: t.Source, RecordedAt: op.RecordedAt.Format(time.RFC3339Nano), Operator: op.Operator})
-		}
-	}
-	for _, removed := range candidate.Deleted {
-		r := removed
-		op.Revisions = append(op.Revisions, Revision{Before: &r})
-		summaries = slices.DeleteFunc(summaries, func(s org.OperationSummary) bool { return s.RecordID == r.ID })
-	}
-	if cmd.Action == "CREATE" || !slices.ContainsFunc(t.Records, func(r d.Record) bool { return r.ID == selected }) {
-		selected = t.First
-	}
+	recordedAt := now.UTC().Truncate(time.Microsecond)
+	summary := org.OperationSummary{OperationSourceVersion: t.Source, RecordedAt: recordedAt.Format(time.RFC3339Nano), Operator: org.OperatorSnapshot(operator)}
+	history := recordhistory.Assemble[Revision](d.Kernel, before.Timeline.Records, candidate, cmd.RecordID, before.Summaries, summary)
+	t.Records = history.Records
+	op := Operation{ID: t.Source, Previous: before.Timeline.Source, Subject: operator.SubjectID, Submission: terminal.ID, Action: cmd.Action, EventID: foundation.NewID(), Number: t.SourceNo, RecordedAt: recordedAt, Operator: summary.Operator, Revisions: history.Revisions}
 	terminal.Outcome = "accepted"
-	terminal.Result = org.LocationResult{SubmissionID: terminal.ID, Outcome: "accepted", LocationID: ptr(t.ID), SourceVersion: ptr(t.Source), SelectedRecordID: ptr(selected), TargetRecordID: ptr(selected), Action: cmd.Action, RecordedAt: ptr(op.RecordedAt.Format(time.RFC3339Nano))}
-	if cmd.Action == "DELETE" {
-		terminal.Result.TargetRecordID = ptr(cmd.RecordID)
-	}
-	for _, r := range t.Records {
-		if r.ID == selected {
-			terminal.Result.TargetRevision = ptr(r.Revision)
-			terminal.Result.EffectiveDate = ptr(r.Date)
-		}
+	terminal.Result = org.LocationResult{
+		SubmissionID: terminal.ID, Outcome: terminal.Outcome, LocationID: ptr(t.ID), SourceVersion: ptr(t.Source),
+		SelectedRecordID: ptr(history.Selected), TargetRecordID: ptr(history.Target.ID), TargetRevision: ptr(history.Target.Revision),
+		EffectiveDate: ptr(history.Target.Date), Action: cmd.Action, RecordedAt: ptr(summary.RecordedAt),
 	}
 	op.Terminal = terminal
-	return Write{Before: before.Timeline, After: State{Timeline: t, Summaries: summaries}, Operation: op, authorized: true}
+	return Write{Before: before.Timeline, After: State{Timeline: t, Summaries: history.Summaries}, Operation: op, authorized: true}
 }
 func (s Service) Resolve(ctx context.Context, c access.Credentials, id string) (org.LocationResult, error) {
 	if !foundation.ValidID(id) {

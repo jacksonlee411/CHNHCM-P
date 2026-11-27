@@ -2086,7 +2086,7 @@
     {
       "id": "CHNHCM-140",
       "title": "模块边界、日期显示与实施登记收敛路线图",
-      "path": "docs/plans/140-module-cohesion-roadmap.md",
+      "path": "docs/archive/plans/140-module-cohesion-roadmap.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "Organization、Access、共享体验及架构登记维护者",
       "owner": null,
@@ -2097,7 +2097,7 @@
         "X03",
         "M03"
       ],
-      "scope": "行政区划经授权守卫读取策略版本、组织记录期间显示、已实施切片登记，以及下次 M02 历史流程变更触发的地点与法律实体收敛。",
+      "scope": "行政区划经授权守卫读取策略版本、组织记录期间显示、已实施切片登记、地点与法律实体的历史修订及单条删除回执。",
       "format": "numbered",
       "review": {
         "date": "2026-11-22",
@@ -2106,10 +2106,17 @@
         "result": "accepted",
         "evidence": "docs/verification/140-module-cohesion-roadmap-review.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-27",
+        "reason": "T01–T03 分项验收及阶段反例已有记录。T04 随两对象单条删除回执修复通过 A06、A07，本地实库、浏览器及旧回执升级复核见 140-history-receipt-closeout。"
+      },
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "按 014 移交四项持续规则至 004、013、026、120、201、207 和上下文登记，原编号及验收记录保留。",
+        "previous_path": "docs/plans/140-module-cohesion-roadmap.md"
+      }
     },
     {
       "id": "CHNHCM-141",
@@ -6065,6 +6072,73 @@
         ]
       },
       {
+        "path": "docs/verification/140-history-receipt-closeout.md",
+        "related_documents": [
+          "CHNHCM-140",
+          "CHNHCM-004",
+          "CHNHCM-013",
+          "CHNHCM-026",
+          "CHNHCM-120",
+          "CHNHCM-201",
+          "CHNHCM-207",
+          "CHNHCM-014"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "地点和法律实体单条删除回执改用准确前像及适用记录，共用修订组装。",
+        "environment": "wt-dev-b，本地 PostgreSQL 18.6、Go API、生产构建与 Chromium。",
+        "scope": "T04 的 A06、A07，升级前原件和回执，以及 140 的签收与规则去向。",
+        "results": [
+          {
+            "check": "原分支两类对象删除第三条后回执和原号查回误指首条",
+            "result": "failed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          },
+          {
+            "check": "地点和法律实体的删除前像、独立后继、原号与权限",
+            "result": "passed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          },
+          {
+            "check": "最终候选定向实库/API 七组含地点完整验收，两个对象及岗位引用保护均通过",
+            "result": "passed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          },
+          {
+            "check": "首轮新用例误读详情字段、原生缩放误用桌面日期条",
+            "result": "failed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          },
+          {
+            "check": "两类对象回滚与丢响应的独立连接取证，原号重送及重启查回",
+            "result": "passed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          },
+          {
+            "check": "临时生产前端 8 项场景，固定入口双角色和升级前 6 份历史投影核对",
+            "result": "passed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          },
+          {
+            "check": "文档、边界、Go 单测与 vet、运行脚本、前端类型、生成客户端及归档链接核验",
+            "result": "passed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          },
+          {
+            "check": "额外对全部 bootstrap 集成测试启用 vet，原基线和候选均报告 15 处既有测试复制含锁结构体",
+            "result": "failed",
+            "evidence": "docs/verification/140-history-receipt-closeout.md"
+          }
+        ],
+        "limitations": [
+          "本次签收限 T04 及 140 交接。T01–T03 保留各自受测候选和日期。",
+          "本地按影响运行。全库全量集成、全量浏览器、容量、远端 CI 和人工验收未运行。"
+        ]
+      },
+      {
         "path": "docs/verification/140-module-cohesion-review-fixes.md",
         "related_documents": [
           "CHNHCM-140",
@@ -6152,7 +6226,7 @@
           {
             "check": "T04 后续共同历史流程",
             "result": "not_run",
-            "evidence": "docs/plans/140-module-cohesion-roadmap.md"
+            "evidence": "docs/archive/plans/140-module-cohesion-roadmap.md"
           }
         ],
         "limitations": [
@@ -6213,7 +6287,7 @@
           {
             "check": "A01 至 A07 产品实施验收",
             "result": "not_run",
-            "evidence": "docs/plans/140-module-cohesion-roadmap.md"
+            "evidence": "docs/archive/plans/140-module-cohesion-roadmap.md"
           }
         ],
         "limitations": [

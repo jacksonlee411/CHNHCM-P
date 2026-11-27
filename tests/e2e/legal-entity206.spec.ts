@@ -1,3 +1,4 @@
+import { checkMiddleDelete } from './delete-history-support';
 import { randomUUID } from 'node:crypto';
 import { test, expect, openMoreActions, deferAutomaticConfirmation } from './fixtures';
 import { open, choose, select } from './bu-support';
@@ -220,4 +221,8 @@ test('140 法律实体成对删除显示准确采用的登记国家名称', asyn
   await open(page);
   await create(page, '美国');
   await checkAdoptedLabelOnPairDelete(page, 'legal-entities');
+});
+
+test('140 法律实体删除中段后选中适用记录，查询者可回看删除前原件', async ({page}) => {
+  await checkMiddleDelete(page, 'legal-entities', 'REGISTRATION_ADJUSTMENT', create, menu);
 });

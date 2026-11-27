@@ -75,7 +75,6 @@
 | --- | --- | --- | --- |
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
-| [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
 | [210 薪酬体系配置实施路线图](../../plans/210-compensation-configuration-roadmap.md) | in_review | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
@@ -128,6 +127,7 @@
 | [136 GitHub Actions节流实施计划](../../archive/plans/136-actions-cost-reduction.md) | active | completed | 物理归档 |
 | [138 行政区划目录交互实施方案](../../archive/plans/138-geo-area-interactions.md) | active | completed | 物理归档 |
 | [139 岗位列表、岗位关系与结构视图实施方案](../../archive/plans/139-position-workspace.md) | active | completed | 物理归档 |
+| [140 模块边界、日期显示与实施登记收敛路线图](../../archive/plans/140-module-cohesion-roadmap.md) | active | completed | 物理归档 |
 | [141 本地预检结果与生成物核对优化计划](../../archive/plans/141-local-preflight.md) | active | completed | 物理归档 |
 | [200 国家地区行政区划与地点实施路线图](../../archive/plans/200-geography-and-location-roadmap.md) | active | completed | 物理归档 |
 | [203 G3必要行政区划接入实施方案](../../archive/plans/203-g3-geo-area-admission.md) | active | completed | 物理归档 |
@@ -182,6 +182,7 @@
 | 213、210、211、212、003、012 | [CHNHCM-213 管理员维护生效与薪酬首期范围核对](../../verification/213-administrator-maintenance-and-compensation.md) | 2026-11-27 | final |
 | 210、211、212 | [CHNHCM-210 薪酬体系业务方案与页面原型走查](../../verification/210-compensation-design-walkthrough.md) | 2026-11-27 | final |
 | 210、211、212、213 | [CHNHCM-210 薪酬体系路线图与方案多轮评审](../../verification/210-compensation-design-review.md) | 2026-11-27 | final |
+| 140、004、013、026、120、201、207、014 | [CHNHCM-140 地点与法律实体删除回执验证及计划交接](../../verification/140-history-receipt-closeout.md) | 2026-11-27 | final |
 | 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 | final |
 | 004、002、025、313、505 | [CHNHCM-004 架构、技术栈与数据归属整改复验](../../verification/004-architecture-review-remediation.md) | 2026-11-27 | final |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案评审](../../verification/511-project-standards-review.md) | 2026-11-26 | final |
