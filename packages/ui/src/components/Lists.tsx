@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom';
 import { createContext, useContext, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type Ref, type RefObject } from 'react';
 import { Box, Button, Checkbox, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
 import {
-  DataGrid, GridPagination, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD, type GridApi, type GridColDef, type GridColumnVisibilityModel,
+  DataGrid, GridPagination, GridPreferencePanelsValue, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD, type GridApi, type GridColDef, type GridColumnVisibilityModel,
   type GridPaginationModel, type GridSortModel, type GridFilterModel, type GridSlotsComponent,
 } from '@mui/x-data-grid';
 
@@ -71,7 +71,8 @@ export function DataGridPage<T extends { id: string }>({
   }], [columns, summaryColumn, Boolean(selection)]);
   const visibility = useMemo(() => compact
     ? Object.fromEntries(gridColumns.map(column => [column.field, column.field === summaryColumn.field || column.field === GRID_CHECKBOX_SELECTION_FIELD]))
-    : { ...desktopVisibility, [summaryColumn.field]: false, [GRID_CHECKBOX_SELECTION_FIELD]: columns.some(column => desktopVisibility[column.field] !== false) }, [compact, columns, gridColumns, summaryColumn.field, desktopVisibility]);
+    : { ...desktopVisibility, [summaryColumn.field]: false }, [compact, gridColumns, summaryColumn.field, desktopVisibility]);
+  const onlySelection = selection && !compact && columns.length > 0 && columns.every(column => desktopVisibility[column.field] === false);
   const root = useRef<HTMLDivElement>(null);
   const pagerFocus = useRef<HTMLElement | null>(null);
   const focusedRow = useRef<{ id: string; link: boolean } | null>(null);
@@ -188,7 +189,10 @@ export function DataGridPage<T extends { id: string }>({
       } } }}
       sx={{ border: 0, borderRadius: 0, minHeight: 160, '--DataGrid-overlayHeight': '100px', '--DataGrid-containerBackground': '#fff' }}
     />;
-  return <SelectionContext.Provider value={selection}><ToolbarHost.Provider value={toolbarHost}><ToolbarContent.Provider value={<>{toolbar}{messages}</>}>
+  return <SelectionContext.Provider value={selection}><ToolbarHost.Provider value={toolbarHost}><ToolbarContent.Provider value={<>{toolbar}{messages}{onlySelection && <Box className="list-applied-summary" role="status" sx={{px: 2}}>
+    <Typography component="span" variant="body2">没有显示的列</Typography>
+    <Button size="small" onClick={() => apiRef.current?.showPreferences(GridPreferencePanelsValue.columns)}>管理列</Button>
+  </Box>}</>}>
     {sidebar ? <Box className="list-with-sidebar" sx={{display:'flex',flexDirection:'column',flex:1,minWidth:0,minHeight:0}}>
       <Box ref={setToolbarHost} />
       <Box sx={{display:'flex',flex:1,minWidth:0,minHeight:160}}>{sidebar}<Box sx={{display:'flex',flexDirection:'column',flex:1,minWidth:0,minHeight:0}}>{grid}</Box></Box>
