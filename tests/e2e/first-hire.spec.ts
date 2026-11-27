@@ -1327,12 +1327,30 @@ async function lifecycleJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
   const day=page.getByRole('textbox',{name:/^到岗日/});await day.fill('2027-10-01');await day.press('Tab');
   for(const [label,value] of [['部门',sample.department],['职务',sample.job],['用人单位',sample.employer]])await choose(label,value);
   await page.getByLabel(/任用通知说明/).fill('十月重新聘任');
-  if(recover) await page.route('**/api/v1/hires', async route=>{await route.fetch();await route.abort('failed');},{times:1});
+  let submissionId: string | null = null;
+  if (recover) {
+    await page.route('**/api/v1/hires', async route => {
+      submissionId = await route.request().headerValue('Idempotency-Key');
+      await route.fetch();
+      await route.abort('failed');
+    }, {times: 1});
+    // Keep the receipt unknown until the user reopens the page and requests it.
+    await page.route('**/api/v1/hires/submissions/*/resolve', route => route.abort('failed'), {times: 1});
+  }
   await button('保存').click();
-  if(recover){
+  if (recover) {
+    await expect(page.getByRole('alert').filter({hasText: '网络连接失败，请重试'})).toBeVisible();
     await expect(button('查回原提交')).toBeVisible();
-    await page.reload({waitUntil:'commit'});
-    await button('查回原提交').click();
+    expect(submissionId).toBeTruthy();
+    page.once('dialog', dialog => dialog.accept());
+    await page.reload({waitUntil: 'commit'});
+    await expect(button('查回原提交')).toBeVisible();
+    const [receipt] = await Promise.all([
+      page.waitForResponse(response => new URL(response.url()).pathname === '/api/v1/hires/submissions/' + submissionId + '/resolve'),
+      button('查回原提交').click(),
+    ]);
+    expect(receipt.ok()).toBe(true);
+    expect(await receipt.json()).toMatchObject({submissionId, outcome: 'accepted'});
   }
   await expect(page).toHaveURL(url=>url.pathname.startsWith('/personnel/employees/'+sample.id+'/assignments/') && url.searchParams.get('assignmentDay')==='2027-10-01' && !!url.searchParams.get('action'));
   const landed = new URL(page.url());
