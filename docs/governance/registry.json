@@ -2394,6 +2394,99 @@
       "archive": null
     },
     {
+      "id": "CHNHCM-210",
+      "title": "薪酬体系配置实施路线图",
+      "path": "docs/plans/210-compensation-configuration-roadmap.md",
+      "owner_branch": "wt-dev-c",
+      "owner_role": "薪酬业务、体验与验证维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "plan",
+      "modules": [
+        "M09",
+        "M03",
+        "X02",
+        "X03"
+      ],
+      "scope": "薪酬体系设计、两种制度走查和后续职级薪酬标准、薪酬计划后台实现的分阶段任务、责任与出口。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": "in_progress",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-211",
+      "title": "薪酬体系配置业务方案",
+      "path": "docs/specs/m09/211-compensation-configuration.md",
+      "owner_branch": "wt-dev-c",
+      "owner_role": "薪酬业务与 Compensation 维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "business_spec",
+      "modules": [
+        "M09",
+        "M03",
+        "X02",
+        "X03"
+      ],
+      "scope": "薪酬计划及组成、同口径共享薪带、定额与连续薪带、计划内固定津贴、管理员按日维护与历史权限，含制度样例与独立验收预期。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-212",
+      "title": "薪酬配置后台页面与交互设计",
+      "path": "docs/specs/m09/212-compensation-configuration-pages.md",
+      "owner_branch": "wt-dev-c",
+      "owner_role": "薪酬配置体验与验证维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "functional_spec",
+      "modules": [
+        "M09",
+        "M03",
+        "X02",
+        "X03"
+      ],
+      "scope": "薪酬计划和职级薪酬标准的后台页面、字段、桌面设计原型、错误恢复、来源与返回上下文。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-213",
+      "title": "本阶段管理员维护与业务生效",
+      "path": "docs/adr/213-administrator-maintenance-and-effectivity.md",
+      "owner_branch": "wt-dev-c",
+      "owner_role": "项目实施与各业务域维护者",
+      "owner": null,
+      "status": "active",
+      "type": "decision",
+      "modules": [],
+      "scope": "全项目现阶段的业务由具备相应权限的管理员直接办理，按日维护的记录一次保存、按生效日采用，涵盖授权、期间和历史处理。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "用户明确本阶段实施决定，Codex 核对规范及相关合同",
+        "scope": "采纳现阶段项目内全部业务维护和发布由有相应权限的管理员直接办理、按业务生效条件执行的决定。仅核对规则及合同衔接。",
+        "result": "accepted",
+        "evidence": "docs/verification/213-administrator-maintenance-and-compensation.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
       "id": "CHNHCM-300",
       "title": "部门列表左侧部门树实施计划",
       "path": "docs/archive/plans/300-department-tree-implementation.md",
@@ -3479,6 +3572,128 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/210-compensation-design-review.md",
+        "related_documents": [
+          "CHNHCM-210",
+          "CHNHCM-211",
+          "CHNHCM-212",
+          "CHNHCM-213"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "在未提交的 210 至 213 设计基线上修订路线图、现行业务与页面规格、离线原型及走查，保存修订前样本。",
+        "environment": "本地工作树，Oracle 官方产品资料，独立 Chromium 临时浏览器与合成制度。",
+        "scope": "首期配置的项目合同、行业取舍、办理负担及正常菜单、历史、权限样例的交叉走查。",
+        "results": [
+          {
+            "check": "原候选的津贴调整入口、只读返回及比例基准反例。",
+            "result": "failed",
+            "evidence": "docs/verification/210-compensation-design-review.md"
+          },
+          {
+            "check": "按项目合同及中外官方资料核对范围、实际期间、共享与独立调整、基准金额和办理成本，第四轮交叉反例未发现新增主要问题。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-design-review.md"
+          },
+          {
+            "check": "三个视口的离线原型走查通过，核对计划津贴、两职级引用、保存时资料、权限返回及 192 个页面和来路组合。",
+            "result": "passed",
+            "evidence": "docs/verification/data/210-compensation-design/walkthrough.mjs"
+          },
+          {
+            "check": "产品 Go、DB/API、真实授权、并发、日期切换及同构建业务页面验收。",
+            "result": "not_run",
+            "evidence": "docs/verification/210-compensation-design-review.md"
+          }
+        ],
+        "limitations": [
+          "原型只呈现合成预置状态。产品实施和业务代表签收另行记录。"
+        ]
+      },
+      {
+        "path": "docs/verification/213-administrator-maintenance-and-compensation.md",
+        "related_documents": [
+          "CHNHCM-213",
+          "CHNHCM-210",
+          "CHNHCM-211",
+          "CHNHCM-212",
+          "CHNHCM-003",
+          "CHNHCM-012"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "新增全项目本阶段管理员维护生效决定，更新项目规范、DDD 与 M09、薪酬设计及路线图，并按官方资料收敛固定津贴与职级标准。",
+        "environment": "本地工作树、Oracle 官方产品文档、Chromium 140.0.7339.186 和 Playwright 临时配置。",
+        "scope": "阶段范围、行业取舍、管理员直达结果及未来日期、原型正常菜单及三视口走查。",
+        "results": [
+          {
+            "check": "核对用户确定的办理口径，检查计划固定额、无档职级费率及 PeopleSoft 薪档可选的官方说明。",
+            "result": "passed",
+            "evidence": "docs/verification/213-administrator-maintenance-and-compensation.md"
+          },
+          {
+            "check": "三个视口的原型路径、76 个页面及来路组合，以及四项专项页面表达。",
+            "result": "passed",
+            "evidence": "docs/verification/213-administrator-maintenance-and-compensation.md"
+          },
+          {
+            "check": "真实持久化与权限、业务日切换、同名津贴独立落库和零审批任务的产品验收。",
+            "result": "not_run",
+            "evidence": "docs/verification/213-administrator-maintenance-and-compensation.md"
+          }
+        ],
+        "limitations": [
+          "仅实施规范和设计范围采纳。合成原型不承担 Go、数据库或客户制度的产品验收。"
+        ]
+      },
+      {
+        "path": "docs/verification/210-compensation-design-walkthrough.md",
+        "related_documents": [
+          "CHNHCM-210",
+          "CHNHCM-211",
+          "CHNHCM-212"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "新增薪酬体系路线图、业务和页面方案、离线桌面原型及走查证据，更新文档与资产入口。",
+        "environment": "WSL2，Node.js 24.19.0，Playwright 1.55.1，Chromium 140.0.7339.186，独立临时浏览器配置。",
+        "scope": "从两个后台菜单走查月薪及年薪配置、专业和运营计划共用薪带、重复建标、未来生效、误录更正、原件、权限样例、返回和取消。",
+        "results": [
+          {
+            "check": "原生缩放宽度断言、窗口校准及同菜单筛选曾失败。逐项修正，保留首次表现。",
+            "result": "failed",
+            "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+          },
+          {
+            "check": "月薪、年薪两套配置和十进制目标奖金、半分舍入、日期边界的独立预期。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+          },
+          {
+            "check": "三个视口的浏览器走查及页面链接遍历，覆盖新建、组成行、两计划共用薪带、重复建标、七月调整、更正、原件、取消和只读样例。",
+            "result": "passed",
+            "evidence": "docs/verification/data/210-compensation-design/walkthrough.mjs"
+          },
+          {
+            "check": "Go、数据库、真实授权和客户业务验收。",
+            "result": "not_run",
+            "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+          }
+        ],
+        "limitations": [
+          "走查使用合成制度和预置页面状态。业务评审采纳、产品开发和真实数据验收由后续阶段分别记录。"
+        ]
+      },
       {
         "path": "docs/verification/027-public-00058-grant-upgrade.md",
         "related_documents": [

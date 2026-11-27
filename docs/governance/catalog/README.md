@@ -51,6 +51,7 @@
 | [201 国家/地区目录、行政区划目录与企业地点维护技术合同](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md) | active | — | 原位 |
 | [202 配置与主数据默认生效日期](../../adr/202-master-data-default-effective-date.md) | active | — | 原位 |
 | [207 法律实体基础维护合同](../../specs/m02/207-legal-entity-design.md) | active | — | 原位 |
+| [213 本阶段管理员维护与业务生效](../../adr/213-administrator-maintenance-and-effectivity.md) | active | — | 原位 |
 | [308 职类、职务系列与职务基础合同](../../specs/m03/308-job-foundation-contract.md) | active | — | 原位 |
 | [310 职级与职级阶梯对象接入合同](../../specs/m03/310-grade-ladder-contract.md) | active | — | 原位 |
 | [312 岗位定义与岗位层级对象接入合同](../../specs/m03/312-position-contract.md) | active | — | 原位 |
@@ -75,6 +76,7 @@
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
 | [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
+| [210 薪酬体系配置实施路线图](../../plans/210-compensation-configuration-roadmap.md) | in_review | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
 
@@ -92,6 +94,9 @@
 | [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
+| [210 薪酬体系配置实施路线图](../../plans/210-compensation-configuration-roadmap.md) | in_review | in_progress | 原位 |
+| [211 薪酬体系配置业务方案](../../specs/m09/211-compensation-configuration.md) | in_review | — | 原位 |
+| [212 薪酬配置后台页面与交互设计](../../specs/m09/212-compensation-configuration-pages.md) | in_review | — | 原位 |
 
 <a id="catalog-closed"></a>
 
@@ -174,6 +179,9 @@
 | --- | --- | --- | --- |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
+| 213、210、211、212、003、012 | [CHNHCM-213 管理员维护生效与薪酬首期范围核对](../../verification/213-administrator-maintenance-and-compensation.md) | 2026-11-27 | final |
+| 210、211、212 | [CHNHCM-210 薪酬体系业务方案与页面原型走查](../../verification/210-compensation-design-walkthrough.md) | 2026-11-27 | final |
+| 210、211、212、213 | [CHNHCM-210 薪酬体系路线图与方案多轮评审](../../verification/210-compensation-design-review.md) | 2026-11-27 | final |
 | 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 | final |
 | 004、002、025、313、505 | [CHNHCM-004 架构、技术栈与数据归属整改复验](../../verification/004-architecture-review-remediation.md) | 2026-11-27 | final |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案评审](../../verification/511-project-standards-review.md) | 2026-11-26 | final |

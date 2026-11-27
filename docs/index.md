@@ -33,6 +33,8 @@
 
 [待审文稿](governance/catalog/README.md#catalog-review)按文稿状态检索，计划是否已关闭另见执行状态。
 
+薪酬制度维护人可从[薪酬体系配置业务方案](specs/m09/211-compensation-configuration.md)核对月薪、年薪两套制度，按[后台页面设计](specs/m09/212-compensation-configuration-pages.md)走查原型。[实施路线图](plans/210-compensation-configuration-roadmap.md)
+
 ## 历次设计与实施记录
 
 [验证专题](verification/README.md) · [4496 入职原单与岗位验收](verification/404-4496-acceptance.md) · [已关闭计划](governance/catalog/README.md#catalog-closed) · [全部编号与原始登记](governance/registry.json)

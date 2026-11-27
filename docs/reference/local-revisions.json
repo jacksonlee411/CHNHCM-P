@@ -1368,6 +1368,30 @@
           "after_sha256": "04a6ee184af28f31153333051f387d0814d4fa0e1254e194006c70e11521843f"
         }
       ]
+    },
+    {
+      "id": "CHNHCM-213",
+      "decision": "docs/adr/213-administrator-maintenance-and-effectivity.md",
+      "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+      "scope": "目标架构区分全项目本阶段的管理员直接维护与后续核准能力，M09 的计划、组成项和职级标准按日生效。",
+      "verification": "docs/verification/213-administrator-maintenance-and-compensation.md",
+      "files": [
+        {
+          "path": "docs/architecture/target/10-ddd-and-state-contracts.md",
+          "before_sha256": "67250b6525de3777cea285cd663d433b94fe349f0fabc86c4fd74a485efaf431",
+          "after_sha256": "ef28f62f0f3a7992fab5e3d3cb57141333737a3b6c056a171e9963b52dd3154f"
+        },
+        {
+          "path": "docs/architecture/target/data/business-modules.json",
+          "before_sha256": "e0bfacf2693070e3546fb4b634bed018812124de425a1d9bec943741f3e188e7",
+          "after_sha256": "624a40a42fa508e7c13d8f36272e9641219b17927ce625570d9f012b61e71c70"
+        },
+        {
+          "path": "docs/architecture/target/modules/m09.md",
+          "before_sha256": "8aaf498439e93d8476eb525a8e64d75ba3f7cf54baaca376980bd03591b961d2",
+          "after_sha256": "f5208789c9680c38f5f04b9bd00eab9cc24c1134cf1c17dfe60ddef618273de2"
+        }
+      ]
     }
   ]
 }

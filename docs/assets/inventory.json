@@ -831,7 +831,20 @@
         "implemented": false,
         "verified": false
       },
-      "new_evidence": []
+      "new_evidence": [],
+      "planned_adoptions": [
+        {
+          "document": "CHNHCM-210",
+          "scope": "把既有从正常入口选择原件、查看旧资料和返回的验证方式用于两类薪酬配置的设计场景。金额和日期预期见 211。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        }
+      ]
     },
     {
       "id": "ASSET-0029",
@@ -2418,6 +2431,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/122-operation-summary-contract-review.md"
+        },
+        {
+          "document": "CHNHCM-211",
+          "scope": "提炼变更前后值与确切修订的业务意图，薪带新增、误录更正和原计划采用由 M09 的对象合同定义。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
         }
       ]
     },
@@ -5123,6 +5147,19 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/019-cubebox-experience-migration.md"
         }
+      ],
+      "planned_adoptions": [
+        {
+          "document": "CHNHCM-212",
+          "scope": "职级标准与薪酬计划沿用对象详情、紧凑资料分组及当前授权的控制区，组成项作为计划内资料。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        }
       ]
     },
     {
@@ -7401,6 +7438,19 @@
           "verified": true,
           "complete_asset_verified": false,
           "evidence": "docs/verification/206-legal-entity-implementation.md"
+        }
+      ],
+      "planned_adoptions": [
+        {
+          "document": "CHNHCM-212",
+          "scope": "薪标和计划按日选择当前和未来记录，日志打开确切历史并返回所选记录。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
         }
       ]
     },
