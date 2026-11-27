@@ -118,6 +118,11 @@ func TestAppointmentDecisionFirstHire(t *testing.T) {
 	in = input(first)
 	preview(in)
 	secondPreview := maps.Clone(in)
+	second.call("POST", "/api/v1/hires/preview", secondPreview, "", 403)
+	// A hire preview checks both rules and reads the employer, department and job.
+	h.policy(`INSERT INTO access.subject_grant
+		SELECT instance_id,gen_random_uuid(),$1,scope_kind,scope_id,action,read_fields,write_fields
+		FROM access.subject_grant WHERE principal_id=$2 AND action IN ('legalpurpose.check','assignmentpolicy.check','legalentity.read','department.read','department.history.read','job.read','job.history.read')`, second.subject, b.subject)
 	secondPreview["expected"] = second.call("POST", "/api/v1/hires/preview", secondPreview, "", 200)["adoption"]
 	h.policy("UPDATE access.employment_grant SET department_id=$2 WHERE principal_id=$1 AND action='hire'", second.subject, f.NewID())
 	if len(options(second, first)) != 0 {

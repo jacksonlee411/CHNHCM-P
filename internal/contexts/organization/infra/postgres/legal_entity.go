@@ -59,6 +59,9 @@ func (u *legalentityUnit) LockSubmission(ctx context.Context, id string) error {
 	return e
 }
 func (u *legalentityUnit) Lock(ctx context.Context, id string) error {
+	return u.lockEntity(ctx, id, true)
+}
+func (u *legalentityUnit) lockEntity(ctx context.Context, id string, write bool) error {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	// A first-date change of the enterprise and a legal entity write serialize on
@@ -71,10 +74,18 @@ func (u *legalentityUnit) Lock(ctx context.Context, id string) error {
 
 	b, _ := json.Marshal([]string{"organization.legalentity.object", u.instance, id})
 	h := sha256.Sum256(b)
-	if _, e := u.tx.Exec(ctx, "SELECT pg_advisory_xact_lock($1)", int64(binary.BigEndian.Uint64(h[:8]))); e != nil {
+	// Concurrent consumers may adopt the same employer while competing for a seat.
+	// Hold the source against maintenance until their owning transactions finish.
+	advisory := "SELECT pg_advisory_xact_lock_shared($1)"
+	rowLock := " FOR SHARE"
+	if write {
+		advisory = "SELECT pg_advisory_xact_lock($1)"
+		rowLock = " FOR UPDATE"
+	}
+	if _, e := u.tx.Exec(ctx, advisory, int64(binary.BigEndian.Uint64(h[:8]))); e != nil {
 		return e
 	}
-	_, e = u.tx.Exec(ctx, `SELECT legal_entity_id FROM organization.legal_entity WHERE instance_id=$1 AND legal_entity_id=$2 FOR UPDATE`, u.instance, id)
+	_, e = u.tx.Exec(ctx, `SELECT legal_entity_id FROM organization.legal_entity WHERE instance_id=$1 AND legal_entity_id=$2`+rowLock, u.instance, id)
 	return e
 }
 func (u *legalentityUnit) Load(ctx context.Context, id, source string) (app.State, error) {

@@ -140,7 +140,7 @@ func TestHistoryMaintenanceOfflineScopeRollbackAndReadback(t *testing.T) {
 	}
 	b.call("GET", "/api/v1/departments?q=MAINTENANCE_DEP", nil, "", 200)
 	other := foundation.NewID()
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: other, EnterpriseCode: "OTHER", EnterpriseName: "同任务另一实例", Start: "2020-01-01", Login: "admin", Password: "admin1234567"}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: other, EnterpriseCode: "OTHER", EnterpriseName: "同任务另一实例", Start: "2020-01-01", Login: "admin", Password: "admin1234567"}))
 	insertGarbage := func(prefix, instance, word string) int {
 		var n int
 		must(t, f.admin.QueryRow(f.ctx, `INSERT INTO organization.`+prefix+`_dictionary(instance_id,enterprise_id,words,binaries,ranges) SELECT instance_id,enterprise_id,ARRAY[$2]::text[],'{}'::bytea[],'{}'::daterange[] FROM organization.enterprise WHERE instance_id=$1 RETURNING id`, instance, word).Scan(&n))
@@ -246,7 +246,7 @@ func TestMergedReadIndexAndCoveringPrimaryKeys(t *testing.T) {
 func TestHistoryMaintenanceCrossInstanceReferencesAndLockingClient(t *testing.T) {
 	f := fresh(t)
 	g := &fixture{t: t, ctx: f.ctx, admin: f.admin, instance: foundation.NewID(), password: "admin1234567"}
-	must(t, bootstrap.Initialize(g.ctx, g.admin, bootstrap.InitInput{Instance: g.instance, EnterpriseCode: "OTHER", EnterpriseName: "另一归属企业", Start: "2020-01-01", Login: "admin", Password: g.password}))
+	must(t, bootstrap.Initialize(g.ctx, g.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: g.instance, EnterpriseCode: "OTHER", EnterpriseName: "另一归属企业", Start: "2020-01-01", Login: "admin", Password: g.password}))
 	var err error
 	g.runtime, err = bootstrap.Open(g.ctx, f.runtime.Pool.Config().ConnConfig.ConnString(), g.instance)
 	must(t, err)

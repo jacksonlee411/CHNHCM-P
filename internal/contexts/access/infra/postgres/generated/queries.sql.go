@@ -108,8 +108,25 @@ func (q *Queries) LockPolicyShared(ctx context.Context, arg LockPolicySharedPara
 }
 
 const readGrants = `-- name: ReadGrants :many
-SELECT scope_kind,scope_id,action,read_fields,write_fields FROM access.subject_grant
-WHERE instance_id=$1 AND principal_id=$2 ORDER BY grant_id
+WITH bindings AS MATERIALIZED (
+ SELECT a.instance_id,a.grant_id,a.purpose,a.valid_from,a.valid_until,b.role_id,b.scope_id,b.fields_id
+ FROM access.grant_assignment a JOIN access.grant_revision b USING(instance_id,grant_id,revision)
+ WHERE a.instance_id=$1 AND a.principal_id=$2 AND b.operation<>'revoke'
+), locked AS MATERIALIZED (
+ SELECT v.kind,v.version_id,v.actions,v.scope_kind,v.scope_id,v.read_fields,v.write_fields,v.disabled_at
+ FROM access.policy_version v WHERE v.instance_id=$1 AND (v.kind,v.version_id) IN (
+ SELECT 'role',role_id FROM bindings UNION ALL SELECT 'scope',scope_id FROM bindings
+ UNION ALL SELECT 'fields',fields_id FROM bindings
+ ) ORDER BY v.kind COLLATE "C",v.version_id FOR SHARE OF v
+)
+SELECT s.scope_kind::text AS scope_kind,s.scope_id::text AS scope_id,op.action::text AS action,
+ f.read_fields,f.write_fields,b.purpose,b.valid_from,b.valid_until
+FROM bindings b
+JOIN locked r ON r.kind='role' AND r.version_id=b.role_id AND r.disabled_at IS NULL
+JOIN locked s ON s.kind='scope' AND s.version_id=b.scope_id AND s.disabled_at IS NULL
+JOIN locked f ON f.kind='fields' AND f.version_id=b.fields_id AND f.disabled_at IS NULL
+CROSS JOIN LATERAL unnest(r.actions) op(action)
+ORDER BY b.grant_id,op.action
 `
 
 type ReadGrantsParams struct {
@@ -123,8 +140,13 @@ type ReadGrantsRow struct {
 	Action      string
 	ReadFields  []string
 	WriteFields []string
+	Purpose     string
+	ValidFrom   pgtype.Timestamptz
+	ValidUntil  pgtype.Timestamptz
 }
 
+// The held subject row fixes the dependency set. Classify using the actual
+// version rows returned by FOR SHARE, including updates committed during a wait.
 func (q *Queries) ReadGrants(ctx context.Context, arg ReadGrantsParams) ([]ReadGrantsRow, error) {
 	rows, err := q.db.Query(ctx, readGrants, arg.InstanceID, arg.PrincipalID)
 	if err != nil {
@@ -140,6 +162,9 @@ func (q *Queries) ReadGrants(ctx context.Context, arg ReadGrantsParams) ([]ReadG
 			&i.Action,
 			&i.ReadFields,
 			&i.WriteFields,
+			&i.Purpose,
+			&i.ValidFrom,
+			&i.ValidUntil,
 		); err != nil {
 			return nil, err
 		}

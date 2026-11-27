@@ -19,7 +19,7 @@ func (u *unit) SearchQuotaDepartments(ctx context.Context, c foundation.Credenti
 	if u.store.PositionDirectory == nil {
 		return nil, errors.New("position directory unavailable")
 	}
-	return u.store.PositionDirectory.SearchQuotaDepartments(dbtx.With(ctx, u.tx), c, enterprise, day, needle, u.now, offset, limit)
+	return u.store.PositionDirectory.SearchQuotaDepartments(u.transactionContext(ctx), c, enterprise, day, needle, u.now, offset, limit)
 }
 func (u *unit) PositionDepartments(ctx context.Context, anchor string, descendants bool, ids []string) ([]string, error) {
 	ent, err := u.Enterprise(ctx, false)
@@ -29,7 +29,7 @@ func (u *unit) PositionDepartments(ctx context.Context, anchor string, descendan
 	if u.store.PositionDirectory == nil {
 		return nil, errors.New("position directory unavailable")
 	}
-	return u.store.PositionDirectory.PositionDepartments(dbtx.With(ctx, u.tx), u.credentials, ent.ID, u.now, anchor, descendants, ids)
+	return u.store.PositionDirectory.PositionDepartments(u.transactionContext(ctx), u.credentials, ent.ID, u.now, anchor, descendants, ids)
 }
 
 func (u *unit) PositionCandidateIDs(ctx context.Context, field, date, needle string, members []string, offset, limit int) ([]string, error) {
@@ -41,7 +41,7 @@ func (u *unit) PositionCandidateIDs(ctx context.Context, field, date, needle str
 		if u.store.PositionDirectory == nil {
 			return nil, errors.New("position directory unavailable")
 		}
-		return u.store.PositionDirectory.PositionCandidateIDs(dbtx.With(ctx, u.tx), ent.ID, field, date, needle, offset, limit)
+		return u.store.PositionDirectory.PositionCandidateIDs(u.transactionContext(ctx), ent.ID, field, date, needle, offset, limit)
 	}
 	kind := d.Grade
 	if field == "jobId" {
@@ -71,7 +71,7 @@ func (u *unit) PositionSources(ctx context.Context, field string, ids []string, 
 			return nil, errors.New("position directory unavailable")
 		}
 		query := func(ctx context.Context) error {
-			refs, err := u.store.PositionDirectory.PositionReferences(dbtx.With(ctx, u.tx), ent.ID, field, ids, locked, u.now)
+			refs, err := u.store.PositionDirectory.PositionReferences(u.transactionContext(ctx), ent.ID, field, ids, locked, u.now)
 			if err != nil {
 				return err
 			}
@@ -128,7 +128,7 @@ func (u *unit) PositionSources(ctx context.Context, field string, ids []string, 
 }
 
 func (u *unit) PositionUses(ctx context.Context, enterprise, field, id string) ([]staff.PositionUse, error) {
-	return u.store.PositionUses(dbtx.With(ctx, u.tx), enterprise, field, id)
+	return u.store.PositionUses(u.transactionContext(ctx), enterprise, field, id)
 }
 
 func (s *Store) PositionUses(ctx context.Context, enterprise, field, id string) ([]staff.PositionUse, error) {

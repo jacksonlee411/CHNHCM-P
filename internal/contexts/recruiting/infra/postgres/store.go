@@ -51,7 +51,7 @@ func (s *Store) within(ctx context.Context, c f.Credentials, write bool, run fun
 	if e != nil {
 		return e
 	}
-	if e = run(dbtx.With(ctx, tx), &unit{s, tx, g.Principal().ID, c}); e != nil {
+	if e = run(dbtx.With(g.Bind(ctx), tx), &unit{s, tx, g.Principal().ID, c}); e != nil {
 		return e
 	}
 	if e = g.RecordSessionActivity(ctx); e != nil {

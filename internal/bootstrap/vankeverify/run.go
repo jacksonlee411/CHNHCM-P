@@ -129,7 +129,7 @@ func Run(mode, dir string) (any, error) {
 			return nil, e
 		}
 		for _, login := range []string{"admin", "reader"} {
-			if e = bootstrap.Initialize(ctx, pool, bootstrap.InitInput{Instance: c.Instance, EnterpriseCode: "VANKE127", EnterpriseName: "组织历史验证企业", Start: "1984-01-01", Login: login, Password: "admin1234567", ReadOnly: login == "reader"}); e != nil {
+			if e = bootstrap.Initialize(ctx, pool, bootstrap.InitInput{DevelopmentFixture: true, Instance: c.Instance, EnterpriseCode: "VANKE127", EnterpriseName: "组织历史验证企业", Start: "1984-01-01", Login: login, Password: "admin1234567", ReadOnly: login == "reader"}); e != nil {
 				return nil, e
 			}
 		}

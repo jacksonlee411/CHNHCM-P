@@ -25,7 +25,7 @@ func TestLocation204BoundariesAndCapturedReads(t *testing.T) {
 	h := location204{t, f, b, map[string]string{"MO": geoCountry203(t, f, "MO")}}
 	original := h.create("BOUNDARY204", "MO", "", "")
 	g := &fixture{t: t, ctx: f.ctx, admin: f.admin, instance: foundation.NewID(), password: foundation.NewID()}
-	must(t, bootstrap.Initialize(g.ctx, g.admin, bootstrap.InitInput{Instance: g.instance, EnterpriseCode: "OTHER204", EnterpriseName: "另一企业", Start: "1900-01-01", Login: "admin", Password: g.password}))
+	must(t, bootstrap.Initialize(g.ctx, g.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: g.instance, EnterpriseCode: "OTHER204", EnterpriseName: "另一企业", Start: "1900-01-01", Login: "admin", Password: g.password}))
 	var e error
 	g.runtime, e = bootstrap.Open(g.ctx, f.runtime.Pool.Config().ConnConfig.ConnString(), g.instance)
 	must(t, e)

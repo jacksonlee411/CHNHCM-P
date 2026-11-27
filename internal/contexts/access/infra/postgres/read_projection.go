@@ -16,6 +16,7 @@ import (
 // unions for identical matches are shared within this call; no proof is built.
 func (g *guard) DecideReads(ctx context.Context, inputs []access.ReadIntent) (access.ReadDecisions, error) {
 	defer foundation.BeginStage(ctx, "access.read_projection")()
+	g.refresh()
 	if g.readActions == nil {
 		g.readActions = map[string][]access.Grant{}
 		for _, grant := range g.grants {
@@ -79,6 +80,14 @@ func (g *guard) DecideReads(ctx context.Context, inputs []access.ReadIntent) (ac
 			index = len(results.Values)
 			results.Values = append(results.Values, g.evaluate(in))
 			unions[key] = index
+		}
+		if !g.boundary.IsZero() && results.Values[index].Allowed {
+			decision := results.Values[index]
+			if in.DepartmentTarget != nil {
+				target := *in.DepartmentTarget
+				in.DepartmentTarget = &target
+			}
+			g.checks = append(g.checks, func(current *guard) bool { return coversDecision(current.evaluate(in), decision) })
 		}
 		results.Index = append(results.Index, index)
 	}

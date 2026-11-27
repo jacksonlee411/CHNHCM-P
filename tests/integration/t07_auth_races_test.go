@@ -49,7 +49,7 @@ func TestT07AuthenticationAndRevocationLockOrdering(t *testing.T) {
 				t.Run(action+"_"+change+"_"+first, func(t *testing.T) {
 					login := "t07_" + foundation.NewID()[:8]
 					password := foundation.NewID()
-					must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: login, Password: password}))
+					must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: login, Password: password}))
 					b := f.login(login, password)
 					subject := b.subject
 					ctx, cancel := context.WithTimeout(f.ctx, 6*time.Second)

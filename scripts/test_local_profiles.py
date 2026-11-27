@@ -138,19 +138,25 @@ class LocalProfilesTest(unittest.TestCase):
         self.assertEqual(next(r for r in rows if r["profile"] == "legacy")["ports"], {"database": 54370})
 
     def test_start_and_browser_failure_both_run_cleanup_and_keep_original_error(self):
-        for failure in ("up", "browser"):
+        for failure, code in (("up", 17), ("fixture", 18), ("browser", 19)):
             calls = []
             def run(command, env):
                 calls.append(command[2])
                 if failure == "up" and command[2] == "up":
                     raise subprocess.CalledProcessError(17, "up")
-            with self.subTest(failure=failure), patch.object(bu, "run", side_effect=run), patch.object(bu.subprocess, "Popen") as process:
+            def install(command, env):
+                calls.append("fixture")
+                if failure == "fixture":
+                    raise subprocess.CalledProcessError(18, "fixture")
+            with (self.subTest(failure=failure), patch.object(bu, "run", side_effect=run),
+                  patch.object(bu, "install_smoke_policy_fixture", side_effect=install),
+                  patch.object(bu.subprocess, "Popen") as process):
                 process.return_value.wait.return_value = 19
                 process.return_value.poll.return_value = 19
                 with self.assertRaises(subprocess.CalledProcessError) as error:
                     bu.smoke(argparse.Namespace(profile="task-test", playwright_args=[]))
-                self.assertEqual(error.exception.returncode, 17 if failure == "up" else 19)
-                self.assertEqual(calls, ["configure", "up", "destroy"])
+                self.assertEqual(error.exception.returncode, code)
+                self.assertEqual(calls, ["configure", "up"] + ([] if failure == "up" else ["fixture"]) + ["destroy"])
 
 
 if __name__ == "__main__":

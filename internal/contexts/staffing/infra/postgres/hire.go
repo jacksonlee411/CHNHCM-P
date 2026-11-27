@@ -90,7 +90,7 @@ func (u *unit) prepareHire(ctx context.Context, in h.Hire, showOriginalSources b
 	if err = lock(ctx, u.tx, false, "staffing.hire.person", u.store.Instance, in.Person); err != nil {
 		return plan, err
 	}
-	ctx = dbtx.With(ctx, u.tx)
+	ctx = u.transactionContext(ctx)
 	if in.Decision != nil {
 		if err = u.findDecisionHire(ctx, in, &plan, showOriginalSources); err != nil || plan.original.reused {
 			return plan, err
@@ -392,7 +392,7 @@ func (st *Store) HireEmployers(ctx context.Context, c f.Credentials, in h.Employ
 func (u *unit) employerTargets(ctx context.Context, term f.Period, in h.EmployerSearch, permission string, candidates *[]org.EligibleEntity) error {
 	skip := (in.Page - 1) * 20
 	for page := 1; ; page++ {
-		chunk, e := u.store.HirePurposes.Candidates(dbtx.With(ctx, u.tx), u.credentials, org.PurposeCandidates{PurposeCheck: org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}, Search: in.Search, Page: page})
+		chunk, e := u.store.HirePurposes.Candidates(u.transactionContext(ctx), u.credentials, org.PurposeCandidates{PurposeCheck: org.PurposeCheck{Role: "employer", Period: term, BU: in.BU, Location: in.Location}, Search: in.Search, Page: page})
 		if e != nil {
 			return e
 		}

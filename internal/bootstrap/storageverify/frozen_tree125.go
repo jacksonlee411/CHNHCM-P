@@ -156,7 +156,11 @@ func initializeFrozenTree(ctx context.Context, pool *pgxpool.Pool, bu bootstrap.
 		if err != nil {
 			return err
 		}
-		_, err = accessdb.Initialize(ctx, tx, bu.Instance, bu.Enterprise, login, "admin1234567", login == "reader")
+		subject := foundation.NewID()
+		if login == "admin" {
+			subject = bu.Operation.Source.Subject
+		}
+		_, err = accessdb.InitializePrincipal(ctx, tx, bu.Instance, bu.Enterprise, subject, login, "admin1234567", login == "reader", true)
 		if err != nil {
 			_ = tx.Rollback(ctx)
 			return err
@@ -165,38 +169,5 @@ func initializeFrozenTree(ctx context.Context, pool *pgxpool.Pool, bu bootstrap.
 			return err
 		}
 	}
-	// Reattach the freshly initialized admin to the source's exact actor before
-	// any session/history exists. Preserve normal initialization and credentials;
-	// this does not edit an existing environment or rewrite any business source.
-	tx, err := pool.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-	if err = tx.QueryRow(ctx, `SELECT (SELECT count(*) FROM access.session)+(SELECT count(*) FROM access.security_event)`).Scan(&occupied); err != nil || occupied != 0 {
-		return errors.New("fresh fixture accounts already used")
-	}
-	var admin string
-	if err = tx.QueryRow(ctx, `SELECT principal_id::text FROM access.principal WHERE instance_id=$1 AND login='admin'`, bu.Instance).Scan(&admin); err != nil {
-		return err
-	}
-	tables := []string{"access.subject_grant", "access.credential", "access.policy_guard", "access.principal"}
-	rows := make(map[string][]byte, len(tables))
-	for _, table := range tables {
-		var raw []byte
-		if err = tx.QueryRow(ctx, `WITH removed AS (DELETE FROM `+table+` WHERE instance_id=$1 AND principal_id=$2 RETURNING *) SELECT jsonb_agg(jsonb_set(to_jsonb(r),'{principal_id}',to_jsonb($3::text))) FROM removed r`, bu.Instance, admin, bu.Operation.Source.Subject).Scan(&raw); err != nil {
-			return err
-		}
-		rows[table] = raw
-	}
-	for i := len(tables) - 1; i >= 0; i-- {
-		table := tables[i]
-		if _, err = tx.Exec(ctx, `INSERT INTO `+table+` SELECT * FROM jsonb_populate_recordset(NULL::`+table+`,$1::jsonb)`, rows[table]); err != nil {
-			return err
-		}
-	}
-	if err = tx.Commit(ctx); err != nil {
-		return err
-	}
-	return bootstrap.Initialize(ctx, pool, bootstrap.InitInput{Instance: bu.Instance, EnterpriseCode: "LOCAL", EnterpriseName: name, Login: "admin", Password: "admin1234567"})
+	return bootstrap.Initialize(ctx, pool, bootstrap.InitInput{DevelopmentFixture: true, Instance: bu.Instance, EnterpriseCode: "LOCAL", EnterpriseName: name, Login: "admin", Password: "admin1234567"})
 }

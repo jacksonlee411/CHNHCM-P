@@ -129,19 +129,8 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 		go func() { status, _, err := b.response("POST", path, body, key); ch <- response{status, err} }()
 		return ch
 	}
-	waitOn := func(pid uint32) {
-		t.Helper()
-		deadline := time.Now().Add(3 * time.Second)
-		for time.Now().Before(deadline) {
-			if h.f.scalar("SELECT count(*) FROM pg_stat_activity WHERE $1::int=any(pg_blocking_pids(pid))", pid) > 0 {
-				return
-			}
-			time.Sleep(5 * time.Millisecond)
-		}
-		t.Fatal("competing connection did not wait")
-	}
 	req := async("/api/v1/hires", in, f.NewID())
-	waitOn(hold.Conn().PgConn().PID())
+	waitForBlockedTransaction(t, h.f, hold.Conn().PgConn().PID())
 	must(t, hold.Commit(h.f.ctx))
 	if got := <-req; got.err != nil || got.status != 409 {
 		t.Fatal(got)
@@ -179,9 +168,32 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	defer hold.Rollback(h.f.ctx)
 	_, err = hold.Exec(h.f.ctx, "select pg_advisory_xact_lock(373737)")
 	must(t, err)
+	// A borrowed Organization guard supplies legalpurpose.check. Its last
+	// grant can expire after that port returns and before Staffing commits.
+	issueCheck := replaceAdminPurposeGrant(t, h.f, b)
+	expiry := time.Now().Add(1400 * time.Millisecond)
+	expiringGrant := issueCheck(&expiry)
+	expiringKey := f.NewID()
+	req = async("/api/v1/hires", in, expiringKey)
+	waitForBlockedTransaction(t, h.f, hold.Conn().PgConn().PID())
+	waitForStoredGrantExpiry(t, h.f, hold, expiringGrant)
+	must(t, hold.Commit(h.f.ctx))
+	if got := <-req; got.err != nil || got.status != 403 {
+		t.Fatal("cross-domain permission expired before commit", got)
+	}
+	zero("入职用途授权在发布等待中到期")
+	if h.f.scalar("SELECT count(*) FROM staffing.hire_terminal WHERE submission_id=$1", expiringKey) != 0 {
+		t.Fatal("expired nested grant left a receipt")
+	}
+	issueCheck(nil)
+	hold, err = h.f.admin.Begin(h.f.ctx)
+	must(t, err)
+	defer hold.Rollback(h.f.ctx)
+	_, err = hold.Exec(h.f.ctx, "select pg_advisory_xact_lock(373737)")
+	must(t, err)
 	key := f.NewID()
 	req = async("/api/v1/hires", in, key)
-	waitOn(hold.Conn().PgConn().PID())
+	waitForBlockedTransaction(t, h.f, hold.Conn().PgConn().PID())
 	var writer uint32
 	must(t, h.f.admin.QueryRow(h.f.ctx, "SELECT pid FROM pg_stat_activity WHERE $1::int=any(pg_blocking_pids(pid))", hold.Conn().PgConn().PID()).Scan(&writer))
 	v, err = legal.Purposes(h.f.ctx, cred, entity, "")
@@ -189,7 +201,7 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	row = v.Rows[0]
 	row.Until = "2027-05-01"
 	edit := async(legal206Path+"/"+entity+"/purposes", M{"expectedVersion": decl.Version, "row": row}, f.NewID())
-	waitOn(writer)
+	waitForBlockedTransaction(t, h.f, writer)
 	must(t, hold.Commit(h.f.ctx))
 	if got := <-req; got.err != nil || got.status != 200 {
 		t.Fatal(got)

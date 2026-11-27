@@ -307,7 +307,7 @@ func Run(mode, dir, role string) (any, error) {
 			return nil, err
 		}
 		for _, login := range []string{"admin", "reader"} {
-			if err := bootstrap.Initialize(ctx, pool, bootstrap.InitInput{Instance: db.Instance, EnterpriseCode: code, EnterpriseName: name, Start: start, Login: login, Password: "admin1234567", ReadOnly: login == "reader"}); err != nil {
+			if err := bootstrap.Initialize(ctx, pool, bootstrap.InitInput{DevelopmentFixture: true, Instance: db.Instance, EnterpriseCode: code, EnterpriseName: name, Start: start, Login: login, Password: "admin1234567", ReadOnly: login == "reader"}); err != nil {
 				return nil, err
 			}
 		}

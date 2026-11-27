@@ -4,8 +4,10 @@ import (
 	"chnhcm.local/chnhcm/db/migrations"
 	"chnhcm.local/chnhcm/internal/bootstrap"
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	"chnhcm.local/chnhcm/internal/foundation"
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,6 +18,7 @@ import (
 func main() {
 	mode := flag.String("mode", "migrate", "migrate, initialize, runtime-roles, access-change, local-password, country-catalog, geoarea-catalog, personnel-retention, probation-reconcile, t04-reconcile; inputs are JSON on stdin")
 	apply := flag.Bool("apply", false, "apply the selected reconciliation; defaults to preview")
+	optionalCatalog := flag.Bool("skip-unauthorized-catalog", false, "during local startup, skip a catalog when the account lacks current access")
 	flag.Parse()
 	reconcile := *mode == "probation-reconcile" || *mode == "t04-reconcile"
 	if *apply && !reconcile {
@@ -62,7 +65,12 @@ func main() {
 			err = runtime.InitializeCountryCatalog(ctx, input)
 		}
 		if err != nil {
-			fail("country catalog initialization failed: " + err.Error())
+			var fault *foundation.Fault
+			if *optionalCatalog && errors.As(err, &fault) && (fault.Code == "ACCESS_DENIED" || fault.Code == "AUTH_REQUIRED") {
+				fmt.Println("upgrader: " + *mode + " skipped; account lacks current access")
+				return
+			}
+			fail(*mode + " initialization failed: " + err.Error())
 		}
 		fmt.Println("upgrader: " + *mode + " completed")
 		return
@@ -86,6 +94,9 @@ func main() {
 		d := json.NewDecoder(os.Stdin)
 		d.DisallowUnknownFields()
 		if err = d.Decode(&in); err == nil {
+			if (in.DevelopmentFixture || in.NewAccountFixture != nil) && (os.Getenv("CHNHCM_INSECURE_LOCAL") != "1" || os.Getenv("CHNHCM_TEMPORARY") != "true") {
+				fail("development fixtures require an explicit temporary local instance")
+			}
 			err = bootstrap.Initialize(ctx, p, in)
 		}
 	case "access-change":

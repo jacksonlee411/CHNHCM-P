@@ -66,6 +66,9 @@ def run(private,output,binary):
         value=subprocess.run(['docker','exec','-i',container,'psql','-U','postgres','-d',database,'-X','-Atq','-v','ON_ERROR_STOP=1'],input=statement,text=True,capture_output=True)
         if value.returncode:raise RuntimeError('owned SQL fixture failed; raw output intentionally omitted')
         return value.stdout.strip()
+    # The caller verified ownership of this disposable benchmark database.
+    if sql("SELECT to_regclass('access.subject_grant') IS NULL") == "t":
+        sql((ROOT / "tests/fixtures/access/policy.sql").read_text())
     def policy_mutation(instance,subject,statement):
         where=f"instance_id='{str(uuid.UUID(instance))}' AND principal_id='{str(uuid.UUID(subject))}'"
         sql(f'BEGIN;SELECT principal_id FROM access.policy_guard WHERE {where} FOR UPDATE;{statement};UPDATE access.policy_guard SET policy_no=policy_no+1 WHERE {where};COMMIT;')
@@ -120,7 +123,7 @@ def run(private,output,binary):
         status,session,_=admin.call('GET','/api/v1/session');assert status==200
         instance,subject=session['instanceId'],session['subjectId'];uuid.UUID(instance);uuid.UUID(subject)
         where=f"instance_id='{instance}' AND principal_id='{subject}'"
-        snapshot=sql('SELECT json_agg(g) FROM access.subject_grant g WHERE '+where)
+        snapshot=sql("SELECT json_agg(g) FROM access.subject_grant g WHERE "+where+" AND action='department.export'")
         snapshot_path=private/'125-export-grants.json';snapshot_path.write_text(snapshot);snapshot_path.chmod(0o600)
         def mutate(statement):
             sql(f'BEGIN;SELECT principal_id FROM access.policy_guard WHERE {where} FOR UPDATE;{statement};UPDATE access.policy_guard SET policy_no=policy_no+1 WHERE {where};COMMIT;')
@@ -131,7 +134,7 @@ def run(private,output,binary):
             result['failures'].append(metric)
         finally:
             escaped=snapshot.replace("'","''")
-            mutate("INSERT INTO access.subject_grant SELECT * FROM json_populate_recordset(NULL::access.subject_grant,'"+escaped+"') ON CONFLICT(instance_id,grant_id) DO UPDATE SET read_fields=EXCLUDED.read_fields,write_fields=EXCLUDED.write_fields")
+            mutate("INSERT INTO access.subject_grant SELECT * FROM json_populate_recordset(NULL::access.subject_grant,'"+escaped+"')")
         # A real source change preserves fixed identities and exports current facts;
         # restoring the name is another immutable correction.
         parents={row[2] for frame in oracle.frames.values() for row in frame['records'] if row[2]}
