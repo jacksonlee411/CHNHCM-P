@@ -353,7 +353,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "M02 BU SCN001—018/027、BR001—023/034—035、AC001—033/041—044；原维护、选择/导出及分类单组字段的实际范围按既有报告；122操作摘要/日志目标待实施。 2026-11-08按CHNHCM-128取消逐次完整授权过程持久化及其断言，保留当前授权/业务历史/恢复保护；新验收参数未运行，旧报告保持。",
+      "scope": "规定 M02 业务单元按日维护、查询选择与导出、分类、操作摘要和变更日志的场景、规则及验收条件。记录删除和改日、多次启停、显式分类按 020—022，直接保存和位置新增按 101、103，公开联合办理按 109 收敛为固定启停。授权规则和 AC009 按 CHNHCM-128 第 5 节取消逐次完整判权存档，仍要求当前判权、业务历史、必要事件和原结果恢复。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -364,9 +364,45 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-020",
+        "CHNHCM-021",
+        "CHNHCM-022",
+        "CHNHCM-101",
+        "CHNHCM-103",
+        "CHNHCM-109",
+        "CHNHCM-128"
+      ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "当前授权与信息边界": "#m02-br-010",
+          "撤权后查回原结果": "#m02-ac-009"
+        },
+        "CHNHCM-020": {
+          "已生效记录的删除": "CHNHCM-011#m02-br-007",
+          "已保存记录的生效日期更正": "CHNHCM-011#m02-br-017"
+        },
+        "CHNHCM-021": {
+          "当天新增、重新启用与完整启停链": "#21-日期及生命周期"
+        },
+        "CHNHCM-022": {
+          "单条记录显式更正分类": "CHNHCM-011#m02-br-021"
+        },
+        "CHNHCM-101": {
+          "取消手动预览，直接保存": "#2-决策"
+        },
+        "CHNHCM-103": {
+          "普通资料按所选位置新增或插入": "#2-决策"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        },
+        "CHNHCM-128": {
+          "普通判权免存完整过程": "#21-授权计算不默认产生持久证据"
+        }
+      }
     },
     {
       "id": "CHNHCM-012",
@@ -379,7 +415,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，桌面视口、原生缩放与手机端专项的适用范围按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。 跨对象列表准入见第 3.1 节。",
+      "scope": "规定 M02 菜单、列表详情及维护交互。记录维护按 020—022、101、103，普通日期表达按 026，固定启停按 109。紧凑控制沿用 110，Community、查询草稿与已应用条件、名称链接及列表摘要按 113，全结果选择与导出按 114。详情字段分组、获权摘要和行入口见第 2.4.1 节，桌面视口、原生缩放和手机端专项范围见第 6.2 节。更正记录的分类单组按权显示，保留原值及差异保护。 跨对象列表准入见第 3.1 节。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -391,10 +427,51 @@
       },
       "execution_status": null,
       "superseded_by": [
-        "CHNHCM-026"
+        "CHNHCM-020",
+        "CHNHCM-021",
+        "CHNHCM-022",
+        "CHNHCM-026",
+        "CHNHCM-101",
+        "CHNHCM-103",
+        "CHNHCM-109",
+        "CHNHCM-110"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "列表与详情入口": "#m02-ui-list",
+          "表单离开的未保存保护": "#m02-ui-protection",
+          "跨对象列表的行、列与筛选准入": "#m02-ui-list-admission"
+        },
+        "CHNHCM-020": {
+          "已生效记录的删除": "CHNHCM-011#m02-br-007",
+          "已保存记录的生效日期更正": "CHNHCM-011#m02-br-017"
+        },
+        "CHNHCM-021": {
+          "当天新增、重新启用与完整启停链": "#21-日期及生命周期"
+        },
+        "CHNHCM-022": {
+          "单条记录显式更正分类": "CHNHCM-011#m02-br-021"
+        },
+        "CHNHCM-026": {
+          "业务日期格式": "#21-业务日期",
+          "日期输入": "#22-日期输入",
+          "记录时刻与历史证据": "#23-记录时刻与历史证据"
+        },
+        "CHNHCM-101": {
+          "取消手动预览，直接保存": "#2-决策"
+        },
+        "CHNHCM-103": {
+          "普通资料按所选位置新增或插入": "#2-决策"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        },
+        "CHNHCM-110": {
+          "BU 紧凑控制区与列表摘要": "#21-基础改造与展示能力"
+        }
+      }
     },
     {
       "id": "CHNHCM-013",
@@ -409,7 +486,7 @@
         "X01",
         "X03"
       ],
-      "scope": "M02当前Go/API/存储/来源/事务及授权；唯一当前模型，固定两项启停；Community受控列表及单列谓词三参数接线，非Pro或通用查询框架。 114/115新增全结果选择/CSV协议与权限/单SQL快照已接线并按115验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。",
+      "scope": "规定 M02 业务单元的 Go、API、存储、来源与事务合同，包括固定两项启停、Community 列表的单列三参数筛选、完整集合选择与 CSV 的单语句快照，以及按权读取更正分类和差异。记录删除和改日、启停与分类、直接保存和位置新增分别按 020—022、101、103，公开联合办理按 109 收敛为固定启停。第 2、3.1.3、3.1.4、4—6 和 8 节按 CHNHCM-128 第 5 节撤除逐次完整判权存档及终态对它的依赖。当前授权、请求绑定、四种终态和来源保护继续适用。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -420,9 +497,46 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-020",
+        "CHNHCM-021",
+        "CHNHCM-022",
+        "CHNHCM-101",
+        "CHNHCM-103",
+        "CHNHCM-109",
+        "CHNHCM-128"
+      ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "请求绑定与四种终态": "#313-提交结果的终态字段",
+          "当前授权与必要审计": "#63-当前授权与必要审计"
+        },
+        "CHNHCM-020": {
+          "已生效记录的删除": "CHNHCM-011#m02-br-007",
+          "已保存记录的生效日期更正": "CHNHCM-011#m02-br-017"
+        },
+        "CHNHCM-021": {
+          "当天新增、重新启用与完整启停链": "#21-日期及生命周期"
+        },
+        "CHNHCM-022": {
+          "单条记录显式更正分类": "CHNHCM-011#m02-br-021"
+        },
+        "CHNHCM-101": {
+          "取消手动预览，直接保存": "#2-决策"
+        },
+        "CHNHCM-103": {
+          "普通资料按所选位置新增或插入": "#2-决策"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        },
+        "CHNHCM-128": {
+          "普通判权免存完整过程": "#21-授权计算不默认产生持久证据",
+          "原提交恢复解除对授权快照的依赖": "#23-业务终态自行解释原提交"
+        }
+      }
     },
     {
       "id": "CHNHCM-014",
@@ -437,11 +551,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-26",
-        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
-        "scope": "归档条件、原目录镜像、登记日期、同号迁移和定稿引用搬迁。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理",
+        "scope": "现行规范适用范围的写法、历史批次的查证入口，以及部分替代在正文、登记和生成目录的一致性。",
         "result": "accepted",
-        "evidence": "docs/verification/511-physical-archive.md"
+        "evidence": "docs/verification/014-128-scope-and-replacement.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -547,7 +661,7 @@
         "M02",
         "X01"
       ],
-      "scope": "取消任意系统时间截点和采集，保留不可变修订、确切来源及当前授权；第2.3节禁止改日已由020部分替代，其余决定继续有效。 022补充有限联合修订/首条补全/显式分类纠错，仅部分替代，其他决定继续有效。",
+      "scope": "取消任意系统时间截点和采集，保留生效记录、不可变修订、确切来源与当前权限。已保存记录的改日按 020，显式分类纠错按 022 及 011 的单条规则，开发基线按 025，普通维护日期按 123。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -558,12 +672,33 @@
         "evidence": "docs/verification/123-current-maintenance.md"
       },
       "superseded_by": [
+        "CHNHCM-020",
+        "CHNHCM-022",
         "CHNHCM-025",
         "CHNHCM-123"
       ],
       "archive": null,
       "execution_status": null,
-      "closure": null
+      "closure": null,
+      "clause_routes": {
+        "retained": {
+          "生效记录与确切来源": "#21-生效记录与确切来源",
+          "一次保存的历史保护": "#22-一次保存与历史保护"
+        },
+        "CHNHCM-020": {
+          "已保存记录的日期更正": "#22-修改生效日期"
+        },
+        "CHNHCM-022": {
+          "显式更正单条记录的业务分类": "CHNHCM-011#m02-br-021"
+        },
+        "CHNHCM-025": {
+          "开发基线与旧库升级前置": "#single-current-implementation"
+        },
+        "CHNHCM-123": {
+          "普通维护列表的业务日": "#21-普通列表与未来资料",
+          "详情按所选记录定位": "#22-详情及办理定位"
+        }
+      }
     },
     {
       "id": "CHNHCM-019",
@@ -631,7 +766,31 @@
         "CHNHCM-109"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "非首条删除与首条保护": "#21-删除记录",
+          "记录身份、历史及原采用": "#23-历史权限及原采用"
+        },
+        "CHNHCM-021": {
+          "重新启用与多段启停": "#21-日期及生命周期"
+        },
+        "CHNHCM-022": {
+          "显式更正单条记录的业务分类": "CHNHCM-011#m02-br-021"
+        },
+        "CHNHCM-025": {
+          "开发基线与旧库升级前置": "#single-current-implementation"
+        },
+        "CHNHCM-101": {
+          "取消手动预览，直接保存": "#2-决策"
+        },
+        "CHNHCM-104": {
+          "名称、日期和分类统一更正": "CHNHCM-011#m02-br-006"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        }
+      }
     },
     {
       "id": "CHNHCM-021",
@@ -663,7 +822,28 @@
         "CHNHCM-109"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "完整生命周期与日期": "#21-日期及生命周期",
+          "首条保护及普通改日": "#22-首条删除及改日"
+        },
+        "CHNHCM-022": {
+          "显式更正单条记录的业务分类": "CHNHCM-011#m02-br-021"
+        },
+        "CHNHCM-025": {
+          "开发基线与旧库升级前置": "#single-current-implementation"
+        },
+        "CHNHCM-101": {
+          "取消手动预览，直接保存": "#2-决策"
+        },
+        "CHNHCM-104": {
+          "名称、日期和分类统一更正": "CHNHCM-011#m02-br-006"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        }
+      }
     },
     {
       "id": "CHNHCM-022",
@@ -677,7 +857,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "同BU显式有限联合及完整候选；单条分类按104统一更正，首条专用引导/强制联合由107替代，通用联合能力保持。",
+      "scope": "规定记录身份、独立快照与原子结果。单条分类纠错按 104 承接到 011，首条按 107 分两次维护，109 将公开联合办理收敛为两项固定启停操作。结果恢复、当前模型和直接保存分别按 024、025、101。",
       "format": "numbered",
       "review": {
         "date": "2026-11-02",
@@ -696,7 +876,31 @@
         "CHNHCM-109"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "后继资料的独立快照与原子结果": "#24-快照与原子结果"
+        },
+        "CHNHCM-024": {
+          "结果读取与业务执行分权": "#21-结果读取与业务执行分权",
+          "锁内拒绝与显式查回": "#22-同事务拒绝与显式查回"
+        },
+        "CHNHCM-025": {
+          "旧模型和旧终态格式的兼容要求": "#5-适用与替代关系"
+        },
+        "CHNHCM-101": {
+          "取消手动预览，直接保存": "#2-决策"
+        },
+        "CHNHCM-104": {
+          "名称、日期和分类统一更正": "CHNHCM-011#m02-br-006"
+        },
+        "CHNHCM-107": {
+          "首条更正与随后新增分别保存": "#2-决策"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        }
+      }
     },
     {
       "id": "CHNHCM-023",
@@ -711,7 +915,7 @@
         "M02",
         "X03"
       ],
-      "scope": "M02时间轴及列表案例；394编号、350现行、44退役；BU122/123/R1—R3结果保留各自报告边界。部门TL-394及122适用参数分别映射R4后端与R5正常菜单，按实际报告验收；R6容量后置。 2026-11-08按CHNHCM-128取消逐次完整授权过程持久化及其断言，保留当前授权/业务历史/恢复保护；新验收参数未运行，旧报告保持。",
+      "scope": "规定 M02 时间轴、列表选择与导出、操作摘要及变更日志的测试输入和独立预期，区分 BU、部门及后端、页面和容量参数。按 101 取消手动预览和保存许可的交互预期。TL-178、TL-212 及反例 14 按 CHNHCM-128 第 5 节核验当前判权、原结果独立恢复、必要事实原子性及普通判权零过程写入。",
       "format": "numbered",
       "review": {
         "date": "2026-11-05",
@@ -721,9 +925,24 @@
         "evidence": "docs/verification/116-r5-department-pages-and-acceptance.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-101",
+        "CHNHCM-128"
+      ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "撤权后的原结果恢复": "#m02-tl-178",
+          "必要事实失败时的原子性": "#m02-tl-212"
+        },
+        "CHNHCM-101": {
+          "取消手动预览，直接保存": "#2-决策"
+        },
+        "CHNHCM-128": {
+          "TL-178、TL-212 和反例 14 的判权存档预期": "#authorization-evidence-replacement"
+        }
+      }
     },
     {
       "id": "CHNHCM-024",
@@ -753,7 +972,20 @@
         "CHNHCM-109"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "结果读取与业务执行分权": "#21-结果读取与业务执行分权",
+          "原锁内拒绝与显式查回": "#22-同事务拒绝与显式查回",
+          "按风险分层验证": "#23-按风险分配验证层次"
+        },
+        "CHNHCM-025": {
+          "撤销旧库升级与换密前置": "#5-适用与替代关系"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        }
+      }
     },
     {
       "id": "CHNHCM-025",
@@ -807,7 +1039,18 @@
         "CHNHCM-123"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "业务日期格式": "#21-业务日期",
+          "日期输入": "#22-日期输入",
+          "记录时刻的时区和精度": "#23-记录时刻与历史证据"
+        },
+        "CHNHCM-123": {
+          "普通维护列表的业务日": "#21-普通列表与未来资料",
+          "详情按所选记录定位": "#22-详情及办理定位"
+        }
+      }
     },
     {
       "id": "CHNHCM-027",
@@ -829,7 +1072,12 @@
       "execution_status": "in_progress",
       "superseded_by": [],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "3-同一业务事务内的当前权限": {
+          "主体与角色版本在业务事务内的加锁顺序": "CHNHCM-013#612-守卫粒度与事务顺序"
+        }
+      }
     },
     {
       "id": "CHNHCM-028",
@@ -901,7 +1149,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "全部已接BU维护场景取消手动预览及保存许可；自动辅助、最终校验及历史保护。",
+      "scope": "已接入的 BU 维护场景直接保存，自动辅助保留，保存时重验。首条独立表单和原日期保留选择按 107 移除，公开联合办理按 109 限于固定启停期间，旧历史继续按权读取。",
       "format": "numbered",
       "review": {
         "date": "2026-11-02",
@@ -912,10 +1160,22 @@
       },
       "execution_status": null,
       "superseded_by": [
+        "CHNHCM-107",
         "CHNHCM-109"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "直接保存与表单自动辅助": "#2-决策"
+        },
+        "CHNHCM-107": {
+          "首条改用普通更正并按需另次新增": "#2-决策"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        }
+      }
     },
     {
       "id": "CHNHCM-102",
@@ -962,7 +1222,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "普通资料新增/插入的位置约束、资料及日期默认、无日期仅禁用、统一命名；产品实施与分层证据由105持有。",
+      "scope": "规定 BU 普通资料按所选位置新增或插入、资料及日期默认、统一命名和无可用日期时的按钮状态。首条之前的专用补全入口按 107 移除，原公开联合办理按 109 收敛为固定启停期间维护。",
       "format": "numbered",
       "review": {
         "date": "2026-11-02",
@@ -973,10 +1233,22 @@
       },
       "execution_status": null,
       "superseded_by": [
+        "CHNHCM-107",
         "CHNHCM-109"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "按所选位置新增或插入资料": "#2-决策"
+        },
+        "CHNHCM-107": {
+          "首条改用普通更正并按需另次新增": "#2-决策"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        }
+      }
     },
     {
       "id": "CHNHCM-104",
@@ -1106,7 +1378,15 @@
         "CHNHCM-109"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "首条更正与随后新增分别保存": "#2-决策"
+        },
+        "CHNHCM-109": {
+          "通用联合办理收敛为两项固定启停操作": "CHNHCM-011#m02-br-019"
+        }
+      }
     },
     {
       "id": "CHNHCM-108",
@@ -1186,7 +1466,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "继续紧凑控制、A/D、真实名称链接、分页和原生列设置；Pro路线由113替代，列拖动/固定按用户补充取消。",
+      "scope": "保留 BU 列表紧凑控制、分页、真实名称链接、查询草稿与已应用条件。保留原生列设置，按 113 采用 Community 并取消列拖动和固定，完整集合选择和导出按 114，普通维护日期按 123。",
       "format": "numbered",
       "review": {
         "date": "2026-11-04",
@@ -1202,7 +1482,26 @@
         "CHNHCM-123"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "分页与紧凑控制": "#21-基础改造与展示能力",
+          "真实名称链接与查询草稿": "#22-必须保留的合同",
+          "单列筛选的应用与取消": "#26-后续采纳单列条件与统一应用取消"
+        },
+        "CHNHCM-113": {
+          "组件选型与许可（Community）": "#21-组件来源与构建",
+          "列显隐、列宽及拖动固定的取舍": "#23-纯展示列能力与后置边界"
+        },
+        "CHNHCM-114": {
+          "完整查询结果选择": "#21-选择对象与用户任务",
+          "按权导出所选 CSV": "#22-集合变化权限与消费动作"
+        },
+        "CHNHCM-123": {
+          "普通维护列表的业务日": "#21-普通列表与未来资料",
+          "详情按所选记录定位": "#22-详情及办理定位"
+        }
+      }
     },
     {
       "id": "CHNHCM-111",
@@ -1284,7 +1583,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "Community8.29.3源码、部门样板及既定交互；111实际交付见原报告；114部分替代多选/导出后置，115增量已完成限定交付。",
+      "scope": "规定 Community 8.29.3 组件与源码、部门列表样板及保留的列表交互。完整查询结果选择和导出按 114，普通维护日期按 123。",
       "format": "numbered",
       "review": {
         "date": "2026-11-04",
@@ -1299,7 +1598,22 @@
         "CHNHCM-123"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "Community 组件与源码": "#21-组件来源与构建",
+          "列表展示与原生分页": "#22-既定交互与响应式展示",
+          "原生列菜单、显隐与列宽": "#23-纯展示列能力与后置边界"
+        },
+        "CHNHCM-114": {
+          "完整查询结果选择": "#21-选择对象与用户任务",
+          "按权导出所选 CSV": "#22-集合变化权限与消费动作"
+        },
+        "CHNHCM-123": {
+          "普通维护列表的业务日": "#21-普通列表与未来资料",
+          "详情按所选记录定位": "#22-详情及办理定位"
+        }
+      }
     },
     {
       "id": "CHNHCM-114",
@@ -1313,7 +1627,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "全查询授权结果选择及CSV所选导出已由115实施；只替代110/113相关后置边界，实际结果见实施报告。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。",
+      "scope": "规定 BU 列表完整授权查询结果的选择和所选 CSV 全部导出或整次失败，部分替代 110、113 对这两项功能的后置决定。普通维护日期按 CHNHCM-123。第 4 节按 CHNHCM-128 第 5 节取消普通读取、选择和导出的逐次完整判权存档，保留当前授权及明确敏感操作的最小事件。",
       "format": "numbered",
       "review": {
         "date": "2026-11-04",
@@ -1324,10 +1638,24 @@
       },
       "execution_status": null,
       "superseded_by": [
-        "CHNHCM-123"
+        "CHNHCM-123",
+        "CHNHCM-128"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "完整授权集合与跨页选择": "#21-选择对象与用户任务",
+          "消费时重验权限与 CSV 整次成功": "#22-集合变化权限与消费动作"
+        },
+        "CHNHCM-123": {
+          "普通维护列表的业务日": "#21-普通列表与未来资料",
+          "详情按所选记录定位": "#22-详情及办理定位"
+        },
+        "CHNHCM-128": {
+          "选择和导出只记必要事件": "#22-只记录有明确用途的事实"
+        }
+      }
     },
     {
       "id": "CHNHCM-115",
@@ -1423,7 +1751,18 @@
         "CHNHCM-123"
       ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "BU 与部门独立存储": "#21-对象与存储",
+          "部门归属与有效期间": "#22-bu归属与期间"
+        },
+        "CHNHCM-123": {
+          "普通维护列表的业务日": "#21-普通列表与未来资料",
+          "详情按所选记录定位": "#22-详情及办理定位",
+          "部门当前及历史路径按何日读取": "#24-部门路径"
+        }
+      }
     },
     {
       "id": "CHNHCM-118",
@@ -1438,7 +1777,7 @@
         "M02",
         "X03"
       ],
-      "scope": "BU/部门独立表组、单值BU归属、同日一条、最小行政关系、路径、分类及恢复；R4后端与R5页面按独立证据验收，R6容量后置。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
+      "scope": "规定 BU 与部门使用独立表组，以及部门的单值 BU 归属、同日一条生效记录、行政上级、路径、分类和原结果恢复。第 4.8 节按 CHNHCM-128 第 5 节撤除关联快捷跳转和专属判权。引用名称与编码按权展示，关系维护资格及历史路径真实性继续适用。",
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
@@ -1448,9 +1787,19 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "引用名称与路径按读权裁剪": "#m02-br-031"
+        },
+        "CHNHCM-128": {
+          "撤除关联快捷跳转及专属判权": "#26-取消关联快捷跳转及其专属机制"
+        }
+      }
     },
     {
       "id": "CHNHCM-119",
@@ -1465,7 +1814,7 @@
         "M02",
         "X03"
       ],
-      "scope": "部门正常菜单、列表/详情/维护、关系候选、路径、日志及恢复；R5页面落地与双对象实测，容量留R6。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。 第 10 节列出部门树共用交互与各页的范围差异。",
+      "scope": "规定部门正常菜单、列表与详情、维护表单、关系候选、路径、日志及恢复交互。第 3、8 节按 CHNHCM-128 第 5 节撤除管理 BU、行政上级及路径祖先的快捷链接和打开能力预判，保留获权文本、本对象导航及准确来源定位。 第 10 节规定部门树共用的交互和各列表的业务范围。",
       "format": "numbered",
       "review": {
         "date": "2026-11-27",
@@ -1475,9 +1824,21 @@
         "evidence": "docs/verification/405-list-standards-review.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "路径的读取上下文": "#33-路径读取上下文",
+          "列表及 CSV 的字段读权": "#31-列表及csv",
+          "共用部门树的交互和右表范围": "#department-tree-consumers"
+        },
+        "CHNHCM-128": {
+          "撤除关联快捷跳转及专属判权": "#26-取消关联快捷跳转及其专属机制"
+        }
+      }
     },
     {
       "id": "CHNHCM-120",
@@ -1492,7 +1853,7 @@
         "M02",
         "X03"
       ],
-      "scope": "独立存储/类型端口、当前授权和共同锁序、路径证据；R5新增筛选引用模式、展示日期及链接权限，R6容量后置。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
+      "scope": "规定 M02 按日维护的独立存储、类型化接口、当前权限、共同锁序、提交恢复和路径来源保护。逐次判权过程存档、业务终态对该档案的依赖，以及部门关联快捷跳转的专属判权、摘要、缓存和返回字段，按 CHNHCM-128 第 5 节列明的范围撤除。",
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
@@ -1502,9 +1863,20 @@
         "evidence": "docs/verification/511-physical-archive.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "当前授权及路径节点的引用保护": "#63-引用与路径保护"
+        },
+        "CHNHCM-128": {
+          "普通判权免存完整过程": "#21-授权计算不默认产生持久证据",
+          "撤除关联快捷跳转及专属判权": "#26-取消关联快捷跳转及其专属机制"
+        }
+      }
     },
     {
       "id": "CHNHCM-121",
@@ -1519,7 +1891,7 @@
         "M02",
         "X03"
       ],
-      "scope": "双对象分层验收；R4真实后端及R5菜单/视口映射已按实际报告闭合，R6容量未运行；旧报告保持。 2026-11-08涉及逐次完整授权过程持久化及终态耦合的部分由CHNHCM-128替代；原执行结果保留，128产品整改未实施。",
+      "scope": "规定 BU 与部门按日维护的分层验收条件，包括 R4 后端、R5 正常菜单和 R6 容量，以及其他对象适用的接入映射。第 11 节 R6-08 的逐次判权存档要求按 CHNHCM-128 第 5 节替代。验收覆盖当前范围和字段判权、撤权保护、原结果恢复及操作者身份快照。",
       "format": "numbered",
       "review": {
         "date": "2026-11-26",
@@ -1529,9 +1901,19 @@
         "evidence": "docs/verification/511-project-standards-implementation.md"
       },
       "execution_status": null,
-      "superseded_by": [],
+      "superseded_by": [
+        "CHNHCM-128"
+      ],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "retained": {
+          "R6-08 的范围和字段重判、撤权保护": "#11-r6标准容量及回归映射"
+        },
+        "CHNHCM-128": {
+          "R6-08 的普通判权零过程写入": "#authorization-evidence-replacement"
+        }
+      }
     },
     {
       "id": "CHNHCM-122",
@@ -1729,7 +2111,7 @@
         "X03",
         "M02"
       ],
-      "scope": "授权过程存储、业务终态耦合及关联跳转专属判权/摘要/DTO已按128实施记录完成删除及分层验证，原历史结果保留。容量、浏览器稳定性及固定环境交付由125恢复整改分别验收，不能以128完成代表容量关闭。",
+      "scope": "规定 X03 当前判权及必要安全事件、M02 业务终态独立恢复和部门关联名称展示。第 5 节逐项列出撤除的完整判权存档、终态依赖、关联快捷跳转及专属机制，保留当前授权、业务历史与准确来源。适用于采用相同机制的后续对象，容量验收由 125 负责。",
       "format": "numbered",
       "review": {
         "date": "2026-11-08",
@@ -1856,13 +2238,30 @@
         "M02",
         "X03"
       ],
-      "scope": "M0第7节冻结选择草稿、候选/路径分页、一致游标、邻居导航及首错具体输入；其余条件项继续in_review，各对象API/规格随后续实现同步。",
+      "scope": "评审交互查询、必要校验及存储候选。第 7 节记录选择草稿、候选及路径分页、一致游标、邻居导航和首错的采用范围。部门固定身份选择、单请求一致读取、BU 预览及大范围写入的相应约束由 120 持有，单对象 20 条验收场景与模型 5 见 017。各项采纳范围按具体条款核对。",
       "format": "numbered",
       "review": null,
       "execution_status": null,
       "superseded_by": [],
       "closure": null,
-      "archive": null
+      "archive": null,
+      "clause_routes": {
+        "72-草稿表示额度与生命周期": {
+          "部门选择与固定身份草稿": "CHNHCM-120#46-r133-m1部门选择游标与锚点协议"
+        },
+        "73-单请求游标与一致事实": {
+          "单请求游标与读取一致性": "CHNHCM-120#11-r133主线读取协议的实施输入"
+        },
+        "10-bu覆盖变化预览的必要读取": {
+          "BU 完整预览的削减期间检查": "CHNHCM-120#12-r129共用边界与日志按页装配"
+        },
+        "15-正式采用20记录场景并保留模型5": {
+          "单对象 20 条验收场景与模型 5": "CHNHCM-017#19-保留模型5及20条正式场景"
+        },
+        "16-大影响范围写入与范围查询的实施减负": {
+          "部门大范围写入的阶段目标": "CHNHCM-120#department-broad-write-stage-target"
+        }
+      }
     },
     {
       "id": "CHNHCM-133",
@@ -1958,6 +2357,11 @@
         "records_per_object": 20,
         "retired_candidate": "m02-compact-6",
         "evidence": "docs/verification/135-model5-and-20-record-adoption.md"
+      },
+      "clause_routes": {
+        "8-用户最终采用决定": {
+          "单对象 20 条验收场景与模型 5": "CHNHCM-017#19-保留模型5及20条正式场景"
+        }
       }
     },
     {
@@ -3523,6 +3927,206 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/014-verification-catalog.md",
+        "related_documents": [
+          "CHNHCM-014"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "3139c9385a23f44238565af516d7cf00dbcaa418",
+        "working_tree": "dirty",
+        "change_description": "验收记录登记、目录生成及检查、014 规范、模板与文档入口在工作区更新。",
+        "environment": "wt-dev-f，本地 Git、Python 3 和 ripgrep。",
+        "scope": "已有验收记录的分类、公开结论、证据位置与后续记录，以及现行规范的默认检索范围。",
+        "results": [
+          {
+            "check": "逐路径核对 312 份既有报告原文和既有登记字段，按用途检查目录行、权限标记和后续记录链接",
+            "result": "passed",
+            "evidence": "docs/verification/014-verification-catalog.md"
+          },
+          {
+            "check": "沿 309、404、500/510 和 125 的导航核对历史结论与公开边界，从默认检索及显式查证入口验证文档范围",
+            "result": "passed",
+            "evidence": "docs/verification/014-verification-catalog.md"
+          }
+        ],
+        "limitations": [
+          "本轮核验文档导航和公开登记。私有原报告、私有附件及历史运行环境未访问，业务用例未重新执行。"
+        ],
+        "purpose": "governance",
+        "conclusion": "312 份原记录已补齐用途、结论及证据位置，原报告和原有字段保留。默认检索仍仅命中现行规范，本轮只验文档。",
+        "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/014-128-scope-and-replacement.md",
+        "related_documents": [
+          "CHNHCM-014",
+          "CHNHCM-011",
+          "CHNHCM-013",
+          "CHNHCM-023",
+          "CHNHCM-114",
+          "CHNHCM-118",
+          "CHNHCM-119",
+          "CHNHCM-120",
+          "CHNHCM-121",
+          "CHNHCM-128"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "a363e104394f27e8066afb8ae63400df5a62c9c0",
+        "working_tree": "dirty",
+        "change_description": "修订 014 的登记与复核要求，对照 128 第 5 节修订现行规范正文、适用范围及生成目录。",
+        "environment": "wt-dev-f，本地 Git、Python 3 和 ripgrep。",
+        "scope": "128 及其直接部分替代的 8 份现行规范，122 与 R6 的关联历史记录，现行目录和默认全文检索。",
+        "results": [
+          {
+            "check": "逐条核对 128 第 5 节、8 份原规范的保留与替代范围、登记状态和目录入口",
+            "result": "passed",
+            "evidence": "docs/verification/014-128-scope-and-replacement.md"
+          },
+          {
+            "check": "核对 122、R6、128 的日期与实际结论，对照基线检查 313 份既有记录及 55 份现行规范的默认检索集合",
+            "result": "passed",
+            "evidence": "docs/verification/014-128-scope-and-replacement.md"
+          }
+        ],
+        "limitations": [
+          "本次检查仓内文档、导航和公开登记。历史产品及容量用例未重跑，128 原报告及附件由原仓按权限保管。"
+        ],
+        "purpose": "governance",
+        "conclusion": "8 份原规范可查到 128 的部分替代，114 同时保留 123。默认全文检索覆盖相同的 55 份现行规范，历史产品结果按原批次查证。",
+        "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/014-m03-shared-clause-navigation.md",
+        "related_documents": [
+          "CHNHCM-014",
+          "CHNHCM-308",
+          "CHNHCM-310",
+          "CHNHCM-312",
+          "CHNHCM-313",
+          "CHNHCM-012",
+          "CHNHCM-026",
+          "CHNHCM-121",
+          "CHNHCM-123"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "6e12ba8d7a798180a66eb172c1491f36bed34fca",
+        "working_tree": "dirty",
+        "change_description": "M03 模块导航按对象并列合同、适用的共享条款及差异，同步生成目录并登记本次复核。",
+        "environment": "wt-dev-f，本地 Git、Python 3 和 ripgrep。",
+        "scope": "从模块入口查职务、职类、职级、岗位和编制的合同与共享条款，核对章节、生成目录与默认检索范围。",
+        "results": [
+          {
+            "check": "从模块入口逐行核对 4 份对象合同、5 类办理对象及 012、026、121、123 的适用条款",
+            "result": "passed",
+            "evidence": "docs/verification/014-m03-shared-clause-navigation.md"
+          },
+          {
+            "check": "核对链接的目标文件与章节、现行规范目录及默认全文检索的文件集合",
+            "result": "passed",
+            "evidence": "docs/verification/014-m03-shared-clause-navigation.md"
+          }
+        ],
+        "limitations": [
+          "本次验证文档导航和检索。未执行产品页面、数据库或容量用例。"
+        ],
+        "purpose": "governance",
+        "conclusion": "5 类办理对象可从 M03 入口查到 4 份对象合同及共享条款。41 处链接均可定位，默认检索仍为 55 份现行规范。本次只验文档。",
+        "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/014-clause-catalog.md",
+        "related_documents": [
+          "CHNHCM-014",
+          "CHNHCM-110",
+          "CHNHCM-113",
+          "CHNHCM-114",
+          "CHNHCM-123",
+          "CHNHCM-132",
+          "CHNHCM-120",
+          "CHNHCM-018",
+          "CHNHCM-022",
+          "CHNHCM-011",
+          "CHNHCM-109",
+          "CHNHCM-027",
+          "CHNHCM-135"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "b6732b8aed6593eb5d41088c1517464e46e0d461",
+        "working_tree": "dirty",
+        "change_description": "为部分替代及单独采纳登记条款导航，补齐正文已明确的后继关系，生成现行与待审目录并补充 120 第 11 节的检索用语。",
+        "environment": "wt-dev-f，本地 Git、Python 3、ripgrep，使用独立 Markdown 解析器复核生成页。",
+        "scope": "核对部分替代文档的剩余规则与现行承接章节，从待审条目及现行目录定位同一条款，以及默认检索和原有状态、证据。",
+        "purpose": "governance",
+        "conclusion": "21 份现行规范的 65 项后继关系均可按问题定位，7 项在审文稿条款可进入现行合同。默认全文检索与登记逐文件匹配 55 份规范。",
+        "evidence_access": "repository",
+        "results": [
+          {
+            "check": "基线的 101、103、107 只提示见正文，默认逐字检索“读取一致性”没有命中 120",
+            "result": "failed",
+            "evidence": "docs/verification/014-clause-catalog.md"
+          },
+          {
+            "check": "初稿把 028 引用的既有核编规则标为单独采纳，复核采纳方向后撤下该项",
+            "result": "failed",
+            "evidence": "docs/verification/014-clause-catalog.md"
+          },
+          {
+            "check": "独立解析现行目录 55 行和 239 处链接，核对 21 份部分替代及 7 个单独采纳入口的章节和适用范围",
+            "result": "passed",
+            "evidence": "docs/verification/014-clause-catalog.md"
+          },
+          {
+            "check": "默认检索、历史证据保护、登记反例、生成一致性、make docs 和差异格式复验",
+            "result": "passed",
+            "evidence": "docs/verification/014-clause-catalog.md"
+          }
+        ],
+        "limitations": [
+          "本次复核文档管理与检索。产品验收、业务运行和容量结果沿用各批原件。"
+        ]
+      },
+      {
+        "path": "docs/verification/014-current-standards-search.md",
+        "related_documents": [
+          "CHNHCM-014"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "入口及 014 检索规则、目录生成与核对、docs 搜索范围和回归测试在工作区修改。",
+        "environment": "wt-dev-f，Python 3.14.4，ripgrep 15.2.0。",
+        "scope": "从仓库根目录检索现行编号规范、按条款名称浏览目录及显式查找原报告。",
+        "results": [
+          {
+            "check": "登记路径、默认搜索文件和目录链接集合一致，两组关键词分别命中 23 份和 8 份现行规范",
+            "result": "passed",
+            "evidence": "docs/verification/014-current-standards-search.md"
+          },
+          {
+            "check": "条款链接、部分替代和原 500 关闭报告的显式查回",
+            "result": "passed",
+            "evidence": "docs/verification/014-current-standards-search.md"
+          }
+        ],
+        "limitations": [
+          "默认范围按编号文档的登记状态判定，部分替代条款依正文核对。"
+        ],
+        "purpose": "governance",
+        "conclusion": "默认检索与登记的 55 份规范逐份一致，“未保存”命中 23 份，“再聘”命中 8 份。部分替代范围须核对正文。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/014-verification-catalog.md"
+      },
+      {
         "path": "docs/verification/027-public-00058-grant-upgrade.md",
         "related_documents": [
           "CHNHCM-027",
@@ -3557,7 +4161,10 @@
         "limitations": [
           "本轮本地按影响验证，未跑全量分片或远端 PR CI。",
           "部门、单岗核编与客户管理和受控恢复在 T03、T04 接续。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "00057 升至 00058 的 273 份授权逐值相符。录用提交前到期修复后返回 403，25 个实库根和 7 个浏览器专项通过，远程未跑。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/027-public-main-grant-upgrade.md",
@@ -3630,7 +4237,10 @@
         "limitations": [
           "远端集中领号尚未启用。f 的 00040 在本候选仅作 SQL 合流验收。",
           "客户管理页面与受控恢复按 T04、T05 跟踪。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "从公共 00039 升级的 272 份授权及原提交查回相符，667 个浏览器用例分轮通过，客户管理和受控恢复后续验证。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/027-public-grant-cutover.md",
@@ -3707,7 +4317,10 @@
         ],
         "limitations": [
           "T03、T04、T05 与正式发布独立跟踪。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "公共库 272 份授权及撤权重启核对通过，浏览器首败补验后 667 个唯一用例分轮通过。后续管理与恢复另验。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/027-x03-grant-cutover.md",
@@ -3769,7 +4382,10 @@
         ],
         "limitations": [
           "管理页面、客户管理员引导与恢复、页面撤权后的真实启动走查由 T04、T05 接续。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "逐主体授权切换、提交竞争与原业务查回通过，616 个唯一浏览器用例分批通过。管理页面与恢复另行验收。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/004-architecture-review-remediation.md",
@@ -3822,7 +4438,10 @@
         ],
         "limitations": [
           "已接通的录用与任职按真实接口验证。远期招聘需求和交接产品能力仍按原计划验收。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "越界 SQL 反例、录用与核编接口、七张架构图已复验。远期招聘需求和交接能力未在本批验收。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/025-position-quota-interface-retirement.md",
@@ -3869,7 +4488,10 @@
         ],
         "limitations": [
           "限于岗位核编旧接口与其实际调用链。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "岗位核编旧地址返回 404，两版备份升级后可查原回执，4386 原表对账通过。仅验该接口及实际调用链。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/136-206-plan-archive.md",
@@ -3922,7 +4544,10 @@
         ],
         "limitations": [
           "历史窗口仅支持原报告载明的结论。80% 试点仍待按 137 取得自然交付样本。全量 DB/API、浏览器、容量和固定环境沿用所引批次，其他法律实体用途由消费域在接入时验证。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "136、206 的计划已关闭并移交，两类成本窗口完成复算，法律实体四项实库用例通过。80% 试点仍待 137 的自然交付样本。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/500-personnel-roadmap-closeout.md",
@@ -3963,7 +4588,10 @@
         ],
         "limitations": [
           "浏览器、全量 DB/API、容量和固定 4386 的验收沿用所引各批记录，本次定向复验仅覆盖列出的四项。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "500 归档时逐项核对 8 个场景去向，合同与录用入职 4 项实库通过，浏览器和容量沿用各批原证据。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/511-physical-archive.md",
@@ -4014,7 +4642,10 @@
         ],
         "limitations": [
           "本次为文档及其检查工具的修订。产品办理、容量与运行结果沿用各自受测基线。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "46 份编号文档完成物理归档，六份原暂缓计划的规则及遗留工作已交接，产品结果沿用各自受测版本。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/511-project-standards-implementation.md",
@@ -4073,7 +4704,11 @@
         ],
         "limitations": [
           "方案作者与本批复核为同一主代理。历史运行结果保留原基线。6 份暂缓的复查由表内责任方接续。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "43 份存量逐份评估交接，301 的 17 项规则核到唯一现行定义。该批 6 份暂缓物理归档，另有后续迁移记录。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/511-physical-archive.md"
       },
       {
         "path": "docs/verification/511-project-standards-acceptance.md",
@@ -4102,7 +4737,10 @@
         ],
         "limitations": [
           "由方案编写者复核，治理批次及页面实测在实施记录中单独判定。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "511 方案经修订获采纳，135 可逐项交接，缺整份审阅时提升原文状态被拒。页面实测另验。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/511-project-standards-rereview.md",
@@ -4141,7 +4779,11 @@
         ],
         "limitations": [
           "由方案编写者复评。范围为文档和治理规则。301 原仓的受评原稿由获权维护者在试点核验，产品实测和存量归档由实施批次留证。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "复评确认四项初评问题的修订，仍用 135 复现部分承接路径缺口，方案尚需修订。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/511-project-standards-acceptance.md"
       },
       {
         "path": "docs/verification/511-project-standards-review.md",
@@ -4180,7 +4822,11 @@
         ],
         "limitations": [
           "由方案编写者复核。反向引用统计限于已登记定稿报告中的仓内 Markdown 直接链接。产品运行、私有附件及实际批量归档属于各自交付范围。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "初评核对 291 份定稿报告的直接引用，发现现行冲突、稳定 ID、组件交付及入口验收四项待修，限于方案。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/511-project-standards-rereview.md"
       },
       {
         "path": "docs/verification/012-desktop-page-acceptance.md",
@@ -4232,7 +4878,10 @@
         ],
         "limitations": [
           "678 项属于完整收集清单，未执行全套浏览器或远程 CI。各组共享企业前置，组间通过数不可直接相加。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "桌面和缩放调整后按用例名去重有 47 项实测通过。678 项为收集清单，全套浏览器及远程 CI 未运行。",
+        "evidence_access": "public_ci"
       },
       {
         "path": "docs/verification/510-personnel-page-remediation-implementation.md",
@@ -4302,7 +4951,11 @@
         "limitations": [
           "全量数据库和最初的 181 项浏览器组合未取得整组通过结果。后续按影响范围复跑。",
           "固定库实操使用合成样本，双窗保存于原库副本进行。未运行远程 CI。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "500 的 20 项页面问题逐项复验，4386 原 131 表对账相符。本地全量曾中断，按影响补验，后续固定版本已核对全量 CI 的产品输入。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/012-desktop-page-acceptance.md"
       },
       {
         "path": "docs/verification/510-personnel-page-remediation-review.md",
@@ -4335,7 +4988,11 @@
         ],
         "limitations": [
           "方案评审通过，产品验收另行记录。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "20 项人员页面整改方案初审未通过，修订后两组复审通过，产品结果另见实施复验。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/510-personnel-page-remediation-implementation.md"
       },
       {
         "path": "docs/verification/500-personnel-entry-and-date-review.md",
@@ -4386,7 +5043,11 @@
         "limitations": [
           "固定环境使用现有合成样本，仅执行浏览、读取、选择及取消。",
           "固定清单与本树另有 4 个后端集成测试和 3 个生成模型不同。此次未复跑全套业务、权限动态变更或原生 400%，结论限定在记录的实页路径。"
-        ]
+        ],
+        "purpose": "assessment",
+        "conclusion": "第二轮实页评审发现 500-UI-12 至 20 共 9 项问题，限已有样本的浏览与取消，后续逐项复验见 510。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/510-personnel-page-remediation-implementation.md"
       },
       {
         "path": "docs/verification/500-personnel-page-review.md",
@@ -4450,7 +5111,11 @@
         "limitations": [
           "固定验收库使用现有合成样本，草稿取消。原生 400% 仅核对只读资料行明细及退出归焦。",
           "三个用例的 Playwright 结果为通过，外层进程返回 143。临时资源已回收。此次为页面专项，未重验全套业务、并发或数据库不变量。"
-        ]
+        ],
+        "purpose": "assessment",
+        "conclusion": "首轮实页评审发现 500-UI-01 至 11 共 11 项问题，保留截图与关闭条件，后续逐项复验见 510。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/510-personnel-page-remediation-implementation.md"
       },
       {
         "path": "docs/verification/509-t04-remediation-implementation.md",
@@ -4500,7 +5165,10 @@
         ],
         "limitations": [
           "2026-11-25 的实测覆盖本地工作树和固定 f。原生 400% 沿用 508 已确认范围，本次未执行。主线集成以随后 PR 的正式检查为准。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "27 项在职、结束与再聘整改完成验证，49 项实库回归及 4386 原库对账通过，原生 400% 未测。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/509-t04-remediation-review.md",
@@ -4536,7 +5204,11 @@
         ],
         "limitations": [
           "此记录评价实施方案。产品结果由本次产品验证记录单列。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "在职变动、结束与再聘方案首轮独立审查要求修改，分项回审和第二轮整案评审通过，产品另验。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/509-t04-remediation-implementation.md"
       },
       {
         "path": "docs/verification/500-t04-implementation-rereview.md",
@@ -4596,7 +5268,11 @@
         "limitations": [
           "五种 100% 视口及原生 200% 实测，原生 400% 专项依 508 既有决定未执行。固定 f 原库只读，新反例使用合成数据。",
           "评审基线为固定 f 本地提交，远端发布与人工业务签收另行记录。"
-        ]
+        ],
+        "purpose": "assessment",
+        "conclusion": "在职变动、结束与再聘的复评复现跨任职、并发和导航等问题，末轮去重新发现为零。原生 400% 未执行，修复另查 509。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/509-t04-remediation-implementation.md"
       },
       {
         "path": "docs/verification/508-job-information-implementation.md",
@@ -4649,7 +5325,10 @@
         ],
         "limitations": [
           "本验收对应 d981fed8 加工作区修复候选和固定 f。原生 400% 已由用户取消，数据库回归按改动范围实测。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "六项职务信息反例完成修复，末轮 136 项菜单通过，固定 f 的 29 张表对账一致。首轮失败保留，原生 400% 未测。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/508-job-information-remediation-review.md",
@@ -4694,7 +5373,11 @@
         ],
         "limitations": [
           "本次交付实施方案及其文档评审。新实现、旧库纠正和产品重新验收随实施执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "六项职务信息反例的根因、处置和验收条件完成复核，修复后的实库与菜单另验。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/508-job-information-implementation.md"
       },
       {
         "path": "docs/verification/500-job-information-delivery-review.md",
@@ -4760,7 +5443,10 @@
         ],
         "limitations": [
           "范围为 500 第 6.3 节，其他路线图项目按各自专项推进。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "职务信息分阶段验了办理、旧单查回、4386 原库和各候选及主线门禁，范围限 500 第 6.3 节。",
+        "evidence_access": "public_ci"
       },
       {
         "path": "docs/verification/506-job-information-direct-entry-review.md",
@@ -4817,7 +5503,10 @@
         ],
         "limitations": [
           "复核限于设计合同及合成资料，T04 功能按路线图另行签收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "地点更正、履职补录及同日次数等五项设计经算例互查，T04 数据库、页面和 API 未在本批运行。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/506-same-day-actions-design-review.md",
@@ -4865,7 +5554,10 @@
         ],
         "limitations": [
           "本次复核文档及设计样本。T04 的事务、授权、页面、运行成本和前向升级随产品交付验证。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "同日办理的五步状态、顺序互换及发生部门经复算，真实事务、授权和菜单另验。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/507-personnel-action-register-design-review.md",
@@ -4910,7 +5602,10 @@
         ],
         "limitations": [
           "本记录限于文稿、已有源代码和接口基线。新页面及跨人查询按 T04 分批实施。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "跨人办理列表的去重、日期与授权用两人四笔样本复算，真实跨人查询及页面另验。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/506-job-information-design-review.md",
@@ -4963,7 +5658,10 @@
         ],
         "limitations": [
           "本次为 Codex 主代理文稿复核。实施、运行时分权及用户菜单验收随相应产品批次进行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "主岗编号、再聘、兼岗与页签权限通过方案样本复核，实际页面和运行时分权归产品批次。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/504-personal-profile-fourth-batch.md",
@@ -5031,7 +5729,10 @@
         ],
         "limitations": [
           "真实主岗和兼岗共享在 T04 联验。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "九栏联验覆盖万人底库、两档会话和 41 个实库根，4386 双角色复查通过，真实主兼岗共享归 T04。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/504-personal-profile-third-batch.md",
@@ -5084,7 +5785,10 @@
         ],
         "limitations": [
           "仅本地产品验收。九栏完整容量和真实多任职随对应批次。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "教育和凭证首败修复后原仓 34 项浏览器通过，公共基线另过 17 个实库根及 12 项 Chromium，九栏容量另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/400-first-hire-integration.md",
@@ -5145,7 +5849,10 @@
         "limitations": [
           "第 7 至 12 节的首单采用无编号通知。第 13 节接入 M04 系统内原单、名单行及不可变修订。按岗免占／占编及 T04 多动作仍待接入。",
           "仓内没有独立 Worker 可执行入口。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T03 从无编号通知扩展到系统内任用决定，原单、行修订、双人竞争和撤销重送已验，按岗模式另行接入。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/400-hire-simplification.md",
@@ -5188,7 +5895,11 @@
         ],
         "limitations": [
           "本轮为文档语义评审；106 待采纳，T03 产品验证随实施进行。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T02 的主体用途和按职务规则可维护、可查回，修复后固定构建 8 项浏览器通过。人员供给为消费合同样本，首次入职保存归 T03。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/400-first-hire-integration.md"
       },
       {
         "path": "docs/verification/400-hire-readiness-review.md",
@@ -5257,7 +5968,11 @@
         "limitations": [
           "本轮为主代理顺序文档评审。106 第 6 节所涉维护者尚未正式会签。",
           "产品与存量升级按 400 的分批准入另行实现和验收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "入职准备经过多轮评审，发现并细分身份依据、跨模式守卫及重办边界，本批未验真实数据库和菜单。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/400-hire-simplification.md"
       },
       {
         "path": "docs/verification/504-personal-profile-second-batch.md",
@@ -5314,7 +6029,10 @@
         ],
         "limitations": [
           "九栏完整容量随第四批联验。具名用户验收和发布 CI 独立办理。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "第二批两栏修复撤权及地区等反例后，通过实库、31 项菜单回归和固定地址复查，九栏整页容量另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/504-personal-profile-first-batch.md",
@@ -5365,7 +6083,10 @@
         ],
         "limitations": [
           "完整九栏容量留到第四批。用户具名签收与发布 CI 单独办理。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "首批三栏及身份证件、联系方式的六种弹框完成验收，窄屏边距问题已复测，完整九栏容量另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/504-personal-profile-dialog-layout.md",
@@ -5412,7 +6133,10 @@
         ],
         "limitations": [
           "本轮工作限于参考原型及实施前的合同评审。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "七类弹框 40 个样例在七种显示条件下取得 280 组原型布局，实际产品弹框当时未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/504-personal-profile-review.md",
@@ -5464,7 +6188,10 @@
         ],
         "limitations": [
           "审阅者为同一 Codex 主代理，结论限于方案和合同。产品实施状态为 not_started。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "九栏资料及 73 项去重标签完成合同对照，首稿缺项已记录，真实产品、菜单及容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/500-personnel-change-log.md",
@@ -5520,7 +6247,10 @@
         "limitations": [
           "本次验收使用 Chromium 可访问角色与实际键盘，未进行人工读屏朗读。",
           "本次未重跑独立万笔容量与备份恢复试验。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "人员详情和日志通过 9 项实库及双角色固定入口复验，含键盘和窄屏，未做人工读屏或重跑万笔容量。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/500-personnel-registration-trial.md",
@@ -5568,7 +6298,10 @@
         ],
         "limitations": [
           "正式发布与客户生产库升级不在本地试办范围内。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "主要证件防重、并发登记、补换证及旧库升级完成实库和人事试办，万人样本计时 2400 次，限本地交付。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/500-registration-without-name-prompts.md",
@@ -5605,7 +6338,11 @@
         ],
         "limitations": [
           "本轮为方案评审，产品实施与人事试办由下一批交付。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "三种办理样例核对了取消同名提示、无证登记及同单重办，产品实施和人事试办留给后续。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/500-personnel-registration-trial.md"
       },
       {
         "path": "docs/verification/500-primary-document-registration-review.md",
@@ -5647,7 +6384,11 @@
         ],
         "limitations": [
           "产品代码、持久库升级与正常菜单验收由后续实施交付。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "人员登记与证件方案的五组场景通过复核，补登结果后文档检查通过，真实升级及页面另验。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/500-registration-without-name-prompts.md"
       },
       {
         "path": "docs/verification/500-t01-personnel-registration.md",
@@ -5691,7 +6432,10 @@
         ],
         "limitations": [
           "仅在自有合成客户执行。人工业务签收与发布另行办理。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "人员登记十项条件、备份恢复及双角色 14 个视口组合获验，万人样本计时 2400 次，限合成客户环境。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/500-t00-personnel-specifications.md",
@@ -5750,7 +6494,10 @@
         ],
         "limitations": [
           "T00 为首批规格准入，评审由同一主代理执行。实际人员菜单、真实并发、升级、原生缩放及延迟由 T01 分层验证。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "T00 四稿逐项核对，三份规格与第四稿一致。实际人员菜单、并发、升级、缩放和容量归 T01。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/500-personnel-roadmap-review.md",
@@ -5808,7 +6555,11 @@
         ],
         "limitations": [
           "由同一主代理依次审阅五稿。产品实施从 T00 专项规格开始，M04 实现还有 T02 的合同及准入前置。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "路线图前四稿的问题经第五稿复核，覆盖七批和八个场景，产品实库及菜单当时未验。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/500-personnel-roadmap-closeout.md"
       },
       {
         "path": "docs/verification/141-local-preflight.md",
@@ -5839,7 +6590,10 @@
         ],
         "limitations": [
           "本轮在本地执行。托管成本、远程 CI、全产品回归及固定环境更新未在本轮验收。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "本地预检能区分候选、首败与复验，空分片和目标遮蔽反例保留。远程门禁及托管成本未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-quota-implementation.md",
@@ -5890,7 +6644,10 @@
         "limitations": [
           "真实任职与招聘分支由 M04、M05 接续。",
           "本地定向验收，未执行全量集成、全量浏览器、远端 CI 或人工验收。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "首批岗位核编、历史、部门汇总和重启完成实测，11 项定向实库和 7 项浏览器通过，招聘和任职真实分支另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/140-history-receipt-closeout.md",
@@ -5957,7 +6714,10 @@
         "limitations": [
           "本次签收限 T04 及 140 交接。T01–T03 保留各自受测候选和日期。",
           "本地按影响运行。全库全量集成、全量浏览器、容量、远端 CI 和人工验收未运行。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "地点和法律实体的删除回执首轮均指错记录，修复后两对象、原号查回、升级前原件和 4490 菜单复验通过。原有回执按原样保留。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/140-module-cohesion-review-fixes.md",
@@ -5996,7 +6756,11 @@
         "limitations": [
           "本批按影响验收，容量、全量集成、全量浏览器、远端 CI 及人工验收未运行。",
           "T04 由首次触及两对象共同历史写入规则的后续任务接续。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "SQL 归属漏报、误报及成对删除缺名称已复现修复，实库及窄屏名称专项通过，未验全量和容量。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/140-history-receipt-closeout.md"
       },
       {
         "path": "docs/verification/140-module-cohesion-implementation.md",
@@ -6053,7 +6817,11 @@
         "limitations": [
           "本批运行定向 DB/API 与浏览器用例，未运行全量集成、全量浏览器、远端 CI 或人工业务签收。",
           "T04 等待下一次相关 M02 历史流程变更。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "A01 至 A05 完成分项实测，授权逐条翻页、实库和最终 16 项浏览器通过。T04 待下一次共用历史流程变更。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/140-history-receipt-closeout.md"
       },
       {
         "path": "docs/verification/140-module-cohesion-roadmap-review.md",
@@ -6113,7 +6881,10 @@
         ],
         "limitations": [
           "本轮交付方案，产品实施与验收由各实施任务负责。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "路线前四稿均要求修改，第五稿的四批任务和七组反例通过回读。A01 至 A07 的产品实测另行登记。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/314-job-function-t05-acceptance.md",
@@ -6162,7 +6933,10 @@
         ],
         "limitations": [
           "本候选尚无 313 首批岗位核编办理，编制交付方负责余下两项。远端 CI 未运行。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T05 同候选通过 27 项实库专项及分组浏览器。AC090 仅验 308 分支，313 独验和并存由编制交付接续。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/314-job-function-t04-query-export.md",
@@ -6214,7 +6988,10 @@
         ],
         "limitations": [
           "本轮为 T04 本地专项，T05 分层签收和远程 CI 另行执行。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "双维查询和跨升级导出通过实库与 22 项 Chromium，字段撤权已验。本轮限 T04，T05 分层签收另行记录。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/139-position-workspace-implementation.md",
@@ -6395,7 +7172,10 @@
         "limitations": [
           "原全库浏览器首轮失败，以及依赖开发模式或开发夹具的用例在生产构建中的失败，分别留档。原候选的浏览器结果取有对应夹具的完整分组，含12次重复前置。",
           "原集成命令超时，分片复验汇总331通过、13个条件跳过。4390 已按授权单独清理原演示职能发布并升级到迁移24，其他固定环境未更新。独立容量验收、远端CI、生产部署及人工HR签收未执行。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "岗位工作区修复后通过 4 个定向测试根和 28 项浏览器，4390 双角色可读五个管理历史版本，独立容量未验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/139-position-workspace-review.md",
@@ -6447,7 +7227,10 @@
         "limitations": [
           "Codex主代理顺序评审，不是独立评审人签署或HR业务签收。",
           "139产品工作和全部产品样本未执行，未更新固定环境。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "岗位菜单、关系列表与视图完成四轮方案复核，仅验文本和桌面推演，产品样本未执行。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/136-actions-observation.md",
@@ -6491,7 +7274,10 @@
         "limitations": [
           "10 次最终候选均为全量。6 次业务交付仅 #20 有同类整次历史交付可比，整体降本 25%–33% 的证据不足。",
           "runner 分钟来自获配 job 逐项取整，主线重复全量的成本为反事实估算，实际扣费无可用账单。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "10 次交付、34 次运行共估算 5693 runner 分钟。可比业务样本不足以确认整体节省 25% 至 33%，无实付账单。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/136-hosted-minutes-pilot.md",
@@ -6588,7 +7374,11 @@
         ],
         "limitations": [
           "历史分钟为逐 job 运行时长估算。新增前置的关键路径、宿主成本及节省须用发布后的可比交付核验。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "试点分区和逐片复用以历史运行回放核对，保留当轮未选中的一次偶发失败。80% 目标仍待自然交付测量。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/136-206-plan-archive.md"
       },
       {
         "path": "docs/verification/315-department-quota-allocation.md",
@@ -6678,7 +7468,10 @@
         "limitations": [
           "招聘预留与任职使用量依各源域分批接入。",
           "本地回归范围与 CI 状态见验证记录。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "部门分配和同日调剂、旧库升级及末编竞争通过验证，两入口在三种原生缩放下抽测 24 次，源域用量分批接入。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/315-position-quota-implementation.md",
@@ -6731,7 +7524,10 @@
         "limitations": [
           "部门总额与多岗位分配属第二步。",
           "完整 make integration 在既有部门测试处超时；本地分项通过不替代正式 PR 三项 CI。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "岗位核编的并发、丢响应、重启和升级通过定向验证，全量集成在部门测试处超时，部门总额归第二步。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/315-staffing-quota-plan-architecture-review.md",
@@ -6779,7 +7575,11 @@
         ],
         "limitations": [
           "本轮交付计划修订稿。新核编能力的真实执行结果由各实施批登记。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "核编两步交付经 5 项架构复核，明确按日算例、读取结果和 AC090 出口，限于计划文本。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/315-position-quota-implementation.md"
       },
       {
         "path": "docs/verification/315-staffing-quota-administration-review.md",
@@ -6830,7 +7630,10 @@
         ],
         "limitations": [
           "本次复核对象为设计与实施计划。315 的产品开发及验收待执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "部门额度、岗位额度及分配顺序通过按日算例复核，产品和正常菜单尚未验证。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/314-job-function-t03-upgrade.md",
@@ -6865,7 +7668,10 @@
         ],
         "limitations": [
           "本轮签收服务端 T03。正常职务菜单、双维筛选、九列 CSV 及全候选浏览器签收由 T04／T05 负责。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T03 服务端双维写入、升级重试、旧号重送与双连接竞争通过，正常菜单、筛选和九列导出另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/314-job-function-t02-directory.md",
@@ -6919,7 +7725,10 @@
         ],
         "limitations": [
           "本次签收范围为 T02。本地定向 PostgreSQL/API 和 Chromium 覆盖职类与受影响的共用路径；全产品集成及远端 CI 不在本轮结果中。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "职类目录在空库和 00023 原备份升级后通过限定实库及页面验证，44 行旧事实保留，双维写入和九列导出另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/314-job-function-t01-baseline.md",
@@ -6982,7 +7791,10 @@
         ],
         "limitations": [
           "T01 已通过。真实职类迁移、九列导出及其余产品验收由 T02—T05 接续。原选择受同会话、同业务日和 30 分钟有效期约束，另日须从捕获前的备份在旧版建立该轮原选择。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "T01 旧库基线、原采用、丢响应和八列下载核对通过，跨升级原选择受同会话、业务日和有效期限制。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/314-job-function-roadmap-review.md",
@@ -7034,7 +7846,10 @@
         ],
         "limitations": [
           "本记录为 Codex 主代理的路线图评审。新职类产品验收由 T01—T05 接续。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "职类路线图经三稿修订，明确升级、跨版本导出与分批签收责任。产品实测由 T01 至 T05 接续。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-hr-staffing-review.md",
@@ -7073,7 +7888,10 @@
         ],
         "limitations": [
           "本轮为方案修订，实际菜单、数据库和人工验收由产品批次执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "两人报到顺序、在岗计算和名额归属经方案推演核对，真实招聘与任职产品未验。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/313-staffing-procedure-review.md",
@@ -7128,7 +7946,10 @@
         ],
         "limitations": [
           "本轮针对方案及其验收条件。产品验收待相应实施批次执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "录用与入职交接、等价空缺和冲突提示完成文本修订，发现的到岗日用语失配保留，产品联验未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-capacity-simplification.md",
@@ -7168,7 +7989,10 @@
         ],
         "limitations": [
           "本次验证覆盖方案及算例。产品验收待相应实施批次执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "单日录用、交接起止和实况差额完成合同与算例复核，真实数据库和菜单联验另行安排。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-staff-transfer-review.md",
@@ -7208,7 +8032,10 @@
         ],
         "limitations": [
           "本轮为方案修订及文档复核，产品验收由各实施批次执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "原岗和新岗的日期、缺口及满编对调算例经复算，调动实库和正常菜单未作联验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-backfill-and-handover-review.md",
@@ -7248,7 +8075,10 @@
         ],
         "limitations": [
           "只复核方案与固定日期的独立算例。招聘、人事及编制的实现、真实数据库并发、正常菜单、运营指标实测与人工签收由产品批次执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "提前补招、交接和限期归还已按逐日算例复核，招聘、人事与编制的产品联验未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-staffing-establishment-independent-review.md",
@@ -7309,7 +8139,10 @@
         ],
         "limitations": [
           "办理规则的产品实现和真实业务验收由各批实施时执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "编制分段占用、撤销与重送等问题经三轮独立评审，第三轮三方接受同一合同。真实数据库与办理签收另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-staffing-establishment-review.md",
@@ -7356,7 +8189,10 @@
         ],
         "limitations": [
           "按岗位定编作为首批建议。组织共享总额需单独确定归属与使用规则。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "按岗位核定整数编制的算例完成核对，组织共享总额的归属和规则仍待确定，产品未验。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/308-job-function-contract-review.md",
@@ -7394,7 +8230,10 @@
         ],
         "limitations": [
           "本次制定合同，职类产品实施独立排期。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "职类合同三轮独立评审关闭前两轮 8 项发现，3 位评审者接受同一终稿，职类产品另行验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-position-capacity-localization-review.md",
@@ -7435,7 +8274,10 @@
         ],
         "limitations": [
           "文档评审与产品、法律个案或人工业务签收分别记录。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "兼岗口径和分批边界按 13 项原断言、5 组本地化样本复算，产品及外部租户未实测。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/313-position-capacity-contract-review.md",
@@ -7479,7 +8321,10 @@
         ],
         "limitations": [
           "接受结论限于合同，由同一主代理顺序复核。产品运行、并发实测和人工业务签收由后续各批执行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "岗位容量的计量、事务、权限合同和逐日算例通过当次评审，实际并发与业务签收另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/138-geo-area-interactions.md",
@@ -7536,7 +8381,10 @@
         ],
         "limitations": [
           "本地限定验收；未执行远程CI或全产品回归。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "区划及地点消费者实库通过，最终构建 29 项、七组视口和双角色撤权完成验证，未跑全产品或远程 CI。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/311-position-definition-signoff.md",
@@ -7568,7 +8416,10 @@
         ],
         "limitations": [
           "开发验证历史保留；本次委托范围为业务签收。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "首批岗位定义按委托完成签收，双角色、冲突和两种写入顺序通过，保留外层命令首败。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/311-position-hierarchy-signoff.md",
@@ -7594,7 +8445,10 @@
         ],
         "limitations": [
           "开发验证历史保留；本次委托范围为业务签收。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "岗位层级第二批受托签收通过，覆盖双管理员互设、同日旧版、停用与未来闭环，限 AC053 至 055。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/311-position-hierarchy.md",
@@ -7640,7 +8494,11 @@
         ],
         "limitations": [
           "仅开发侧验证，非业务签收、容量或CI结果。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "岗位层级两种锁序、版本查回及双角色页面完成开发验证，业务签收另有记录，容量未验。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/311-position-hierarchy-signoff.md"
       },
       {
         "path": "docs/verification/311-position-definition.md",
@@ -7700,7 +8558,11 @@
         ],
         "limitations": [
           "仅第一批开发侧验证，不等同于人工验收、生产容量、正式CI或第二批交付。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "岗位定义首批的期间引用、竞争、旧库升级和双角色缩放已验。此份为开发验证，业务签收另有记录。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/311-position-definition-signoff.md"
       },
       {
         "path": "docs/verification/bootstrap.md",
@@ -7725,7 +8587,10 @@
         "limitations": [
           "仅迁移原记录，本轮没有重跑建仓检查或产品验收。",
           "当时精确受测提交及工作树差异未记录。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "建仓时资料、构建、健康接口和导航经原报告检查通过。精确提交及工作区差异未知，迁移时未重跑。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/009-m02-terminology.md",
@@ -7749,7 +8614,10 @@
         ],
         "limitations": [
           "仅迁移原记录，不代表本轮重新执行或全部 R25 增量验收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "009 的术语、关联设计和五张图通过当次核对。迁移沿用原记录，未重验全部 R25 增量。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/014-document-management.md",
@@ -7801,7 +8669,10 @@
           "未运行产品构建、Go 业务、浏览器或数据库验证；未核对外部资料时效。",
           "检查当前登记结构及关联，不审计完整 Git 状态转换历史、所有 Markdown 语法或证据真实性。",
           "旧记录仅迁移；未知受测信息及未指派个人责任人保持未知。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "文档登记、模板和检查器通过 36 项回归，未验证 M02 业务。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/014-document-management-review-fixes.md",
@@ -7851,7 +8722,10 @@
         "limitations": [
           "不覆盖M02业务、数据库、浏览器或外部政策时效。",
           "本轮由主代理修复复核，没有新一轮独立代理评审。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "稳定 ID、历史定义和标题引用修复后通过 41 项治理回归，只核对文档。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/014-repository-document-revisions.md",
@@ -7906,7 +8780,10 @@
         "limitations": [
           "不覆盖领域语义全量批准、外部政策时效、SVG重新渲染或产品验收。",
           "由主代理实施和复核，不声称独立代理评审或人工批准。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "94 份原有 Markdown 逐项复核，3 处事实或来源问题及 32 项完善建议已处理，未重验产品。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/014-numbered-format-migration.md",
@@ -7961,7 +8838,10 @@
           "主代理实施后复核，非独立评审或人工批准。",
           "未重验法律及 Oracle 资料时效；未运行业务、数据库、浏览器或生产交付验收。",
           "冻结的历史报告与来源资料保留各自原格式和原结论。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "001 至 009 的格式和审阅门禁经反例修复，44 项回归通过，原领域结论沿用。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-scope-draft.md",
@@ -8004,7 +8884,10 @@
           "010 保留草案，011—013 尚未创建，业务实现未开始。",
           "主代理资料自查，不是独立语义评审或人工批准。",
           "不覆盖产品、数据库、浏览器、外部政策时效或全量 R25 增量验证。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "首批范围草案与登记、入口一致。该轮只完成起草自查，业务尚未实施。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-backoffice-scope-revision.md",
@@ -8051,7 +8934,10 @@
           "010 保持草案，011—013 未创建；不代表范围采纳或业务完成。",
           "主代理资料自查，非独立评审或人工批准。",
           "未运行产品、数据库、API 或浏览器验收，未重验法律、Oracle 时效或全量 R25 增量。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "BU 后台入口、动作和返回路径已自查，010 当时仍为草案，未进入业务验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-review-fixes.md",
@@ -8097,7 +8983,10 @@
           "010 仍为草案，011—013 未创建，不代表整个范围采纳或产品完成。",
           "本轮不运行 Go、数据库、API、浏览器或产品构建验收。",
           "不复核外部政策时效或全部 R25 后增量。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "已保存记录改日、未来记录和真实引用边界通过文本复核，草案未作产品验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-business-requirements-draft.md",
@@ -8155,7 +9044,10 @@
           "010/011 仍为草案，012/013 未创建；不代表范围采纳或业务验收。",
           "未运行 Go、数据库、API、浏览器或产品构建。",
           "未重验外部政策/Oracle 时效及全部 R25 增量。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "业务草案首轮独立复核发现两项 P2，报告保留修订和复核过程。本轮未运行业务。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-terminology-registration.md",
@@ -8207,7 +9099,10 @@
           "010/011整体仍为草案；术语采用不等于范围采纳或业务验收。",
           "未运行 Go、数据库、API、浏览器或产品构建。",
           "未重验外部政策或 Oracle 译名、全部 R25 后增量。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "修订及新增词条通过独立复核并完成生成，草案的业务范围未在本批验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/015-terminology-naming.md",
@@ -8253,7 +9148,10 @@
           "没有逐项复核、批量更名或认定既有词条例外。",
           "未查询外部权威资料，未进行业务实现或运行验收。",
           "没有新增自动字数门禁；现有检查不证明惯例、权威性或语义正确性。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "中文命名原则及生成结果已核对，存量词条未逐项认定合规。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-current-date-terminology.md",
@@ -8301,7 +9199,10 @@
           "仅修正项目用语；未重验Oracle译名或外部资料。",
           "未运行 Go、数据库、API、浏览器或产品构建。",
           "010/011草案及资产实现/验证状态保持，不代表业务验收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "当前日期用语和词条生成一致，本轮未改日期规则或运行产品。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-effective-date-terminology.md",
@@ -8349,7 +9250,10 @@
           "010/011仍为草案，不代表业务实现或验收。",
           "没有运行 Go、数据库、API、浏览器或产品构建。",
           "未重验 Oracle、法律资料或全量术语。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "生效日期用语、生成文本与修订链核对通过，未运行产品验证。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-operation-classification.md",
@@ -8397,7 +9301,10 @@
           "010/011仍为草案，012/013无正文；未修改业务实现或检查器。",
           "没有运行 Go、数据库、API、浏览器或产品构建；新增 AC013 仍是待实现预期。",
           "未重验 Oracle、法律资料或全量术语，B&B 仅作静态参考。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "操作类型、原因和日期的文本及生成资料通过复核，新增验收条件当时尚待实现。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/016-history-decision-and-012.md",
@@ -8442,7 +9349,10 @@
           "本轮仅编写及检查文档，未运行 Go、数据库、API、浏览器或产品构建。",
           "013 尚无正文，010/011/012 不是业务验收结果，197 项资产状态不提升。",
           "Oracle 仅引用本会话核对的官方文档，无 Oracle 环境实测。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "历史决策和 012 页面合同通过独立语义评审，本轮只核对文档。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-delete-record-terminology.md",
@@ -8493,7 +9403,10 @@
           "010/011/012 仍为草案，013 尚无正文；不提升业务实现或资产验收状态。",
           "未运行 Go、数据库、API、浏览器或产品构建；未修改检查器。",
           "未重新核验 Oracle 或法律资料，也未重命名其他领域的撤销业务。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "删除记录的术语、历史保护和生成文本通过复核，只覆盖草案合同。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-record-classification-simplification.md",
@@ -8543,7 +9456,10 @@
           "010/011/012 仍为草案，013 尚无正文；不代表业务实现或验收。",
           "未修改业务代码、检查器或 B&B 文件，未运行 Go、数据库、API、浏览器或产品构建。",
           "未引入 B&B 的分类改写、历史改日、整对象删除、可选说明或 DB Kernel，未重验外部 Oracle/法律资料。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "继承分类、自动留痕及请求字段边界通过独立语义复核，仅覆盖草案。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/013-technical-design.md",
@@ -8594,7 +9510,10 @@
           "010至013均为草案，业务实现未开始；文档检查不等于产品验收。",
           "未安装运行候选工具组合或修改业务代码、目标图、资产状态、术语及原验证记录。",
           "未运行Go、真实DB/API、浏览器、迁移、提交捕获或性能测试；部署和外部业务系统不在范围。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "模型、历史、事务授权和恢复设计通过文本评审，候选工具和运行时尚未验证。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/013-table-design-review-fixes.md",
@@ -8639,7 +9558,10 @@
           "010至013仍为draft，业务实现未开始；仅关闭文档设计缺口。",
           "未实施或运行DDL、Go业务、API、鉴权、浏览器、逻辑捕获或性能验证。",
           "原19份验证登记/报告及摘要、011/012/016、术语/目标图/资产状态保留；不扩大初次验证范围。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "来源、前驱约束和提交终态的表设计通过复核，未执行建表或事务测试。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/013-series-review-fixes.md",
@@ -8686,7 +9608,10 @@
           "010至013继续draft；009维持已采纳角色决定，仅澄清后续交接。",
           "未修改业务代码/数据库迁移或运行DB/API/浏览器/性能测试；未重验法律或Oracle外部资料。",
           "旧20份验证登记及报告/摘要、来源包、448项术语、53张目标图和197项资产状态保留；不推导全量来源增量验收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "无事实与未记录的显示隔离及 M04 交接通过独立复核，010 至 013 当时仍为草案。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/013-multiround-review.md",
@@ -8732,7 +9657,10 @@
           "文档语义评审不等于人工采纳或业务验收；010至013状态保持。",
           "未实施或运行Go、SQL、DB/API、浏览器、并发、历史捕获或性能测试。",
           "未引入审批、工作台、完整IAM或消费者；旧报告/目标设计/源包及资产状态保留。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "多轮复审关闭 X03 不可变授权依据的文档问题，数据库、API 和并发实现未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-first-vertical-slice.md",
@@ -8799,7 +9727,10 @@
           "六项浏览器用例各有通过记录；其中依赖/403/退出失败使用前端故障注入，不替代真实权限竞争测试；真实落库和查回仍走Go/PostgreSQL。",
           "只交付创建/查询；未来新增、更正、删除、停用、生产备份恢复、外部系统和Outbox投递消费者未实施。",
           "容量仅2000个BU各1来源，未覆盖013多来源多期间及完整冷/热缓存、EXPLAIN和捕获延迟目标；资产部分覆盖不升级整项状态。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "BU 创建、查询、权限、并发及崩溃恢复通过实库验证。最终连续浏览器运行 6 项通过 5 项，余项遇主机时钟回拨。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/018-source-history-simplification.md",
@@ -8870,7 +9801,10 @@
           "未修改系统校时；日期和会话仍依赖系统时间。",
           "无真实采用消费者、事件投递、生产恢复或跨机升级；专用槽删除后提交故障需核对备份恢复。",
           "R25及来源命名增量状态保持，197项资产不提升整项验收。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "来源历史简化后 7 项实库集成通过，旧库 50 个 BU 的八表数据保留，容量只覆盖单来源。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/018-comprehensive-review-fixes.md",
@@ -8922,7 +9856,10 @@
           "浏览器限本地Chromium；错误注入不是生产故障或真实撤权演练。",
           "容量为单来源样本；无真实采用消费者、事件投递、生产恢复或外部HCM验收。",
           "R25、命名增量和197项资产状态不提升；不修改系统校时。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "BU 创建和查询修复后，9 项实库测试及 13 项浏览器测试通过，范围限当前切片和本地 Chromium。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/018-multiround-review.md",
@@ -8974,7 +9911,10 @@
           "异常时序和页面权限拒绝使用受控注入；真实授权/撤权和原子性另由DB夹具验证。",
           "一次返回筛选断言失败未独立复现业务根因；保留原失败，增加查询完成前置，原返回断言未放宽。",
           "未重跑容量、全浏览器、生产恢复、消费者或外部HCM；不提交或推送。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "八轮独立评审完成，原有浏览器首败留存，修复后实库 11 项通过。权限时序另由受控注入和实库夹具验证。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/005-github-ci-preparation.md",
@@ -9011,7 +9951,10 @@
         "limitations": [
           "本报告只记录发布准备；远程结果以实际 PR、Actions 和 Git refs 为准。",
           "未在本轮本机重复数据库和浏览器业务测试；其输入未变，保留018证据，远程 CI 将重新运行。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "CI 定义、构建和生成检查在本地通过。该轮远程 PR 检查及合并尚未执行。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/019-cubebox-experience-migration.md",
@@ -9075,7 +10018,10 @@
           "仅创建/查询；其他记录维护未实施。",
           "多节点日期轴及跨页签错误使用展示夹具；浏览器故障注入不等同生产故障。",
           "图面采用公共紧凑标准，保留业务字段和显式查看日差异，不作逐像素等同声明。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "BU 创建和查询完成共享体验迁移及三种视口对比，保留菜单流程首败，其他维护动作未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-retroactive-record-addition.md",
@@ -9125,7 +10071,10 @@
           "追溯新增与其他记录维护动作尚未实施，未运行Go/DB/API/浏览器业务验证。",
           "当天新增、首条之前新增、已生效删除、追溯停用和重新启用不因本次调整开放。",
           "真实消费者仍未接入，原采用保护为合同要求，不计跨域验收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "追溯新增的四份合同与原有 41 个业务锚点核对通过，Go、数据库和页面未验。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/020-effective-record-delete-and-redate.md",
@@ -9176,7 +10125,10 @@
           "删除及改日尚未实施，未运行业务DB/API/浏览器验收。",
           "首条禁止删除；整BU删除、恢复已删除记录及实际消费者未纳入。",
           "前轮未提交改动和报告保留，实施状态不提升。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "已生效记录删除与改日的合同和迁移设计通过静态核对，运行实现未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/021-bu-lifecycle-and-record-maintenance.md",
@@ -9226,7 +10178,10 @@
         "limitations": [
           "仅文档修订；Go/DB/API/页面维护动作未实施。",
           "真实消费者和联合修订仍后置；历史报告及前轮修订保留。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "多次启停与记录维护合同核对通过，真实消费者和联合修订留待后续。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/022-joint-timeline-revision.md",
@@ -9278,7 +10233,10 @@
         "limitations": [
           "仅文档修订，运行能力及业务测试未实施。",
           "首条删除、整BU作废、跨BU联合办理和真实消费者继续后置；旧证据保留。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "单 BU 联合修订与历史补全通过合同核对，跨 BU 办理、消费者及运行测试未覆盖。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/022-timeline-review-fixes.md",
@@ -9327,7 +10285,10 @@
         "limitations": [
           "仅文档与方案修订，维护动作和AC016—024未实现/未运行。",
           "未接入消费者、性能及生产能力不计通过；无提交/推送/发布。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "时间线合同与验收条件的映射已经核对，AC016 至 024 当时未实现或运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/022-timeline-robustness-fixes.md",
@@ -9377,7 +10338,10 @@
           "仅合同与待办修订，维护动作及AC025—029未实现/未运行。",
           "初始执行预算未经实测；受控升级方案未执行，不声明生产恢复能力。",
           "无提交、推送或发布。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "事务失败、终态竞争和升级准入设计已核对，执行预算和受控升级未实测。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/023-timeline-test-cases.md",
@@ -9427,7 +10391,10 @@
         "limitations": [
           "测试设计不等于业务验收；023案例本轮均未运行。",
           "真实消费者、生产恢复、跨BU及同日多记录等范围不扩展。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "时间轴案例和合同映射通过静态复核，所列业务、故障和容量案例当次均未执行。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/024-timeline-simplification.md",
@@ -9479,7 +10446,10 @@
           "仅文档合同修订，维护动作和257案例均未实现/运行。",
           "取消响应预算及本地换密升级尚待实测；正式发布制品校验后置。",
           "当前创建/查询代码未修改，不将旧报告扩大为本轮业务通过。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "五项设计问题已在合同及案例分层中修订，257 个案例未运行，取消预算尚待实测。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/025-greenfield-implementation-policy.md",
@@ -9532,7 +10502,10 @@
           "仅文档修订，当前代码仍为创建/查询基线，维护动作未实施。",
           "253个现行案例未运行；4个退役编号不计为通过。",
           "未修改代码/迁移/客户端，未执行旧库升级、数据重建或对外发布。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "全新实施策略及四个案例的退役依据核对通过，当批 253 个现行案例未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-first-record-maintenance.md",
@@ -9608,7 +10581,10 @@
           "没有真实消费者/投递/采用、生产恢复或人工业务批准；启停夹具不计业务流程通过。",
           "部分TL仅本批参数或Go夹具，不将253个现行案例全部记通过；TL-241/242/246/247退役不执行。",
           "COMMIT通信故障专项、慢正文、网络不可达清理和全部故障/竞争排列未穷举；保留执行预算和取消实测证据。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "BU 资料新增、普通更正及受影响的历史恢复通过回归，后续维护动作和完整容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/011-organization-name-policy.md",
@@ -9677,7 +10653,10 @@
           "仅名称规则及受影响M02回归；T04—T08未实施/未全验，容量案例显式跳过。",
           "有限文字上下文，不宣称完整Unicode规范、全部IVD字形、外部交换或GB18030符合性验收。",
           "无独立人工业务批准、推送或发布。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "创建、新增和普通更正的名称规则及相关页面通过复测，未作全部字形或外部交换合规验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/021-lifecycle-implementation.md",
@@ -9766,7 +10745,10 @@
           "T04启停分支及既有M02回归；T01/T02跨后续动作未关闭，T05/T06/T08及T07全容量未实施/未全验。",
           "真实引用范围仅企业归属和BU内部修订；Outbox未投递，M03/M04消费者和完整授权管理UI未接入。",
           "仅代理实施与自查；无独立人工业务批准、推送、PR、合并或对外部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "停用、重新启用及已接动作通过受影响回归。删除、改日、联合及全容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/021-lifecycle-review-fixes.md",
@@ -9856,7 +10838,10 @@
         "limitations": [
           "T01/T02跨后续动作、T05/T06/T08、T07全容量及真实跨域消费者不计完成。",
           "仅本地实施与自查；无推送、PR、合并或对外部署。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "两项启停评审问题完成修复和回归，首轮数据库取消夹具竞态已留证，其他维护动作未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/100-b-runtime-isolation.md",
@@ -9924,7 +10909,10 @@
           "整体100保持草案，T02至T06未实施；012、产品页面、来源资产状态保持。",
           "a工作区期间出现并行文档变化，HEAD/index保持；没有覆盖或同步这些修改。",
           "本机Linux/WSL2，未重验旧库升级、容量、外部对照、全浏览器、生产恢复或远程CI；没有独立评审或Git提交发布。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "b 环境独立启动、创建查询、数据保留和停止边界已验，a 与 b 同时在线留待补验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/100-runtime-review-fixes.md",
@@ -9978,7 +10966,10 @@
           "Go/API/DB的46份相关输入未变，本轮未重跑Testcontainers，原结果按范围复用；浏览器真实DB结果另列。",
           "a索引摘要出现并行变化、核对时HEAD未变，本轮未写入或同步a；不宣称其整个工作区快照保持。",
           "T02、旧库升级、容量、全浏览器、生产恢复和远程CI未运行；不提升整体计划或来源资产状态。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "不同地址监听及跨目录准备的两项反例修复后，17 项运行测试和 4 项跨目录测试通过，双树联运行未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/100-ui-baseline.md",
@@ -10053,7 +11044,11 @@
           "010/011/013、API及产品实现未变；日志可读姓名/后续差异接口仍待013/010。a的并行文档未导入，a/b同时在线及T05未运行。",
           "整体100仍draft/in_progress；无独立人工批准、提交或发布。",
           "后续勘误：首次12张缩放图不能作为完整视口图面；原件保留，校正索引及补采见100-ui-baseline-capture-fix.md。原生倍率及DOM测量不因此失效。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "R01 至 R09 的页面基线已采集，复核发现 200% 与 400% 的 12 张原图不完整，本批未修复页面问题。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/100-ui-baseline-capture-fix.md"
       },
       {
         "path": "docs/verification/100-ui-baseline-capture-fix.md",
@@ -10129,7 +11124,11 @@
           "详情图采用诊断直达访问；400%列表仍零高，截图通过不等于完整正常菜单或无障碍验收。",
           "产品、API、010/011/013及既有012修订未变；原基线附件原样保留，报告增加勘误并保存精确副本。",
           "本批含先前T02全部待提交更改和本轮补验，仅本地提交；未启动T03或发布。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "修复原生缩放采图后补采 12 张完整视口图，400% 列表零高仍保留为页面问题。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/100-ui-experience-improvement.md"
       },
       {
         "path": "docs/verification/100-ui-experience-improvement.md",
@@ -10193,7 +11192,10 @@
           "可读操作者姓名及未来操作完整差异未实现；不编造缺失事实。",
           "未运行其他浏览器、真机或完整无障碍审计；本轮为实施代理分轮自评。",
           "a自身并行文档提交另记，未合入b；未推送、PR、合并或部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "BU 创建和查询通过 32 项 Chromium 回归及 7 组页面矩阵，含原生 200% 和 400%，仅覆盖已接切片。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-record-maintenance.md",
@@ -10275,7 +11277,10 @@
           "多轮为实施代理自评，不是独立人员评审。",
           "a存在未提交的024收敛修订，本次冻结e58f8df基线；024定稿后先对齐，不宣称本批符合在途新合同。",
           "未推送、PR、远程合并或部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "前向升级、新增记录和普通更正通过实库、竞争与跨午夜复验。启停、删除、改日及联合办理当时尚未开放。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/012-detail-more-actions.md",
@@ -10348,7 +11353,10 @@
           "两个返回入口区分暂缓；已有历史只读及退出保护保持；业务、容量、真实消费者及生产/Firefox验收不提升。",
           "a后续a82d85b名称策略未纳入；UI/文档增量未提交或发布。",
           "实施代理多轮自查与实际测试，非独立人工业务批准；早期失败及手动终结的图面轮次保留。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "详情菜单、查看日期和编辑路径完成受影响回归，两类返回入口的区分留待后续。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/012-record-form-consistency.md",
@@ -10414,7 +11422,10 @@
           "无Go/API/存储或共享UI原语修改；真实UI使用当前API/DB，独立DB专项未重跑。",
           "两个返回操作区分暂缓；后续业务、Firefox、生产及独立人工批准不在本轮。",
           "保留修复前失败、首轮定位歧义和图面脚本准备失败；只有最终结果计修复后通过。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "表单外观差异已复现，新增及更正表单和受影响浏览器旅程已复验，未重跑独立数据库专项。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/012-ui-expression-simplification.md",
@@ -10474,7 +11485,10 @@
           "仅页面表达及原浏览器旅程；不提升完整M02或全部TL状态。",
           "无Go/API/存储及共享UI原语变更；独立DB专项不重跑，浏览器使用真实API/DB。",
           "返回操作改造仍暂缓；修改未提交/推送/合并，原报告和100保持。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "新建、新增和更正页面的表达简化通过受影响回归，未覆盖全部 M02 场景或 Firefox。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/012-pr-scroll-test.md",
@@ -10525,7 +11539,10 @@
         "limitations": [
           "仅修正测试采样前置，未更改产品源码、超时、重试或像素断言；完整远程结果以PR3最新提交CI为准。",
           "不提升完整M02、全部TL或100验收范围；保留首轮失败及既有报告。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "PR 滚动采样首败复现，修正采样前置后专项连续三次通过，未在本地重跑完整浏览器。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/021-main-ui-integration.md",
@@ -10598,7 +11615,10 @@
           "仅本轮整合及已接通批次，不关闭T01/T02跨后续动作、T05/T06/T08及T07全容量。",
           "两个返回入口设计调整继续暂缓；不重开100或提升来源资产整项状态。",
           "自查与分层执行，不冒充独立人工批准；a尚未推送/PR，不预记其远程CI。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "主线整合后 31 个 DB/API 测试根通过，容量 1 项显式跳过，覆盖已接创建、维护和启停。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/020-delete-implementation.md",
@@ -10700,7 +11720,10 @@
           "T01/T02跨改日、分类和联合部分继续保留；T06/T08、T07全容量未完成。",
           "真实引用范围仅企业及BU内部修订，不宣称M03/M04消费者已接入。",
           "本批仅本地提交，不推送、不创建PR、不合并或部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T05 分类删除及两种撤销日期读权场景复验通过，跨域真实下游引用和全容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/020-delete-review-fixes.md",
@@ -10809,7 +11832,10 @@
         "limitations": [
           "COMMIT网络通信未知的完整故障矩阵未实施；本次实测提交前取消/超时及真实延迟约束提交失败。",
           "T06/T08及T07完整容量未运行；原验证报告保留，不自动关闭全部TL案例。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "终态信息泄出反例已复现并修复，提交前取消、超时和约束失败已验，完整网络故障矩阵未执行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/020-redate-implementation.md",
@@ -10941,7 +11967,10 @@
           "独立评审代理授权尚未收到、独立评审未运行；技术验证通过不等于T06整阶段完成。",
           "T01/T02分类/联合部分、T08及T07全容量保留后续；真实跨域消费者未接入。",
           "完整69条浏览器早于缺分类保护，正常分支不变；最终程序T06八条复验，边界见报告。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T06 四类改日及完整集成复验通过，本批尚未执行独立评审或全容量。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/020-redate-independent-review.md",
@@ -11049,7 +12078,10 @@
           "独立评审由单独代理执行，不冒充人工业务批准。",
           "本轮当前Chromium仅定向T06九条；原69条及七组视口复用未改变分支，不宣称当前完整70条全部重跑。",
           "T01/T02分类/联合部分、T08和T07容量、真实外部消费者与完整COMMIT网络未知仍后置。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "T06 独立评审发现两项 P2，修复后本轮定向复验 9 条 Chromium 用例，其他未改场景沿用原证据。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/022-joint-implementation.md",
@@ -11169,7 +12201,10 @@
           "最终57项round7完整86条通过；其产品与round6相同，只有旧历史滚轮测试稳定等待/正文落点修正。原85/86失败和各轮反例/夹具失败原件保留。",
           "T07综合容量/253案例汇总、真实跨域消费者及引用/投递、生产恢复和完整物理网络COMMIT矩阵未运行；025退役案例不执行、不计通过。",
           "单独代理工具评审不是人工业务批准；M02总体及T01/T02完整综合验收未据本批笼统关闭，不推送/PR/合并/部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "有限联合修订经独立评审及修复，末轮 86 条浏览器用例通过，首败保留。综合容量及跨域消费者未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/010-t07-acceptance.md",
@@ -11229,7 +12264,10 @@
           "代理业务验收经用户授权；独立正式结论见最终报告，不记人工批准。",
           "冷20项保存p95约492ms余量较小；默认列表性能范围、长线超正文/预算拒绝、旧探索失败原件分别保留。",
           "真实消费者/投递/Inbox/采用、生产恢复、外部部署及Firefox/WebKit未运行；不推送、PR、合并或自动启动下一阶段。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "BU 本版通过 241 个整例及冷热容量目标，3 例仅本域参数通过，未接消费者仍未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/101-direct-save.md",
@@ -11339,7 +12377,10 @@
           "仅全部已接M02维护直接保存及其受影响回归，不扩大为全M02或全部257案例完成。",
           "完整容量、特定午夜/物理网络COMMIT故障、真实跨域消费者、生产恢复和Firefox/WebKit未重跑。",
           "主代理复核非独立代理或人工业务批准；不提交/推送/PR/部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "已接 M02 维护动作的直接保存和受影响路径完成回归，原中断留证，容量及物理网络故障未重跑。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/102-bu-maintenance-usability.md",
@@ -11417,7 +12458,10 @@
           "真实API/DB浏览器验收限于当前BU维护页面及受影响回归，不扩大为全M02完成。",
           "本批不重复独立Go集成、容量、午夜/物理COMMIT、真实消费者、生产恢复、Firefox/WebKit。",
           "主代理复核非独立代理或人工业务批准；未提交、推送、PR、合并或部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "BU 日志、未保存保护及专用表单通过 6 项定向和完整 106 项 Chromium，独立容量和跨域消费者未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/103-positioned-record-addition.md",
@@ -11467,7 +12511,10 @@
         "limitations": [
           "仅文档采纳，不是产品/API/客户端已实现或新案例已通过。",
           "不运行Go、DB/API、浏览器或容量业务测试；不修改旧报告、源资产及运行数据。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "位置新增的八项规则、案例映射和历史标识核对通过，本轮仅采纳文档，未运行产品。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/104-unified-record-correction.md",
@@ -11541,7 +12588,10 @@
           "非全293项TL、容量、真实消费者或生产验收；103位置新增未实施。",
           "联合入口及历史停用对交互不优化；当前主代理自查非独立评审。",
           "完整Chromium首轮2个旧断言失败，定点复跑2个通过，保留原失败命令和逐例绑定；未提交本轮实现或推送。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "统一更正、页面能力、历史与恢复完成当批检查，7 个 BU 和原证据保留，位置新增未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/105-positioned-addition-and-coverage.md",
@@ -11623,7 +12673,10 @@
           "首轮130测试129通过/1旧断言失败，相关17复跑通过，不声明单次完整132项全绿。",
           "联合入口及历史停用对交互不优化；非独立评审、真实消费者或生产验收。",
           "80431ac已提交统一更正，当前105实现及补测未追加提交或推送。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "位置新增和插入完成受影响回归，首轮 130 项有 1 条旧断言失败，相关 17 项复跑通过，部分参数未穷举。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/107-first-record-maintenance.md",
@@ -11691,7 +12744,10 @@
           "首次浏览器16通过/6旧标题匹配失败，修正辅助方法后46项复跑通过，保留首次失败。",
           "Go生产/API/存储无变更，未重跑完整DB套件，执行六个受影响真实DB/API函数及参数。",
           "主代理自查非独立评审；原联合入口及历史启停对交互不优化；当前107变更未提交或推送。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "首条维护和历史保护完成回归，修正旧标题匹配后 46 项复跑通过，未覆盖全部 306 个编号。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/108-maintenance-consistency-review.md",
@@ -11801,7 +12857,10 @@
           "保留首轮26项的22通过/4失败、中途140项的37通过/1中断/102未运行、辅助门槛修复前1通过/3失败与后4通过及未就绪setup失败。",
           "完整144项在full输入通过，之后仅4文件限定差异；最终28项复验覆盖26原项与2新权限项，146实例为合并最近结果，不是单次146命令。",
           "104的24份日志原字节保持并恢复Git跟踪资格，本轮仍未提交或推送；原数据、定稿报告、来源、目标资产保持。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "四轮发现已修复，11 个实库接口函数定向通过，未重跑完整数据库或容量。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/109-lifecycle-pair-maintenance.md",
@@ -11888,7 +12947,10 @@
           "旧通用39例和原5例退役，不计通过；未声称278现行案例所有参数/层次整例通过。",
           "新容量工作负载仅编译/静态检查，未重跑2000BU冷热容量；Firefox、真实消费者和生产恢复未纳入。",
           "未提交或推送。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "专用启停维护经真实数据库和浏览器复验，首轮含账号干扰，后续 132 项顺序通过。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/003-development-environment-cleanup.md",
@@ -11929,7 +12991,10 @@
         ],
         "limitations": [
           "不重新执行容器启停、删除或业务回归；临时测试资源回收机制仅核对现有代码，不计为新的运行验收。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "环境收尾规则、模板和保留入口已核对，本次只读检查，未重新启停容器或运行业务。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/021-single-lifecycle-append.md",
@@ -12005,7 +13070,10 @@
           "保留首轮失败及其后复验；45项Chromium为44+1最近结果，非单次45项全绿。",
           "扩大轮后唯一源码差异是第一详情样式例的合法前置及原断言位置；早期失败未逐次完整冻结源码。",
           "主代理实施后自查，非独立评审或人工批准；原4382未更新，本轮未提交或推送。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "单条启停追加、权限与恢复完成专项验证。45 项 Chromium 结果来自两轮，未验完整容量。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/017-docker-runtime-lifecycle.md",
@@ -12092,7 +13160,10 @@
           "故意失败及取消只证明回收路径，未将无匹配或中断的业务测试记为通过；Testcontainers夹具未修改。",
           "SIGKILL及主机故障须下次按归属盘点；本次未清理历史存量，也未自动改变持久环境分类。",
           "主代理自查，非独立评审或人工批准；受测实现输入及摘要已保存。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "Docker 地址池、临时网络和环境回收路径已验证，取消用例仅用于检查回收，远程 CI 未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/026-date-display-and-input-format.md",
@@ -12190,7 +13261,10 @@
           "原生选日检查覆盖调用及回填，未承诺跨操作系统面板视觉一致性；组件夹具与正常菜单证据分开。",
           "早期类型/断言错误未完整冻结全部早期源码，原输出保留；完整首轮及最终输入均已归档。",
           "主代理实施自查，非独立评审或人工批准；旧证据保持，无提交、推送或部署。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "日期格式首轮浏览器 137 项有 1 项失败，修复后定向 8 项通过，其余沿用同输入结果。原生缩放未重跑。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/023-parallel-case-identifiers.md",
@@ -12229,7 +13303,10 @@
         ],
         "limitations": [
           "未新增业务能力或扩大原报告通过范围；最新PR CI另按实际远程状态核对。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "并行案例编号与验收映射完成消歧，73 项治理回归和原件摘要核对通过，本轮未新增业务验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-bu-list-preimplementation-docs.md",
@@ -12301,7 +13378,10 @@
           "主代理多轮自查，非独立评审或人工产品验收。",
           "Pro未安装；最终patch、许可配置及新列条件仍按110/111节点处理。",
           "新增TL-323—334全部未运行；旧报告原件不回写。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "列表实施前评审发现两项追踪与交接遗漏，登记和文档复核已完成，新增 12 例当时未执行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-datagrid-pro-t01.md",
@@ -12383,7 +13463,10 @@
           "缺密钥夹具不挂载Pro；无水印/console仅证明缺配置保护。",
           "T01部分完成，T02及12个BU业务案例未运行。",
           "首次安装/类型/JSX运行失败及修复分别保留。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "Pro 源码依赖、构建及缺密钥保护已核对，有效密钥下的无水印运行未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-datagrid-pro-t02.md",
@@ -12455,7 +13538,10 @@
         ],
         "limitations": [
           "T01有效密钥及无水印运行项仍待验；T03真实Pro/API/DB及七组验收未运行。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "列表基础接线在修正日期定位和焦点问题后通过类型检查及构建，有效许可和真实 BU 路径未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-datagrid-pro-unblock.md",
@@ -12506,7 +13592,10 @@
         ],
         "limitations": [
           "真实鉴权/DB和七组缩放仍未验；无水印/无许可提示需有效密钥。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "移除缺密钥挂载阻断后 6 项返回钩子复验通过，真实鉴权和无水印运行未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-defensive-design-cleanup.md",
@@ -12585,7 +13674,10 @@
         ],
         "limitations": [
           "真实Go/API/DB业务及全缩放验收未运行；官方许可行为不改。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "前端构建与运行配置已分开，覆盖值冲突时构建通过，未执行完整缩放及实库业务验证。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/113-community-adoption-docs.md",
@@ -12684,7 +13776,10 @@
           "主代理多轮自查，非独立评审或人工业务验收。",
           "Community源码/依赖替换、类型/构建、真实Go/API/DB/浏览器及七组视口均未运行。",
           "旧Pro许可专项因选型退出撤销，不计通过；旧报告及来源原件保留。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "Community 采用、替代关系及原件保护完成文档复核，首轮 3 项语义发现留存，真实接线未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/113-department-list-template-docs.md",
@@ -12760,7 +13855,10 @@
           "主代理自查，非独立评审或人工产品验收。",
           "Community源码/依赖、类型/构建及真实Go/API/DB/浏览器和七组视口验收未运行。",
           "旧Pro报告、前轮113报告及其证据保留原字节，范围退出不改写旧通过/失败。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "部门列表样板和列能力边界完成文档复核，首轮两项遗漏留存，浏览器和实库未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-community-t01-t02.md",
@@ -12906,7 +14004,10 @@
           "主代理定向自查，非独立评审或人工业务验收。",
           "合成HTTP/分页及钩子夹具不作为TL-323—334真实业务整例通过；T03/T04/T05仍未关闭。",
           "构建保留上游use client指令和chunk体积提示；无过滤控制台、隐藏水印或第三方算法改写。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "Community 离线依赖、构建及 T02 定向组件适配已验。模拟分页和钩子结果未计入 T03 真实业务。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-desktop-row-height.md",
@@ -12950,7 +14051,10 @@
         "limitations": [
           "合成HTTP/行数据，只验证实际组件布局及已有返回行为，不作为真实业务整例验收。",
           "原T01/T02报告保留原输入和结果，本次另建补充记录。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "桌面行高、长文和窄屏对照通过，10 项实际网格回归使用合成行，真实业务及全缩放未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-cubebox-desktop-row-height.md",
@@ -13000,7 +14104,10 @@
         "limitations": [
           "只读样板观察与合成HTTP组件验证，不改变T03真实业务及完整缩放的后置范围。",
           "主代理定向自查与图面复核，非独立评审；自有临时服务及浏览器已关闭，既有4180服务未操作。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "按 CubeBox 样板核对桌面行高，10 项网格返回及尺寸切换通过，仅覆盖组件与合成数据。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-community-t03.md",
@@ -13079,7 +14186,10 @@
           "仅111 T03的12例当前参数和受影响代表例；非全334编号、全M02/维护组合/真实消费者/生产验收，T04/T05未关闭。",
           "Linux Chromium；正常结果来自真实Go/API/DB，故障/延迟/丢失响应为受控传输注入；不冒充macOS或其他浏览器。",
           "主代理执行及分轮复核，非独立评审或具名业务人员验收；失败/中断与最终通过分开保存。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T03 的 12 个列表案例、受影响维护路径和 7 组视口通过真实接口验证，含原生 200% 与 400%，限 Linux Chromium。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-column-filter-evaluation.md",
@@ -13120,7 +14230,10 @@
         "limitations": [
           "评估完成不代表新增列筛选或Excel候选已实现；原生输入实验无真实业务接口，73条仅为合成计数。",
           "主代理执行及分轮自查，非独立评审；T05整体交付未关闭，T03原报告与证据保持。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "单列筛选评估完成，7 项合成组件实验通过，新增列条件和导出候选当时未作真实接口验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-single-column-filter.md",
@@ -13190,7 +14303,10 @@
           "组合运行17/18，TL333旧关闭筛选断言按新合同更新后定向复验通过；原失败及中断留证，不记整轮18/18。",
           "仅TL335—342及10组受影响列表；非全M02/342例、全维护/跨浏览器/真实消费者/生产或容量验收。",
           "主代理实施与分轮自查，非独立评审或具名业务签收；T05整体交付未关闭。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "单列条件的 8 组新增和 10 组旧列表场景均有通过记录，组合首轮 17/18，余项定向复验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-community-t05-delivery.md",
@@ -13248,7 +14364,10 @@
           "旧17/18组合失败及TL333复验各自保留；314份历史报告和证据不改写。",
           "本轮不修改运行代码、不复跑已证明输入相同的全量业务套件；主代理分轮复核，非独立评审。",
           "仅本地提交；不推送/PR/合并。当前日常环境依用户要求保留，用户结束本轮使用或下次服务交接时复查。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "Community 列表五阶段及单列增量完成交接，双角色只读入口补验通过。原筛选组合首败及专项复验分开保留。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/021-publication-browser-conflict.md",
@@ -13288,7 +14407,10 @@
         "limitations": [
           "定向2项不代表138项完整套件通过；PR最新提交仍须quality/integration/browser全部通过才能合并。",
           "主代理定位及复核，非独立评审或人工批准。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "远程首轮 137 项有 1 项失败，本地两个确定冲突参数通过。该轮未重跑完整套件。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-a-b-integration.md",
@@ -13381,7 +14503,10 @@
           "远程三项CI按最新提交另行核对；跨列组合、Excel值枚举和Pro不纳入。",
           "本地最新结果为154完整轮通过＋1修订后定点，不冒充单次155项全绿；完整轮执行了发现时缓存的旧焦点断言，重建保留该精确输入。",
           "当前最终套件156项；本地用155项完整轮及后续定向3项分别留证，完整最终提交以远程CI为准；未运行Firefox或生产恢复。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "列表、日期与启停合并后，154 项整轮通过，焦点断言修订后单项补验，远程结果按对应提交查证。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/111-ci-browser-budget.md",
@@ -13446,7 +14571,10 @@
         "limitations": [
           "原CI无最终堆栈/截图，不能证明其与本地定位是相同断言；本地已复现并定位异步前置问题，原失败保留。",
           "本地重复通过不能替代新提交完整CI；最新head的quality、integration、browser必须全部通过。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "PR 浏览器原轮取消。本地修正异步前置后连续三轮共 6 项通过，原远程失败缺最终堆栈。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/115-query-selection-docs.md",
@@ -13509,7 +14637,10 @@
         ],
         "limitations": [
           "产品实施和真实Go/API/DB/浏览器/容量验收未运行；非独立评审或人工批准。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "全查询结果选择、权限和 CSV 合同完成文档评审，产品实现与容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/115-query-selection-implementation.md",
@@ -13603,7 +14734,10 @@
           "容量2021BU每BU一来源；未重跑20并发复杂多来源SLA，内存采样为Go测试进程(API+客户端)，不含PG。",
           "完整集成之后的选择错误边界以定向测试补验；不把原整轮结果归给后来才添加的断言。",
           "浏览器为WSL Chromium，含原生200%/400%缩放；非Windows Edge/Firefox/macOS或人工业务签收。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "BU 全查询选择、跨页导出及七组视口完成验收。容量样本为 2021 个单来源 BU，未重跑复杂来源的 20 并发目标。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r0-contract-preparation.md",
@@ -13676,7 +14810,10 @@
           "当前仅R0合同和BU状态标题定向验证，不是部门真实接入、全M02或生产验收。",
           "主代理自审，非独立评审或人工业务签收；旧报告不计本轮重跑。",
           "未运行完整check/build/integration/smoke；浏览器为2条定向真实链路。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "R0 登记 19 个独立预期并核验既有 BU 状态标题，未执行部门接入、路径和容量验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/104-classification-direct-edit.md",
@@ -13738,7 +14875,10 @@
           "不是一次完整浏览器套件通过；末批37通过/1测试断言失败，修正该断言后单项通过；另23项未受末次限定影响的本轮实跑结果复用。",
           "未重跑全量Go/独立integration套件、Firefox、全产品或生产验收、容量、远程CI及116后续阶段。",
           "视口为首条组合更正；非首条分类切换为桌面实测；原因目录故障为受控HTTP；主代理自查。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "分类直接编辑、动态权限及恢复有 61 个去重参数分批通过，最后一项旧断言单独复验，未跑完整套件。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/104-classification-single-fields.md",
@@ -13800,7 +14940,10 @@
           "仅本轮39项定向浏览器及首条七组视口；未重跑旧61项或完整浏览器套件。",
           "未运行完整make check、全量Go/integration、Firefox、生产容量或远程CI；不启动116后续阶段。",
           "目录异常为受控HTTP响应；非首条类型切换为桌面实测。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "分类单组字段及部分读权、撤写权通过 39 项定向浏览器验证，未重跑此前 61 项。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/122-operation-summary-contract-review.md",
@@ -13881,7 +15024,10 @@
           "主代理自审，不是独立评审或具名维护者/业务人员签收；不是全M02合同重审。",
           "PeopleSoft仅复用前轮样本截图，未验证多修订/权限矩阵或本项目功能。",
           "另一个工作提交的dbd4015被保留，本轮不验证其产品修改或归入122。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "日志分权、分组筛选和链接的增量合同完成复核，产品及新增 20 例未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/122-operation-summary-contract-review-fixes.md",
@@ -13942,7 +15088,10 @@
           "TL-367—386全部not_run，原366案例及44退役项保持，116后续阶段不启动。",
           "非独立评审或人工业务签收；原122报告与证据保留，源系统未重新实测。",
           "只授权本地提交，不执行推送、PR、合并或部署。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "三项操作摘要及日志的合同问题完成修订，20 个新增案例当时未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r0-authorization-and-hierarchy-review-fixes.md",
@@ -14009,7 +15158,10 @@
           "R1—R6未开始，部门/Hierarchy产品及新增独立预期未运行。",
           "主代理合同复核，不是独立评审或人工业务签收。",
           "原R0报告、原19个样本及122交付保持原字节；本次仅本地提交。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "授权、层级及更正恢复的分类继承合同通过复核，部门产品和 R1 至 R6 当时未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/123-current-maintenance.md",
@@ -14153,7 +15305,10 @@
           "174项为分批通过，非最终工作区单次全绿；各轮失败及输入差异保留。",
           "部门/Hierarchy、116 R1—R6与122未实施；不声明完整M02或生产验收。",
           "本次主代理实施和合同复核，非独立评审或人工业务签收；未运行新CubeBox或Windows Edge对照。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "今日列表、记录详情和跨日选择共 174 项分批通过，保留首轮失败。部门当时仅有合同。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/122-post123-contract-review.md",
@@ -14215,7 +15370,10 @@
           "TL-367—386全部未运行；不将123既有产品通过计入122。",
           "主代理语义自审，非独立评审或人工业务签收；旧报告及来源观察保留原范围。",
           "仅完善文档，未执行本地提交、推送、PR、合并或部署。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "123 实施后复核了操作摘要的两个合同边界，122 的 20 个案例当时未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/122-operation-summary-implementation.md",
@@ -14272,7 +15430,10 @@
           "主代理实施验证，非独立评审或人工签收；不含116后续阶段、部门、完整M02或生产。",
           "冷连接池不等于清OS/PG缓存，长日志并发测量不是生产SLA。",
           "未提交、推送、PR、合并或部署。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "操作摘要和日志的 20 个案例完成实测映射，双角色菜单通过，首轮集成和浏览器失败与复验分别留存。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/122-operation-summary-review-fixes.md",
@@ -14328,7 +15489,10 @@
           "原报告及20例矩阵保留原时点，本记录补正TL-373主层参数证据边界。",
           "主代理修复与复验，非独立评审、人工签收或生产验收。",
           "未提交、推送、PR、合并或部署。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "三项评审问题及日期空导航补验完成，实库专项和末轮 19 项浏览器通过，前四轮失败保留。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r1-kernel-and-directory.md",
@@ -14424,7 +15588,10 @@
           "R1只含共用Go内核和BU适配/目录；未实施共用事务/前端、部门/Hierarchy及R6容量标准。",
           "浏览器采用整轮185通过加启停8项修复复验，不宣称单轮186全绿；最终生产源码相同，只有一个测试定位修正。",
           "未提交、推送、远程CI或部署；不声明完整M02/生产验收。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "R1 的共用 Go 内核和 BU 适配通过分批核对，2634 份原资产保留，39 个部门产品样本未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r1-review-fixes.md",
@@ -14483,7 +15650,10 @@
           "主代理执行与复核，非独立评审或人工签收。",
           "只改变测试夹具和断言；DB、浏览器、R2—R6及部门产品未在本轮运行。",
           "未提交或推送本轮修复。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "R1 引用比较夹具先复现错误，修正后三类独立预期通过，未重跑数据库或浏览器。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r2-contract-review.md",
@@ -14513,7 +15683,10 @@
         "limitations": [
           "主代理执行与复核，非独立评审或人工签收。",
           "不实施R3前端提炼、部门/Hierarchy及R6容量。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "R2 事务提交及恢复合同通过语义评审，当次只确定两批实施边界。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r2-transaction-and-recovery.md",
@@ -14589,7 +15762,10 @@
           "R3—R6、部门/Hierarchy运行时及生产验收不在范围；部门39项仍not_run。",
           "默认integration不包含显式容量及两项附加跨日浏览器通道。",
           "日常脚本首轮观察时机失败及独立复测保留；不纳入完整Chromium计数。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "R2 事务、结果恢复与 BU 接入完成复核，双角色只读补验通过，39 个部门产品样本未运行。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r3-contract-review.md",
@@ -14632,7 +15808,10 @@
         "limitations": [
           "主代理执行及复核，非独立评审或人工签收。",
           "部门39项仍not_run；R4—R6及生产验收后置。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "R3 流程和类型适配合同通过复核，补齐登记后文档检查通过，部门真实运行未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r3-frontend-workflow.md",
@@ -14780,7 +15959,10 @@
           "部门39项仍not_run；R4—R6、Hierarchy真实运行时、显式容量和附加跨日浏览器通道后置。",
           "定向首轮17/18及视口首轮失败、完整浏览器首轮主动中断分别保留，不拼接为通过；最终产品全轮187项单独通过。",
           "全轮期间仅不被默认E2E引用的独立列表视口脚本修正预期，并另行7/7复验；产品及默认E2E输入未变。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "R3 共用提交流程的 9 项独立预期通过，完成 BU 接入复验，39 项部门样本及显式容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r3-review-fixes.md",
@@ -14851,7 +16033,10 @@
         "limitations": [
           "原R3完整DB、187项Chromium及21组视口为修复前证据；本轮按实际影响单独复验。",
           "主代理执行和复核；未提交、未推送，无人工签收或生产验收结论。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "退出返回 503 后的取消与关闭保护失效已复现并修复，三类 BU 表单定向复验，原整套结果属修复前基线。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r4-contract-review.md",
@@ -14916,7 +16101,10 @@
         "limitations": [
           "主代理设计与复核，非独立评审或人工业务签收。",
           "部门39例及新增R4技术参数保持not_run；无DB/API/浏览器产品通过结论。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "14 项 R4 合同语义及 62 项映射已核对，4 项编写问题关闭，真实部门后端仍待实施验收。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r4-relation-simplification.md",
@@ -14983,7 +16171,10 @@
         "limitations": [
           "非独立评审或人工签收。",
           "本轮不将此前另外两项设计意见登记为已解决。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "关系版本粒度简化通过 9 项合同复核，分类上下文与错误优先级两项意见在该轮未关闭。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r4-review-fixes.md",
@@ -15030,7 +16221,10 @@
         "limitations": [
           "代理复核不冒充独立评审或人工签收。",
           "产品仍未实施。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "上轮余下两项 R4 设计问题通过合同复核，39 例与技术参数保留，此轮未执行产品验证。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r4-department-backend.md",
@@ -15100,7 +16294,10 @@
           "完整DB后仅追加独立身份测试及BU前端修复，113个生产Go/SQL输入不变；实际输入差异单独保存。",
           "4个显式负载/附加浏览器通道跳过；R5部门页面/正常菜单、R6容量及外域消费者/生产交付未运行。",
           "主代理复核不冒充独立评审或人工签收；原持久环境未升级或清理，新实施增量尚未提交。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "39 个部门案例和 24 组技术参数完成后端映射，149 个实库测试根通过，R5 页面和 R6 容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r4-local-department-samples.md",
@@ -15155,7 +16352,10 @@
           "首次脚本断言错误保留，修正后基于已落库结果继续，不重复创建样本；最终浏览器只读复核另存。",
           "新环境仅含本次合成数据，旧环境7个BU未迁移；旧库及程序保留。",
           "R5部门页面仍未接线，当前仅能登录后通过API查看部门JSON；本轮未重复全套DB/浏览器验收。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "五个合成部门的创建、历史、停用及原提交可查，修正脚本预期后沿用落库样本，未验部门页面。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r4-implementation-review-fixes.md",
@@ -15238,7 +16438,10 @@
           "完整回归一次守卫耗时超过4秒；原始日志未记录精确耗时，原因未能据该日志定性；没有放宽时限或修改守卫业务代码，不声明单轮全绿。",
           "两项新增反例及修复补验分别保留；代理补验不冒充独立评审重新批准。",
           "首次make check缺报告导航，补链接后通过；R5/R6及远程CI未执行；本轮未提交。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "删除摘要投影及管理 BU 筛选反例修复后定向实库通过，整轮曾有一次守卫超时，原日志无法定因。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r4-guard-budget-closeout.md",
@@ -15352,7 +16555,10 @@
           "本次仅强化共用对象锁阶段；未改宿主时钟或全局时间同步服务。",
           "原失败、中断、定向复验和本次最终完整单轮各自保存；四项专项跳过，R5/R6和人工签收未验收。",
           "主代理实施后限定复核，不冒充独立评审人批准；本轮未提交或推送。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "同基线复现 4.226 秒守卫请求，延迟反例用于验证对象锁阶段的修复，原首败缺逐段计时，R6 容量未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r5-department-pages-and-acceptance.md",
@@ -15434,7 +16640,10 @@
           "完整Chromium有1项布局测试等待失败，修正后独立2项通过；不宣称单轮205项全绿。",
           "长任务工具外壳异常退出与测试进程终态分开记录；本轮smoke资源已按创建归属核销。",
           "4项专项跳过，R6容量/标准、跨域消费者及生产能力不计入本轮。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "R5 部门页面与双对象验收完成，整轮浏览器有 1 个等待失败，修正后 2 项专项通过，R6 容量另验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r5-review-fixes.md",
@@ -15531,7 +16740,10 @@
           "原完整DB/API、205项浏览器及布局/跨日是修复前证据；本轮未重跑全套，最终29项和5项分两批记录。",
           "主代理修复及补验；不代表人工签收或另一轮独立批准；未提交、推送或发布。",
           "Go、SQL、公开API及业务规则不变；R6容量与生产不在范围内。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "旧状态泄出和根部门创建遭拒两个反例修复，最终 29 项与 5 项分批复验，未重跑完整 205 项。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r5-authorization-followup.md",
@@ -15645,7 +16857,10 @@
           "首批37项与最终28项按不同输入分别保存，存在重叠；不合计为全量单轮通过。",
           "本轮未重跑完整DB/API、全量浏览器、布局/原生缩放或受控跨日；R6容量及生产不在范围内。",
           "主代理修复及补验，不代表独立评审或人工签收；未提交、推送或发布。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "候选缓存和日志字段权反例完成修复，37 项与 28 项按不同输入分批复验，完整实库及容量未重跑。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r5-multiround-review.md",
@@ -15795,7 +17010,10 @@
           "第五轮32项与第六轮18项为分批验证，不宣称单轮50项或默认全量浏览器通过。",
           "完整DB/API一次外层143、一次提交锁耗时4.972秒超出4秒上界；后续3次通过不覆盖前次失败；墙钟采样存在回拨，不据此宣称稳定时钟或锁耗时全量验收。",
           "主代理按合同独立建立预期进行多轮评审，非另一名评审者或人工签收；R6、生产、远程CI不在本轮范围，未提交或发布。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "引用标签授权、关系补丁及表单回归分批完成。实库曾超过 4 秒上界，后续三次通过，原超时保留。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/116-r6-standards-and-capacity.md",
@@ -15959,7 +17177,11 @@
           "背景复制旧请求摘要/授权事件不能计原提交重放或完整授权审计；实际恢复使用新提交。",
           "初轮暖测3次pending未保存提交号，其逐笔恢复未补造；新工具和后轮74笔原身份恢复独立记录。",
           "非生产SLA、非人工业务签收、非跨域接入；R6增量仍未提交。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "双对象接入标准和规定规模测量完成。列表、冷启动和混合写入未达标，容量问题转入整改。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/125-implementation.md"
       },
       {
         "path": "docs/verification/125-r6-capacity-plan.md",
@@ -16011,7 +17233,10 @@
           "主代理编制及自查，不是外部独立评审或人工批准。",
           "方案产品实施not_started，120/013现行合同保持，容量P1仍未关闭。",
           "未重跑产品DB/API、浏览器或容量；现有R6产品及原证据不改写。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "容量整改顺序、失败证据与验收安排通过方案自查，未实施产品或重测容量。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/125-r6-capacity-plan-review-fixes.md",
@@ -16063,7 +17288,10 @@
           "主代理修订及自查，非外部独立评审或人工业务签收。",
           "三项意见只在方案层补齐；新增600次context及判定器/连接验证均未运行，原容量P1未关闭。",
           "保持原R6产品、工具和验证数据及125原编制报告；125产品实施仍not_started。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "三项 P2 已落实到方案及验收参数，600 次上下文、判定器和连接恢复未实测，原容量 P1 保留。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/125-implementation.md",
@@ -16156,7 +17384,11 @@
           "本报告原收尾时任务profile停机保留两份容量库；2026-11-07用户随后要求由126持久紧凑案例接替并退役旧两库，原证据保留，详见126报告第9节。",
           "完整DB/API及浏览器回归后仅容量freeze.go新增重复复制前置保护；产品代码未变，工具增量另有真实库反例、单元和make check覆盖，输入差异单独保存。",
           "补归档的单张截图来自中断运行；42个通过场景属于原50项中的2个布局测试，不代表新增42项或当前代码验收。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "功能回归通过。旧版 4800 次暖态有真实超标，候选完整容量与 600 次上下文测试未运行，P01、P02 保留。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/125-capacity-resumption.md"
       },
       {
         "path": "docs/verification/126-storage-feasibility.md",
@@ -16228,7 +17460,10 @@
           "辅助数据实际复制并计原索引空间预算，未接产品DDL、全保护约束、有界块、授权和并发；不认定产品可用或容量P1关闭。",
           "高重复案例的191.5MB不能推广到独立摘要/名称/时刻或无限历史，未运行实际业务吞吐。",
           "原容量profile停机保留；本任务临时容器与卷已回收。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "存储原型重启后约 192 MB 并能还原历史，未接产品迁移、授权及并发验证，容量 P1 保留。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/126-compact-history-implementation.md",
@@ -16325,7 +17560,10 @@
           "原测量时未提交；实现随后本地提交76f392e。本次仅补文档与证据，未推送、未运行远程CI。",
           "2026-11-07用户取消200MB硬性要求并授权本地提交；原受测基线和失败值不改写。",
           "4387保留原API及00001—00005，不含25229e7列表修复；原部门加载中截图保留，新四列表补验不覆盖本轮首次详情等待失败，不增加容量通过范围。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "紧凑历史保留完整案例及 36490 条审计，列表和集中写入延迟仍超标，完整冷启动与长期增长未验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/127-vanke-full-history.md",
@@ -16484,7 +17722,10 @@
           "原临时库已按旧约定清理，用户后追加固定保留要求；当前按原文件重建，新导入身份/审计不冒称原物理库恢复。",
           "新增更改为本地提交范围；未推送或运行远程CI。最终代码采用完整先行回归与后续定向复验，不宣称单轮完整套件全绿。",
           "首轮开发页面重叠503已在第10节定位为同会话行锁持有过长并修复；列表仍为秒级，额外测试负载下冷列表10秒预算失败保留，125容量P1未关闭。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "全量样本的原始字段、历史及冻结路径完成核对。部分类型扩展未实现，20 会话部门列表 40 次有 39 次失败。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/128-authorization-evidence-investigation.md",
@@ -16537,7 +17778,10 @@
           "整库和授权占用为2026-11-07调查值，本批未重新实时测量。",
           "压缩实验仅内存编码诊断，128已明确不采用继续保留完整过程的路线。",
           "原固定万科库、紧凑案例及仓外来源/恢复资产均未操作；125容量P1未关闭。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "七份只读调查原件完成归档并形成授权过程存储删除合同，未改产品或迁移固定库。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/128-reference-link-removal.md",
@@ -16578,7 +17822,10 @@
           "原128文档工作尚未提交，本次追加保留全部既有更改。",
           "静态少87344个意图不是实测吞吐或空间节省；与删除授权档案收益不能重复相加。",
           "当前程序和固定库未修改；原业务路径真实性及读权仍保留；新验收未运行。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "关联快捷跳转的清理范围和验证条件已核对，减少的静态意图数未作性能或空间实测。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/128-cleanup-completeness-review.md",
@@ -16634,7 +17881,10 @@
           "关键词清单包含67个源码文件和222个命中行，另列13份架构资料；命中不表示全文件应删除，零命中也不能代替行为验收。",
           "架构入口明确128优先，13份正文/源数据/生成资料仍待实施时逐项同步；原导入包与历史验证保持。",
           "未运行Go/DB/API/浏览器/容量验证，125容量P1未关闭。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "清理范围复核发现六类遗漏，修订后核对了依赖和保留边界，产品及容量尚未验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/128-implementation.md",
@@ -16707,7 +17957,10 @@
           "本轮万科混合写入达标，不代表125更大规定规模全工况通过；未单独导出万科全量CSV。",
           "方案文档先本地提交b33df10，实施随本记录提交；未推送、未运行远程CI、未切换原固定库。",
           "唯一自有候选已清理，仓外保留少量首次失败日志及实际页面截图；原固定万科和紧凑案例仍为旧模型/原API。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "授权过程存储及快捷跳转清理后业务历史可查，完整实库一轮 474 项通过、5 项跳过。部门列表和父候选容量仍失败。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-capacity-resumption.md",
@@ -16786,7 +18039,10 @@
           "容量P01/P02保持；完整矩阵和万科/4390实际20会话均未达标，索引增加存储，不能靠暖态或语义改善关闭。",
           "DB/API为分包完整复跑，首次失败保留；完整smoke237通过，但原128行政上级首次超时原因仍未确定。",
           "10000成员普通更正未实际应用；远程CI、原固定入口切换及旧库退役未执行；候选为新身份重导，非原物理库恢复。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "冷暖及独立混合样本语义无误，部分列表与冷保存超标，4390 父候选首次 20 次均超时，容量 P1 未关闭。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-4390-baseline-adoption.md",
@@ -16837,7 +18093,11 @@
         "limitations": [
           "本次基准采纳不关闭125容量P01/P02，不代表生产或容量验收。",
           "原4387/4388环境保留；不重启、不退役、不迁移其数据。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "4390 构建、模型、数据量及双角色读取核对一致并采作基准。原两套环境保留，125 容量 P1 未关闭。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/125-4390-runtime-refresh.md"
       },
       {
         "path": "docs/verification/129-bu-simplification-plan.md",
@@ -16881,7 +18141,10 @@
         "limitations": [
           "本轮仅制定计划，产品实施与验收未开始；文档检查不证明所拟关系分类、锁协议和性能目标已通过。",
           "125容量P1及原4390采纳边界保持；本轮未复测或操作运行环境，未提交、推送或部署。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "BU 简化方案的顺序、历史保护与验收安排完成核对，关系分类、锁和容量目标未作产品验证。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/130-department-storage-plan-review.md",
@@ -16949,7 +18212,10 @@
           "本轮只制定和评审文档，产品任务not_started，没有真实回收、合并或索引变更。",
           "125容量P1及4390固定基准保持；UUID/路径全局共享和shape删除暂缓。",
           "没有独立代理或人工签收；文档检查不证明实际减容、历史/日期等价或容量达标。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "部门存储方案三轮评审关闭 2 项 P1 和 2 项 P2。仅验证文档，产品空间与容量未测。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/130-implementation.md",
@@ -17113,7 +18379,10 @@
           "合成周期1 B写入WAL较A多10480920字节，原WAL已回收导致细分归因不可用；保留实测和限制，不宣称全面无回退。",
           "全局UUID映射两个样本均更大、不采用；shape删除及全局路径共享暂缓；没有独立代理/人工验收。",
           "固定环境未变，4390保持模型3；未提交、推送、远程CI、部署或新固定基准交付；原方案及历史原件保留。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "V01 至 V12 的功能、历史、空间和增长完成限定验收，多组列表、候选及保存仍超标并交回 125。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-department-query-plan.md",
@@ -17160,7 +18429,10 @@
         "limitations": [
           "本批只形成可评审设计；产品任务未开始，不证明读取计划、SQL一致性、期间排除或容量已通过。",
           "125容量P1、原历史结果与4390固定基准保持；本批未操作运行环境或提交/发布。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "部门查询减负的授权、路径和候选期间设计已形成可评审方案，产品、SQL 原型及容量未运行。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-department-query-plan-review.md",
@@ -17230,7 +18502,10 @@
           "评审结果changes_requested，1项P1保留；简化SQL探针不能证明当前compact封套接线、完整投影保护或性能。",
           "产品任务保持not_started；无完整make check/integration/smoke/容量矩阵，125容量P1仍开放。",
           "保留首次探针失败；产品、原历史证据和4390/4387/4388保持；未提交或发布。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "查询减负方案的三项 P2 已修订，完整性仍有一项 P1，评审要求修改。简化 SQL 探针未验证产品容量。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-department-query-integrity-prototype.md",
@@ -17302,7 +18577,11 @@
           "成本仅1来源/对象、每组20个单会话样本；不含HTTP/X03/路径/选择、冷态或20会话，125容量P1保持。",
           "原型仅特殊构建及自有空库；生产迁移、原API/页面和固定环境不变；前批fe0675d已本地提交，本轮原型未另提交或发布。",
           "完整集成标签Go vet仍有13条既有夹具锁复制诊断；与不含原型的基线相同，普通make check通过，不将该专项记为全绿。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "完整性原型在 26 类损坏和 5 类查询形状下通过本轮检查，仅关闭当次 R01，T00 其余出口未验。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/131-t00-completion-review.md"
       },
       {
         "path": "docs/verification/131-t00-completion-review.md",
@@ -17391,7 +18670,11 @@
           "Q131-R01因新数组维度反例重新打开，T00完整性通过结论需补修后复审；原final记录保留原结果。",
           "其他T00授权计划、完整祖先/BU捕获、期间排除、长期合同/API消费者、模型/索引及A/B仍未冻结；不能进入T01。",
           "本轮仅主代理评审，不宣称独立代理审阅；原型源码、生产实现、固定环境和旧证据不改；未提交或推送。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "原型四项测试可复跑，但二维数组反例两次重现漏拒绝，完整性 P1 重新打开，当轮未准进入 T01。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/131-t00-integrity-fix.md"
       },
       {
         "path": "docs/verification/131-t00-integrity-fix.md",
@@ -17474,7 +18757,10 @@
           "本轮由主代理修复和复核，无独立代理评审；R01修复通过不代表T00全部冻结。",
           "X03强类型读取计划、完整祖先/BU捕获、期间排除、长期合同/API消费者、正式模型/索引及A/B仍未完成；125容量P1保持。",
           "修复前红灯、初版DDL失败和清理中断均保留；固定环境、旧final报告及旧原始证据保持，未提交或推送。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "数组维度和下标漏检已复现，修复后 R01 通过复核，保留初版 DDL 失败及中断，T00 其他条件另验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t00-design-freeze.md",
@@ -17604,7 +18890,10 @@
           "全段/字典完整性扫描仍有成本；小样本和EXPLAIN不能替代20会话两形状或两轮增长。",
           "主代理修复和复核，无独立代理；所有首次失败及原final报告保留。",
           "bootstrap专项vet13条既有诊断保留非零，与本次实际基线逐条相同；普通make check和原型目标包vet通过。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "T00 原型与长期读取合同完成冻结，产品 API、页面和完整容量不在本轮验收范围。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/130-4390-model4-refresh.md",
@@ -17664,7 +18953,10 @@
           "125容量P1保持；本次不复跑完整容量矩阵、完整smoke或DB/API回归，不代表容量或生产验收。",
           "T00为设计冻结与完整性原型，T01—T05未开始；运行产品仍模型4/read-segment-3。",
           "浏览器更正及恢复新增2个不可变来源，保留验证前132290个来源；不得将验证后数据冒称原冻结输入。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "4390 模型 4 转换后，18 张原表及全部来源逐值核对，双角色入口和重启已验，完整容量未重跑。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t01-foundation.md",
@@ -17753,7 +19045,10 @@
           "T01普通列表与路径查询端口尚未接通，V01—V06/V14产品验收未完成；T02—T05未开始，125容量P1保持。",
           "未执行浏览器、容量或4390切换；固定4390继续模型4构建。",
           "完整回归首轮非单轮全绿；仅测试夹具修复后按失败范围定向复验，首次失败和首轮夹具原件保持。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "模型准入、事务投影及授权计划的定向实库与 Go 测试通过。普通列表和路径端口当时未接通。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t01-list-implementation.md",
@@ -17958,7 +19253,10 @@
           "完整回归第一批四项夹具失败、第二批20分钟包级超时及分包补跑均保留；最终唯一485通过、5默认跳过，不宣称完整单轮全绿或完整smoke。",
           "原生生成校验覆盖已执行SQL写入故障与禁用触发器反例，未验证特权DDL拆除或物理页故障；新增存储/WAL/写入成本仍待T04完整矩阵。",
           "本轮未另行提交、推送或部署，4390继续模型4固定构建。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "正式列表首轮超时后修复，14 个测试根含 73 项通过。两种数据形状使用不同构建，未作同版完整容量验收。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t01-completion-review.md",
@@ -18046,7 +19344,10 @@
           "不代表T02专项、T03—T05或125容量P1关闭。",
           "原完整回归超时、分包复验和两构建证据保留；本次未重跑完整容量数据导入。",
           "主代理评审，不冒称独立代理或人工批准；未提交、推送或部署。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "T01 受测输入一致，14 个专项根共 73 项通过，补齐文档导航后检查通过，后续阶段和容量另验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t01-review-fix.md",
@@ -18092,7 +19393,10 @@
           "本次修复只修改文档，产品测试复用无漂移的先前T01证据，不计新一轮完整DB/API或smoke。",
           "T02完整专项、T03—T05及125容量P1仍未完成。",
           "本地提交不等于远程CI、push、PR、合并或固定4390切换。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "按调用链复核后关闭 T01 合同范围问题，497 个输入无漂移并复用既有证据，未重跑完整实库。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t02-selection-export.md",
@@ -18229,7 +19533,10 @@
           "开发模式Vite模块加载偶发空白登录页的具体根因未证实；最终完整smoke恢复既有开发入口，八环境先准备、全部分片结束后统一销毁网络，失败原件保留；最终开发模式整轮通过不证明此前失败根因已消除。",
           "主代理复核，无独立代理或人工产品验收；无远程CI/推送/PR/合并/部署。",
           "原4390/4387/4388开始已停止，本轮保持；只核身份/状态/挂载及4390固定构建，未宣称在线健康。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "T02 选择与导出完成限定验证，整轮初次超时后分批复验。完整选择约 4.7 至 5.5 秒，未计作容量达标。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t03-parent-candidates.md",
@@ -18359,7 +19666,10 @@
           "完整DB/API分六包，首轮与最终轮源码差异、各次万科失败、验证器失败、smoke准备中断及默认跳过/另验分别保留。",
           "主代理评审复核，无独立代理/人工产品验收或远程CI；本轮未提交，无推送、PR、合并或部署。",
           "固定4390/4387/4388开始已停止且保持；只核身份/状态/挂载与监听状态，未声称在线健康。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "父候选期间及并发屏障通过功能验证。完整输入下父候选仍约 5 秒，T04 容量及 125 的 P1 保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-t04-capacity-and-handoff.md",
@@ -18733,7 +20043,10 @@
           "R65冷态及已确认共享WSL时钟回拨按用户决定本阶段只记录，原失败和3秒断言保持；R152核对末段与文档门禁重叠，影响未量化。",
           "合成CSV复用R126同构建/原输入/原日期，普通菜单复用R124的125夹具；串行带诊断写入成本、父候选冷菜单及配置20恢复worker均不能替代正式并发容量。",
           "固定4390/4387/4388及API保持任务初态停止；当前模型5未接入固定模型4库。本地资料/证据交接不代表远程CI、发布、生产验收或容量P1关闭。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "T05 完成阶段交接。6400 次中保留 2682 次 503，19400 次容量和 1827 次观察后置，由 125 接续。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/131-4390-model5-refresh.md",
@@ -18829,7 +20142,10 @@
           "首次父候选单次HTTP约4778.328ms，仅正常菜单观测，不作为P95达标证据。",
           "现场原132297来源全部保留，比旧报告多出的5个来源不是本轮新增。",
           "本轮只更新未提交运行资料，不新增远程CI或生产验收结论。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "4390 切换模型 5 后，18 张原表、来源和持久复制核对通过。单次父候选耗时只作观察，未验容量。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-remediation-plan.md",
@@ -18875,7 +20191,10 @@
         "limitations": [
           "本轮仅制定方案；132具体契约待评审，133产品T00—T07未开始，文档检查不代表新机制或性能通过。",
           "125容量P1及原失败保持；本任务未操作运行环境、未发起Git提交或发布。并存4390更新及其fixture现场修复独立记录，不计本次实施。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "过度防御整改方案完成调用和容量口径核对，产品、浏览器及新容量测试当时未运行。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-additional-scope-assessment.md",
@@ -18922,7 +20241,10 @@
         "limitations": [
           "用户采纳九项进入评估，不代表全部取消或新契约生效；132/133仍in_review，133产品not_started。",
           "收益为源码及文档初评，尚无新实测；125容量P1、历史原件、固定环境和原133报告保持。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "九项建议进入评估并明确阶段和验收映射，具体契约及收益当时尚未实测。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-comprehensive-design-assessment.md",
@@ -18970,7 +20292,10 @@
         "limitations": [
           "应纳尽纳针对评估覆盖，不表示所有候选都必须实施；具体取舍与收益尚待验证。",
           "125容量P1和既有失败保持；132/133待评审，产品未开始。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "新增 14 项设计候选并核对调用链、反例和成本取舍，收益及产品实施尚待验证。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/133-roadmap-review.md",
@@ -19031,7 +20356,10 @@
           "路线图active仅表明分批、责任、分项采用条件和验收出口通过文档评审；产品T00—T07未开始，132仍in_review。",
           "125容量P1、原2682次503及未完成范围保持；没有新性能收益证明。",
           "原133编制报告只作注明链接勘误，原字节另存；4390运行更新不纳入本提交。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "路线图三轮评审关闭 3 项 P1 和 2 项 P2，限定于阶段与责任，原 2682 次 503 及容量遗留保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-m0-implementation.md",
@@ -19120,7 +20448,10 @@
           "主代理评审，非独立代理或人工签收；M0范围通过不关闭125容量P1。",
           "270次原诊断和60次追加定位分列；没有M1正式6400次或新页面/草稿产品表验收。",
           "原型仅证明所列协议与预算，真实产品接线、持续资源和剩余条件项由后续批次持有。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "M0 的 2 项 P1 和 3 项 P2 已关闭，事务和解码取消反例留存，M1 正式容量未运行。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-m1-implementation.md",
@@ -19204,7 +20535,10 @@
           "正式可用性及追加2000ms阶段目标通过；其他入口阶段接受不等于原目标通过，125容量P1及133整体仍开放。",
           "完整检查按首失败、分包和定向复验记录；生命周期r2早于最终r8，到期行锁另定向验证，不宣称最终单轮全绿。",
           "原两形状存储/恢复证据仅复用未改路径；未启动M2/M3及19400/1827后置范围。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "M1 最终 6400 次业务操作、8000 次请求零错误，达到追加阶段目标，原目标和整体容量仍开放。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-m2-implementation.md",
@@ -19296,7 +20630,10 @@
           "M1未改选择/路径协议沿原r8结果引用；未重跑6400、19400/1827后置范围，未进入M3/M4或129其余实施。",
           "固定4390/4387/4388程序与数据保持；不推送、发布或更新固定环境。",
           "用户接受本阶段成果；原500ms长期目标及容量失败判定保持，后续按M3/129/M4推进，不自动追加本阶段容量微调。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "M2 最终 8760 次操作零语义错误，82 组中 72 组通过、10 个冷态组超标，用户只接受本阶段。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-long-save-overhead.md",
@@ -19382,7 +20719,10 @@
           "原迁移、503/not_applied、r12 2000记录慢样本和文档首失败保留；主代理复核不称独立评审。",
           "固定4390/4387/4388未更新；当前迁移原生函数需在实际目标库另行处理；未提交、推送或部署。",
           "用户接受本阶段成果；原500ms长期目标及容量失败判定保持，后续按M3/129/M4推进，不自动追加本阶段容量微调。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "受影响的 3000 次容量分区已测，本轮获阶段接受。万个记录的 500 ms 目标及 3 个冷态期间保存组未通过。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-m3-m4-implementation.md",
@@ -19492,7 +20832,10 @@
           "共享绑定只有真实SQL回滚原型，没有产品等价保护、新模型恢复或全库空间证明，因此未采用。",
           "DB/API和浏览器均保留首次失败与独立复验，三个首轮页面超时根因未确认，不称单轮全绿。",
           "主代理自复核，非独立评审；验证收尾时未提交；随后用户授权本地提交。未推送、触发远程CI或更新固定环境，验证原件保留提交前快照。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "M3 与 M4 完成阶段交接，覆盖变化预览仍有 503，四个冷态组及万个记录保存目标未达。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-bu-coverage-preview.md",
@@ -19590,7 +20933,10 @@
           "五个默认专项未运行；本次只恢复10份准备结果，未重跑M4的6406份。",
           "其他冷态保存、10000记录500ms及125整体容量P1继续开放。",
           "固定环境未更新，无提交、推送、远程CI或发布。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "BU 覆盖变化预览通过分轮实库和 41 项受影响页面验证，原 948 次 503 保留，未扩大到全企业存储诊断。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-cold-save-and-storage-design.md",
@@ -19687,7 +21033,10 @@
           "客户组织案例的原始明细保存在私有验收记录。",
           "完整DB/API五项专项显式跳过，其中仅10000记录子组另验；浏览器26项为受影响范围，不称全产品验收。",
           "固定程序未更新；本批未提交、推送或远程CI。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "冷态部门普通和期间保存仍超 500 ms，存储协议原型未采纳，125 容量 P1 保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-property-rename.md",
@@ -19759,7 +21108,10 @@
           "DB/API首轮失败后定向复验，不称全量单轮通过；TestDepartmentR5BusinessDayBrowser本次显式跳过。",
           "固定库只追加现有00008；已应用00002保持旧定义，没有借此应用前批历史追加触发器优化。",
           "当前固定构建是1a05ea4基线加工作区更改；未提交或推送，不代表远程CI或生产验收。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "部门更名、历史及并发引用通过定向复验，恢复副本可查原回执。初轮实库失败保留，未新增容量结果。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/134-parallel-baseline.md",
@@ -19793,7 +21145,10 @@
         "limitations": [
           "远程CI/PR合并以本次PR最新提交检查为准，本文不预先记为通过。",
           "未在其他物理主机启动环境；容量P1保持。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "组织来源完整性、可移植准备和账本保护通过本地检查，未在其他物理主机重跑。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/134-ci-generated-models.md",
@@ -19825,7 +21180,10 @@
         "limitations": [
           "此记录不将运行中或取消的其他CI任务算作通过。",
           "合并仍须修复提交的最新quality、integration、browser全部成功。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "远端生成差异首败已保留，本地再生成及受影响 Go 包通过，远程完整结果须查修复提交。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/134-jason-dev-d-worktree.md",
@@ -19872,7 +21230,10 @@
           "本次复核已完成的PR11 CI，不代表新文档变更已运行远程CI；没有提交、推送、PR、合并或部署。",
           "没有安装应用依赖、创建profile、启动Web/API/数据库或执行产品/容量验收；候选端口尚未分配。",
           "原vivobook主机路径及创建状态保留；其他主机现场未核验，跨主机写入同一分支仍需交接。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "d 工作树、固定引用、号段及共同基线核对通过，未启动产品或运行容量验收。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/300-department-tree-plan.md",
@@ -19935,7 +21296,10 @@
           "本次为作者自查，不代表独立代理评审、人工采纳或产品验收。",
           "没有提交、推送、PR、合并、部署或改变其他主机固定环境；原125容量P1保持。",
           "定稿复核曾有一次IPv6-only临时端口测试失败；原日志未记端口，唯一根因未锁定。定向及完整复验通过，未改测试或运行代码，失败记录保持。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "部门树方案与既有查询和固定选择合同核对通过，产品、浏览器和容量当时未验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/300-department-tree-plan-review.md",
@@ -19984,7 +21348,10 @@
           "仅主代理文档评审，不代表独立代理、人工业务签收或产品验收；T00—T05及AC045—056未实施／未运行。",
           "新缓存预算、树API与浏览器性能目标尚无实测；125容量P1和旧失败保持。",
           "没有提交、推送、PR、合并、部署或固定环境操作；原300编制报告、来源索引及检查证据原样保留。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "部门树方案 2 项 P1 和 5 项 P2 在文档层关闭，12 项产品验收条件及新容量目标未实测。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/300-department-tree-implementation.md",
@@ -20106,7 +21473,11 @@
           "用户授权d树合同接续并自行协调容量时段，保留c默认日期，后续合并协调。",
           "功能分轮通过不称单轮全绿；合成API851次503及延迟超标，完整万科历史第1496行仍阻塞；300及125容量P1保持开放。",
           "两个自有临时失败现场停机保留，由d在下一次300整改开工时复查；固定环境及其他工作树未操作。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "部门树功能分轮通过，合成 19200 次请求含 851 次 503，完整历史的第 1496 行阻塞。后续阶段结果见 300 关闭记录。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/300-closeout.md"
       },
       {
         "path": "docs/verification/133-user-facing-message-audit.md",
@@ -20170,7 +21541,10 @@
           "静态可达性及文案语义排查，不代表逐条异常已在浏览器或真实DB复现。",
           "本轮只提交排查清单与替换建议，不改业务代码、恢复协议、事务保护或运行环境。",
           "补查为主代理连续4轮源码与语义评审，并非独立代理评审；38组累计问题未实施，运行异常及框架错误页本轮未在浏览器复现。"
-        ]
+        ],
+        "purpose": "assessment",
+        "conclusion": "对 235 份源码核对可见提示和异常传播，补查四轮，此次为静态排查，未逐条在浏览器复现。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/301-user-feedback-plan-review.md",
@@ -20229,7 +21603,10 @@
         "limitations": [
           "本次为方案登记及主代理评审，不是独立代理评审或人工业务验收。",
           "产品实现、DB/API、浏览器故障注入与部署未执行；既有容量和浏览器失败不因此关闭。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "38 组提示与恢复动作经四轮评审，7 项文档问题关闭，17 个产品条件当时未实测。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/301-user-feedback-implementation.md",
@@ -20281,7 +21658,10 @@
           "不是一次全套浏览器全绿；原首次失败、包装进程退出143及定向复验分别记录。",
           "完整DB/API首轮20分钟超时，后续只宣称受影响真实用例通过。",
           "不重跑或关闭125/300容量，不操作4390/4387/4388，不声明生产或全M02完成；未推送/PR。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "17 项限定条件及 315 个浏览器场景分批复验，原超时和中断保留，完整数据库超时后只确认受影响用例。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-performance-continuation.md",
@@ -20354,7 +21734,10 @@
           "10000记录每位置正式一笔，P95未建立；共享绑定及真实头新格式未采用。",
           "早期探索诊断被恢复基线覆盖前未逐批重启恢复，最终3500份证据不追认这些诊断写入。",
           "负载及三项浏览器跨日专项本轮未追加；固定环境未更新。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "暖保存与独立混合各 1200 次通过，600 次冷态中三个保存组未达 500 ms，实库超时后采取分批复验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-cold-publication.md",
@@ -20439,7 +21822,10 @@
           "首轮真实死锁夹具1失败，独立三次复验通过但首错根因未确定，不是单轮全绿；负载和三项浏览器跨日专项未追加。",
           "正式测量构建与后置离线观察器初始化修复后的交付构建分别记录；业务保存代码和关闭观察的池参数不变。",
           "固定4390未更新，未恢复19400后置容量或1827全覆盖调度。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "暖保存和独立混合各 1200 次通过，600 次冷态请求中两个部门组超标，万个记录样本尚无 P95。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-cold-ordinary-and-head-proof.md",
@@ -20524,7 +21910,10 @@
           "真实10000记录最终三笔720.737/503.372/508.375ms仍超500ms，P95未建立；增长诊断与最终原型构建分别记录。",
           "完整回归两项首次失败及20分钟外层中断保留；六次定向复验与五个补验结果不是单轮全绿；首次时序失败根因未唯一确定。",
           "5项默认跳过保持，未追加全套/跨日浏览器或远程CI，未更新固定4390或提交发布。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "3000 次保存的 HTTP 和语义零错误，普通及期间部门冷态分别为 500.240、520.450 ms，仍超 500 ms。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/135-real-head-product-integration.md",
@@ -20634,7 +22023,10 @@
           "44读取组每组20协议样本只作成本比较，不替代125/131容量最小样本；首次失败、默认跳过和分区复验保持。",
           "万科仅完整输入、读取成本及历史核验；未增加万科保存3000或增长周期。逐请求CPU、远程CI、外部真实消费者和生产恢复未验收。",
           "仅工作区候选实现，没有提交、推送、PR、合并或部署。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "模型 6 在完整合成样本占用扩大至 48.646 倍，读取和维护退化，评估不建议采纳。最终 20 条样本仅测单会话。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/135-model5-and-20-record-adoption.md",
@@ -20710,7 +22102,10 @@
           "原10000条专用场景撤销，不改原失败为通过；模型6退出当前构建，源码和原实测封存。",
           "本轮为受影响检查；没有重跑完整DB/API、浏览器、正式容量、远程CI或生产恢复；125其他容量P1保持。",
           "未提交、暂存、推送、PR、合并或更新固定环境。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "正式采纳模型 5 和 20 条记录场景，沿用原 1206 次请求及重启证据。万个记录专项已撤销，原失败仍保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/135-model5-publication.md",
@@ -20747,7 +22142,10 @@
         "limitations": [
           "本记录只持有本地验证；远端quality/integration/browser必须在PR最终提交全部成功后方可合并。",
           "不新增正式性能样本、不关闭125其他容量P1、不更新固定4390。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "模型 5 的完整默认实库和显式 20 条专项已在本地验证，跳过项单列，未增加性能样本或远程结论。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/200-geography-plan.md",
@@ -20828,7 +22226,10 @@
           "200/201待评审；产品尚未实施；202默认日期规则已由用户明确，但产品适配另验。",
           "官方固定来源不证明当前最新或完整行政沿革；澳门映射和民政部访问限制由G0承接。",
           "主代理自复核，不冒充独立评审或人工业务验收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "20 份源资料及国家目录数据形状完成方案核对，当前完整沿革、澳门映射和产品实现尚未验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/200-geography-design-review.md",
@@ -20887,7 +22288,10 @@
         "limitations": [
           "来源版次及澳门条目核验由对应G0任务继续承接；本轮不重采数据。",
           "主代理方案评审不代表独立评审、产品验收或部署。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "国家地区与地点方案首轮发现 1 项 P1、6 项 P2，核对范围为方案和复用边界，来源版次及澳门条目交 G0。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/200-g0-source-admission.md",
@@ -20932,7 +22336,10 @@
         "limitations": [
           "MO八条全部隔离，仅准入基础地址；非最新全国目录。",
           "产品发布标记仍false，Go入库与UUID映射后续实施。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "G0 离线来源和结构通过核对，澳门 8 条区划因名称未核实而隔离，仅准入基础地址，产品未验。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/200-g1-default-date.md",
@@ -20976,7 +22383,10 @@
           "完整结果来自分组及定向复验，非单轮全绿；5个条件专项未启用。",
           "G2—G5未开始，类型扩展随国家真实切片；125容量P1保留。",
           "固定环境未更新；c/d公共分工已获用户确认，后续集成保留双方修改。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "初始默认日期和边界获实测，231 个数据库测试根中 226 个通过、5 个条件项跳过，40 个浏览器场景分批复验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/200-g2-country-catalog.md",
@@ -21047,7 +22457,10 @@
           "按用户2026-11-14决定，本轮功能交付收尾；3条X11缩放后补、正式容量另行安排，原失败、未运行结果和目标保持，完整验证未关闭。",
           "所有首失败、中断及定向复验分别保留，不称单轮全绿；6个DB/API条件专项未运行。",
           "G3/G4未实施，固定环境、其他分支及其他主机未更新。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "251 条国家地区资料的装载、权限与历史完成当批验收，3 条原生缩放及国家列表正式容量留待补测。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/200-g2-default-port-verification.md",
@@ -21073,7 +22486,10 @@
         ],
         "limitations": [
           "本轮为默认端口运行验证；正式容量与原生缩放仍按用户决定后补，G3/G4未实施。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "在默认端口核验了迁移、251 条国家初始化、双角色菜单和旧事实，正式容量与原生缩放另验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/200-country-resource-simplification.md",
@@ -21128,7 +22544,11 @@
         ],
         "limitations": [
           "正式容量及原生缩放仍按前批用户决定后补；行政区划和地点未实施；不更新持久环境。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "251 条国家资料和离线版本核对通过，来源资源精简后的装载与恢复已验，正式容量和原生缩放待补。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/200-country-resource-runtime.md"
       },
       {
         "path": "docs/verification/200-country-resource-runtime.md",
@@ -21166,7 +22586,10 @@
         ],
         "limitations": [
           "不重复完整产品回归；容量及原生缩放保持后补；行政区划与地点未实施。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "固定构建迁移后原 23 张业务表保持，双角色菜单与来源资料退出已验，正式容量和原生缩放后补。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/203-g3-plan-and-sync.md",
@@ -21231,7 +22654,10 @@
           "G3仅方案制定及自复核，产品未开始；不代表人工批准。",
           "同步验证仅make check和5个DB/API根专项，未重跑完整集成、浏览器或容量。",
           "固定运行环境未更新，方案保留工作区；未推送或创建PR。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "G3 方案已核对，主线同步的编译首败修复后 5 个实库根通过，G3 产品未在该批实施。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/203-g3-plan-review.md",
@@ -21284,7 +22710,10 @@
         "limitations": [
           "主代理文档评审，不是独立评审、人工业务验收或产品验证。",
           "原G2后补及125其他容量遗留保持；未实施G3。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "发布门槛、历史授权和游标设计首轮发现 2 项 P1、3 项 P2，修订仅覆盖文档，G3 产品未验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/203-g3-implementation.md",
@@ -21326,7 +22755,10 @@
         "limitations": [
           "分轮回归不冒充单轮全绿；6个专用条件项跳过不计通过，原失败日志保留。",
           "固定4383/4388未更新，未提交/推送/部署；G4地点与G5未实施，G2和125原遗留保持。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "G3 的 238 个实库根、298 项浏览器分轮通过，18 组达当批新容量标准，原 300 ms 失败与 6 个跳过项保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/203-g3-runtime.md",
@@ -21365,7 +22797,10 @@
         "limitations": [
           "仅更新m02-current-c；4388及其他分支环境保持。",
           "G4地点与G5未实施；本次不重复容量或完整CI，不在固定库实际保存维护业务。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "固定环境更新后，双角色可读 251 个国家地区及 3620 个区划，原表保持。现场只读及取消，未重跑容量。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/203-vanke-fixed-runtime.md",
@@ -21436,7 +22871,10 @@
           "导入首次9次503及分批恢复保留，不称单轮全绿；本次不重复完整CI或容量，20会话500ms目标及125容量P1保持。",
           "v1不含其他环境后续手工更名或测试写入；G4/G5未实施。",
           "新旧备份在仓外，归档目录可读但未执行完整恢复演练；运行验收采用工作区构建，随后按用户要求整理为本地提交，未推送；准确补丁已归档。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "固定组织样本的 132302 行全部处理并可查回，首轮 9 次 503 及分批恢复留证，未作容量验收。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/204-g4-plan-review.md",
@@ -21515,7 +22953,10 @@
         "limitations": [
           "G4产品及G5未实施，国家列表正式容量未运行，125其他容量P1保持。",
           "原G2/G3报告及测量保持；文档复核不是产品验证或独立人工批准。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "地点方案与原 G2 缩放证据完成复核，首轮语义问题保留，G4 产品及国家列表正式容量未执行。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/204-g4-implementation.md",
@@ -21577,7 +23018,10 @@
           "分轮通过不称单轮全绿；四条长流程另用90秒整例预算，原30秒失败及实际耗时保留。",
           "G5未开始、国家列表正式容量和125其他容量P1保持；固定4383/4388/4390未更新。",
           "本次本地提交，不代表生产验收、远端CI或发布。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "地点 G4 的 251 个实库根和 354 项浏览器分轮通过，8 组容量中 4 个 20 会话组超过 500 ms，按当批决定移交 G5。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/205-g5-implementation.md",
@@ -21654,7 +23098,10 @@
           "复用G4结果以1392产品文件相同为依据，分轮不称全量单轮全绿；既有14处带integration标签vet夹具告警保留。",
           "短时其他Go测试进程退出时刻未采集，不宣称独占主机；本任务其他重负载在正式窗口停止。",
           "数据库备份归档可读，未执行恢复演练；本批不代表生产验收或远端CI。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "G5 联合验收中 4000 次请求正确，147 项固定 API 及双角色已验。地点及区划各 4 个 20 会话组仍超 500 ms，按当批决定保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/302-detail-navigation.md",
@@ -21748,7 +23195,10 @@
           "路径完整统计独立加载，未做8.7万对象路径统计正式容量验证；路径游标列表与返回机制保持。",
           "初轮React类型及文档状态检查失败、浏览器首两轮超时保留；最终为分批复验，不称首次全绿。",
           "本地实施阶段只更新45300；用户随后授权提交、推送、PR及CI通过后合并，发布结果由PR持有。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "详情导航位置与授权统计通过 5 项定向实库及合并后 10 项浏览器，543 至 551 ms 仅为诊断观察。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/205-g5-publication.md",
@@ -21824,7 +23274,10 @@
           "D08/D09及125其他容量P1保持；本轮不做性能优化或新容量测量。",
           "原G4/G5通过证据对应原构建，不能替代合入302后的受影响验证。",
           "远端三项仅成功才可合并，不以本地检查替代。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "14 个并发子组原值已登记，4383 合入后通过 147 项 API 与双角色导航，原 38 表保持。未新增容量测量。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/135-4390-model5-refresh.md",
@@ -21878,7 +23331,10 @@
           "完整备份已读取检查，未新做实际恢复演练或数据库重启。",
           "未新增业务保存、Go全量历史解码或P95样本；125其他容量P1保持。",
           "运行记录未新增提交或推送。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "4390 模型 5 更新后双角色四条菜单及历史路径通过，17 表原行和来源保持，未新增恢复演练或容量样本。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-list-return-notice.md",
@@ -21931,7 +23387,10 @@
         ],
         "limitations": [
           "不扩大为全产品提示审查或容量验收；未更新固定4390。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "列表返回定位和跨页勾选完成定向复验，首轮 35 项有 2 项脚本失败，未扩至容量验收。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-list-return-main-sync.md",
@@ -21979,7 +23438,10 @@
         ],
         "limitations": [
           "不把同步前分轮结果或本次定向检查当作全产品验收。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "同步主线后 17 个受影响列表返回场景同轮通过。首次资源对比失败保留，本轮只验直接影响范围。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/133-capacity-closeout-preparation.md",
@@ -22034,7 +23496,10 @@
         "limitations": [
           "所有产品测试和容量数值均为所链接历史批次的结果，本批新增容量请求为0。",
           "125容量P1和133整体执行仍开放；不将阶段接受或需求撤销改写为原指标达标。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "核对 16 组验收、121 份日志及容量分母，明确 129、133 的阶段边界，本轮未增加容量请求。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-query-capacity-continuation.md",
@@ -22113,7 +23578,10 @@
           "路径两组仍明显超过300ms，20会话较本轮基线未改善；125容量P1及133整体开放，129限定completed保持。",
           "不称完整DB/API、全smoke、合成/查询者/冷态/写入并发容量完成；原值、首失败、原目标和跨日边界保留。",
           "单对象20条、模型5及R65仅记录决定保持；无暂存、提交、推送、固定环境更新或远端CI。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "7200 次查询操作、9600 次请求零错误，仅 12/176 个查询单元取得本批容量结果，两组路径仍超长期目标。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-roadmap-consolidation.md",
@@ -22160,7 +23628,11 @@
         "limitations": [
           "执行关闭依据为用户决定及责任移交，不等于原容量达标；125容量P1保持。",
           "200及300保持进行中，原报告/资产/产品及固定环境不变。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "116、131、133 依责任移交关闭执行，六项目标汇入 125。该批未增加容量结果，原 P1 继续跟踪。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/125-target-adoption-and-current-validation.md"
       },
       {
         "path": "docs/verification/300-closeout.md",
@@ -22244,7 +23716,10 @@
           "首轮带诊断时延不计正式验收；原始16009次计时请求与全部偏差保留。",
           "旧功能回归按源码影响复用，未新增完整DB/API／完整smoke／远端CI或生产验收。",
           "原d主机保留现场的当前状态未由本机重新核验；固定环境未更新，未提交或推送。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "部门树阶段关闭，完整样本的 60 组、12000 次请求零语义错误。9 组时延失败和 36 个共用待验项交 125。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-path-stage-target-adoption.md",
@@ -22310,7 +23785,10 @@
           "只复评两轮既有暖态8组1600样本；冷态、合成及其他125责任没有新增当前容量资格。",
           "首次保护资源断言失败未保留差异明细，后续结束快照一致；不推断全程无外部临时活动，详见执行偏差。",
           "300保持阶段关闭；原报告、全部失败、固定环境和未提交成果保持，未推送或提交。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "按新旧目标复算 1600 个原路径样本，4 个 20 会话组仍超 1000 ms 阶段目标，本轮无新增容量请求。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/125-main-sync-performance.md",
@@ -22395,7 +23873,10 @@
           "每版管理员六暖态组及三组20会话回测，不是完整125容量；页面诊断每角色5次，不是浏览器P95。",
           "初次共用13库被旧程序准入拒绝；正式改用各自匹配库，不放宽版本或业务校验。",
           "原始失败、源数据和既有阶段关闭保持；未推送或更新固定环境。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "同步后 3000 次正式请求零错误，导航 API 约改善 15% 至 16%，列表和路径无明显改善，长期目标未达。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-tree-write-remediation.md",
@@ -22455,7 +23936,10 @@
           "仍有44个查询时延组及大范围保存500ms长期目标未达；其他125容量责任保持，300阶段关闭不重开。",
           "本批resolve为已有完整草稿核对，不能替代另一套包含建立/预取的176单元完整业务操作。",
           "固定4390仍为原程序及64MiB配置；本批未提交、推送或更新固定环境。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "大范围保存 200 次，P95 为 1520.479 ms，达到阶段 2000 ms，未达长期 500 ms，另有 44 个查询时延组仍超标。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-query-scope-continuation.md",
@@ -22521,7 +24005,10 @@
           "已有草稿核对不替代176单元完整操作；原19400后置请求、1827观察与退出的10000记录场景未恢复。",
           "前后基线跨两个相邻业务日，完整来源和当前图相同；前批新增写入历史差异单列。",
           "固定4390仍为原构建及64MiB配置；未提交、推送或更新固定环境。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "两种输入 144 组、28800 次请求零错误，137 组达阶段目标。其余 7 组及长期目标仍待整改。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/125-4390-runtime-refresh.md",
@@ -22576,7 +24063,10 @@
           "完整备份读取校验通过，未执行实际备份恢复演练。",
           "浏览器首五次脚本前提/定位错误、只读预检首错及完整性进程退出143保留；最终复验分别登记。",
           "当前产品构建650db772，后续只提交运行资料，不改变已运行程序。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "4390 固定构建与实返文件相符，原 30 张组织表及来源、授权保持。未重测容量或实际演练备份恢复。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/136-actions-policy-validation.md",
@@ -22621,7 +24111,11 @@
         "limitations": [
           "没有生产路径分类器、汇总和复用实现；136实施尚未开始。",
           "当前账单权限不足，3944分钟为历史运行估算；不同范围不混算收益。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "61 项离线决策及 53 轮历史运行复算完成，形成 137 规范，远程工作流及实付节省当时未验。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/136-actions-implementation.md"
       },
       {
         "path": "docs/verification/136-actions-implementation.md",
@@ -22668,7 +24162,11 @@
           "仅本地实现与验证，未提交、推送或触发Actions；T06待执行。",
           "原干净环境清单首失败及修复保留；清单不代表实际业务回归。",
           "全量8/11保持，未验证同覆盖减分片净收益；3944分钟是前批估算，不是账单。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "工作流选择、汇总、复用反例及实际清单在本地通过，远程事件、门禁与节省率未验。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/136-actions-prepublication.md"
       },
       {
         "path": "docs/verification/206-legal-entity-plan-review.md",
@@ -22710,7 +24208,11 @@
         "limitations": [
           "主代理评审，不代表独立人工批准或产品通过。",
           "L2/L3及D08/D09/125容量遗留保持。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "法律实体阶段边界经两轮评审关闭两项 P2，导航首败修复，产品及后续用途当时未验。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/206-legal-entity-implementation.md"
       },
       {
         "path": "docs/verification/206-legal-entity-implementation.md",
@@ -22824,7 +24326,10 @@
           "分批通过，原超时/失败保留；一次浏览器Failed to fetch复验通过但未定位首错根因。",
           "L2用途/必要组织绑定与L3真实M04未实施；原批未提交/更新固定环境，后续L1本地提交832c79fc及4383更新a9548b47见204地点优化第6节；未推送/PR/合并。",
           "远端仅按明确的75根DB/API/87个不同浏览器范围验证，最终head三项实际CI以PR为准；4383保持原c分支1—15匹配程序，不能直接接集成后的1—16程序。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "法律实体 L1 有 259 个实库根、380 项浏览器分批通过。20 会话详情、保存和查回超 500 ms，本批限于基础维护。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/204-location-region-picker.md",
@@ -23022,7 +24527,10 @@
           "第4节原批未更新固定环境或提交；第5节单独持后续本地提交及4383更新，未推送/PR/合并。",
           "D08/D09及125等既有容量事项保持；本轮不声明P95成果。",
           "第8节验证结束时尚未提交或更新4383；第9节已提交并更新，保留新建预览首失败，修复后完整make check及现场复验通过；未重跑隔离23项、独立147项API、全仓浏览器、原生缩放或容量。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "地区选择、搜索及当前读权通过受影响验证，4383 原 46 表和来源保持，未重跑全套实库或浏览器。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/204-location-address-simplification.md",
@@ -23128,7 +24636,10 @@
           "4383已更新9f4140cc并追加00015；其他固定环境保持；用户随后授权运行记录及证据本地提交，未推送/PR/合并。",
           "4383业务写入0，新建与更正仅草稿及取消；实际保存复用同一产品构建的前批相关DB/API及23条浏览器，不冒称现场新增/更正保存。",
           "本批不重跑全仓DB/API或浏览器、不作容量达标声明；私有备份归档可读，未做恢复演练。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "地址字段精简后 8 个实库根同轮通过，4383 双角色及重启已验。现场仅做草稿和取消，保存沿用同构建证据。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/303-department-primary-navigation.md",
@@ -23225,7 +24736,10 @@
           "只由主代理实现自审；不声明独立评审或人工业务验收。",
           "原生缩放依赖在任务临时目录准备，显示子进程收尾单独记录；其他分支环境未操作。",
           "本批未提交、推送；125及300容量遗留保持。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "部门一级菜单、直达和未保存保护的 14 项浏览器分轮通过，未重跑全量实库或容量。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/304-enterprise-maintenance.md",
@@ -23371,7 +24885,10 @@
           "企业特有事件及真实跨模块消费者未扩入；125/300容量遗留和原目标保持；未提交、推送或更新固定环境。",
           "第1—6节保留原实施批未提交/未部署事实；第7节接续用户后续授权。当前原125/300及地点容量遗留不由本次关闭，远端发布结果以关联PR为准。",
           "集成浏览器27 passed输出完整，但外层会话143保留；最终远端三项检查必须成功后合并，不以断言汇总代替CI退出状态。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "企业维护限定范围内，255 个实库根分轮通过、6 个条件项跳过，首败和中断保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/136-actions-prepublication.md",
@@ -23417,7 +24934,11 @@
           "执行第1步本地收口；远程保持待发布，未更新固定环境。",
           "条件标签首轮未选中项不计通过，7根与3根分轮结果单列。",
           "不替代完整产品或容量回归，原125及其他遗留保持。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "主线合入后，本地静态、构建及受影响实库页面通过复验，远程发布和固定环境更新不在本批。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/136-actions-publication.md"
       },
       {
         "path": "docs/verification/136-actions-publication.md",
@@ -23512,7 +25033,11 @@
           "草稿、限定范围与平台故障等反例未逐项额外远端演练，保留此前本地验证边界。",
           "完整备份只读校验，未实际恢复；原125容量P1及历史失败保持。",
           "固定运行6ce8a3e9；本批后续收尾文档推送到b，不能冒称另一次部署或新增main验证。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "PR #19 最终 22 项成功并合并，主线复用及 4390 双角色交接通过。598 runner 分钟为含首败估算，非账单。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/136-actions-observation.md"
       },
       {
         "path": "docs/verification/306-department-path-simplification.md",
@@ -23668,7 +25193,10 @@
           "大根案例更正采用无监听离线工具的有界准备预算，不放宽在线预算，不关闭125/300及地点容量遗留。",
           "未迁移、提交或推送；4383保持e79ffd4c加306三文件补丁，后续统一更新须协调迁移布局并带入306。",
           "第8节接续2026-11-16提交、同步main6ce8a3e9、push/PR与发起CI授权；正式full按137执行，远端结果由PR当前候选持有，不用本地验证替代。固定环境保持。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "部门路径与集团案例通过 23 个实库根及 30 个浏览器用例的分轮验证，限本次受影响范围。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/136-impact-selection.md",
@@ -23715,7 +25243,10 @@
           "本地实现与验证完成，尚未提交、推送或触发Actions；首次发布自身仍须正式全量。",
           "原首失败保留；真实清单不代表执行DB/API或浏览器业务流程。",
           "未测量本轮远端消耗，固定运行环境和容量遗留保持。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "41 项 CI 专项及 19 组测试清单验证了本地选择与复用，远程生效和实际节省另验。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/307-m03-job-foundation-plan-review.md",
@@ -23776,7 +25307,10 @@
         "limitations": [
           "主代理文档评审，非独立代理或人工业务批准。",
           "T01—T05未实施，全部产品验收未运行；既有容量和固定环境保持。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "职务基础方案第六轮按 26 个反例关闭 9 项发现，验收结论限合同，产品未在该批实施。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/307-m03-job-foundation-implementation.md",
@@ -23887,7 +25421,11 @@
           "CPU/RSS为整轮Go测试进程组成本，包含准备/恢复，未取得逐组数据库CPU指标。",
           "固定环境未更新，未提交/推送/触发Actions，远程三项正式发布门禁未执行；125、D08/D09及206-D01—03等既有遗留保持。",
           "第10节接续用户后续授权：独立m03-manual-d保留供手工验收；前批临时自动测试环境已回收事实保持，原固定环境未更新。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "职务系列和职务首批完成 38 个实库根、29 项浏览器及 4380 双角色菜单核对。职级、岗位和跨域真实消费者另验。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/308-job-page-standard-implementation.md"
       },
       {
         "path": "docs/verification/005-agents-entry-simplification.md",
@@ -23945,7 +25483,11 @@
           "暂存前M03实施工作未恢复，307/308编号已使用，后续恢复需合并AGENTS/登记表/导航并保留精简入口。",
           "仅第一步文档整理，不证明职务/职务系列页面标准一致性完成。",
           "未执行产品构建、DB/API及浏览器业务回归，未更新或回收固定环境，未提交、推送或触发Actions。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "318 项暂存改动与精简前入口核对一致，4380 可达。职务页面整改及业务回归未执行。",
+        "evidence_access": "restricted",
+        "follow_up": "docs/verification/005-stash-disposition.md"
       },
       {
         "path": "docs/verification/308-job-page-admission-contract.md",
@@ -24014,7 +25556,11 @@
           "文档完成不代表页面整改通过；14项新增验收、28个尺寸角色单元及权限专项均未执行。",
           "原307首批completed及其报告保持；7项当前页面/测试偏差待后续整改，Staffing日志需Go读取和OpenAPI共同接线。",
           "本轮不修改产品、测试或CI；不执行DB/API、浏览器或容量回归，不更新或回收固定环境，未提交、推送或触发Actions。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "职务页面确认 6 项差异和 7 项整改偏差，已定义 14 项验收与 28 个尺寸角色组合，本批未执行页面整改。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/308-job-page-standard-implementation.md"
       },
       {
         "path": "docs/verification/308-job-page-standard-implementation.md",
@@ -24215,7 +25761,10 @@
           "不同影响范围分轮运行，未冒称全仓同轮或独立人工验收；首失败、测试修订及单次未确因网络观察保留。",
           "第1—7节整改及第8节固定更新当时未发布；后续第10节已完成PR22正式三门禁、合并和main同树复用，4380前端同步两处补修，API及数据库保持。",
           "第8节固定库零业务写入；第9节按后续明确授权真实写入并留存。本批未做容量、受限字段撤权或双连接并发试验；备份已读取校验，未实际恢复演练。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "职务页面 14 项验收、28 个尺寸角色组合和 6 个权限单元通过，4380 留存样本与原来源核对，未新增容量结论。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/005-stash-disposition.md",
@@ -24286,7 +25835,10 @@
         "limitations": [
           "归档为本机仓外恢复副本，不是远程备份；只含原快照及其基线，不归档无关更早历史。",
           "产品业务、运行环境可用性及数据内容未重验；本项没有操作产品运行或数据库。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "三份历史 stash 的 24 个差异路径逐项核对并保留仓外恢复副本，本轮未重验产品或数据库。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/309-grade-ladder-plan-review.md",
@@ -24349,7 +25901,11 @@
           "仅文档方案与评审，非独立代理或人工验收；产品T01—T04未开始。",
           "18项验收/56分批尺寸角色单元、Go/DB/API/浏览器/容量及部署均未运行。",
           "原307/308关闭范围及125等容量接续保持；4380和已有样本未更新或回收。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "职级与阶梯方案三轮复核关闭 5 项文档问题，30 个反例作桌面推演，18 项产品验收当时未执行。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/309-grade-g1-implementation.md"
       },
       {
         "path": "docs/verification/309-grade-g1-implementation.md",
@@ -24422,7 +25978,11 @@
           "G2阶梯/Job职级关系未实施，309计划整体保持in_progress。",
           "完整make integration因20分钟总限额超时；本次分组结果不等同全仓完整通过。旧307容量及308固定时钟浏览器未重跑，309容量和Grade时钟边界另行实测。",
           "五轮主代理顺序评审；远程CI、发布/推送/合并及人工业务验收未执行。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "G1 职级通过 14 个尺寸角色组合、1200 个容量样本及重启核对。整仓集成超时后分组验证，职级阶梯归 G2。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/309-grade-g2-implementation.md"
       },
       {
         "path": "docs/verification/309-grade-g2-implementation.md",
@@ -24526,7 +26086,10 @@
           "本地验收不等同正式CI或人工业务验收；20会话Job普通保存P95为493.996ms，接近500ms阈值，记录本机实测而非线上SLA。",
           "337根全仓累计覆盖中的11项条件跳过单列，诊断显式通过仅用于定位；最终受影响50根中49通过、1条件跳过，不称全部337根都通过。",
           "主代理顺序评审，不冒称独立人工验收；没有推送、合并或正式CI，不更新4380/4381。"
-        ]
+        ],
+        "purpose": "acceptance",
+        "conclusion": "G2 阶梯与职务关联已交付。后续复验 53 组中有 3 个 20 会话组超 500 ms，仅该轮获准非阻断，原超标保留。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/125-target-adoption-and-current-validation.md",
@@ -24586,7 +26149,10 @@
           "4次最大根更正和单次路径全选均非P95；选择、混合及成本边界保持。",
           "地点D08、区划D09与法律实体L2/L3保持；本批无新浏览器、远程CI或固定环境更新。",
           "当前查询原判据及长期判据仍有失败，125整体P1保持；本批未提交或推送。"
-        ]
+        ],
+        "purpose": "technical",
+        "conclusion": "查询、20 条保存和法律实体在当批范围内 62 组阶段通过。查询按原判据过 21/36、长期过 18/36，125 容量 P1 保留。",
+        "evidence_access": "restricted"
       },
       {
         "path": "docs/verification/404-position-exempt-first-hire-review.md",
@@ -24642,7 +26208,11 @@
         ],
         "limitations": [
           "本次为同一主代理顺序文档评审。产品执行尚未开始。"
-        ]
+        ],
+        "purpose": "review",
+        "conclusion": "按岗免占方案评审发现接管、原单岗位和反向竞争等缺口并修订，产品及 4496 更新未在本批执行。",
+        "evidence_access": "public_ci",
+        "follow_up": "docs/verification/404-main-sync-reassessment.md"
       },
       {
         "path": "docs/verification/404-main-sync-reassessment.md",
@@ -24708,7 +26278,11 @@
         "limitations": [
           "浏览器只执行所列三个首单场景及其前置。主线、4386 及原方案的历史验收分别保留原范围。",
           "4496 本轮仍为 bc769ff、00039。升级及用户地址实操归 e 的第 4 阶段。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "主线合入后 8 个实库根及 3 个首单页面场景复验，覆盖暂停竞争和旧岗升级，4496 原卷更新留给后续签收。",
+        "evidence_access": "public_ci",
+        "follow_up": "docs/verification/404-4496-acceptance.md"
       },
       {
         "path": "docs/verification/404-4496-acceptance.md",
@@ -24773,7 +26347,11 @@
         "limitations": [
           "4496 写入一个限定业务日的合成首单；占编竞争使用先前同业务实现的独立 PostgreSQL 验证。",
           "旧账号未获试用修复预览权限，库中试用动作数为零。本地候选的远程提交与门禁另行办理。"
-        ]
+        ],
+        "purpose": "handoff",
+        "conclusion": "4496 原库 162 表还原并升级至 00057，固定构建上完成限定日期的合成首单。占编竞争使用独立实库证据。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/404-pr30-browser-recheck.md"
       },
       {
         "path": "docs/verification/400-404-plan-archive.md",
@@ -24808,7 +26386,10 @@
         ],
         "limitations": [
           "4496 的持久原卷及页面验收以 2026-11-26 的实际签收版本为准。客户主选择政策换版时由 M04 复验激活。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "400、404 归档后条款与责任可追溯，主线 5 项实库测试通过。4496 持久卷与页面沿用原签收基线。",
+        "evidence_access": "repository"
       },
       {
         "path": "docs/verification/404-pr30-browser-recheck.md",
@@ -24850,7 +26431,10 @@
         ],
         "limitations": [
           "4496 既有管理员无办理记录列表权限，获权的名单查询和跨页原件使用独立验收库。最终远程汇总按 PR 当前提交核验。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "PR #30 远程首轮 4 项失败。修复后本地 5 项前置、8 项 Chromium 业务用例通过，4496 已更新。远程终验另查 PR。",
+        "evidence_access": "public_ci"
       },
       {
         "path": "docs/verification/405-personnel-directory.md",
@@ -24898,7 +26482,11 @@
         ],
         "limitations": [
           "样本在任数按2026-11-27计算。验收为本地固定环境和定向回归，远程CI未运行。"
-        ]
+        ],
+        "purpose": "retest",
+        "conclusion": "人员名录七项问题复验通过。4496 原库保留原人员、办理和回执，并补验五级部门、在任及未来样本。实测业务日为 2026-11-27。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/405-list-standards-review.md"
       },
       {
         "path": "docs/verification/405-list-standards-review.md",
@@ -24972,7 +26560,10 @@
         ],
         "limitations": [
           "固定样本以2026-11-27为业务日，六份新增任职的最后任职日为2027-03-31。条款初评限于本地定向回归。公开 PR 首败与后续本地复验另记于第 5 节。第 20 至 21 行在隔离实库核对。"
-        ]
+        ],
+        "purpose": "governance",
+        "conclusion": "从人员名录提炼列表、部门树和验收样本标准。勾选时序及跨页返回两轮首败均保留。第 21 人及第 21 份任职返回经隔离实库复验，4496 已更新。",
+        "evidence_access": "mixed"
       }
     ]
   },
