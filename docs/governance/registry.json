@@ -24917,7 +24917,7 @@
         "working_tree": "dirty",
         "change_description": "基于已归档的405，修订现行列表、树和手工样本条款，扩充人员名录的同号多任职浏览器用例。受测差异与本记录一同提交。",
         "environment": "wt-dev-e，t03-first-e（4496 / 8496 / 54496），独立临时 PostgreSQL 18 与 Chromium 140。",
-        "scope": "共享条款及对象差异评审，五级分支、勾选与返回、读权、日期样本和参考页复核。",
+        "scope": "共享条款及对象差异评审，五级分支、勾选与返回、读权、日期样本和参考页复核。追加核对 PR 合并候选的第 21 人及第 21 份任职返回。",
         "results": [
           {
             "check": "草稿应用时机、动态与固定选择、行身份、字段读权及手工样本的合同复评",
@@ -24953,10 +24953,25 @@
             "check": "make check、规范导航、文档登记与生成目录",
             "result": "passed",
             "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "PR 38 初次正式检查的浏览器分片 3、6 从第 21 行返回时页码及焦点丢失",
+            "result": "failed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "9e9ba0c 修复后两类角色、两个桌面视口、原生 200%、任职返回及跨页选择共 8 项定向复验",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "4496 原库 16 张表、API 与 5 份 Web 文件核验，两类角色从正常菜单核对任职返回",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
           }
         ],
         "limitations": [
-          "固定样本以2026-11-27为业务日，六份新增任职的最后任职日为2027-03-31。本轮范围为本地定向回归，未重测容量或运行远程CI。"
+          "固定样本以2026-11-27为业务日，六份新增任职的最后任职日为2027-03-31。条款初评限于本地定向回归。公开 PR 首败与后续本地复验另记于第 5 节。第 20 至 21 行在隔离实库核对。"
         ]
       }
     ]
