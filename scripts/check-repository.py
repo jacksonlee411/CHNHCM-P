@@ -14,6 +14,7 @@ from context_registry import slice_errors
 from design_revisions import resolve_hashes, historical_source_exists
 from document_catalog import catalog_matches
 from document_governance import markdown_anchors, markdown_links, validate_governance
+from project_skills import project_skill_errors
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -43,6 +44,10 @@ def local_file(path):
 
 
 registry = read_json('docs/governance/registry.json')
+errors.extend(project_skill_errors(ROOT))
+if errors:
+    print('\n'.join(errors))
+    raise SystemExit(1)
 errors.extend(validate_governance(ROOT, registry))
 if errors:
     print('\n'.join(errors))
