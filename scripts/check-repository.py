@@ -52,7 +52,10 @@ errors.extend(validate_governance(ROOT, registry))
 if errors:
     print('\n'.join(errors))
     raise SystemExit(1)
-require(catalog_matches(registry), '文档目录或默认检索范围已过期，请运行 python3 -B scripts/document_catalog.py。')
+try:
+    require(catalog_matches(registry), '文档目录或默认检索范围已过期，请运行 python3 -B scripts/document_catalog.py。')
+except ValueError as error:
+    errors.append(str(error))
 branches = registry['fixed_branches']
 require([b['branch'] for b in branches] == ['wt-dev-' + c for c in 'abcdef'], 'six fixed branches required')
 ranges = {}

@@ -30,12 +30,14 @@
 
 ## 待审文稿
 
-| 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
-| --- | --- | --- | --- |
-| [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
-| [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 |
-| [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
-| [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
+条款名称前标出送审稿中的原位置，链接直达承接该项规则的现行合同。空栏表示尚未登记单独采纳的条款。
+
+| 编号与正文 | 文档状态 | 执行状态 | 保存位置 | 已单独采用的现行条款 |
+| --- | --- | --- | --- | --- |
+| [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 | [§3 主体与角色版本在业务事务内的加锁顺序 → 013 §6.1.2](../../specs/m02/013-m02-technical-design.md#612-守卫粒度与事务顺序) |
+| [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 | — |
+| [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 | [§7.2 部门选择与固定身份草稿 → 120 §4.6](../../specs/m02/120-dated-maintenance-technical-contract.md#46-r133-m1部门选择游标与锚点协议) · [§7.3 单请求游标与读取一致性 → 120 §11](../../specs/m02/120-dated-maintenance-technical-contract.md#11-r133主线读取协议的实施输入) · [§10 BU 完整预览的削减期间检查 → 120 §12](../../specs/m02/120-dated-maintenance-technical-contract.md#12-r129共用边界与日志按页装配) · [§15 单对象 20 条验收场景与模型 5 → 017 §19](../../guides/017-local-bu-development.md#19-保留模型5及20条正式场景) · [§16 部门大范围写入的阶段目标 → 120](../../specs/m02/120-dated-maintenance-technical-contract.md#department-broad-write-stage-target) |
+| [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 | [§8 单对象 20 条验收场景与模型 5 → 017 §19](../../guides/017-local-bu-development.md#19-保留模型5及20条正式场景) |
 
 <a id="catalog-closed"></a>
 
@@ -116,7 +118,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（78）](#evidence-acceptance) · [问题复验（45）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（18）](#evidence-governance)
+[业务验收（78）](#evidence-acceptance) · [问题复验（45）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（19）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -467,6 +469,7 @@
 | 014 | [CHNHCM-014 验收记录目录与历史接续复验](../../verification/014-verification-catalog.md) | 2026-11-27 定稿 | 312 份原记录已补齐用途、结论及证据位置，原报告和原有字段保留。默认检索仍仅命中现行规范，本轮只验文档。 | 本仓报告 |
 | 014、308、310、312、313、012、026、121、123 | [CHNHCM-014 M03 模块合同与共享条款导航复核](../../verification/014-m03-shared-clause-navigation.md) | 2026-11-27 定稿 | 5 类办理对象可从 M03 入口查到 4 份对象合同及共享条款。41 处链接均可定位，默认检索仍为 55 份现行规范。本次只验文档。 | 本仓报告 |
 | 014 | [CHNHCM-014 现行规范默认检索复验](../../verification/014-current-standards-search.md) | 2026-11-27 定稿 | 默认检索与登记的 55 份规范逐份一致，“未保存”命中 23 份，“再聘”命中 8 份。部分替代范围须核对正文。 [后续记录](../../verification/014-verification-catalog.md) | 本仓报告 |
+| 014、110、113、114、123、132、120、018、022、011、109、027、135 | [CHNHCM-014 部分替代与单项采纳导航复核](../../verification/014-clause-catalog.md) | 2026-11-27 定稿 | 21 份现行规范的 65 项后继关系均可按问题定位，7 项在审文稿条款可进入现行合同。默认全文检索与登记逐文件匹配 55 份规范。 | 本仓报告 |
 | 014、011、013、023、114、118、119、120、121、128 | [CHNHCM-014 现行适用范围与 128 部分替代核对](../../verification/014-128-scope-and-replacement.md) | 2026-11-27 定稿 | 8 份原规范可查到 128 的部分替代，114 同时保留 123。默认全文检索覆盖相同的 55 份现行规范，历史产品结果按原批次查证。 | 本仓报告 |
 | 511、014、008、011、012、013、118、119、120、121、131、138、203、204、205、301、306、308、500、502、507 | [CHNHCM-511 项目规范实施、归档评估与验收](../../verification/511-project-standards-implementation.md) | 2026-11-26 定稿 | 43 份存量逐份评估交接，301 的 17 项规则核到唯一现行定义。该批 6 份暂缓物理归档，另有后续迁移记录。 [后续记录](../../verification/511-physical-archive.md) | 本仓报告，部分原件需权限 |
 | 511、014、016、017、112、120、124、125、127、129、130、135、139、300、301、304、307、308 | [CHNHCM-511 文档物理归档与历史引用迁移](../../verification/511-physical-archive.md) | 2026-11-26 定稿 | 46 份编号文档完成物理归档，六份原暂缓计划的规则及遗留工作已交接，产品结果沿用各自受测版本。 | 本仓报告，部分原件需权限 |

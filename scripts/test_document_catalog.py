@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import unittest
+from copy import deepcopy
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -93,11 +94,16 @@ class DocumentCatalogTests(unittest.TestCase):
                 documents.append(dict(id="CHNHCM-" + number, title=number, path=relative, type=kind,
                                       status=status, execution_status=execution, archive=archive, superseded_by=[]))
                 (root / relative).parent.mkdir(parents=True, exist_ok=True)
-                (root / relative).write_text("共同关键词\n", encoding="utf-8")
+                (root / relative).write_text("共同关键词\n\n<a id=\"save\"></a>\n## 1 保存\n\n## 2 固定办理\n",
+                                             encoding="utf-8")
             report = root / "docs/verification/report.md"
             report.parent.mkdir()
             report.write_text("# 共同关键词：原验证\n", encoding="utf-8")
             documents[0]["superseded_by"] = ["CHNHCM-004"]
+            documents[0]["clause_routes"] = {
+                "retained": {"原保存规则": "#1-保存"},
+                "CHNHCM-004": {"归档后承接的办理": "CHNHCM-001#2-固定办理"},
+            }
             registry = {"documents": documents, "governance": {"verification_records": [
                 {"path": "docs/verification/report.md", "related_documents": ["CHNHCM-001"],
                  "date": "2026-11-26", "status": "final", "purpose": "acceptance",
@@ -114,7 +120,7 @@ class DocumentCatalogTests(unittest.TestCase):
                     cwd=root, text=True).splitlines())
                 page = (catalog.parent / "standards/README.md").read_text(encoding="utf-8")
                 self.assertIn("[保存与返回]", page)
-                self.assertIn("见正文的替代说明", page)
+                self.assertIn("[归档后承接的办理（据 004） → 001 §2](../../../specs/m01/001-current.md#2-固定办理)", page)
                 self.assertNotIn("待审跳转", page)
                 self.assertNotIn("原验证", page)
                 self.assertNotIn("未覆盖故障恢复", page)
@@ -126,3 +132,61 @@ class DocumentCatalogTests(unittest.TestCase):
                 documents[1]["status"] = "in_review"
                 (root / "docs/.ignore").write_text("", encoding="utf-8")
                 self.assertFalse(document_catalog.catalog_matches(registry))
+
+    def test_partial_replacement_and_review_adoption_lead_to_the_current_clause(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            catalog = root / "docs/governance/catalog/README.md"
+            (root / "docs/governance").mkdir(parents=True)
+            (root / "docs/specs").mkdir()
+            for directory in ("governance", "specs"):
+                (root / f"docs/{directory}/README.md").write_text("# 导航\n")
+            old, current, review = [
+                dict(id=f"CHNHCM-{n}", title=title, path=f"docs/specs/{n}.md", type="decision",
+                     status=status, execution_status=None, archive=None, superseded_by=[])
+                for n, title, status in (("001", "原约定", "active"), ("002", "接收合同", "active"),
+                                         ("003", "送审稿", "in_review"))
+            ]
+            (root / old["path"]).write_text("## 1 保留规则\n")
+            (root / current["path"]).write_text("## 1 现行规则\n\n### 1.1 列表、分页\n\n<a id=\"snapshot\"></a>\n")
+            (root / review["path"]).write_text("## 1 已采纳部分\n\n## 2 待决建议\n")
+            old["superseded_by"] = [current["id"]]
+            old["clause_routes"] = {"retained": {"保存": "#1-保留规则"}, current["id"]: {"列表": "#11-列表分页"}}
+            review["clause_routes"] = {"1-已采纳部分": {"读取一致性": "CHNHCM-002#snapshot"}}
+            documents = [old, current, review]
+            registry = {"documents": documents, "governance": {"verification_records": []}}
+            with patch.multiple(document_catalog, ROOT=root, CATALOG=catalog):
+                pages = document_catalog.catalog_files(registry)
+                index = pages[catalog.parent / "standards/README.md"]
+                original = next(line for line in index.splitlines() if "[001 " in line)
+                receiver = next(line for line in index.splitlines() if "[002 " in line)
+                self.assertIn("[保存 → 001 §1](../../../specs/001.md#1-保留规则)", original)
+                self.assertIn("[列表 → 002 §1.1](../../../specs/002.md#11-列表分页)", original)
+                self.assertIn("[读取一致性 → 002](../../../specs/002.md#snapshot)", receiver)
+                self.assertIn("读取一致性 → 002](../../specs/002.md#snapshot)", pages[catalog])
+                self.assertNotIn("003.md", index + pages[root / "docs/.ignore"])
+                self.assertNotIn("待决建议", index + pages[catalog])
+
+                invalid = [
+                    (0, {"retained": {"保存": "#1-保留规则"}}, "每个后继"),
+                    (0, {"retained": {"保存": "#1-保留规则"}, current["id"]: {}}, "缺少条款"),
+                    (2, {"2-不存在": {"读取": "CHNHCM-002#snapshot"}}, "找不到条款锚点"),
+                    (2, {"1-已采纳部分": {"读取": "CHNHCM-002"}}, "具体条款"),
+                    (2, {"1-已采纳部分": {"读取": "CHNHCM-002#missing"}}, "找不到条款锚点"),
+                    (2, {"1-已采纳部分": {"读取": "CHNHCM-003#2-待决建议"}}, "现行规范"),
+                ]
+                for source, routes, message in invalid:
+                    with self.subTest(routes=routes):
+                        changed = deepcopy(documents)
+                        changed[source]["clause_routes"] = routes
+                        with self.assertRaisesRegex(ValueError, message):
+                            document_catalog.clause_navigation(changed)
+
+                for status, kind, archive in (("draft", "decision", None), ("active", "plan", None),
+                                              ("superseded", "decision", {"date": "2026-11-26"})):
+                    with self.subTest(status=status, kind=kind):
+                        changed = deepcopy(documents)
+                        changed[1].update(status=status, type=kind, archive=archive,
+                                          execution_status="in_progress" if kind == "plan" else None)
+                        with self.assertRaisesRegex(ValueError, "现行规范"):
+                            document_catalog.clause_navigation(changed)
