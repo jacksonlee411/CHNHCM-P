@@ -9,5 +9,5 @@ export async function withPolicy(page:Page,run:(where:string,mutate:(sql:string)
  const sql=(input:string)=>execFileSync('docker',['exec','-i',container,'psql','-U','postgres','-d','chnhcm','-X','-Atq','-v','ON_ERROR_STOP=1'],{input,encoding:'utf8'}).trim();const where=`instance_id='${credentials.instance}' AND principal_id='${subject}'`;
  const snapshot=sql(`SELECT json_agg(g) FROM access.subject_grant g WHERE ${where}`);
  const mutate=(statement:string)=>{sql(`BEGIN;SELECT principal_id FROM access.policy_guard WHERE ${where} FOR UPDATE;${statement};UPDATE access.policy_guard SET policy_no=policy_no+1 WHERE ${where};COMMIT;`)};
- try{await run(where,mutate)}finally{mutate(`INSERT INTO access.subject_grant SELECT * FROM json_populate_recordset(NULL::access.subject_grant,'${snapshot.replaceAll("'","''")}') ON CONFLICT(instance_id,grant_id) DO UPDATE SET read_fields=EXCLUDED.read_fields,write_fields=EXCLUDED.write_fields`)}
+ try{await run(where,mutate)}finally{mutate(`INSERT INTO access.subject_grant SELECT * FROM json_populate_recordset(NULL::access.subject_grant,'${snapshot.replaceAll("'","''")}')`)}
 }

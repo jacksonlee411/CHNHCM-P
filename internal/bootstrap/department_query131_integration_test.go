@@ -106,7 +106,7 @@ func TestDepartmentQuery131FilteringIntegrity(t *testing.T) {
 	}
 	f.exec(`CREATE TABLE public.q131_copy AS SELECT * FROM organization.department_read_segment`)
 	otherInstance := foundation.NewID()
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: otherInstance, EnterpriseCode: "Q131_OTHER", EnterpriseName: "另一个实例", Start: "2020-01-01", Login: "admin", Password: foundation.NewID()}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: otherInstance, EnterpriseCode: "Q131_OTHER", EnterpriseName: "另一个实例", Start: "2020-01-01", Login: "admin", Password: foundation.NewID()}))
 	var foreignDictionary int32
 	must(t, f.admin.QueryRow(f.ctx, `INSERT INTO organization.department_dictionary(instance_id,enterprise_id,words,binaries,ranges)
  SELECT e.instance_id,e.enterprise_id,d.words,d.binaries,d.ranges FROM organization.enterprise e

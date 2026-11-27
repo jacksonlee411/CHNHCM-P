@@ -16,4 +16,4 @@ enterprise = config.get("enterprise", dict(EnterpriseCode="LOCAL", EnterpriseNam
 local["run"]([str(local["BIN"] / "upgrader"), "-mode", "initialize"],
              local["environment"](config, conn),
              dict(Instance=config["instance"], **enterprise, Login="quota-315-admin",
-                  Password=local["DEVELOPMENT_LOGIN_PASSWORD"], ReadOnly=False))
+                  Password=local["DEVELOPMENT_LOGIN_PASSWORD"], ReadOnly=False, DevelopmentFixture=True))

@@ -6,6 +6,10 @@
 
 [登记、编号及权限](m01/501-person-registration-requirements.md) · [人员名录、资料面板及日志返回](m01/502-person-directory-interactions.md#m01-change-log) · [跨域端口及容量](m01/503-person-registration-design.md) · [个人资料九栏目](m01/505-personal-profile-contract.md)
 
+## X03 本地账号与授权
+
+028 拟定首位客户管理员的引导与恢复、可委派范围和逐份授予规则，并以部门与单岗位核编给出正常菜单、例外处理和验收样例。当前处于文档评审阶段。[028 客户管理员合同](x03/028-local-account-and-authorization.md) · [027 分阶段实施计划](../plans/027-x03-local-access-rollout.md)
+
 ## M03职务基础
 
 [职类、职务系列及职务](m03/308-job-foundation-contract.md) · [职级及阶梯](m03/310-grade-ladder-contract.md) · [岗位及层级](m03/312-position-contract.md) · [岗位、部门与编制](m03/313-position-capacity-contract.md)

@@ -19,7 +19,7 @@ import (
 func seedLongCurrentSource(ctx context.Context, f *fixture, store application.Store, creds access.Credentials, id, key, subject string, digest []byte, items []domain.Item) (result org.Result, err error) {
 	// The three explicit sizes reuse this synthetic principal and enterprise.
 	// Reuse its test-only authority rather than inserting a duplicate scope.
-	f.exec(`INSERT INTO access.subject_grant SELECT $1,$2,$3,'enterprise',enterprise_id,'bu.timeline.revise',ARRAY[]::text[],ARRAY[]::text[] FROM organization.enterprise WHERE instance_id=$1 ON CONFLICT(instance_id,principal_id,scope_kind,scope_id,action) DO NOTHING`, f.instance, foundation.NewID(), subject)
+	f.exec(`INSERT INTO access.subject_grant SELECT $1,$2,$3,'enterprise',enterprise_id,'bu.timeline.revise',ARRAY[]::text[],ARRAY[]::text[] FROM organization.enterprise WHERE instance_id=$1 AND NOT EXISTS (SELECT FROM access.subject_grant WHERE instance_id=$1 AND principal_id=$3 AND action='bu.timeline.revise')`, f.instance, foundation.NewID(), subject)
 	err = store.WithinWrite(ctx, creds, func(u application.Unit) error {
 		if e := u.LockSubmission(ctx, key); e != nil {
 			return e

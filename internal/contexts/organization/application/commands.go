@@ -214,11 +214,12 @@ func (s Service) execute(ctx context.Context, c access.Credentials, create org.C
 		if terminal.Action == "CORRECT" {
 			intent = correctionIntent(*lockedTimeline, terminal.RecordID, ent.ID, maintain.Correct)
 		}
+		intent.PermissionOnly = true
 		decision, e := u.Access().Decide(ctx, intent)
 		if e != nil {
 			return e
 		}
-		if !decision.Allowed || (maintain == nil && !allowed(u.Access().Grants(), "bu.read", ent.ID, "")) {
+		if !decision.Allowed {
 			reply.Rejection = permission()
 			u.Confirm()
 			return nil
@@ -228,10 +229,18 @@ func (s Service) execute(ctx context.Context, c access.Credentials, create org.C
 			if e != nil {
 				return e
 			}
+			if !read.Allowed {
+				reply.Rejection = permission()
+				u.Confirm()
+				return nil
+			}
 			outputFields = read.ReadFields
 		}
 		ent, e = u.Enterprise(ctx, true)
 		if e != nil {
+			return e
+		}
+		if e = u.Access().ValidateUse(); e != nil {
 			return e
 		}
 		w := Write{Terminal: terminal}

@@ -83,6 +83,10 @@ func fresh(t *testing.T, options ...bootstrap.InitInput) *fixture {
 	must(t, e)
 	t.Cleanup(admin.Close)
 	must(t, bootstrap.Migrate(ctx, admin, migrations.Files))
+	fixtureSQL, e := os.ReadFile("../../tests/fixtures/access/policy.sql")
+	must(t, e)
+	_, e = admin.Exec(ctx, string(fixtureSQL))
+	must(t, e)
 	apiPass := foundation.NewID()
 	must(t, bootstrap.ConfigureLocalRoles(ctx, admin, apiPass))
 	f := &fixture{t: t, ctx: ctx, admin: admin, instance: foundation.NewID(), password: foundation.NewID(), readPassword: foundation.NewID()}
@@ -95,7 +99,7 @@ func fresh(t *testing.T, options ...bootstrap.InitInput) *fixture {
 		login, pass string
 		readOnly    bool
 	}{{"admin", f.password, false}, {"reader", f.readPassword, true}} {
-		must(t, bootstrap.Initialize(ctx, admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: enterpriseName, Start: enterpriseStart, Login: a.login, Password: a.pass, ReadOnly: a.readOnly}))
+		must(t, bootstrap.Initialize(ctx, admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: enterpriseName, Start: enterpriseStart, Login: a.login, Password: a.pass, ReadOnly: a.readOnly}))
 	}
 	f.runtime, e = bootstrap.Open(ctx, dsn("chnhcm_api", apiPass), f.instance)
 	must(t, e)
@@ -390,7 +394,7 @@ func TestBUCurrentAuthorizationAndSession(t *testing.T) {
 	stale.call("GET", "/api/v1/session", nil, "", 401)
 	reader.call("DELETE", "/api/v1/session", nil, "", 204)
 	reader.call("GET", "/api/v1/session", nil, "", 401)
-	if e := bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: "admin", Password: f.password, ReadOnly: true}); e == nil {
+	if e := bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "2020-01-01", Login: "admin", Password: f.password, ReadOnly: true}); e == nil {
 		t.Fatal("changed initialization intent accepted")
 	}
 }

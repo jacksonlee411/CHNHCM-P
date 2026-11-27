@@ -6,6 +6,7 @@ import (
 	f "chnhcm.local/chnhcm/internal/foundation"
 	"maps"
 	"testing"
+	"time"
 )
 
 func TestRecruitingOfferReservationAndDecision(t *testing.T) {
@@ -25,6 +26,27 @@ func TestRecruitingOfferReservationAndDecision(t *testing.T) {
 	usage := func(day string) M {
 		return b.call("GET", "/api/v1/positions/"+position+"/replenishment?businessAt="+day, nil, "", 200)
 	}
+	// Hold publication after the cross-domain employer and assignment checks return.
+	issueCheck := replaceAdminPurposeGrant(t, db, b)
+	hold, err := db.admin.Begin(db.ctx)
+	must(t, err)
+	defer hold.Rollback(db.ctx)
+	_, err = hold.Exec(db.ctx, "LOCK TABLE recruiting.outbox IN EXCLUSIVE MODE")
+	must(t, err)
+	expiry := time.Now().Add(1800 * time.Millisecond)
+	grant := issueCheck(&expiry)
+	result := make(chan int, 1)
+	go func() {
+		status, _, _ := b.response("POST", path, doc, key)
+		result <- status
+	}()
+	waitForBlockedTransaction(t, db, hold.Conn().PgConn().PID())
+	waitForStoredGrantExpiry(t, db, hold, grant)
+	must(t, hold.Commit(db.ctx))
+	if status := <-result; status != 403 || db.scalar("SELECT count(*) FROM recruiting.offer_submission") != 0 || usage("2027-05-01")["reserved"] != 0.0 {
+		t.Fatalf("用途授权在录用发布前到期，返回 %d，要求拒绝且无回执、无名额占用", status)
+	}
+	issueCheck(nil)
 	db.exec("ALTER TABLE recruiting.outbox ADD CONSTRAINT fail_offering CHECK(false) NOT VALID")
 	b.call("POST", path, doc, key, 503)
 	db.exec("ALTER TABLE recruiting.outbox DROP CONSTRAINT fail_offering")

@@ -21,7 +21,11 @@ func (s Service) Parents(ctx context.Context, c access.Credentials, in org.Depar
 		if e != nil {
 			return e
 		}
-		if !departmentReadEntry(u, ent.ID) {
+		entry, e := departmentEntry(ctx, u, ent.ID, "department.read")
+		if e != nil {
+			return e
+		}
+		if !entry.Allowed {
 			return denied()
 		}
 		now, e := u.Now(ctx)

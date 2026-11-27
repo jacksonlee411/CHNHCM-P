@@ -8,7 +8,6 @@ import (
 	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
 	s "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
-	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -103,7 +102,7 @@ func (u *unit) checkTransferTarget(ctx context.Context, a h.Action, in s.Assignm
 			return nil, e
 		}
 	}
-	return u.store.checkOwnerAssignment(dbtx.With(ctx, u.tx), u.credentials, in, retained, "M04", a.Assignment, nil)
+	return u.store.checkOwnerAssignment(u.transactionContext(ctx), u.credentials, in, retained, "M04", a.Assignment, nil)
 }
 
 // Moving or deleting the first transfer can restore part of the starting appointment.
@@ -149,7 +148,7 @@ func (u *unit) restoredPositions(ctx context.Context, a h.Action, segments []h.P
 			if a.Kind == "AdditionalAssignment" || a.Kind == "ParallelEmployment" {
 				purpose = "secondary"
 			}
-			adopted, e := u.store.checkOwnerAssignment(dbtx.With(ctx, u.tx), u.credentials, s.AssignmentCheck{Period: span, Enterprise: u.enterprise.ID, Category: "Employee", Purpose: purpose, Department: seg.Department, Job: seg.Job, Position: seg.Adoption.Position}, nil, "M04", a.Assignment, nil)
+			adopted, e := u.store.checkOwnerAssignment(u.transactionContext(ctx), u.credentials, s.AssignmentCheck{Period: span, Enterprise: u.enterprise.ID, Category: "Employee", Purpose: purpose, Department: seg.Department, Job: seg.Job, Position: seg.Adoption.Position}, nil, "M04", a.Assignment, nil)
 			if e != nil {
 				return nil, e
 			}

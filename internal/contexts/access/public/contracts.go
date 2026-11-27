@@ -23,6 +23,9 @@ type Grant struct {
 	WriteFields []string
 }
 type Intent struct {
+	// PermissionOnly asks for the allow/deny outcome and no field projection.
+	// A command can then survive expiry of rights it never used in its result.
+	PermissionOnly   bool
 	PositionID       string
 	DepartmentTarget *DepartmentTarget
 	AffectedScope    *AffectedScope
@@ -81,10 +84,13 @@ type ReadDecisions struct {
 	Index  []int
 }
 type Guard interface {
+	// Bind carries this transaction's decision history to nested business ports.
+	Bind(context.Context) context.Context
 	// RecordSessionActivity persists the authenticated request's access time in
 	// this transaction, after business work and immediately before commit. No
 	// further business locks may be acquired after this session-row update.
 	RecordSessionActivity(context.Context) error
+	ValidateUse() error
 	OperatorSnapshot(context.Context) (OperatorSnapshot, error)
 	// PolicyVersion is the version locked by this transaction for its principal.
 	PolicyVersion() int64

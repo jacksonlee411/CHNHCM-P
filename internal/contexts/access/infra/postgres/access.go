@@ -33,16 +33,31 @@ type guard struct {
 	p             access.Principal
 	grants        []access.Grant
 	readActions   map[string][]access.Grant
+	windows       []timedGrant
+	boundary      time.Time
+	checks        []func(*guard) bool
+	dependents    []*guard
+	changedWindow bool
 	now           time.Time
+}
+
+type guardContextKey struct{}
+
+func (g *guard) Bind(ctx context.Context) context.Context {
+	return context.WithValue(ctx, guardContextKey{}, g)
 }
 
 func (g *guard) PolicyVersion() int64        { return g.policyVersion }
 func (g *guard) Principal() access.Principal { return g.p }
 
 func (g *guard) RecordSessionActivity(ctx context.Context) error {
-	return generated.New(g.tx).TouchSession(ctx, generated.TouchSessionParams{
+	err := generated.New(g.tx).TouchSession(ctx, generated.TouchSessionParams{
 		InstanceID: g.p.InstanceID, SessionID: g.p.SessionID, AccessedAt: stamp(g.now),
 	})
+	if err != nil {
+		return err
+	}
+	return g.ValidateUse()
 }
 
 func (g *guard) OperatorSnapshot(ctx context.Context) (access.OperatorSnapshot, error) {
@@ -58,7 +73,6 @@ func (g *guard) OperatorSnapshot(ctx context.Context) (access.OperatorSnapshot, 
 	}
 	return v, nil
 }
-func (g *guard) Grants() []access.Grant { return append([]access.Grant{}, g.grants...) }
 
 func stamp(t time.Time) pgtype.Timestamptz { return pgtype.Timestamptz{Time: t, Valid: true} }
 func token() (string, []byte) {
@@ -90,6 +104,10 @@ func (s *Store) Guard(ctx context.Context, tx pgx.Tx, c access.Credentials) (acc
 	if err != nil {
 		return nil, err
 	}
+	rows, err := q.ReadGrants(ctx, generated.ReadGrantsParams{InstanceID: s.Instance, PrincipalID: id})
+	if err != nil {
+		return nil, err
+	}
 	session, err := q.ReadSession(ctx, generated.ReadSessionParams{InstanceID: s.Instance, TokenDigest: digest(c.Token)})
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, denied()
@@ -108,15 +126,21 @@ func (s *Store) Guard(ctx context.Context, tx pgx.Tx, c access.Credentials) (acc
 	if c.Write && subtle.ConstantTimeCompare([]byte(csrf), []byte(c.CSRF)) != 1 {
 		return nil, foundation.Fail(403, "AUTH_REQUEST_VALIDATION_FAILED", "登录状态需要刷新")
 	}
-	rows, err := q.ReadGrants(ctx, generated.ReadGrantsParams{InstanceID: s.Instance, PrincipalID: id})
-	if err != nil {
-		return nil, err
-	}
-	grants := make([]access.Grant, 0, len(rows))
+	g := &guard{policyVersion: version, tx: tx, p: access.Principal{ID: id, SessionID: session.SessionID, Login: session.Login, CSRF: csrf, InstanceID: s.Instance}, now: now}
 	for _, r := range rows {
-		grants = append(grants, access.Grant{ScopeKind: r.ScopeKind, ScopeID: r.ScopeID, Action: r.Action, ReadFields: r.ReadFields, WriteFields: r.WriteFields})
+		if r.Purpose != purposeFor(r.Action) {
+			continue
+		}
+		v := access.Grant{ScopeKind: r.ScopeKind, ScopeID: r.ScopeID, Action: r.Action, ReadFields: r.ReadFields, WriteFields: r.WriteFields}
+		g.windows = append(g.windows, timedGrant{v, r.ValidFrom.Time, r.ValidUntil.Time})
 	}
-	return &guard{policyVersion: version, tx: tx, p: access.Principal{ID: id, SessionID: session.SessionID, Login: session.Login, CSRF: csrf, InstanceID: s.Instance}, grants: grants, now: now}, nil
+	g.selectAt(time.Now())
+	// A nested call may run inside a pgx savepoint. Authenticate it separately
+	// and retain its time-sensitive decisions until the physical transaction commits.
+	if parent, ok := ctx.Value(guardContextKey{}).(*guard); ok && !g.boundary.IsZero() && parent.tx.Conn() == tx.Conn() {
+		parent.dependents = append(parent.dependents, g)
+	}
+	return g, nil
 }
 
 func matchesIntent(grant access.Grant, in access.Intent) bool {
@@ -132,6 +156,10 @@ func matchesIntent(grant access.Grant, in access.Intent) bool {
 // reuse the formatted day and validation of an identical adjacent scope fact.
 func validIntentScope(in access.Intent, day string) bool {
 	if in.DepartmentTarget == nil {
+		if in.Kind == "department-entry" {
+			return (in.Action == "department.read" || in.Action == "department.create" || in.Action == "department.history.read") &&
+				foundation.ValidID(in.EnterpriseID) && in.BUID == "" && in.AffectedScope == nil && len(in.Fields) == 0 && len(in.Requirements) == 0
+		}
 		return !strings.HasPrefix(in.Action, "department.")
 	}
 	target := in.DepartmentTarget
@@ -168,6 +196,9 @@ func validIntentScope(in access.Intent, day string) bool {
 func matchesValidatedIntent(grant access.Grant, in access.Intent) bool {
 	if grant.Action != in.Action {
 		return false
+	}
+	if in.Kind == "department-entry" && in.DepartmentTarget == nil {
+		return grant.ScopeKind == "enterprise" && grant.ScopeID == in.EnterpriseID || grant.ScopeKind == "department" || grant.ScopeKind == "bu"
 	}
 	if strings.HasPrefix(in.Action, "staffingquota.") && grant.ScopeKind == "position" {
 		return foundation.ValidID(in.EnterpriseID) && ((in.Kind == "quota-list" && in.PositionID == "") || (in.PositionID != "" && grant.ScopeID == in.PositionID))
@@ -271,16 +302,24 @@ func (g *guard) Decide(ctx context.Context, in access.Intent) (access.Decision, 
 	if err := ctx.Err(); err != nil {
 		return access.Decision{}, err
 	}
-	return g.evaluate(in), nil
+	g.refresh()
+	d := g.evaluate(in)
+	if in.PermissionOnly {
+		d.ReadFields, d.WriteFields = nil, nil
+	}
+	if d.Allowed && !g.boundary.IsZero() {
+		g.checks = append(g.checks, func(current *guard) bool { return coversDecision(current.evaluate(in), d) })
+	}
+	return d, nil
 }
 
 // Change is an upgrader-only operation serialized against current business requests.
-func Change(ctx context.Context, pool *pgxpool.Pool, instance, login, operation, action string) error {
+func Change(ctx context.Context, pool *pgxpool.Pool, instance, login, operation, action, grantID string) error {
 	if operation != "disable" && operation != "revoke" {
 		return errors.New("unsupported security operation")
 	}
-	if operation == "revoke" && !domain.Contains([]string{"bu.read", "bu.history.read", "bu.export", "bu.create", "bu.record.add", "bu.record.correct", "bu.deactivate", "bu.reactivate", "bu.first.reclassify", "bu.record.reclassify", "bu.deactivation.reclassify", "bu.reactivation.reclassify", "bu.record.delete", "bu.deactivation.delete", "bu.reactivation.delete", "bu.record.redate", "bu.first.redate", "bu.deactivation.redate", "bu.reactivation.redate"}, action) {
-		return errors.New("unsupported grant action")
+	if operation == "revoke" && ((action == "") == (grantID == "") || grantID != "" && !foundation.ValidID(grantID)) {
+		return errors.New("revocation requires a grant ID or a single legacy action")
 	}
 	tx, e := pool.Begin(ctx)
 	if e != nil {
@@ -302,8 +341,38 @@ func Change(ctx context.Context, pool *pgxpool.Pool, instance, login, operation,
 		if _, e = tx.Exec(ctx, "UPDATE access.session SET revoked_at=clock_timestamp() WHERE instance_id=$1 AND principal_id=$2 AND revoked_at IS NULL", instance, p.PrincipalID); e != nil {
 			return e
 		}
-	} else if _, e = tx.Exec(ctx, "DELETE FROM access.subject_grant WHERE instance_id=$1 AND principal_id=$2 AND action=$3", instance, p.PrincipalID, action); e != nil {
-		return e
+	} else {
+		// Old single-action CLI requests can identify exactly one grant. Ambiguous
+		// requests require the grant ID and never revoke multiple sources.
+		rows, err := tx.Query(ctx, `SELECT a.grant_id::text,a.revision,cardinality(v.actions)=1 FROM access.grant_assignment a
+ JOIN access.grant_revision r USING(instance_id,grant_id,revision)
+ JOIN access.policy_version v ON (v.instance_id,v.kind,v.version_id)=(a.instance_id,'role',r.role_id)
+ WHERE a.instance_id=$1 AND a.principal_id=$2 AND r.operation<>'revoke'
+ AND (a.grant_id::text=$3 OR $4=ANY(v.actions))`, instance, p.PrincipalID, grantID, action)
+		if err != nil {
+			return err
+		}
+		type match struct {
+			id           string
+			revision     int64
+			singleAction bool
+		}
+		candidates, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (match, error) {
+			var v match
+			err := row.Scan(&v.id, &v.revision, &v.singleAction)
+			return v, err
+		})
+		if err != nil {
+			return err
+		}
+		if len(candidates) != 1 || grantID == "" && !candidates[0].singleAction {
+			return errors.New("revocation requires one existing grant ID")
+		}
+		_, err = changeAssignment(ctx, tx, instance, access.AssignmentChange{Operation: "revoke", ID: candidates[0].id, Subject: p.PrincipalID, RequestID: foundation.NewID(), ExpectedRevision: candidates[0].revision})
+		if err != nil {
+			return err
+		}
+		return tx.Commit(ctx)
 	}
 	if _, e = tx.Exec(ctx, "UPDATE access.policy_guard SET policy_no=policy_no+1 WHERE instance_id=$1 AND principal_id=$2", instance, p.PrincipalID); e != nil {
 		return e
@@ -520,14 +589,21 @@ func ChangeLocalPassword(ctx context.Context, pool *pgxpool.Pool, instance, logi
 }
 
 // Initialize is called only by the controlled upgrader, with credentials from outside the repository.
-func Initialize(ctx context.Context, tx pgx.Tx, instance, enterprise, login, password string, readOnly bool) (string, error) {
+func Initialize(ctx context.Context, tx pgx.Tx, instance, enterprise, login, password string, readOnly, developmentFixture bool) (subject string, created bool, err error) {
+	id := foundation.NewID()
+	subject, err = InitializePrincipal(ctx, tx, instance, enterprise, id, login, password, readOnly, developmentFixture)
+	return subject, err == nil && subject == id, err
+}
+
+// InitializePrincipal lets a disposable historical fixture retain its original
+// actor ID before any credential, grant or business fact is inserted.
+func InitializePrincipal(ctx context.Context, tx pgx.Tx, instance, enterprise, id, login, password string, readOnly, developmentFixture bool) (string, error) {
 	login, validLogin := domain.NormalizeLogin(login)
 	if !validLogin || len(password) < 12 || len(password) > 1024 {
 		return "", errors.New("initial account requires a 1-100 byte login and a 12-1024 byte password")
 	}
 	initial, _ := json.Marshal([]any{strings.ToLower(strings.TrimSpace(login)), enterprise, readOnly})
 	initialDigest := sha256.Sum256(initial)
-	id := foundation.NewID()
 	q := generated.New(tx)
 	old, e := q.FindLogin(ctx, generated.FindLoginParams{InstanceID: instance, NormalizedLogin: strings.ToLower(strings.TrimSpace(login))})
 	if e == nil {
@@ -541,26 +617,6 @@ func Initialize(ctx context.Context, tx pgx.Tx, instance, enterprise, login, pas
 		}
 		if subtle.ConstantTimeCompare(recorded, initialDigest[:]) != 1 {
 			return "", errors.New("initial account scope differs; refusing overwrite")
-		}
-		// The controlled initializer has just verified the immutable declaration
-		// (login, enterprise, readOnly). Complete its current permission set under
-		// the same policy guard; never infer permissions from a displayed role.
-		if !readOnly {
-			if _, e = q.LockPolicyExclusive(ctx, generated.LockPolicyExclusiveParams{InstanceID: instance, PrincipalID: old.PrincipalID}); e != nil {
-				return "", e
-			}
-			tag, e := tx.Exec(ctx, `INSERT INTO access.subject_grant VALUES($1,$2,$3,'enterprise',$4,'bu.export','{}'::text[],'{}'::text[]) ON CONFLICT(instance_id,principal_id,scope_kind,scope_id,action) DO NOTHING`, instance, foundation.NewID(), old.PrincipalID, enterprise)
-			if e != nil {
-				return "", e
-			}
-			if tag.RowsAffected() > 0 {
-				if _, e = tx.Exec(ctx, `UPDATE access.policy_guard SET policy_no=policy_no+1 WHERE instance_id=$1 AND principal_id=$2`, instance, old.PrincipalID); e != nil {
-					return "", e
-				}
-			}
-		}
-		if e = initializeDepartmentGrants(ctx, tx, instance, enterprise, old.PrincipalID, readOnly, false); e != nil {
-			return "", e
 		}
 		return old.PrincipalID, nil
 	}
@@ -582,6 +638,10 @@ func Initialize(ctx context.Context, tx pgx.Tx, instance, enterprise, login, pas
 	if e != nil {
 		return "", e
 	}
+	if !developmentFixture {
+		return id, nil
+	}
+	var batch pgx.Batch
 	fields := []string{"code", "name", "nameEn", "effectiveDate", "operationType", "operationReason"}
 	actions := []string{"bu.read", "bu.history.read"}
 	if !readOnly {
@@ -595,29 +655,23 @@ func Initialize(ctx context.Context, tx pgx.Tx, instance, enterprise, login, pas
 		if strings.HasSuffix(a, ".redate") {
 			write = []string{"effectiveDate"}
 		}
-		_, e = tx.Exec(ctx, `INSERT INTO access.subject_grant VALUES($1,$2,$3,'enterprise',$4,$5,$6,$7)`, instance, foundation.NewID(), id, enterprise, a, fields, write)
-		if e != nil {
-			return "", e
-		}
+		queueDevelopmentGrant(&batch, instance, id, "enterprise", enterprise, a, fields, write)
 	}
-	if e = initializeDepartmentGrants(ctx, tx, instance, enterprise, id, readOnly, true); e != nil {
-		return "", e
+	initializeDepartmentGrants(&batch, instance, enterprise, id, readOnly)
+	if err := tx.SendBatch(ctx, &batch).Close(); err != nil {
+		return "", err
 	}
 	return id, nil
 }
 
-// Only the controlled initializer completes grants from its verified declaration.
-func initializeDepartmentGrants(ctx context.Context, tx pgx.Tx, instance, enterprise, subject string, readOnly, newPrincipal bool) error {
-	if _, e := generated.New(tx).LockPolicyExclusive(ctx, generated.LockPolicyExclusiveParams{InstanceID: instance, PrincipalID: subject}); e != nil {
-		return e
-	}
+// Development declarations run once when creating an explicit fixture principal.
+func initializeDepartmentGrants(batch *pgx.Batch, instance, enterprise, subject string, readOnly bool) {
 	fields := []string{"code", "name", "shortName", "managementBuId", "parentDepartmentId", "departmentPath", "status", "effectiveDate", "operationType", "operationReason"}
 	writable := []string{"code", "name", "shortName", "managementBuId", "parentDepartmentId", "effectiveDate", "operationType", "operationReason"}
 	actions := []string{"department.read", "department.history.read", "department.reference.read", "bu.reference.read"}
 	if !readOnly {
 		actions = append(actions, "department.create", "department.export", "department.record.add", "department.record.correct", "department.deactivate", "department.reactivate", "department.record.delete", "department.deactivation.delete", "department.reactivation.delete", "department.record.redate", "department.first.redate", "department.deactivation.redate", "department.reactivation.redate", "department.record.reclassify", "department.first.reclassify", "department.deactivation.reclassify", "department.reactivation.reclassify", "department.reassign")
 	}
-	changed := false
 	for _, action := range actions {
 		read, write := fields, []string{}
 		if strings.HasSuffix(action, "reference.read") {
@@ -635,66 +689,28 @@ func initializeDepartmentGrants(ctx context.Context, tx pgx.Tx, instance, enterp
 		if action == "department.reassign" {
 			write = []string{"managementBuId", "parentDepartmentId"}
 		}
-		tag, e := tx.Exec(ctx, `INSERT INTO access.subject_grant VALUES($1,$2,$3,'enterprise',$4,$5,$6,$7) ON CONFLICT(instance_id,principal_id,scope_kind,scope_id,action) DO NOTHING`, instance, foundation.NewID(), subject, enterprise, action, read, write)
-		if e != nil {
-			return e
+		queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, action, read, write)
+	}
+	initializeCountryGrants(batch, instance, subject, readOnly)
+	initializeEnterpriseGrants(batch, instance, subject, readOnly)
+	initializeGeoAreaGrants(batch, instance, subject, readOnly)
+	initializeLocationGrants(batch, instance, enterprise, subject, readOnly)
+	initializeLegalEntityGrants(batch, instance, enterprise, subject, readOnly)
+	initializeStaffingGrants(batch, instance, enterprise, subject, readOnly)
+	for _, kind := range []string{"legalpurpose", "assignmentpolicy"} {
+		actions := []string{"read", "history.read", "check"}
+		if !readOnly {
+			actions = append(actions, "maintain")
 		}
-		changed = changed || tag.RowsAffected() > 0
-	}
-	if changed {
-		_, e := tx.Exec(ctx, `UPDATE access.policy_guard SET policy_no=policy_no+1 WHERE instance_id=$1 AND principal_id=$2`, instance, subject)
-		if e != nil {
-			return e
-		}
-	}
-	if e := initializeCountryGrants(ctx, tx, instance, subject, readOnly); e != nil {
-		return e
-	}
-	if e := initializeEnterpriseGrants(ctx, tx, instance, subject, readOnly); e != nil {
-		return e
-	}
-	if e := initializeGeoAreaGrants(ctx, tx, instance, subject, readOnly); e != nil {
-		return e
-	}
-	if err := initializeLocationGrants(ctx, tx, instance, enterprise, subject, readOnly); err != nil {
-		return err
-	}
-	if err := initializeLegalEntityGrants(ctx, tx, instance, enterprise, subject, readOnly); err != nil {
-		return err
-	}
-	var readiness bool
-	if newPrincipal {
-		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM pg_constraint WHERE conrelid='access.subject_grant'::regclass AND conname='readiness_rule_scope')`).Scan(&readiness); err != nil {
-			return err
-		}
-	}
-	if readiness {
-		for _, kind := range []string{"legalpurpose", "assignmentpolicy"} {
-			actions := []string{"read", "history.read", "check"}
-			if !readOnly {
-				actions = append(actions, "maintain")
+		for _, action := range actions {
+			writes := []string{}
+			if action == "maintain" {
+				writes = []string{"rule"}
 			}
-			for _, action := range actions {
-				writes := []string{}
-				if action == "maintain" {
-					writes = []string{"rule"}
-				}
-				if _, err := tx.Exec(ctx, `INSERT INTO access.subject_grant VALUES ($1,$2,$3,'enterprise',$4,$5,$6,$7)`, instance, foundation.NewID(), subject, enterprise, kind+"."+action, []string{"rule"}, writes); err != nil {
-					return err
-				}
-			}
+			queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, kind+"."+action, []string{"rule"}, writes)
 		}
 	}
-	if newPrincipal && !readOnly {
-		var intake bool
-		if e := tx.QueryRow(ctx, "SELECT to_regclass('staffing.position_intake') IS NOT NULL").Scan(&intake); e != nil {
-			return e
-		}
-		if intake {
-			if _, e := tx.Exec(ctx, "INSERT INTO access.subject_grant VALUES($1,$2,$3,'enterprise',$4,'replenishment.maintain',ARRAY['rule'],ARRAY['rule'])", instance, foundation.NewID(), subject, enterprise); e != nil {
-				return e
-			}
-		}
+	if !readOnly {
+		queueDevelopmentGrant(batch, instance, subject, "enterprise", enterprise, "replenishment.maintain", []string{"rule"}, []string{"rule"})
 	}
-	return initializeStaffingGrants(ctx, tx, instance, enterprise, subject, readOnly, newPrincipal)
 }

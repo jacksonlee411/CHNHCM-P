@@ -135,17 +135,15 @@ func (s Service) References(ctx context.Context, c access.Credentials, kind stri
 		if e != nil {
 			return e
 		}
-		if !departmentReadEntry(u, ent.ID) {
+		entry, e := departmentEntry(ctx, u, ent.ID, "department.read")
+		if e != nil {
+			return e
+		}
+		if !entry.Allowed {
 			return submission.RejectRead(denied())
 		}
 		if q.Mode == "filter" {
-			permitted := false
-			for _, g := range u.Access().Grants() {
-				if g.Action == "department.read" && (g.ScopeKind != "enterprise" || g.ScopeID == ent.ID) && slices.Contains(g.ReadFields, "managementBuId") {
-					permitted = true
-				}
-			}
-			if !permitted {
+			if !slices.Contains(entry.ReadFields, "managementBuId") {
 				return submission.RejectRead(denied())
 			}
 		}
