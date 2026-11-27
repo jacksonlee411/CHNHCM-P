@@ -24406,6 +24406,48 @@
         "limitations": [
           "4496 的持久原卷及页面验收以 2026-11-26 的实际签收版本为准。客户主选择政策换版时由 M04 复验激活。"
         ]
+      },
+      {
+        "path": "docs/verification/404-pr30-browser-recheck.md",
+        "related_documents": [
+          "CHNHCM-404",
+          "CHNHCM-507",
+          "CHNHCM-012",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "3d0083b3d8f8d9ff2bf1eaa714ab2951c53db016",
+        "working_tree": "clean",
+        "change_description": "215a8705 修复迟到读取影响职务原件及办理筛选的问题，3d0083b3 修订窄屏用例的日期轴等待。",
+        "environment": "wt-dev-e，PostgreSQL、Chromium、独立开发和固定构建，持久验收 t03-first-e（4496 / 8496 / 54496）。",
+        "scope": "PR #30 首轮浏览器 5、6 片的四个失败用例及 4496 原卷和旧链接。",
+        "results": [
+          {
+            "check": "首轮两个远程浏览器分片共四项失败",
+            "result": "failed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          },
+          {
+            "check": "真实响应触发页签移动 43 像素、用量移动 38 像素或清空已选类型，延迟任职读取复现窄屏用例等错按钮",
+            "result": "failed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          },
+          {
+            "check": "产品固定构建的 13 项 Chromium 与单独补验的原生缩放迟到读取",
+            "result": "passed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          },
+          {
+            "check": "4496 的构建、原卷、12 张业务表和五视口原件及补员状态",
+            "result": "passed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          }
+        ],
+        "limitations": [
+          "4496 既有管理员无办理记录列表权限，获权的名单查询和跨页原件使用独立验收库。最终远程汇总按 PR 当前提交核验。"
+        ]
       }
     ]
   },

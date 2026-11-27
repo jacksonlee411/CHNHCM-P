@@ -1,6 +1,6 @@
 # 验证记录
 
-e 树已在同步后的主线复验免占编首单、暂停补员竞争、跨模式占编及旧岗升级。4496 原卷已升至 00057，旧单及私人回执可查，新首单实岗一份、常规占编零。[400、404 归档及主线复验](400-404-plan-archive.md) · [4496 原卷签收与合成样本](404-4496-acceptance.md) · [同步复评](404-main-sync-reassessment.md) · [404 原方案评审](404-position-exempt-first-hire-review.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire)
+e 树已在同步后的主线复验免占编首单、暂停补员竞争、跨模式占编及旧岗升级。4496 原卷已升至 00057，旧单及私人回执可查，新首单实岗一份、常规占编零。[PR #30 浏览器复验及 4496 当前版本](404-pr30-browser-recheck.md) · [400、404 归档及主线复验](400-404-plan-archive.md) · [4496 原卷签收与合成样本](404-4496-acceptance.md) · [同步复评](404-main-sync-reassessment.md) · [404 原方案评审](404-position-exempt-first-hire-review.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire)
 
 [004 架构、技术栈与数据归属整改复验](004-architecture-review-remediation.md)
 
