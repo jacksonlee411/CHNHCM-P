@@ -47,7 +47,7 @@ func runAuthorized[T any](ctx context.Context, s *Store, c f.Credentials, author
 	if e != nil {
 		return zero, e
 	}
-	r := request{ctx: dbtx.With(ctx, tx), tx: tx, a: a, instance: a.Principal.InstanceID, credentials: c, profileCatalog: s.ProfileCatalog}
+	r := request{ctx: dbtx.With(g.Bind(ctx), tx), tx: tx, a: a, instance: a.Principal.InstanceID, credentials: c, profileCatalog: s.ProfileCatalog}
 	v, e := fn(&r)
 	if e != nil {
 		return zero, e

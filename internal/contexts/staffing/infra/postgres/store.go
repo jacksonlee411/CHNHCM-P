@@ -59,6 +59,10 @@ type unit struct {
 	enterprise    org.Enterprise
 }
 
+func (u *unit) transactionContext(ctx context.Context) context.Context {
+	return dbtx.With(u.guard.Bind(ctx), u.tx)
+}
+
 func (u *unit) Access() access.Guard { return u.guard }
 func (u *unit) Now() time.Time       { return u.now }
 func (s *Store) Within(ctx context.Context, c foundation.Credentials, write bool, fn func(app.Unit) error) error {
@@ -114,6 +118,9 @@ func (s *Store) within(ctx context.Context, c foundation.Credentials, write, sna
 		if e = g.RecordSessionActivity(ctx); e != nil {
 			return e
 		}
+	}
+	if e = g.ValidateUse(); e != nil {
+		return e
 	}
 	if e = tx.Commit(ctx); e != nil {
 		code, msg := "M03_DEPENDENCY_UNAVAILABLE", "查询暂不可用，请重试"

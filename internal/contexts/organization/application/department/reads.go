@@ -36,27 +36,23 @@ func (s Service) Context(ctx context.Context, c access.Credentials) (out org.Dep
 		if e != nil {
 			return e
 		}
-		visible := false
-		read, write := []string{}, []string{}
-		create, history := false, false
-		for _, g := range u.Access().Grants() {
-			if g.ScopeKind == "enterprise" && g.ScopeID != ent.ID {
-				continue
-			}
-			switch g.Action {
-			case "department.read":
-				visible = true
-				read = append(read, g.ReadFields...)
-			case "department.history.read":
-				history = true
-			case "department.create":
-				create = true
-				write = append(write, g.WriteFields...)
-			}
+		entry, e := departmentEntry(ctx, u, ent.ID, "department.read")
+		if e != nil {
+			return e
 		}
-		if !visible {
+		if !entry.Allowed {
 			return submission.RejectRead(denied())
 		}
+		add, e := departmentEntry(ctx, u, ent.ID, "department.create")
+		if e != nil {
+			return e
+		}
+		past, e := departmentEntry(ctx, u, ent.ID, "department.history.read")
+		if e != nil {
+			return e
+		}
+		read, write := entry.ReadFields, add.WriteFields
+		create, history := add.Allowed, past.Allowed
 		// The entry is usable only if at least one real BU scope admits the
 		// complete create declaration and its mandatory result read/history rights.
 		if create {
@@ -78,10 +74,6 @@ func (s Service) Context(ctx context.Context, c access.Credentials) (out org.Dep
 				}
 			}
 		}
-		slices.Sort(read)
-		read = slices.Compact(read)
-		slices.Sort(write)
-		write = slices.Compact(write)
 		out = org.DepartmentContext{Enterprise: enterprisecheck.Display(ent, now), CurrentDate: now.In(foundation.Shanghai).Format("2006-01-02"), DefaultEffectiveDate: foundation.DefaultEffectiveDate, Timezone: "Asia/Shanghai", NameMaxLength: base.NameMaxLength, NameGuidance: base.NameGuidance, CodeMaxLength: 40, FieldCatalog: slices.Clone(ReadFields), Capabilities: org.Capabilities{Create: create, History: history, ReadFields: read, WriteFields: write, AddWriteFields: []string{}, CorrectWriteFields: []string{}, DeactivateWriteFields: []string{}, ReactivateWriteFields: []string{}}}
 		return nil
 	})
@@ -503,11 +495,6 @@ func (s Service) List(ctx context.Context, c access.Credentials, in org.Departme
 	return
 }
 
-func departmentReadEntry(u Unit, enterprise string) bool {
-	for _, g := range u.Access().Grants() {
-		if g.Action == "department.read" && (g.ScopeKind != "enterprise" || g.ScopeID == enterprise) {
-			return true
-		}
-	}
-	return false
+func departmentEntry(ctx context.Context, u Unit, enterprise, action string) (access.Decision, error) {
+	return u.Access().Decide(ctx, access.Intent{Kind: "department-entry", EnterpriseID: enterprise, Action: action})
 }

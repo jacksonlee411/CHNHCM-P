@@ -326,7 +326,7 @@ func TestStaffing315DepartmentAllocation(t *testing.T) {
 	f.exec("UPDATE access.subject_grant SET scope_kind='enterprise',scope_id=(SELECT scope_id FROM access.subject_grant WHERE principal_id=$1 AND action='staffingquota.adjust' AND scope_kind='enterprise') WHERE principal_id=$1 AND action IN ('staffingquota.read','staffingquota.history.read')", b.subject)
 	// Both administrators saw one remaining place. Hold the first transaction after validation.
 	passwd := foundation.NewID()
-	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "allocation-admin", Password: passwd}))
+	must(t, bootstrap.Initialize(f.ctx, f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "allocation-admin", Password: passwd}))
 	creds := []foundation.Credentials{geoCredentials203(t, f, "admin", f.password), geoCredentials203(t, f, "allocation-admin", passwd)}
 	for round, suffix := range []string{"A", "B"} {
 		dep := dept("RACE315" + suffix)

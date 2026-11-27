@@ -204,7 +204,7 @@ func TestLocationAddressMigration(t *testing.T) {
 	}
 	for i, action := range []string{"location.read", "location.history.read", "location.export", "location.create"} {
 		var b []byte
-		must(pool.QueryRow(ctx, `SELECT to_jsonb(read_fields) FROM access.subject_grant WHERE action=$1`, action).Scan(&b))
+		must(pool.QueryRow(ctx, `SELECT to_jsonb(read_fields) FROM access.bound_permission WHERE action=$1`, action).Scan(&b))
 		var fields []string
 		must(json.Unmarshal(b, &fields))
 		want := [][]string{{"addressLine"}, {}, {}, {"name"}}[i]

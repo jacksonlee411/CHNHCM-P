@@ -19,8 +19,12 @@ func (s Service) InitializeCatalog(ctx context.Context, c access.Credentials, pu
 		return fault("M02_INVALID_INPUT", "", "国家目录包不完整")
 	}
 	check := func(u Unit) error {
-		if _, e := readable(ctx, u, true); e != nil {
-			return e
+		// This deployment command targets a known package. Report missing
+		// authority separately from a missing business object or source.
+		for _, action := range []string{"read", "history.read"} {
+			if _, e := require(ctx, u, action, nil); e != nil {
+				return e
+			}
 		}
 		_, e := require(ctx, u, "create", []string{"code", "name", "nameEn", "phoneCode", "effectiveDate", "operationType", "operationReason"})
 		return e

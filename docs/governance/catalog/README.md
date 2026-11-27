@@ -72,6 +72,7 @@
 
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
+| [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
 | [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
 | [400 M04 T02 入职规则与准备实施方案](../../plans/400-hire-readiness.md) | active | in_progress | 原位 |
@@ -88,6 +89,8 @@
 
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
+| [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
+| [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
 
@@ -181,6 +184,7 @@
 | 012、121、402、500、501、502、505、506、507、509 | [CHNHCM-500 人员页面布局与交互问题登记](../../verification/500-personnel-page-review.md) | 2026-11-26 | final |
 | 012、121、123、124、313、402、500、501、502、506、507、509 | [CHNHCM-500 人员入口、职务信息与日期交互补充评审](../../verification/500-personnel-entry-and-date-review.md) | 2026-11-26 | final |
 | 136、206、137、207、014、121、124、125、401、403 | [CHNHCM-136、CHNHCM-206 计划关闭与归档交接](../../verification/136-206-plan-archive.md) | 2026-11-26 | final |
+| 027、028、137 | [CHNHCM-027 公共 00057 升至逐份授予 00058](../../verification/027-public-00058-grant-upgrade.md) | 2026-11-26 | final |
 | 012、023、121、124、308、310、312、315、402、500、501、502、505、507 | [CHNHCM-012 桌面页面验收范围调整](../../verification/012-desktop-page-acceptance.md) | 2026-11-26 | final |
 | 012、313、403、500、506、507、508、509 | [CHNHCM-509 在职变动、结束与再聘修复方案评审](../../verification/509-t04-remediation-review.md) | 2026-11-25 | final |
 | 012、403、500、506、507、508、509 | [CHNHCM-509 在职变动、结束与再聘产品修复验证](../../verification/509-t04-remediation-implementation.md) | 2026-11-25 | final |
@@ -194,6 +198,8 @@
 | 012、106、401、402、403、500、502、505、506、507 | [CHNHCM-506 职务信息业务与页面设计复核](../../verification/506-job-information-design-review.md) | 2026-11-24 | final |
 | 003、012、502、504、505 | [CHNHCM-504 M01 教育经历与专业凭证实施验收](../../verification/504-personal-profile-third-batch.md) | 2026-11-24 | final |
 | 003、012、502、504、505 | [CHNHCM-504 M01 银行账户、健康信息与九栏整页联验](../../verification/504-personal-profile-fourth-batch.md) | 2026-11-24 | final |
+| 027、028、013、137 | [CHNHCM-027 公共主线合流与逐份授予升级](../../verification/027-public-main-grant-upgrade.md) | 2026-11-24 | final |
+| 027、028、013、137 | [CHNHCM-027 公共库逐份授予切换验收](../../verification/027-public-grant-cutover.md) | 2026-11-24 | final |
 | 003、012、502、504、505 | [CHNHCM-504 M01 个人资料第二批实施与验收](../../verification/504-personal-profile-second-batch.md) | 2026-11-23 | final |
 | 012、500、501、502、503、504、505 | [CHNHCM-504 M01 个人资料扩展方案评审](../../verification/504-personal-profile-review.md) | 2026-11-23 | final |
 | 003、012、501、504、505 | [CHNHCM-504 M01 个人资料第一批实施与验收](../../verification/504-personal-profile-first-batch.md) | 2026-11-23 | final |
@@ -206,6 +212,7 @@
 | 315、313、312、012 | [CHNHCM-315 部门额度与同日调剂](../../verification/315-department-quota-allocation.md) | 2026-11-23 | final |
 | 141、137、136 | [CHNHCM-141 本地预检设施验证](../../verification/141-local-preflight.md) | 2026-11-23 | final |
 | 136、137 | [CHNHCM-136 正常交付的 Actions 成本观察](../../verification/136-actions-observation.md) | 2026-11-23 | final |
+| 027、028、013、137 | [CHNHCM-027 X03 首批职责与版本化授予验证](../../verification/027-x03-grant-cutover.md) | 2026-11-23 | final |
 | 500、501、502、503、012、026 | [CHNHCM-500 T01 人员名录与登记产品验收](../../verification/500-t01-personnel-registration.md) | 2026-11-22 | final |
 | 500、501、502、503、004、006、012、121、124 | [CHNHCM-500 T00 人员登记与名录规格评审](../../verification/500-t00-personnel-specifications.md) | 2026-11-22 | final |
 | 500、501、502、503 | [CHNHCM-500 人员登记取消同名提示的方案评审](../../verification/500-registration-without-name-prompts.md) | 2026-11-22 | final |

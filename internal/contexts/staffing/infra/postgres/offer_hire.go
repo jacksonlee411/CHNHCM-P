@@ -8,7 +8,6 @@ import (
 	recruit "chnhcm.local/chnhcm/internal/contexts/recruiting/public"
 	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	f "chnhcm.local/chnhcm/internal/foundation"
-	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -66,7 +65,7 @@ func checkOfferHire(v recruit.Offer, in h.Hire, p hirePlan) error {
 }
 func (u *unit) visibleHandoff(ctx context.Context, v recruit.Offer) (out h.OfferHireState, err error) {
 	cmd := offerBinding(v)
-	known, _, err := u.store.HirePeople.RecognizedPeople(dbtx.With(ctx, u.tx), u.credentials, []string{v.Person}, "")
+	known, _, err := u.store.HirePeople.RecognizedPeople(u.transactionContext(ctx), u.credentials, []string{v.Person}, "")
 	if err != nil {
 		return
 	}
@@ -106,7 +105,7 @@ func (st *Store) OfferHireState(ctx context.Context, c f.Credentials, id, versio
 		return out, f.Fail(400, "OFFER_INPUT", "请核对原录用及版本")
 	}
 	err = st.within(ctx, c, false, true, func(u *unit) error {
-		v, e := st.OfferHandoffs.OfferForHire(dbtx.With(ctx, u.tx), c, id, version, false)
+		v, e := st.OfferHandoffs.OfferForHire(u.transactionContext(ctx), c, id, version, false)
 		if e != nil {
 			return e
 		}
@@ -141,7 +140,7 @@ func (st *Store) HireFromOffer(ctx context.Context, c f.Credentials, id, key str
 		if e := lock(ctx, u.tx, false, "staffing.hire.person", st.Instance, in.Person); e != nil {
 			return employmentResult{}, e
 		}
-		txctx := dbtx.With(ctx, u.tx)
+		txctx := u.transactionContext(ctx)
 		v, e := st.OfferHandoffs.OfferForHire(txctx, c, id, in.Version, true)
 		if e != nil {
 			return employmentResult{}, e
@@ -190,5 +189,5 @@ func (u *unit) cancelAdoptedOffer(ctx context.Context, original, action, revisio
 	if err != nil {
 		return err
 	}
-	return u.store.OfferHandoffs.CancelHireConversion(dbtx.With(ctx, u.tx), u.credentials, ref, action, revision, day)
+	return u.store.OfferHandoffs.CancelHireConversion(u.transactionContext(ctx), u.credentials, ref, action, revision, day)
 }

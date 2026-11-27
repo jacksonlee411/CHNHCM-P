@@ -25,7 +25,7 @@ import (
 )
 
 func TestCountry200SourceFieldRemovalMigration(t *testing.T) {
-	f := fresh(t)
+	f := freshWithSchema(t, "2020-01-01", true)
 	b := f.login("admin", f.password)
 	login, e := f.runtime.Access.Login(f.ctx, access.LoginInput{Login: "admin", Password: f.password}, foundation.NewID())
 	must(t, e)
@@ -45,6 +45,7 @@ func TestCountry200SourceFieldRemovalMigration(t *testing.T) {
 		return out
 	}
 	before := snapshot()
+	restoreGrantPredecessor(f)
 	removeEmptyLegalEntity206(t, f)
 	// Reconstruct the actual 00009 prefix in this disposable DB, including
 	// removing later Location/GeoArea extensions and the tree index. Never create a ledger hole.
@@ -77,6 +78,9 @@ func TestCountry200SourceFieldRemovalMigration(t *testing.T) {
 		t.Fatal("runtime admitted pending field migration")
 	}
 	must(t, bootstrap.Migrate(f.ctx, f.admin, migrations.Files))
+	fixtureSQL, err := os.ReadFile("../../tests/fixtures/access/policy.sql")
+	must(t, err)
+	f.exec(string(fixtureSQL))
 	must(t, bootstrap.CheckCurrentStorage(f.ctx, f.admin))
 	if f.scalar("SELECT count(*) FROM access.subject_grant WHERE 'source'=ANY(read_fields) OR 'source'=ANY(write_fields)") != 0 || f.scalar("SELECT policy_no FROM access.policy_guard WHERE principal_id=$1", b.subject) != policy+1 {
 		t.Fatal("removed field or policy invalidation missing")

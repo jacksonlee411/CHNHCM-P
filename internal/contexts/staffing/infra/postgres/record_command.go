@@ -12,7 +12,6 @@ import (
 	d "chnhcm.local/chnhcm/internal/contexts/staffing/domain"
 	staff "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
-	"chnhcm.local/chnhcm/internal/platform/dbtx"
 )
 
 type recordEdit struct {
@@ -610,7 +609,7 @@ func (u *unit) adoptRecordPeriods(ctx context.Context, a h.Action, records []sav
 			if e != nil {
 				return e
 			}
-			legal, e := u.store.HirePurposes.CheckPurpose(dbtx.With(ctx, u.tx), u.credentials, a.Employer, org.PurposeCheck{Role: "employer", BU: bu, Location: loc.ID, Period: span})
+			legal, e := u.store.HirePurposes.CheckPurpose(u.transactionContext(ctx), u.credentials, a.Employer, org.PurposeCheck{Role: "employer", BU: bu, Location: loc.ID, Period: span})
 			if e != nil {
 				return e
 			}

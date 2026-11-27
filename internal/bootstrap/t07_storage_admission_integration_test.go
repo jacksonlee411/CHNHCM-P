@@ -13,13 +13,28 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// Only the two legacy upgrade tests capture the real empty public 00057 schema.
+func restoreGrantPredecessor(f *fixture) {
+	if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('access.bound_permission')") == 0 {
+		return
+	}
+	f.exec(`DROP VIEW IF EXISTS access.subject_grant;
+ CREATE TABLE access.subject_grant (LIKE fixture.prefix_grant INCLUDING ALL);
+ INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission;
+ DROP VIEW access.bound_permission;
+ DROP TABLE access.grant_assignment,access.grant_revision,access.policy_version;
+ DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
+ DELETE FROM public.goose_db_version WHERE version_id=58`)
+}
+
 func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
-	f := fresh(t)
+	f := freshWithSchema(t, "2020-01-01", true)
 	b := f.login("admin", f.password)
 	b.call("POST", "/api/v1/business-units", createBody("T07_ADMISSION", "2026-01-01"), foundation.NewID(), 201)
 	before := businessSnapshot(t, f)
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
+		{"mutable_grant_revision", `ALTER TABLE access.grant_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE access.grant_revision ENABLE TRIGGER immutable_revision`},
 		{"missing_f_reserved_versions", `DELETE FROM public.goose_db_version WHERE version_id IN (32,33)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(32,true),(33,true)`},
 		{"missing_person_profile_table", `ALTER TABLE personnel.document_payload RENAME TO t07_hidden_documents`, `ALTER TABLE personnel.t07_hidden_documents RENAME TO document_payload`},
 		{"first_hire_rule_period", `ALTER TABLE staffing.hire_rule_source DROP CONSTRAINT hire_rule_period_unique`,
@@ -83,6 +98,7 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	}
 	// The first prefix keeps the 00011 catalog, including its original code constraints.
 	removeLaterExtensions := func() {
+		restoreGrantPredecessor(f)
 		if f.scalar("SELECT (SELECT count(*) FROM organization.geoarea WHERE country_code='MO') + (SELECT count(*) FROM organization.geoarea_package WHERE country_code='MO')") != 0 {
 			t.Fatal("prefix fixture contains Macau catalog data")
 		}
@@ -122,6 +138,7 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	if !treeIndex {
 		t.Fatal("tree parent index was not installed")
 	}
+	restoreGrantPredecessor(f)
 	removeEnterprise304Extension(f)
 	removeLaterExtensions()
 	f.exec(treeParts[1])

@@ -83,19 +83,31 @@ func TestCountedPositionAdmissionAndPromotion(t *testing.T) {
 	if view(july)["sourceVersion"] != got["sourceVersion"] {
 		t.Fatal("拒绝撤销改变任职")
 	}
-	// After the first holder leaves A, an offer and a different hire race for that dated seat.
+	// After the first holder leaves A, queue a hire and an offer for the last seat.
+	// The offer checks the employer before waiting for the hire's department lock.
 	waiting["arrival"] = july
 	offer := M{"operation": "issue", "businessDate": july, "basis": "七月预留", "terms": M{"number": "R51", "person": person("LIN"), "employer": x.entity, "position": a, "arrival": july, "reserveFrom": july}}
+	hold, err := db.admin.Begin(db.ctx)
+	must(t, err)
+	defer hold.Rollback(db.ctx)
+	_, err = hold.Exec(db.ctx, "SELECT pg_advisory_xact_lock($1)", key307("staffing.position", db.instance, a))
+	must(t, err)
 	replies := make(chan jointReply, 2)
-	for path, cmd := range map[string]M{"/api/v1/hires": waiting, "/api/v1/recruiting/offers": offer} {
-		go func() { status, v, e := b.response("POST", path, cmd, f.NewID()); replies <- jointReply{status, v, e} }()
+	submit := func(path string, cmd M) {
+		status, v, e := b.response("POST", path, cmd, f.NewID())
+		replies <- jointReply{status, v, e}
 	}
+	go submit("/api/v1/hires", waiting)
+	waitForBlockedTransaction(t, db, hold.Conn().PgConn().PID())
+	go submit("/api/v1/recruiting/offers", offer)
+	waitJointLocks(t, db, 2)
+	must(t, hold.Commit(db.ctx))
 	one, two := <-replies, <-replies
 	if one.status == 409 {
 		one, two = two, one
 	}
 	count := usage(a, july)
-	if one.err != nil || two.err != nil || one.status != 200 || two.status != 409 || count["reserved"].(float64)+count["occupied"].(float64) != 1 {
+	if one.err != nil || two.err != nil || one.status != 200 || two.status != 409 || two.body["code"] != "M03_QUOTA_SHORTAGE" || count["reserved"] != 0.0 || count["occupied"] != 1.0 {
 		t.Fatal(one, two, count)
 	}
 }

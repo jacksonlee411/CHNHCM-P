@@ -15,6 +15,8 @@
 
 按[在办计划](governance/catalog/README.md#catalog-in-progress)查询交付，按[模块规格](specs/README.md)查业务边界与验收条件。设计决策、采用范围及替代关系见[编号登记](governance/registry.json)。跨域开发从[模块化单体与领域边界](architecture/004-repository-layout.md)、[上下文登记](architecture/contexts.json)及[目标架构](architecture/target/README.md)进入。
 
+本地账号、部门授权与指定岗位核编授权见[027 实施计划](plans/027-x03-local-access-rollout.md)和[028 客户管理员合同](specs/x03/028-local-account-and-authorization.md)。存量授权迁入、撤权重启与旧回执查回见[00058 验证记录](verification/027-public-00058-grant-upgrade.md)。
+
 ## 验证与历史批次
 
 [已关闭计划](governance/catalog/README.md#catalog-closed)保留各份的执行及采纳状态，可按原编号打开归档正文。[全部验证记录](governance/catalog/README.md#catalog-evidence)可按关联编号查找原评审、实施和复验。归档依据见[511 首轮逐份评估](verification/511-project-standards-implementation.md#plan-dispositions)、[首批物理归档与交接](verification/511-physical-archive.md)、[500 人员场景交接](verification/500-personnel-roadmap-closeout.md)及[136 节流观察与 206 法律实体验收交接](verification/136-206-plan-archive.md)。

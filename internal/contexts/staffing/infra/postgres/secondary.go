@@ -6,7 +6,6 @@ import (
 	h "chnhcm.local/chnhcm/internal/contexts/staffing/application/hireprep"
 	staff "chnhcm.local/chnhcm/internal/contexts/staffing/public"
 	f "chnhcm.local/chnhcm/internal/foundation"
-	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"context"
 	"github.com/jackc/pgx/v5"
 	"strings"
@@ -95,7 +94,7 @@ func (st *Store) AddSecondary(ctx context.Context, c f.Credentials, id, key stri
 		if e != nil {
 			return employmentResult{}, e
 		}
-		sourceCtx := dbtx.With(ctx, u.tx)
+		sourceCtx := u.transactionContext(ctx)
 		var adoptedLocation *h.LocationRef
 		if in.Location != "" {
 			adoptedLocation, e = u.adoptHistoryLocation(ctx, in.Location, term)

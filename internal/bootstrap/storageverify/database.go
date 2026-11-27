@@ -230,6 +230,17 @@ func importAuxiliary(ctx context.Context, dir string) (any, error) {
 	counts := map[string]int{}
 	for _, table := range []string{"organization.enterprise", "access.principal", "access.credential", "access.policy_guard", "access.session", "access.subject_grant"} {
 		rows := tables[table]
+		if table == "access.subject_grant" {
+			payload, err := json.Marshal(rows)
+			if err != nil {
+				return nil, err
+			}
+			if err = bootstrap.RestoreGrantArchive(ctx, tx, payload); err != nil {
+				return nil, err
+			}
+			counts[table] = len(rows)
+			continue
+		}
 		columns, e := tx.Query(ctx, "SELECT attname FROM pg_attribute WHERE attrelid=$1::regclass AND attnum>0 AND NOT attisdropped", table)
 		if e != nil {
 			return nil, e

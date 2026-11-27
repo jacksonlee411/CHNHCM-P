@@ -40,7 +40,7 @@ func (unit hierarchyUnit312) SaveHierarchy(ctx context.Context, enterprise strin
 func TestStaffing312Hierarchy(t *testing.T) {
 	h := staffingSetup307(t)
 	secondPassword := foundation.NewID()
-	must(t, bootstrap.Initialize(h.f.ctx, h.f.admin, bootstrap.InitInput{Instance: h.f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "hierarchy-admin", Password: secondPassword}))
+	must(t, bootstrap.Initialize(h.f.ctx, h.f.admin, bootstrap.InitInput{DevelopmentFixture: true, Instance: h.f.instance, EnterpriseCode: "LOCAL", EnterpriseName: "本地验证企业", Start: "1900-01-01", Login: "hierarchy-admin", Password: secondPassword}))
 	secondAdmin := h.f.login("hierarchy-admin", secondPassword)
 	if secondAdmin.subject == h.b.subject {
 		t.Fatal("并发参与者应有不同的管理员主体")
