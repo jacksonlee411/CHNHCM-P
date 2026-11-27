@@ -2887,11 +2887,11 @@
       "scope": "薪酬计划和职级薪酬标准的后台页面、字段、桌面设计原型、错误恢复、来源与返回上下文。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-27",
-        "reviewer": "Codex 按用户授权，结合设计走查及 I1 至 I3 产品实施复审",
-        "scope": "两类后台菜单、四种页面状态、角色可见范围、表单异常、日期、原件返回和桌面验收范围。",
+        "date": "2026-11-28",
+        "reviewer": "Codex 按用户授权，结合原设计走查和产品实页复审",
+        "scope": "两类配置的四种页面状态、授权、日期与原件沿用原 I3 联验，本次复核列表准入、独立金额列、查询草稿、按日来源返回和桌面列恢复。",
         "result": "accepted",
-        "evidence": "docs/verification/210-compensation-i3.md"
+        "evidence": "docs/verification/210-compensation-list-retest.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -4045,6 +4045,57 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/210-compensation-list-retest.md",
+        "related_documents": [
+          "CHNHCM-210",
+          "CHNHCM-211",
+          "CHNHCM-212",
+          "CHNHCM-012",
+          "CHNHCM-003"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "4822889148d855cad0adbf6f3e798b1a138620bb",
+        "working_tree": "clean",
+        "change_description": "固定环境在此产品提交更新并逐项核对。浏览器专项在提交前、相同产品源输入的工作树上执行，报告列出前一基线及首败。",
+        "environment": "wt-dev-c，独立 PostgreSQL、Go HTTP、Chromium 生产构建，以及本工作树负责的 4521 固定环境。",
+        "scope": "薪标及计划的列表准入、独立金额列、按日来源返回、短屏恢复、当日有效样本和原件保全。",
+        "purpose": "retest",
+        "conclusion": "两个薪酬菜单的 15 项浏览器场景通过，短屏列恢复和来源按日返回均已复验。4521 七个对象的原件、回执和按日资料一致，人工签收另记。",
+        "evidence_access": "repository",
+        "results": [
+          {
+            "check": "首轮开发版 15 项中，按日返回、三计划联验、撤权、列表重试和短屏薪标办理五项失败。",
+            "result": "failed",
+            "evidence": "docs/verification/210-compensation-list-retest.md"
+          },
+          {
+            "check": "修复按日来源后，生产构建 14/15，稳定开发版重点场景 4/5；剩余短屏隐藏全部列后按钮无法点击。",
+            "result": "failed",
+            "evidence": "docs/verification/210-compensation-list-retest.md"
+          },
+          {
+            "check": "共享列恢复在同构建薪酬计划和业务单元通过，独立开发版短屏复验通过，两类薪酬页面生产构建 15 项全数通过。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-list-retest.md"
+          },
+          {
+            "check": "实库与真实 Go HTTP 验证薪标、计划按日采用与生命周期，make check 通过。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-list-retest.md"
+          },
+          {
+            "check": "原 4521 地址从两个角色菜单复查当日制度，更新前后的七个对象、九份原修订、九份回执、十七份按日资料一致。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-list-retest.md"
+          }
+        ],
+        "limitations": [
+          "使用合成薪酬制度。客户业务签收、实际上线容量及个人薪资业务不在本次复验范围。"
+        ]
+      },
+      {
         "path": "docs/verification/210-compensation-i3.md",
         "related_documents": [
           "CHNHCM-210",
@@ -4087,7 +4138,8 @@
         ],
         "purpose": "handoff",
         "conclusion": "八组业务场景联验，768 次容量请求零错误，重启后 408 份原修订及回执一致。4521 已交接，业务签收及客户容量另记。",
-        "evidence_access": "repository"
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/210-compensation-list-retest.md"
       },
       {
         "path": "docs/verification/210-compensation-i2.md",
