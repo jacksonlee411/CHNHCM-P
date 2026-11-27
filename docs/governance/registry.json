@@ -135,15 +135,15 @@
       "status": "active",
       "type": "decision",
       "modules": [],
-      "scope": "建仓、规格、垂直实现、验收及交付能力的阶段口径，含手工验收环境更新、资源收尾与持久数据保留。",
+      "scope": "建仓、规格、垂直实现、验收及交付能力的阶段口径，含手工验收样本与环境更新、资源收尾与持久数据保留。",
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-03",
-        "reviewer": "Codex主代理实施后自查，非独立评审或人工业务验收",
-        "scope": "按用户授权明确少量持久开发环境、创建时可丢弃的浏览器验收、自动回收、环境列表及宿主机地址池；保留历史数据和原报告。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理（合同与实测复评）",
+        "scope": "第 4.3 节手工验收样本的业务日、角色、预期及到期复查，含当前与未来首聘及推荐五级部门分支。",
         "result": "accepted",
-        "evidence": "docs/verification/017-docker-runtime-lifecycle.md"
+        "evidence": "docs/verification/405-list-standards-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -379,15 +379,15 @@
       "modules": [
         "M02"
       ],
-      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，桌面视口、原生缩放与手机端专项的适用范围按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。",
+      "scope": "M02当前菜单、列表详情及维护交互；Community列表、A/D、真实链接和窄屏摘要按113；111 T03完成当批真实业务及七组条件。项目详情正文的字段分组、获权摘要和行入口按第 2.4.1 节，桌面视口、原生缩放与手机端专项的适用范围按第 6.2 节执行。 114/115新增全结果选择工具条/导出交互已实施并按115分层验证。 更正记录分类单组按权显示，原值及差异保护保持；实际增量见104单组字段报告。 跨对象列表准入见第 3.1 节。",
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-26",
-        "reviewer": "Codex 主代理（本批修订与复核）",
-        "scope": "详情页签手动激活、单草稿、原件后退与保存确认、权限及失败恢复的长期规则。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理（合同与实测复评）",
+        "scope": "第 3.1 节列表准入的行、计数、独立列、主要查询、勾选和错误恢复，以及第 6.2 节共享组件的消费者复验。",
         "result": "accepted",
-        "evidence": "docs/verification/511-project-standards-implementation.md"
+        "evidence": "docs/verification/405-list-standards-review.md"
       },
       "execution_status": null,
       "superseded_by": [
@@ -1465,14 +1465,14 @@
         "M02",
         "X03"
       ],
-      "scope": "部门正常菜单、列表/详情/维护、关系候选、路径、日志及恢复；R5页面落地与双对象实测，容量留R6。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。",
+      "scope": "部门正常菜单、列表/详情/维护、关系候选、路径、日志及恢复；R5页面落地与双对象实测，容量留R6。 2026-11-08关联快捷跳转及专属检验/DTO/摘要要求按CHNHCM-128第2.6节撤除；代码尚未改动。 第 10 节列出部门树共用交互与各页的范围差异。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-26",
-        "reviewer": "Codex 主代理（本批修订与复核）",
-        "scope": "部门读写恢复、会话与局部错误的现行验收入口。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理（合同与实测复评）",
+        "scope": "第 10.1 节共用部门树的交互、各使用页获权的节点和关系，以及右表范围。",
         "result": "accepted",
-        "evidence": "docs/verification/511-project-standards-implementation.md"
+        "evidence": "docs/verification/405-list-standards-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -1610,11 +1610,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-26",
-        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
-        "scope": "BU V15 诊断与正式测量、部门存储增长和树查询的责任交接。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理（合同与实测复评）",
+        "scope": "第 7 节从对象事实和角色推导列表预期，再按适用条款验收及复验共享组件。",
         "result": "accepted",
-        "evidence": "docs/verification/511-physical-archive.md"
+        "evidence": "docs/verification/405-list-standards-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3148,14 +3148,14 @@
         "M01",
         "X03"
       ],
-      "scope": "人员菜单、详情各面板授权、登记、个人资料与明细、证件维护、改号、人员历史与返回。",
+      "scope": "人员菜单、名录范围与行选择、查询重试、详情各面板授权、登记、个人资料与明细、证件维护、改号、人员历史与返回。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-26",
-        "reviewer": "Codex 主代理（本批修订与复核）",
-        "scope": "人员主动切签与日志返回的焦点分工，按人员编号过滤兼岗及受限读者。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理（合同与实测复评）",
+        "scope": "第 3 节按失败步骤重试，第 4 节同号三份任职的部门范围、勾选、列显隐、读权与原行返回。",
         "result": "accepted",
-        "evidence": "docs/verification/511-project-standards-implementation.md"
+        "evidence": "docs/verification/405-list-standards-review.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3472,6 +3472,42 @@
       "superseded_by": [],
       "closure": null,
       "archive": null
+    },
+    {
+      "id": "CHNHCM-405",
+      "title": "人员名录交互、部门层级与验收样本整改",
+      "path": "docs/archive/plans/405-personnel-directory.md",
+      "owner_branch": "wt-dev-e",
+      "owner_role": "人员与任职名录维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "M01",
+        "M04",
+        "M02",
+        "X03"
+      ],
+      "scope": "统一名录的查询恢复、可见任职树、行选择、列展示及4496在任样本。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理顺序评审",
+        "scope": "七项原问题、查询异常、获权树和全选、原件保留及固定环境样本。",
+        "result": "accepted",
+        "evidence": "docs/verification/405-personnel-directory.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-27",
+        "reason": "七项整改经定向回归、两套万人容量及4496三种桌面视口核验，原件和新增样本均已复核。"
+      },
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "规则由502、503、507接续，实页验收与环境责任由405验证记录接续。",
+        "previous_path": "docs/plans/405-personnel-directory.md"
+      }
     }
   ],
   "first_slice": {
@@ -24814,6 +24850,128 @@
         ],
         "limitations": [
           "4496 既有管理员无办理记录列表权限，获权的名单查询和跨页原件使用独立验收库。最终远程汇总按 PR 当前提交核验。"
+        ]
+      },
+      {
+        "path": "docs/verification/405-personnel-directory.md",
+        "related_documents": [
+          "CHNHCM-405",
+          "CHNHCM-502",
+          "CHNHCM-507",
+          "CHNHCM-012",
+          "CHNHCM-119"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "547a70dced30aa3d0069d71d6e73bd90a014b151",
+        "working_tree": "clean",
+        "change_description": "由1284f50e原实页复现，236a913完成整改，547a70d保留全隐藏后的公共选择入口并在4496复验。",
+        "environment": "wt-dev-e，t03-first-e 4496 / 8496 / 54496，Chromium 140 与 PostgreSQL 18。",
+        "scope": "两轮问题、定稿评审、业务回归及固定菜单验收。",
+        "results": [
+          {
+            "check": "原菜单重现查询、筛选、选择、部门栏和样本问题",
+            "result": "failed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "方案修订及按012、119、502、507顺序评审",
+            "result": "passed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "首轮并行负载和业务单元隐藏全部列",
+            "result": "failed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "七项问题、公共列表及实库授权与成员变化复核",
+            "result": "passed",
+            "evidence": "docs/verification/405-personnel-directory.md"
+          },
+          {
+            "check": "两套万人容量及固定原件、样本与三视口复验",
+            "result": "passed",
+            "evidence": "docs/verification/data/405-personnel-directory/validation.json"
+          }
+        ],
+        "limitations": [
+          "样本在任数按2026-11-27计算。验收为本地固定环境和定向回归，远程CI未运行。"
+        ]
+      },
+      {
+        "path": "docs/verification/405-list-standards-review.md",
+        "related_documents": [
+          "CHNHCM-405",
+          "CHNHCM-012",
+          "CHNHCM-119",
+          "CHNHCM-003",
+          "CHNHCM-502",
+          "CHNHCM-124"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "6ba262942dc1928c4be69cd2b9e7901b85acdb60",
+        "working_tree": "dirty",
+        "change_description": "基于已归档的405，修订现行列表、树和手工样本条款，扩充人员名录的同号多任职浏览器用例。受测差异与本记录一同提交。",
+        "environment": "wt-dev-e，t03-first-e（4496 / 8496 / 54496），独立临时 PostgreSQL 18 与 Chromium 140。",
+        "scope": "共享条款及对象差异评审，五级分支、勾选与返回、读权、日期样本和参考页复核。追加核对 PR 合并候选的第 21 人及第 21 份任职返回。",
+        "results": [
+          {
+            "check": "草稿应用时机、动态与固定选择、行身份、字段读权及手工样本的合同复评",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "首轮浏览器 4/5 通过，五级树用例在查询完成前断言复选框状态",
+            "result": "failed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "修订时序后五级分支、资料读者、公共列表与固定成员等 7 项浏览器回归",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "隔离浏览器分别模拟查询引用及名录读取的一次临时失败，核对重试与较晚草稿",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "4496 两类角色、桌面及短屏与原生 200%、生效样本及职务岗位独立显隐",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "实库同数换人、跨页排除、叶子任职及上级关系撤权",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "make check、规范导航、文档登记与生成目录",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "PR 38 初次正式检查的浏览器分片 3、6 从第 21 行返回时页码及焦点丢失",
+            "result": "failed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "9e9ba0c 修复后两类角色、两个桌面视口、原生 200%、任职返回及跨页选择共 8 项定向复验",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          },
+          {
+            "check": "4496 原库 16 张表、API 与 5 份 Web 文件核验，两类角色从正常菜单核对任职返回",
+            "result": "passed",
+            "evidence": "docs/verification/405-list-standards-review.md"
+          }
+        ],
+        "limitations": [
+          "固定样本以2026-11-27为业务日，六份新增任职的最后任职日为2027-03-31。条款初评限于本地定向回归。公开 PR 首败与后续本地复验另记于第 5 节。第 20 至 21 行在隔离实库核对。"
         ]
       }
     ]
