@@ -18,13 +18,17 @@ func restoreGrantPredecessor(f *fixture) {
 	if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('access.bound_permission')") == 0 {
 		return
 	}
-	f.exec(`DROP VIEW IF EXISTS access.subject_grant;
+	// The fixture models the pre-M09 product. Remove its synthetic rate grants
+	// before restoring the older allowlist. Real profiles are never downgraded.
+	f.exec(`DROP SCHEMA IF EXISTS compensation CASCADE;
+ DROP VIEW IF EXISTS access.subject_grant;
  CREATE TABLE access.subject_grant (LIKE fixture.prefix_grant INCLUDING ALL);
- INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission;
+ INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission WHERE action NOT LIKE 'graderate.%';
  DROP VIEW access.bound_permission;
  DROP TABLE access.grant_assignment,access.grant_revision,access.policy_version;
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id=58`)
+ DROP FUNCTION IF EXISTS access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[]);
+ DELETE FROM public.goose_db_version WHERE version_id IN (58,59)`)
 }
 
 func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
@@ -34,6 +38,7 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	before := businessSnapshot(t, f)
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
+		{"missing_grade_rate_periods", `ALTER TABLE compensation.grade_rate_period RENAME TO hidden_periods`, `ALTER TABLE compensation.hidden_periods RENAME TO grade_rate_period`},
 		{"mutable_grant_revision", `ALTER TABLE access.grant_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE access.grant_revision ENABLE TRIGGER immutable_revision`},
 		{"missing_f_reserved_versions", `DELETE FROM public.goose_db_version WHERE version_id IN (32,33)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(32,true),(33,true)`},
 		{"missing_person_profile_table", `ALTER TABLE personnel.document_payload RENAME TO t07_hidden_documents`, `ALTER TABLE personnel.t07_hidden_documents RENAME TO document_payload`},

@@ -48,6 +48,7 @@ func (a *API) Handler() http.Handler {
 	a.readinessRoutes(mux)
 	a.recruitingRoutes(mux)
 	a.staffingRoutes(mux)
+	a.compensationRoutes(mux)
 	mux.Handle("GET /healthz", Handler())
 	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
 		if a.Runtime.Ready(r.Context()) != nil {

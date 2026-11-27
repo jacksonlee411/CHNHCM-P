@@ -275,6 +275,68 @@ type AccessSession struct {
 	RevokedAt         pgtype.Timestamptz
 }
 
+type CompensationGradeRate struct {
+	InstanceID   string
+	EnterpriseID string
+	ID           string
+	GradeID      string
+	Currency     string
+	Frequency    string
+	Unit         string
+	Places       int16
+	Head         string
+}
+
+type CompensationGradeRateOutbox struct {
+	InstanceID string
+	RateID     string
+	Version    string
+	Event      []byte
+}
+
+type CompensationGradeRatePeriod struct {
+	InstanceID  string
+	RateID      string
+	RecordID    string
+	Revision    string
+	StartDate   pgtype.Date
+	UntilDate   pgtype.Date
+	Active      bool
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationGradeRateReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	Result       []byte
+}
+
+type CompensationGradeRateRevision struct {
+	InstanceID string
+	RateID     string
+	RecordID   string
+	Revision   string
+	Fact       []byte
+}
+
+type CompensationGradeRateVersion struct {
+	InstanceID       string
+	RateID           string
+	ID               string
+	Predecessor      *string
+	Action           string
+	RecordID         string
+	Revision         string
+	PreviousRecordID *string
+	PreviousRevision *string
+	UntilDate        pgtype.Date
+	PreviousUntil    pgtype.Date
+	Operator         []byte
+	RecordedAt       pgtype.Timestamptz
+}
+
 type MigrationBinding struct {
 	InstanceID    string
 	GrantID       string

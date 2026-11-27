@@ -4,7 +4,9 @@
 
 ## 1 目标与上下文归属
 
-17 个上下文及其领域责任见[上下文登记](contexts.json)。Personnel、Organization、Staffing、Recruiting 和 Access 已接入组合根。登记中的每个切片分别列出所属模块、实际入口和签收范围。Staffing 的 M03 已接入[岗位核编首批](../verification/313-quota-implementation.md)。M04 已接入按职务或按岗首聘、任职维护和人事事务办理记录，M05 已接入招聘录用及预留。修改事实归属时，同步核对上下文登记、对象合同、目标图的节点和箭头，以及实际写表和消费端口。各入口及合成样本见[分阶段验收](../verification/500-job-information-delivery-review.md#stage-delivery-results)。
+17 个上下文及其领域责任见[上下文登记](contexts.json)。Personnel、Organization、Staffing、Recruiting、Compensation 和 Access 已接入组合根。登记中的每个切片分别列出所属模块、实际入口和签收范围。Staffing 的 M03 已接入[岗位核编首批](../verification/313-quota-implementation.md)。M04 已接入按职务或按岗首聘、任职维护和人事事务办理记录，M05 已接入招聘录用及预留。M09 从 M03 的公开端口采用职级，在本域保存按日薪标和独立修订。[薪标实施验证](../verification/210-compensation-i1.md)
+
+修改事实归属时，同步核对上下文登记、对象合同、目标图的节点和箭头，以及实际写表和消费端口。各入口及合成样本见[分阶段验收](../verification/500-job-information-delivery-review.md#stage-delivery-results)。
 
 ## 2 目录组织
 
@@ -21,6 +23,7 @@ CHNHCM/
   internal/contexts/organization/          M02：public/domain/application/infra
   internal/contexts/staffing/              M03 岗位与核编、M04 任职及占编
   internal/contexts/recruiting/            M05 招聘录用、预留及交接
+  internal/contexts/compensation/          M09 职级薪酬标准
   internal/contexts/access/                X03 本地身份、会话与授权
   internal/foundation/                    X01 小型共享值与协议
   internal/platform/                      DB 设施、X04 调度、X05 适配

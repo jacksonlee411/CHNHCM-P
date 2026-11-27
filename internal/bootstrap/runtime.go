@@ -4,6 +4,8 @@ import (
 	accessapp "chnhcm.local/chnhcm/internal/contexts/access/application"
 	accessdb "chnhcm.local/chnhcm/internal/contexts/access/infra/postgres"
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	compdb "chnhcm.local/chnhcm/internal/contexts/compensation/infra/postgres"
+	comp "chnhcm.local/chnhcm/internal/contexts/compensation/public"
 	orgapp "chnhcm.local/chnhcm/internal/contexts/organization/application"
 	countryapp "chnhcm.local/chnhcm/internal/contexts/organization/application/country"
 	departmentapp "chnhcm.local/chnhcm/internal/contexts/organization/application/department"
@@ -37,6 +39,7 @@ import (
 )
 
 type Runtime struct {
+	Compensation       comp.RateService
 	Offers             recruit.Offers
 	OfferTargets       func(context.Context, foundation.Credentials, hireprep.TargetSearch) ([]org.EligibleEntity, error)
 	OfferArrangement   func(context.Context, foundation.Credentials, hireprep.ArrangementQuery) (hireprep.ArrangementMode, error)
@@ -134,7 +137,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 			slog.Warn("revoked staffing selection cleanup failed")
 		}
 	}
-	runtime := &Runtime{Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
+	runtime := &Runtime{Compensation: &compdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Enterprise: o, Grades: st}, Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
 	if e = runtime.Ready(ctx); e != nil {
 		p.Close()
 		return nil, e
@@ -434,9 +437,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,58)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,59)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 57 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 58 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -537,6 +540,10 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
            AND to_regclass('personnel.contact_channel_primary') IS NOT NULL AND to_regclass('access.person_profile_fixture') IS NOT NULL
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.person_grant') AND attname='item_id' AND NOT attisdropped)
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.identity_payload') AND attname='basic' AND NOT attisdropped)))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=59 AND is_applied) OR (
+           to_regclass('compensation.grade_rate') IS NOT NULL AND to_regclass('compensation.grade_rate_outbox') IS NOT NULL
+           AND to_regclass('compensation.grade_rate_revision') IS NOT NULL AND to_regclass('compensation.grade_rate_period') IS NOT NULL
+           AND to_regclass('compensation.grade_rate_version') IS NOT NULL AND to_regclass('compensation.grade_rate_receipt') IS NOT NULL))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=58 AND is_applied) OR (
            to_regclass('access.bound_permission') IS NOT NULL AND to_regprocedure('access.valid_permission(uuid,text,uuid,text,text[],text[])') IS NOT NULL
            AND NOT EXISTS(SELECT FROM (VALUES

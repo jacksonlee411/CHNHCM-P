@@ -34,6 +34,25 @@
     "enterprise-maintenance"
   ],
   "domains": {
+    "compensation": {
+      "frontend": [
+        "apps/web/src/features/compensation/RateDetail.tsx",
+        "apps/web/src/features/compensation/RateEditor.tsx",
+        "apps/web/src/features/compensation/RateList.tsx",
+        "apps/web/src/features/compensation/RateLog.tsx",
+        "apps/web/src/features/compensation/Recovery.tsx",
+        "apps/web/src/features/compensation/rates.ts"
+      ],
+      "browser_files": [
+        "compensation210.spec.ts"
+      ],
+      "backend_prefixes": [
+        "internal/contexts/compensation/"
+      ],
+      "backend_consumers": [
+        "compensation"
+      ]
+    },
     "recruiting": {
       "frontend": ["apps/web/src/features/recruiting/Offers.tsx"],
       "browser_files": ["first-hire.spec.ts", "staffing313.spec.ts"],
@@ -167,7 +186,8 @@
         "geoarea",
         "location",
         "legalentity",
-        "staffing"
+        "staffing",
+        "compensation"
       ]
     },
     "country": {
@@ -308,11 +328,13 @@
       "backend_consumers": [
         "staffing",
         "enterprise",
-        "recruiting"
+        "recruiting",
+        "compensation"
       ]
     }
   },
   "integration_prefixes": {
+    "compensation": ["Compensation"],
     "recruiting": ["Recruiting"],
     "personnel": ["Personnel"],
     "businessunit": [

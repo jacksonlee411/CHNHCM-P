@@ -42,7 +42,8 @@ export function StaffingDetail({
     [params, setParams] = useMaintenanceSearchParams(staff.paths[k]),
     navigate = useNavigate();
   const proposed = params.get('back') ?? staff.paths[k],
-    back = (proposed.split('?')[0] === staff.paths[k] || (k==='position' && proposed.split('?')[0]===structurePath)) ? proposed : staff.paths[k];
+    fromGradeRate = k === 'grade' && /^\/settings\/compensation\/grade-rates\/[0-9a-f-]{36}$/.test(proposed.split('?')[0]),
+    back = (fromGradeRate || proposed.split('?')[0] === staff.paths[k] || (k==='position' && proposed.split('?')[0]===structurePath)) ? proposed : staff.paths[k];
   const returnToCurrentStructure=()=>{
     const q=new URLSearchParams(fromStructure?back.split('?')[1]:undefined);
     if(structureDate)q.set('businessAt',structureDate);
@@ -287,7 +288,7 @@ export function StaffingDetail({
       <RecordControl
         identity={
           <>
-            <RecordBackButton component={Link} label={fromStructure?"返回岗位上下级":"返回列表"} to={back} />
+            <RecordBackButton component={Link} label={fromGradeRate ? "返回职级薪酬标准" : fromStructure ? "返回岗位上下级" : "返回列表"} to={back} />
             {data?.code && <Typography>{data.code}</Typography>}
             {!creating && !data?.readOnly && (!!operations.length || !!openAdjustment) && (
               <IconButton

@@ -832,6 +832,20 @@
         "verified": false
       },
       "new_evidence": [],
+      "adoptions": [
+        {
+          "document": "CHNHCM-210",
+          "scope": "薪标经办人从真实菜单打开更正前的原件，核对上限并返回所选标准。",
+          "target_files": [
+            "tests/e2e/compensation210.spec.ts",
+            "apps/web/src/features/compensation/RateDetail.tsx"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i1.md"
+        }
+      ],
       "planned_adoptions": [
         {
           "document": "CHNHCM-210",
@@ -2416,6 +2430,19 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/122-operation-summary-implementation.md",
           "verification_limit": "原实施报告与122评审修复报告合读；补闭S/P/F主层参数，不提升原资产整项状态。"
+        },
+        {
+          "document": "CHNHCM-211",
+          "scope": "Go 按确切原修订和结果列出获权薪标字段、来源及经办时间。",
+          "target_files": [
+            "internal/contexts/compensation/infra/postgres/rate_read.go",
+            "apps/web/src/features/compensation/RateLog.tsx",
+            "internal/bootstrap/compensation_grade_rate_integration_test.go"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i1.md"
         }
       ],
       "planned_adoptions": [
@@ -7438,6 +7465,19 @@
           "verified": true,
           "complete_asset_verified": false,
           "evidence": "docs/verification/206-legal-entity-implementation.md"
+        },
+        {
+          "document": "CHNHCM-212",
+          "scope": "薪标使用共用日期轴和维护入口，桌面、短屏及放大流程按同一后台菜单办理。",
+          "target_files": [
+            "apps/web/src/features/compensation/RateDetail.tsx",
+            "apps/web/src/features/compensation/RateEditor.tsx",
+            "tests/e2e/compensation210.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i1.md"
         }
       ],
       "planned_adoptions": [

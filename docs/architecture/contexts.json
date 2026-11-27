@@ -272,7 +272,19 @@
         "M09"
       ],
       "code_path": "internal/contexts/compensation",
-      "state": "planned"
+      "state": "partially_implemented",
+      "slices": [
+        {
+          "module": "M09",
+          "capability": "职级薪酬标准",
+          "state": "verified_slice",
+          "scope": "管理员按日维护共享职级定额或连续薪带，按现权查看来源、当期标准及历次修订。",
+          "entry": "/settings/compensation/grade-rates",
+          "entry_source": "apps/web/src/features/compensation/rates.ts",
+          "source": "internal/contexts/compensation/application/rates.go",
+          "evidence": "docs/verification/210-compensation-i1.md"
+        }
+      ]
     },
     {
       "name": "payroll",

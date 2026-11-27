@@ -5830,10 +5830,285 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/compensation/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["compensationMenu"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/grade-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listCompensationRates"];
+        put?: never;
+        post: operations["createCompensationRate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/grade-rates/create-context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["createCompensationRateContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/grade-rates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["readCompensationRate"];
+        put?: never;
+        post: operations["amendCompensationRate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/grade-rates/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["compensationRateHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/grade-rate-receipts/{submissionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["compensationRateReceipt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/grade-rate-receipts/{submissionId}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolveCompensationRateReceipt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CompensationMenu: {
+            gradeRates: boolean;
+        };
+        CompensationReference: {
+            open?: boolean;
+            /** Format: date */
+            businessAt: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            /** Format: uuid */
+            recordId: string;
+            /** Format: uuid */
+            revision: string;
+        };
+        CompensationGrade: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            code?: string;
+        };
+        CompensationRateRecord: {
+            /** Format: uuid */
+            recordId: string;
+            /** Format: uuid */
+            revision: string;
+            /** Format: date */
+            effectiveDate?: string;
+            /** Format: date */
+            endExclusive?: string;
+            status?: string;
+            operation?: string;
+            reason?: string;
+            form?: string;
+            amount?: string;
+            minimum?: string;
+            guidance?: string;
+            maximum?: string;
+            grade?: components["schemas"]["CompensationGrade"];
+            adopted?: components["schemas"]["CompensationReference"];
+        };
+        CompensationRate: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            currency?: string;
+            frequency?: string;
+            unit?: string;
+            precision?: number;
+            record: components["schemas"]["CompensationRateRecord"];
+        };
+        CompensationDate: {
+            /** Format: uuid */
+            recordId: string;
+            /** Format: date */
+            effectiveDate: string;
+            active?: boolean;
+        };
+        CompensationRateDetail: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            sourceVersion: string;
+            currency?: string;
+            frequency?: string;
+            unit?: string;
+            precision?: number;
+            record: components["schemas"]["CompensationRateRecord"];
+            /** Format: date */
+            today: string;
+            dates: components["schemas"]["CompensationDate"][];
+            reasons: {
+                [key: string]: string[];
+            };
+            windows: {
+                [key: string]: {
+                    /** Format: date */
+                    minimum: string;
+                    /** Format: date */
+                    maximum?: string;
+                    /** Format: date */
+                    default?: string;
+                    available: boolean;
+                };
+            };
+            history: boolean;
+            actions: {
+                [key: string]: string[];
+            };
+        };
+        CompensationRateList: {
+            readable: string[];
+            items: components["schemas"]["CompensationRate"][];
+            total: number;
+            /** Format: date */
+            today: string;
+            create: boolean;
+        };
+        CompensationRateContext: {
+            reasons: string[];
+            units: {
+                [key: string]: string;
+            };
+            /** Format: date */
+            defaultEffectiveDate: string;
+            writable: string[];
+        };
+        CompensationRateInput: {
+            /** @enum {string} */
+            action: "CREATE" | "ADD" | "CORRECT" | "DEACTIVATE" | "REACTIVATE" | "DELETE";
+            /** Format: date */
+            effectiveDate?: string;
+            reason?: string;
+            /** Format: uuid */
+            gradeId?: string;
+            currency?: string;
+            frequency?: string;
+            unit?: string;
+            precision?: number;
+            /** Format: uuid */
+            recordId?: string;
+            /** Format: uuid */
+            expectedVersion?: string;
+            /** Format: uuid */
+            expectedRevision?: string;
+            changes?: {
+                [key: string]: string | null;
+            };
+        };
+        CompensationReceipt: {
+            /** Format: uuid */
+            submissionId: string;
+            message?: string;
+            /** @enum {string} */
+            outcome: "accepted" | "rejected" | "no_change" | "not_applied";
+            /** Format: uuid */
+            objectId?: string;
+            /** Format: uuid */
+            sourceVersion?: string;
+            /** Format: uuid */
+            recordId?: string;
+            /** Format: uuid */
+            revision?: string;
+        };
+        CompensationRateChange: {
+            /** Format: uuid */
+            previousSourceVersion?: string;
+            currency?: string;
+            frequency?: string;
+            unit?: string;
+            precision?: number;
+            /** Format: uuid */
+            sourceVersion: string;
+            action: string;
+            /** Format: date-time */
+            recordedAt: string;
+            operator?: string;
+            before?: components["schemas"]["CompensationRateRecord"];
+            after?: components["schemas"]["CompensationRateRecord"];
+        };
+        CompensationRateChanges: {
+            items: components["schemas"]["CompensationRateChange"][];
+        };
         OfferTerms: {
             number: string;
             /** Format: uuid */
@@ -26483,6 +26758,306 @@ export interface operations {
                 };
             };
             /** @description Unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    compensationMenu: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationMenu"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listCompensationRates: {
+        parameters: {
+            query?: {
+                q?: string;
+                currency?: string;
+                frequency?: string;
+                form?: string;
+                status?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationRateList"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createCompensationRate: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompensationRateInput"];
+            };
+        };
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationReceipt"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createCompensationRateContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationRateContext"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    readCompensationRate: {
+        parameters: {
+            query?: {
+                recordId?: string;
+                businessAt?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationRateDetail"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    amendCompensationRate: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompensationRateInput"];
+            };
+        };
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationReceipt"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    compensationRateHistory: {
+        parameters: {
+            query?: {
+                sourceVersion?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationRateChanges"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    compensationRateReceipt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                submissionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationReceipt"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    resolveCompensationRateReceipt: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                submissionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized compensation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompensationReceipt"];
+                };
+            };
+            /** @description Request rejected or unavailable */
             default: {
                 headers: {
                     [name: string]: unknown;

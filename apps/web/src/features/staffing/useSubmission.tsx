@@ -1,35 +1,16 @@
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Stack } from '@mui/material';
 import { ApiError, sessionGuard } from '@chnhcm/api-client';
 import { useSessionRecovery } from '../../shared/sessionRecovery';
-import { SubmissionFlow, ownedReference, type Pending } from '../../shared/dated/submission';
+import { useObjectSubmission } from '../../shared/dated/useObjectSubmission';
+import { ownedReference, type Pending } from '../../shared/dated/submission';
 import * as staff from './api';
 import {arrangementChannel,resolveArrangement,structurePath} from './structure';
 export function useStaffingSubmission(k: staff.Kind, session: staff.Principal, id: string, onSaved: (r: staff.Result) => void) {
     return useObjectSubmission(session, staff.channels[k], (body:staff.Input,sub:string)=>staff.send(k,session,id,body,sub), ref=>staff.resolve(k,session,ref), onSaved, e=>e instanceof staff.RejectedSubmission);
 }
-export function useObjectSubmission<C>(session:staff.Principal, channel:typeof staff.channels.position,
-    send:(body:C,id:string)=>Promise<staff.Result>, resolve:(ref:Pending)=>Promise<staff.Result>,
-    onSaved:(result:staff.Result)=>void, definitive:(error:unknown)=>boolean){
-    const [,render]=useReducer(n=>n+1,0), mounted=useRef(false);
-    const latest=useRef({send,resolve,onSaved,definitive}); latest.current={send,resolve,onSaved,definitive};
-    const flow=useRef<SubmissionFlow<C,staff.Result,staff.Result> | undefined>(undefined);
-    if (!flow.current) flow.current=new SubmissionFlow({owner:session,channel,uuid:()=>crypto.randomUUID(),changed:render,
-      current:()=>{const same=sessionGuard();return ()=>mounted.current && same()},
-      send:(input,id)=>latest.current.send(input,id),resolve:ref=>latest.current.resolve(ref),unwrap:r=>r,definitive:e=>latest.current.definitive(e)});
-    const f = flow.current;
-    useEffect(() => { mounted.current = true; return () => { mounted.current = false; f.clearPayload(); }; }, [f]);
-    useEffect(() => channel.watch(render), [channel]);
-    useEffect(() => channel.subscribe(notice => { if (f.resolved(notice.reference, notice.result)) {
-        latest.current.onSaved(notice.result); return true; } }, () => render()), [channel, f]);
-    let pending = true;
-    try {
-        pending = channel.read().some(p => ownedReference(p, session));
-    }
-    catch { /* fail closed */ }
-    return { flow: f, pending, sessionBlocked: useSessionRecovery() };
-}
+export { useObjectSubmission } from '../../shared/dated/useObjectSubmission';
 export function StaffingRecovery({ session }: {
     session: staff.Principal;
 }) {

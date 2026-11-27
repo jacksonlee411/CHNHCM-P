@@ -3580,6 +3580,48 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/210-compensation-i1.md",
+        "related_documents": [
+          "CHNHCM-210",
+          "CHNHCM-211",
+          "CHNHCM-212",
+          "CHNHCM-213"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "83075373e77e28c0bfb8a4f76581bc0987a0e43b",
+        "working_tree": "dirty",
+        "change_description": "在设计基线上实现职级薪酬标准、M03 职级公开来源、X03 权限、迁移、API 及后台页面。",
+        "environment": "wt-dev-c；任务自有 PostgreSQL 18.6、Go HTTP 及 Chromium。",
+        "scope": "I1 职级薪标的正常办理、按日生效、准确历史、重送及当前权限。",
+        "results": [
+          {
+            "check": "真实 DB/API 验证定额、连续薪带、跨日、并发同号、撤权、启停及旧修订。",
+            "result": "passed",
+            "evidence": "internal/bootstrap/compensation_grade_rate_integration_test.go"
+          },
+          {
+            "check": "首轮 CI 影响集发现新增浏览器场景未登记；登记后文档检查通过。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-i1.md"
+          },
+          {
+            "check": "职级薪标在桌面、短屏、原生 200% 及并发和响应丢失四项真实浏览器场景通过。",
+            "result": "passed",
+            "evidence": "tests/e2e/compensation210.spec.ts"
+          },
+          {
+            "check": "在固定配置 m09-compensation-c 的 4521 正常菜单用管理员和只读账号查回 P5 月标与年标。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-i1.md"
+          }
+        ],
+        "limitations": [
+          "跨计划引用与停用影响在 I2 接入，端到端容量与两套制度联验归 I3。"
+        ]
+      },
+      {
         "path": "docs/verification/210-compensation-design-review.md",
         "related_documents": [
           "CHNHCM-210",
