@@ -8,7 +8,8 @@ import { EffectiveDates, HistoryNotice, ObjectDetailField, ObjectDetailIdentity,
 import { useMaintenanceSearchParams, usePageTitle } from '../../shared/navigation';
 import { useRead } from '../../shared/useRead';
 import { paths as staffingPaths } from '../staffing/api';
-import { RateEditor } from './RateEditor';
+import { RateEditor, type RateDraftBackup } from './RateEditor';
+import { useDraftRecovery } from './useDraftRecovery';
 import { RateLog } from './RateLog';
 import { actionLabel, amountKeys, amountLabels, createContext, formLabels, frequencies, gradeLabel, money, moneyUnit, rateDetail, rateHistory, ratePath,
   rateTitle, statusLabels, type Action, type Principal, type RateRecord, type Receipt } from './rates';
@@ -91,6 +92,12 @@ export function RateDetailPage({ session, creating = false }: { session: Princip
   const addLabel = data && at >= 0 && at < data.dates.length - 1 ? '插入记录' : '新增记录';
   const errors = context.error || read.error || log.error || (source && data && !data.history ? '所选资料不可用' : undefined);
   const valid = creating ? !!context.data : !!data && (!source || !!snapshot);
+  const recovery = useDraftRecovery<RateDraftBackup>(JSON.stringify([id, selected, editing]), !!readyToEdit, !!errors);
+  const recoverDenied = (input: RateDraftBackup) => {
+    recovery.remember(input);
+    read.invalidate(); context.invalidate(); log.invalidate();
+    setNotice('办理权限已变更，已重新读取当前可维护的资料。');
+  };
   useEffect(() => { setEdit(undefined); setAnchor(null); }, [id, selected, source]);
   useEffect(() => {
     if (edit && data && !data.actions[edit]) {
@@ -118,8 +125,8 @@ export function RateDetailPage({ session, creating = false }: { session: Princip
         timeline={!editing && !source && !historyTab && data && data.dates.length > 0 && <EffectiveDates dates={data.dates.map(d => d.effectiveDate)} selected={current?.effectiveDate}
           onSelect={day => update({ selectedRecordId: data.dates.find(d => d.effectiveDate === day)?.recordId })}/>}
       >
-        {readyToEdit ? <RateEditor key={JSON.stringify([id, editing, data?.record.recordId, fields])}
-          session={session} detail={data} defaultDate={defaultDate ?? ''} fields={fields} action={editing} units={context.data?.units}
+        {readyToEdit ? <RateEditor key={JSON.stringify([id, editing, data?.record.recordId])} recovered={recovery.input} onDenied={recoverDenied}
+          session={session} returnTo={back} detail={data} defaultDate={defaultDate ?? ''} fields={fields} action={editing} units={context.data?.units}
           reasons={creating ? context.data?.reasons ?? [] : data?.reasons[editing] ?? []}
           host={host} onCancel={cancel} onReload={reload} onRefresh={read.refresh} onSaved={save}/> :
           source ? <><HistoryNotice label="返回变更日志" onReturn={() => update({ sourceVersion: undefined, side: undefined, tab: 'history' })} />

@@ -28,7 +28,7 @@
 
 ## M09 薪酬体系配置设计
 
-[薪酬体系配置业务方案与制度样例](m09/211-compensation-configuration.md) · [后台页面与交互设计](m09/212-compensation-configuration-pages.md) · [可点击桌面原型](m09/prototype/compensation-configuration.html) · [设计及实施路线图](../plans/210-compensation-configuration-roadmap.md)
+[薪酬体系配置业务方案与制度样例](m09/211-compensation-configuration.md) · [后台页面与交互设计](m09/212-compensation-configuration-pages.md) · [可点击桌面原型](m09/prototype/compensation-configuration.html) · [设计及实施路线图](../archive/plans/210-compensation-configuration-roadmap.md)
 
 ## 实施与验证去向
 

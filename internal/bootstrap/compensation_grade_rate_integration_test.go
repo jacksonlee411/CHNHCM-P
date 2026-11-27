@@ -68,13 +68,23 @@ func TestCompensationGradeRateLifecycle(t *testing.T) {
 	if got := b.call("GET", "/api/v1/compensation/grade-rate-receipts/"+sid, nil, "", 200); !reflect.DeepEqual(got, first) {
 		t.Fatal(got)
 	}
-	list := b.call("GET", base+"?q=P5&currency=CNY", nil, "", 200)
+	list := b.call("GET", base+"?q=P5&currency=CNY&frequency=MONTH&gradeId="+grade.(string), nil, "", 200)
 	if list["total"] != float64(1) {
 		t.Fatal(list)
 	}
 	reader := h.f.login("reader", h.f.readPassword)
 	reader.call("GET", path, nil, "", 200)
 	reader.call("POST", base, input, foundation.NewID(), 403)
+	reader.call("GET", base+"?gradeId=invalid", nil, "", 422)
+	h.f.exec("UPDATE access.subject_grant SET read_fields=array_remove(read_fields,'name') WHERE principal_id=$1 AND action='grade.read'", reader.subject)
+	for _, candidate := range []string{grade.(string), foundation.NewID()} {
+		reader.call("GET", base+"?gradeId="+candidate, nil, "", 403)
+	}
+	h.f.exec("UPDATE access.subject_grant SET read_fields=array_remove(read_fields,'name') WHERE principal_id=$1 AND action='grade.read'", b.subject)
+	if got := b.call("GET", base, nil, "", 200); got["create"] != false {
+		t.Fatal("offered create without grade source access")
+	}
+	b.call("GET", base+"/create-context", nil, "", 403)
 	if n := h.f.scalar("SELECT count(*) FROM compensation.grade_rate_version"); n != 4 {
 		t.Fatal(n)
 	}

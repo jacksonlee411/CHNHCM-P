@@ -27159,6 +27159,7 @@ export interface operations {
     listCompensationRates: {
         parameters: {
             query?: {
+                gradeId?: string;
                 q?: string;
                 currency?: string;
                 frequency?: string;

@@ -140,6 +140,9 @@ func (s *Store) RateContext(ctx context.Context, cred foundation.Credentials) (o
 		for _, frequency := range []string{"MONTH", "YEAR", "HOUR", "ONCE"} {
 			out.Units[frequency], _ = d.FrequencyUnit(frequency)
 		}
+		if !v.gradeName {
+			return denied()
+		}
 		out.DefaultDate, out.Writable = foundation.DefaultEffectiveDate, visibleWrites(v.fields, grant.WriteFields)
 		return nil
 	})
@@ -160,10 +163,18 @@ func (s *Store) ListRates(ctx context.Context, cred foundation.Credentials, q c.
 		if e != nil {
 			return e
 		}
-		out.Create, out.Today = create.Allowed, u.today
+		out.Create, out.Today = create.Allowed && v.gradeName, u.today
 		out.Readable = slices.Clone(v.fields)
 		if !v.gradeName {
 			out.Readable = slices.DeleteFunc(out.Readable, func(key string) bool { return key == "gradeId" })
+		}
+		if q.GradeID != "" {
+			if !v.gradeName {
+				return denied()
+			}
+			if !foundation.ValidID(q.GradeID) {
+				return d.Invalid("gradeId", "请选择有效职级")
+			}
 		}
 		for _, filter := range []struct{ key, value string }{{"currency", q.Currency}, {"frequency", q.Frequency}, {"form", q.Form}, {"status", q.Status}} {
 			if filter.value != "" && !has(v.fields, filter.key) {
@@ -181,12 +192,12 @@ func (s *Store) ListRates(ctx context.Context, cred foundation.Credentials, q c.
 		($4='' OR ($5 AND strpos(lower(v.fact#>>'{data,grade,name}'),lower($4))>0) OR ($6 AND strpos(lower(v.fact#>>'{data,grade,code}'),lower($4))>0))
 		AND ($7='' OR r.currency=$7) AND ($8='' OR r.frequency=$8)
 		AND ($9='' OR v.fact#>>'{data,amounts,form}'=$9)
-		AND ($10='' OR (CASE WHEN p.start_date>$3 THEN 'FUTURE' WHEN p.active THEN 'ACTIVE' ELSE 'INACTIVE' END)=$10)`
-		args := []any{s.Instance, u.enterprise.ID, u.today, strings.TrimSpace(q.Q), v.gradeName, v.gradeCode, q.Currency, q.Frequency, q.Form, q.Status}
+		AND ($10='' OR (CASE WHEN p.start_date>$3 THEN 'FUTURE' WHEN p.active THEN 'ACTIVE' ELSE 'INACTIVE' END)=$10) AND ($11::uuid IS NULL OR r.grade_id=$11::uuid)`
+		args := []any{s.Instance, u.enterprise.ID, u.today, strings.TrimSpace(q.Q), v.gradeName, v.gradeCode, q.Currency, q.Frequency, q.Form, q.Status, optional(q.GradeID)}
 		if e = u.tx.QueryRow(ctx, "SELECT count(*)"+selection, args...).Scan(&out.Total); e != nil {
 			return e
 		}
-		rows, e := u.tx.Query(ctx, `SELECT r.id::text,r.head::text,r.grade_id::text,r.currency,r.frequency,r.unit,r.places,v.fact,coalesce(p.until_date::text,'')`+selection+" ORDER BY r.id LIMIT $11 OFFSET $12", append(args, q.Size, (q.Page-1)*q.Size)...)
+		rows, e := u.tx.Query(ctx, `SELECT r.id::text,r.head::text,r.grade_id::text,r.currency,r.frequency,r.unit,r.places,v.fact,coalesce(p.until_date::text,'')`+selection+" ORDER BY r.id LIMIT $12 OFFSET $13", append(args, q.Size, (q.Page-1)*q.Size)...)
 		if e != nil {
 			return e
 		}

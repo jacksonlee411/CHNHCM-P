@@ -17,7 +17,7 @@ func (a *API) compensationRoutes(mux *http.ServeMux) {
 		respond(w, 200, v, e)
 	})
 	mux.HandleFunc("GET "+base, func(w http.ResponseWriter, r *http.Request) {
-		q, e := queryValues(r, "q", "currency", "frequency", "form", "status", "page", "pageSize")
+		q, e := queryValues(r, "q", "gradeId", "currency", "frequency", "form", "status", "page", "pageSize")
 		if e != nil {
 			writeError(w, e)
 			return
@@ -32,7 +32,7 @@ func (a *API) compensationRoutes(mux *http.ServeMux) {
 			writeError(w, e)
 			return
 		}
-		v, e := a.Runtime.Compensation.ListRates(r.Context(), credentials(r), c.RateQuery{Q: q.Get("q"), Currency: q.Get("currency"), Frequency: q.Get("frequency"), Form: q.Get("form"), Status: q.Get("status"), Page: page, Size: size})
+		v, e := a.Runtime.Compensation.ListRates(r.Context(), credentials(r), c.RateQuery{Q: q.Get("q"), GradeID: q.Get("gradeId"), Currency: q.Get("currency"), Frequency: q.Get("frequency"), Form: q.Get("form"), Status: q.Get("status"), Page: page, Size: size})
 		respond(w, 200, v, e)
 	})
 	mux.HandleFunc("GET "+base+"/{id}", func(w http.ResponseWriter, r *http.Request) {

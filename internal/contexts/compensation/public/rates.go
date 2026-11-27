@@ -86,8 +86,8 @@ type RateList struct {
 	Create   bool     `json:"create"`
 }
 type RateQuery struct {
-	Q, Currency, Frequency, Form, Status string
-	Page, Size                           int
+	Q, GradeID, Currency, Frequency, Form, Status string
+	Page, Size                                    int
 }
 type Change struct {
 	Previous   string      `json:"previousSourceVersion,omitempty"`

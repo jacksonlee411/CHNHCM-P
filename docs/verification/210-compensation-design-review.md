@@ -1,6 +1,6 @@
 # CHNHCM-210 薪酬体系路线图与方案多轮评审
 
-评审范围为后台薪酬计划、计划组成项和职级薪酬标准。判为主要问题的情形包括办不了已约定的制度、把金额或日期解释错、让角色看到无权办理的动作，以及给正常办理增加无业务依据的前置。四轮评审均由 Codex 在本工作树完成。业务代表的设计签收和产品验收另行记录。[登记表](../governance/registry.json) · [路线图](../plans/210-compensation-configuration-roadmap.md) · [业务验收条件](../specs/m09/211-compensation-configuration.md#design-cases)
+评审范围为后台薪酬计划、计划组成项和职级薪酬标准。判为主要问题的情形包括办不了已约定的制度、把金额或日期解释错、让角色看到无权办理的动作，以及给正常办理增加无业务依据的前置。四轮评审均由 Codex 在本工作树完成。业务代表的设计签收和产品验收另行记录。[登记表](../governance/registry.json) · [路线图](../archive/plans/210-compensation-configuration-roadmap.md) · [业务验收条件](../specs/m09/211-compensation-configuration.md#design-cases)
 
 ## 1 受测基线与环境
 
@@ -23,7 +23,7 @@
 | --- | --- |
 | **失败。** 管理员从列表打开 PRO-M，控制区只有「返回列表」「更正记录」。把真实调标当作误录更正，会把九月应当保留的 300 元改掉。原型又将读取原件称作「发布」。 | 计划详情增加「新增记录」。十月稿带入原 300 元，改为 350 元后直接查看未来记录。日期轴可查九月，日志可查保存时的计划及薪标。管理员一次保存，指定日采用。[计划维护](../specs/m09/212-compensation-configuration-pages.md#31-薪酬计划) · [阶段规范](../adr/213-administrator-maintenance-and-effectivity.md) |
 | **失败。** 薪标只读样例从月标返回列表可见「新建」。仅验证详情隐藏按钮会漏过正常办理路径。 | 只读角色在菜单、返回、后退、刷新和直接打开旧编辑地址时沿用当前样例权限。区分目录权、标准引用权、金额读写和历史权。已获权改计划名的经办人可以只提交名称，服务端保留未提交的受限金额。[权限预期](../specs/m09/211-compensation-configuration.md#m09-br-007) |
-| **失败。** 路线图只验期间端点。一份一至六月的计划引用在三月停用、四月恢复的标准，两端都能命中。另把 I1 写成所有计划的前置，单项固定津贴也要先建薪标。 | 按实际引用的相关日期段检查完整覆盖，定位三月缺口。相邻两段无缝换价时允许计划继续沿用。I2 明确企业通用固定额路径所需的 X02 范围和 X03 权限，只有按职级取值的行依赖 I1。[路线图](../plans/210-compensation-configuration-roadmap.md) · [校验边界](../adr/132-query-and-validation-boundary.md) |
+| **失败。** 路线图只验期间端点。一份一至六月的计划引用在三月停用、四月恢复的标准，两端都能命中。另把 I1 写成所有计划的前置，单项固定津贴也要先建薪标。 | 按实际引用的相关日期段检查完整覆盖，定位三月缺口。相邻两段无缝换价时允许计划继续沿用。I2 明确企业通用固定额路径所需的 X02 范围和 X03 权限，只有按职级取值的行依赖 I1。[路线图](../archive/plans/210-compensation-configuration-roadmap.md) · [校验边界](../adr/132-query-and-validation-boundary.md) |
 
 ## 3 第二轮　行业制度和办理成本
 
@@ -63,6 +63,6 @@ git diff --check
 
 ## 6 结论与产品实施边界
 
-在上述首期制度和项目合同内，终轮未发现新增主要问题，可按 I1、I2 组织产品实施。保留的写入保护各有具体用途，覆盖金额精度、实际引用期间、当下授权、并发以及原采用。企业通用单项固定额、正常保存和未改动离开均有直接路径。[业务方案](../specs/m09/211-compensation-configuration.md) · [实施路线图](../plans/210-compensation-configuration-roadmap.md)
+在上述首期制度和项目合同内，终轮未发现新增主要问题，可按 I1、I2 组织产品实施。保留的写入保护各有具体用途，覆盖金额精度、实际引用期间、当下授权、并发以及原采用。企业通用单项固定额、正常保存和未改动离开均有直接路径。[业务方案](../specs/m09/211-compensation-configuration.md) · [实施路线图](../archive/plans/210-compensation-configuration-roadmap.md)
 
 产品层未运行。X02 的实际范围保存与 M09 的引用采用、Go 的整段覆盖和金额权、DB 的事务与幂等、按真实业务日切换和共享组件页面对照，分别在 I1 至 I3 验收。离线原型展示预置保存结果。任务只使用临时浏览器，本次未启动应用、数据库或用户验收环境。[验收条件](../specs/m09/211-compensation-configuration.md#design-cases)

@@ -1,6 +1,6 @@
 # CHNHCM-210 I2 薪酬计划与组成实施验证
 
-[路线图及阶段出口](../plans/210-compensation-configuration-roadmap.md) · [两套制度及八组业务预期](../specs/m09/211-compensation-configuration.md#design-cases) · [后台页面合同](../specs/m09/212-compensation-configuration-pages.md) · [I1 职级薪标](210-compensation-i1.md) · [登记表](../governance/registry.json)
+[路线图及阶段出口](../archive/plans/210-compensation-configuration-roadmap.md) · [两套制度及八组业务预期](../specs/m09/211-compensation-configuration.md#design-cases) · [后台页面合同](../specs/m09/212-compensation-configuration-pages.md) · [I1 职级薪标](210-compensation-i1.md) · [登记表](../governance/registry.json)
 
 ## 1 本阶段基线
 

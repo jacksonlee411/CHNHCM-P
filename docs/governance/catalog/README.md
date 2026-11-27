@@ -51,6 +51,8 @@
 | [201 国家/地区目录、行政区划目录与企业地点维护技术合同](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md) | active | — | 原位 |
 | [202 配置与主数据默认生效日期](../../adr/202-master-data-default-effective-date.md) | active | — | 原位 |
 | [207 法律实体基础维护合同](../../specs/m02/207-legal-entity-design.md) | active | — | 原位 |
+| [211 薪酬体系配置业务方案](../../specs/m09/211-compensation-configuration.md) | active | — | 原位 |
+| [212 薪酬配置后台页面与交互设计](../../specs/m09/212-compensation-configuration-pages.md) | active | — | 原位 |
 | [213 本阶段管理员维护与业务生效](../../adr/213-administrator-maintenance-and-effectivity.md) | active | — | 原位 |
 | [308 职类、职务系列与职务基础合同](../../specs/m03/308-job-foundation-contract.md) | active | — | 原位 |
 | [310 职级与职级阶梯对象接入合同](../../specs/m03/310-grade-ladder-contract.md) | active | — | 原位 |
@@ -75,7 +77,6 @@
 | --- | --- | --- | --- |
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
-| [210 薪酬体系配置实施路线图](../../plans/210-compensation-configuration-roadmap.md) | in_review | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
 
@@ -93,9 +94,6 @@
 | [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
-| [210 薪酬体系配置实施路线图](../../plans/210-compensation-configuration-roadmap.md) | in_review | in_progress | 原位 |
-| [211 薪酬体系配置业务方案](../../specs/m09/211-compensation-configuration.md) | in_review | — | 原位 |
-| [212 薪酬配置后台页面与交互设计](../../specs/m09/212-compensation-configuration-pages.md) | in_review | — | 原位 |
 
 <a id="catalog-closed"></a>
 
@@ -134,6 +132,7 @@
 | [204 G4地点纵向交付实施方案](../../archive/plans/204-g4-location-implementation.md) | active | completed | 物理归档 |
 | [205 G5地理联合验收与固定运行交付](../../archive/plans/205-g5-geography-acceptance-and-runtime.md) | active | completed | 物理归档 |
 | [206 法律实体分阶段实施计划](../../archive/plans/206-legal-entity-implementation.md) | active | completed | 物理归档 |
+| [210 薪酬体系配置实施路线图](../../archive/plans/210-compensation-configuration-roadmap.md) | active | completed | 物理归档 |
 | [300 部门列表左侧部门树实施计划](../../archive/plans/300-department-tree-implementation.md) | active | completed | 物理归档 |
 | [301 用户提示与异常恢复整改方案](../../archive/plans/301-user-feedback-and-recovery.md) | superseded | completed | 物理归档 |
 | [302 详情对象导航位置与响应整改](../../archive/plans/302-detail-navigation.md) | active | completed | 物理归档 |
@@ -180,6 +179,7 @@
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 213、210、211、212、003、012 | [CHNHCM-213 管理员维护生效与薪酬首期范围核对](../../verification/213-administrator-maintenance-and-compensation.md) | 2026-11-27 | final |
+| 210、211、212、213 | [CHNHCM-210 I3 薪酬体系联合验收与交接](../../verification/210-compensation-i3.md) | 2026-11-27 | final |
 | 210、211、212、213 | [CHNHCM-210 I2 薪酬计划与组成实施验证](../../verification/210-compensation-i2.md) | 2026-11-27 | final |
 | 210、211、212、213 | [CHNHCM-210 I1 职级薪酬标准实施验证](../../verification/210-compensation-i1.md) | 2026-11-27 | final |
 | 210、211、212 | [CHNHCM-210 薪酬体系业务方案与页面原型走查](../../verification/210-compensation-design-walkthrough.md) | 2026-11-27 | final |

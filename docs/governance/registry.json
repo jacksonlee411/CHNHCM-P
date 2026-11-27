@@ -2403,11 +2403,11 @@
     {
       "id": "CHNHCM-210",
       "title": "薪酬体系配置实施路线图",
-      "path": "docs/plans/210-compensation-configuration-roadmap.md",
+      "path": "docs/archive/plans/210-compensation-configuration-roadmap.md",
       "owner_branch": "wt-dev-c",
       "owner_role": "薪酬业务、体验与验证维护者",
       "owner": null,
-      "status": "in_review",
+      "status": "active",
       "type": "plan",
       "modules": [
         "M09",
@@ -2417,11 +2417,24 @@
       ],
       "scope": "薪酬体系设计、两种制度走查和后续职级薪酬标准、薪酬计划后台实现的分阶段任务、责任与出口。",
       "format": "numbered",
-      "review": null,
-      "execution_status": "in_progress",
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "Codex 按用户授权，结合设计走查及 I1 至 I3 产品实施复审",
+        "scope": "D1、D2 的两套制度和页面，以及 I1 至 I3 的实施、容量、八项场景与固定环境交接。",
+        "result": "accepted",
+        "evidence": "docs/verification/210-compensation-i3.md"
+      },
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-27",
+        "reason": "D1、D2 设计包与 I1、I2 两个后台配置对象已交付，I3 八项联合验收、两类对象容量及持久环境交接已登记。"
+      },
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "首期制度和八组验收口径由 211 承接，页面与来源返回由 212 承接，管理员按生效日办理由 213 承接。实际测量及持续环境责任归 I3 报告。",
+        "previous_path": "docs/plans/210-compensation-configuration-roadmap.md"
+      }
     },
     {
       "id": "CHNHCM-211",
@@ -2430,7 +2443,7 @@
       "owner_branch": "wt-dev-c",
       "owner_role": "薪酬业务与 Compensation 维护者",
       "owner": null,
-      "status": "in_review",
+      "status": "active",
       "type": "business_spec",
       "modules": [
         "M09",
@@ -2440,7 +2453,13 @@
       ],
       "scope": "薪酬计划及组成、同口径共享薪带、定额与连续薪带、计划内固定津贴、管理员按日维护与历史权限，含制度样例与独立验收预期。",
       "format": "numbered",
-      "review": null,
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "Codex 按用户授权，结合设计走查及 I1 至 I3 产品实施复审",
+        "scope": "首期薪酬体系两类对象、三种组成、按日适用、精度、来源和当前权限以及八项验收口径。",
+        "result": "accepted",
+        "evidence": "docs/verification/210-compensation-i3.md"
+      },
       "execution_status": null,
       "superseded_by": [],
       "closure": null,
@@ -2453,7 +2472,7 @@
       "owner_branch": "wt-dev-c",
       "owner_role": "薪酬配置体验与验证维护者",
       "owner": null,
-      "status": "in_review",
+      "status": "active",
       "type": "functional_spec",
       "modules": [
         "M09",
@@ -2463,7 +2482,13 @@
       ],
       "scope": "薪酬计划和职级薪酬标准的后台页面、字段、桌面设计原型、错误恢复、来源与返回上下文。",
       "format": "numbered",
-      "review": null,
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "Codex 按用户授权，结合设计走查及 I1 至 I3 产品实施复审",
+        "scope": "两类后台菜单、四种页面状态、角色可见范围、表单异常、日期、原件返回和桌面验收范围。",
+        "result": "accepted",
+        "evidence": "docs/verification/210-compensation-i3.md"
+      },
       "execution_status": null,
       "superseded_by": [],
       "closure": null,
@@ -3579,6 +3604,48 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/210-compensation-i3.md",
+        "related_documents": [
+          "CHNHCM-210",
+          "CHNHCM-211",
+          "CHNHCM-212",
+          "CHNHCM-213"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "fe164d08239fbe5c0fc119356733454fde142302",
+        "working_tree": "dirty",
+        "change_description": "在 I2 基线上按八项业务出口联验两套制度、共享月标、受限读取、独立容量及原件恢复。",
+        "environment": "wt-dev-c，本阶段独立 PostgreSQL 18.6、真实 Go HTTP、生产构建 Chromium 及工作树负责的 4521。",
+        "scope": "两种薪酬制度及运营共享对照、AC-001 至 AC-008、两类对象容量、准确原件、持久环境交接和路线图收尾。",
+        "results": [
+          {
+            "check": "按 211 核对八组业务预期，真实 Go/HTTP 与 PostgreSQL 验证来源更名、期间缺口、独立津贴及当前权限。",
+            "result": "passed",
+            "evidence": "internal/bootstrap/compensation_plan_integration_test.go"
+          },
+          {
+            "check": "13 项薪酬专项 Chromium 场景，含两种桌面视口、原生 200%、同构建参考、重复建标、撤权后的获权草稿和撤去后的原采用。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-i3.md"
+          },
+          {
+            "check": "20 个职级、40 份标准、12 份计划、双方各六生效段，八个会话共 768 个计时请求；重启同一实库后 408 份原修订及回执可查。",
+            "result": "passed",
+            "evidence": "internal/bootstrap/compensation_capacity_integration_test.go"
+          },
+          {
+            "check": "固定 4521 同一数据库及样例，以管理员和查询者进入正常菜单；核对两份薪标、三份计划、七份原修订和原回执。",
+            "result": "passed",
+            "evidence": "docs/verification/210-compensation-i3.md"
+          }
+        ],
+        "limitations": [
+          "首期容量采用路线图预先登记的合成业务量。人工签收和将来客户的实际上线规模由经办人与交付维护者另行记录。"
+        ]
+      },
       {
         "path": "docs/verification/210-compensation-i2.md",
         "related_documents": [

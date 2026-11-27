@@ -63,7 +63,9 @@ export function initialDraft(detail: PlanDetail | undefined, action: Action, dat
       return {
         ...meta,
         ...(fields.includes('amount') && { amount }),
-        ...(fields.includes('rates') && { rates }),
+        ...(fields.includes('rates') && {
+          rates: rates?.map(({ gradeId, rateId, code, name }) => ({ gradeId, rateId, code, name })),
+        }),
         ...(fields.includes('percentage') && { baseId, rounding, percent }),
       };
     }),

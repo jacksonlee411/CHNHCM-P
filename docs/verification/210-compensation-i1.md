@@ -1,6 +1,6 @@
 # CHNHCM-210 I1 职级薪酬标准实施验证
 
-[登记表](../governance/registry.json) · [I1 出口](../plans/210-compensation-configuration-roadmap.md) · [职级标准与独立业务预期](../specs/m09/211-compensation-configuration.md#m09-br-002) · [页面合同](../specs/m09/212-compensation-configuration-pages.md) · [管理员维护规范](../adr/213-administrator-maintenance-and-effectivity.md)
+[登记表](../governance/registry.json) · [I1 出口](../archive/plans/210-compensation-configuration-roadmap.md) · [职级标准与独立业务预期](../specs/m09/211-compensation-configuration.md#m09-br-002) · [页面合同](../specs/m09/212-compensation-configuration-pages.md) · [管理员维护规范](../adr/213-administrator-maintenance-and-effectivity.md)
 
 ## 1 基线与环境
 

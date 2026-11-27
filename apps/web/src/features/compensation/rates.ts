@@ -18,7 +18,7 @@ export const rateDetail = (id: string, recordId?: string) =>
   api.GET('/api/v1/compensation/grade-rates/{id}', { params: { path: { id }, query: { recordId } } }).then(unwrap);
 export const rateHistory = (id: string, sourceVersion?: string) =>
   api.GET('/api/v1/compensation/grade-rates/{id}/history', { params: { path: { id }, query: { sourceVersion } } }).then(unwrap);
-export function rateList(query: { q?: string; currency?: string; frequency?: string; form?: string; status?: string; page: number; pageSize: number }) {
+export function rateList(query: { gradeId?: string; q?: string; currency?: string; frequency?: string; form?: string; status?: string; page: number; pageSize: number }) {
   return api.GET(base, { params: { query } }).then(unwrap);
 }
 export const actionLabel: Record<Action, string> = { CREATE: '新建', ADD: '新增记录', CORRECT: '更正记录', DEACTIVATE: '停用', REACTIVATE: '重新启用', DELETE: '删除此记录' };

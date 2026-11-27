@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from './fixtures';
 import { open } from './bu-support';
+import { withPolicy } from './grants';
 import { namedMenu308 } from './staffing308-support';
 import { calibrateDesktopWindow, nativeZoomBrowser } from './native-zoom-support';
 
@@ -123,4 +124,80 @@ test('210 职级薪标并发重读保留输入及响应丢失查回', async ({ p
   await expect(page.getByText('16,000.00',{exact:true})).toBeVisible();
   const results=await page.request.get(path+'/history');
   expect((await results.json()).items).toHaveLength(4);
+});
+
+test('210 重复建标返回原件、错误取消、仅目录角色及撤权后保存', async ({ page }) => {
+  await open(page);
+  const code = 'AC6' + randomUUID().slice(0, 8).toUpperCase();
+  await gradeFixture(page, code);
+  await createRate(page, code);
+  const detailURL = page.url();
+  const id = new URL(detailURL).pathname.split('/').at(-1)!;
+  const api = '/api/v1/compensation/grade-rates/' + id;
+  const before = await (await page.request.get(api)).json();
+  await menu(page);
+  await page.getByRole('link', { name: '新建', exact: true }).click();
+  await page.getByRole('textbox', { name: '生效日期' }).fill('2027-01-01');
+  await choose(page, '办理原因', '建立标准');
+  await page.getByRole('combobox', { name: '职级', exact: true }).fill(code);
+  await page.getByRole('option', { name: code + ' 薪标验收职级', exact: true }).click();
+  await page.getByRole('textbox', { name: '定额', exact: true }).fill('9000');
+  await page.getByRole('button', { name: '保存', exact: true }).click();
+  const existing = page.getByRole('link', { name: '打开已有职级薪酬标准', exact: true });
+  await expect(existing).toHaveAttribute('href', new RegExp(id + '[?]back='));
+  await existing.click();
+  await page.getByRole('button', { name: '放弃修改', exact: true }).click();
+  await expect(page.getByText('15,000.00', { exact: true })).toBeVisible();
+
+  await more(page, '更正记录');
+  const guide = page.getByRole('textbox', { name: '指导值', exact: true });
+  await guide.fill('17000');
+  const invalid = page.waitForResponse((r) => new URL(r.url()).pathname === api && r.request().method() === 'POST');
+  await page.getByRole('button', { name: '保存', exact: true }).click();
+  expect((await invalid).status()).toBe(422);
+  await expect(guide).toBeFocused();
+  await expect(guide).toHaveAttribute('aria-invalid', 'true');
+  await page.getByRole('button', { name: '取消', exact: true }).click();
+  await page.getByRole('button', { name: '放弃修改', exact: true }).click();
+  expect((await (await page.request.get(api)).json()).sourceVersion).toBe(before.sourceVersion);
+  await more(page, '更正记录');
+  const lower = page.getByRole('textbox', { name: '下限', exact: true });
+  await lower.fill('10500');
+  await page.getByRole('textbox', { name: '上限', exact: true }).fill('18888');
+  await withPolicy(page, async (where, mutate) => {
+    mutate(
+      `UPDATE access.subject_grant SET read_fields=array_remove(read_fields,'maximum') WHERE ${where} AND action IN ('graderate.read','graderate.history.read'); UPDATE access.subject_grant SET write_fields=array_remove(write_fields,'maximum') WHERE ${where} AND action='graderate.correct'`,
+    );
+    const result = page.waitForResponse((r) => new URL(r.url()).pathname === api && r.request().method() === 'POST');
+    await page.getByRole('button', { name: '保存', exact: true }).click();
+    expect((await result).status()).toBe(403);
+    await expect(page.getByRole('textbox', { name: '上限', exact: true })).toHaveCount(0);
+    await expect(lower).toHaveValue('10500');
+    await expect(page.locator('main')).not.toContainText('15,000.00');
+    const fresh = await (await page.request.get(api)).json();
+    expect(fresh.sourceVersion).toBe(before.sourceVersion);
+    expect(fresh.record.maximum).toBeUndefined();
+    expect(fresh.record.minimum).toBe('10000.00');
+    await save(page);
+    await expect(page.getByText('10,500.00', { exact: true })).toBeVisible();
+    await page.getByRole('tab', { name: '变更日志' }).click();
+    await page.getByRole('link', { name: '查看当次资料' }).first().click();
+    await expect(page.getByText('正在查看只读历史资料', { exact: true })).toBeVisible();
+    await expect(page.locator('main')).not.toContainText('15,000.00');
+    const historical = await (await page.request.get(api + '/history?sourceVersion=' + before.sourceVersion)).json();
+    expect(historical.items[0].after.maximum).toBeUndefined();
+    const oldURL = page.url();
+    mutate(
+      `DELETE FROM access.subject_grant WHERE ${where} AND (action LIKE 'graderate.%' OR action LIKE 'compplan.%')`,
+    );
+    await page.goto(oldURL);
+    await expect(page.getByRole('alert').last()).toBeVisible();
+    await expect(page.locator('.object-detail-sheet')).toHaveCount(0);
+    expect((await page.request.get(api)).status()).toBe(404);
+    expect((await page.request.get('/api/v1/compensation/grade-rates/' + randomUUID())).status()).toBe(404);
+    await namedMenu308(page, '职级', '职务配置', '/settings/staffing/grades');
+    await page.getByRole('button', { name: '切换应用', exact: true }).click();
+    await page.getByRole('menuitem', { name: '设置', exact: true }).click();
+    await expect(page.getByRole('button', { name: '薪酬配置', exact: true })).toHaveCount(0);
+  });
 });

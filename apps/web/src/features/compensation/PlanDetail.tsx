@@ -15,7 +15,8 @@ import {
 } from '@chnhcm/ui';
 import { useMaintenanceSearchParams, usePageTitle } from '../../shared/navigation';
 import { useRead } from '../../shared/useRead';
-import { PlanEditor } from './PlanEditor';
+import { PlanEditor, type PlanDraftBackup } from './PlanEditor';
+import { useDraftRecovery } from './useDraftRecovery';
 import { PlanFacts, PlanLog } from './PlanFacts';
 import { planContext, planHistory, planPath, planTitle, readPlan } from './plans';
 import { actionLabel, type Action, type Receipt, type Principal } from './rates';
@@ -115,6 +116,18 @@ export function PlanDetailPage({ session, creating = false }: { session: Princip
   const errors =
     context.error || read.error || log.error || (source && data && !data.history ? '所选资料不可用' : undefined);
   const valid = creating ? !!context.data : !!data && (!source || !!snapshot);
+  const recovery = useDraftRecovery<PlanDraftBackup>(
+    JSON.stringify([id, selected, referenceDate, editing]),
+    !!readyToEdit,
+    !!errors,
+  );
+  const recoverDenied = (input: PlanDraftBackup) => {
+    recovery.remember(input);
+    read.invalidate();
+    context.invalidate();
+    log.invalidate();
+    setNotice('办理权限已变更，已重新读取当前可维护的资料。');
+  };
   useEffect(() => {
     setEdit(undefined);
     setAnchor(null);
@@ -288,6 +301,8 @@ export function PlanDetailPage({ session, creating = false }: { session: Princip
           >
             {readyToEdit ? (
               <PlanEditor
+                recovered={recovery.input}
+                onDenied={recoverDenied}
                 key={JSON.stringify([id, editing, data?.record.recordId])}
                 session={session}
                 detail={data}

@@ -1,6 +1,6 @@
 # CHNHCM-210 薪酬体系业务方案与页面原型走查
 
-本次走查回答三个问题。薪酬专员能否用同一套配置表达月薪和年薪制度，能否看出一次调整从哪天生效，以及能否沿计划查回当初采用的金额依据。业务预期由 [211 薪酬体系方案](../specs/m09/211-compensation-configuration.md#design-cases)给出，操作入口见 [212 页面设计](../specs/m09/212-compensation-configuration-pages.md#prototype-walk)。本记录关联[实施路线图](../plans/210-compensation-configuration-roadmap.md)，元数据存于[登记表](../governance/registry.json)。
+本次走查回答三个问题。薪酬专员能否用同一套配置表达月薪和年薪制度，能否看出一次调整从哪天生效，以及能否沿计划查回当初采用的金额依据。业务预期由 [211 薪酬体系方案](../specs/m09/211-compensation-configuration.md#design-cases)给出，操作入口见 [212 页面设计](../specs/m09/212-compensation-configuration-pages.md#prototype-walk)。本记录关联[实施路线图](../archive/plans/210-compensation-configuration-roadmap.md)，元数据存于[登记表](../governance/registry.json)。
 
 ## 1 受测对象与基线
 
@@ -43,7 +43,7 @@ git diff --check
 
 用户于 2026-11-27 就同一职级、币种、频率和计量单位下的薪带明确选择「各计划共用同一薪带」。该选择已落实到 BR-002、AC-005 和两个菜单的原型。跨计划固定津贴是否联动、哪些发布需要复核仍由制度负责人审阅。职级内设薪档的客户可补一份逐档金额样例。[制度选项及反例](../specs/m09/211-compensation-configuration.md#policy-decisions)
 
-原型展示预置结果。权限样例、日期选择和取消能验证页面表达，后续 I1 至 I3 仍须用真实 Go 命令、数据库、授权和菜单验证落库、撤去未来记录、撤权与缓存清理、重送、并发、引用失效和停用。AC-005、AC-007、AC-008 的完整业务结果以及其余各例的服务端保护均留待实施验收。客户制度、业务代表签收、生产构建及同构建页面对照也由相应阶段补录。[八组验收预期](../specs/m09/211-compensation-configuration.md#design-cases) · [实施及交接责任](../plans/210-compensation-configuration-roadmap.md)
+原型展示预置结果。权限样例、日期选择和取消能验证页面表达，后续 I1 至 I3 仍须用真实 Go 命令、数据库、授权和菜单验证落库、撤去未来记录、撤权与缓存清理、重送、并发、引用失效和停用。AC-005、AC-007、AC-008 的完整业务结果以及其余各例的服务端保护均留待实施验收。客户制度、业务代表签收、生产构建及同构建页面对照也由相应阶段补录。[八组验收预期](../specs/m09/211-compensation-configuration.md#design-cases) · [实施及交接责任](../archive/plans/210-compensation-configuration-roadmap.md)
 
 走查仅使用临时浏览器进程及配置，脚本退出时关闭。此次设计使用本地文件，不需要 API、数据库、端口或用户手工验收环境。
 

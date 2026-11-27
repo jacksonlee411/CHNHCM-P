@@ -33,7 +33,7 @@
 
 [待审文稿](governance/catalog/README.md#catalog-review)按文稿状态检索，计划是否已关闭另见执行状态。
 
-薪酬制度维护人可从[薪酬体系配置业务方案](specs/m09/211-compensation-configuration.md)核对月薪、年薪两套制度，按[后台页面设计](specs/m09/212-compensation-configuration-pages.md)走查原型。[实施路线图](plans/210-compensation-configuration-roadmap.md)
+薪酬管理员从「设置 → 薪酬配置」维护薪酬计划和职级标准。专业、运营月薪和管理年薪三份合成制度供管理员与查询者按日核对。[业务方案](specs/m09/211-compensation-configuration.md) · [后台页面](specs/m09/212-compensation-configuration-pages.md) · [实施路线图](archive/plans/210-compensation-configuration-roadmap.md) · [实际验收入口与结果](verification/210-compensation-i3.md)
 
 ## 历次设计与实施记录
 

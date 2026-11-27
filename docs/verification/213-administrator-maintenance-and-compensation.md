@@ -26,4 +26,4 @@ node docs/verification/data/210-compensation-design/walkthrough.mjs --native-zoo
 
 ## 4 实施验收边界
 
-本轮核对设计资料与预置页面。后续 I1、I2 由同一位有权管理员实测新建、更正、启停和撤去，核对回执、生效日前后、历史按现权读取及失败零写入。数据库中零人工审批任务、两个同名津贴的独立保存结果也待产品实测。原验收环境未参与。[首期业务场景](../specs/m09/211-compensation-configuration.md#design-cases) · [实施里程碑](../plans/210-compensation-configuration-roadmap.md)
+本轮核对设计资料与预置页面。后续 I1、I2 由同一位有权管理员实测新建、更正、启停和撤去，核对回执、生效日前后、历史按现权读取及失败零写入。数据库中零人工审批任务、两个同名津贴的独立保存结果也待产品实测。原验收环境未参与。[首期业务场景](../specs/m09/211-compensation-configuration.md#design-cases) · [实施里程碑](../archive/plans/210-compensation-configuration-roadmap.md)

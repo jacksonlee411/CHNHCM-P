@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { Alert, Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, MenuItem, TextField } from '@mui/material';
 import { api, ApiError, sessionGuard, unwrap, type Models } from '@chnhcm/api-client';
@@ -6,12 +7,20 @@ import { ObjectDetailField, ObjectDetailSection, ObjectForm, ObjectFormError, Ob
 import { useDraftExit } from '../../shared/dated/useDraftExit';
 import { useObjectSubmission } from '../../shared/dated/useObjectSubmission';
 import { message, useRead } from '../../shared/useRead';
-import { actionLabel, amountKeys, amountLabels, formLabels, frequencies, gradeLabel, moneyUnit, rateAmounts, rateChannel, rateDetail, statusLabels, resolveRate, saveRate,
+import { actionLabel, amountKeys, amountLabels, formLabels, frequencies, gradeLabel, moneyUnit, rateAmounts, rateChannel, rateDetail, rateList, ratePath, statusLabels, resolveRate, saveRate,
   type Action, type AmountKey, type Command, type Detail, type Principal, type Receipt } from './rates';
 
 type Grade = Pick<Models['GradeSummary'], 'id' | 'code' | 'name' | 'effectiveDate'>;
 type Draft = { gradeId: string; currency: string; frequency: string; precision: string; form: string; effectiveDate: string; reason: string } & Record<AmountKey, string>;
-type Props = { session: Principal; detail?: Detail; action: Action; fields: string[]; reasons: string[]; units?: Record<string,string>; defaultDate: string;
+export type RateDraftBackup = { original: Draft; draft: Draft; grade?: Grade };
+function rebaseRate(draft: Draft, original: Draft, fresh: Draft, fields: string[]): Draft {
+  const next = { ...fresh };
+  for (const key of Object.keys(draft) as (keyof Draft)[]) {
+    if (fields.includes(key) && draft[key] !== original[key]) next[key] = draft[key];
+  }
+  return next;
+}
+type Props = { recovered?: RateDraftBackup; onDenied: (input: RateDraftBackup) => void; returnTo: string; session: Principal; detail?: Detail; action: Action; fields: string[]; reasons: string[]; units?: Record<string,string>; defaultDate: string;
   host: HTMLElement | null; onCancel: () => void; onSaved: (r: Receipt) => void; onReload: () => void; onRefresh: () => void };
 function defaults({ detail, action, defaultDate, fields }: Props): Draft {
   const r = detail?.record;
@@ -41,8 +50,12 @@ export function RateEditor(props: Props) {
   const [basis,setBasis] = useState({ version: detail?.sourceVersion, revision: detail?.record.revision });
   const [conflict,setConflict] = useState(false), [rereading,setRereading] = useState(false);
   const stale = conflict || basis.version !== detail?.sourceVersion;
-  const [draft, setDraft] = useState(original), [grade, setGrade] = useState<Grade>();
-  const [issue, setIssue] = useState<{ text: string; field?: string }>(), [nextForm, setNextForm] = useState('');
+  const [draft, setDraft] = useState(() => props.recovered ? rebaseRate(props.recovered.draft, props.recovered.original, original, fields) : original);
+  const [grade, setGrade] = useState<Grade | undefined>(() => fields.includes('gradeId') ? props.recovered?.grade : undefined);
+  const [issue, setIssue] = useState<{ text: string; field?: string; duplicate?: boolean }>(), [nextForm, setNextForm] = useState('');
+  const matching = useRead(issue?.duplicate ? JSON.stringify([draft.gradeId, draft.currency, draft.frequency]) : undefined,
+    () => rateList({ gradeId: draft.gradeId, currency: draft.currency, frequency: draft.frequency, page: 1, pageSize: 1 }), 'fresh');
+  const existing = matching.data?.items[0];
   const dirty = (Object.keys(original) as (keyof Draft)[]).some(k => draft[k] !== original[k]);
   const saved = useRef(false);
   const onResult = (r: Receipt) => {
@@ -54,6 +67,17 @@ export function RateEditor(props: Props) {
     e => e instanceof ApiError && e.status >= 400 && e.status < 500);
   const exit = useDraftExit(dirty, () => saved.current || flow.saved, () => { saved.current = true; flow.clearPayload(); });
   const writable = (key: string) => fields.includes(key);
+  const fieldKey = JSON.stringify(fields), priorFields = useRef(fieldKey);
+  useLayoutEffect(() => {
+    if (priorFields.current === fieldKey) return;
+    priorFields.current = fieldKey;
+    const baseline = defaults(props);
+    setDraft(value => rebaseRate(value, original, baseline, fields));
+    setOriginal(baseline);
+    setBasis({version: detail?.sourceVersion, revision: detail?.record.revision});
+    if (!fields.includes('gradeId')) setGrade(undefined);
+    setIssue(undefined); setNextForm(''); flow.clearPayload();
+  }, [fieldKey, detail]);
   const reread = async () => {
     if (!detail || rereading) return;
     const current = sessionGuard();
@@ -64,11 +88,7 @@ export function RateEditor(props: Props) {
       const allowed = fresh.actions[action];
       if (!allowed) { onReload(); return; }
       const baseline = defaults({ ...props, fields: allowed, detail: fresh, defaultDate: fresh.windows[action]?.default ?? fresh.record.effectiveDate ?? '' });
-      const next = { ...baseline };
-      for (const key of Object.keys(draft) as (keyof Draft)[]) {
-        if (allowed.includes(key) && draft[key] !== original[key]) next[key] = draft[key];
-      }
-      setDraft(next); setOriginal(baseline); setBasis({version:fresh.sourceVersion, revision:fresh.record.revision});
+      setDraft(rebaseRate(draft, original, baseline, allowed)); setOriginal(baseline); setBasis({version:fresh.sourceVersion, revision:fresh.record.revision});
       setConflict(false); setIssue(undefined); props.onRefresh();
     } catch (e) {
       if (current()) { if (e instanceof ApiError && [401,403,404].includes(e.status)) onReload(); else setIssue({text:message(e)}); }
@@ -111,9 +131,10 @@ export function RateEditor(props: Props) {
     if (result.kind === 'saved') onResult(result.result);
     if (result.kind === 'failed') {
       const e = result.error;
-      if (e instanceof ApiError && [401, 403, 404].includes(e.status)) { saved.current = true; onReload(); return; }
+      if (e instanceof ApiError && e.status === 403) { flow.clearPayload(); props.onDenied({ draft, original, grade }); return; }
+      if (e instanceof ApiError && [401, 404].includes(e.status)) { saved.current = true; onReload(); return; }
       if (e instanceof ApiError && e.code === 'M09_VERSION_CONFLICT') { setConflict(true); return; }
-      setIssue({ text: message(e), field: e instanceof ApiError ? e.field : undefined });
+      setIssue({ text: message(e), field: e instanceof ApiError ? e.field : undefined, duplicate: e instanceof ApiError && e.code === 'M09_DUPLICATE_RATE' });
     }
   };
   const controls = <><Button onClick={() => exit.request(onCancel)} disabled={flow.inFlight}>取消</Button>
@@ -136,6 +157,7 @@ export function RateEditor(props: Props) {
   return <ObjectForm><form id="compensation-rate-form" onSubmit={save} noValidate><fieldset disabled={busy} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
     {stale && <Alert severity="warning" action={<Button disabled={rereading} onClick={() => void reread()}>重新读取</Button>}>这份标准已变更，请重新读取并核对输入。</Alert>}
     {issue && <ObjectFormError id="rate-error" message={issue.text} />}
+    {issue?.duplicate && existing && <Link to={ratePath + '/' + existing.id + '?' + new URLSearchParams({ back: props.returnTo })}>打开已有职级薪酬标准</Link>}
     {deleting ? <ObjectDetailSection title="撤去这条记录"><p>删除 {state?.effectiveDate} 的记录后，从该日起将沿用前一条记录{state?.endExclusive ? '，直至 ' + state.endExclusive + ' 的后续记录生效' : ''}。</p>
       {restored.data && <ObjectDetailField label="恢复适用的标准">{[statusLabels[restored.data.record.status ?? ''], rateAmounts(restored.data.record)].filter(Boolean).join(' · ')}</ObjectDetailField>}
       {restored.error && <Alert severity="error">{restored.error}</Alert>}

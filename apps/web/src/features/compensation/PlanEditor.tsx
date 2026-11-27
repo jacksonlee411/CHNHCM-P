@@ -20,7 +20,10 @@ import { initialDraft, planChanges, rebasePlan, type Draft } from './planDraft';
 import { planChannel, readPlan, resolvePlan, savePlan, scopeLabel, type PlanDetail, type PlanInput } from './plans';
 import { type Principal, type Action, type Receipt } from './rates';
 
+export type PlanDraftBackup = { original: Draft; draft: Draft };
 type Props = {
+  recovered?: PlanDraftBackup;
+  onDenied: (input: PlanDraftBackup) => void;
   session: Principal;
   detail?: PlanDetail;
   action: Action;
@@ -42,7 +45,16 @@ export function PlanEditor(props: Props) {
     deleting = action === 'DELETE';
   const values = !deleting && action !== 'DEACTIVATE' && !(correct && detail?.record.status === 'INACTIVE');
   const [original, setOriginal] = useState(() => initialDraft(detail, action, props.defaultDate, fields)),
-    [draft, setDraft] = useState(original);
+    [draft, setDraft] = useState(() => {
+      const saved = props.recovered;
+      if (!saved) return original;
+      const next = rebasePlan(saved.draft, saved.original, original, fields);
+      next.scope = {
+        ...next.scope,
+        choices: next.scope.choices.filter((c) => props.scopeDimensions.includes(c.dimension)),
+      };
+      return next;
+    });
   const [basis, setBasis] = useState({ version: detail?.sourceVersion, revision: detail?.record.revision });
   const [issue, setIssue] = useState<{ field?: string; text: string }>(),
     [conflict, setConflict] = useState(false),
@@ -160,7 +172,12 @@ export function PlanEditor(props: Props) {
     if (result.kind === 'saved') receive(result.result);
     if (result.kind === 'failed') {
       const e = result.error;
-      if (e instanceof ApiError && [401, 403, 404].includes(e.status)) {
+      if (e instanceof ApiError && e.status === 403) {
+        flow.clearPayload();
+        props.onDenied({ original, draft });
+        return;
+      }
+      if (e instanceof ApiError && [401, 404].includes(e.status)) {
         saved.current = true;
         onReload();
         return;

@@ -4,6 +4,7 @@ package bootstrap_test
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"chnhcm.local/chnhcm/internal/foundation"
@@ -289,5 +290,59 @@ func TestCompensationPlanReferenceOnlyAndGradeMapping(t *testing.T) {
 	for _, rate := range []any{r4["objectId"], foundation.NewID()} {
 		row["rates"] = []planBody{{"gradeId": p4, "rateId": rate}}
 		b.call("POST", plans210, newPlan210("DENIED-M", planBody{"mode": "ENTERPRISE"}, row), foundation.NewID(), 403)
+	}
+}
+
+// A scope retaining a grade records its exact prior name; only adopting the
+// source anew rechecks the corrected catalog segment and complete coverage.
+func TestCompensationPlanGradeChangeAndOriginalScope(t *testing.T) {
+	h := staffingSetup307(t)
+	b := h.b
+	grade := h.create("grade", "P5-ORIGIN", "")
+	id := grade["id"].(string)
+	rate := b.call("POST", rates210, planBody{"action": "CREATE", "gradeId": id, "currency": "CNY", "frequency": "YEAR", "unit": "PER_YEAR", "effectiveDate": "2027-01-01", "reason": "建立标准", "changes": planBody{"form": "FIXED", "amount": "180000"}}, foundation.NewID(), 200)
+	basic := sourceRow210(id, rate, "YEAR")
+	bonus := target210(basic["id"].(string), "12.50", "YEAR")
+	scope := planBody{"mode": "SELECTED", "choices": []planBody{{"dimension": "grade", "id": id}}}
+	initial := b.call("POST", plans210, newPlan210("P5-ORIG-Y", scope, basic, bonus), foundation.NewID(), 200)
+	path := resultPath210(plans210, initial)
+	first := func() planBody {
+		return b.call("GET", path+"/history?sourceVersion="+initial["sourceVersion"].(string), nil, "", 200)["items"].([]any)[0].(planBody)["after"].(planBody)
+	}
+	before := first()
+	member := before["scope"].(planBody)["members"].([]any)[0].(planBody)
+	if member["name"] != "资料 P5-ORIGIN" || member["sourceVersion"] != grade["headSourceVersion"] {
+		t.Fatal("initial scope source differs", member)
+	}
+	for _, rows := range [][]planBody{{bonus}, {basic, {"id": bonus["id"], "currency": "USD"}}} {
+		refused := b.call("POST", path, command210("CORRECT", initial, "", planBody{"components": rows}), foundation.NewID(), 422)
+		if !strings.HasPrefix(refused["field"].(string), "components.") {
+			t.Fatal(refused)
+		}
+	}
+	h.correct("grade", grade, planBody{"name": "更名后专业五级"}, nil, 200)
+	grade = h.detail("grade", id, "")
+	family := h.create("jobfamily", "PRO-ORIGIN", "")
+	refined := planBody{"mode": "SELECTED", "choices": []planBody{{"dimension": "grade", "id": id}, {"dimension": "jobFamily", "id": family["id"]}}}
+	changed := b.call("POST", path, command210("ADD", initial, "2027-02-01", planBody{"scope": refined, "description": "将适用对象限于专业系列"}), foundation.NewID(), 200)
+	day := b.call("GET", path+"?businessAt=2027-02-01", nil, "", 200)["record"].(planBody)
+	var adoptedName any
+	for _, m := range day["scope"].(planBody)["members"].([]any) {
+		if m.(planBody)["dimension"] == "grade" {
+			adoptedName = m.(planBody)["name"]
+		}
+	}
+	if adoptedName != "更名后专业五级" || !reflect.DeepEqual(before, first()) {
+		t.Fatal("corrected source or original lost")
+	}
+	h.add("grade", grade, "DEACTIVATE", "2027-03-01", nil, 200)
+	stopped := h.detail("grade", id, "")["timeline"].([]any)[1].(planBody)
+	h.add("grade", h.detail("grade", id, stopped["recordId"].(string)), "REACTIVATE", "2027-04-01", nil, 200)
+	rejected := b.call("POST", path, command210("ADD", changed, "2027-02-15", planBody{"description": "涉及期间缺口"}), foundation.NewID(), 422)
+	if !strings.Contains(rejected["message"].(string), "2027-03-01") || !reflect.DeepEqual(before, first()) {
+		t.Fatal("missing March gap or changed prior adoption", rejected)
+	}
+	if h.f.scalar("SELECT count(*) FROM compensation.plan_version") != 2 {
+		t.Fatal("failed changes wrote a plan revision")
 	}
 }

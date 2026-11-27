@@ -44,6 +44,7 @@
         "apps/web/src/features/compensation/PlanList.tsx",
         "apps/web/src/features/compensation/plans.ts",
         "apps/web/src/features/compensation/planDraft.ts",
+        "apps/web/src/features/compensation/useDraftRecovery.ts",
         "apps/web/src/features/compensation/RateDetail.tsx",
         "apps/web/src/features/compensation/RateEditor.tsx",
         "apps/web/src/features/compensation/RateList.tsx",
