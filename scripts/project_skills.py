@@ -8,10 +8,14 @@ import subprocess
 SKILLS = Path('.agents/skills')
 SKILL_NAME = re.compile(r'chnhcm-p-[a-z0-9]+(?:-[a-z0-9]+)*\Z')
 PUBLIC_SKILLS = re.compile(r'(?:\.codex|\.agents|/etc/codex)/skills\b')
+HOST_ROOT = re.compile(r'HOME|~/|/home/|/Users/|USERPROFILE|\.home\(|\.homedir\(')
+PARENT_SKILLS = re.compile(r"""\.\./(?:[^\s'";|]*/)?\.(?:agents|codex)/skills\b""")
 INSTALL = re.compile(
-    r'(?:^|[;&|(])\s*@?(?:cp|ln|install|mkdir|rsync|tee)\s+'
-    r'|\.(?:symlink|symlink_to|copytree|copyfile|copy2|write_text|write_bytes|mkdir)\s*\('
+    r'(?:^|[;&|(]|\brun:)\s*@?(?:cp|ln|install|mkdir|rsync|tee)\s+'
+    r'|\.(?:symlink_to|copytree|copyfile|copy2|write_text|write_bytes|'
+    r'(?:symlink|mkdir|cp|copyFile|writeFile|appendFile)(?:Sync)?)\s*\('
     r'|\s>{1,2}\s*["\x27$~/]', re.MULTILINE)
+PATH_JOIN = re.compile(r"""['"]\s*[,/]\s*['"]""")
 
 
 def project_skill_errors(root):
@@ -55,11 +59,12 @@ def project_skill_errors(root):
             continue
         # Match personal/admin roots, including installers which first assign
         # CODEX_HOME to a local variable and append /skills in a later command.
-        shared = ('CODEX_HOME' in source and '/skills' in source) or any(
-            '/etc/codex/skills' in line or
-            (PUBLIC_SKILLS.search(line) and re.search(r'HOME|~/|/home/|/Users/|USERPROFILE', line))
-            for line in source.splitlines())
-        if shared:
+        joined = PATH_JOIN.sub('/', source).replace('\\', '/')
+        codex_home_skills = 'CODEX_HOME' in joined and re.search(r"""/skills\b|['"]skills['"]""", joined)
+        shared_path = any('/etc/codex/skills' in line or PARENT_SKILLS.search(line)
+                          or (PUBLIC_SKILLS.search(line) and HOST_ROOT.search(line))
+                          for line in joined.splitlines())
+        if codex_home_skills or shared_path:
             errors.append(f'项目自动化引用了公共技能目录及写入操作: {path}')
 
     for directory in sorted(skill_dirs):

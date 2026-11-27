@@ -38,3 +38,21 @@ class ProjectSkillsTest(unittest.TestCase):
         errors = project_skill_errors(self.root)
         self.assertTrue(any('setup.sh' in error for error in errors))
         self.assertTrue(any('SKILL.md' in error for error in errors))
+
+    def test_shared_destinations_in_workflows_and_path_builders(self):
+        shared = '.agents'
+        samples = {
+            'workflow.yml': f'steps:\n  - run: mkdir -p "$HOME/{shared}/skills/example"\n',
+            'setup.py': f'(Path.home() / "{shared}" / "skills" / "example").mkdir()\n',
+            'setup.mjs': f'fs.mkdirSync(path.join(os.homedir(), "{shared}", "skills", "example"));\n',
+            'parent.sh': f'mkdir -p "../{shared}/skills/example"\n',
+            'sibling.sh': f'cp -r source "../other-checkout/{shared}/skills/example"\n',
+        }
+        for name, source in samples.items():
+            with self.subTest(name=name):
+                path = self.root / name
+                path.write_text(source)
+                self.assertTrue(any(name in error for error in project_skill_errors(self.root)))
+                path.unlink()
+        (self.root / 'local.sh').write_text(f'mkdir -p "{shared}/skills/example"\n')
+        self.assertEqual([], project_skill_errors(self.root))
