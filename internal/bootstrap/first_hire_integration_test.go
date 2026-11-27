@@ -258,6 +258,10 @@ func TestFirstHireAndPurposeProtection(t *testing.T) {
 	b.call("POST", "/api/v1/hires", in, missing, 409)
 	path := "/api/v1/employment-actions/" + action["id"].(string)
 	original := b.call("GET", path, nil, "", 200)
+	issued := b.call("GET", path+"?adoptedRef="+action["revision"].(string), nil, "", 200)
+	if original["action"].(M)["cancelled"] != true || issued["action"].(M)["cancelled"] != false {
+		t.Fatal("当前原办理应反映撤销，签发时的修订应保留当时状态")
+	}
 	identity := original["sources"].(M)["identity"].(M)
 	if identity["personId"] != person || identity["personVersion"] != p["sourceVersion"] || action["canHistory"] != true {
 		t.Fatal("incorrect original source or action permission")

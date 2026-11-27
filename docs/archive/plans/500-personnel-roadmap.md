@@ -117,7 +117,7 @@ Personnel 的 `CheckIdentity` 从当前会话取客户，依本人、入职用�
 <a id="job-information-delivery"></a>
 ### 6.3 从直接入职接入职务信息
 
-2026-11-25，本节十个阶段已合入 main，并在固定 f 的 4386 环境从正常菜单验收。本轮沿用 f 的 `3771272` 已交付的人员九栏、按职务首聘及未来撤销，按 e 的 `ec4572a` 实施 404 岗位方案。Staffing 负责办理、存储和查询，Personnel 与体验负责人员菜单及返回，Access 随每个入口交付其权限。[阶段提交、主线检查与操作样本](../../verification/500-job-information-delivery-review.md#stage-delivery-results) · [九栏交接](../../verification/504-personal-profile-fourth-batch.md) · [按职务首单实测](../../verification/400-first-hire-integration.md#decision-first-hire) · [分模式准入](../../plans/400-hire-readiness.md#hire-gates)
+2026-11-25，本节十个阶段已合入 main，并在固定 f 的 4386 环境从正常菜单验收。本轮沿用 f 的 `3771272` 已交付的人员九栏、按职务首聘及未来撤销，按 e 的 `ec4572a` 实施 404 岗位方案。Staffing 负责办理、存储和查询，Personnel 与体验负责人员菜单及返回，Access 随每个入口交付其权限。[阶段提交、主线检查与操作样本](../../verification/500-job-information-delivery-review.md#stage-delivery-results) · [九栏交接](../../verification/504-personal-profile-fourth-batch.md) · [按职务首单实测](../../verification/400-first-hire-integration.md#decision-first-hire) · [分模式准入](400-hire-readiness.md#hire-gates)
 
 同日对产品合并 `dfd49554` 的后续复核发现六项缺陷，其中历史调动后转正归属错误、有据可查的同日顺序无法完整办理，均影响整体验收。上述发现使原版本暂缓接受。508 六项修复及交叉回归现已通过，固定 f 的 4386 已更新，第 6.3 节在本地修复候选上重新验收通过。[修复版本与原库复验](../../verification/508-job-information-implementation.md) · [修复次序与验收用例](508-job-information-remediation.md) · [复核事实](../../verification/508-job-information-remediation-review.md)
 
@@ -170,6 +170,6 @@ flowchart LR
 
 | 办理范围 | 接入时机与新增验收 |
 | --- | --- |
-| 按岗位免占编 | 待 T03 免占首单产品签收后，接相应任职动作，复用按职务路径已验的办理与恢复。接入该办理用途下的分段岗位政策、补员状态、M04 实际使用及授权。按岗调入后能查到真实岗位任职，常规占编增量为零。用量涉及占编的后段须待相应来源可核实后整笔办理。[分模式条件](../../plans/400-hire-readiness.md#hire-gates) |
+| 按岗位免占编 | 待 T03 免占首单产品签收后，接相应任职动作，复用按职务路径已验的办理与恢复。接入该办理用途下的分段岗位政策、补员状态、M04 实际使用及授权。按岗调入后能查到真实岗位任职，常规占编增量为零。用量涉及占编的后段须待相应来源可核实后整笔办理。[分模式条件](400-hire-readiness.md#hire-gates) |
 | 按岗位占编、补录与交接 | 待 T03 占编模式交付，逐段定额、占用和预留有可信覆盖或有据零起点，再对该用途开放占编办理。先验最后一编竞争、暂停补员和整单回滚，再从同一满编岗验拟调入缺 1 编、补录已履职三天实占 4／核定 3，次日实占回 3。对调、内部交接或按岗晋升分别在对应任职动作可用时追加联验。[实况样本](../../specs/m04/506-job-information-records.md#actual-duty-case) · [双岗对调](#m04-scn-003) · [313 人员调动](../../specs/m03/313-position-capacity-contract.md#m03-br-037) |
 | T05 合同、T06 招聘 | T05 有真实关系即可独立订立、续订，涉及在办合同的离职再联合处置。T06 以真实已接受录用及对应 T03 入职模式为前置，仅有预留时联验份额转换。M20 审批待办、年资、调薪与工资采用各随其专项。[合同样本](#m04-scn-004) · [招聘样本](#m04-scn-005) · [106 首单决定](../../adr/106-same-day-personnel-actions-and-daily-state.md#first-hire-adoption) |

@@ -117,7 +117,7 @@ function Filters({
     }}>
       <summary ref={trigger}>筛选条件{summary && ' · '+summary}</summary>
       {open && <Stack
-        key={params.toString()+JSON.stringify(options)}
+        key={params.toString()}
         component="form"
         direction="row"
         flexWrap="wrap"

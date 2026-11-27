@@ -2899,7 +2899,7 @@
     {
       "id": "CHNHCM-400",
       "title": "M04 T02 入职规则与准备实施方案",
-      "path": "docs/plans/400-hire-readiness.md",
+      "path": "docs/archive/plans/400-hire-readiness.md",
       "owner_branch": "wt-dev-e",
       "owner_role": "人事业务与 Staffing 维护者",
       "owner": null,
@@ -2921,10 +2921,18 @@
         "result": "accepted",
         "evidence": "docs/verification/400-hire-simplification.md"
       },
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "T02 准备及 T03 三种首单已分模式签收，4496 原卷完成历史与新免占首单联验。",
+        "evidence": "docs/verification/404-4496-acceptance.md"
+      },
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "首单三种模式的业务、页面和事务规则由 401–403 与 106 承接，政策换版的复查条件及 4496 验收已交接。",
+        "previous_path": "docs/plans/400-hire-readiness.md"
+      }
     },
     {
       "id": "CHNHCM-401",
@@ -3016,6 +3024,44 @@
       "superseded_by": [],
       "closure": null,
       "archive": null
+    },
+    {
+      "id": "CHNHCM-404",
+      "title": "T03 按岗位免占编首次入职实施方案",
+      "path": "docs/archive/plans/404-position-exempt-first-hire.md",
+      "owner_branch": "wt-dev-e",
+      "owner_role": "人事业务与 Staffing 维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "M04",
+        "M03",
+        "M02",
+        "M01",
+        "X03"
+      ],
+      "scope": "承接原决定首单和公共分片基线，规划从员工详情选择岗位、全期免占编保存及真实业务验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-24",
+        "reviewer": "Codex 主代理顺序评审与定稿复核",
+        "scope": "已有决定与岗位办理、补员及真实免占使用、共享事务与恢复、业务验收和公共分片实际时长。",
+        "result": "accepted",
+        "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-26",
+        "reason": "四个实施阶段已验收，4496 原卷升级、旧单与私人回执回查、新实岗免占首单及岗位用量均已交接。",
+        "evidence": "docs/verification/404-4496-acceptance.md"
+      },
+      "archive": {
+        "date": "2026-11-27",
+        "reason": "401–403 和 313 已承接按岗免占、分段占用、补员和原件恢复，4496 原卷及后续复查责任已交接。",
+        "previous_path": "docs/plans/404-position-exempt-first-hire.md"
+      }
     },
     {
       "id": "CHNHCM-500",
@@ -24430,6 +24476,270 @@
           "4次最大根更正和单次路径全选均非P95；选择、混合及成本边界保持。",
           "地点D08、区划D09与法律实体L2/L3保持；本批无新浏览器、远程CI或固定环境更新。",
           "当前查询原判据及长期判据仍有失败，125整体P1保持；本批未提交或推送。"
+        ]
+      },
+      {
+        "path": "docs/verification/404-position-exempt-first-hire-review.md",
+        "related_documents": [
+          "CHNHCM-404",
+          "CHNHCM-400",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-313",
+          "CHNHCM-106",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-24",
+        "base_commit": "eb5948bc137e236100b67e88ed150cb9a8c89912",
+        "working_tree": "dirty",
+        "change_description": "新增 404 方案及三轮意见与定稿复核，更新 400、入口及登记。",
+        "environment": "公共 wt-dev-e 固定树，Git、Python 标准库及 GitHub Actions 只读作业。",
+        "scope": "按岗位免占编首次入职的业务、事务及验收方案评审。",
+        "results": [
+          {
+            "check": "首轮审阅发现接管依据、原单岗位及派生授权缺口",
+            "result": "failed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "第二轮发现反向竞争与异岗重办缺口",
+            "result": "failed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "第三轮发现撤销计数、分片和升级验收缺口",
+            "result": "failed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "定稿逐项反例、日历复算与实际 Actions 作业复核",
+            "result": "passed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "仓库文档与边界、链接、CI 影响预览和差异空白检查",
+            "result": "passed",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          },
+          {
+            "check": "新按岗业务的真实库、API、浏览器与 4496 更新",
+            "result": "not_run",
+            "evidence": "docs/verification/404-position-exempt-first-hire-review.md"
+          }
+        ],
+        "limitations": [
+          "本次为同一主代理顺序文档评审。产品执行尚未开始。"
+        ]
+      },
+      {
+        "path": "docs/verification/404-main-sync-reassessment.md",
+        "related_documents": [
+          "CHNHCM-404",
+          "CHNHCM-400",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-500",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "5c478c43d46eb3e9cf1d4db4d48c2752f884a051",
+        "working_tree": "dirty",
+        "change_description": "产品、迁移及仓内用例与同步后的基线一致。复评期间仅改计划、登记及索引，补充场景使用仓外临时 Go 试件。",
+        "environment": "wt-dev-e 使用 Go 1.26.0、一次性 PostgreSQL 18.6、固定前端构建及 Chromium。4496 仅作只读核对。",
+        "scope": "复评三种直接入职、按岗免占的实际交付、跨模式竞争、旧岗升级及 e 固定环境接续。",
+        "results": [
+          {
+            "check": "八个既有 DB/API 测试根，含两种暂停竞争及两项旧库升级",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "临时试件尝试删除已生效的招聘接管以准备旧岗，数据库拒绝",
+            "result": "failed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "同名单异岗、防重、同岗两人撤一人及两种跨模式最后一编",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "使用 00049 程序设岗，升级两次到 00057 后免占首单保存及撤销",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "免占首单与补员的两个桌面视口及原生 200%，另有五项企业前置",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "4496 构建、运行入口与账本的只读核对",
+            "result": "passed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "4496 原卷升级及新旧样本业务签收",
+            "result": "not_run",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          },
+          {
+            "check": "本机全部固定分支 refs 存在性检查，缺 a 至 d",
+            "result": "failed",
+            "evidence": "docs/verification/404-main-sync-reassessment.md"
+          }
+        ],
+        "limitations": [
+          "浏览器只执行所列三个首单场景及其前置。主线、4386 及原方案的历史验收分别保留原范围。",
+          "4496 本轮仍为 bc769ff、00039。升级及用户地址实操归 e 的第 4 阶段。"
+        ]
+      },
+      {
+        "path": "docs/verification/404-4496-acceptance.md",
+        "related_documents": [
+          "CHNHCM-400",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-404",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-26",
+        "base_commit": "ccd0900ab1db293601f5266ec480f4a9231e25e1",
+        "working_tree": "clean",
+        "change_description": "产品受测提交修复默认原办理的撤销状态；本地预检使用固定构建的单独提交为 d6b46f44。验收资料据此另行登记。",
+        "environment": "wt-dev-e，Go 1.26.0、PostgreSQL 18.6、Chromium；隔离原库副本及 t03-first-e（4496 / 8496 / 54496）。",
+        "scope": "原库备份与还原、逐行迁移比对、历史与私人回执、原菜单按岗首单、日期边界、岗位份数和两层主选择。",
+        "results": [
+          {
+            "check": "恢复角色首轮因授权人不同被拒",
+            "result": "failed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "原库 162 张表完整还原，含两个任用版本的副本两次升级至 00057",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "副本默认读取已撤销原 Hire 的状态与旧版不符，现有实库用例补断言复现",
+            "result": "failed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "修复后区分默认读取与签发修订，副本及原库旧单与五份私人回执逐笔通过",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "人员和岗位菜单办成单人决定实岗免占，按三天、两层主选择、提交与岗位用量对账",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "五种视口分别打开两份固定样本，原件与免占份数可见且无页面横向溢出",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "本地预检的开发服务器两轮企业前置未全部通过",
+            "result": "failed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          },
+          {
+            "check": "固定构建复跑本地前置和首单浏览器回归，含原生 200%",
+            "result": "passed",
+            "evidence": "docs/verification/404-4496-acceptance.md"
+          }
+        ],
+        "limitations": [
+          "4496 写入一个限定业务日的合成首单；占编竞争使用先前同业务实现的独立 PostgreSQL 验证。",
+          "旧账号未获试用修复预览权限，库中试用动作数为零。本地候选的远程提交与门禁另行办理。"
+        ]
+      },
+      {
+        "path": "docs/verification/400-404-plan-archive.md",
+        "related_documents": [
+          "CHNHCM-400",
+          "CHNHCM-404",
+          "CHNHCM-401",
+          "CHNHCM-402",
+          "CHNHCM-403",
+          "CHNHCM-313",
+          "CHNHCM-014"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "ffe2c82e9609b1298d22ee110e0f48edfb66ff4f",
+        "working_tree": "dirty",
+        "change_description": "在同步主线 #29 的候选上复验业务，按 014 迁移两份已关闭计划及引用，并在 403 明确撤销状态的读取语义。",
+        "environment": "wt-dev-e，Go 与独立 PostgreSQL 测试数据库，真实 HTTP 与数据库事务。",
+        "scope": "400、404 已采纳条款、执行关闭和接续责任，以及主线与首单原件、岗位使用的交叉行为。",
+        "results": [
+          {
+            "check": "两份归档保留原关闭依据，业务、体验、技术及交付条款均有现行承接位置",
+            "result": "passed",
+            "evidence": "docs/verification/400-404-plan-archive.md"
+          },
+          {
+            "check": "五项实库集成测试覆盖原办理与准确修订、旧库升级、用途及岗位补员保护、招聘和入职争末份编制",
+            "result": "passed",
+            "evidence": "docs/verification/400-404-plan-archive.md"
+          }
+        ],
+        "limitations": [
+          "4496 的持久原卷及页面验收以 2026-11-26 的实际签收版本为准。客户主选择政策换版时由 M04 复验激活。"
+        ]
+      },
+      {
+        "path": "docs/verification/404-pr30-browser-recheck.md",
+        "related_documents": [
+          "CHNHCM-404",
+          "CHNHCM-507",
+          "CHNHCM-012",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "3d0083b3d8f8d9ff2bf1eaa714ab2951c53db016",
+        "working_tree": "clean",
+        "change_description": "215a8705 修复迟到读取影响职务原件及办理筛选的问题，3d0083b3 修订窄屏用例的日期轴等待。",
+        "environment": "wt-dev-e，PostgreSQL、Chromium、独立开发和固定构建，持久验收 t03-first-e（4496 / 8496 / 54496）。",
+        "scope": "PR #30 首轮浏览器 5、6 片的四个失败用例及 4496 原卷和旧链接。",
+        "results": [
+          {
+            "check": "首轮两个远程浏览器分片共四项失败",
+            "result": "failed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          },
+          {
+            "check": "真实响应触发页签移动 43 像素、用量移动 38 像素或清空已选类型，延迟任职读取复现窄屏用例等错按钮",
+            "result": "failed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          },
+          {
+            "check": "产品固定构建的 13 项 Chromium 与单独补验的原生缩放迟到读取",
+            "result": "passed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          },
+          {
+            "check": "4496 的构建、原卷、12 张业务表和五视口原件及补员状态",
+            "result": "passed",
+            "evidence": "docs/verification/404-pr30-browser-recheck.md"
+          }
+        ],
+        "limitations": [
+          "4496 既有管理员无办理记录列表权限，获权的名单查询和跨页原件使用独立验收库。最终远程汇总按 PR 当前提交核验。"
         ]
       }
     ]

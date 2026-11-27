@@ -35,4 +35,4 @@
 
 ## 历次设计与实施记录
 
-[验证专题](verification/README.md) · [已关闭计划](governance/catalog/README.md#catalog-closed) · [全部编号与原始登记](governance/registry.json)
+[验证专题](verification/README.md) · [4496 入职原单与岗位验收](verification/404-4496-acceptance.md) · [已关闭计划](governance/catalog/README.md#catalog-closed) · [全部编号与原始登记](governance/registry.json)

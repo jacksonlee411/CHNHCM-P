@@ -121,6 +121,7 @@ function AssignmentDetail({
   const showRelatedTabs = pageMode !== 'history' && !source;
   const dates = data?.effectiveDates || [];
   const tabs = showRelatedTabs && !!profile.data;
+  const waitingForTabs = showRelatedTabs && data?.primaryJob && !profile.data && !profile.error;
   // A concurrent date adjustment may remove the node that opened a draft.
   // Keep its authorized conflict comparison visible until the user closes it.
   const explicitUnavailable = pageMode === 'browse' && !!data && !!day && !source && !dates.includes(day);
@@ -203,15 +204,17 @@ function AssignmentDetail({
               )
             }
             tabs={
-              tabs && (
-                <PersonTabs
-                  selected="job"
-                  targets={{
-                    profile: path + '?' + personQuery,
-                    job: location.pathname + location.search,
-                    history: profile.data?.history ? path + '?' + personQuery + '&tab=history' : undefined,
-                  }}
-                />
+              (tabs || waitingForTabs) && (
+                <Box sx={{ visibility: waitingForTabs ? 'hidden' : 'visible' }}>
+                  <PersonTabs
+                    selected="job"
+                    targets={{
+                      profile: profile.data ? path + '?' + personQuery : undefined,
+                      job: location.pathname + location.search,
+                      history: profile.data?.history ? path + '?' + personQuery + '&tab=history' : undefined,
+                    }}
+                  />
+                </Box>
               )
             }
             timeline={
