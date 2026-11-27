@@ -310,7 +310,7 @@ source_version.recorded_at仍记录实际插入来源的时间，可以晚于eva
 
 T06及更正改日预览返回afterRecord、currentStatus/previousCurrentStatus及必要的newNoFactRange；固定首条后移明确新增无事实区间。这些字段执行当次读字段裁剪。完整timeline、beforeRecord、defaults、targetPreviousState、successorSnapshotsPreserved、writeFields及referenceCoverage退出当前BU预览DTO；详情办理context中的defaults仍由实际表单消费。
 
-单条删除的原适用期间与记录详情共用当前获权的日期。BU、企业将首条生效日后移时，预览的 `newNoFactRange` 同时返回起日、排他终点及 Go 计算的最后适用日。支持成对删除的对象在获准的资料变化区间中投影 `endInclusive`，页面按有限段或开放段显示。地点与法律实体删除成对记录时，按当前读权分别解析删除前后准确采用的国家名称和适用的区划路径。同一引用身份有可读标签变化时展示期间和前后值。两边可见资料相同则省略该段。失去日期读权时隐藏期间，有限段缺少最后适用日显示“期间不可用”。持久化影响与原回执继续使用既有半开区间。[实施与验收范围](../../plans/140-module-cohesion-roadmap.md)
+单条删除的原适用期间与记录详情共用当前获权的日期。BU、企业将首条生效日后移时，预览的 `newNoFactRange` 同时返回起日、排他终点及 Go 计算的最后适用日。支持成对删除的对象在获准的资料变化区间中投影 `endInclusive`，页面按有限段或开放段显示。地点与法律实体删除成对记录时，按当前读权分别解析删除前后准确采用的国家名称和适用的区划路径。同一引用身份有可读标签变化时展示期间和前后值。两边可见资料相同则省略该段。失去日期读权时隐藏期间，有限段缺少最后适用日显示“期间不可用”。持久化影响与原回执继续使用既有半开区间。[实施与验收范围](../../archive/plans/140-module-cohesion-roadmap.md)
 
 当前单条Preview返回readFields；已取得当前对象读授权的预览/提交4xx响应可携带同名字段，供页面清理受限缓存。该响应元数据来自当次bu.read，不存入不可变终态，不以历史读字段交集代替当前对象范围；原结果正文仍按对象及历史字段交集裁剪。未建立安全对象读范围的拒绝和依赖故障不返回此元数据。删除诊断无业务输入字段定位，保留安全整体错误及原拒绝终态。
 

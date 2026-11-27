@@ -2,7 +2,7 @@
 
 ## 1 候选与范围
 
-2026-11-22，T01（A01、A02）、T02（A03、A04）和 T03（A05）分别通过本地验收。固定工作树 wt-dev-b 从 `2a2317b4669ca3a0517185d86460f829f979efcb` 的干净状态开始，受测候选包含本批工作区变更。140 保持进行中，T04 待下一次 M02 历史流程变更触及地点与法律实体的共同规则。[140 路线图](../plans/140-module-cohesion-roadmap.md) · [候选摘要、命令与运行结果](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/140-module-cohesion-implementation/results.txt)
+2026-11-22，T01（A01、A02）、T02（A03、A04）和 T03（A05）分别通过本地验收。固定工作树 wt-dev-b 从 `2a2317b4669ca3a0517185d86460f829f979efcb` 的干净状态开始，受测候选包含本批工作区变更。140 保持进行中，T04 待下一次 M02 历史流程变更触及地点与法律实体的共同规则。[140 路线图](../archive/plans/140-module-cohesion-roadmap.md) · [候选摘要、命令与运行结果](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/140-module-cohesion-implementation/results.txt)
 
 ## 2 T01 行政区划授权和翻页
 

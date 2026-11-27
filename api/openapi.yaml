@@ -20306,6 +20306,7 @@ components:
         currentChanged:
           type: boolean
         effectiveDate:
+          description: 单条删除成功时指被删记录的原生效日，按当前字段权限返回。
           anyOf:
           - type: string
           - type: 'null'
@@ -20332,6 +20333,7 @@ components:
         replayed:
           type: boolean
         selectedRecordId:
+          description: 单条删除成功后，在本次新来源中接管被删记录原生效日的记录。
           anyOf:
           - type: string
           - type: 'null'
@@ -20342,10 +20344,12 @@ components:
         submissionId:
           type: string
         targetRecordId:
+          description: 单条删除成功时指被删记录。
           anyOf:
           - type: string
           - type: 'null'
         targetRevision:
+          description: 单条删除成功时指被删记录的删除前修订。
           anyOf:
           - type: string
           - type: 'null'
@@ -21817,6 +21821,7 @@ components:
         currentChanged:
           type: boolean
         effectiveDate:
+          description: 单条删除成功时指被删记录的原生效日，按当前字段权限返回。
           anyOf:
           - type: string
           - type: 'null'
@@ -21843,6 +21848,7 @@ components:
         replayed:
           type: boolean
         selectedRecordId:
+          description: 单条删除成功后，在本次新来源中接管被删记录原生效日的记录。
           anyOf:
           - type: string
           - type: 'null'
@@ -21853,10 +21859,12 @@ components:
         submissionId:
           type: string
         targetRecordId:
+          description: 单条删除成功时指被删记录。
           anyOf:
           - type: string
           - type: 'null'
         targetRevision:
+          description: 单条删除成功时指被删记录的删除前修订。
           anyOf:
           - type: string
           - type: 'null'

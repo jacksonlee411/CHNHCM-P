@@ -18,7 +18,6 @@
 | --- | --- | --- | --- |
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
-| [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
 
@@ -69,6 +68,7 @@
 | [136 GitHub Actions节流实施计划](../../archive/plans/136-actions-cost-reduction.md) | active | completed | 物理归档 |
 | [138 行政区划目录交互实施方案](../../archive/plans/138-geo-area-interactions.md) | active | completed | 物理归档 |
 | [139 岗位列表、岗位关系与结构视图实施方案](../../archive/plans/139-position-workspace.md) | active | completed | 物理归档 |
+| [140 模块边界、日期显示与实施登记收敛路线图](../../archive/plans/140-module-cohesion-roadmap.md) | active | completed | 物理归档 |
 | [141 本地预检结果与生成物核对优化计划](../../archive/plans/141-local-preflight.md) | active | completed | 物理归档 |
 | [200 国家地区行政区划与地点实施路线图](../../archive/plans/200-geography-and-location-roadmap.md) | active | completed | 物理归档 |
 | [203 G3必要行政区划接入实施方案](../../archive/plans/203-g3-geo-area-admission.md) | active | completed | 物理归档 |
@@ -118,7 +118,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（78）](#evidence-acceptance) · [问题复验（45）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（19）](#evidence-governance)
+[业务验收（78）](#evidence-acceptance) · [问题复验（46）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（19）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -143,7 +143,7 @@
 | 500、501、502、503、012、026 | [CHNHCM-500 T01 人员名录与登记产品验收](../../verification/500-t01-personnel-registration.md) | 2026-11-22 定稿 | 人员登记十项条件、备份恢复及双角色 14 个视口组合获验，万人样本计时 2400 次，限合成客户环境。 | 本仓报告，部分原件需权限 |
 | 315、313、312、314 | [CHNHCM-315 岗位核编实施与验证](../../verification/315-position-quota-implementation.md) | 2026-11-22 定稿 | 岗位核编的并发、丢响应、重启和升级通过定向验证，全量集成在部门测试处超时，部门总额归第二步。 | 本仓报告，部分原件需权限 |
 | 313、312、308、314、026 | [CHNHCM-313 岗位核编首批实施验证](../../verification/313-quota-implementation.md) | 2026-11-22 定稿 | 首批岗位核编、历史、部门汇总和重启完成实测，11 项定向实库和 7 项浏览器通过，招聘和任职真实分支另验。 | 本仓报告，部分原件需权限 |
-| 140、004、013、026、201、313、314 | [CHNHCM-140 授权、日期与实施登记的分项验证](../../verification/140-module-cohesion-implementation.md) | 2026-11-22 定稿 | A01 至 A05 完成分项实测，授权逐条翻页、实库和最终 16 项浏览器通过。T04 待下一次共用历史流程变更。 | 本仓报告，部分原件需权限 |
+| 140、004、013、026、201、313、314 | [CHNHCM-140 授权、日期与实施登记的分项验证](../../verification/140-module-cohesion-implementation.md) | 2026-11-22 定稿 | A01 至 A05 完成分项实测，授权逐条翻页、实库和最终 16 项浏览器通过。T04 待下一次共用历史流程变更。 [后续记录](../../verification/140-history-receipt-closeout.md) | 本仓报告，部分原件需权限 |
 | 314、308、313 | [CHNHCM-314 T05 职类分层验收与交接](../../verification/314-job-function-t05-acceptance.md) | 2026-11-21 定稿 | T05 同候选通过 27 项实库专项及分组浏览器。AC090 仅验 308 分支，313 独验和并存由编制交付接续。 | 本仓报告，部分原件需权限 |
 | 314、308 | [CHNHCM-314 T04 职务双维查询、办理与导出](../../verification/314-job-function-t04-query-export.md) | 2026-11-21 定稿 | 双维查询和跨升级导出通过实库与 22 项 Chromium，字段撤权已验。本轮限 T04，T05 分层签收另行记录。 | 本仓报告，部分原件需权限 |
 | 314、308 | [CHNHCM-314 T03 职务双维写入与存量升级](../../verification/314-job-function-t03-upgrade.md) | 2026-11-21 定稿 | T03 服务端双维写入、升级重试、旧号重送与双连接竞争通过，正常菜单、筛选和九列导出另验。 | 本仓报告，部分原件需权限 |
@@ -212,6 +212,7 @@
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 定稿 | PR #30 远程首轮 4 项失败。修复后本地 5 项前置、8 项 Chromium 业务用例通过，4496 已更新。远程终验另查 PR。 | 本仓报告及公开 CI |
+| 140、004、013、026、120、201、207、014 | [CHNHCM-140 地点与法律实体删除回执验证及计划交接](../../verification/140-history-receipt-closeout.md) | 2026-11-27 定稿 | 地点和法律实体的删除回执首轮均指错记录，修复后两对象、原号查回、升级前原件和 4490 菜单复验通过。原有回执按原样保留。 | 本仓报告，部分原件需权限 |
 | 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 定稿 | 岗位核编旧地址返回 404，两版备份升级后可查原回执，4386 原表对账通过。仅验该接口及实际调用链。 | 本仓报告，部分原件需权限 |
 | 004、002、025、313、505 | [CHNHCM-004 架构、技术栈与数据归属整改复验](../../verification/004-architecture-review-remediation.md) | 2026-11-27 定稿 | 越界 SQL 反例、录用与核编接口、七张架构图已复验。远期招聘需求和交接能力未在本批验收。 | 本仓报告 |
 | 012、123、500、502、507、510 | [CHNHCM-510 人员页面整改实施与实页复验](../../verification/510-personnel-page-remediation-implementation.md) | 2026-11-26 定稿 | 500 的 20 项页面问题逐项复验，4386 原 131 表对账相符。本地全量曾中断，按影响补验，后续固定版本已核对全量 CI 的产品输入。 [后续记录](../../verification/012-desktop-page-acceptance.md) | 本仓报告，部分原件需权限 |
@@ -219,7 +220,7 @@
 | 012、023、121、124、308、310、312、315、402、500、501、502、505、507 | [CHNHCM-012 桌面页面验收范围调整](../../verification/012-desktop-page-acceptance.md) | 2026-11-26 定稿 | 桌面和缩放调整后按用例名去重有 47 项实测通过。678 项为收集清单，全套浏览器及远程 CI 未运行。 | 本仓报告及公开 CI |
 | 012、403、500、506、507、508、509 | [CHNHCM-509 在职变动、结束与再聘产品修复验证](../../verification/509-t04-remediation-implementation.md) | 2026-11-25 定稿 | 27 项在职、结束与再聘整改完成验证，49 项实库回归及 4386 原库对账通过，原生 400% 未测。 | 本仓报告，部分原件需权限 |
 | 403、500、506、507、508 | [CHNHCM-508 人员职务信息修复实施验证](../../verification/508-job-information-implementation.md) | 2026-11-25 定稿 | 六项职务信息反例完成修复，末轮 136 项菜单通过，固定 f 的 29 张表对账一致。首轮失败保留，原生 400% 未测。 | 本仓报告，部分原件需权限 |
-| 140、004、013、201、207 | [CHNHCM-140 阶段评审修复与复验](../../verification/140-module-cohesion-review-fixes.md) | 2026-11-22 定稿 | SQL 归属漏报、误报及成对删除缺名称已复现修复，实库及窄屏名称专项通过，未验全量和容量。 | 本仓报告，部分原件需权限 |
+| 140、004、013、201、207 | [CHNHCM-140 阶段评审修复与复验](../../verification/140-module-cohesion-review-fixes.md) | 2026-11-22 定稿 | SQL 归属漏报、误报及成对删除缺名称已复现修复，实库及窄屏名称专项通过，未验全量和容量。 [后续记录](../../verification/140-history-receipt-closeout.md) | 本仓报告，部分原件需权限 |
 | 302、132、133、125、300、301 | [CHNHCM-302 详情导航位置与响应整改记录](../../verification/302-detail-navigation.md) | 2026-11-15 定稿 | 详情导航位置与授权统计通过 5 项定向实库及合并后 10 项浏览器，543 至 551 ms 仅为诊断观察。 | 本仓报告，部分原件需权限 |
 | 133、012、023、114、131 | [CHNHCM-133 列表返回定位提示收敛](../../verification/133-list-return-notice.md) | 2026-11-14 定稿 | 列表返回定位和跨页勾选完成定向复验，首轮 35 项有 2 项脚本失败，未扩至容量验收。 | 本仓仅有摘要，原件需权限 |
 | 133、012、023、300、301、005 | [CHNHCM-133 列表返回定位与最新main同步](../../verification/133-list-return-main-sync.md) | 2026-11-14 定稿 | 同步主线后 17 个受影响列表返回场景同轮通过。首次资源对比失败保留，本轮只验直接影响范围。 | 本仓仅有摘要，原件需权限 |
