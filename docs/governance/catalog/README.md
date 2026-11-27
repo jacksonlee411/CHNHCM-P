@@ -174,6 +174,7 @@
 | 关联编号 | 记录 | 日期 | 状态 |
 | --- | --- | --- | --- |
 | 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 | final |
+| 405、012、119、003、502、124 | [CHNHCM-405 从人员名录提炼列表标准的评审与复验](../../verification/405-list-standards-review.md) | 2026-11-27 | final |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 | final |

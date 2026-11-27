@@ -2151,6 +2151,44 @@ test('M04 人员名录的延迟响应保留姓名草稿及搜索返回位置',as
   await expect(employee).toBeFocused(); await expect(input).toHaveValue(sample.name);
 });
 
+test('人员名录重试失败的查询步骤并保留后来输入的草稿', async ({ page }) => {
+  await signIn(page);
+  const suffix = randomUUID().slice(0, 8);
+  const name = '名录重查' + suffix;
+  const registered = await request(page, 'POST', '/api/v1/persons', { name, submissionId: randomUUID() });
+  expect(registered.status).toBe(200);
+  await openPersonnel(page);
+  const input = page.getByRole('textbox', { name: '姓名或人员编号' });
+  const link = page.getByRole('link', { name, exact: true });
+  const searchPath = '/api/v1/persons/queries';
+  let references = 0;
+  page.on('request', req => { if (new URL(req.url()).pathname === searchPath) references++; });
+
+  for (const [path, keyword] of [[searchPath, name], ['/api/v1/personnel/directory/query', suffix]]) {
+    const endpoint = '**' + path;
+    await page.route(endpoint, route => route.fulfill({
+      status: 503, json: { code: 'TEMPORARY', message: '本次查询暂时失败' },
+    }), { times: 1 });
+    const failedRequest = page.waitForRequest(endpoint);
+    await input.fill(keyword);
+    await input.press('Enter');
+    const attempted = (await failedRequest).postDataJSON();
+    await expect(page.getByRole('alert')).toContainText('本次查询暂时失败');
+    await expect(link).toHaveCount(0);
+    await expect(page.getByText('没有匹配的人员', { exact: true })).toHaveCount(0);
+
+    const beforeRetry = references;
+    await input.fill('尚未提交的输入');
+    const retry = page.waitForRequest(endpoint);
+    await page.getByRole('button', { name: '重试', exact: true }).click();
+    expect((await retry).postDataJSON()).toEqual(attempted);
+    await expect(link).toBeVisible();
+    await expect(input).toHaveValue('尚未提交的输入');
+    await expect(page.getByRole('status').filter({ hasText: '输入已修改' })).toContainText(keyword);
+    expect(references - beforeRetry).toBe(path === searchPath ? 1 : 0);
+  }
+});
+
 async function filterPrimary(page: Page, value?: string) {
   await page.getByRole('button', {name:'更多操作', exact:true}).click();
   await page.getByRole('menuitem', {name:'列筛选…'}).click();
@@ -2179,18 +2217,29 @@ test('按人员编号筛选兼岗并返回原行，资料读者只见本人', as
   const person = await request(page, 'GET', '/api/v1/persons/' + sample.id);
   expect(person.status).toBe(200);
   const number = person.body.number;
-  const { hire } = await hireAtLocation(page, sample);
+  const delivery = sample.department + '交付部';
+  let parentId = sample.departmentId;
+  for (const name of [sample.department + '区域', sample.department + '中心', delivery]) {
+    const child = await apiDepartment(page, sample.buId, { name, parent: parentId });
+    parentId = child.id;
+  }
+  const { hire } = await hireAtLocation(page, { ...sample, department: delivery, departmentId: parentId });
   await ensureJobOnlyPolicy(page, 'secondary');
   const primaryPath = '/api/v1/assignments/' + hire.assignment;
-  for (const [index, from] of ['2027-05-01', '2027-05-02'].entries()) {
+  const teams = [
+    { name: sample.department + '一线组', from: '2027-05-01', record: 1 },
+    { name: sample.department + '质量组', from: '2027-05-02', record: 2 },
+  ];
+  for (const { name, from, record } of teams) {
+    const team = await apiDepartment(page, sample.buId, { name, parent: parentId });
     const current = await request(page, 'GET', primaryPath + '?businessAt=' + from);
     expect(current.status).toBe(200);
     const added = await request(page, 'POST', primaryPath + '/additional-assignments', {
       from, expectedSourceVersion: current.body.sourceVersion, parallel: false,
-      department: sample.departmentId, job: sample.jobId, notice: '兼岗名录验收',
+      department: team.id, job: sample.jobId, notice: '兼岗名录验收',
     }, randomUUID());
     expect(added.status, added.body.message).toBe(200);
-    expect(added.body.recordNumber).toBe(index + 1);
+    expect(added.body.recordNumber).toBe(record);
   }
 
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -2199,16 +2248,62 @@ test('按人员编号筛选兼岗并返回原行，资料读者只见本人', as
   await search.fill(number);
   await search.press('Enter');
   await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
+  const node = (name: string) => page.getByRole('treeitem', { name, exact: true });
+  const row = (record: number) => page.getByRole('row').filter({
+    has: page.getByRole('gridcell', { name: String(record), exact: true }),
+  });
+  await expect(page.getByRole('columnheader').first().getByRole('checkbox')).toHaveAccessibleName('全选查询结果');
+  await expect(page.getByRole('combobox', { name: '主兼岗', exact: true })).toHaveCount(0);
+  await expect(row(0).getByRole('gridcell', { name: sample.job, exact: true })).toBeVisible();
+  const openColumns = async () => {
+    await page.getByRole('button', { name: '更多操作', exact: true }).click();
+    await page.getByRole('menuitem', { name: '列设置…' }).click();
+  };
+  await openColumns();
+  await page.getByRole('checkbox', { name: '职务', exact: true }).uncheck();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('columnheader', { name: '职务', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('columnheader', { name: '岗位', exact: true })).toBeVisible();
+  await openColumns();
+  await page.getByRole('checkbox', { name: '职务', exact: true }).check();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('columnheader', { name: '职务', exact: true })).toBeVisible();
+  await expect(node(delivery)).toHaveAttribute('aria-level', '4');
+  await node(delivery).click();
+  await expect(page.getByRole('button', { name: '清除部门范围 · ' + delivery, exact: true })).toBeVisible();
+  const descendants = page.getByRole('checkbox', { name: '含子部门', exact: true });
+  await expect(descendants).toBeChecked();
+  await descendants.click();
+  await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible();
+  await expect(descendants).not.toBeChecked();
+  await expect(row(0)).toContainText(delivery);
+  await descendants.click();
+  await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
+  await expect(descendants).toBeChecked();
+  for (const team of teams) {
+    await expect(node(team.name)).toHaveAttribute('aria-level', '5');
+    await node(team.name).click();
+    await expect(page.getByText('1 份任职，1 人', { exact: true })).toBeVisible();
+    await expect(row(team.record)).toContainText(team.name);
+  }
+  await node(delivery).click();
+  await expect(page.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
   await filterPrimary(page, '兼岗');
   await expect(page.getByText('2 份任职，1 人', { exact: true })).toBeVisible();
-  const second = page.getByRole('row').filter({ has: page.getByRole('gridcell', { name: '2', exact: true }) })
-    .getByRole('link', { name: sample.name, exact: true });
+  await page.getByRole('checkbox', { name: '全选查询结果', exact: true }).click();
+  await expect(page.getByText('已选择2项', { exact: true })).toBeVisible();
+  await row(1).getByRole('checkbox', { name: '取消选择人员', exact: true }).click();
+  await expect(page.getByText('已选择1项', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '取消选择', exact: true }).click();
+  const second = row(2).getByRole('link', { name: sample.name, exact: true });
   await second.focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('.object-detail-identity')).toContainText('2 号兼岗');
   await page.getByRole('link', { name: '返回人员', exact: true }).click();
   await expect(second).toBeFocused();
   await expect(search).toHaveValue(number);
+  await expect(node(delivery)).toHaveAttribute('aria-selected', 'true');
+  await expect(descendants).toBeChecked();
   await expect(page.getByRole('button',{name:'主兼岗：兼岗'})).toBeVisible();
 
   const reader = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -2220,6 +2315,13 @@ test('按人员编号筛选兼岗并返回原行，资料读者只见本人', as
     await limitedSearch.fill(number);
     await limitedSearch.press('Enter');
     await expect(limited.getByText('0 份任职，1 人', { exact: true })).toBeVisible();
+    await expect(limited.getByRole('tree')).toHaveCount(0);
+    for (const name of ['主兼岗', '部门', '职务', '岗位']) {
+      await expect(limited.getByRole('columnheader', { name, exact: true })).toHaveCount(0);
+    }
+    await limited.getByRole('button', { name: '更多操作', exact: true }).click();
+    await expect(limited.getByRole('menuitem', { name: '列筛选…' })).toHaveCount(0);
+    await limited.keyboard.press('Escape');
     const self = limited.getByRole('link', { name: sample.name, exact: true });
     await expect(self).toHaveCount(1);
     await self.click();
