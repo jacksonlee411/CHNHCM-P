@@ -464,6 +464,7 @@ async function openEmployeeAssignment(page: Page,sample:Awaited<ReturnType<typeo
 }
 async function chooseEffectiveDate(page: Page, day: string) {
   const axis=page.getByRole('navigation',{name:'生效日期'});
+  await expect(axis.locator('button[aria-current="date"]')).toBeVisible();
   const point=axis.locator('button[data-day="'+day+'"]');
   if(await point.isVisible()) await point.click();
   else {
@@ -1330,7 +1331,7 @@ async function lifecycleJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
   await button('保存').click();
   if(recover){
     await expect(button('查回原提交')).toBeVisible();
-    await page.reload();
+    await page.reload({waitUntil:'commit'});
     await button('查回原提交').click();
   }
   await expect(page).toHaveURL(url=>url.pathname.startsWith('/personnel/employees/'+sample.id+'/assignments/') && url.searchParams.get('assignmentDay')==='2027-10-01' && !!url.searchParams.get('action'));

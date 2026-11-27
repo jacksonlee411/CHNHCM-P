@@ -67,7 +67,7 @@ func (s *Store) purpose(ctx context.Context, c f.Credentials, id, action string,
 		}
 		lu := &legalentityUnit{unit: u, enterprise: ent}
 		if locked {
-			if err = lu.Lock(ctx, id); err != nil {
+			if err = lu.lockEntity(ctx, id, write); err != nil {
 				return err
 			}
 		}
