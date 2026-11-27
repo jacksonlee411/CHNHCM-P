@@ -37,7 +37,8 @@ class DocumentCatalogTests(unittest.TestCase):
             evidence.write_text("# 初次评审\n", encoding="utf-8")
             registry = {"documents": [], "governance": {"verification_records": [
                 {"path": "docs/verification/record.md", "related_documents": ["CHNHCM-511"],
-                 "date": "2026-11-26", "status": "final"}
+                 "date": "2026-11-26", "status": "final", "purpose": "retest",
+                 "conclusion": "本地 8 项通过 | 远程未重跑", "evidence_access": "public_ci"}
             ]}}
             with patch.multiple(document_catalog, ROOT=root, CATALOG=catalog):
                 self.assertFalse(document_catalog.catalog_matches(registry))
@@ -47,6 +48,27 @@ class DocumentCatalogTests(unittest.TestCase):
                 self.assertTrue(document_catalog.catalog_matches(registry))
                 evidence.write_text("# 实施复验\n", encoding="utf-8")
                 self.assertFalse(document_catalog.catalog_matches(registry))
+
+    def test_evidence_groups_show_the_conclusion_access_and_follow_up_for_each_report(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs/verification").mkdir(parents=True)
+            review_path = "docs/verification/review.md"
+            retest_path = "docs/verification/retest.md"
+            (root / review_path).write_text("# 初评\n", encoding="utf-8")
+            (root / retest_path).write_text("# 专项复验\n", encoding="utf-8")
+            review = dict(path=review_path, related_documents=["CHNHCM-511"], date="2026-11-25", status="draft",
+                          purpose="review", conclusion="两项待改", evidence_access="restricted", follow_up=retest_path)
+            retest = dict(path=retest_path, related_documents=["CHNHCM-511"], date="2026-11-26", status="final",
+                          purpose="retest", conclusion="本地 8 项通过 | 远程未重跑", evidence_access="public_ci")
+            registry = {"documents": [], "governance": {"verification_records": [review, retest]}}
+            with patch.multiple(document_catalog, ROOT=root, CATALOG=root / "docs/governance/catalog/README.md"):
+                page = document_catalog.render(registry)
+            self.assertIn("[问题复验（1）](#evidence-retest)", page)
+            self.assertIn("[方案评审（1）](#evidence-review)", page)
+            self.assertIn("定稿 | 本地 8 项通过 ｜ 远程未重跑 | 本仓报告及公开 CI |", page)
+            self.assertIn("草稿 | 两项待改 [后续记录](../../verification/retest.md) | 本仓仅有摘要，原件需权限 |", page)
+            self.assertNotIn("#evidence-handoff", page)
 
     @unittest.skipUnless(shutil.which("rg"), "ripgrep is needed to exercise its default search")
     def test_default_search_uses_the_same_active_documents_as_the_standards_page(self):
@@ -78,7 +100,8 @@ class DocumentCatalogTests(unittest.TestCase):
             documents[0]["superseded_by"] = ["CHNHCM-004"]
             registry = {"documents": documents, "governance": {"verification_records": [
                 {"path": "docs/verification/report.md", "related_documents": ["CHNHCM-001"],
-                 "date": "2026-11-26", "status": "final"}]}}
+                 "date": "2026-11-26", "status": "final", "purpose": "acceptance",
+                 "conclusion": "未覆盖故障恢复", "evidence_access": "mixed"}]}}
             with patch.multiple(document_catalog, ROOT=root, CATALOG=catalog):
                 for path, content in document_catalog.catalog_files(registry).items():
                     path.parent.mkdir(parents=True, exist_ok=True)
@@ -94,6 +117,7 @@ class DocumentCatalogTests(unittest.TestCase):
                 self.assertIn("见正文的替代说明", page)
                 self.assertNotIn("待审跳转", page)
                 self.assertNotIn("原验证", page)
+                self.assertNotIn("未覆盖故障恢复", page)
                 self.assertNotIn("004-old.md", page)
                 self.assertEqual(subprocess.run(["rg", "--no-config", "-q", "原验证", "docs"], cwd=root).returncode, 1)
                 documents[1]["status"] = "active"

@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from document_governance import link_definitions, link_occurrences, markdown_prose
+from document_governance import EVIDENCE_ACCESS, REPORT_PURPOSES, link_definitions, link_occurrences, markdown_prose
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "docs/governance/registry.json"
@@ -69,13 +69,30 @@ def render(registry):
                 location = "暂缓归档"
             lines.append(f"| {label} | {doc['status']} | {doc['execution_status'] or '—'} | {location} |")
     lines.extend(["", '<a id="catalog-evidence"></a>', "", "## 验收记录", "",
-                  "按关联编号查到方案评审、实施复验及其他记录。打开正文核对受测基线、实际结果和限制。", "",
-                  "| 关联编号 | 记录 | 日期 | 状态 |", "| --- | --- | --- | --- |"])
-    for report in sorted(registry["governance"]["verification_records"], key=lambda item: (item["date"], item["path"]), reverse=True):
-        path = report["path"]
-        title = (ROOT / path).read_text(encoding="utf-8").splitlines()[0].removeprefix("# ")
-        ids = "、".join(n.removeprefix("CHNHCM-") for n in report["related_documents"])
-        lines.append(f"| {ids} | {link(title.replace('|', '｜'), path)} | {report['date']} | {report['status']} |")
+                  "按用途进入，或在页内查关联编号、对象及结论。每行只说明该批受测范围。定稿表示记录已写定，首败、复验及未测项可在原记录中查回。", "",
+                  "证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。", ""])
+    reports = sorted(registry["governance"]["verification_records"],
+                     key=lambda item: (item["date"], item["path"]), reverse=True)
+    by_purpose = {key: [] for key in REPORT_PURPOSES}
+    for report in reports:
+        by_purpose[report["purpose"]].append(report)
+    lines.append(" · ".join(f"[{name}（{len(by_purpose[key])}）](#evidence-{key})"
+                            for key, name in REPORT_PURPOSES.items() if by_purpose[key]))
+    for key, records in by_purpose.items():
+        if not records:
+            continue
+        lines.extend(["", f'<a id="evidence-{key}"></a>', "", f"### {REPORT_PURPOSES[key]}", "",
+                      "| 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |", "| --- | --- | --- | --- | --- |"])
+        for report in records:
+            path = report["path"]
+            title = (ROOT / path).read_text(encoding="utf-8").splitlines()[0].removeprefix("# ").replace("|", "｜")
+            ids = "、".join(n.removeprefix("CHNHCM-") for n in report["related_documents"])
+            status = "定稿" if report["status"] == "final" else "草稿"
+            conclusion = report["conclusion"].replace("|", "｜")
+            if report.get("follow_up"):
+                conclusion += " " + link("后续记录", report["follow_up"])
+            lines.append(f"| {ids} | {link(title, path)} | {report['date']} {status} | "
+                         f"{conclusion} | {EVIDENCE_ACCESS[report['evidence_access']]} |")
     return "\n".join(lines) + "\n"
 
 

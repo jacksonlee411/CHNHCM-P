@@ -32,7 +32,7 @@ BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-a
 
 唯一企业的初始化与期间覆盖归 [120 企业约束](../specs/m02/120-dated-maintenance-technical-contract.md#enterprise-dated-contract)，固定验证库的历史导入与重建归 [017](../guides/017-local-bu-development.md#history-import-rebuild)。BU 与部门的容量复测见 [124 测量口径](../guides/124-dated-object-admission-and-capacity.md#bu-department-capacity-comparison)和[在办的 125](../plans/125-r6-capacity-remediation.md)，职务系列和职务见 [308 容量分组](../specs/m03/308-job-foundation-contract.md#job-capacity-matrix)。
 
-按对象查条款可从[规格目录](../specs/README.md)进入。查某次交付的实际结果，可按文档号在[登记表](registry.json)的 `governance.verification_records` 中找关联报告，再核对其受测版本、结果和限制。
+按对象查条款可从[规格目录](../specs/README.md)进入。查某次交付的实际结果，可按用途或文档号查看该批的结论、限制及证据位置，再打开报告核对受测版本。[验收记录目录](catalog/README.md#catalog-evidence)
 
 ## 计划与文稿
 
@@ -43,7 +43,7 @@ BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-a
 | 在办计划 | 取 `type=plan` 且 `execution_status=in_progress`。尚待启动的计划另查 `not_started` | [当前在办计划](catalog/README.md#catalog-in-progress) |
 | 待审文稿 | 按文档 `status` 查 `draft` 或 `in_review`。计划另读 `execution_status` | [135 对象头接入方案](../archive/plans/135-real-head-product-integration.md) |
 | 已关闭批次 | 按 `type=plan` 查执行 `completed` 或 `cancelled`，并读 `closure` 和 `archive` | [510 整改结果](../archive/plans/510-personnel-page-remediation.md#4-实施结果) · [首页历史入口](../index.md#验证与历史批次) |
-| 原始验收 | 在 `governance.verification_records` 中按 `related_documents` 查同一编号，按范围选择实施复验，再读逐项结果和限制 | [510 的二十项实测](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) |
+| 原始验收 | 在验收记录目录按用途选择业务验收或问题复验，在对应编号下查本批结论。私有原件的位置和保管方见原记录 | [按用途查验收](catalog/README.md#catalog-evidence) · [510 的二十项实测](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) |
 
 例如，从仓库根目录可以直接列出在办计划及其两种状态和正文路径。
 

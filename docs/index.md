@@ -4,7 +4,7 @@
 | --- | --- |
 | 查业务规则、页面布局、交互、组件或工程标准 | [检索现行规范](governance/catalog/standards/README.md) · [按问题查规范与对象差异](governance/README.md) · [按模块查规格](specs/README.md) |
 | 编写、实施或评审方案 | [在办计划](governance/catalog/README.md#catalog-in-progress) · [待启动计划](governance/catalog/README.md#catalog-not-started) · [待审文稿](governance/catalog/README.md#catalog-review) · [文档模板](templates/README.md) |
-| 核验某批做过什么，找到受测版本及遗留项 | [按关联编号查验收记录](governance/catalog/README.md#catalog-evidence) · [验证专题](verification/README.md) |
+| 核验某批做过什么，找到受测版本及遗留项 | [按用途、关联编号查验收结论与证据](governance/catalog/README.md#catalog-evidence) · [验证专题](verification/README.md) |
 | 查历史计划或办理归档 | [已关闭计划和保存位置](governance/catalog/README.md#catalog-closed) · [已替代等历史文档](governance/catalog/README.md#catalog-history) · [归档前逐项提炼与状态判定](governance/014-document-management.md#82-归档) |
 
 ## 当前规则

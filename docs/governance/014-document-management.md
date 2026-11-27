@@ -68,6 +68,16 @@ ADR 解释为什么作出选择，架构或规格维护受该选择影响的当�
 
 `verification_records` 每项记录 `path / related_documents / format / status / date / base_commit / working_tree / change_description / environment / scope / results / limitations`。路径唯一，关联文档必须存在；`status` 为 `draft` 或 `final`。
 
+每项还须登记以下三个字段。[验收记录目录](catalog/README.md#catalog-evidence)按主要用途分组，组内按日期倒序列出。
+
+| 字段 | 登记方法 |
+| --- | --- |
+| `purpose` 主要用途 | 按本次要回答的问题选一项。评方案用 `review`，查现有实现的问题用 `assessment`，核验业务达成的条件用 `acceptance`，复验已知问题用 `retest`。技术机制与容量实测用 `technical`，环境、样本或交付责任移交用 `handoff`，文档、归档及治理规则检查用 `governance`。 |
+| `conclusion` 本次结论及限制 | 用一行写明当次对象、实测结果及影响判断的限制。首败后复验、部分通过、未运行、超标但获本轮豁免时写明区别。方案评审写采纳或待改事项及实施边界。摘要须能在报告或已公开的登记中逐项找到依据。 |
+| `evidence_access` 证据位置 | `repository` 表示报告在本仓可读，另有公开 CI 结果可供核对时可选 `public_ci`。报告在本仓、部分原件须到原仓或保管人的私有备份核对时选 `mixed`。本仓仅保留指针和公开登记、原报告和附件均需原仓权限时选 `restricted`。摘要只写已公开的范围、结果与限制，原始材料按原权限查阅。 |
+
+同一编号可以有多份用途或结论不同的记录。已有直接接续的报告时，可在旧记录的登记中加 `follow_up`，填写另一份已登记报告的仓内路径，目录据此提供“后续记录”链接。专题入口串起问题发现、整改和后续复验，引用当时的结论时注明批次。新增验证依旧在 `docs/verification/` 单独登记并保留原报告、首败和基线。开发默认检索范围见第 8.2 节。
+
 `base_commit` 为实际受测基线的完整提交号；`working_tree` 为 `clean` 或 `dirty`，后者必须描述基线外变更，宜保存受测输入摘要。不能用报告自己的最终提交号代替受测对象。`results` 每项包含 `check / result / evidence`，结果只能为 `passed / failed / interrupted / not_run`；证据引用仓内实际文件。`limitations` 保留未覆盖范围及限制。
 
 `final` 表示记录已定稿，不表示全部检查通过。历史报告缺失的受测信息必须保留未知，不补造；本次迁移的两个旧报告允许 `historical-unspecified`，其中建仓报告的 `base_commit` 为 `null`。该例外不适用于新报告。

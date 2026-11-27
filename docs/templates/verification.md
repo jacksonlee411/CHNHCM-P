@@ -4,6 +4,8 @@
 
 涉及开发/测试运行环境时，按[003](../adr/003-implementation-stages.md#development-environment-cleanup)记录收尾事实；只修订文档等不涉及资源操作时明确不适用，不为填表另启容器。
 
+登记时按主要用途选 `purpose`，将第 6 节结论和关键限制压成一行填入 `conclusion`，再用 `evidence_access` 标明读者在本仓能核对哪些材料。例如“远程首轮有 4 项失败，修复后本地 8 项专项通过，远程全量结果另查对应运行”。涉及私有原件时仅写已公开的范围与结论。各字段取值见[014 验证记录元数据](../governance/014-document-management.md#32-验证记录元数据)。
+
 ````markdown
 # CHNHCM-NNN 验证报告标题
 
