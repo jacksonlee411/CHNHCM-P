@@ -17,7 +17,7 @@ class ImpactTests(unittest.TestCase):
         return impact.select(list(paths), self.policy, root=root)
 
     def test_document_and_passive_evidence_do_not_start_business_suites(self):
-        p = self.select('docs/README.md', 'docs/verification/data/306-publication/check-merged.log.gz',
+        p = self.select('docs/README.md', 'docs/.ignore', 'docs/verification/data/306-publication/check-merged.log.gz',
                         'docs/verification/data/306-publication/integration-summary.json')
         self.assertEqual((p['scope'], p['integration_shards'], p['browser_shards']), ('docs', 0, 0))
         for path in ['docs/verification/data/116-r0-review-fixes/contract-fixtures.json',

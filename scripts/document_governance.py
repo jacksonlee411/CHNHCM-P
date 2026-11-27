@@ -29,6 +29,15 @@ TYPE_DIRECTORIES = {
 }
 STATUSES = {'planned', 'draft', 'in_review', 'active', 'superseded', 'retired', 'cancelled'}
 LEGACY_REPORTS = {'docs/verification/bootstrap.md', 'docs/verification/009-m02-terminology.md'}
+REPORT_PURPOSES = {
+    'acceptance': '业务验收', 'retest': '问题复验', 'review': '方案评审', 'assessment': '实施评审与问题排查',
+    'technical': '技术验证', 'handoff': '环境与交付交接', 'governance': '治理检查',
+}
+EVIDENCE_ACCESS = {
+    'repository': '本仓报告', 'public_ci': '本仓报告及公开 CI',
+    'mixed': '本仓报告，部分原件需权限', 'restricted': '本仓仅有摘要，原件需权限',
+}
+PRIVATE_REPORT_NOTICE = '本次验收使用私有组织样本。原报告和附件由原仓保管，获权维护者可核对原始结果。'
 
 
 def markdown_body(text):
@@ -343,7 +352,8 @@ def validate_governance(root, registry):
         value = report.get('path')
         label = f'verification {value}'
         report_fields = {'path', 'related_documents', 'format', 'status', 'date', 'base_commit', 'working_tree',
-                         'change_description', 'environment', 'scope', 'results', 'limitations'}
+                         'change_description', 'environment', 'scope', 'results', 'limitations',
+                         'purpose', 'conclusion', 'evidence_access'}
         require(report_fields <= report.keys(), f'{label}: missing report metadata fields: {sorted(report_fields - report.keys())}')
         path = existing_file(value, label)
         if path is None or not isinstance(value, str):
@@ -357,6 +367,13 @@ def validate_governance(root, registry):
         legacy_report = report.get('format') == 'legacy' and value in LEGACY_REPORTS
         require(report.get('format') != 'legacy' or legacy_report, f'{label}: legacy report format is restricted to original evidence')
         require(report.get('status') in ('draft', 'final'), f'{label}: invalid report status')
+        purpose = report.get('purpose')
+        access = report.get('evidence_access')
+        require(isinstance(purpose, str) and purpose in REPORT_PURPOSES, f'{label}: invalid report purpose')
+        require(isinstance(access, str) and access in EVIDENCE_ACCESS, f'{label}: invalid evidence access')
+        conclusion = report.get('conclusion')
+        require(nonempty(conclusion) and conclusion.splitlines() == [conclusion],
+                f'{label}: one-line conclusion required')
         require(is_date(report.get('date')), f'{label}: invalid date')
         commit = report.get('base_commit')
         unknown_bootstrap = legacy_report and value == 'docs/verification/bootstrap.md' and commit is None
@@ -377,13 +394,23 @@ def validate_governance(root, registry):
             require(nonempty(result.get('check')), f'{label}: check description required')
             require(result.get('result') in ('passed', 'failed', 'interrupted', 'not_run'), f'{label}: invalid check result')
             existing_file(result.get('evidence'), label)
+            if result.get('private_evidence'):
+                require(access in ('mixed', 'restricted'), f'{label}: private evidence requires restricted or mixed access')
         if path.is_file():
             report_text = path.read_text(encoding='utf-8')
+            if PRIVATE_REPORT_NOTICE in report_text.splitlines():
+                require(access == 'restricted', f'{label}: private report pointer requires restricted access')
             errors.extend(heading_errors(report_text, value, numbered=not legacy_report))
             for level, title in HEADINGS.findall(markdown_body(report_text)):
                 if len(level) == 1:
                     for identifier in re.findall(r'\bCHNHCM-\d{3}\b', title):
                         require(strings(related) and identifier in related, f'{label}: title ID must be in related_documents: {identifier}')
+
+    for value, report in report_paths.items():
+        if 'follow_up' in report:
+            target = report['follow_up']
+            require(isinstance(target, str) and target in report_paths and target != value,
+                    f'verification {value}: follow_up must point to another registered report')
 
     markdown = {}
     for directory, directories, files in os.walk(root):

@@ -2,12 +2,14 @@
 
 从本次要改的业务或页面查起。文档的适用范围、维护角色、审阅及替代关系可在[唯一登记表](registry.json)核对。
 
+默认只检索[现行规范](catalog/standards/README.md)。可在该页按开发问题找到本篇仍适用的条款和已改由哪份规范规定的事项，也可在仓库根目录用 `rg -n -F -- '关键词' docs` 查正文。该命令使用登记表生成的搜索范围，显式指定 `-g '*.md'` 会扩大范围。待审文稿已单独采纳的条款可在现行接收规范的目录行找到。
+
 | 要解决的问题 | 现行约定 | 对象、实现或查证入口 |
 | --- | --- | --- |
 | 本阶段由谁维护业务，保存后何时生效 | [管理员维护与业务生效](../adr/213-administrator-maintenance-and-effectivity.md) · [项目阶段](../adr/003-implementation-stages.md) | [薪酬计划和职级标准的办理规则](../specs/m09/211-compensation-configuration.md#m09-br-007) |
 | 业务对象是谁，什么条件下可以办理、更正或撤销 | [领域与事实归属](../architecture/004-repository-layout.md) · [各模块业务规格](../specs/README.md) · [术语命名](015-terminology-naming.md) | [人员登记及防重](../specs/m01/501-person-registration-requirements.md#m01-registration-examples) · [任职编号与再聘](../specs/m04/506-job-information-records.md#m04-br-009) |
 | 业务日、记录时刻、历史修订和采用来源各指什么 | [日期显示与输入](../adr/026-date-display-and-input-format.md) · [主数据首次新建](../adr/202-master-data-default-effective-date.md) · [按日维护及准确来源](../specs/m02/120-dated-maintenance-technical-contract.md) | [普通维护与专项按日查询](../adr/123-current-maintenance-and-dated-query-boundary.md) · [同日人事办理](../specs/m04/506-job-information-records.md#m04-scn-018) |
-| 谁能看、能改哪些字段，授权收窄后如何读取历史、控制导出 | [X03 身份权限与隐私](../architecture/target/modules/x03.md) · [必要审计事实](../adr/128-authorization-evidence-removal.md) · [历史访问](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-history-access) | [人员范围、用途和字段权](../specs/m01/503-person-registration-design.md#m01-registration-access) · [BU 选择与导出](../adr/114-bu-query-selection-and-export.md) |
+| 谁能看、能改哪些字段，授权收窄后如何读取历史、控制导出 | [X03 身份权限与隐私](../architecture/target/modules/x03.md) · [必要审计事实](../adr/128-authorization-evidence-removal.md#22-只记录有明确用途的事实) · [128 授权存证与关联跳转的替代范围](../adr/128-authorization-evidence-removal.md#authorization-evidence-replacement) · [历史访问](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-history-access) | [人员范围、用途和字段权](../specs/m01/503-person-registration-design.md#m01-registration-access) · [BU 选择与导出](../adr/114-bu-query-selection-and-export.md) |
 | 列表、详情、表单的顶栏、控制区、字段和滚动区如何安排 | [012 共享体验](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression) · [列表行、列与筛选准入](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list-admission) · [部门树接入](../specs/m02/119-department-functional-design.md#department-tree-consumers) · [详情正文](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections) · [对象表单](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-object-form) | [职务逐页对照](../specs/m03/308-job-foundation-contract.md#m03-page-inheritance) · [人员名录、详情与对象差异](../specs/m01/502-person-directory-interactions.md#m01-page-map) |
 | 筛选何时生效，保存、取消、出错和从原件返回时如何操作 | [查询草稿与应用](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-query-state) · [动作与保存定位](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-actions) · [未保存保护](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-protection) · [历史](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-history) | [人员主兼岗入口与页签](../specs/m04/507-job-information-tab.md#job-tab-layout) · [从人员日志原件返回](../specs/m01/502-person-directory-interactions.md#m01-change-log) |
 | 改一个控件，应接哪份共用实现，哪些页面需要一起复验 | [页面继承与业务差异的填法](../templates/dated-object-admission.md#page-inheritance) · [职务已采用的共用布局、交互及差异](../specs/m03/308-job-foundation-contract.md#m03-page-inheritance) | [主题](../../packages/ui/src/theme.ts) · [详情布局](../../packages/ui/src/components/ObjectDetail.tsx) · [共享离开保护](../../apps/web/src/shared/dated/useDraftExit.ts) |
@@ -31,18 +33,18 @@ BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-a
 
 唯一企业的初始化与期间覆盖归 [120 企业约束](../specs/m02/120-dated-maintenance-technical-contract.md#enterprise-dated-contract)，固定验证库的历史导入与重建归 [017](../guides/017-local-bu-development.md#history-import-rebuild)。BU 与部门的容量复测见 [124 测量口径](../guides/124-dated-object-admission-and-capacity.md#bu-department-capacity-comparison)和[在办的 125](../plans/125-r6-capacity-remediation.md)，职务系列和职务见 [308 容量分组](../specs/m03/308-job-foundation-contract.md#job-capacity-matrix)。
 
-按对象查条款可从[规格目录](../specs/README.md)进入。查某次交付的实际结果，可按文档号在[登记表](registry.json)的 `governance.verification_records` 中找关联报告，再核对其受测版本、结果和限制。
+按对象查条款可从[规格目录](../specs/README.md)进入。查某次交付的实际结果，可按用途或文档号查看该批的结论、限制及证据位置，再打开报告核对受测版本。[验收记录目录](catalog/README.md#catalog-evidence)
 
 ## 计划与文稿
 
-[分类目录](catalog/README.md)从登记表生成，列出全部现行标准、在办和待启动计划、待审文稿、已关闭计划与原始验收。下表列出筛选口径和走查样本。
+[分类目录](catalog/README.md)提供计划、文稿与验收记录的入口。需要追溯某批次时，可直接打开相关记录，或用 `rg --no-ignore-dot -n -F -- '关键词' docs/verification docs/archive` 在验收和归档中查找。
 
 | 入口 | 筛选方法 | 走查样本 |
 | --- | --- | --- |
 | 在办计划 | 取 `type=plan` 且 `execution_status=in_progress`。尚待启动的计划另查 `not_started` | [当前在办计划](catalog/README.md#catalog-in-progress) |
 | 待审文稿 | 按文档 `status` 查 `draft` 或 `in_review`。计划另读 `execution_status` | [135 对象头接入方案](../archive/plans/135-real-head-product-integration.md) |
 | 已关闭批次 | 按 `type=plan` 查执行 `completed` 或 `cancelled`，并读 `closure` 和 `archive` | [510 整改结果](../archive/plans/510-personnel-page-remediation.md#4-实施结果) · [首页历史入口](../index.md#验证与历史批次) |
-| 原始验收 | 在 `governance.verification_records` 中按 `related_documents` 查同一编号，按范围选择实施复验，再读逐项结果和限制 | [510 的二十项实测](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) |
+| 原始验收 | 在验收记录目录按用途选择业务验收或问题复验，在对应编号下查本批结论。私有原件的位置和保管方见原记录 | [按用途查验收](catalog/README.md#catalog-evidence) · [510 的二十项实测](../verification/510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) |
 
 例如，从仓库根目录可以直接列出在办计划及其两种状态和正文路径。
 

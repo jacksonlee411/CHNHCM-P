@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from document_governance import heading_errors, markdown_anchors, markdown_links, validate_governance
+from document_governance import PRIVATE_REPORT_NOTICE, heading_errors, markdown_anchors, markdown_links, validate_governance
 
 
 class DocumentGovernanceTests(unittest.TestCase):
@@ -60,6 +60,7 @@ class DocumentGovernanceTests(unittest.TestCase):
         record = {
             'path': path, 'related_documents': ['CHNHCM-014'], 'format': 'numbered', 'status': 'final',
             'date': '2026-10-30', 'base_commit': 'a' * 40, 'working_tree': 'dirty',
+            'purpose': 'retest', 'conclusion': 'Original failure retained.', 'evidence_access': 'repository',
             'change_description': 'Base plus documented governance changes.', 'environment': 'Python fixture',
             'scope': 'Document checks only', 'results': [{'check': 'Focused check', 'result': result, 'evidence': path}],
             'limitations': ['No product validation.'],
@@ -462,6 +463,48 @@ class DocumentGovernanceTests(unittest.TestCase):
         report['base_commit'] = 'a' * 40
         report['results'][0]['evidence'] = 'docs/verification/missing.log'
         self.assert_rejected('missing or unsafe evidence path')
+
+    def test_report_requires_a_purpose_conclusion_and_evidence_location(self):
+        report = self.add_report()
+        for field, invalid, message in (
+            ('purpose', 'final', 'invalid report purpose'),
+            ('conclusion', '  ', 'one-line conclusion required'),
+            ('conclusion', 'First\nSecond', 'one-line conclusion required'),
+            ('conclusion', 'First\n', 'one-line conclusion required'),
+            ('evidence_access', 'passed', 'invalid evidence access'),
+        ):
+            with self.subTest(field=field, invalid=invalid):
+                original = report.pop(field)
+                self.assert_rejected('missing report metadata')
+                report[field] = invalid
+                self.assert_rejected(message)
+                report[field] = original
+
+    def test_private_attachments_and_pointer_only_reports_keep_their_access_boundary(self):
+        report = self.add_report()
+        report['results'][0]['private_evidence'] = 'https://example.org/private/attachment'
+        self.assert_rejected('private evidence requires restricted or mixed access')
+        report['evidence_access'] = 'mixed'
+        self.assertEqual([], self.errors())
+        self.write(report['path'], f'# CHNHCM-014 原件\n\n{PRIVATE_REPORT_NOTICE}\n\n'
+                                   '[私有验收记录](https://example.org/private/report)\n')
+        self.assert_rejected('private report pointer requires restricted access')
+        report['evidence_access'] = 'restricted'
+        self.assertEqual([], self.errors())
+
+    def test_follow_up_must_identify_a_different_registered_report(self):
+        report = self.add_report()
+        for target in (report['path'], self.policy['path'], 'docs/verification/missing.md'):
+            with self.subTest(target=target):
+                report['follow_up'] = target
+                self.assert_rejected('follow_up must point to another registered report')
+        target = 'docs/verification/014-recheck.md'
+        self.write(target, '# CHNHCM-014 Recheck\n\n## 1 Results\n')
+        self.link(target)
+        del report['follow_up']
+        self.registry['governance']['verification_records'].append(dict(report, path=target))
+        report['follow_up'] = target
+        self.assertEqual([], self.errors())
 
     def test_report_title_cannot_claim_an_unrelated_document(self):
         report = self.add_report()

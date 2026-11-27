@@ -14,7 +14,7 @@
 
 当前范围按[109](../../archive/plans/109-lifecycle-pair-maintenance.md)收窄：BR019只公开插入停用与重新启用、删除停用与重新启用；旧通用请求/预览、项目编辑、混合办理、多条分类纠错和日期交换退出。带“109退役”的行保留原输入/预期作历史，不执行、不计当前通过。未退役的共用原子性、权限/并发/来源/恢复断言按固定两请求或合法普通单条入口承接；原报告不回写。
 
-2026-11-08按[128](../../adr/128-authorization-evidence-removal.md)修订TL-178/TL-212及反例14的预期，编号不变；取消逐次完整判权存证断言，改验当前权限、原结果独立恢复及过程档案删除。新参数尚未运行，旧报告结果保持，不能沿用为新参数通过。
+TL-178、TL-212 及反例 14 按[128 第 5 节](../../adr/128-authorization-evidence-removal.md#authorization-evidence-replacement)验当前权限、原结果独立恢复、必要事件的原子性及普通判权零过程写入。查某项参数的执行结果时，须核对报告的受测基线、输入和断言。相关批次见[2026-11-08 实施记录](../../verification/128-implementation.md)。
 
 ## 1 范围与证据边界
 
@@ -443,11 +443,11 @@ A从详情联合编辑区明确ADD/UPDATE/DELETE项；默认F2，直接提交时
 | <a id="m02-tl-171"></a>TL-171 固定操作须两方实际权限 | 缺停用/恢复任一动作及其字段权；删除缺任一类别删除权；普通更正单独持权 | 对固定两条及普通更正分别提交 | 固定两条缺一方即整笔拒绝；普通更正按实际面办理，无通用入口权。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC016](011-m02-business-requirements.md#m02-ac-016)；主A |
 | <a id="m02-tl-172"></a>TL-172 显式同值字段也需写权 | EW可读英文但不能写；普通更正中文真变、英文同值或null | 分别提交 | 两种英文显式声明均拒绝；只省略英文时可按权限改中文并保留原英文。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC019](011-m02-business-requirements.md#m02-ac-019)、[AC023](011-m02-business-requirements.md#m02-ac-023)；主A |
 | <a id="m02-tl-173"></a>TL-173 默认继承不增加字段写权 | L有R动作/日期原因及读取，缺英文写权；F4 | 恢复省略changes，另例显式回传英文Alpha | 省略可W并独立保持Alpha，回传即使同值也拒绝；不可泄露无读权默认。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC015](011-m02-business-requirements.md#m02-ac-015)、[AC023](011-m02-business-requirements.md#m02-ac-023)；主A；补B |
-| <a id="m02-tl-174"></a>TL-174 普通更正及固定结果读取与新执行分权 | 普通更正accepted/no_change/rejected含英文同值声明，固定两条accepted/rejected另验；仅撤英文写权，再撤实际动作写权，读权保持 | 各终态resolve及原内容重试；独立夹具以尚无终态身份重试。补当前CREATE有BU的accepted和无目标rejected对照；补B只用固定两条accepted丢响应后撤写权并刷新 | 已有终态仍可读、原引用解除且零业务新增；无终态执行因缺写权拒绝。原声明/判定不改写，撤读权的裁剪和拒绝见TL-218。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC023](011-m02-business-requirements.md#m02-ac-023)、[AC027](011-m02-business-requirements.md#m02-ac-027)；主A；补B；条件F |
+| <a id="m02-tl-174"></a>TL-174 普通更正及固定结果读取与新执行分权 | 普通更正accepted/no_change/rejected含英文同值声明，固定两条accepted/rejected另验；仅撤英文写权，再撤实际动作写权，读权保持 | 各终态resolve及原内容重试；独立夹具以尚无终态身份重试。补当前CREATE有BU的accepted和无目标rejected对照；补B只用固定两条accepted丢响应后撤写权并刷新 | 已有终态仍可读、原引用解除且零业务新增；无终态执行因缺写权拒绝。原请求声明和已存终态保持，撤读权的裁剪和拒绝见TL-218。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC023](011-m02-business-requirements.md#m02-ac-023)、[AC027](011-m02-business-requirements.md#m02-ac-027)；主A；补B；条件F |
 | <a id="m02-tl-175"></a>TL-175 原结果与当前办理类别分离 | 原S改日后纠为CHANGE；另例S删除后原日新建CHANGE B；撤原S写权但保留读权 | 查回/重放原结果，再按当前目标尝试新维护 | 原结果仍原S身份/分类/日期且可读，不要求旧类别写权；新维护按当前类型核验写权。新身份不代替旧结果，失去对象/历史读权仍拒绝。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC010](011-m02-business-requirements.md#m02-ac-010)、[AC018](011-m02-business-requirements.md#m02-ac-018)、[AC023](011-m02-business-requirements.md#m02-ac-023)；主A；条件F |
 | <a id="m02-tl-176"></a>TL-176 授权完整单元 | 一份Grant有BU1动作，另一份仅BU2字段；另用有效重叠读授权 | 提交BU1字段写入并查询列表 | 不能拼动作/范围越权；同BU合法读授权按合同合并，不因窄授权删除已有可读字段。 | [AC009](011-m02-business-requirements.md#m02-ac-009)；主A |
 | <a id="m02-tl-177"></a>TL-177 认证和安全守卫不可用 | 会话失效、主体停用、缺policy_guard、授权存储故障；写缺CSRF或异源 | 分别预览、保存、历史读取及resolve | 拒绝且不返回受限正文；不临时补守卫、不用缓存allow放行；提交未知按原身份保护。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC010](011-m02-business-requirements.md#m02-ac-010)、[AC012](011-m02-business-requirements.md#m02-ac-012)；主A；条件F |
-| <a id="m02-tl-178"></a>TL-178 撤权后的业务历史与原结果 | 一次成功后删除/收窄Grant或停用主体；新模型不存在授权过程档案 | 获权主体核对原业务来源；原主体重新操作/查回；以允许读取原结果的权限组合复验恢复 | 原业务来源/终态保持，当前访问重新判断；恢复仅依赖本域请求事实和结果，不复用旧许可、不需要原input/basis。新参数未运行。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC012](011-m02-business-requirements.md#m02-ac-012)、[AC023](011-m02-business-requirements.md#m02-ac-023)；主D；条件F；V128-03/04 |
+| <a id="m02-tl-178"></a>TL-178 撤权后的业务历史与原结果 | 一次成功后删除/收窄Grant或停用主体；新模型不存在授权过程档案 | 获权主体核对原业务来源；原主体重新操作/查回；以允许读取原结果的权限组合复验恢复 | 原业务来源和终态保持，当前访问重新判权。恢复仅依赖本域请求事实和结果，无需原 input/basis。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC012](011-m02-business-requirements.md#m02-ac-012)、[AC023](011-m02-business-requirements.md#m02-ac-023)；主D；条件F；V128-03/04 |
 | <a id="m02-tl-179"></a>TL-179 未接消费者不当故障 | 只有当前企业与M02内部引用，F1/F4/F5 | 分别做合法新增、停用/恢复、删除/改日 | 本域合法动作可W；不调用恒为空替身冒充全域保护，也不要求不存在消费者响应。 | [AC011](011-m02-business-requirements.md#m02-ac-011)、[AC015](011-m02-business-requirements.md#m02-ac-015)；主A |
 | <a id="m02-tl-180"></a>TL-180 历史引用不会一概阻断 | F5有T0来源、审计及受控不可变采用引用 | 删尾R或改合法日期 | 仅历史证据不阻断W，旧引用仍指T0；不自动重新采用、改员工或重算工资。 | [AC008](011-m02-business-requirements.md#m02-ac-008)、[AC011](011-m02-business-requirements.md#m02-ac-011)、[AC015](011-m02-business-requirements.md#m02-ac-015)；主G |
 | <a id="m02-tl-181"></a>TL-181 真实业务点引用 | F5在05-15需ACTIVE；未来样本08-15需ACTIVE | 删r1或安排覆盖引用日的停用 | 均R REFERENCE_CONFLICT，检查历史/未来实际日期，不只看D；不暴露无权引用正文。 | [AC011](011-m02-business-requirements.md#m02-ac-011)、[AC015](011-m02-business-requirements.md#m02-ac-015)；主G；条件F |
@@ -493,11 +493,11 @@ A从详情联合编辑区明确ADD/UPDATE/DELETE项；默认F2，直接提交时
 
 | 案例 | 前置与输入 | 操作步骤 | 明确预期（并执行第2.3节共同断言） | 验收依据 · 主层/补层 |
 | --- | --- | --- | --- | --- |
-| <a id="m02-tl-208"></a>TL-208 业务409不得泄漏身份 | 既有BU已插新effective_record而其他业务尚未完成 | 注入业务409并结束事务 | 整笔业务savepoint撤销，无孤立身份；仅确定提交的安全判定/拒绝可留，不能因Fault<500提交业务。 | [AC012](011-m02-business-requirements.md#m02-ac-012)、[AC025](011-m02-business-requirements.md#m02-ac-025)；主D；条件F |
+| <a id="m02-tl-208"></a>TL-208 业务409不得泄漏身份 | 既有BU已插新effective_record而其他业务尚未完成 | 注入业务409并结束事务 | 整笔业务savepoint撤销，无孤立身份；只保留按协议确定提交的拒绝终态及必要事件，不能因Fault<500提交业务。 | [AC012](011-m02-business-requirements.md#m02-ac-012)、[AC025](011-m02-business-requirements.md#m02-ac-025)；主D；条件F |
 | <a id="m02-tl-209"></a>TL-209 写阶段与异常类型覆盖 | 记录身份、来源头、修订、成员、source_change_item、审计、Outbox、accepted结果、BU头九阶段 | 各阶段各注入一次技术失败；另在写修订后panic、写Outbox后取消，覆盖共同异常清理入口 | 各子例均无部分事实；以9个阶段反例加2个异常类型代表例覆盖共享事务边界，不强制九阶段×三类型。COMMIT前可确认回滚，清理不明则U；实现出现不同清理分支时补相应例。 | [AC012](011-m02-business-requirements.md#m02-ac-012)、[AC016](011-m02-business-requirements.md#m02-ac-016)、[AC020](011-m02-business-requirements.md#m02-ac-020)、[AC025](011-m02-business-requirements.md#m02-ac-025)；主D；条件F |
 | <a id="m02-tl-210"></a>TL-210 savepoint清理失败 | 业务写后错误，ROLLBACK TO本身失败；外层连接不可用另例 | 执行有界清理及resolve | 不继续同事务写rejected或COMMIT残留；外层回滚/丢弃连接，结果按真实终态确认。 | [AC025](011-m02-business-requirements.md#m02-ac-025)、[AC028](011-m02-business-requirements.md#m02-ac-028)；主D；条件F |
 | <a id="m02-tl-211"></a>TL-211 技术故障不伪装业务拒绝 | 候选完成前/写入中发生依赖故障或取消 | 检查返回及command_result；显式resolve前后分开观察 | 整笔失败不自动补rejected；没有确定终态保持U，只有用户发起的resolve可封闭。可恢复业务拒绝的原锁内保存另由TL-208/203验证。 | [AC012](011-m02-business-requirements.md#m02-ac-012)、[AC025](011-m02-business-requirements.md#m02-ac-025)、[AC026](011-m02-business-requirements.md#m02-ac-026)；主A；条件F |
-| <a id="m02-tl-212"></a>TL-212 判权与必要事实原子性 | 注入当前授权依赖失败、业务/必要事件写入失败；普通读取重复执行 | 提交/查回并核对事实与终态；检查新模型目录和运行SQL | 授权失败不能越权，实际写入失败回滚或待确认；无需授权档案仍能恢复原结果，普通判权无过程记录增长。新参数未运行。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC012](011-m02-business-requirements.md#m02-ac-012)、[AC025](011-m02-business-requirements.md#m02-ac-025)；主D；条件F；V128-01—05 |
+| <a id="m02-tl-212"></a>TL-212 判权与必要事实原子性 | 注入当前授权依赖失败、业务/必要事件写入失败；普通读取重复执行 | 提交/查回并核对事实与终态；检查新模型目录和运行SQL | 授权失败不能越权，实际写入失败回滚或待确认。原结果可独立于授权档案恢复，普通判权无过程记录增长。 | [AC009](011-m02-business-requirements.md#m02-ac-009)、[AC012](011-m02-business-requirements.md#m02-ac-012)、[AC025](011-m02-business-requirements.md#m02-ac-025)；主D；条件F；V128-01—05 |
 | <a id="m02-tl-213"></a>TL-213 提交结果三分支 | COMMIT前回滚、COMMIT成功丢响应、COMMIT通信未知 | 三例按原身份查回 | 分别按封闭/成功/待确认推进；不能由503或断连猜未保存，成功只有一份来源。 | [AC010](011-m02-business-requirements.md#m02-ac-010)、[AC012](011-m02-business-requirements.md#m02-ac-012)、[AC025](011-m02-business-requirements.md#m02-ac-025)、[AC028](011-m02-business-requirements.md#m02-ac-028)；主A；条件F |
 | <a id="m02-tl-214"></a>TL-214 同字段多项拒绝准确定位（109退役） | c1/c2两UPDATE均声明name/nameEn，仅c1中文201码点 | 丢拒绝响应、刷新查回、重排精确重试 | failure_details始终指c1项的changes.name；不按数组下标，不凭摘要或字段集合猜错误。 | [AC027](011-m02-business-requirements.md#m02-ac-027)；主A；条件F；109退出通用编排，本例退役，不执行或计当前通过 |
 | <a id="m02-tl-215"></a>TL-215 原拒绝不受当前头改变 | 保存上述rejected后其他请求推进来源或目录变化 | 无正文resolve | 回原安全诊断及原expectedSource，不重验后改为版本冲突；不返回后来输入或原名称值。 | [AC027](011-m02-business-requirements.md#m02-ac-027)；主A |
@@ -644,7 +644,7 @@ A从详情联合编辑区明确ADD/UPDATE/DELETE项；默认F2，直接提交时
 | 11 | 四终态合法组合和来源唯一归属 | [TL-234](#m02-tl-234)—[TL-235](#m02-tl-235) |
 | 12 | X03共享守卫、认证与CSRF竞争 | [TL-177](#m02-tl-177)、[TL-205](#m02-tl-205)—[TL-206](#m02-tl-206) |
 | 13 | 旧来源未来首条不混当前 | [TL-021](#m02-tl-021) |
-| 14 | 当前权限、原结果独立恢复与必要事实原子性（128修订，未运行） | [TL-178](#m02-tl-178)、[TL-212](#m02-tl-212) |
+| 14 | 当前权限、原结果独立恢复与必要事实原子性（128） | [TL-178](#m02-tl-178)、[TL-212](#m02-tl-212) |
 | 15 | 当前模型安装及日期引用 | [TL-230](#m02-tl-230)、[TL-233](#m02-tl-233)、[TL-239](#m02-tl-239) |
 | 16 | 改日与各动作竞争及原结果 | [TL-107](#m02-tl-107)、[TL-192](#m02-tl-192)、[TL-209](#m02-tl-209) |
 | 17 | 多轮启停、删除/改日依赖和快照 | [TL-073](#m02-tl-073)、[TL-083](#m02-tl-083)、[TL-103](#m02-tl-103) |
@@ -832,7 +832,7 @@ T05实际覆盖与未完成参数见[分类删除验证](../../verification/020-
 | <a id="m02-tl-361"></a>TL-361 读与导出分权 | R可读全137但无bu.export；另仅136条具export、其他对象具写权；随后完整授予 | 均可按read选择137；缺一条export仍整次拒绝，不变成136条可导出子集；完整授予后重验成功；按对象合并字段读权，隐藏列不是授权 | A,D / B；本轮分层结果见115 |
 | <a id="m02-tl-362"></a>TL-362 CSV编码与公式 | 合法投影含逗号、双引号、换行、中文；编码/名称以=,+,-,@或前导空白/控制字符组合开始；无权字段 | RFC4180可解析；危险文本先中和再转义，原数据不回写；无权字段为空，无内部ID/版本/英文/日志字段 | A / D,B；本轮分层结果见115 |
 | <a id="m02-tl-363"></a>TL-363 导出并发及零文件 | 版本核对前并发变更；撤bu.export或bu.read分别先赢；导出先获守卫；生成故障/超时、发送部分响应后断网；前端取消/离开后响应 | 版本变化409，撤权先赢拒绝；成功快照不混入其后新数据；校验/生成失败无CSV头/字节；传输中断可已有网络字节但前端不创建下载；旧代际不能创建文件；成功已交付不承诺追回 | D,A / B；本轮分层结果见115 |
-| <a id="m02-tl-364"></a>TL-364 组织历史零变化 | 导出成功、拒绝、重试和取消前后对比组织来源、修订、Outbox、提交结果及原采用引用 | 全部组织事实计数/内容不变；允许Access按职责记录安全判定；不创建命令终态或伪造采用 | D / A；本轮分层结果见115 |
+| <a id="m02-tl-364"></a>TL-364 组织历史零变化 | 导出成功、拒绝、重试和取消前后对比组织来源、修订、Outbox、提交结果及原采用引用 | 全部组织事实计数/内容不变；Access 按 128 只记录必要的最小操作事件，不创建命令终态或伪造采用 | D / A。选择与导出的原参数见[115 实施报告](../../verification/115-query-selection-implementation.md)，事件边界见[128 第 2.2 节](../../adr/128-authorization-evidence-removal.md#22-只记录有明确用途的事实) |
 | <a id="m02-tl-365"></a>TL-365 键盘与响应式 | Space切换、Shift当前页连续选择、网格Ctrl/Cmd+A及输入框文本全选；取消后焦点；按 012 核对适用视口与原生缩放，从桌面切窄屏再返回 | mixed可访问状态、可见焦点；网格Ctrl/Cmd+A选全U且输入框仍只选文本；Shift不猜跨未加载页；窄屏全选/清空/导出可达，选择及D保持；不恢复四列表头或横向页面溢出 | B / 组件；本轮分层结果见115 |
 | <a id="m02-tl-366"></a>TL-366 2000BU与资源取消 | 2000BU全选/排除/解析/CSV，另用2021BU及20条每页核对超过100页的结果；记录现有复杂来源规模；执行中取消和受控资源失败 | 不逐页前端拉取、不分页截断、不默加业务硬上限；单快照/权限守卫/版本一致；记录耗时、内存、锁与取消释放，临时环境回收，不宣称生产SLA | D,A / B；本轮分层结果见115 |
 

@@ -149,6 +149,9 @@ for (const kind of ['jobfamily', 'job'] as const) {
     await action308(page, '插入停用与重新启用');
     await page.getByLabel('停用日期').and(page.locator('input')).fill('2021-01-01');
     await page.getByLabel('重新启用日期').and(page.locator('input')).fill('2022-01-01');
+    const reasonPrefix = kind === 'jobfamily' ? '职务系列' : '职务';
+    await expect(page.getByRole('combobox', { name: '停用原因', exact: true })).toHaveText(reasonPrefix + '停用');
+    await expect(page.getByRole('combobox', { name: '重新启用原因', exact: true })).toHaveText(reasonPrefix + '恢复');
     await saved(page);
     expect((await detail(page, o)).timeline).toHaveLength(4);
     await action308(page, '维护停用与重新启用');

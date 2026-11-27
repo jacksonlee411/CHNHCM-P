@@ -1,10 +1,12 @@
 # 验证记录
 
-[薪酬体系两类配置、八项联合验收和 4521 交接](210-compensation-i3.md) · [职级薪酬标准](210-compensation-i1.md) · [薪酬计划及组成](210-compensation-i2.md)
+查某批做过什么，从[全部验收记录](../governance/catalog/README.md#catalog-evidence)按用途或关联编号找报告。目录列出每批的结论、限制和证据位置。下列专题按各批受测时的情况叙述。查目前还要做什么，见[在办计划](../governance/catalog/README.md#catalog-in-progress)。查开发时应遵循的条款，见[现行规范](../governance/catalog/standards/README.md)。
+
+薪酬体系先评审两套制度和后台页面，再分别实施职级标准、薪酬计划及组成，最终在 4521 联验八组业务场景并交接。[设计复审](210-compensation-design-review.md) · [职级薪酬标准](210-compensation-i1.md) · [薪酬计划及组成](210-compensation-i2.md) · [联合验收和手工入口](210-compensation-i3.md)
 
 4496 人员名录的七项问题、方案和实页交接见[405 人员名录整改](405-personnel-directory.md)。由此提炼的列表、部门树与验收样本条款，以及跨部门任职回归见[405 标准评审与复验](405-list-standards-review.md)。
 
-e 树已在同步后的主线复验免占编首单、暂停补员竞争、跨模式占编及旧岗升级。4496 原卷已升至 00057，旧单及私人回执可查，新首单实岗一份、常规占编零。[PR #30 浏览器复验及 4496 当前版本](404-pr30-browser-recheck.md) · [400、404 归档及主线复验](400-404-plan-archive.md) · [4496 原卷签收与合成样本](404-4496-acceptance.md) · [同步复评](404-main-sync-reassessment.md) · [404 原方案评审](404-position-exempt-first-hire-review.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire)
+404 的按岗免占编首单先在主线同步后复验，再在 4496 原卷升级至 00057 时签收。该批确认旧单及私人回执可查，新首单实岗一份、常规占编零。后续 PR #30 的记录保留远程首败、本地复验和当批 4496 构建。[原方案评审](404-position-exempt-first-hire-review.md) · [同步复评](404-main-sync-reassessment.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire) · [4496 原卷签收](404-4496-acceptance.md) · [PR #30 浏览器复验](404-pr30-browser-recheck.md) · [400、404 归档及主线复验](400-404-plan-archive.md)
 
 [004 架构、技术栈与数据归属整改复验](004-architecture-review-remediation.md)
 
@@ -16,16 +18,12 @@ e 树已在同步后的主线复验免占编首单、暂停补员竞争、跨模
 
 [文档物理归档、路径迁移与六份规则交接](511-physical-archive.md)
 
-[按关联编号查全部评审、验收及历史记录](../governance/catalog/README.md#catalog-evidence) · [511 规范实施与逐份归档评估](511-project-standards-implementation.md)
+[511 规范实施与逐份归档评估](511-project-standards-implementation.md)
 
 
 511 的修订验收包括 135 在审文稿的单项决定交接、原状态保留和错误提升被拒绝的对照。[方案采纳](511-project-standards-acceptance.md) · [复评](511-project-standards-rereview.md) · [初评](511-project-standards-review.md)
 
-510 人员页面整改的旧编号、首败、实测和复验按项记录，方案评审另有原稿与结论。[二十项实施复验](510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录) · [510 方案评审](510-personnel-page-remediation-review.md)
-
-500 人员页面的实页评审登记了 11 项待修复问题，可逐项查阅复现路径、规范、截图及关闭条件。[500 人员页面布局与交互问题登记](500-personnel-page-review.md)
-
-500-UI-12 至 20 接续记录普通人员入口、职务信息页签、日期轴、通用查看日期和相邻流程的 9 项问题。四轮走查覆盖单任职、多任职、首聘、只读、返回与专项统计，并对照实施合同和旧浏览器断言。[500 人员入口与日期交互补充评审](500-personnel-entry-and-date-review.md)
+500 的两轮人员页面评审分别登记了 11 项和 9 项问题。510 沿用原编号逐项记录修复、首败和实测结果，可从任一发现追到对应复验。[首批 11 项](500-personnel-page-review.md) · [补充 9 项](500-personnel-entry-and-date-review.md) · [510 方案评审](510-personnel-page-remediation-review.md) · [二十项实施复验](510-personnel-page-remediation-implementation.md#1-二十项问题的复验记录)
 
 职务信息的设计复核覆盖首单升级与实施分批、主兼岗分行、两处查回原笔、106 的同日办理，以及普通更正、撤销和已履职补录的最少输入。首单实测记录了按职务入职、原件、查回及未来撤销。后续任职变动、工作关系合同和录用交接可按阶段查验。[首单实测](400-first-hire-integration.md#decision-first-hire) · [分阶段交付结果](500-job-information-delivery-review.md#stage-delivery-results) · [直接办理负担修订](506-job-information-direct-entry-review.md) · [同日办理复核](506-same-day-actions-design-review.md) · [办理列表复核](507-personnel-action-register-design-review.md) · [主兼岗复核](506-job-information-design-review.md)
 
@@ -43,7 +41,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [500 T00 人员首批规格评审](500-t00-personnel-specifications.md)记录原四稿关于未任职者、同名者和受限读者的走查、修订和万人样本复算。新版产品按[现行十项条件](../specs/m01/501-person-registration-requirements.md#4-t01-独立验收条件)验收。
 
-人员路线图第五稿通过评审。记录包含逐稿修订、页面继承、人员与任职的授权交集，以及未来入职撤销后旧请求重送的名额算例。[500 评审记录](500-personnel-roadmap-review.md) · [人员模块实施路线图](../archive/plans/500-personnel-roadmap.md)
+人员路线图的第五稿通过了方案评审。原评审保留页面继承、授权交集和撤销后重送的算例，关闭记录列出了八个场景的现行定义和剩余事项的接收方。[500 方案评审](500-personnel-roadmap-review.md) · [归档路线图](../archive/plans/500-personnel-roadmap.md) · [500 关闭与场景交接](500-personnel-roadmap-closeout.md)
 
 
 [公共 00057 升至登记号 00058](027-public-00058-grant-upgrade.md)记录按主体对账、旧回执和撤尽重启，以及录用授权在提交前到期的回归。
@@ -83,11 +81,11 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 311 两批均已受托签收。[第一批岗位定义签收单](311-position-definition-signoff.md) · [第二批岗位层级签收单](311-position-hierarchy-signoff.md)
 
-[309 G1职级实施与验收](309-grade-g1-implementation.md)：G1完整交付，14尺寸角色单元、真实DB/API、1200容量样本及1643来源/回执重启通过；4381保留验收，G2未开始。
+309 分两批交付。G1 职级通过 14 个尺寸与角色组合及重启核对。G2 交付了职级阶梯和职务关联。交付后的容量复验中，53 组有 3 个 20 会话组的 P95 超过 500 ms，用户仅在该轮验收中接受为非阻断，报告保留了原始超标结果。[G1 职级验收](309-grade-g1-implementation.md) · [G2 阶梯与职务关联交付](309-grade-g2-implementation.md#8-收尾与本地交付) · [G2 容量复验与本轮决定](309-grade-g2-implementation.md#91-容量实测与本轮验收决定)
 
 [005三份stash处置](005-stash-disposition.md)：24个差异路径承接核对、666个文件版本真实恢复、仓外归档及三条精确清理；没有遗留待恢复实现。
 
-[309职级与阶梯方案评审](309-grade-ladder-plan-review.md)：方案阶段三轮主代理复核，5项文档问题关闭、30项反例；后续G1实施见上述独立记录。
+[309 职级与阶梯方案评审](309-grade-ladder-plan-review.md)记录了实施前的三轮复核、5 项文档问题的关闭依据及 30 项反例。
 
 [308职务页面标准整改与验收](308-job-page-standard-implementation.md)：继承标准布局、表单、日期、操作与历史；14项验收、28个尺寸角色及6个权限单元通过，M02公共消费者回归完成。本地提交已更新4380；用户后续授权真实写入并保留样本，25场景及8个原生缩放单元通过，164个新增对象／245份来源留存，原数据保护和首失败留证，见[实际体验验收](308-job-page-standard-implementation.md#m03-308-live-retained)。
 
@@ -103,13 +101,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 - [306部门路径与集团案例](306-department-path-simplification.md)：23个DB/API根、30个浏览器分轮通过，两个固定案例双角色页面、原日期更正、219635份原来源与构建核验，首失败及资源收尾。
 
-136 首批发布中，PR #19 最终全量 22 项成功并合并，main 实际复用且三项门禁通过。4390 在该批更新至 6ce8a3e9，双角色 16 条旅程和原数据复核通过。598 个估算 runner 分钟和首败保存在原报告。首轮 10 次交付窗口已收口，80% 试点另按 137 接续。[首批发布](136-actions-publication.md) · [原窗口结果](136-actions-observation.md#6-窗口收口) · [试点责任与口径](../governance/137-actions-and-validation.md#hosted-minutes-observation)
-
-[136发布前本地收口](136-actions-prepublication.md)：原CI/规范已提交，本地同步main并保留双方功能；检查与限定业务复验单列，远程仍待发布。
-
-[136 Actions工作流实施](136-actions-implementation.md)：触发、范围选择、严格汇总及完整PR等价复用已本地验证；含最新main隔离清单及干净环境首失败修复。未发布、未触发远程CI，实际节省待观察。
-
-[136 Actions节流方案与规范验证](136-actions-policy-validation.md)：61项离线决策、53轮636job历史消耗复算及文档检查；137形成项目规范，自动工作流及实际节省率尚未实施/验证。
+136 从离线方案评估、工作流实现走到正式发布。PR #19 最终全量 22 项成功，主线复用通过，4390 当批双角色 16 条旅程通过。598 个估算 runner 分钟包含首败。原 10 次交付的观测窗口已关闭，后续 80% 试点由 137 接续。[方案评估](136-actions-policy-validation.md) · [本地实施](136-actions-implementation.md) · [发布前复验](136-actions-prepublication.md) · [首批发布](136-actions-publication.md) · [原窗口结果](136-actions-observation.md#6-窗口收口) · [试点原记录](136-hosted-minutes-pilot.md) · [关闭与交接](136-206-plan-archive.md#2-github-actions-节流与托管分钟试点) · [137 测量口径](../governance/137-actions-and-validation.md#hosted-minutes-observation)
 
 [125同步main与性能复查](125-main-sync-performance.md)：3000次A/B/A正式请求零错误，列表／路径无明显变化，导航API约改善15—16%；双角色页面5次诊断约快75%、每次8→3请求。完整输入、原失败、回测及资源保护分别登记，125容量P1保持。
 
