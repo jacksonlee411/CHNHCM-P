@@ -77,6 +77,7 @@ export function EmployeeDirectory({
   const more = useRef<HTMLButtonElement>(null),
     queryButton = useRef<HTMLButtonElement>(null);
   const [filter, setFilter] = useState<FilterRequest>();
+  // Restoring the URL filter after the grid mounts would send a returning user to page one.
   const filterModel = useMemo(
     () => ({ items: query.primary ? [{ field: 'primaryJob', operator: 'is', value: query.primary }] : [] }),
     [query.primary],
@@ -359,7 +360,7 @@ export function EmployeeDirectory({
           ready={!!data}
           loading={!data && !failed}
           empty={data && !staleScope ? '没有匹配的人员' : ''}
-          filterModel={staffing ? filterModel : undefined}
+          filterModel={filterModel}
           slots={columnFilterSlots}
           selection={{ ...selection, disabled: !data || selection.disabled }}
           columns={columns}
