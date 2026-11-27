@@ -1,0 +1,323 @@
+{
+  "profile": "t03-first-e",
+  "webPort": 4496,
+  "apiPort": 8496,
+  "databasePort": 54496,
+  "migration": 58,
+  "productCommit": "547a70dced30aa3d0069d71d6e73bd90a014b151",
+  "servedWebFiles": 5,
+  "counts": {
+    "admin": {
+      "people": 9,
+      "assignments": 9,
+      "total": 11,
+      "current": 6,
+      "future": 3,
+      "canList": true,
+      "depth": 5,
+      "nodes": 7,
+      "names": [
+        [
+          "P00000006",
+          "示例陈舒"
+        ],
+        [
+          "P00000007",
+          "示例刘宁"
+        ],
+        [
+          "P00000008",
+          "示例周平"
+        ],
+        [
+          "P00000009",
+          "示例林青"
+        ]
+      ]
+    },
+    "reader": {
+      "people": 9,
+      "assignments": 0,
+      "total": 9,
+      "current": 0,
+      "future": 0,
+      "canList": false,
+      "depth": 0,
+      "nodes": 0,
+      "names": []
+    }
+  },
+  "viewports": {
+    "desktop": {
+      "viewport": [
+        1440,
+        900,
+        1
+      ],
+      "control": 64,
+      "sidebar": 220
+    },
+    "short": {
+      "viewport": [
+        1440,
+        540,
+        1
+      ],
+      "control": 64,
+      "sidebar": 220
+    },
+    "200": {
+      "viewport": [
+        640,
+        450,
+        2
+      ],
+      "control": 100.5,
+      "sidebar": 0
+    }
+  },
+  "originalRowsVerified": {
+    "personnel.person": {
+      "before": 5,
+      "after": 9
+    },
+    "personnel.source": {
+      "before": 6,
+      "after": 10
+    },
+    "personnel.identity_payload": {
+      "before": 6,
+      "after": 10
+    },
+    "staffing.hire_rule_source": {
+      "before": 1,
+      "after": 2
+    },
+    "staffing.employment": {
+      "before": 4,
+      "after": 8
+    },
+    "staffing.assignment": {
+      "before": 4,
+      "after": 10
+    },
+    "staffing.assignment_head": {
+      "before": 4,
+      "after": 10
+    },
+    "staffing.employment_action": {
+      "before": 5,
+      "after": 11
+    },
+    "staffing.employment_action_revision": {
+      "before": 5,
+      "after": 11
+    },
+    "staffing.assignment_segment": {
+      "before": 4,
+      "after": 10
+    },
+    "staffing.employment_primary": {
+      "before": 6,
+      "after": 14
+    },
+    "staffing.employment_outbox": {
+      "before": 5,
+      "after": 11
+    },
+    "staffing.hire_terminal": {
+      "before": 6,
+      "after": 12
+    },
+    "staffing.hire_decision_use": {
+      "before": 2,
+      "after": 2
+    },
+    "staffing.appointment_version": {
+      "before": 3,
+      "after": 3
+    },
+    "staffing.appointment_outbox": {
+      "before": 3,
+      "after": 3
+    }
+  },
+  "sameVolume": true,
+  "seedReplayChangedFacts": false,
+  "originalReceipt": {
+    "status": 200,
+    "receiptMatches": true,
+    "fields": [
+      "action",
+      "employment",
+      "assignment",
+      "recordNumber"
+    ]
+  },
+  "mixedCapacity": [
+    {
+      "query": "混合名录",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 62.98,
+      "p95_ms": 74.17,
+      "p99_ms": 85.25
+    },
+    {
+      "query": "任职锚点",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 63.19,
+      "p95_ms": 74.08,
+      "p99_ms": 84.82
+    },
+    {
+      "query": "人员锚点",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 63.26,
+      "p95_ms": 76.43,
+      "p99_ms": 89.07
+    },
+    {
+      "query": "混合名录",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 327.83,
+      "p95_ms": 428.59,
+      "p99_ms": 591.82
+    },
+    {
+      "query": "任职锚点",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 309.52,
+      "p95_ms": 368.49,
+      "p99_ms": 402.51
+    },
+    {
+      "query": "人员锚点",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 303.99,
+      "p95_ms": 348.38,
+      "p99_ms": 365.19
+    }
+  ],
+  "personnelCapacity": [
+    {
+      "query": "directory",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 71.85,
+      "p95_ms": 81.16,
+      "p99_ms": 89.34
+    },
+    {
+      "query": "restricted",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 59.48,
+      "p95_ms": 70.94,
+      "p99_ms": 80.99
+    },
+    {
+      "query": "oldNumber",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 62.53,
+      "p95_ms": 71.73,
+      "p99_ms": 80.25
+    },
+    {
+      "query": "detail",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 15.92,
+      "p95_ms": 18.55,
+      "p99_ms": 19.38
+    },
+    {
+      "query": "source",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 17.18,
+      "p95_ms": 21.53,
+      "p99_ms": 28.02
+    },
+    {
+      "query": "save",
+      "sessions": 1,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 52.94,
+      "p95_ms": 62.37,
+      "p99_ms": 73.45
+    },
+    {
+      "query": "directory",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 310.13,
+      "p95_ms": 445.58,
+      "p99_ms": 554.89
+    },
+    {
+      "query": "restricted",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 239.64,
+      "p95_ms": 286.7,
+      "p99_ms": 306.63
+    },
+    {
+      "query": "oldNumber",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 272.77,
+      "p95_ms": 334.1,
+      "p99_ms": 357.34
+    },
+    {
+      "query": "detail",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 55.49,
+      "p95_ms": 68.77,
+      "p99_ms": 94.59
+    },
+    {
+      "query": "source",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 58.67,
+      "p95_ms": 71.32,
+      "p99_ms": 78.16
+    },
+    {
+      "query": "save",
+      "sessions": 20,
+      "samples": 200,
+      "errors": 0,
+      "p50_ms": 286.33,
+      "p95_ms": 330.07,
+      "p99_ms": 443.6
+    }
+  ]
+}

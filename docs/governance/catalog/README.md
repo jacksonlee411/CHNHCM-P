@@ -146,6 +146,7 @@
 | [315 部门与岗位编制后台实施计划](../../archive/plans/315-staffing-quota-administration.md) | active | completed | 物理归档 |
 | [400 M04 T02 入职规则与准备实施方案](../../archive/plans/400-hire-readiness.md) | active | completed | 物理归档 |
 | [404 T03 按岗位免占编首次入职实施方案](../../archive/plans/404-position-exempt-first-hire.md) | active | completed | 物理归档 |
+| [405 人员名录交互、部门层级与验收样本整改](../../archive/plans/405-personnel-directory.md) | active | completed | 物理归档 |
 | [500 人员模块实施路线图](../../archive/plans/500-personnel-roadmap.md) | active | completed | 物理归档 |
 | [504 M01 个人资料扩展实施方案](../../archive/plans/504-personal-profile-extension.md) | active | completed | 物理归档 |
 | [508 人员职务信息评审问题修复实施方案](../../archive/plans/508-job-information-remediation.md) | active | completed | 物理归档 |
@@ -176,6 +177,8 @@
 
 | 关联编号 | 记录 | 日期 | 状态 |
 | --- | --- | --- | --- |
+| 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 | final |
+| 405、012、119、003、502、124 | [CHNHCM-405 从人员名录提炼列表标准的评审与复验](../../verification/405-list-standards-review.md) | 2026-11-27 | final |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 213、210、211、212、003、012 | [CHNHCM-213 管理员维护生效与薪酬首期范围核对](../../verification/213-administrator-maintenance-and-compensation.md) | 2026-11-27 | final |

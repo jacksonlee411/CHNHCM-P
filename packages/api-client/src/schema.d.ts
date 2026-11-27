@@ -7308,6 +7308,12 @@ export interface components {
             anchor?: string;
             /** Format: uuid */
             department?: string;
+            directOnly?: boolean;
+            selection?: {
+                all: boolean;
+                ids: string[];
+                version?: string;
+            };
             /** @enum {string} */
             primary?: "primary" | "secondary";
             /** Format: uuid */
@@ -7335,6 +7341,12 @@ export interface components {
             future?: boolean;
         };
         PersonnelDirectory: {
+            canListAssignments: boolean;
+            selection?: {
+                version: string;
+                count: number;
+                changed: boolean;
+            };
             navigation?: {
                 position: number;
                 previous?: components["schemas"]["PersonnelDirectoryLink"];
