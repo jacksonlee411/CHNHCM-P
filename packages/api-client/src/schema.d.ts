@@ -68,6 +68,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/access/{area}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["accessManagementView"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/access/commands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["accessManagementCommand"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/access/submissions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["accessManagementResult"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/access/submissions/{id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolveAccessManagement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/context": {
         parameters: {
             query?: never;
@@ -7971,6 +8035,138 @@ export interface components {
             failureDetails?: components["schemas"]["FailureDetails"];
             readFields?: string[];
         };
+        AccessTarget: {
+            options?: string[];
+            kind: string;
+            id: string;
+            code: string;
+            name: string;
+        };
+        AccessDefinition: {
+            options?: string[];
+            kind: string;
+            name: string;
+            id?: string;
+            definitionId?: string;
+            number?: number;
+            actions?: string[];
+            targetKind?: string;
+            targetId?: string;
+            readFields?: string[];
+            writeFields?: string[];
+            scope?: string;
+            fields?: string;
+            disabled?: boolean;
+        };
+        AccessManagementLimit: {
+            owner: string;
+            rights: string[];
+            role: string;
+            scope: string;
+            fields: string;
+            maxProxyDays: number;
+            /** Format: date-time */
+            until?: string;
+        };
+        AccessMandate: {
+            id: string;
+            limit: components["schemas"]["AccessManagementLimit"];
+            revoked: boolean;
+        };
+        AccessManagedAccount: {
+            id: string;
+            login: string;
+            displayName: string;
+            owner: string;
+            state: string;
+            revision: number;
+            options?: string[];
+        };
+        AccessManagedGrant: {
+            id: string;
+            subject: string;
+            role: string;
+            scope: string;
+            fields: string;
+            revision: number;
+            source: string;
+            purpose: string;
+            /** Format: date-time */
+            from?: string;
+            /** Format: date-time */
+            until?: string;
+            state: string;
+        };
+        AccessCatalogAction: {
+            key: string;
+            name: string;
+            menu: string;
+            api: string;
+        };
+        AccessManagementEvent: {
+            /** Format: uuid */
+            previousOwner?: string;
+            /** Format: uuid */
+            assignedOwner?: string;
+            id: string;
+            actor: string;
+            target: string;
+            operation: string;
+            reason: string;
+            /** Format: date-time */
+            at: string;
+            request: string;
+        };
+        AccessManagementView: {
+            /** @description 当前委派职责可采用的代理天数初值 */
+            suggestedProxyDays?: number;
+            total?: number;
+            rights?: string[];
+            owners?: components["schemas"]["AccessTarget"][];
+            targets?: components["schemas"]["AccessTarget"][];
+            actions?: components["schemas"]["AccessCatalogAction"][];
+            readFields?: string[];
+            writeFields?: string[];
+            accounts?: components["schemas"]["AccessManagedAccount"][];
+            versions?: components["schemas"]["AccessDefinition"][];
+            grants?: components["schemas"]["AccessManagedGrant"][];
+            mandates?: components["schemas"]["AccessMandate"][];
+            events?: components["schemas"]["AccessManagementEvent"][];
+        };
+        AccessManagementCommand: {
+            requestId: string;
+            instanceId: string;
+            operation: string;
+            subject?: string;
+            id?: string;
+            revision?: number;
+            login?: string;
+            displayName?: string;
+            password?: string;
+            owner?: string;
+            reason?: string;
+            version?: components["schemas"]["AccessDefinition"];
+            newScope?: components["schemas"]["AccessDefinition"];
+            newFields?: components["schemas"]["AccessDefinition"];
+            role?: string;
+            scope?: string;
+            fields?: string;
+            source?: string;
+            purpose?: string;
+            /** Format: date-time */
+            from?: string;
+            /** Format: date-time */
+            until?: string;
+            limit?: components["schemas"]["AccessManagementLimit"];
+        };
+        AccessManagementResult: {
+            requestId: string;
+            operation: string;
+            target: string;
+            subject?: string;
+            /** Format: date-time */
+            at: string;
+        };
         Principal: {
             /** Format: uuid */
             subjectId: string;
@@ -12073,6 +12269,144 @@ export interface operations {
                 content?: never;
             };
             /** @description Rejected or unavailable; unknown writes must resolve their original identity. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    accessManagementView: {
+        parameters: {
+            query?: {
+                q?: string;
+                owner?: string;
+                state?: string;
+                subject?: string;
+                object?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path: {
+                area: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized management result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessManagementView"];
+                };
+            };
+            /** @description Access, input or revision rejected */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    accessManagementCommand: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccessManagementCommand"];
+            };
+        };
+        responses: {
+            /** @description Authorized management result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessManagementResult"];
+                };
+            };
+            /** @description Access, input or revision rejected */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    accessManagementResult: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized management result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessManagementResult"];
+                };
+            };
+            /** @description Access, input or revision rejected */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    resolveAccessManagement: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized management result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessManagementResult"];
+                };
+            };
+            /** @description Access, input or revision rejected */
             default: {
                 headers: {
                     [name: string]: unknown;

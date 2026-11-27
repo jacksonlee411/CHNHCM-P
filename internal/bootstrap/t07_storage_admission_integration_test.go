@@ -18,13 +18,18 @@ func restoreGrantPredecessor(f *fixture) {
 	if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('access.bound_permission')") == 0 {
 		return
 	}
-	f.exec(`DROP VIEW IF EXISTS access.subject_grant;
+	// Reconstruct the predecessor only in this test-owned container. Remove
+	// later X03 foreign keys before restoring the old permission table.
+	f.exec(`DROP TABLE IF EXISTS access.management_mandate,access.management_publication,access.management_receipt,access.management_root;
+ DROP FUNCTION IF EXISTS access.protect_management_mandate();
+ ALTER TABLE access.principal DROP COLUMN IF EXISTS management_owner;
+ DROP VIEW IF EXISTS access.subject_grant;
  CREATE TABLE access.subject_grant (LIKE fixture.prefix_grant INCLUDING ALL);
  INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission;
  DROP VIEW access.bound_permission;
  DROP TABLE access.grant_assignment,access.grant_revision,access.policy_version;
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id=58`)
+ DELETE FROM public.goose_db_version WHERE version_id>=58`)
 }
 
 func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
@@ -34,6 +39,8 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	before := businessSnapshot(t, f)
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
+		{"mutable_management_receipt", `ALTER TABLE access.management_receipt DISABLE TRIGGER immutable_management_receipt`, `ALTER TABLE access.management_receipt ENABLE TRIGGER immutable_management_receipt`},
+		{"missing_management_root", `ALTER TABLE access.management_root RENAME TO t04_hidden_root`, `ALTER TABLE access.t04_hidden_root RENAME TO management_root`},
 		{"mutable_grant_revision", `ALTER TABLE access.grant_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE access.grant_revision ENABLE TRIGGER immutable_revision`},
 		{"missing_f_reserved_versions", `DELETE FROM public.goose_db_version WHERE version_id IN (32,33)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(32,true),(33,true)`},
 		{"missing_person_profile_table", `ALTER TABLE personnel.document_payload RENAME TO t07_hidden_documents`, `ALTER TABLE personnel.t07_hidden_documents RENAME TO document_payload`},

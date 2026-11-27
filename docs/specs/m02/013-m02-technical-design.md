@@ -84,7 +84,7 @@ flowchart TB
 | `internal/contexts/organization/application/` | 命令/查询、事务编排、结果恢复、来源引用核验 |
 | `internal/contexts/organization/public/` | 只含公开 DTO、命令/查询入口及可用性合同；不暴露 domain 或 pgx 类型 |
 | `internal/contexts/organization/infra/postgres/` | 仓库、sqlc 映射、当前/确切来源查询及事务适配器 |
-| `internal/contexts/access/{public,domain,application,infra}/` | 本批真实主体、会话、静态授权及撤权守卫；没有权限配置页面 |
+| `internal/contexts/access/{public,domain,application,infra}/` | 真实主体、会话、逐份授予和撤权守卫，027 T04 在 X03 管理入口维护客户账号与版本 |
 | `internal/bootstrap/`、`cmd/server/` | HTTP 与依赖接线；当前无 worker，Outbox 消费后置 |
 | `cmd/upgrader/`、`db/migrations/` | 唯一迁移调度；补零全局序号，已发布迁移不修改 |
 | `db/queries/{organization,access}/` | 按表拥有域维护 SQL；sqlc 生成到各域 `infra/postgres/generated/` |
@@ -684,7 +684,7 @@ Go在候选构建、区间/继承扫描、影响/结果组装的有界批次检�
 
 ### 6.1 首批真实身份
 
-选择 X03 本地账号和服务端会话作为首批可复现接入，不依赖外部 SSO、人员档案或旧原型角色开关。仅提供登录、退出和当前会话三个必要接口及简短登录表单；普通账号开户时业务权限为空。受控初始化沿用原主体，逐份授予通过 X03 事务写端口维护。客户管理页面及首位管理员引导和恢复由 027 T04 接入。正常 BU 菜单仍从设置进入。
+选择 X03 本地账号和服务端会话作为首批可复现接入，不依赖外部 SSO、人员档案或旧原型角色开关。登录、退出和当前会话沿用原入口。普通账号开户后业务授予为空。T04 的管理查询、命令及原提交查回使用同一 X03 会话和管理归属。Go 分别检查账号管理、凭据重置、角色、策略、业务授予及管理职责委派。部署命令提供首位管理员引导、恢复和交接，操作身份、原授予及业务历史沿用原主体。[028 管理合同](../x03/028-local-account-and-authorization.md)正常 BU 菜单仍从设置进入。
 
 接口为 `POST /api/v1/session/login`（login/password，仅返回当前主体和会话就绪结果）、`GET /api/v1/session`（当前主体、企业范围及 CSRF 引用）、`DELETE /api/v1/session`（退出并撤销会话）。登录也校验 Origin；登录响应以 Set-Cookie 设置会话，不将会话值放入 JSON 或本地存储。未登录先进入登录表单，成功后只恢复合法本应用路由及待确认引用；不建立工作台中转。
 
@@ -700,7 +700,7 @@ Go在候选构建、区间/继承扫描、影响/结果组装的有界批次检�
 
 #### 6.1.1 X03 最小表与引用
 
-以下表均归 Access，上下文内部引用带 instance_id；I 表示该列。身份使用 uuid，时刻使用 timestamptz(6)，状态/动作使用带 CHECK 的 text。除注明可空的字段外均非空；域内外键 NO ACTION，不级联删除主体或诊断。首批只提供受控命令，不增加角色继承、权限产品或配置页面。
+以下表均归 Access，上下文内部引用带 instance_id；I 表示该列。身份使用 uuid，时刻使用 timestamptz(6)，状态/动作使用带 CHECK 的 text。除注明可空的字段外均非空；域内外键 NO ACTION，不级联删除主体或诊断。027 T04 增加账号管理归属、受保护管理员、管理职责、策略发布信息和管理回执。角色、范围、字段及业务授予继续使用 00058 的不可变版本。变更回执按当前管理权查回，记录操作者、目标、时间、事由和提交身份。
 
 | 表 | 主要字段与键 | 维护边界 |
 | --- | --- | --- |

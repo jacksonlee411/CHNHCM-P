@@ -1,0 +1,750 @@
+{
+  "baseline": "3c3dde7caab4bd367a9351b0f880a2e4247966dd",
+  "candidate": "wt-dev-a working tree",
+  "migrationSHA256": "642de72a804a5fdeaa5ea3e762f8d5c6d3c87f2e86f184c864519d1e62d6a7c9",
+  "commands": {
+    "unitAndBuild": "make check build",
+    "codeGeneration": "make generate",
+    "databasePreflight": "python3 scripts/integration-shard.py --preflight",
+    "partitionInventory": "python3 scripts/integration-shard.py --check --coverage-output <destination>",
+    "databaseRemainder": "python3 scripts/integration-shard.py --after-preflight --shard N --total 5 --list; go test -tags=integration -count=1 -timeout=20m -run <selected-roots> <package>"
+  },
+  "integration": {
+    "discovered": 454,
+    "outcomes": {
+      "pass": 432,
+      "skip": 22
+    },
+    "conditionalSkipReasons": {
+      "TestBUSliceLoad": "bu_test.go:462: explicit 2000 BU capacity sample",
+      "TestCountry200ListCapacity": "country200_integration_test.go:437: country capacity requires an isolated measurement window",
+      "TestDepartmentR5BusinessDayBrowser": "department_r5_clock_integration_test.go:24: explicit R5 browser lane after make build",
+      "TestHire400PositionBackups": "hire_upgrade_integration_test.go:27: requires isolated 00026 and 00027 Staffing API backups",
+      "TestJointMidnightBrowser": "joint_browser_integration_test.go:25: supplementary browser lane: run after make build with CHNHCM_MIDNIGHT_BROWSER=1",
+      "TestLegalEntity206Capacity": "legal_entity206_capacity_integration_test.go:26: explicit isolated 1000-background / 20-record scenario",
+      "TestLocation204Capacity": "location204_capacity_integration_test.go:37: explicit isolated 10001-location capacity scenario",
+      "TestPersonnelCapacity": "personnel_capacity_test.go:56: explicit 10,000 person HTTP measurement",
+      "TestPersonnelNineSectionsCapacity": "personnel_nine_sections_capacity_test.go:130: explicit 10,000 person HTTP measurement",
+      "TestPersonnelPrimaryDocumentUpgrade": "personnel_restore_integration_test.go:132: requires a private copy of a 00026 backup",
+      "TestPersonnelProfileV27Backup": "personnel_restore_integration_test.go:258: requires private v27 backup",
+      "TestPersonnelProfileV31Backup": "personnel_restore_integration_test.go:409: requires the matching private acceptance backup",
+      "TestPersonnelProfileV36Backup": "personnel_restore_integration_test.go:409: requires the matching private acceptance backup",
+      "TestPersonnelProfileV38Backup": "personnel_restore_integration_test.go:409: requires the matching private acceptance backup",
+      "TestPersonnelUpgradeFromBackup": "personnel_restore_integration_test.go:30: explicit pre-T01 PostgreSQL backup",
+      "TestStaffing307Capacity": "staffing307_capacity_integration_test.go:30: explicit isolated M03 capacity run",
+      "TestStaffing308ClockBrowser": "staffing308_clock_browser_integration_test.go:24: explicit fixed-clock browser after make build",
+      "TestStaffing309Capacity": "staffing309_capacity_integration_test.go:34: explicit isolated M03 capacity run",
+      "TestStaffing310Capacity": "staffing310_capacity_integration_test.go:29: explicit isolated M03 capacity run",
+      "TestStaffing310WriteDiagnostic": "staffing310_diagnostic_integration_test.go:80: explicit write profiling only; not a capacity acceptance test",
+      "TestT07BusinessDayBoundaryBrowser": "t07_clock_integration_test.go:147: explicit browser lane after make build",
+      "TestT07CurrentTimeline20Records": "t07_pressure_integration_test.go:32: explicit20-record real DB/API maintenance and recovery lane"
+    },
+    "packageTimeouts": [
+      {
+        "selection": "integration-staged",
+        "activeAtLimit": "TestDepartmentParent131CandidateSaveBothOrders (5s)"
+      },
+      {
+        "selection": "integration-staged",
+        "activeAtLimit": "TestDepartmentRealCommitCommunicationLoss (6s)"
+      },
+      {
+        "selection": "partition-1",
+        "activeAtLimit": "TestLocation204Acceptance (4m34s)"
+      },
+      {
+        "selection": "partition-2",
+        "activeAtLimit": "TestJointCommittedButAcknowledgementLostRecoversAccepted (14s)"
+      },
+      {
+        "selection": "partition-3",
+        "activeAtLimit": "TestPositionPauseAndHireCommitOrders (30s)"
+      }
+    ],
+    "shards": [
+      {
+        "selection": "preflight",
+        "selected": 2,
+        "outcomes": {
+          "pass": 2
+        },
+        "packages": {
+          "internal/bootstrap": {
+            "pass": [
+              "TestCountry200SourceFieldRemovalMigration",
+              "TestT07ExactCurrentMigrationSetAdmission"
+            ]
+          }
+        }
+      },
+      {
+        "selection": 1,
+        "selected": 92,
+        "outcomes": {
+          "pass": 87,
+          "skip": 5
+        },
+        "packages": {
+          "internal/bootstrap": {
+            "pass": [
+              "TestAcceptedOfferConvertsItsOwnReservationOnce",
+              "TestAccess027AssignmentOrderAndExpiry",
+              "TestAccessManagementUpgradeRetainsRevokedAssignments",
+              "TestAssignmentLocationChangesPreserveBusinessAndRevisionIdentity",
+              "TestConfirmationFromSecondaryTracksPrimaryAndHonorsNotice",
+              "TestConfirmationSurvivesDeletingPrecedingTransfer",
+              "TestCountry200CatalogRestartAndMaintenance",
+              "TestDeleteOriginalDayAcrossMidnight",
+              "TestDepartment133HTTPCancellationReleasesSQLAndGuard",
+              "TestDepartmentParent133MissingRequiredAncestorFails",
+              "TestDepartmentSelection131ExportPolicyBoundary",
+              "TestDepartmentSelection131PartialRevocationNeverExportsRemainder",
+              "TestDepartmentSelection131ResolveBudgetHasNoPartialPage",
+              "TestDepartmentTree300AuthorizationAndFixedDraft",
+              "TestDepartmentTree300FutureMoveAndFixedMembers",
+              "TestEnterprise304AuthorizationAndValidation",
+              "TestEnterprise304LocationFirstDateLocks",
+              "TestEnterprise304TwentyRecords",
+              "TestExitDepartmentReplayRetainsBoundariesAndIndependentRelationFacts",
+              "TestFeedback301BUSelectionTransportPreservesLargeExplicitSet",
+              "TestFullPositionsExchangeTogether",
+              "TestHealthAndUnimplementedRoutes",
+              "TestHire400ConcurrentRecovery",
+              "TestHistory133ConcurrentAbsentShapePublication",
+              "TestIndependentTL207RealSubmissionLockTimeout",
+              "TestInitialDate202Contexts",
+              "TestLeaveImpactContractsFollowNoticeBoundaryAndDepartment",
+              "TestLegalEntity206CountryRaces",
+              "TestLifecycleRepairFromPreviousRelease",
+              "TestLocation204Acceptance",
+              "TestLocation204ReferenceRaces",
+              "TestMergedReadIndexAndCoveringPrimaryKeys",
+              "TestNavigation302CatalogConsumers",
+              "TestPersonOwnsConcurrentAssignmentNumbersAcrossRelationships",
+              "TestR2BUAdapterUsesOriginalLockAndIsolatesObjectNamespace",
+              "TestRedateOriginalDayAcrossMidnight",
+              "TestRelationshipContractsRenewAndCloseOnlyTheSelectedRelationship",
+              "TestRetainedRecordModesUseFirstPublishedSource",
+              "TestSessionActivityFailureRollsBackBusinessAndWithholdsResponse",
+              "TestStaffing307EnterpriseDefaultAndForeignIdentity",
+              "TestStaffing307Foundation",
+              "TestStaffing307IndexedListPagesAndPermissions",
+              "TestStaffing307ReassignmentAndReactivationBothLockOrders",
+              "TestStaffing308InitialSingleSelection",
+              "TestStaffing308LogSourcesPagingAndFilters",
+              "TestStaffing309EnterpriseFloorAndPhysicalTransaction",
+              "TestStaffing309RollbackAndOriginalResolution",
+              "TestStaffing310GradeReplanAndSwaps",
+              "TestStaffing310MemberReferenceIntegrity",
+              "TestStaffing312HierarchyMigration",
+              "TestStaffing314FixedPeriod",
+              "TestSuccessionChoosesRegularQuotaPerSegment",
+              "TestT07BusinessDayNaturalTransitionsAndOldPreview",
+              "TestTimelineOriginalBusinessDateAcrossMidnight",
+              "TestUncommittedResultsNeverEscapeApplication",
+              "TestZhouNingAndChenHeFourTransactions"
+            ],
+            "skip": [
+              "TestCountry200ListCapacity",
+              "TestPersonnelPrimaryDocumentUpgrade",
+              "TestPersonnelUpgradeFromBackup",
+              "TestStaffing310WriteDiagnostic"
+            ]
+          },
+          "tests/integration": {
+            "pass": [
+              "TestBUCoveragePreview133FiniteReferencesAndExpansion",
+              "TestBUCurrentAuthorizationAndSession",
+              "TestBURevocationOrderingAndStrictInput",
+              "TestChangeLogPaginationFiltersPrivacyAndBudget",
+              "TestDeleteStrictInputsDependenciesAndConcurrentSave",
+              "TestDepartmentD28RootReactivation",
+              "TestDepartmentH45PaginationAndPrivacy",
+              "TestDepartmentNameValidationLocationAndRevokedRecovery",
+              "TestDepartmentPairDeletionFieldProjection",
+              "TestDepartmentPath306RealGroupAndOriginalDates",
+              "TestDepartmentReadProjectionCurrentScopeWithoutPersistentDecisions",
+              "TestDepartmentSelectedReferenceIsIndependentOfEligibilityAndSearch",
+              "TestDepartmentV06DayChosenAfterLocks",
+              "TestDepartmentV07V20GuardOrderBudgetAndReplan",
+              "TestDepartmentV15CreationAndHeadFailurePoints",
+              "TestFirstRecordIndependentCorrectionAndAddition",
+              "TestLifecycleDedicatedPermissionsFieldsAndReadableOriginalResult",
+              "TestLifecyclePairResumeSnapshotAndDigestBinding",
+              "TestOperationIdentityLegacyServiceAndAtomicFailure",
+              "TestPersonnelBankHealth",
+              "TestPersonnelMaintenanceAndQueryLifetime",
+              "TestPersonnelNameOnlyRegistrationGrant",
+              "TestPersonnelWholeProfile",
+              "TestRedateJourneyOriginalSourcesAndExactResults",
+              "TestT07CreateClassificationAndServerOwnedFields",
+              "TestT07ExactReadonlyScopeAndJointFieldPermissions",
+              "TestT07LifecycleDedicatedDTOAndCreateEvent",
+              "TestT07StorageCompositeRangesAndSourceChains",
+              "TestTemporaryAuthStorageFailureKeepsSession",
+              "TestTimelineDamagedResultKeepsIdentityAndCurrentReadPriority",
+              "TestUnifiedCorrectionAtomicHistoryAndRecovery"
+            ],
+            "skip": [
+              "TestPersonnelCapacity"
+            ]
+          }
+        }
+      },
+      {
+        "selection": 2,
+        "selected": 90,
+        "outcomes": {
+          "pass": 85,
+          "skip": 5
+        },
+        "packages": {
+          "internal/bootstrap": {
+            "pass": [
+              "TestAccessManagementAccountsAndRecovery",
+              "TestAppointmentDecisionFirstHire",
+              "TestConfirmationRepeatFromOtherAssignment",
+              "TestCountedPositionAdmissionAndPromotion",
+              "TestCountry200SubmissionFaultsAndConcurrency",
+              "TestDepartmentDraft133ExpiryCannotEraseInFlightPage",
+              "TestDepartmentIndependentLeafWritesProtectNewIncomingEdge",
+              "TestDepartmentNavigation302BeyondOrdinaryPage",
+              "TestDepartmentPreparationSeparatesFactReadsFromLockBudget",
+              "TestDepartmentReadAndResolvePoolBudgets",
+              "TestDepartmentRealCommitCommunicationLoss",
+              "TestDepartmentSelectionDraft133ExplicitScopeAndExpiry",
+              "TestDiagnostic133SinglePoolWithConcurrentCleanup",
+              "TestEnterprise304ConcurrentCoverage",
+              "TestEnterprise304LegalEntityFirstDateLocks",
+              "TestEnterprise304OrderedCoverageLocks",
+              "TestFirstHireAndPurposeProtection",
+              "TestGeoArea203Catalog",
+              "TestGradeOnlyPredecessorPreservesUnknownTransferOrder",
+              "TestHire400PurposeRecheckOrdering",
+              "TestHire400UpgradeFrom28",
+              "TestHire400UpgradeFromPersonnel34",
+              "TestHistory133SQLPartBoundsAndSinglePartFraming",
+              "TestHistoryMaintenanceCancellationAndLateConnection",
+              "TestInitialDate202Writes",
+              "TestJointCommittedButAcknowledgementLostRecoversAccepted",
+              "TestJointThreeRequestDeterministicTerminalOrders",
+              "TestLegalEntity206Core",
+              "TestLegalEntity206PairsAndPermissions",
+              "TestManagerSuccessionBeforeAfterAndOnExitBoundary",
+              "TestNavigation133CurrentAnchorBothObjects",
+              "TestPositionHireAcrossJobModeAndFutureDepartment",
+              "TestPublic38UpgradeToAppointmentDecisions",
+              "TestReadFailure133PreservesSQLCauseAndReleasesTransaction",
+              "TestRejectedCommandCommitBoundary",
+              "TestReportingOnlyMigration",
+              "TestSecondaryReplayChecksOriginalPositionReadFields",
+              "TestStaffing307DatedMaintenance",
+              "TestStaffing307InverseCoverageAndArchivedSources",
+              "TestStaffing307ReplanAfterUnlockedDependencyChange",
+              "TestStaffing308ServerMaintenanceAvailability",
+              "TestStaffing309IdentityShapeAndRecovery",
+              "TestStaffing310CandidateAndDigest",
+              "TestStaffing310LadderExportAndLog",
+              "TestStaffing310MigrationPreservesPriorFacts",
+              "TestStaffing312Hierarchy",
+              "TestStaffing313Quota",
+              "TestStaffing314ClassificationQueryAndSelection",
+              "TestStaffing314IndependentJobCandidates",
+              "TestT07FreshInstallMidMigrationFailureClosesBusiness",
+              "TestT07PoolWaitThenAuthorizationLockUsesOriginalDeadline",
+              "TestT07ReadsPinOneSourceDuringConcurrentCorrection",
+              "TestTransferCorrectionRecordsOnlyChangedOrder"
+            ],
+            "skip": [
+              "TestHire400PositionBackups",
+              "TestPersonnelProfileV27Backup",
+              "TestStaffing307Capacity",
+              "TestT07BusinessDayBoundaryBrowser"
+            ]
+          },
+          "tests/integration": {
+            "pass": [
+              "TestBU129UnchangedCoverageAvoidsDepartmentHeadsAndFacts",
+              "TestBUCoveragePreview133FutureReferenceAndRequiredIntegrity",
+              "TestBUExactHistoryIgnoresAuditClockOrder",
+              "TestDeleteDedicatedCategoryRightsAndCurrentReadRecovery",
+              "TestDepartment133RenameAndIncomingChildBothOrders",
+              "TestDepartment133RenameKeepsHistoryAndRequiredQualification",
+              "TestDepartmentHistoricalNameRetainsOriginAndOrdinaryBoundary",
+              "TestDepartmentParent131ExtremeFirstDates",
+              "TestDepartmentQueryProtocolSelectionAndNavigation",
+              "TestDepartmentS1S7SummaryOracles",
+              "TestDepartmentSelection131SelectedReferenceAcrossRealPages",
+              "TestDepartmentV09HumanWithoutDisplayName",
+              "TestDepartmentV20OppositeParents",
+              "TestDepartmentV21ReferenceClassificationOracles",
+              "TestDepartmentV24ImplicitRollbackBeforeQualification",
+              "TestHistory133LoadedChunkRolloverAndRollback",
+              "TestInitialAccountCanAuthenticate",
+              "TestLifecycleFullJourneySourcesAndExactInheritance",
+              "TestLifecyclePairStrictScopeAndAtomicRefusal",
+              "TestOperationSummaryRevisionAndDeletionOracle",
+              "TestPersonnelEducationCredentials",
+              "TestPersonnelRaces",
+              "TestPositionedAdditionRealBoundaryDatesAndScope",
+              "TestRedateMissingClassificationFailsClosed",
+              "TestSingleColumnFilter",
+              "TestT07DateExtremesPersistWithOpenUpperBound",
+              "TestT07ExactBodyLimitAndRealStalledSocket",
+              "TestT07FutureFirstAndFourExactHistoricalAnswers",
+              "TestT07NoChangeOriginalSourceAfterLaterAcceptedWrite",
+              "TestT07UnsupportedBusinessEntrypointsRemainClosed",
+              "TestTimelineReadRejectionsWithoutPersistentDecisions",
+              "TestUnifiedCorrectionRequiresBothCategoriesForDateAndClassification"
+            ],
+            "skip": [
+              "TestPersonnelNineSectionsCapacity"
+            ]
+          }
+        }
+      },
+      {
+        "selection": 3,
+        "selected": 89,
+        "outcomes": {
+          "pass": 86,
+          "skip": 3
+        },
+        "packages": {
+          "internal/bootstrap": {
+            "pass": [
+              "TestAccessManagementDelegationAndSharedVersions",
+              "TestActualDutyPreservesFullPositionAndThreeDayExcess",
+              "TestAssignmentAddAndInsertUseTheirBusinessPosition",
+              "TestAssignmentPromotionUsesActualGradeAndOneDailySource",
+              "TestConfirmationReplaysEarlierTransfer",
+              "TestCountry200FixedCatalog",
+              "TestCurrentMaintenanceFutureRecordsAndMidnightSelection",
+              "TestDepartmentFactLoadSQLFailureReleasesOwnership",
+              "TestDepartmentListPinsFactsAcrossConcurrentParentCorrection",
+              "TestDepartmentParent133SparseFetchUsesOneSnapshotAndFutureCoverage",
+              "TestDepartmentScope125SparseAncestorsAndReferenceDenial",
+              "TestDepartmentSelection131HTTPBudgetHasNoCSV",
+              "TestDepartmentSelectionDraft133FixedIdentityEditsAndCurrentExport",
+              "TestEmploymentRecordUpgradePreservesWithdrawnAndReplacementHires",
+              "TestEnterprise304FutureFirstAndClock",
+              "TestExemptPositionFirstHireAndReplenishment",
+              "TestFirstHireKeepsActualTrialStartAndConcurrentConfirmation",
+              "TestHire400Readiness",
+              "TestHire400RuleRecovery",
+              "TestHistory133AppendChecksNewReferencesAndProtectsPrefix",
+              "TestHistoryMaintenanceCrossInstanceReferencesAndLockingClient",
+              "TestHistoryMaintenanceOfflineScopeRollbackAndReadback",
+              "TestJointOriginalBusinessDayAcrossRecordedMidnight",
+              "TestLegalEntity206Recovery",
+              "TestLegalEntity206SelectionNavigation",
+              "TestLocation204EnterpriseDate",
+              "TestLocationAddressMigration",
+              "TestOfferHireWithoutReservedSeatsAndIncompleteIdentity",
+              "TestPositionPauseAndHireCommitOrders",
+              "TestPublic39UpgradeToBankHealth",
+              "TestQuerySelectionAuthorizationAndSnapshots",
+              "TestQuerySelectionComplete2021Rows",
+              "TestReportingBranch24JobClassificationUpgrade",
+              "TestStaffing139DepartmentRange",
+              "TestStaffing307EnterpriseFloorAndPhysicalTransaction",
+              "TestStaffing307PairAndExactAdoption",
+              "TestStaffing307RollbackAndOriginalResolution",
+              "TestStaffing309DatedMaintenance",
+              "TestStaffing309MigrationPreservesPriorFacts",
+              "TestStaffing310CollectionsAndSeals",
+              "TestStaffing310LifecycleCoverageAndAdoption",
+              "TestStaffing310RecoveryAndLockBudget",
+              "TestStaffing310RedateMemberAuthority",
+              "TestStaffing312Position",
+              "TestStaffing314Directory",
+              "TestStaffing315AllocationPredecessor",
+              "TestStaffing315DepartmentAllocation",
+              "TestT07BlockedRollbackReplyUsesOneCleanupDeadline",
+              "TestT07CancellationAtActualCalculationStages",
+              "TestT07RealCommitCommunicationLossPreservesIdentity",
+              "TestUnchangedPromotionRetainsPredecessorAndSuccessor"
+            ],
+            "skip": [
+              "TestJointMidnightBrowser",
+              "TestPersonnelProfileV31Backup",
+              "TestStaffing308ClockBrowser"
+            ]
+          },
+          "tests/integration": {
+            "pass": [
+              "TestBUCommitVisibilityAndRevocationOrdering",
+              "TestBUCoveragePreview133NewReferenceBeforeSave",
+              "TestBUFullUnicodeNameSearch",
+              "TestBUNamePolicyAcrossCreateAddCorrect",
+              "TestDeleteJourneyExactOriginalResultAndSameDayNewIdentity",
+              "TestDepartmentAssistanceHistoryAndSelection",
+              "TestDepartmentD14EmptySetBothLockOrders",
+              "TestDepartmentFixedContractsD20D39",
+              "TestDepartmentMaintenanceAndReverseChecks",
+              "TestDepartmentParent131CandidateSaveBothOrders",
+              "TestDepartmentParent131VisibleSearchAndReadOnlyMaintain",
+              "TestDepartmentR5FilterReferenceReadBoundary",
+              "TestDepartmentScopedReadRetainsInactiveHistoricalReference",
+              "TestDepartmentSelection133CurrentProjectionAndDayExpiry",
+              "TestDepartmentV12CorruptEvidenceFailsClosed",
+              "TestDepartmentV22V23AuthorizationBeforeDiagnostics",
+              "TestHireIdentityArchiveAndGuards",
+              "TestLifecycleAppendPositionDefaultsFutureStateAndHistory",
+              "TestLifecyclePairInsertDeleteSourcesAndRecovery",
+              "TestLifecyclePreviewAndCommitInheritanceImpact",
+              "TestPersonnelExpiredPrimaryAddress",
+              "TestPersonnelHealthReadAfterPolicyWait",
+              "TestPersonnelLogAuthorizedSourceDifferences",
+              "TestPersonnelRegistration",
+              "TestPositionedAdditionStrictGapSameDataAndOriginalRecovery",
+              "TestT07AuthenticationAndRevocationLockOrdering",
+              "TestT07CodeDisplayCaseAndNormalizedUniqueness",
+              "TestT07DeleteCurrentClassificationAndCrossCategoryGrants",
+              "TestT07InitializationAtomicityAndNoGrantExpansion",
+              "TestT07InstanceSubjectAndReadonlyBoundaries",
+              "TestT07RetiredReasonRetainsExactStoredSnapshot",
+              "TestT07WriteGrantsCannotComposeAcrossObjectsAndMissingGuardFailsClosed",
+              "TestTimelineClientCancellationReleasesLocks",
+              "TestTimelineRejectionsAndCurrentPermissions",
+              "TestUnifiedCorrectionStrictNewModifierProtocol"
+            ]
+          }
+        }
+      },
+      {
+        "selection": 4,
+        "selected": 91,
+        "outcomes": {
+          "pass": 86,
+          "skip": 5
+        },
+        "packages": {
+          "internal/bootstrap": {
+            "pass": [
+              "TestAccessManagementScopedCredentialAndExpiry",
+              "TestAssignmentDefaultDayUsesActualTerm",
+              "TestCanonicalFixedPairDigest",
+              "TestConfirmationRetainsDocumentedSameDepartmentTransfer",
+              "TestCurrentMaintenanceKeepsDateWhenRequestCrossesMidnight",
+              "TestDepartmentIndependentCreationsShareRangeButBlockMaintenance",
+              "TestDepartmentParent133CursorQualifiedBoundaryAndOwnership",
+              "TestDepartmentPath133CursorAndCompleteSelection",
+              "TestDepartmentSelection131AtomicCaptureAndExport",
+              "TestDepartmentSelection131CancelledHTTPHasNoCSV",
+              "TestDepartmentSnapshotAndUncommittedCancellation",
+              "TestDepartmentTree300NarrowReadPrototype",
+              "TestDepartmentV07GuardBudgetWithoutDatabaseLockTimer",
+              "TestEnterprise304AtomicPublicationFailure",
+              "TestEnterprise304References",
+              "TestExemptPositionTransferAndRestore",
+              "TestFeedback301ExportFileBoundaryHasDistinctHTTPReasons",
+              "TestFixedTermDecisionRecoversOriginalCountedHire",
+              "TestHistory133BUStableAndChangedReadSpansAreAtomic",
+              "TestIndependentTL207ControlledAdvisoryCollisionKeepsFullIdentities",
+              "TestIndependentTL207RealDeadlock",
+              "TestInternalSuccessionUsesDedicatedThenRegularSeat",
+              "TestLegalEntity206Boundaries",
+              "TestLifecycleWholeWriteRollbackAndRecovery",
+              "TestLocation204HongKong",
+              "TestLocationRegionPickerCandidates",
+              "TestModel5Timeline20Maintenance",
+              "TestPartialExitAndRehireKeepPermanentRecordNumbers",
+              "TestProbationRepairFromPreviousRelease",
+              "TestQuerySelectionSourceFieldsAndCancellation",
+              "TestRecruitingOfferReservationAndDecision",
+              "TestSameSessionRequestsProceedWhileBusinessReadIsOpen",
+              "TestStaffing307CumulativeBudgetCancellationAndResolveRace",
+              "TestStaffing307EnterpriseBothLockOrders",
+              "TestStaffing307FamilyWriteRaces",
+              "TestStaffing307HTTPAdmissionIdentityAndConcurrentReads",
+              "TestStaffing307PermissionsAndIntervals",
+              "TestStaffing307SelectionCSVAndNavigation",
+              "TestStaffing309DefaultFloorAndInstanceIsolation",
+              "TestStaffing309PairAndFuture",
+              "TestStaffing310GradeGuardsWithoutReadProjection",
+              "TestStaffing310MemberPermissionsAndCorruption",
+              "TestStaffing310SelectedPermissionAndMissingSeals",
+              "TestStaffing310WholePeriodReverseAndEvidence",
+              "TestStaffing314EnterpriseFloor",
+              "TestStaffing315Quota",
+              "TestSubmissionBudgetWithoutDatabaseLockTimer",
+              "TestT07BusinessCommitDoesNotWriteAuthorizationEvents",
+              "TestT07PreviewAndResolveFiveSecondPoolBudgets",
+              "TestTimelineWholeSavepointAndResolveRaces",
+              "TestUnchangedStandalonePromotionAndWithdrawnPredecessors"
+            ],
+            "skip": [
+              "TestDepartmentR5BusinessDayBrowser",
+              "TestLegalEntity206Capacity",
+              "TestPersonnelProfileV36Backup",
+              "TestStaffing309Capacity",
+              "TestT07CurrentTimeline20Records"
+            ]
+          },
+          "tests/integration": {
+            "pass": [
+              "TestBUConcurrencyRollbackAndSealedHistory",
+              "TestBUCreateQuerySourceHistory",
+              "TestBUNameSortUsesCombinedVisibleFields",
+              "TestCompactSameObjectSubmissionRemainsSubjectScoped",
+              "TestDeleteSameValuePredecessorExactInheritanceAndPureStructure",
+              "TestDepartmentBroadDependenciesRetainDeepGuardAndFrozenPath",
+              "TestDepartmentBroadMoveLoadsNewAncestorsWithoutLockingTheirSiblings",
+              "TestDepartmentContextDoesNotLoadDepartmentForest",
+              "TestDepartmentD19FullQueryCSVAndPathVersion",
+              "TestDepartmentManagementBUStableFilter",
+              "TestDepartmentParent131WindowsAndInvariantFailure",
+              "TestDepartmentR5PathTextPeriodAndReferenceRights",
+              "TestDepartmentSelectedBUReferenceUsesCurrentAuthorityAndStrictInput",
+              "TestDepartmentV05MinimumReferenceAndCompleteGrant",
+              "TestDepartmentV14RecoveryAuthorizationAndV17Locality",
+              "TestDepartmentV23DamagedDiagnosticsAfterAuthorization",
+              "TestLifecycleConcurrentSubmissionAndStrictInputs",
+              "TestLifecyclePairProjectedDeletionAndBothPermissions",
+              "TestLifecycleTargetDateTodayFutureAndRejections",
+              "TestPersonnelAddressFamily",
+              "TestPersonnelFamilyRejectedReceipt",
+              "TestPersonnelLogPaginationAndFilters",
+              "TestPersonnelRetentionAndFieldAccess",
+              "TestR1DirectoryPreservesOldSnapshotsAndAllStoredOutcomes",
+              "TestT07CorruptDiagnosticsKeepOriginalIdentity",
+              "TestT07EveryTerminalReadRevocationAndRestoration",
+              "TestT07InstanceOnlyMemberMismatchAndImmutablePrivileges",
+              "TestT07OriginalStopRedateAfterClassificationOrReplacement",
+              "TestT07SessionTouchDoesNotExtendAbsoluteExpiry",
+              "TestT07SharedStrictWriteParserAndOptionalEnglish",
+              "TestTimelineAggregateTimeoutAndBoundedCleanup",
+              "TestTimelineConcurrentVersionAndResolve",
+              "TestTimelineStrictProtocolAndCurrentFormat",
+              "TestUnifiedCorrectionCompleteFacetMatrixAndDeclaredSameValues",
+              "TestUnifiedCorrectionFacetPermissionsWithoutJointEntry"
+            ]
+          }
+        }
+      },
+      {
+        "selection": 5,
+        "selected": 90,
+        "outcomes": {
+          "pass": 86,
+          "skip": 4
+        },
+        "packages": {
+          "internal/bootstrap": {
+            "pass": [
+              "TestAccess027PublicPrefixUpgrade",
+              "TestActualManagersConcurrentAndExit",
+              "TestBUCoveragePreview133CapturedReferenceIntegrity",
+              "TestBodyDeadlineEndsBeforeApplicationAndKeepAlive",
+              "TestConfirmationInsertedBeforeExistingPromotion",
+              "TestConfirmationUsesPrimaryAssignmentDecisionAndItsAdoptedDepartment",
+              "TestDeleteWholeWriteRollbackAndRecoveryRaces",
+              "TestDepartmentCapacitySaturationCancellationAndRecovery",
+              "TestDepartmentCoverIndexValidMaximumNames",
+              "TestDepartmentReadIndexMissingCorruptAndAtomicWrite",
+              "TestDepartmentSelectionDraft133ConcurrentEditsAndAdmission",
+              "TestDepartmentTree300LifecycleAndCrossBU",
+              "TestEarlierAssignmentEditRetainsRealLaterTransfer",
+              "TestEnterprise304ClassificationAndDateFacets",
+              "TestEnterprise304MaintenanceAndRecovery",
+              "TestExpiredPrimaryRequiresRehireFromLeave",
+              "TestFeedback301SelectionBodyFailureIsNotSizeLimit",
+              "TestFutureHireCancellationAfterWithdrawnPromotion",
+              "TestGeoArea203HongKongFocused",
+              "TestHire400CustomerRule",
+              "TestHire400RuleUpgradeFrom34",
+              "TestHistory133SQLHashesPreserveExactFraming",
+              "TestInitialDate202Dependencies",
+              "TestInitialDate202Enterprise",
+              "TestLeaveRegisterUsesLastActiveDepartmentAndFieldGrant",
+              "TestLegalEntity206ExactCountry",
+              "TestLocalDevelopmentPasswordChange",
+              "TestLocation204BoundariesAndCapturedReads",
+              "TestLocation205NavigationConsumers",
+              "TestPersonnelDirectoryRetentionBoundary",
+              "TestPersonnelMainlinePrefixes",
+              "TestPublic37UpgradeToEducationCredentials",
+              "TestReadCommitCommunicationLossDoesNotSuggestSubmissionRecovery",
+              "TestRelationshipProbationSharesOneRealDecision",
+              "TestSecondaryPositionUsesOnlyItsOwnDatedSeat",
+              "TestStaffing307CandidatePeriodsAndExactLabels",
+              "TestStaffing307ImmutableRebuildAndRestart",
+              "TestStaffing307ReferencePermissionAndDayRollover",
+              "TestStaffing308LogCurrentGrantsAndDeletedOriginal",
+              "TestStaffing309EnterpriseBothLockOrders",
+              "TestStaffing309FieldRightsSortAndCSV",
+              "TestStaffing309ObjectLockBudgetAndResolve",
+              "TestStaffing309UnknownCommitRecoversOriginal",
+              "TestStaffing310GradeWriteRaces",
+              "TestStaffing310MemberWritesAtomic",
+              "TestStaffing312MigrationPreservesPriorFacts",
+              "TestStaffing314EnterpriseRace",
+              "TestStaffing314FunctionRaces",
+              "TestT07BUConcurrencyMatrixRealSeparateSessions",
+              "TestT07PanicCancellationAndFailedSavepointCleanup",
+              "TestTransferCorrectionAndExitShareExpectedSource"
+            ],
+            "skip": [
+              "TestLocation204Capacity",
+              "TestPersonnelProfileV38Backup",
+              "TestStaffing310Capacity"
+            ]
+          },
+          "tests/integration": {
+            "pass": [
+              "TestBU129QueuedSameSourceRechecksAfterLock",
+              "TestBUCoveragePreview133FirstDateAndCrossingWindow",
+              "TestBUCurrentInitializationPreservesHistory",
+              "TestCurrentStorageMismatchFailsClosed",
+              "TestDepartment133PublicationCommitAndLateFailure",
+              "TestDepartment133QueuedRenameRechecksSource",
+              "TestDepartmentD39AllPersistenceFailurePoints",
+              "TestDepartmentFixedContractsD01D18",
+              "TestDepartmentPairFutureAndNoChangeSummaryOracles",
+              "TestDepartmentParent131CurrentContextAndCandidateSave",
+              "TestDepartmentPreview133ScopedFactsAndReverseQualification",
+              "TestDepartmentRootChildFirstChain",
+              "TestDepartmentSelection131EstablishmentAndSafeErrors",
+              "TestDepartmentSelection131SevenPagesAndIndependentCSV",
+              "TestDepartmentV01StorageConstraintsAndSeals",
+              "TestDepartmentV08V11OperationHistoryAttribution",
+              "TestDepartmentV16BUAndParentFinalCandidateReverseGuards",
+              "TestDepartmentV19ExactAdoptionAndIndependentSources",
+              "TestDepartmentV23AuthorizationGuardBothOrders",
+              "TestHistory133DictionaryShapeFailureAtomic",
+              "TestLifecycleDependencyDiagnosticsRespectDateReadPermission",
+              "TestLifecyclePairSealedSourceAndDirectItemRelations",
+              "TestOperationSummaryPairAndFutureOracles",
+              "TestPersonnelAddressDirectory",
+              "TestPersonnelCustomerIsolation",
+              "TestPersonnelPrimaryDocumentLifecycle",
+              "TestPositionedAdditionPartialReadDefaultsAndFinalAuthorization",
+              "TestRedateCategoryRightsMatrixNoChangeAndReadRecovery",
+              "TestRedateStrictInputsConcurrencyAndInheritance",
+              "TestT07CreateFactFailureAndReadWithoutSecurityEventDependency",
+              "TestT07FirstLoginRequiresSameOriginWithoutCSRF",
+              "TestT07LiteralSearchStablePaginationAndFields",
+              "TestT07TerminalAndEventStorageShapes",
+              "TestTimelineJourneyAndRecovery",
+              "TestUnifiedCorrectionRejectsWholeInvalidCombination"
+            ],
+            "skip": [
+              "TestBUSliceLoad"
+            ]
+          }
+        }
+      }
+    ],
+    "targetedOnFinalSources": [
+      "TestAccess027AssignmentOrderAndExpiry",
+      "TestAccess027PublicPrefixUpgrade",
+      "TestAccessManagementAccountsAndRecovery",
+      "TestAccessManagementDelegationAndSharedVersions",
+      "TestAccessManagementScopedCredentialAndExpiry",
+      "TestAccessManagementUpgradeRetainsRevokedAssignments",
+      "TestBUCurrentAuthorizationAndSession",
+      "TestLocalDevelopmentPasswordChange"
+    ]
+  },
+  "browsers": [
+    {
+      "run": "formal-browser",
+      "passed": 12,
+      "cases": [
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 管理员开户、发布和逐份撤销 · 1440×900"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 管理员开户、发布和逐份撤销 · 1440×540"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 管理员关键流程原生 200%"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 委派管理员仅见获管归属，撤去职责后旧表单和直接请求均拒绝"
+        },
+        {
+          "file": "navigation302.spec.ts",
+          "case": "302 admin详情位置总数、跨页切换无列表重读及返回"
+        },
+        {
+          "file": "navigation302.spec.ts",
+          "case": "302 reader详情位置总数、跨页切换无列表重读及返回"
+        },
+        {
+          "file": "navigation302.spec.ts",
+          "case": "302路径准确统计单独加载，延迟和失败均保留详情及切换"
+        },
+        {
+          "file": "navigation302.spec.ts",
+          "case": "302 admin国家/地区共享导航位置及切换"
+        },
+        {
+          "file": "navigation302.spec.ts",
+          "case": "302 reader国家/地区共享导航位置及切换"
+        },
+        {
+          "file": "navigation302.spec.ts",
+          "case": "302 admin行政区划共享导航位置及切换"
+        },
+        {
+          "file": "navigation302.spec.ts",
+          "case": "302 reader行政区划共享导航位置及切换"
+        },
+        {
+          "file": "staffing315.spec.ts",
+          "case": "027 指定岗位的本职与代理、可见小计、旧表单和原调整"
+        }
+      ]
+    },
+    {
+      "run": "formal-t03-browser",
+      "passed": 2,
+      "cases": [
+        {
+          "file": "department-acceptance.spec.ts",
+          "case": "027 甲 BU 名称更正、乙 BU 只读、历史与固定选择逐份导出"
+        },
+        {
+          "file": "department-tree300.spec.ts",
+          "case": "027 首次定位保留在部门上下文就绪前输入的最后一个编码"
+        }
+      ]
+    },
+    {
+      "run": "formal-lifecycle-browser",
+      "passed": 6,
+      "cases": [
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 管理员开户、发布和逐份撤销 · 1440×900"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 管理员开户、发布和逐份撤销 · 1440×540"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 管理员关键流程原生 200%"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 委派管理员仅见获管归属，撤去职责后旧表单和直接请求均拒绝"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 从账号页启停及重置，两个旧会话均失效"
+        },
+        {
+          "file": "access-management.spec.ts",
+          "case": "027 T04 从角色页单独发布范围、字段策略并停用指定版本"
+        }
+      ]
+    }
+  ]
+}

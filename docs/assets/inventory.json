@@ -5147,6 +5147,7 @@
         "verified": false
       },
       "new_evidence": [
+        "docs/verification/027-t04-access-management.md",
         "docs/verification/019-cubebox-experience-migration.md",
         "docs/verification/012-record-form-consistency.md",
         "docs/verification/012-ui-expression-simplification.md",

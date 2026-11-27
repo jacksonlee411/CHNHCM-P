@@ -3480,6 +3480,73 @@
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
       {
+        "path": "docs/verification/027-t04-access-management.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-013"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "3c3dde7caab4bd367a9351b0f880a2e4247966dd",
+        "working_tree": "dirty",
+        "change_description": "实施三个安全管理菜单、逐项管理职责、受控引导、恢复及交接。",
+        "environment": "公共 wt-dev-a，隔离 PostgreSQL 18.6、Go API、Chromium 固定构建和原生缩放。",
+        "scope": "T04 客户管理员的账号、角色、授权和部署恢复。",
+        "results": [
+          {
+            "check": "首次接口回归将 RFC3339 截止时刻误拒为输入错误，首次新账号页面读回遇到空 UUID",
+            "result": "failed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "首次短屏定位及原生缩放夹具失败，修复后开户、发布角色和逐份撤销在三种视口分别通过",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "服务端检查全部当前和待生效引用、原会话及凭据、部署交接、原操作者和撤权",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "从 00058 升级中途失败回滚，重试及原初始化后逐表对账",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "真实委派账号的归属候选、直接 API 和打开表单后的失权",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "首轮两个整包及前三个 bootstrap 分片达到 20 分钟上限",
+            "result": "interrupted",
+            "evidence": "docs/verification/data/027-t04-access-management/results.json"
+          },
+          {
+            "check": "DB/API 分批完成 432 个通过根，全部根和条件跳过项均有记录",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t04-access-management/results.json"
+          },
+          {
+            "check": "三个临时实例分批通过 16 条不同浏览器用例，含本切片全部 6 条及正常菜单复验",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t04-access-management/results.json"
+          },
+          {
+            "check": "4627 原卷保留 17 张表的 1,245 行原记录和 230 份原授予，甲样例撤代理后仍可按本职读取",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          }
+        ],
+        "limitations": [
+          "22 个 DB/API 根按仓内条件跳过，原因见逐根清单。远程 PR 门禁待执行。",
+          "T05 的跨角色业务与撤尽旧部门读权后的实际进程重启另行验收。"
+        ]
+      },
+      {
         "path": "docs/verification/027-t03-department-and-position-access.md",
         "related_documents": [
           "CHNHCM-027",

@@ -115,6 +115,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/access/{area}:
+    get:
+      operationId: accessManagementView
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: area
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: q
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: owner
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: state
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: subject
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: object
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema: {type: integer}
+      - in: query
+        name: pageSize
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Authorized management result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessManagementView'
+        default:
+          description: Access, input or revision rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/access/commands:
+    post:
+      operationId: accessManagementCommand
+      security:
+      - session: []
+      parameters:
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authorized management result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessManagementResult'
+        default:
+          description: Access, input or revision rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessManagementCommand'
+  /api/v1/access/submissions/{id}:
+    get:
+      operationId: accessManagementResult
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authorized management result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessManagementResult'
+        default:
+          description: Access, input or revision rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/access/submissions/{id}/resolve:
+    post:
+      operationId: resolveAccessManagement
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: Authorized management result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessManagementResult'
+        default:
+          description: Access, input or revision rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/organization/context:
     get:
       operationId: organizationContext
@@ -16538,6 +16675,346 @@ components:
       required:
       - code
       - message
+    AccessTarget:
+      type: object
+      additionalProperties: false
+      properties:
+        options:
+          type: array
+          items: {type: string}
+        kind:
+          type: string
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - kind
+      - id
+      - code
+      - name
+    AccessDefinition:
+      type: object
+      additionalProperties: false
+      properties:
+        options:
+          type: array
+          items: {type: string}
+        kind:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+        definitionId:
+          type: string
+        number:
+          type: integer
+        actions:
+          type: array
+          items:
+            type: string
+        targetKind:
+          type: string
+        targetId:
+          type: string
+        readFields:
+          type: array
+          items:
+            type: string
+        writeFields:
+          type: array
+          items:
+            type: string
+        scope:
+          type: string
+        fields:
+          type: string
+        disabled:
+          type: boolean
+      required:
+      - kind
+      - name
+    AccessManagementLimit:
+      type: object
+      additionalProperties: false
+      properties:
+        owner:
+          type: string
+        rights:
+          type: array
+          items:
+            type: string
+        role:
+          type: string
+        scope:
+          type: string
+        fields:
+          type: string
+        maxProxyDays:
+          type: integer
+        until:
+          type: string
+          format: date-time
+      required:
+      - owner
+      - rights
+      - role
+      - scope
+      - fields
+      - maxProxyDays
+    AccessMandate:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        limit:
+          $ref: '#/components/schemas/AccessManagementLimit'
+        revoked:
+          type: boolean
+      required:
+      - id
+      - limit
+      - revoked
+    AccessManagedAccount:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        login:
+          type: string
+        displayName:
+          type: string
+        owner:
+          type: string
+        state:
+          type: string
+        revision:
+          type: integer
+        options:
+          type: array
+          items:
+            type: string
+      required:
+      - id
+      - login
+      - displayName
+      - owner
+      - state
+      - revision
+    AccessManagedGrant:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        subject:
+          type: string
+        role:
+          type: string
+        scope:
+          type: string
+        fields:
+          type: string
+        revision:
+          type: integer
+        source:
+          type: string
+        purpose:
+          type: string
+        from:
+          type: string
+          format: date-time
+        until:
+          type: string
+          format: date-time
+        state:
+          type: string
+      required:
+      - id
+      - subject
+      - role
+      - scope
+      - fields
+      - revision
+      - source
+      - purpose
+      - state
+    AccessCatalogAction:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        menu:
+          type: string
+        api:
+          type: string
+      required:
+      - key
+      - name
+      - menu
+      - api
+    AccessManagementEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        previousOwner: {type: string, format: uuid}
+        assignedOwner: {type: string, format: uuid}
+        id:
+          type: string
+        actor:
+          type: string
+        target:
+          type: string
+        operation:
+          type: string
+        reason:
+          type: string
+        at:
+          type: string
+          format: date-time
+        request:
+          type: string
+      required:
+      - id
+      - actor
+      - target
+      - operation
+      - reason
+      - at
+      - request
+    AccessManagementView:
+      type: object
+      additionalProperties: false
+      properties:
+        suggestedProxyDays: {type: integer, minimum: 0, description: 当前委派职责可采用的代理天数初值}
+        total: {type: integer}
+        rights:
+          type: array
+          items:
+            type: string
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessTarget'
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessTarget'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessCatalogAction'
+        readFields:
+          type: array
+          items:
+            type: string
+        writeFields:
+          type: array
+          items:
+            type: string
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessManagedAccount'
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessDefinition'
+        grants:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessManagedGrant'
+        mandates:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessMandate'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessManagementEvent'
+    AccessManagementCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        requestId:
+          type: string
+        instanceId:
+          type: string
+        operation:
+          type: string
+        subject:
+          type: string
+        id:
+          type: string
+        revision:
+          type: integer
+        login:
+          type: string
+        displayName:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+        owner:
+          type: string
+        reason:
+          type: string
+        version:
+          $ref: '#/components/schemas/AccessDefinition'
+        newScope:
+          $ref: '#/components/schemas/AccessDefinition'
+        newFields:
+          $ref: '#/components/schemas/AccessDefinition'
+        role:
+          type: string
+        scope:
+          type: string
+        fields:
+          type: string
+        source:
+          type: string
+        purpose:
+          type: string
+        from:
+          type: string
+          format: date-time
+        until:
+          type: string
+          format: date-time
+        limit:
+          $ref: '#/components/schemas/AccessManagementLimit'
+      required:
+      - requestId
+      - instanceId
+      - operation
+    AccessManagementResult:
+      type: object
+      additionalProperties: false
+      properties:
+        requestId:
+          type: string
+        operation:
+          type: string
+        target:
+          type: string
+        subject:
+          type: string
+        at:
+          type: string
+          format: date-time
+      required:
+      - requestId
+      - operation
+      - target
+      - at
     Principal:
       type: object
       additionalProperties: false

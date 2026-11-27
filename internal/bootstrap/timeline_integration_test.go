@@ -98,7 +98,8 @@ func freshWithSchema(t *testing.T, start string, capturePredecessor bool) *fixtu
 	if capturePredecessor {
 		prefix := fstest.MapFS{}
 		must(t, fs.WalkDir(migrations.Files, ".", func(path string, entry fs.DirEntry, err error) error {
-			if err != nil || entry.IsDir() || path == "00058_access_grant_versions.sql" {
+			// Capture the original 57 ledger even after new migrations are added.
+			if err != nil || entry.IsDir() || (len(path) > 5 && path[5] == '_' && path[:5] > "00057") {
 				return err
 			}
 			b, err := migrations.Files.ReadFile(path)

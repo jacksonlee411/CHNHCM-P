@@ -9,6 +9,7 @@ import shutil
 import signal
 import socket
 import subprocess
+import sys
 import time
 import urllib.request
 import uuid
@@ -266,6 +267,15 @@ def execute(args):
         runtime.register_profile(temporary=True if args.temporary else None, purpose=args.purpose)
     config = configuration(args.command == "up")
     env = environment(config, conn)
+    if args.command == "access-admin":
+        # Recovery remains available while either application listener is down.
+        # database_container() verified the profile, bound port and retained volume.
+        if not database or not database["running"]:
+            raise RuntimeError("Access recovery requires this profile's running database")
+        request = json.load(sys.stdin)
+        request.setdefault("instanceId", config["instance"])
+        run([str(BIN / "upgrader"), "-mode", "access-admin"], env, request)
+        return
     if args.command == "login-passwords":
         runtime.verify_api(conn)
         run(["go", "build", "-o", str(BIN / "upgrader"), "./cmd/upgrader"], env)
@@ -388,7 +398,7 @@ def main():
     up.add_argument("--fixed-web", action="store_true", help="serve a profile-owned fixed frontend build with this API")
     up.add_argument("--temporary", action="store_true", help="mark a new named profile as disposable")
     up.add_argument("--purpose", help="short local environment purpose")
-    for command in ("down", "status", "credentials-path", "migrate", "connection", "restart-api", "login-passwords"):
+    for command in ("down", "status", "credentials-path", "migrate", "connection", "restart-api", "login-passwords", "access-admin"):
         commands.add_parser(command)
     configure = commands.add_parser("configure")
     configure.add_argument("--temporary", action="store_true")
@@ -408,7 +418,7 @@ def main():
     args = parser.parse_args()
     if args.command == "smoke":
         smoke(args)
-    elif args.command in ("configure", "set-default", "up", "down", "destroy", "migrate", "restart-api", "login-passwords"):
+    elif args.command in ("configure", "set-default", "up", "down", "destroy", "migrate", "restart-api", "login-passwords", "access-admin"):
         with runtime.lifecycle_lock():
             execute(args)
     else:

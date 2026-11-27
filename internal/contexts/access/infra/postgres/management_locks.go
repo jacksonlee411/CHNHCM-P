@@ -10,10 +10,16 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+var errMissingPolicyVersion = errors.New("referenced policy version missing")
+
 // LockManagement fixes participants and definitions before a management use
 // case checks delegation in this same transaction. The retired row alone
 // needs an exclusive version lock. All callers order keys the same way.
 func LockManagement(ctx context.Context, tx pgx.Tx, instance, actor, target string, binding access.VersionBinding, retireKind, retireID string) error {
+	return lockManagement(ctx, tx, instance, actor, target, binding, retireKind, retireID, false)
+}
+
+func lockManagement(ctx context.Context, tx pgx.Tx, instance, actor, target string, binding access.VersionBinding, retireKind, retireID string, delegation bool) error {
 	subjects := []string{}
 	if actor != "" {
 		subjects = append(subjects, actor)
@@ -27,10 +33,16 @@ func LockManagement(ctx context.Context, tx pgx.Tx, instance, actor, target stri
 			return err
 		}
 	}
+	mandates := ""
+	if delegation {
+		mandates = ` UNION SELECT ref.kind,ref.id FROM access.management_mandate m
+  CROSS JOIN LATERAL (VALUES ('fields',m.fields_id),('role',m.role_id),('scope',m.scope_id)) ref(kind,id)
+  WHERE m.instance_id=$1 AND m.principal_id=$2 AND m.revoked_at IS NULL`
+	}
 	rows, err := tx.Query(ctx, `WITH keys(kind,id) AS (
  SELECT ref.kind,ref.id FROM access.grant_assignment a JOIN access.grant_revision b USING(instance_id,grant_id,revision)
  CROSS JOIN LATERAL (VALUES ('fields',b.fields_id),('role',b.role_id),('scope',b.scope_id)) ref(kind,id)
- WHERE a.instance_id=$1 AND a.principal_id=$2 AND b.operation<>'revoke'
+ WHERE a.instance_id=$1 AND a.principal_id=$2 AND b.operation<>'revoke' `+mandates+`
  UNION SELECT * FROM (VALUES ('fields',$3::uuid),('role',$4::uuid),('scope',$5::uuid),($6::text,$7::uuid)) input
  ) SELECT kind,id::text FROM keys WHERE id IS NOT NULL ORDER BY kind COLLATE "C",id`,
 		instance, nullable(actor), nullable(binding.Fields), nullable(binding.Role), nullable(binding.Scope), retireKind, nullable(retireID))
@@ -58,7 +70,7 @@ func LockManagement(ctx context.Context, tx pgx.Tx, instance, actor, target stri
 			return err
 		}
 		if tag.RowsAffected() != 1 {
-			return errors.New("referenced policy version missing")
+			return errMissingPolicyVersion
 		}
 	}
 	return result.Close()

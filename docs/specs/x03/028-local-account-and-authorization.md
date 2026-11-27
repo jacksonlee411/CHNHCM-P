@@ -1,6 +1,6 @@
 # CHNHCM-028 X03 客户管理员首批账号与授权合同
 
-本合同供客户安全管理员、部门经办人、岗位核编经办人及交付团队评审。首批让管理员建立本地账号、按职责授予权限并收回指定的一份授权。本文描述拟交付行为，现有登录、会话及部门和核编页面是实施起点。执行阶段、迁移与验证责任见[027 实施计划](../../plans/027-x03-local-access-rollout.md)。[登记表](../../governance/registry.json) · [X03 目标合同](../../architecture/target/modules/x03.md)
+本合同供客户安全管理员、部门经办人、岗位核编经办人及交付团队评审。首批让管理员建立本地账号、按职责授予权限并收回指定的一份授权。本文规定角色、授权版本和管理操作的业务结果。当前隔离实例可从「设置 → 安全管理」办理，部署侧受控引导和恢复使用同一实例的独立入口。[T04 实施与验证](../../verification/027-t04-access-management.md)。执行阶段、迁移与验证责任见[027 实施计划](../../plans/027-x03-local-access-rollout.md)。[登记表](../../governance/registry.json) · [X03 目标合同](../../architecture/target/modules/x03.md)
 
 ## 1 谁可以管理谁
 
@@ -62,7 +62,7 @@
 
 ## 3 客户管理员从哪里办理
 
-拟在「设置 → 安全管理」下提供三个入口。列表、表单和返回沿用已交付的主数据页面，实际变更在原账号、版本或授予上可查。X03 的角色发布和授权到期采用自身语义，按实际时刻显示，不套用按日主数据的默认生效日。[参考页面与公共表单](../m02/012-m02-functional-and-interaction-design.md#m02-ui-expression) · [列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) · [动作](../m02/012-m02-functional-and-interaction-design.md#m02-ui-actions) · [历史](../m02/012-m02-functional-and-interaction-design.md#m02-ui-history)
+「设置 → 安全管理」按当前职责提供三个入口。列表、表单和返回沿用已交付的主数据页面，实际变更在原账号、版本或授予上可查。X03 的角色发布和授权到期采用自身语义，按实际时刻显示，不套用按日主数据的默认生效日。[参考页面与公共表单](../m02/012-m02-functional-and-interaction-design.md#m02-ui-expression) · [列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) · [动作](../m02/012-m02-functional-and-interaction-design.md#m02-ui-actions) · [历史](../m02/012-m02-functional-and-interaction-design.md#m02-ui-history)
 
 | 菜单 | 办理及直接呈现的字段 | 保存后的反馈 |
 | --- | --- | --- |
@@ -71,6 +71,18 @@
 | 授权 | 按账号列出各份授权。新增时选角色版本、本职或代理、目标及期限。角色已确定的字段和用途直接显示。普通撤销选中具体一份即可，纠正误授时可补充事由 | 保存后定位该份授予，显示来源、范围、版本、有效期及实际变更。撤销一份后可看其余有效授予。可显式采用新版本，误授的范围可撤销后重新授予 |
 
 取消保留原数据，离开未保存表单沿用共用保护。输入错误就地提示。版本冲突时重读当前版本，保留仍可见的输入。提交后断连、结果未知时才按原提交身份查回。下一次打开、刷新或提交时，页面按服务端结果清除已失权的详情、候选及敏感输入，仍可读时返回原列表定位。固定选择按 [X03-AC-006](#x03-ac-006) 办理。键盘、短屏及原生缩放沿用[共享视口规范](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)。
+
+### 3.1 部署侧引导、恢复及交接
+
+实例运维使用客户保管的部署身份运行 `upgrader -mode access-admin`，从标准输入接收一个 JSON 对象。实例取自部署配置 `CHNHCM_INSTANCE_ID`，请求中的 `instanceId` 必须相同。本地 profile 可运行 `CHNHCM_LOCAL_PROFILE=<已核对的profile> python3 scripts/local-bu.py access-admin`，它核对原容器、绑定端口和数据卷，并代填该实例。该入口只依赖运行中的本实例数据库。前台管理员从账号资料及办理历史查看变更，有部署职责的人应留存首次成功返回的 `target`。
+
+| 操作 | 提交内容 | 成功结果 |
+| --- | --- | --- |
+| `bootstrap` | `requestId`、`operator`、`reason`、`login` 和可选 `maxProxyDays`。新账号从标准输入提供 `password`。已有账号可保留凭据 | 为此前从未引导的实例指定唯一管理员，返回稳定主体。业务许可仍按原授予 |
+| `recover` | 新的提交身份、运维身份、事由、现任登录名和 `expectedAdmin`。需要换凭据时一并输入新口令 | 重新启用同一主体、结束其旧会话。原业务授予及撤销继续生效 |
+| `handover` | 新的提交身份、运维身份、事由、接替者登录名及原管理员的 `expectedAdmin`。新建接替者时提供初始凭据 | 结束原受保护资格、原管理委派及双方旧会话，按接替者稳定主体授予管理资格，历史保留原办理人 |
+
+`requestId` 使用 UUID。同一操作结果未知时，保留原提交身份及内容重试。旧候任人信息与现任不符时返回冲突。首次引导的 `maxProxyDays` 按客户决定，正数限制代理天数，0 表示无天数上限，限期代理始终要给出到期时刻。后续恢复或交接可以显式修改上限，省略时沿用原值。新口令通过受控终端或部署密钥输入传递。输出只有办理结果、时间及对象身份。[部署入口](../../../cmd/upgrader/main.go) · [隔离实例验收](../../verification/027-t04-access-management.md)
 
 ## 4 三组业务走查
 

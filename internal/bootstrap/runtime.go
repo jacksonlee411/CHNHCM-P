@@ -49,6 +49,7 @@ type Runtime struct {
 	Staffing           staffing.Service
 	Pool               *pgxpool.Pool
 	Access             access.Service
+	Management         access.Management
 	Organization       org.Service
 	Department         org.DepartmentService
 	Country            org.CountryService
@@ -102,6 +103,14 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	o := &orgdb.Store{Pool: p, Instance: instance, Guard: a.Guard}
 	st := &staffingdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Organization: o, PositionDirectory: o}
 	st.QuotaPolicies = st.PublishedQuotaPolicies
+	a.Targets = func(ctx context.Context, ids []string) ([]access.Target, error) {
+		objects, err := o.ManagementTargets(ctx, ids)
+		if err != nil {
+			return nil, err
+		}
+		positions, err := st.ManagementTargets(ctx, ids)
+		return append(objects, positions...), err
+	}
 
 	o.Staffing = st
 	people := &persondb.Store{Pool: p, Authorize: a.Personnel, AuthorizeDirectory: a.PersonnelDirectory, ProfileCatalog: o}
@@ -134,7 +143,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 			slog.Warn("revoked staffing selection cleanup failed")
 		}
 	}
-	runtime := &Runtime{Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
+	runtime := &Runtime{Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Management: a, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
 	if e = runtime.Ready(ctx); e != nil {
 		p.Close()
 		return nil, e
@@ -434,9 +443,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,58)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,59)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 57 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 58 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -519,6 +528,13 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                     max(version_id) FILTER (WHERE version_id<=31) person_prefix FROM
        (SELECT DISTINCT ON (version_id) version_id,is_applied FROM public.goose_db_version ORDER BY version_id,id DESC) latest
        WHERE is_applied AND version_id>0) ledger)
+       AND (($1 AND NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id>58 AND is_applied)) OR (
+          to_regclass('access.management_root') IS NOT NULL AND to_regclass('access.management_publication') IS NOT NULL
+          AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.principal') AND attname='management_owner' AND atttypid='uuid'::regtype AND NOT attisdropped)
+          AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.management_receipt') AND attname='receipt_order' AND attidentity='a' AND NOT attisdropped)
+          AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('access.management_mandate') AND tgname='immutable_management_mandate' AND tgenabled='O')
+          AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('access.management_receipt') AND tgname='immutable_management_receipt' AND tgenabled='O')
+          AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('access.management_publication') AND tgname='immutable_management_publication' AND tgenabled='O')))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=29 AND is_applied) OR (
            to_regprocedure('access.person_policy_for_use(uuid)') IS NOT NULL AND
            NOT EXISTS(SELECT FROM unnest(ARRAY['person','number','source','counter','terminal','identity_payload','evidence_payload','contact_payload','material','outbox','query','hold','disposition']) name WHERE to_regclass('personnel.'||name) IS NULL)))
