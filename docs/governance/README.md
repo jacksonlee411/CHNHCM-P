@@ -2,6 +2,8 @@
 
 从本次要改的业务或页面查起。文档的适用范围、维护角色、审阅及替代关系可在[唯一登记表](registry.json)核对。
 
+默认只检索[现行规范](catalog/standards/README.md)。可在该页查标题与条款名称，也可在仓库根目录用 `rg -n -F -- '关键词' docs` 查正文。该命令使用登记表生成的搜索范围，显式指定 `-g '*.md'` 会扩大范围。部分条款已替代时，按正文说明的适用范围和后继条款办理。
+
 | 要解决的问题 | 现行约定 | 对象、实现或查证入口 |
 | --- | --- | --- |
 | 业务对象是谁，什么条件下可以办理、更正或撤销 | [领域与事实归属](../architecture/004-repository-layout.md) · [各模块业务规格](../specs/README.md) · [术语命名](015-terminology-naming.md) | [人员登记及防重](../specs/m01/501-person-registration-requirements.md#m01-registration-examples) · [任职编号与再聘](../specs/m04/506-job-information-records.md#m04-br-009) |
@@ -34,7 +36,7 @@ BU 与部门异常恢复可从[121 逐项映射](../specs/m02/121-dated-object-a
 
 ## 计划与文稿
 
-[分类目录](catalog/README.md)从登记表生成，列出全部现行标准、在办和待启动计划、待审文稿、已关闭计划与原始验收。下表列出筛选口径和走查样本。
+[分类目录](catalog/README.md)提供计划、文稿与验收记录的入口。需要追溯某批次时，可直接打开相关记录，或用 `rg --no-ignore-dot -n -F -- '关键词' docs/verification docs/archive` 在验收和归档中查找。
 
 | 入口 | 筛选方法 | 走查样本 |
 | --- | --- | --- |

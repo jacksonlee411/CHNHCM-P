@@ -437,11 +437,11 @@
       "owner": null,
       "format": "numbered",
       "review": {
-        "date": "2026-11-26",
-        "reviewer": "Codex 主代理（依用户决定及原采纳记录复核）",
-        "scope": "归档条件、原目录镜像、登记日期、同号迁移和定稿引用搬迁。",
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理（按用户明确的默认检索范围复核）",
+        "scope": "现行规范的默认检索范围、目录与正文搜索的一致性，以及显式查证历史的入口。",
         "result": "accepted",
-        "evidence": "docs/verification/511-physical-archive.md"
+        "evidence": "docs/verification/014-current-standards-search.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3479,6 +3479,35 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/014-current-standards-search.md",
+        "related_documents": [
+          "CHNHCM-014"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "入口及 014 检索规则、目录生成与核对、docs 搜索范围和回归测试在工作区修改。",
+        "environment": "wt-dev-f，Python 3.14.4，ripgrep 15.2.0。",
+        "scope": "从仓库根目录检索现行编号规范、按条款名称浏览目录及显式查找原报告。",
+        "results": [
+          {
+            "check": "登记路径、默认搜索文件和目录链接集合一致，两组关键词分别命中 23 份和 8 份现行规范",
+            "result": "passed",
+            "evidence": "docs/verification/014-current-standards-search.md"
+          },
+          {
+            "check": "条款链接、部分替代和原 500 关闭报告的显式查回",
+            "result": "passed",
+            "evidence": "docs/verification/014-current-standards-search.md"
+          }
+        ],
+        "limitations": [
+          "默认范围按编号文档的登记状态判定，部分替代条款依正文核对。"
+        ]
+      },
       {
         "path": "docs/verification/027-public-00058-grant-upgrade.md",
         "related_documents": [

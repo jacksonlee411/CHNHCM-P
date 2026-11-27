@@ -1,6 +1,6 @@
 # 业务与功能规格
 
-按模块查业务事实、操作方式和技术合同。跨模块的布局、交互、共用组件及验收方式可从[项目规范导航](../governance/README.md)查找。[文档首页](../index.md) · [全部现行标准](../governance/catalog/README.md#catalog-standards)
+按模块查业务事实、操作方式和技术合同。跨模块的布局、交互、共用组件及验收方式可从[项目规范导航](../governance/README.md)查找。[文档首页](../index.md) · [检索现行规范](../governance/catalog/standards/README.md)
 
 ## M01 人员登记、名录与个人资料
 

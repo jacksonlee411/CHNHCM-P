@@ -8,63 +8,7 @@
 
 ## 现行标准
 
-| 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
-| --- | --- | --- | --- |
-| [002 继承 CubeBox 技术方向](../../adr/002-technology-stack.md) | active | — | 原位 |
-| [003 全新实施的阶段与完成口径](../../adr/003-implementation-stages.md) | active | — | 原位 |
-| [004 目录、领域及依赖](../../architecture/004-repository-layout.md) | active | — | 原位 |
-| [005 固定分支及文档编号](../005-branches-and-documents.md) | active | — | 原位 |
-| [006 三类资产保留与重新验证](../../assets/006-preservation-contract.md) | active | — | 原位 |
-| [007 首个切片 M02](../../architecture/007-m02-entry.md) | active | — | 原位 |
-| [009 M02 大陆组织角色与工作关系术语](../../adr/009-mainland-organization-terms.md) | active | — | 原位 |
-| [011 业务需求与流程说明](../../specs/m02/011-m02-business-requirements.md) | active | — | 原位 |
-| [012 功能规格与交互设计](../../specs/m02/012-m02-functional-and-interaction-design.md) | active | — | 原位 |
-| [013 技术详细设计](../../specs/m02/013-m02-technical-design.md) | active | — | 原位 |
-| [014 文档管理规范](../014-document-management.md) | active | — | 原位 |
-| [015 术语中文命名规范](../015-terminology-naming.md) | active | — | 原位 |
-| [017 BU首批本地运行与验证](../../guides/017-local-bu-development.md) | active | — | 原位 |
-| [018 生效记录与来源追溯决策](../../adr/018-effective-records-and-source-history.md) | active | — | 原位 |
-| [020 M02 已生效记录删除与生效日期更正](../../adr/020-effective-record-delete-and-redate.md) | active | — | 原位 |
-| [021 M02 多次启停与记录维护规则](../../adr/021-bu-lifecycle-and-record-maintenance.md) | active | — | 原位 |
-| [022 M02 有限联合修订与历史补全](../../adr/022-joint-timeline-revision.md) | active | — | 原位 |
-| [023 M02 时间轴全面测试案例](../../specs/m02/023-m02-timeline-test-cases.md) | active | — | 原位 |
-| [024 M02时间轴实现与验证收敛](../../adr/024-timeline-implementation-simplification.md) | active | — | 原位 |
-| [025 全新实施与当前模型交付策略](../../adr/025-greenfield-implementation-policy.md) | active | — | 原位 |
-| [026 统一业务日期显示与输入格式](../../adr/026-date-display-and-input-format.md) | active | — | 原位 |
-| [101 M02直接保存与自动表单辅助](../../adr/101-direct-save-and-form-assistance.md) | active | — | 原位 |
-| [103 按所选位置新增与插入记录](../../adr/103-positioned-record-addition.md) | active | — | 原位 |
-| [106 M04同日人事动作、日级状态与统计口径](../../adr/106-same-day-personnel-actions-and-daily-state.md) | active | — | 原位 |
-| [107 首条资料维护收敛到通用操作](../../adr/107-first-record-maintenance.md) | active | — | 原位 |
-| [110 BU列表交互收敛与DataGrid Pro采用](../../adr/110-bu-list-and-datagrid.md) | active | — | 原位 |
-| [113 BU列表改用Community并保留既定规则](../../adr/113-bu-list-community-adoption.md) | active | — | 原位 |
-| [114 BU全查询结果选择与导出决定](../../adr/114-bu-query-selection-and-export.md) | active | — | 原位 |
-| [117 M02共用按日维护与部门边界](../../adr/117-m02-dated-maintenance-and-department-boundary.md) | active | — | 原位 |
-| [118 M02部门业务规则与场景](../../specs/m02/118-department-business-requirements.md) | active | — | 原位 |
-| [119 M02部门功能与交互](../../specs/m02/119-department-functional-design.md) | active | — | 原位 |
-| [120 M02共用维护与部门技术接入合同](../../specs/m02/120-dated-maintenance-technical-contract.md) | active | — | 原位 |
-| [121 M02双对象接入验证矩阵](../../specs/m02/121-dated-object-admission-matrix.md) | active | — | 原位 |
-| [123 基础资料维护取消通用查看日期与按日查询边界](../../adr/123-current-maintenance-and-dated-query-boundary.md) | active | — | 原位 |
-| [124 按日维护对象接入及容量验证指南](../../guides/124-dated-object-admission-and-capacity.md) | active | — | 原位 |
-| [128 授权过程与关联跳转过度设计整改](../../adr/128-authorization-evidence-removal.md) | active | — | 原位 |
-| [134 并行开发共同基线与独立环境](../../guides/134-parallel-development-baseline.md) | active | — | 原位 |
-| [137 GitHub Actions使用与验证规范](../137-actions-and-validation.md) | active | — | 原位 |
-| [201 国家/地区目录、行政区划目录与企业地点维护技术合同](../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md) | active | — | 原位 |
-| [202 配置与主数据默认生效日期](../../adr/202-master-data-default-effective-date.md) | active | — | 原位 |
-| [207 法律实体基础维护合同](../../specs/m02/207-legal-entity-design.md) | active | — | 原位 |
-| [308 职类、职务系列与职务基础合同](../../specs/m03/308-job-foundation-contract.md) | active | — | 原位 |
-| [310 职级与职级阶梯对象接入合同](../../specs/m03/310-grade-ladder-contract.md) | active | — | 原位 |
-| [312 岗位定义与岗位层级对象接入合同](../../specs/m03/312-position-contract.md) | active | — | 原位 |
-| [313 编制管理合同](../../specs/m03/313-position-capacity-contract.md) | active | — | 原位 |
-| [401 直接入职业务规则与验收](../../specs/m04/401-direct-hire-requirements.md) | active | — | 原位 |
-| [402 入职准备与办理页面合同](../../specs/m04/402-hire-interactions.md) | active | — | 原位 |
-| [403 入职来源采用与事务技术合同](../../specs/m04/403-hire-technical-contract.md) | active | — | 原位 |
-| [501 人员登记与名录业务规格](../../specs/m01/501-person-registration-requirements.md) | active | — | 原位 |
-| [502 人员登记与名录页面交互规格](../../specs/m01/502-person-directory-interactions.md) | active | — | 原位 |
-| [503 人员登记与名录技术合同](../../specs/m01/503-person-registration-design.md) | active | — | 原位 |
-| [505 M01 个人资料九栏目维护合同](../../specs/m01/505-personal-profile-contract.md) | active | — | 原位 |
-| [506 M04 职务信息与任职记录业务规则](../../specs/m04/506-job-information-records.md) | active | — | 原位 |
-| [507 人员详情职务信息与人事事务办理记录页面设计](../../specs/m04/507-job-information-tab.md) | active | — | 原位 |
-| [512 工作关系合同业务规格](../../specs/m04/512-employment-contracts.md) | active | — | 原位 |
+[按现行规范查标题与条款](standards/README.md)
 
 <a id="catalog-in-progress"></a>
 
@@ -175,6 +119,7 @@
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 025、005、313、315 | [CHNHCM-025 岗位核编旧接口退出与历史查回复验](../../verification/025-position-quota-interface-retirement.md) | 2026-11-27 | final |
+| 014 | [CHNHCM-014 现行规范默认检索复验](../../verification/014-current-standards-search.md) | 2026-11-27 | final |
 | 004、002、025、313、505 | [CHNHCM-004 架构、技术栈与数据归属整改复验](../../verification/004-architecture-review-remediation.md) | 2026-11-27 | final |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案评审](../../verification/511-project-standards-review.md) | 2026-11-26 | final |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案复评](../../verification/511-project-standards-rereview.md) | 2026-11-26 | final |

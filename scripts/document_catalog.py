@@ -3,6 +3,9 @@ import argparse
 import json
 import os
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+from document_governance import link_definitions, link_occurrences, markdown_prose
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "docs/governance/registry.json"
@@ -36,8 +39,8 @@ def categories(doc):
     return groups
 
 
-def link(label, path):
-    relative = Path(os.path.relpath(ROOT / path, CATALOG.parent)).as_posix()
+def link(label, path, directory=None):
+    relative = Path(os.path.relpath(ROOT / path, directory or CATALOG.parent)).as_posix()
     return f"[{label}]({relative})"
 
 
@@ -51,6 +54,9 @@ def render(registry):
             groups[key].append(doc)
     for key, title in GROUPS:
         lines.extend(["", f'<a id="catalog-{key}"></a>', "", f"## {title}", ""])
+        if key == "standards":
+            lines.append("[按现行规范查标题与条款](standards/README.md)")
+            continue
         if not groups[key]:
             lines.append("当前登记为零。")
             continue
@@ -73,8 +79,56 @@ def render(registry):
     return "\n".join(lines) + "\n"
 
 
+def render_standards(standards, directory):
+    # Reuse the clause labels maintained by the task and module navigation pages.
+    clauses = {ROOT / doc["path"]: {} for doc in standards}
+    for source in (ROOT / "docs/governance/README.md", ROOT / "docs/specs/README.md"):
+        content = source.read_text(encoding="utf-8")
+        for _, _, label, target in link_occurrences(markdown_prose(content), link_definitions(content)):
+            url = urlsplit(target)
+            if url.fragment and not url.scheme and not url.netloc:
+                path = (source.parent / unquote(url.path)).resolve()
+                if path in clauses:
+                    clauses[path].setdefault(url.fragment, label)
+
+    by_id = {doc["id"]: doc for doc in standards}
+    lines = ["# 现行规范", "",
+             "按编号、标题或导航中的条款名称查找。检索整份正文时，在仓库根目录运行 `rg -n -F -- '关键词' docs`。", "",
+             "| 编号与正文 | 条款入口 | 部分条款的替代去向 |", "| --- | --- | --- |"]
+    for doc in standards:
+        path = doc["path"]
+        title = link(f"{doc['id'][-3:]} {doc['title']}", path, directory)
+        entries = [link(label, f"{path}#{fragment}", directory)
+                   for fragment, label in clauses[ROOT / path].items()]
+        successors = [link(f"{identifier[-3:]} {by_id[identifier]['title']}", by_id[identifier]["path"], directory)
+                      for identifier in doc["superseded_by"] if identifier in by_id]
+        if len(successors) < len(doc["superseded_by"]):
+            successors.append("其余替代范围见正文" if successors else "见正文的替代说明")
+        lines.append(f"| {title} | {' · '.join(entries) or '—'} | {' · '.join(successors) or '—'} |")
+    return "\n".join(lines) + "\n"
+
+
+def render_search_filter(standards):
+    paths = [Path(doc["path"]).relative_to("docs") for doc in standards]
+    parents = {parent for path in paths for parent in path.parents if parent != Path(".")}
+    lines = ["# 由 scripts/document_catalog.py 按登记的现行规范生成。", "*"]
+    lines.extend(f"!/{parent.as_posix()}/" for parent in sorted(parents))
+    lines.extend(f"!/{path.as_posix()}" for path in sorted(paths))
+    return "\n".join(lines) + "\n"
+
+
+def catalog_files(registry):
+    standards = sorted((doc for doc in registry["documents"] if "standards" in categories(doc)),
+                       key=lambda doc: doc["id"])
+    directory = CATALOG.parent / "standards"
+    return {CATALOG: render(registry),
+            directory / "README.md": render_standards(standards, directory),
+            ROOT / "docs/.ignore": render_search_filter(standards)}
+
+
 def catalog_matches(registry):
-    return CATALOG.is_file() and CATALOG.read_text(encoding="utf-8") == render(registry)
+    return all(path.is_file() and path.read_text(encoding="utf-8") == content
+               for path, content in catalog_files(registry).items())
 
 
 def main():
@@ -84,10 +138,11 @@ def main():
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
     if args.check:
         if not catalog_matches(registry):
-            parser.exit(1, "文档分类目录与登记不一致，请运行 python3 -B scripts/document_catalog.py。\n")
+            parser.exit(1, "文档目录或默认检索范围已过期，请运行 python3 -B scripts/document_catalog.py。\n")
         return
-    CATALOG.parent.mkdir(parents=True, exist_ok=True)
-    CATALOG.write_text(render(registry), encoding="utf-8")
+    for path, content in catalog_files(registry).items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
 
 
 if __name__ == "__main__":
