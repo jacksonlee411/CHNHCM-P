@@ -24,12 +24,21 @@ func InitializeAddressTypes(ctx context.Context, tx pgx.Tx, instance string) err
 	return err
 }
 
-const typeColumns = "item_id,head,code,name,sort_order,first_day::text,selectable"
+const typeColumns = "item_id,head,code,name,sort_order,first_day::text,coalesce(stop_day::text,''),coalesce(confirmed_from::text,''),undated_stop"
 
-func scanAddressType(row pgx.Row) (p.AddressType, error) {
+func typePeriod(x p.AddressType) d.AddressTypePeriod {
+	return d.AddressTypePeriod{FirstDay: x.FirstDay, StopDay: x.StopDay, ConfirmedFrom: x.ConfirmedFrom, UndatedStop: x.UndatedStop}
+}
+func (r *request) addressDay() string { return r.a.At.In(f.Shanghai).Format("2006-01-02") }
+
+func scanAddressType(row pgx.Row, day string) (p.AddressType, error) {
 	var x p.AddressType
-	err := row.Scan(&x.ID, &x.Revision, &x.Code, &x.Name, &x.Order, &x.FirstDay, &x.Selectable)
+	err := row.Scan(&x.ID, &x.Revision, &x.Code, &x.Name, &x.Order, &x.FirstDay, &x.StopDay, &x.ConfirmedFrom, &x.UndatedStop)
+	x.Selectable = typePeriod(x).LegacySelectable(day)
 	return x, err
+}
+func typeView(x p.AddressType, day string) p.AddressTypeView {
+	return p.AddressTypeView{AddressType: x, State: typePeriod(x).State(day)}
 }
 
 func (s *Store) AddressTypes(ctx context.Context, c f.Credentials) (p.AddressTypeList, error) {
@@ -42,12 +51,49 @@ func (s *Store) AddressTypes(ctx context.Context, c f.Credentials) (p.AddressTyp
 		if err != nil {
 			return out, err
 		}
-		out.Items, err = pgx.CollectRows(rows, func(row pgx.CollectableRow) (p.AddressType, error) { return scanAddressType(row) })
+		day := r.addressDay()
+		out.Items, err = pgx.CollectRows(rows, func(row pgx.CollectableRow) (p.AddressTypeView, error) {
+			x, err := scanAddressType(row, day)
+			return typeView(x, day), err
+		})
 		out.CanMaintain = r.allowed("address-type.maintain", "")
 		out.DefaultFirstDay = f.DefaultEffectiveDate
 		return out, err
 	})
 }
+func (s *Store) AddressTypeDetail(ctx context.Context, c f.Credentials, id string) (p.AddressTypeDetail, error) {
+	return run(ctx, s, c, func(r *request) (p.AddressTypeDetail, error) {
+		var out p.AddressTypeDetail
+		if !r.allowed("address-type.read", "") {
+			return out, d.Denied()
+		}
+		if !f.ValidID(id) {
+			return out, d.Missing()
+		}
+		day := r.addressDay()
+		x, err := scanAddressType(r.tx.QueryRow(ctx, "select "+typeColumns+" from personnel.address_type where instance_id=$1 and item_id=$2", r.instance, id), day)
+		if err != nil {
+			return out, noRows(err)
+		}
+		out.Item = typeView(x, day)
+		out.BusinessDay = day
+		out.DefaultStopDay = max(day, x.FirstDay, x.ConfirmedFrom)
+		out.CanMaintain = r.allowed("address-type.maintain", "")
+		period := typePeriod(x)
+		out.SelectedDay = x.FirstDay
+		for _, date := range period.Dates() {
+			out.Timeline = append(out.Timeline, p.AddressTypePoint{Day: date, State: period.State(date)})
+			if date <= day {
+				out.SelectedDay = date
+			}
+		}
+		return out, nil
+	})
+}
+
+const typeSourceColumns = `t.item_id,v.revision,t.code,v.name,v.sort_order,t.first_day::text,v.selectable,
+ coalesce(v.stop_day::text,''),coalesce(case when v.dated then t.confirmed_from::text end,''),v.undated_stop`
+
 func (s *Store) AddressTypeSource(ctx context.Context, c f.Credentials, id, revision string) (p.AddressTypeSource, error) {
 	return run(ctx, s, c, func(r *request) (p.AddressTypeSource, error) {
 		var x p.AddressTypeSource
@@ -57,10 +103,13 @@ func (s *Store) AddressTypeSource(ctx context.Context, c f.Credentials, id, revi
 		if !f.ValidID(id) || !f.ValidID(revision) {
 			return x, d.Missing()
 		}
-		err := r.tx.QueryRow(ctx, `select t.item_id,v.revision,t.code,v.name,v.sort_order,t.first_day::text,v.selectable,v.actor_id,v.recorded_at
+		err := r.tx.QueryRow(ctx, "select "+typeSourceColumns+`,v.actor_id,v.recorded_at,v.dated,
+   coalesce((select prev.revision::text from personnel.address_type_revision prev
+     where (prev.instance_id,prev.item_id)=(v.instance_id,v.item_id) and (prev.recorded_at,prev.revision)<(v.recorded_at,v.revision)
+     order by prev.recorded_at desc,prev.revision desc limit 1),'')
    from personnel.address_type_revision v join personnel.address_type t using(instance_id,item_id)
    where v.instance_id=$1 and v.item_id=$2 and v.revision=$3`, r.instance, id, revision).Scan(
-			&x.ID, &x.Revision, &x.Code, &x.Name, &x.Order, &x.FirstDay, &x.Selectable, &x.ActorID, &x.RecordedAt)
+			&x.ID, &x.Revision, &x.Code, &x.Name, &x.Order, &x.FirstDay, &x.Selectable, &x.StopDay, &x.ConfirmedFrom, &x.UndatedStop, &x.ActorID, &x.RecordedAt, &x.Dated, &x.PreviousRevision)
 		return x, noRows(err)
 	})
 }
@@ -92,7 +141,7 @@ func (s *Store) AddressTypeCandidates(ctx context.Context, c f.Credentials, pers
 			}
 		}
 		rows, err := r.tx.Query(ctx, `select item_id,head,code,name from personnel.address_type
-    where instance_id=$1 and selectable and first_day<=$2::date order by sort_order,item_id`, r.instance, r.a.At.In(f.Shanghai).Format("2006-01-02"))
+    where instance_id=$1 and valid_during @> $2::date order by sort_order,item_id`, r.instance, r.addressDay())
 		if err != nil {
 			return nil, err
 		}
@@ -124,7 +173,7 @@ func (r *request) adoptAddressType(person string, row *profileItem, choice *p.Ad
     (select from personnel.address_type_revision v where (v.instance_id,v.item_id,v.revision)=(t.instance_id,t.item_id,t.head) and actor_id is null) for share of t`
 		key = legacy
 	}
-	x, err := scanAddressType(r.tx.QueryRow(r.ctx, query, r.instance, key))
+	x, err := scanAddressType(r.tx.QueryRow(r.ctx, query, r.instance, key), r.addressDay())
 	if errors.Is(err, pgx.ErrNoRows) {
 		if choice == nil {
 			return d.Invalid("addressType", "请选择当前可用的地址类型")
@@ -140,8 +189,8 @@ func (r *request) adoptAddressType(person string, row *profileItem, choice *p.Ad
 	if !r.visible(person) || !r.itemWrite(d.Addresses, person, row.ItemID, "addressType") {
 		return d.Denied()
 	}
-	day := r.a.At.In(f.Shanghai).Format("2006-01-02")
-	if !x.Selectable || x.FirstDay > day || choice != nil && x.Revision != choice.Revision {
+	day := r.addressDay()
+	if typePeriod(x).State(day) != "active" || choice != nil && x.Revision != choice.Revision {
 		return changedType()
 	}
 	row.Fields["addressType"] = x.Name
@@ -154,10 +203,10 @@ var addressTypeCode = regexp.MustCompile(`^[A-Z0-9][A-Z0-9_-]{0,39}$`)
 func (r *request) addressTypeReceipt(submission string) (p.AddressType, string, error) {
 	var x p.AddressType
 	var digest string
-	err := r.tx.QueryRow(r.ctx, `select t.item_id,v.revision,t.code,v.name,v.sort_order,t.first_day::text,v.selectable,v.digest
+	err := r.tx.QueryRow(r.ctx, "select "+typeSourceColumns+`,v.digest
    from personnel.address_type_revision v join personnel.address_type t using(instance_id,item_id)
    where v.instance_id=$1 and v.actor_id=$2 and v.submission_id=$3`, r.instance, r.a.Principal.ID, submission).
-		Scan(&x.ID, &x.Revision, &x.Code, &x.Name, &x.Order, &x.FirstDay, &x.Selectable, &digest)
+		Scan(&x.ID, &x.Revision, &x.Code, &x.Name, &x.Order, &x.FirstDay, &x.Selectable, &x.StopDay, &x.ConfirmedFrom, &x.UndatedStop, &digest)
 	return x, digest, err
 }
 func (r *request) lockTypeSubmission(submission string, write bool) error {
@@ -223,43 +272,68 @@ func (s *Store) SaveAddressType(ctx context.Context, c f.Credentials, in p.Addre
 		if in.Order < 0 || in.Order > 999999 {
 			return zero, d.Invalid("sortOrder", "排序须为 0 至 999999 的整数")
 		}
-		if in.Selectable == nil {
-			return zero, d.Invalid("selectable", "请选择可选状态")
+		if in.Selectable != nil && in.StopDay != nil {
+			return zero, d.Invalid("stopDay", "请使用一种停用安排")
 		}
-		revision := f.NewID()
-		if in.ID == "" {
-			code := strings.ToUpper(strings.TrimSpace(in.Code))
-			if !addressTypeCode.MatchString(code) {
+		creating := in.ID == ""
+		if creating {
+			x = p.AddressType{FirstDay: in.FirstDay}
+			x.Code = strings.ToUpper(strings.TrimSpace(in.Code))
+			if !addressTypeCode.MatchString(x.Code) {
 				return zero, d.Invalid("code", "编码须为 1 至 40 位字母、数字、下划线或连字符，并以字母或数字开头")
 			}
-			if !f.ValidDate(in.FirstDay) {
+			if !f.ValidDate(x.FirstDay) {
 				return zero, d.Invalid("firstDay", "请填写有效的初始生效日")
 			}
 			if in.ExpectedRevision != "" {
 				return zero, d.Conflict()
 			}
-			x, err = scanAddressType(r.tx.QueryRow(ctx, `insert into personnel.address_type(instance_id,code,name,sort_order,first_day,selectable,head)
-    values($1,$2,$3,$4,$5,$6,$7) returning `+typeColumns, r.instance, code, name, in.Order, in.FirstDay, *in.Selectable, revision))
-			var pg *pgconn.PgError
-			if errors.As(err, &pg) && pg.Code == "23505" {
-				return zero, d.Invalid("code", "此编码已被使用")
-			}
 		} else {
 			if !f.ValidID(in.ID) || !f.ValidID(in.ExpectedRevision) || in.Code != "" || in.FirstDay != "" {
 				return zero, d.Invalid("id", "请按原配置项和修订保存")
 			}
-			x, err = scanAddressType(r.tx.QueryRow(ctx, "select "+typeColumns+" from personnel.address_type where instance_id=$1 and item_id=$2 for update", r.instance, in.ID))
+			x, err = scanAddressType(r.tx.QueryRow(ctx, "select "+typeColumns+" from personnel.address_type where instance_id=$1 and item_id=$2 for update", r.instance, in.ID), r.addressDay())
 			if err != nil {
 				return zero, noRows(err)
 			}
 			if x.Revision != in.ExpectedRevision {
 				return zero, f.Fail(409, "ADDRESS_TYPE_CONFLICT", "此配置项已由其他人修改，请重新核对")
 			}
-			if x.Name == name && x.Order == in.Order && x.Selectable == *in.Selectable {
-				return zero, d.Invalid("name", "没有需要保存的修改")
+		}
+		if err = r.tx.QueryRow(ctx, "select clock_timestamp()").Scan(&r.a.At); err != nil {
+			return zero, err
+		}
+		day := r.addressDay()
+		period := typePeriod(x)
+		stop := in.StopDay
+		// Old clients express an immediate change. An unchanged switch preserves a scheduled stop.
+		if in.Selectable != nil && *in.Selectable != period.LegacySelectable(day) {
+			compatDay := ""
+			if !*in.Selectable {
+				compatDay = max(day, x.FirstDay)
 			}
-			x, err = scanAddressType(r.tx.QueryRow(ctx, `update personnel.address_type set head=$3,name=$4,sort_order=$5,selectable=$6
-    where instance_id=$1 and item_id=$2 returning `+typeColumns, r.instance, in.ID, revision, name, in.Order, *in.Selectable))
+			stop = &compatDay
+		}
+		if stop != nil {
+			period, err = period.WithStop(*stop)
+			if err != nil {
+				return zero, err
+			}
+		}
+		if !creating && x.Name == name && x.Order == in.Order && period == typePeriod(x) {
+			return zero, d.Invalid("name", "没有需要保存的修改")
+		}
+		revision := f.NewID()
+		if creating {
+			x, err = scanAddressType(r.tx.QueryRow(ctx, `insert into personnel.address_type(instance_id,code,name,sort_order,first_day,stop_day,head)
+    values($1,$2,$3,$4,$5,nullif($6,'')::date,$7) returning `+typeColumns, r.instance, x.Code, name, in.Order, x.FirstDay, period.StopDay, revision), day)
+			var pg *pgconn.PgError
+			if errors.As(err, &pg) && pg.Code == "23505" {
+				return zero, d.Invalid("code", "此编码已被使用")
+			}
+		} else {
+			x, err = scanAddressType(r.tx.QueryRow(ctx, `update personnel.address_type set head=$3,name=$4,sort_order=$5,stop_day=nullif($6,'')::date,undated_stop=$7
+    where instance_id=$1 and item_id=$2 returning `+typeColumns, r.instance, in.ID, revision, name, in.Order, period.StopDay, period.UndatedStop), day)
 		}
 		if err != nil {
 			return zero, err
@@ -270,8 +344,8 @@ func (s *Store) SaveAddressType(ctx context.Context, c f.Credentials, in p.Addre
 		if !r.allowed("address-type.read", "") || !r.allowed("address-type.maintain", "") {
 			return zero, d.Denied()
 		}
-		_, err = r.tx.Exec(ctx, `insert into personnel.address_type_revision(instance_id,item_id,revision,name,sort_order,selectable,actor_id,submission_id,digest)
-    values($1,$2,$3,$4,$5,$6,$7,$8,$9)`, r.instance, x.ID, x.Revision, x.Name, x.Order, x.Selectable, r.a.Principal.ID, in.SubmissionID, digest)
+		_, err = r.tx.Exec(ctx, `insert into personnel.address_type_revision(instance_id,item_id,revision,name,sort_order,selectable,actor_id,submission_id,digest,stop_day,undated_stop)
+    values($1,$2,$3,$4,$5,$6,$7,$8,$9,nullif($10,'')::date,$11)`, r.instance, x.ID, x.Revision, x.Name, x.Order, x.Selectable, r.a.Principal.ID, in.SubmissionID, digest, x.StopDay, x.UndatedStop)
 		return x, err
 	})
 }

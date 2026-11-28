@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Page } from '@playwright/test';
 import { test, expect } from './fixtures';
-import { namedMenu308 } from './staffing308-support';
+import { namedMenu308, reference308, reach308 } from './staffing308-support';
 import { openPersonnel as menu } from './app-navigation';
 import { request } from './dated-object-support';
 import { nativeZoomBrowser } from './native-zoom-support';
@@ -43,31 +43,64 @@ for (const mode of ['1440×900', '原生200%']) {
       if (!zoom) await page.setViewportSize({ width: 1440, height: 900 });
       const { path, name } = await sample(page);
       if (zoom) await zoom.setZoom(2);
+      await reference308(page, 'admin');
       const button = (label: string) => page.getByRole('button', { name: label, exact: true });
       const catalog = '/api/v1/person-address-types',
         title = '宿舍' + randomUUID().slice(0, 6);
       await namedMenu308(page, '地址类型', '人员配置', '/settings/personnel/address-types');
       const beforeCancel = (await request(page, 'GET', catalog)).body.items;
-      await button('新增').click();
-      await page.getByRole('dialog').getByLabel('名称').fill('取消样本');
+      await page.getByRole('link', { name: '新增' }).click();
+      await expect(page.getByRole('heading', { name: '新增地址类型', exact: true })).toBeVisible();
+      const nameField = page.getByRole('textbox', { name: '名称', exact: true });
+      await reach308(page, nameField);
+      expect(
+        await nameField.evaluate((el) => ({
+          label: getComputedStyle(document.querySelector('.object-form .object-field-label')!).fontSize,
+          value: getComputedStyle(el).fontSize,
+          height: el.closest('.MuiInputBase-root')!.getBoundingClientRect().height,
+        })),
+      ).toEqual({ label: '13px', value: '14px', height: 32 });
+      await page.getByRole('textbox', { name: '名称', exact: true }).fill('取消样本');
       await button('取消').click();
       await button('放弃修改').click();
       expect((await request(page, 'GET', catalog)).body.items).toEqual(beforeCancel);
-      await button('新增').click();
-      await expect(page.getByRole('dialog').getByLabel('初始生效日')).toHaveValue('1900-01-01');
+      await page.getByRole('link', { name: '新增' }).click();
+      await expect(page.getByRole('heading', { name: '新增地址类型', exact: true })).toBeVisible();
+      await expect(page.getByRole('textbox', { name: '首次生效日', exact: true })).toHaveValue(
+        '1900-01-01',
+      );
       await page
-        .getByRole('dialog')
-        .getByLabel('编码')
+        .getByRole('textbox', { name: '编码', exact: true })
         .fill('DORM-' + randomUUID().slice(0, 8));
-      await page.getByRole('dialog').getByLabel('名称').fill(title);
-      await page.getByRole('dialog').getByLabel('排序').fill('5');
-      await page.getByRole('dialog').press('Escape');
+      await page.getByRole('textbox', { name: '名称', exact: true }).fill(title);
+      await page.getByRole('spinbutton', { name: '排序', exact: true }).fill('5');
+      await button('取消').click();
       await button('继续编辑').click();
       await button('保存').click();
-      await expect(button(title)).toBeVisible();
+      await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
       const created = (await request(page, 'GET', catalog)).body.items.find(
         (v: { name: string }) => v.name === title,
       );
+      const selectDay = async (day: string) => {
+        const timeline = page.getByRole('navigation', { name: '生效日期' });
+        const compact = timeline.locator('[data-date-menu="all"]');
+        if (await compact.isVisible()) {
+          await compact.click();
+          await page.getByRole('menuitem', { name: day, exact: true }).click();
+        } else {
+          await timeline.getByRole('button', { name: day, exact: true }).press('Enter');
+        }
+      };
+      const detailPage = page.getByRole('region', { name: '地址类型详情' });
+      await button('停用').click();
+      await page.getByRole('textbox', { name: '停用生效日', exact: true }).fill('2099-06-01');
+      await button('保存').click();
+      await expect(detailPage).toContainText('2099-06-01');
+      await selectDay('2099-06-01');
+      await expect(detailPage).toContainText('2099-06-01 · 停用');
+      await selectDay('1900-01-01');
+      await expect(detailPage).toContainText('1900-01-01 · 启用');
+      const scheduled = (await request(page, 'GET', catalog + '/' + created.id)).body.item;
       await menu(page);
       await search(page, name);
       await page.getByRole('link', { name, exact: true }).click();
@@ -78,7 +111,7 @@ for (const mode of ['1440×900', '原生200%']) {
       await button('应用').click();
       const rename = await request(page, 'POST', catalog, {
         id: created.id,
-        expectedRevision: created.revision,
+        expectedRevision: scheduled.revision,
         submissionId: randomUUID(),
         name: title + '新名',
         sortOrder: 5,
@@ -97,10 +130,14 @@ for (const mode of ['1440×900', '原生200%']) {
       const prior = (await request(page, 'GET', path)).body.addresses[0];
       expect(prior.addressTypeAdoption.revision).toBe(rename.body.revision);
       await namedMenu308(page, '地址类型', '人员配置', '/settings/personnel/address-types');
-      await button(title + '新名').click();
-      await select(page, '选用状态', '已停选');
+      await page.getByRole('link', { name: title + '新名', exact: true }).click();
+      await button('更正').click();
+      await expect(page.getByRole('textbox', { name: '停用生效日', exact: true })).toHaveValue(
+        '2099-06-01',
+      );
+      await page.getByRole('textbox', { name: '停用生效日', exact: true }).fill('2001-01-01');
       await button('保存').click();
-      await expect(page.getByRole('dialog')).toHaveCount(0);
+      await expect(detailPage.locator('.object-identity-summary')).toContainText('停用');
       await menu(page);
       await search(page, name);
       await page.getByRole('link', { name, exact: true }).click();
@@ -113,6 +150,19 @@ for (const mode of ['1440×900', '原生200%']) {
       const after = (await request(page, 'GET', path)).body.addresses[0];
       expect(after.addressTypeAdoption).toEqual(prior.addressTypeAdoption);
       expect(after.fields.street).toBe('合成宿舍五号');
+      await namedMenu308(page, '地址类型', '人员配置', '/settings/personnel/address-types');
+      await page.getByRole('link', { name: title + '新名', exact: true }).click();
+      await button('更正').click();
+      await button('更正为启用').click();
+      await button('保存').click();
+      await expect(detailPage.locator('.object-identity-summary')).toContainText('启用');
+      await expect(detailPage).toContainText('未安排');
+      await expect(button('重新启用')).toHaveCount(0);
+      await page.getByRole('tab', { name: '变更日志' }).click();
+      await button('上一条修订').click();
+      await expect(detailPage).toContainText('2001-01-01');
+      await button('返回当前修订').click();
+      await expect(detailPage).toContainText('未安排');
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
       ).toBeTruthy();

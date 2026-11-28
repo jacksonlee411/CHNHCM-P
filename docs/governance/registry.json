@@ -3475,11 +3475,11 @@
       "scope": "跨模块选择业务对象、受控参考对象、轻量词表、规则配置与产品枚举，约定轻量配置的维护、采用、成本验证及演进。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-27",
-        "reviewer": "Codex 主代理分轮自审并修订",
-        "scope": "五类模型选型、最小数据、日期与并发采用、权限、历史、成本比较及存量演进。",
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理按模型、日期、迁移及正常办理入口分轮复核",
+        "scope": "单区间词表的日期边界、误停更正、旧项可核实期间、原修订及采用。",
         "result": "accepted",
-        "evidence": "docs/verification/316-object-and-configuration-review.md"
+        "evidence": "docs/verification/317-address-type-periods.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3857,10 +3857,10 @@
       "format": "numbered",
       "review": {
         "date": "2026-11-28",
-        "reviewer": "Codex 主代理按现行合同和真实入口复核",
-        "scope": "既有 M02 采用守卫，新增 M01 地址类型、旧档及分权采用验收。",
+        "reviewer": "Codex 主代理按模型、日期、迁移及正常办理入口分轮复核",
+        "scope": "地址类型按北京办理日选用、同日边界、停用更正、旧修订与原采用。",
         "result": "accepted",
-        "evidence": "docs/verification/317-person-address-types.md"
+        "evidence": "docs/verification/317-address-type-periods.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -27410,6 +27410,60 @@
         ],
         "purpose": "retest",
         "conclusion": "移除薪酬原型及两份脚本的旧视口入口。标准桌面、原生 200%、九组参数反例及正式菜单四项复验通过，历史原件可追溯。",
+        "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/317-address-type-periods.md",
+        "related_documents": [
+          "CHNHCM-317",
+          "CHNHCM-316",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "8b1f1c963ff6decd31498fc1be0308373df1462d",
+        "working_tree": "dirty",
+        "change_description": "将地址类型由当前词表迁移为按办理日选用的单区间配置项。",
+        "environment": "本机 Go、PostgreSQL 18.6 和 Chromium，个人资料验收环境 45317。",
+        "scope": "日期边界、误停更正、历史采用和既有回执、数据库升级、菜单、权限与容量。",
+        "results": [
+          {
+            "check": "业务日期边界与 00061 实库迁移的原项、原修订、回执摘要和未知期间",
+            "result": "passed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "首次预检的 sqlc 模型缺少新增列，浏览器首轮定位必填标签及重进新增时的表头失败",
+            "result": "failed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "运行端口断言一次失败，独立 20 项和完整 make check 复验通过",
+            "result": "passed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "两组桌面与原生 200% 的业务单元对照和整笔地址操作",
+            "result": "passed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "45317 迁移前后七组原事实与权限相等，原员工只读和预排样本通过",
+            "result": "passed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "万名员工 1 和 20 会话四条链路，共 3200 次 HTTP，20 会话均在 1500 ms 内",
+            "result": "passed",
+            "evidence": "docs/verification/data/317-person-address-types/capacity.csv"
+          }
+        ],
+        "limitations": [
+          "旧词表未记录的业务停用日保持未知。"
+        ],
+        "purpose": "acceptance",
+        "conclusion": "按日启停、误停更正、旧回执和原住址通过。整合薪酬主线后六种实库路径通过，45317 八组原事实相同。20 会话四条链路 P95 最高 1009.80 ms。",
         "evidence_access": "repository"
       }
     ]

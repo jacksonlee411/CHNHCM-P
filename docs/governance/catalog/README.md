@@ -122,7 +122,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（81）](#evidence-acceptance) · [问题复验（50）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
+[业务验收（82）](#evidence-acceptance) · [问题复验（50）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -131,6 +131,7 @@
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
 | 317、316、505 | [CHNHCM-317 个人资料地址类型验证](../../verification/317-person-address-types.md) | 2026-11-28 定稿 | 个人资料地址类型维护、员工选用和历史回显通过。20 并发下整页保留及改选的 P95 分别为 1241.89 和 995.46 毫秒，均在临时 1500 毫秒内。 [后续记录](../../verification/317-main-address-types.md) | 本仓报告 |
+| 317、316、505 | [CHNHCM-317 地址类型单个启用区间实施与验证](../../verification/317-address-type-periods.md) | 2026-11-28 定稿 | 按日启停、误停更正、旧回执和原住址通过。整合薪酬主线后六种实库路径通过，45317 八组原事实相同。20 会话四条链路 P95 最高 1009.80 ms。 | 本仓报告 |
 | 210、211、212、213 | [CHNHCM-210 I2 薪酬计划与组成实施验证](../../verification/210-compensation-i2.md) | 2026-11-27 定稿 | 三份计划在 4521 录入，实库和浏览器验证共享标准、计划内津贴、目标比例和原采用。容量与八组联合场景见 I3。 [后续记录](../../verification/210-compensation-i3.md) | 本仓报告 |
 | 210、211、212、213 | [CHNHCM-210 I1 职级薪酬标准实施验证](../../verification/210-compensation-i1.md) | 2026-11-27 定稿 | 定额、连续薪带、按日调整和原件现权读取经实库与浏览器验证，4521 可查 P5 月标和年标；跨计划引用留到 I2。 [后续记录](../../verification/210-compensation-i2.md) | 本仓报告 |
 | 027、028、137 | [CHNHCM-027 公共 00057 升至逐份授予 00058](../../verification/027-public-00058-grant-upgrade.md) | 2026-11-26 定稿 | 00057 升至 00058 的 273 份授权逐值相符。录用提交前到期修复后返回 403，25 个实库根和 7 个浏览器专项通过，远程未跑。 | 本仓报告 |
