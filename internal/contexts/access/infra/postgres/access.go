@@ -98,12 +98,10 @@ func validateSession(session generated.ReadSessionRow, c access.Credentials, now
 	return csrf, nil
 }
 func (s *Store) Guard(ctx context.Context, tx pgx.Tx, c access.Credentials) (access.Guard, error) {
-	return s.sessionGuard(ctx, tx, c, true)
+	return s.authenticatedGuard(ctx, tx, c, true)
 }
 
-// Management uses the same session and subject locks. Its authority comes
-// from management mandates, so it needs no business-grant projection.
-func (s *Store) sessionGuard(ctx context.Context, tx pgx.Tx, c access.Credentials, loadBusinessGrants bool) (access.Guard, error) {
+func (s *Store) authenticatedGuard(ctx context.Context, tx pgx.Tx, c access.Credentials, objectGrants bool) (access.Guard, error) {
 	q := generated.New(tx)
 	if c.Token == "" {
 		return nil, denied()
@@ -123,7 +121,7 @@ func (s *Store) sessionGuard(ctx context.Context, tx pgx.Tx, c access.Credential
 		return nil, err
 	}
 	var rows []generated.ReadGrantsRow
-	if loadBusinessGrants {
+	if objectGrants {
 		rows, err = q.ReadGrants(ctx, generated.ReadGrantsParams{InstanceID: s.Instance, PrincipalID: id})
 		if err != nil {
 			return nil, err
@@ -687,6 +685,20 @@ func InitializePrincipal(ctx context.Context, tx pgx.Tx, instance, enterprise, i
 		queueDevelopmentGrant(&batch, instance, id, "enterprise", enterprise, a, fields, write)
 	}
 	initializeDepartmentGrants(&batch, instance, enterprise, id, readOnly)
+	// Predecessor fixtures may already have versioned grants but still use
+	// the pre-salary action allowlist. Only seed the installed declarations.
+	var gradeRates, compensationPlans bool
+	if err := tx.QueryRow(ctx, `SELECT
+		to_regprocedure('access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[])') IS NOT NULL,
+		to_regprocedure('access.valid_pre_plan_permission(uuid,text,uuid,text,text[],text[])') IS NOT NULL`).Scan(&gradeRates, &compensationPlans); err != nil {
+		return "", err
+	}
+	if gradeRates {
+		initializeGradeRateGrants(&batch, instance, enterprise, id, readOnly)
+	}
+	if compensationPlans {
+		initializeCompensationPlanGrants(&batch, instance, enterprise, id, readOnly)
+	}
 	if err := tx.SendBatch(ctx, &batch).Close(); err != nil {
 		return "", err
 	}

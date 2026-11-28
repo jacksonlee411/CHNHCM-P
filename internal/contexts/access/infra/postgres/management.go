@@ -103,7 +103,7 @@ func (s *Store) manager(ctx context.Context, tx pgx.Tx, c access.Credentials, cm
 			return nil, nil, e
 		}
 	}
-	g, e := s.sessionGuard(ctx, tx, c, false)
+	g, e := s.authenticatedGuard(ctx, tx, c, false)
 	if e != nil {
 		return nil, nil, e
 	}

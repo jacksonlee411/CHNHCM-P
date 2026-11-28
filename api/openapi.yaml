@@ -11512,6 +11512,107 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/StaffingSelectionInput'
+  /api/v1/person-address-types:
+    get:
+      operationId: listPersonAddressTypes
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeList'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+    post:
+      operationId: savePersonAddressType
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressType'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PersonAddressTypeCommand'}
+  /api/v1/person-address-types/{typeId}:
+    get:
+      operationId: getPersonAddressType
+      parameters:
+      - {in: path, name: typeId, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: 获权的目录项、当日状态与可核实的业务日期
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeDetail'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+  /api/v1/person-address-types/{typeId}/revisions/{revision}:
+    get:
+      operationId: getPersonAddressTypeRevision
+      parameters:
+      - {in: path, name: typeId, required: true, schema: {type: string, format: uuid}}
+      - {in: path, name: revision, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: 指定地址类型的确切修订
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeSource'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+  /api/v1/person-address-types/submissions/{submission}/resolve:
+    post:
+      operationId: getPersonAddressTypeReceipt
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeReceipt'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: path, name: submission, required: true, schema: {type: string, format: uuid}}
+  /api/v1/persons/{id}/address-type-candidates:
+    get:
+      operationId: getPersonAddressTypeCandidates
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {type: object, required: [items], properties: {items: {type: array, items: {$ref: '#/components/schemas/PersonAddressTypeOption'}}}}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: itemId, schema: {type: string, format: uuid}}
   /api/v1/persons/context:
     get:
       operationId: personEntry
@@ -13371,6 +13472,657 @@ paths:
         default:
           description: Unavailable
           content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  /api/v1/compensation/access:
+    get:
+      operationId: compensationMenu
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationMenu'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/grade-rates:
+    get:
+      operationId: listCompensationRates
+      security:
+      - session: []
+      parameters:
+      - in: query
+        name: gradeId
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: q
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: currency
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: frequency
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: form
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      - in: query
+        name: pageSize
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationRateList'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: createCompensationRate
+      security:
+      - session: []
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompensationRateInput'
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/grade-rates/create-context:
+    get:
+      operationId: createCompensationRateContext
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationRateContext'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/grade-rates/{id}:
+    get:
+      operationId: readCompensationRate
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: recordId
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: businessAt
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationRateDetail'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: amendCompensationRate
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompensationRateInput'
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/grade-rates/{id}/history:
+    get:
+      operationId: compensationRateHistory
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: sourceVersion
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationRateChanges'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/grade-rate-receipts/{submissionId}:
+    get:
+      operationId: compensationRateReceipt
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/grade-rate-receipts/{submissionId}/resolve:
+    post:
+      operationId: resolveCompensationRateReceipt
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plans:
+    get:
+      operationId: listCompensationPlans
+      security:
+      - session: []
+      parameters:
+      - in: query
+        name: q
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      - in: query
+        name: pageSize
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationPlanList'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: createCompensationPlan
+      security:
+      - session: []
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompensationPlanInput'
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plans/create-context:
+    get:
+      operationId: getCompensationPlanContext
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationPlanContext'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plans/{id}:
+    get:
+      operationId: getCompensationPlan
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: recordId
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: businessAt
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationPlanDetail'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: maintainCompensationPlan
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompensationPlanInput'
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plans/{id}/history:
+    get:
+      operationId: getCompensationPlanHistory
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: sourceVersion
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationPlanChanges'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plan-receipts/{submissionId}:
+    get:
+      operationId: getCompensationPlanReceipt
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plan-receipts/{submissionId}/resolve:
+    post:
+      operationId: resolveCompensationPlanReceipt
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plans/rate-candidates:
+    get:
+      operationId: compensationPlanRateCandidates
+      security:
+      - session: []
+      parameters:
+      - in: query
+        name: businessAt
+        required: true
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: q
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: currency
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: frequency
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompensationRateCandidates'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/plans/{id}/applicability:
+    get:
+      operationId: compensationPlanApplicability
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: businessAt
+        required: true
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: legalEntityId
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: jobFamilyId
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: gradeId
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized compensation result
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  applicable:
+                    type: boolean
+                required:
+                - applicable
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     session:
@@ -13378,6 +14130,894 @@ components:
       in: cookie
       name: chnhcm_session
   schemas:
+    CompensationScopeChoice:
+      type: object
+      additionalProperties: false
+      properties:
+        dimension:
+          type: string
+          enum:
+          - legalEntity
+          - jobFamily
+          - grade
+        id:
+          type: string
+          format: uuid
+        exclude:
+          type: boolean
+      required:
+      - dimension
+      - id
+    CompensationScopeInput:
+      type: object
+      additionalProperties: false
+      properties:
+        mode:
+          type: string
+          enum:
+          - ENTERPRISE
+          - SELECTED
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationScopeChoice'
+      required:
+      - mode
+    CompensationScopeMember:
+      type: object
+      additionalProperties: false
+      properties:
+        dimension:
+          type: string
+          enum:
+          - legalEntity
+          - jobFamily
+          - grade
+        id:
+          type: string
+          format: uuid
+        exclude:
+          type: boolean
+        code:
+          type: string
+        name:
+          type: string
+        recordId:
+          type: string
+          format: uuid
+        revision:
+          type: string
+          format: uuid
+        sourceVersion:
+          type: string
+          format: uuid
+      required:
+      - dimension
+      - id
+    CompensationPlanScope:
+      type: object
+      additionalProperties: false
+      properties:
+        mode:
+          type: string
+          enum:
+          - ENTERPRISE
+          - SELECTED
+        version:
+          type: string
+          format: uuid
+        restricted:
+          type: boolean
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationScopeMember'
+      required:
+      - mode
+      - version
+    CompensationPlanRateInput:
+      type: object
+      additionalProperties: false
+      properties:
+        gradeId:
+          type: string
+          format: uuid
+        rateId:
+          type: string
+          format: uuid
+      required:
+      - gradeId
+      - rateId
+    CompensationPlanRate:
+      type: object
+      additionalProperties: false
+      properties:
+        gradeId:
+          type: string
+          format: uuid
+        rateId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+        businessAt:
+          type: string
+          format: date
+        record:
+          $ref: '#/components/schemas/CompensationRateRecord'
+        adopted:
+          $ref: '#/components/schemas/CompensationReference'
+        adoptedHead:
+          type: string
+          format: uuid
+        open:
+          type: boolean
+      required:
+      - gradeId
+      - rateId
+    CompensationPlanTarget:
+      type: object
+      additionalProperties: false
+      properties:
+        gradeId:
+          type: string
+          format: uuid
+        amount:
+          type: string
+      required:
+      - amount
+    CompensationPlanComponent:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        nature:
+          type: string
+        currency:
+          type: string
+        frequency:
+          type: string
+        unit:
+          type: string
+        precision:
+          type: integer
+        method:
+          type: string
+          enum:
+          - FIXED
+          - GRADE_RATE
+          - PERCENT
+        amount:
+          type: string
+        baseId:
+          type: string
+        percent:
+          type: string
+        rounding:
+          type: string
+        rates:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationPlanRate'
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationPlanTarget'
+      required:
+      - id
+      - code
+      - name
+      - nature
+      - currency
+      - frequency
+      - unit
+      - precision
+      - method
+    CompensationPlanComponentInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        nature:
+          type: string
+        currency:
+          type: string
+        frequency:
+          type: string
+        unit:
+          type: string
+        precision:
+          type: integer
+        method:
+          type: string
+          enum:
+          - FIXED
+          - GRADE_RATE
+          - PERCENT
+        amount:
+          type:
+          - string
+          - 'null'
+        baseId:
+          type:
+          - string
+          - 'null'
+        percent:
+          type:
+          - string
+          - 'null'
+        rounding:
+          type:
+          - string
+          - 'null'
+        rates:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationPlanRateInput'
+    CompensationPlanInput:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - CREATE
+          - ADD
+          - CORRECT
+          - DEACTIVATE
+          - REACTIVATE
+          - DELETE
+        code:
+          type: string
+        effectiveDate:
+          type: string
+          format: date
+        reason:
+          type: string
+        recordId:
+          type: string
+          format: uuid
+        expectedVersion:
+          type: string
+          format: uuid
+        expectedRevision:
+          type: string
+          format: uuid
+        changes:
+          type: object
+          additionalProperties: false
+          properties:
+            name:
+              type:
+              - string
+              - 'null'
+            description:
+              type:
+              - string
+              - 'null'
+            scope:
+              $ref: '#/components/schemas/CompensationScopeInput'
+            components:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompensationPlanComponentInput'
+      required:
+      - action
+    CompensationPlanRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        recordId:
+          type: string
+          format: uuid
+        revision:
+          type: string
+          format: uuid
+        effectiveDate:
+          type: string
+          format: date
+        endExclusive:
+          type: string
+          format: date
+        status:
+          type: string
+        operation:
+          type: string
+        reason:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        scope:
+          $ref: '#/components/schemas/CompensationPlanScope'
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationPlanComponent'
+      required:
+      - recordId
+      - revision
+    CompensationPlan:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        sourceVersion:
+          type: string
+          format: uuid
+        code:
+          type: string
+        record:
+          $ref: '#/components/schemas/CompensationPlanRecord'
+      required:
+      - id
+      - sourceVersion
+      - record
+    CompensationPlanContext:
+      type: object
+      additionalProperties: false
+      required: [scopeDimensions, units, defaultEffectiveDate, writable, reasons]
+      properties:
+        scopeDimensions:
+          type: array
+          items:
+            type: string
+            enum: [legalEntity, jobFamily, grade]
+        units:
+          type: object
+          additionalProperties:
+            type: string
+        defaultEffectiveDate:
+          type: string
+          format: date
+        writable:
+          type: array
+          items: {type: string}
+        reasons:
+          type: array
+          items: {type: string}
+    CompensationPlanDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        scopeDimensions:
+          type: array
+          items:
+            type: string
+            enum: [legalEntity, jobFamily, grade]
+        units:
+          type: object
+          additionalProperties:
+            type: string
+        id:
+          type: string
+          format: uuid
+        sourceVersion:
+          type: string
+          format: uuid
+        code:
+          type: string
+        record:
+          $ref: '#/components/schemas/CompensationPlanRecord'
+        today:
+          type: string
+          format: date
+        dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationDate'
+        history:
+          type: boolean
+        actions:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        reasons:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        windows:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              minimum:
+                type: string
+                format: date
+              maximum:
+                type: string
+                format: date
+              default:
+                type: string
+                format: date
+              available:
+                type: boolean
+            required:
+            - minimum
+            - available
+        businessAt:
+          type: string
+          format: date
+        readable:
+          type: array
+          items:
+            type: string
+      required:
+      - id
+      - sourceVersion
+      - record
+      - today
+      - dates
+      - history
+      - actions
+      - reasons
+      - windows
+      - businessAt
+      - readable
+      - scopeDimensions
+      - units
+    CompensationPlanList:
+      type: object
+      additionalProperties: false
+      properties:
+        readable:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationPlan'
+        total:
+          type: integer
+        today:
+          type: string
+          format: date
+        create:
+          type: boolean
+      required:
+      - readable
+      - items
+      - total
+      - today
+      - create
+    CompensationPlanChange:
+      type: object
+      additionalProperties: false
+      properties:
+        code: {type: string}
+        sourceVersion:
+          type: string
+          format: uuid
+        action:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+        operator:
+          type: string
+        before:
+          $ref: '#/components/schemas/CompensationPlanRecord'
+        after:
+          $ref: '#/components/schemas/CompensationPlanRecord'
+      required:
+      - sourceVersion
+      - action
+      - recordedAt
+    CompensationPlanChanges:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationPlanChange'
+      required:
+      - items
+    CompensationRateCandidate:
+      type: object
+      additionalProperties: false
+      properties:
+        effectiveDate:
+          type: string
+          format: date
+        endExclusive:
+          type: string
+          format: date
+        gradeId:
+          type: string
+          format: uuid
+        rateId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+        currency:
+          type: string
+        frequency:
+          type: string
+        unit:
+          type: string
+        precision:
+          type: integer
+      required:
+      - gradeId
+      - rateId
+      - name
+      - currency
+      - frequency
+      - unit
+      - precision
+    CompensationRateCandidates:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationRateCandidate'
+      required:
+      - items
+    CompensationMenu:
+      type: object
+      additionalProperties: false
+      properties:
+        gradeRates:
+          type: boolean
+        plans:
+          type: boolean
+      required:
+      - gradeRates
+      - plans
+    CompensationReference:
+      type: object
+      additionalProperties: false
+      properties:
+        open: {type: boolean}
+        businessAt:
+          type: string
+          format: date
+        sourceVersion:
+          type: string
+          format: uuid
+        recordId:
+          type: string
+          format: uuid
+        revision:
+          type: string
+          format: uuid
+      required:
+      - businessAt
+      - sourceVersion
+      - recordId
+      - revision
+    CompensationGrade:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+      required:
+      - id
+      - name
+    CompensationRateRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        recordId:
+          type: string
+          format: uuid
+        revision:
+          type: string
+          format: uuid
+        effectiveDate:
+          type: string
+          format: date
+        endExclusive:
+          type: string
+          format: date
+        status:
+          type: string
+        operation:
+          type: string
+        reason:
+          type: string
+        form:
+          type: string
+        amount:
+          type: string
+        minimum:
+          type: string
+        guidance:
+          type: string
+        maximum:
+          type: string
+        grade:
+          $ref: '#/components/schemas/CompensationGrade'
+        adopted:
+          $ref: '#/components/schemas/CompensationReference'
+      required:
+      - recordId
+      - revision
+    CompensationRate:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        sourceVersion:
+          type: string
+          format: uuid
+        currency:
+          type: string
+        frequency:
+          type: string
+        unit:
+          type: string
+        precision:
+          type: integer
+        record:
+          $ref: '#/components/schemas/CompensationRateRecord'
+      required:
+      - id
+      - sourceVersion
+      - record
+    CompensationDate:
+      type: object
+      additionalProperties: false
+      properties:
+        recordId:
+          type: string
+          format: uuid
+        effectiveDate:
+          type: string
+          format: date
+        active:
+          type: boolean
+      required:
+      - recordId
+      - effectiveDate
+    CompensationRateDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        sourceVersion:
+          type: string
+          format: uuid
+        currency:
+          type: string
+        frequency:
+          type: string
+        unit:
+          type: string
+        precision:
+          type: integer
+        record:
+          $ref: '#/components/schemas/CompensationRateRecord'
+        today:
+          type: string
+          format: date
+        dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationDate'
+        reasons:
+          type: object
+          additionalProperties:
+            type: array
+            items: {type: string}
+        windows:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              minimum: {type: string, format: date}
+              maximum: {type: string, format: date}
+              default: {type: string, format: date}
+              available: {type: boolean}
+            required: [minimum, available]
+        history:
+          type: boolean
+        actions:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+      - id
+      - sourceVersion
+      - record
+      - today
+      - dates
+      - history
+      - actions
+      - windows
+      - reasons
+    CompensationRateList:
+      type: object
+      additionalProperties: false
+      properties:
+        readable:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationRate'
+        total:
+          type: integer
+        today:
+          type: string
+          format: date
+        create:
+          type: boolean
+      required:
+      - readable
+      - items
+      - total
+      - today
+      - create
+    CompensationRateContext:
+      type: object
+      additionalProperties: false
+      properties:
+        reasons:
+          type: array
+          items: {type: string}
+        units:
+          type: object
+          additionalProperties: {type: string}
+        defaultEffectiveDate:
+          type: string
+          format: date
+        writable:
+          type: array
+          items:
+            type: string
+      required:
+      - defaultEffectiveDate
+      - reasons
+      - units
+      - writable
+    CompensationRateInput:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - CREATE
+          - ADD
+          - CORRECT
+          - DEACTIVATE
+          - REACTIVATE
+          - DELETE
+        effectiveDate:
+          type: string
+          format: date
+        reason:
+          type: string
+        gradeId:
+          type: string
+          format: uuid
+        currency:
+          type: string
+        frequency:
+          type: string
+        unit:
+          type: string
+        precision:
+          type: integer
+        recordId:
+          type: string
+          format: uuid
+        expectedVersion:
+          type: string
+          format: uuid
+        expectedRevision:
+          type: string
+          format: uuid
+        changes:
+          type: object
+          additionalProperties:
+            type:
+            - string
+            - 'null'
+      required:
+      - action
+    CompensationReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        submissionId: {type: string, format: uuid}
+        message: {type: string}
+        outcome: {type: string, enum: [accepted, rejected, no_change, not_applied]}
+        objectId:
+          type: string
+          format: uuid
+        sourceVersion:
+          type: string
+          format: uuid
+        recordId:
+          type: string
+          format: uuid
+        revision:
+          type: string
+          format: uuid
+      required:
+      - submissionId
+      - outcome
+    CompensationRateChange:
+      type: object
+      additionalProperties: false
+      properties:
+        previousSourceVersion: {type: string, format: uuid}
+        currency: {type: string}
+        frequency: {type: string}
+        unit: {type: string}
+        precision: {type: integer}
+        sourceVersion:
+          type: string
+          format: uuid
+        action:
+          type: string
+        recordedAt:
+          type: string
+          format: date-time
+        operator:
+          type: string
+        before:
+          $ref: '#/components/schemas/CompensationRateRecord'
+        after:
+          $ref: '#/components/schemas/CompensationRateRecord'
+      required:
+      - sourceVersion
+      - action
+      - recordedAt
+    CompensationRateChanges:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompensationRateChange'
+      required:
+      - items
     OfferTerms:
       type: object
       required: [number, person, employer, arrival, reserveFrom]
@@ -14114,6 +15754,15 @@ components:
       properties:
         anchor: {type: string, format: uuid}
         department: {type: string, format: uuid}
+        directOnly: {type: boolean}
+        selection:
+          type: object
+          additionalProperties: false
+          required: [all, ids]
+          properties:
+            all: {type: boolean}
+            ids: {type: array, uniqueItems: true, items: {type: string, format: uuid}}
+            version: {type: string}
         primary: {type: string, enum: [primary, secondary]}
         ref: {type: string, format: uuid}
         page: {type: integer, minimum: 1}
@@ -14138,8 +15787,16 @@ components:
         future: {type: boolean}
     PersonnelDirectory:
       type: object
-      required: [rows, departments, people, total, assignments, keyword]
+      required: [rows, departments, people, total, assignments, keyword, canListAssignments]
       properties:
+        canListAssignments: {type: boolean}
+        selection:
+          type: object
+          required: [version, count, changed]
+          properties:
+            version: {type: string}
+            count: {type: integer}
+            changed: {type: boolean}
         navigation:
           type: object
           required: [position]
@@ -14845,6 +16502,130 @@ components:
         fields: {$ref: '#/components/schemas/ProfileFields'}
         longTerm: {type: boolean}
         primary: {type: boolean}
+    PersonAddressTypeSource:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name, sortOrder, firstDay, selectable, recordedAt, dated]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
+        stopDay: {type: string, format: date}
+        confirmedFrom: {type: string, format: date}
+        undatedStop: {type: boolean}
+        dated: {type: boolean}
+        previousRevision: {type: string, format: uuid}
+        actorId: {type: string, format: uuid}
+        recordedAt: {type: string, format: date-time}
+    PersonAddressTypeReceipt:
+      type: object
+      required: [outcome]
+      properties:
+        outcome: {type: string, enum: [accepted, not_applied]}
+        item: {$ref: '#/components/schemas/PersonAddressType'}
+    PersonAddressTypeChoice:
+      type: object
+      additionalProperties: false
+      required: [id, revision]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+    PersonAddressTypeAdoption:
+      type: object
+      additionalProperties: false
+      required: [id, revision, date]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        date: {type: string, format: date}
+    PersonAddressTypeOption:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+    PersonAddressType:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name, sortOrder, firstDay, selectable]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
+        stopDay: {type: string, format: date}
+        confirmedFrom: {type: string, format: date}
+        undatedStop: {type: boolean}
+    PersonAddressTypeView:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name, sortOrder, firstDay, selectable, state]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
+        stopDay: {type: string, format: date}
+        confirmedFrom: {type: string, format: date}
+        undatedStop: {type: boolean}
+        state: {$ref: '#/components/schemas/PersonAddressTypeState'}
+    PersonAddressTypeState:
+      type: string
+      enum: [not_effective, active, inactive, unknown]
+    PersonAddressTypeDetail:
+      type: object
+      required: [item, businessDay, defaultStopDay, canMaintain, timeline, selectedDay]
+      properties:
+        item: {$ref: '#/components/schemas/PersonAddressTypeView'}
+        defaultStopDay: {type: string, format: date}
+        businessDay: {type: string, format: date}
+        canMaintain: {type: boolean}
+        selectedDay: {type: string, format: date}
+        timeline:
+          type: array
+          items:
+            type: object
+            required: [day, state]
+            properties:
+              day: {type: string, format: date}
+              state: {$ref: '#/components/schemas/PersonAddressTypeState'}
+    PersonAddressTypeList:
+      type: object
+      additionalProperties: false
+      required: [items, canMaintain, defaultFirstDay]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/PersonAddressTypeView'}}
+        canMaintain: {type: boolean}
+        defaultFirstDay: {type: string, format: date}
+    PersonAddressTypeCommand:
+      type: object
+      additionalProperties: false
+      required: [submissionId, name, sortOrder]
+      properties:
+        submissionId: {type: string, format: uuid}
+        id: {type: string, format: uuid}
+        expectedRevision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
+        stopDay:
+          type: string
+          description: 停用生效日。空串明确撤销误停，编辑时省略沿用现有安排。与旧 selectable 参数互斥。
     PersonPlaceChoice:
       type: object
       additionalProperties: false
@@ -14863,6 +16644,7 @@ components:
         credentials 使用 credentialKind、credentialName、credentialLevel、specialty、certificateNumber、
         awardingBody、issuedOn、validFrom、validUntil、indefinite。各标记使用 yes 或空串。未传字段沿用原值。目录字段可在 fields 中填写原文，或在 choices
         中选用目录版本。省州及地址地区的 ancestors 按国家到直接上级的顺序传递候选路径及版本。
+        地址类型新选用 addressTypeChoice，既有四项原文仅在预置项未换版时兼容。
         更新和移除已有行须带 itemId 与 expectedRevision。remove 为 true 时只传原行定位。
       type: object
       additionalProperties: false
@@ -14871,6 +16653,7 @@ components:
         expectedRevision: {type: string, format: uuid}
         remove: {type: boolean}
         fields: {$ref: '#/components/schemas/ProfileFields'}
+        addressTypeChoice: {$ref: '#/components/schemas/PersonAddressTypeChoice'}
         choices: {type: object, additionalProperties: {$ref: '#/components/schemas/PersonPlaceChoice'}}
     PersonProfileItem:
       type: object
@@ -14880,6 +16663,7 @@ components:
         itemId: {type: string, format: uuid}
         revision: {type: string, format: uuid}
         fields: {$ref: '#/components/schemas/ProfileFields'}
+        addressTypeAdoption: {$ref: '#/components/schemas/PersonAddressTypeAdoption'}
         adoptions: {type: object, additionalProperties: {$ref: '#/components/schemas/PersonCountryAdoption'}}
         locked: {type: array, items: {type: string}}
         hidden: {type: array, items: {type: string}}
@@ -14999,6 +16783,7 @@ components:
       type: object
       additionalProperties: false
       properties:
+        canReadAddressTypes: {type: boolean}
         canRead:
           type: boolean
         canRegister:
@@ -20856,6 +22641,7 @@ components:
         currentChanged:
           type: boolean
         effectiveDate:
+          description: 单条删除成功时指被删记录的原生效日，按当前字段权限返回。
           anyOf:
           - type: string
           - type: 'null'
@@ -20882,6 +22668,7 @@ components:
         replayed:
           type: boolean
         selectedRecordId:
+          description: 单条删除成功后，在本次新来源中接管被删记录原生效日的记录。
           anyOf:
           - type: string
           - type: 'null'
@@ -20892,10 +22679,12 @@ components:
         submissionId:
           type: string
         targetRecordId:
+          description: 单条删除成功时指被删记录。
           anyOf:
           - type: string
           - type: 'null'
         targetRevision:
+          description: 单条删除成功时指被删记录的删除前修订。
           anyOf:
           - type: string
           - type: 'null'
@@ -22367,6 +24156,7 @@ components:
         currentChanged:
           type: boolean
         effectiveDate:
+          description: 单条删除成功时指被删记录的原生效日，按当前字段权限返回。
           anyOf:
           - type: string
           - type: 'null'
@@ -22393,6 +24183,7 @@ components:
         replayed:
           type: boolean
         selectedRecordId:
+          description: 单条删除成功后，在本次新来源中接管被删记录原生效日的记录。
           anyOf:
           - type: string
           - type: 'null'
@@ -22403,10 +24194,12 @@ components:
         submissionId:
           type: string
         targetRecordId:
+          description: 单条删除成功时指被删记录。
           anyOf:
           - type: string
           - type: 'null'
         targetRevision:
+          description: 单条删除成功时指被删记录的删除前修订。
           anyOf:
           - type: string
           - type: 'null'

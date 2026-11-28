@@ -164,7 +164,7 @@ Job写入取得原／新全时间线涉及的Family及Grade共享守卫，Ladder
 
 | 页面／流程 | 标准与参考流程 | 公共实现及本对象接线 | 差异／验收 |
 | --- | --- | --- | --- |
-| U01 主题、顶栏、正文滚动 | 012外框；职务系列列表／详情，BU交叉对照 | [AppShell](../../../packages/ui/src/AppShell.tsx)、[layout.css](../../../packages/ui/src/layout.css)；Staffing Detail沿standard-page／page-scroll，桌面居中、窄短屏退让 | D01；[AC042](#m03-ac-042)／[AC046](#m03-ac-046) |
+| U01 主题、顶栏、正文滚动 | 012外框；职务系列列表／详情，BU交叉对照 | [AppShell](../../../packages/ui/src/AppShell.tsx)、[layout.css](../../../packages/ui/src/layout.css)；Staffing Detail沿standard-page／page-scroll，桌面居中、宽度不足时重排 | D01；[AC042](#m03-ac-042)／[AC046](#m03-ac-046) |
 | U02 控制区、查询和筛选 | 012查询草稿／已应用条件；职务列表 | [Lists](../../../packages/ui/src/components/Lists.tsx)、[ColumnFilter](../../../apps/web/src/shared/dated/ColumnFilter.tsx)、Staffing [List](../../../apps/web/src/features/staffing/List.tsx)；按新类型列能力接线 | D02；[AC043](#m03-ac-043)／[AC045](#m03-ac-045) |
 | U03 网格、摘要与选择 | 012 Community及窄屏摘要；职务系列 | 同一DataGridPage／ListPager／StatusChip、真实名称链接，不另造手机列表 | D02；[AC043](#m03-ac-043)／[AC046](#m03-ac-046) |
 | U04 详情、身份及分区 | 012详情；职务／BU详情 | [ObjectDetail](../../../packages/ui/src/components/ObjectDetail.tsx)、ObjectTabPanel，Staffing [Detail](../../../apps/web/src/features/staffing/Detail.tsx)；成员区在基本资料内 | D02／D03；[AC042](#m03-ac-042)／[AC046](#m03-ac-046) |
@@ -252,7 +252,7 @@ Job现有列表及八列CSV保持308，不在普通列表铺开多值集合；�
 
 ### 10.2 视口、原生缩放与权限专项
 
-职级、职级阶梯及职务可用职级按共享桌面视口核对相应布局。后续变更在原生 200% 下验证受影响的关键流程，例如维护长成员集合并保存或取消、从日志查看原采用并返回。按实际路径选择代表对象和角色。原生 400% 按触发条件专项验证。[012 视口与缩放](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
+职级、职级阶梯及职务可用职级按共享桌面视口核对相应布局。后续变更在原生 200% 下验证受影响的关键流程，例如维护长成员集合并保存或取消、从日志查看原采用并返回。按实际路径选择代表对象和角色。[012 视口与缩放](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
 
 原 G1 批次的 Grade 为 2 角色 × 7 条件，共 14 单元。原 G2 批次的 Ladder／Job 为 2 对象 × 2 角色 × 7 条件，共 28 单元，另重验受影响的 Grade 14 单元。上述 56 个单元分别归属原执行批次。原批次每单元均经正常菜单到列表、筛选、详情、日志／历史；admin另走新建／更正、启停或固定期间、全部字段／错误／保存取消／离开弹窗，reader检查无写入口。Ladder／Job用长名称及至少20成员核最后一行可达；Grade无成员不伪造此输入。
 

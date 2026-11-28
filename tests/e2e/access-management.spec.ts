@@ -303,7 +303,6 @@ async function journey(p: Page, adopt = false) {
 test('028 内置 admin 查看长期管理职责并从页面办理授权', async ({ page }) => {
   test.setTimeout(120000);
   requireTemporaryProfile();
-  await page.setViewportSize({ width: 1440, height: 540 });
   await login(page, 'admin');
   await menu(page, '授权', 'grants');
   await page.getByLabel('搜索登录名或显示名').fill('admin');
@@ -316,17 +315,12 @@ test('028 内置 admin 查看长期管理职责并从页面办理授权', async 
   await journey(page, true);
 });
 
-for (const height of [900, 540])
-  test(
-    '027 T04 管理员开户、发布和逐份撤销 · 1440×' + height,
-    async ({ page }) => {
-      test.setTimeout(120000);
-      bootstrap();
-      await page.setViewportSize({ width: 1440, height });
-      await login(page, loginName);
-      await journey(page, height === 900);
-    },
-  );
+test('027 T04 管理员开户、发布和逐份撤销', async ({ page }) => {
+  test.setTimeout(120000);
+  bootstrap();
+  await login(page, loginName);
+  await journey(page, true);
+});
 test('027 T04 管理员关键流程原生 200%', async () => {
   test.setTimeout(150000);
   bootstrap();
@@ -411,18 +405,15 @@ test('027 T04 委派管理员仅见获管归属，撤去职责后旧表单和直
   await openBU(page);
   const a = await apiBU(page, '管理甲' + tag);
   const b = await apiBU(page, '管理乙' + tag);
-  const referenceTop = new Map<number, number>();
-  for (const h of [900, 540]) {
-    await page.setViewportSize({ width: 1440, height: h });
-    const bar = page.locator('.list-control-main');
-    await expect(bar).toBeInViewport();
-    referenceTop.set(h, (await bar.boundingBox())!.y);
-  }
+  const referenceBar = page.locator('.list-control-main');
+  await expect(referenceBar).toBeInViewport();
+  const referenceTop = (await referenceBar.boundingBox())!.y;
   const rootContext = await browser.newContext({
     baseURL: localConnection().webOrigin,
   });
   const limitedContext = await browser.newContext({
     baseURL: localConnection().webOrigin,
+    viewport: page.viewportSize(),
   });
   try {
     const root = await rootContext.newPage();
@@ -480,14 +471,9 @@ test('027 T04 委派管理员仅见获管归属，撤去职责后旧表单和直
     const limited = await limitedContext.newPage();
     await login(limited, loginId);
     await menu(limited, '账号', 'accounts');
-    for (const h of [900, 540]) {
-      await limited.setViewportSize({ width: 1440, height: h });
-      const bar = limited.locator('.list-control-main');
-      await expect(bar).toBeInViewport();
-      expect(
-        Math.abs((await bar.boundingBox())!.y - referenceTop.get(h)!),
-      ).toBeLessThanOrEqual(2);
-    }
+    const bar = limited.locator('.list-control-main');
+    await expect(bar).toBeInViewport();
+    expect(Math.abs((await bar.boundingBox())!.y - referenceTop)).toBeLessThanOrEqual(2);
     expect((await request(limited, 'GET', '/api/v1/departments')).status).toBe(
       403,
     );
@@ -690,7 +676,6 @@ test('029 从账号资料检索存量授予并恢复返回位置', async ({ page
   test.setTimeout(100000);
   bootstrap();
   await login(page, loginName);
-  await page.setViewportSize({ width: 1440, height: 540 });
   await menu(page, '账号', 'accounts');
   await page.getByLabel('搜索登录名或显示名').fill('admin');
   await click(page, '查询');

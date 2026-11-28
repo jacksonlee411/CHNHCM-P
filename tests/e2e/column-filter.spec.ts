@@ -134,7 +134,7 @@ test('TL341 当前失败重试及迟到真实响应不盖新条件', async ({ pa
     release(); await page.unrouteAll({ behavior: 'wait' }); await expect(page.getByRole('link', { name: fixture.items[1].name, exact: true })).toBeVisible(); await expect(page.getByRole('link', { name: fixture.items[0].name, exact: true })).toHaveCount(0);
   } finally { release(); }
 });
-test('TL342 短屏布局、键盘、焦点及断点关闭', async ({ page }) => {
+test('TL342 桌面布局、焦点及断点关闭', async ({ page }) => {
   for (const [width, height] of desktopViewports) {
     await page.setViewportSize({ width, height }); await panel(page, '列筛选…'); const dialog = page.getByRole('dialog'); await dialog.getByLabel('值', { exact: true }).fill(fixture.items[0].code);
     expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

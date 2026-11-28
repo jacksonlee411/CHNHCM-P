@@ -20,7 +20,6 @@ import (
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"io"
-	"io/fs"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
@@ -28,7 +27,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"testing/fstest"
 	"time"
 )
 
@@ -96,16 +94,7 @@ func freshWithSchema(t *testing.T, start string, capturePredecessor bool) *fixtu
 	must(t, e)
 	t.Cleanup(admin.Close)
 	if capturePredecessor {
-		prefix := fstest.MapFS{}
-		must(t, fs.WalkDir(migrations.Files, ".", func(path string, entry fs.DirEntry, err error) error {
-			// Capture the original 57 ledger even after new migrations are added.
-			if err != nil || entry.IsDir() || (len(path) > 5 && path[5] == '_' && path[:5] > "00057") {
-				return err
-			}
-			b, err := migrations.Files.ReadFile(path)
-			prefix[path] = &fstest.MapFile{Data: b}
-			return err
-		}))
+		prefix := hireMigrationSet(t, func(version string) bool { return version <= "00057" })
 		must(t, bootstrap.Migrate(ctx, admin, prefix))
 		_, e = admin.Exec(ctx, "CREATE SCHEMA fixture; CREATE TABLE fixture.prefix_grant (LIKE access.subject_grant INCLUDING ALL)")
 		must(t, e)

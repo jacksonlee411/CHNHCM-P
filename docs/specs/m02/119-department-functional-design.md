@@ -4,11 +4,11 @@
 
 2026-11-13首次新建默认日期按用户确定的[202项目规则](../../adr/202-master-data-default-effective-date.md)统一为1900-01-01，由Go创建上下文提供defaultEffectiveDate；currentDate仍表示今日，明确输入、原日期、后续位置/启停规则及依赖资格保持。默认非法时准确拒绝并允许用户明确改日，不静默换今天或改写父对象。本轮合同已接入现有BU/部门，产品适配及受影响分批回归见[200 G1报告](../../verification/200-g1-default-date.md)，原实施报告不改写。
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：118的部门菜单、页面、字段、路径及可靠提交交互；R0冻结合同，R5接通真实页面。上游为[117](../../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118业务](118-department-business-requirements.md)、[012共用表达](012-m02-functional-and-interaction-design.md#m02-ui-expression)与[026日期](../../adr/026-date-display-and-input-format.md)，技术及验证见[120](120-dated-maintenance-technical-contract.md)、[121](121-dated-object-admission-matrix.md)。
+本规范规定部门菜单、页面、字段、路径及可靠提交的交互。上游为[117](../../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118 业务](118-department-business-requirements.md)、[012 共用表达](012-m02-functional-and-interaction-design.md#m02-ui-expression)与[026 日期](../../adr/026-date-display-and-input-format.md)。技术合同见[120](120-dated-maintenance-technical-contract.md)，验收条件见[121](121-dated-object-admission-matrix.md)，文档元数据见[登记表](../../governance/registry.json)。
 
 当前日期/记录/路径合同按[123](../../adr/123-current-maintenance-and-dated-query-boundary.md)调整；部门及最小Hierarchy后端按R4实施，页面及正常菜单的实际限定验收见[R5报告](../../verification/116-r5-department-pages-and-acceptance.md)。
 
-2026-11-08按[128第2.6节](../../adr/128-authorization-evidence-removal.md)取消关联快捷链接及其canOpen预判，管理BU/行政上级/路径祖先仅显示获权文本。原R5链接实现记作历史，新目标尚未实施；正常菜单、列表打开本对象和准确来源定位继续保留。
+第 3、8 节按[128 替代对照](../../adr/128-authorization-evidence-removal.md#authorization-evidence-replacement)撤除关联快捷链接及 `canOpen` 预判。管理 BU、行政上级与路径祖先只显示获权文本。用户仍可从正常菜单和列表打开本对象，返回列表或日志，并定位准确的业务来源。当批验证见[2026-11-08 实施记录](../../verification/128-implementation.md)。
 
 ## 1 场景与页面映射
 
@@ -116,7 +116,7 @@ CSV固定八列与[BR033](118-department-business-requirements.md#m02-br-033)一
 
 ## 6 验收与证据边界
 
-按118的AC034—040及121分别执行两对象正常菜单、权限、返回/选择、错误、未明结果和来源路径。原 R5 已纳入新部门长路径、390／320 宽、短屏、键盘及原生 200%／400%。后续部门树回归按[012 视口与缩放](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)选择关键流程和专项条件。R0阶段只设计该范围并对状态称谓做定向BU验证；当前部门实际菜单、视口与缩放结果另见R5报告。
+按118的AC034—040及121分别执行两对象正常菜单、权限、返回/选择、错误、未明结果和来源路径。原 R5 已纳入新部门长路径、390／320 宽、短屏、键盘及原生 200%／400%。后续部门树回归按[012 视口与缩放](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)选择受影响的关键流程。R0阶段只设计该范围并对状态称谓做定向BU验证；当前部门实际菜单、视口与缩放结果另见R5报告。
 
 ## 7 待决事项
 
@@ -127,7 +127,7 @@ CSV固定八列与[BR033](118-department-business-requirements.md#m02-br-033)一
 
 管理BU列筛选复用表格原有草稿/应用/取消流程，提供当前授权下的BU引用搜索与分页；输入显示编码、名称，应用保存稳定BU ID。此查询不绑定拟维护日期或创建资格，也不要求完整BU详情权。简称默认隐藏，可由列设置加入；部门路径支持换行及窄屏卡片。维护字段保留独立候选资格，不因改BU或候选过期自动清空行政上级或改为根部门。
 
-路径分段采用Go提供的最后适用日。原R5曾按详情权生成祖先链接；该要求已由128撤除，目标为统一文本及删除跳转专属机制，代码尚待修改。基本资料的所选修订操作者摘要独立日志读权，记录切换与来源模式不改变当前授权范围。实际R5检查见[验收报告](../../verification/116-r5-department-pages-and-acceptance.md)。
+路径分段使用 Go 提供的最后适用日，祖先名称按引用读权显示为文本。基本资料中所选修订的操作者摘要独立于日志读权，切换记录和来源模式时仍按当前授权范围读取。原 R5 对祖先链接的检查见[2026-11-05 验收报告](../../verification/116-r5-department-pages-and-acceptance.md)。
 
 
 ## 9 共用原因默认与提交反馈
@@ -152,6 +152,12 @@ CSV固定八列与[BR033](118-department-business-requirements.md#m02-br-033)一
 | 深层与大字体 | 不压缩字号，不以横向溢出挤掉右侧分页；缩放后按可用宽度进入抽屉。深层树区可滚动，焦点目标始终可见 |
 
 桌面表格39px最小行高、长文本增高、列设置及手机摘要保留。28px是树节点高度，不替换表格行高。触屏和原生缩放以实际可操作性验收，必要的触控命中区域可扩大而不强行保持桌面密度。
+
+<a id="department-tree-consumers"></a>
+
+其他业务列表采用部门树时，以部门列表为同构建参照，共用本节的缩进、展开收起、可见焦点、键盘、定位和抽屉。输入定位词或展开节点只改变树的展示。选定部门、切换「含子部门」或清除范围才改变右表的部门条件，其他已应用的条件继续生效。
+
+各对象的服务端分别确定可披露的节点、上级关系、名称和可选范围。仅供说明路径的祖先按该对象的引用权限显示。部门列表查询部门本身或其子树内的部门。人员名录按可披露任期的实际所属部门查任职行。祖先没有直属任职、后代有获权任职且路径可读时，经办人仍能沿祖先定位后代。收回上级关系读权后，树和定位结果均须遵守新的可见范围。仅有人员档案读权者从人员菜单查档案，页面省去任职部门树及相应条件。[部门深层定位](#m02-scn-029) · [人员任职归属](../m04/507-job-information-tab.md#job-tab-layout)
 
 ### 10.2 正常与异常场景
 

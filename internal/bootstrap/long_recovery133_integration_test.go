@@ -68,40 +68,7 @@ func restartTimelineReceipts(t *testing.T, f *fixture, b *browser, submissions [
 	if kind == "location" {
 		locationBusiness = locationBusinessSnapshot204(t, f)
 	}
-	adminConfig, apiConfig := f.admin.Config(), f.runtime.Pool.Config()
-	f.server.Close()
-	f.runtime.Close()
-	f.admin.Close()
-	stopTimeout := 30 * time.Second
-	must(t, f.container.Stop(f.ctx, &stopTimeout))
-	must(t, f.container.Start(f.ctx))
-	port, err := f.container.MappedPort(f.ctx, "5432/tcp")
-	must(t, err)
-	n, err := strconv.ParseUint(port.Port(), 10, 16)
-	must(t, err)
-	adminConfig.ConnConfig.Port, apiConfig.ConnConfig.Port = uint16(n), uint16(n)
-	f.admin, err = pgxpool.NewWithConfig(f.ctx, adminConfig)
-	must(t, err)
-	t.Cleanup(f.admin.Close)
-	deadline := time.Now().Add(20 * time.Second)
-	for f.admin.Ping(f.ctx) != nil {
-		if time.Now().After(deadline) {
-			t.Fatal("restarted fixture database did not become ready")
-		}
-		time.Sleep(20 * time.Millisecond)
-	}
-	dsn, err := url.Parse(apiConfig.ConnString())
-	must(t, err)
-	dsn.Host = net.JoinHostPort(apiConfig.ConnConfig.Host, port.Port())
-	f.runtime, err = bootstrap.Open(f.ctx, dsn.String(), f.instance)
-	must(t, err)
-	t.Cleanup(f.runtime.Close)
-	api := &bootstrap.API{Runtime: f.runtime, InsecureLocal: true}
-	f.server = httptest.NewUnstartedServer(nil)
-	api.Origin = "http://" + f.server.Listener.Addr().String()
-	f.server.Config.Handler = api.Handler()
-	f.server.Start()
-	t.Cleanup(f.server.Close)
+	restartFixtureDatabase(t, f)
 	exactSources, rejected := 0, 0
 	for i, id := range submissions {
 		got := b.call("POST", "/api/v1/"+recovery+"/submissions/"+id+"/resolve", nil, "", 200)
@@ -178,4 +145,43 @@ func locationBusinessSnapshot204(t *testing.T, f *fixture) map[string]string {
 		out[table] = fmt.Sprintf("%x", hash.Sum(nil))
 	}
 	return out
+}
+
+// Restart only the disposable fixture database and API, preserving its volume and sessions.
+func restartFixtureDatabase(t *testing.T, f *fixture) {
+	t.Helper()
+	adminConfig, apiConfig := f.admin.Config(), f.runtime.Pool.Config()
+	f.server.Close()
+	f.runtime.Close()
+	f.admin.Close()
+	stopTimeout := 30 * time.Second
+	must(t, f.container.Stop(f.ctx, &stopTimeout))
+	must(t, f.container.Start(f.ctx))
+	port, err := f.container.MappedPort(f.ctx, "5432/tcp")
+	must(t, err)
+	n, err := strconv.ParseUint(port.Port(), 10, 16)
+	must(t, err)
+	adminConfig.ConnConfig.Port, apiConfig.ConnConfig.Port = uint16(n), uint16(n)
+	f.admin, err = pgxpool.NewWithConfig(f.ctx, adminConfig)
+	must(t, err)
+	t.Cleanup(f.admin.Close)
+	deadline := time.Now().Add(20 * time.Second)
+	for f.admin.Ping(f.ctx) != nil {
+		if time.Now().After(deadline) {
+			t.Fatal("restarted fixture database did not become ready")
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	dsn, err := url.Parse(apiConfig.ConnString())
+	must(t, err)
+	dsn.Host = net.JoinHostPort(apiConfig.ConnConfig.Host, port.Port())
+	f.runtime, err = bootstrap.Open(f.ctx, dsn.String(), f.instance)
+	must(t, err)
+	t.Cleanup(f.runtime.Close)
+	api := &bootstrap.API{Runtime: f.runtime, InsecureLocal: true}
+	f.server = httptest.NewUnstartedServer(nil)
+	api.Origin = "http://" + f.server.Listener.Addr().String()
+	f.server.Config.Handler = api.Handler()
+	f.server.Start()
+	t.Cleanup(f.server.Close)
 }

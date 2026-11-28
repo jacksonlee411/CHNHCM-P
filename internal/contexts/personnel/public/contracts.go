@@ -60,14 +60,15 @@ type DocumentEdit struct {
 
 // ProfileItem carries only the currently authorized fields of one personal profile item.
 type ProfileItem struct {
-	Masked    []string                   `json:"masked,omitempty"`
-	Hidden    []string                   `json:"hidden,omitempty"`
-	ItemID    string                     `json:"itemId"`
-	Revision  string                     `json:"revision"`
-	Fields    map[string]string          `json:"fields"`
-	Adoptions map[string]CountryAdoption `json:"adoptions,omitempty"`
-	Locked    []string                   `json:"locked,omitempty"`
-	CanRemove bool                       `json:"canRemove,omitempty"`
+	AddressType *AddressTypeAdoption       `json:"addressTypeAdoption,omitempty"`
+	Masked      []string                   `json:"masked,omitempty"`
+	Hidden      []string                   `json:"hidden,omitempty"`
+	ItemID      string                     `json:"itemId"`
+	Revision    string                     `json:"revision"`
+	Fields      map[string]string          `json:"fields"`
+	Adoptions   map[string]CountryAdoption `json:"adoptions,omitempty"`
+	Locked      []string                   `json:"locked,omitempty"`
+	CanRemove   bool                       `json:"canRemove,omitempty"`
 }
 type PlaceChoice struct {
 	ID            string          `json:"id"`
@@ -75,6 +76,7 @@ type PlaceChoice struct {
 	Ancestors     []CountryChoice `json:"ancestors,omitempty"`
 }
 type ProfileItemEdit struct {
+	AddressType      *AddressTypeChoice     `json:"addressTypeChoice,omitempty"`
 	ItemID           string                 `json:"itemId,omitempty"`
 	ExpectedRevision string                 `json:"expectedRevision,omitempty"`
 	Fields           map[string]string      `json:"fields,omitempty"`
@@ -153,12 +155,14 @@ type NumberDecision struct {
 	Until  string `json:"validUntil,omitempty"`
 }
 type Summary struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Number     string `json:"number"`
-	Historical bool   `json:"historical,omitempty"`
+	SourceVersion string `json:"-"`
+	ID            string `json:"id"`
+	Name          string `json:"name"`
+	Number        string `json:"number"`
+	Historical    bool   `json:"historical,omitempty"`
 }
 type Entry struct {
+	CanReadAddressTypes bool     `json:"canReadAddressTypes,omitempty"`
 	CanRegisterDocument bool     `json:"canRegisterDocument"`
 	CanRegisterEvidence bool     `json:"canRegisterEvidence"`
 	CanRead             bool     `json:"canRead"`
@@ -194,6 +198,7 @@ type DirectoryLookup interface {
 	Renew(context.Context) error
 	Candidates(ids []string) ([]Summary, string, error)
 	Page(keys []DirectoryKey, anchor string) (IndexedDirectory, error)
+	SelectionState(keys []DirectoryKey, ids []string) (version string, matched int, err error)
 }
 
 type IndexedPerson struct {

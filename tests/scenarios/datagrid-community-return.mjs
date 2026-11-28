@@ -88,9 +88,7 @@ try {
   await expect(target).toBeFocused(); await expect(target).toBeInViewport();
   await page.setViewportSize({ width: 700, height: 740 });
   await expect(target).toBeFocused(); await expect(target).toBeInViewport();
-  await page.setViewportSize({ width: 1440, height: 540 });
-  await expect(target).toBeFocused(); await expect(target).toBeInViewport();
-  result.checks.push('same-object link focus survives mobile, desktop, bounded tablet and natural short-height transitions');
+  result.checks.push('same-object link focus survives mobile, desktop and bounded tablet transitions');
   assert.deepEqual(result.errors, []); assert.deepEqual(result.warnings, []);
   result.status = 'passed';
 } catch (error) {

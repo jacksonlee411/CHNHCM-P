@@ -46,8 +46,15 @@ export function EffectiveDates({ dates, selected, onSelect }: { dates: string[];
   }, [identity, selected, locale, mobile]);
   const close = () => { const anchor = menu?.anchor; setMenu(null); requestAnimationFrame(() => anchor?.isConnected ? anchor.focus() : slot.current?.querySelector<HTMLElement>('[aria-current="date"], [data-date-menu="all"]')?.focus()); };
   const choose = (date: string) => {
+    const source = document.activeElement;
+    const anchor = menu?.anchor;
     setMenu(null); onSelect(date);
-    requestAnimationFrame(() => requestAnimationFrame(() => slot.current?.querySelector<HTMLElement>('[aria-current="date"], [data-date-menu="all"]')?.focus({ preventScroll: true })));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const active = document.activeElement;
+      if (active === source || active === anchor || active === document.body) {
+        slot.current?.querySelector<HTMLElement>('[aria-current="date"], [data-date-menu="all"]')?.focus({ preventScroll: true });
+      }
+    }));
   };
   const open = (anchor: HTMLElement, side: 'before' | 'after' | 'all') => setMenu(menu?.anchor === anchor ? null : { anchor, side });
   const menuDates = menu?.side === 'before' ? dates.slice(0, bounds.start) : menu?.side === 'after' ? dates.slice(bounds.end + 1) : dates;

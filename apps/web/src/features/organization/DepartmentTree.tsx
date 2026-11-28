@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Box, Button, CircularProgress } from '@mui/material';
 import { api, ApiError, sessionGuard, unwrap, type Models } from '@chnhcm/api-client';
-import { DepartmentTreePanel, type DepartmentTreeRow } from './DepartmentTreePanel';
+import { DepartmentTreePanel, type DepartmentTreeRow } from '../../shared/DepartmentTreePanel';
 import type { ListSidebarProps } from './dated/presentation';
 
 type Node = Models['DepartmentTreeNode'];

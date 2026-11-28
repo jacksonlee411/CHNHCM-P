@@ -7,7 +7,7 @@
 <a id="job-tab-layout"></a>
 ## 1 入口与页内布局
 
-人员名录左侧为部门树，右侧按获权任职列行。普通名录按服务端今日确定当前或最早获权未来任期，部门筛选采用该任期的实际归属。无可披露任职时按获权人员身份列行。列表显示姓名及人员编号、雇用记录编号、主兼岗、部门、职务、适用岗位、任职期间与状态。可在同一单元格分两行显示职务及岗位，按职务管理时岗位显示「—」。同部门的主兼岗也独立列行。人数按可见人员去重，分页、前后导航及返回焦点按任职行计算。
+人员名录左侧为部门树，右侧按获权任职列行。普通名录按服务端今日确定当前或最早获权未来任期，部门筛选采用该任期的实际归属。无可披露任职时按获权人员身份列行。列表显示姓名及人员编号、雇用记录编号、主兼岗、部门、职务、适用岗位、任职期间与状态。桌面用两列分别显示职务和岗位，分别设置显隐。按职务管理时岗位显示「—」。主兼岗由列筛选，部门树沿获权任期的可读祖先定位，可选择直属或含子部门。同部门的主兼岗也独立列行。人数按可见人员去重，分页、前后导航及返回焦点按任职行计算。
 
 **列表示意。** 在全部部门搜索周宁，合计 3 份任职、1 人。点「产品部」显示 0、1 两行，点「培训部」只显示 2 号。多段关系通过实际单位、关系性质和期间区分。
 
@@ -105,7 +105,7 @@
 
 | 任务 | 应对照的现有页面和共用实现 | 职务信息页签的验收差异 |
 | --- | --- | --- |
-| 整页、名录与面板 | [人员详情](../../../apps/web/src/features/personnel/Detail.tsx)、[职务详情](../../../apps/web/src/features/staffing/Detail.tsx)、[012 列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) | 沿用主题、顶栏、紧凑控制区、正文滚动和单一身份标题。页签支持方向键聚焦、Enter／空格激活，短屏自然滚动到底。主岗面板分别核权，兼岗详情使用同一布局，仅呈现职务信息。 |
+| 整页、名录与面板 | [人员详情](../../../apps/web/src/features/personnel/Detail.tsx)、[职务详情](../../../apps/web/src/features/staffing/Detail.tsx)、[012 列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) | 沿用主题、顶栏、紧凑控制区、正文滚动和单一身份标题。页签支持方向键聚焦、Enter／空格激活，正文可滚动到底。主岗面板分别核权，兼岗详情使用同一布局，仅呈现职务信息。 |
 | 任职行与时间轴 | [012 明细](../m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections)、[共享日期轴](../../../packages/ui/src/components/EffectiveDates.tsx)、[121 接入矩阵](../m02/121-dated-object-admission-matrix.md)、[124 跨域适用边界](../../guides/124-dated-object-admission-and-capacity.md#5-跨域适用边界) | 继承按日定位、当前／未来提示及准确来源。M04 同日可有多笔动作，采用 M04 的日期约束、任职身份和生命周期，保留关系级转正与各任职的独立履历。 |
 | 人事事务的查询与返回 | [职务列表](../../../apps/web/src/features/staffing/List.tsx)、[列表控制区](../../../packages/ui/src/components/Lists.tsx)、[返回定位](../../../apps/web/src/shared/navigation.ts) | 桌面和窄屏都从办理链接进入。分页、前后导航、返回焦点均按当前查询中的办理行计算。 |
 | 表单、记录动作与原件 | [012 表单](../m02/012-m02-functional-and-interaction-design.md#m02-ui-object-form)、[公共表单](../../../packages/ui/src/components/ObjectForm.tsx)、[草稿保护](../../../apps/web/src/shared/dated/useDraftExit.ts)、[首单表单与提交](../../../apps/web/src/features/hire/HirePage.tsx) | 桌面左标签、两列字段，窄屏按组单列。对照字号、输入高度、错误及保存落点。人事事务在本面板独立保存，个人资料九栏仍按原整页办理。 |

@@ -2,9 +2,9 @@
 
 | 要完成的任务 | 从哪里进入 |
 | --- | --- |
-| 查业务规则、页面布局、交互、组件或工程标准 | [按问题查规范与对象差异](governance/README.md) · [按模块查规格](specs/README.md) · [全部现行标准](governance/catalog/README.md#catalog-standards) |
+| 查业务规则、页面布局、交互、组件或工程标准 | [检索现行规范](governance/catalog/standards/README.md) · [按问题查规范与对象差异](governance/README.md) · [按模块查规格](specs/README.md) |
 | 编写、实施或评审方案 | [在办计划](governance/catalog/README.md#catalog-in-progress) · [待启动计划](governance/catalog/README.md#catalog-not-started) · [待审文稿](governance/catalog/README.md#catalog-review) · [文档模板](templates/README.md) |
-| 核验某批做过什么，找到受测版本及遗留项 | [按关联编号查验收记录](governance/catalog/README.md#catalog-evidence) · [验证专题](verification/README.md) |
+| 核验某批做过什么，找到受测版本及遗留项 | [按用途、关联编号查验收结论与证据](governance/catalog/README.md#catalog-evidence) · [验证专题](verification/README.md) |
 | 查历史计划或办理归档 | [已关闭计划和保存位置](governance/catalog/README.md#catalog-closed) · [已替代等历史文档](governance/catalog/README.md#catalog-history) · [归档前逐项提炼与状态判定](governance/014-document-management.md#82-归档) |
 
 ## 当前规则
@@ -32,6 +32,8 @@
 ## 待评审草案
 
 [待审文稿](governance/catalog/README.md#catalog-review)按文稿状态检索，计划是否已关闭另见执行状态。
+
+薪酬管理员从「设置 → 薪酬配置」维护薪酬计划和职级标准。管理员与查询者可查看当日有效的企业通用月薪计划，再按日期核对专业月薪、运营月薪和管理年薪。[业务方案](specs/m09/211-compensation-configuration.md) · [后台页面](specs/m09/212-compensation-configuration-pages.md) · [实施路线图](archive/plans/210-compensation-configuration-roadmap.md) · [八组联合验收](verification/210-compensation-i3.md) · [固定环境当日样例](verification/210-compensation-list-retest.md)
 
 ## 历次设计与实施记录
 

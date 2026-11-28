@@ -1,3 +1,4 @@
+import { checkMiddleDelete } from './delete-history-support';
 import { desktopViewports } from './desktop-viewports.mjs';
 import { readFileSync } from "node:fs";
 import { randomUUID } from 'node:crypto';
@@ -45,7 +46,7 @@ test('地点204 地区连续选择、上级路径、全局组合搜索与已选�
  await page.keyboard.press('Escape'); await page.getByRole('button',{name:'取消编辑',exact:true}).click();
 });
 
-test('地点204 地区搜索滚动追加、短屏和键盘连续选择', async ({page}) => {
+test('地点204 地区搜索滚动追加和键盘连续选择', async ({page}) => {
  await open(page); await menu(page); await page.getByRole('link',{name:'新建',exact:true}).click();
  await page.locator('#location-effectiveDate').fill('2020-01-01'); await choose(page,'国家/地区','中国');
  const control=page.getByRole('combobox',{name:'行政区划',exact:true}); await control.fill('区');
@@ -126,10 +127,9 @@ test('地点204 完整地址无分隔符、准确采用与字段权限', async (
     await page.screenshot({ path: '.local/location-address-presentation/form.png', mask: [page.locator('.app-account-name')] });
     const longAddress = '长'.repeat(1000) + '𠀀';
     await address.fill(longAddress);
-    await page.setViewportSize({ width: 1440, height: 540 });
     await expect(addressField(page, '完整地址')).toHaveText(prefix + longAddress);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-    await page.screenshot({ path: '.local/location-address-presentation/short-long.png', mask: [page.locator('.app-account-name')] });
+    await page.screenshot({ path: '.local/location-address-presentation/long-address.png', mask: [page.locator('.app-account-name')] });
     await page.setViewportSize({ width: 1440, height: 900 });
     await address.fill('A / B 栋 2-11');
     await expect(addressField(page, '完整地址')).toHaveText(prefix + 'A / B 栋 2-11');
@@ -476,4 +476,8 @@ test('140 地点成对删除显示准确采用的区划路径', async ({page}) =
   await open(page);
   await create(page, '中国', '西乡塘');
   await checkAdoptedLabelOnPairDelete(page, 'locations', true);
+});
+
+test('140 地点删除中段后选中适用记录，查询者可回看删除前原件', async ({page}) => {
+  await checkMiddleDelete(page, 'locations', 'ADDRESS_ADJUSTMENT', create, menu);
 });

@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { api, ApiError, sessionGuard, unwrap, type Models } from '@chnhcm/api-client';
+import { api, unwrap, type Models } from '@chnhcm/api-client';
 import { submissionChannel } from '../../shared/dated/submission';
 
 export const path = '/personnel/employees';
@@ -10,6 +9,18 @@ export type Result = Models['PersonResult'];
 export const channel = submissionChannel<'person', Result>('person', 'chnhcm-person-submissions');
 const base = '/api/v1/persons';
 const headers = (s: Principal) => ({ 'X-CSRF-Token': s.csrf });
+export const addressTypePath = '/settings/personnel/address-types';
+export const addressTypes = async () => unwrap(await api.GET('/api/v1/person-address-types'));
+export const addressTypeDetail = async (typeId: string) =>
+  unwrap(await api.GET('/api/v1/person-address-types/{typeId}', { params: {path: {typeId}} }));
+export const addressTypeSource = async (typeId: string, revision: string) =>
+  unwrap(await api.GET('/api/v1/person-address-types/{typeId}/revisions/{revision}', {params:{path:{typeId,revision}}}));
+export const addressTypeOptions = async (id: string, itemId?: string) =>
+  unwrap(await api.GET('/api/v1/persons/{id}/address-type-candidates', { params: { path: { id }, query: { itemId } } }));
+export const saveAddressType = async (s: Principal, body: Models['PersonAddressTypeCommand']) =>
+  unwrap(await api.POST('/api/v1/person-address-types', { params: { header: headers(s) }, body }));
+export const addressTypeReceipt = async (s: Principal, submission: string) =>
+  unwrap(await api.POST('/api/v1/person-address-types/submissions/{submission}/resolve', { params: { path: { submission }, header: headers(s) } }));
 export const entry = async () => unwrap(await api.GET('/api/v1/persons/context'));
 export const list = async (query: DirectoryQuery) => unwrap(await api.GET(base, { params: { query } }));
 export const queryRef = async (s: Principal, keyword: string) =>
@@ -25,7 +36,7 @@ export function parse(params: URLSearchParams): DirectoryQuery {
 }
 export function directoryParams(params: URLSearchParams) {
   const result = new URLSearchParams();
-  for (const key of ['ref', 'department', 'primary', 'sort', 'selected', 'page', 'pageSize']) {
+  for (const key of ['ref', 'department', 'directOnly', 'primary', 'sort', 'selected', 'page', 'pageSize']) {
     const value = params.get(key);
     if (value) result.set(key, value);
   }
@@ -36,11 +47,12 @@ export function directoryQuery(params: URLSearchParams): Models['PersonnelDirect
   const primary = params.get('primary');
   return { ...query, pageSize: query.pageSize as 20 | 50 | 100,
     department: params.get('department') || undefined,
+    directOnly: params.has('department') && params.get('directOnly') === '1' || undefined,
     primary: primary === 'primary' || primary === 'secondary' ? primary : undefined };
 }
-export async function directory(s: Principal, params: URLSearchParams, anchor?: string) {
+export async function directory(s: Principal, params: URLSearchParams, anchor?: string, selection?: Models['PersonnelDirectoryQuery']['selection']) {
   return unwrap(await api.POST('/api/v1/personnel/directory/query', {
-    params: { header: headers(s) }, body: { ...directoryQuery(params), anchor },
+    params: { header: headers(s) }, body: { ...directoryQuery(params), anchor, selection },
   }));
 }
 export function directoryTarget(params: URLSearchParams, personId: string, assignment?: string) {
@@ -91,60 +103,7 @@ export const resolve = async (s: Principal, submission: string) =>
       params: { path: { submission }, header: headers(s) },
     }),
   );
-export function message(e: unknown) {
-  return e instanceof Error ? e.message : '读取失败，请重试';
-}
-export function useRead<T>(
-  key: string | undefined,
-  read: () => Promise<T>,
-  mode: 'retain' | 'fresh' = 'retain',
-) {
-  const [epoch, setEpoch] = useState(0);
-  const refresh = useCallback(() => setEpoch((i) => i + 1), []);
-  const identity = JSON.stringify([key, epoch]);
-  const resultKey = mode === 'fresh' ? identity : key;
-  const [result, set] = useState<{ key: string; data?: T; error?: string; status?: number }>();
-  const generation = useRef(0);
-  const invalidate = useCallback(() => {
-    generation.current++;
-    set(undefined);
-    refresh();
-  }, [refresh]);
-  useEffect(() => {
-    if (key === undefined || resultKey === undefined) {
-      set(undefined);
-      return;
-    }
-    let active = true;
-    const current = sessionGuard(),
-      issued = generation.current;
-    read()
-      .then((data) => {
-        if (active && issued === generation.current && current()) set({ key: resultKey, data });
-      })
-      .catch((e) => {
-        if (active && issued === generation.current && current())
-          set({ key: resultKey, error: message(e), status: e instanceof ApiError ? e.status : undefined });
-      });
-    return () => {
-      active = false;
-    };
-  }, [identity, resultKey]);
-  useEffect(() => {
-    const visible = () => {
-      if (document.visibilityState === 'visible') refresh();
-    };
-    window.addEventListener('focus', refresh);
-    window.addEventListener('pageshow', refresh);
-    document.addEventListener('visibilitychange', visible);
-    return () => {
-      window.removeEventListener('focus', refresh);
-      window.removeEventListener('pageshow', refresh);
-      document.removeEventListener('visibilitychange', visible);
-    };
-  }, [refresh]);
-  return { ...(key !== undefined && result?.key === resultKey ? result : {}), refresh, invalidate };
-}
+export { message, useRead } from '../../shared/useRead';
 
 export const differences = async (id: string, version: string, signal?: AbortSignal) =>
   unwrap(

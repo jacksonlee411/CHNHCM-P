@@ -3,6 +3,7 @@
 package bootstrap
 
 import (
+	compdb "chnhcm.local/chnhcm/internal/contexts/compensation/infra/postgres"
 	"context"
 	"time"
 
@@ -18,6 +19,14 @@ func SetIntegrationClock(runtime *Runtime, clock func() time.Time) (restore func
 	store := runtime.Organization.(application.Service).Store.(*orgdb.Store)
 	original := store.Clock
 	store.Clock = func(context.Context, pgx.Tx) (time.Time, error) { return clock(), nil }
+	return func() { store.Clock = original }
+}
+
+// SetCompensationIntegrationClock drives the business date independently of audit time.
+func SetCompensationIntegrationClock(runtime *Runtime, clock func() time.Time) func() {
+	store := runtime.Compensation.(*compdb.Store)
+	original := store.Clock
+	store.Clock = clock
 	return func() { store.Clock = original }
 }
 

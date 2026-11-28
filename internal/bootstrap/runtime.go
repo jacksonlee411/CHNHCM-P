@@ -4,6 +4,9 @@ import (
 	accessapp "chnhcm.local/chnhcm/internal/contexts/access/application"
 	accessdb "chnhcm.local/chnhcm/internal/contexts/access/infra/postgres"
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	compdb "chnhcm.local/chnhcm/internal/contexts/compensation/infra/postgres"
+	comp "chnhcm.local/chnhcm/internal/contexts/compensation/public"
+	configdb "chnhcm.local/chnhcm/internal/contexts/configuration/infra/postgres"
 	orgapp "chnhcm.local/chnhcm/internal/contexts/organization/application"
 	countryapp "chnhcm.local/chnhcm/internal/contexts/organization/application/country"
 	departmentapp "chnhcm.local/chnhcm/internal/contexts/organization/application/department"
@@ -37,6 +40,7 @@ import (
 )
 
 type Runtime struct {
+	Compensation       comp.ConfigurationService
 	Offers             recruit.Offers
 	OfferTargets       func(context.Context, foundation.Credentials, hireprep.TargetSearch) ([]org.EligibleEntity, error)
 	OfferArrangement   func(context.Context, foundation.Credentials, hireprep.ArrangementQuery) (hireprep.ArrangementMode, error)
@@ -144,7 +148,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 			slog.Warn("revoked staffing selection cleanup failed")
 		}
 	}
-	runtime := &Runtime{Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Management: a, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
+	runtime := &Runtime{Compensation: &compdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Enterprise: o, Grades: st, LegalEntities: o, Scopes: &configdb.Store{Instance: instance}}, Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Management: a, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
 	if e = runtime.Ready(ctx); e != nil {
 		p.Close()
 		return nil, e
@@ -259,6 +263,14 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool, migrations fs.FS) error {
 			options = append(options, goose.WithGoMigrations(personnelLineageMigration(migrations, step.name, step.version)), goose.WithExcludeNames([]string{step.name}))
 		}
 	}
+	for _, step := range []struct {
+		name    string
+		version int64
+	}{{compensationPlanFile, 60}, {accessManagementFile, 64}} {
+		if _, err := fs.Stat(migrations, step.name); err == nil {
+			options = append(options, goose.WithGoMigrations(managementLineageMigration(migrations, step.name, step.version)), goose.WithExcludeNames([]string{step.name}))
+		}
+	}
 	provider, e := goose.NewProvider(goose.DialectPostgres, db, migrations, options...)
 	if e != nil {
 		return e
@@ -267,7 +279,7 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool, migrations fs.FS) error {
 	if e != nil {
 		return e
 	}
-	if _, err := fs.Stat(migrations, "00059_access_management.sql"); err == nil {
+	if _, err := fs.Stat(migrations, accessManagementFile); err == nil {
 		if err := initializeExistingManagement(ctx, pool); err != nil {
 			return err
 		}
@@ -347,6 +359,9 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 		if e = staffingdb.InitializeFirstHireRule(ctx, tx, in.Instance, subject, cfg.Version, foundation.Period{From: cfg.From, Until: cfg.Until}); e != nil {
 			return e
 		}
+	}
+	if e = persondb.InitializeAddressTypes(ctx, tx, in.Instance); e != nil {
+		return e
 	}
 	if e = initializeAccountFixtures(ctx, tx, in, subject); e != nil {
 		return e
@@ -461,9 +476,15 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,59)::bigint)
+     (SELECT (versions=(ARRAY(SELECT generate_series(1,62)::bigint) || ARRAY[64::bigint])
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 58 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 62 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            -- Address-type releases 61 and 62 shipped on 58. A retry may already contain 59.
+            OR (last_version IN (61,62) AND 61=ANY(versions)
+                AND array_remove(array_remove(versions,61::bigint),62::bigint) IN
+                    (ARRAY(SELECT generate_series(1,58)::bigint), ARRAY(SELECT generate_series(1,59)::bigint))
+                AND (59=ANY(versions) OR to_regnamespace('compensation') IS NULL)
+                AND to_regnamespace('configuration') IS NULL)
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -546,13 +567,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
                     max(version_id) FILTER (WHERE version_id<=31) person_prefix FROM
        (SELECT DISTINCT ON (version_id) version_id,is_applied FROM public.goose_db_version ORDER BY version_id,id DESC) latest
        WHERE is_applied AND version_id>0) ledger)
-       AND (($1 AND NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id>58 AND is_applied)) OR (
-          to_regclass('access.management_root') IS NOT NULL AND to_regclass('access.management_publication') IS NOT NULL
-          AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.principal') AND attname='management_owner' AND atttypid='uuid'::regtype AND NOT attisdropped)
-          AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.management_receipt') AND attname='receipt_order' AND attidentity='a' AND NOT attisdropped)
-          AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('access.management_mandate') AND tgname='immutable_management_mandate' AND tgenabled='O')
-          AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('access.management_receipt') AND tgname='immutable_management_receipt' AND tgenabled='O')
-          AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('access.management_publication') AND tgname='immutable_management_publication' AND tgenabled='O')))
+       AND CASE WHEN EXISTS(SELECT FROM public.goose_db_version WHERE version_id=64 AND is_applied) THEN management.complete
+                WHEN management.present THEN $1 AND management.complete AND EXISTS(SELECT FROM public.goose_db_version WHERE version_id=59 AND is_applied)
+                ELSE $1 END
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=29 AND is_applied) OR (
            to_regprocedure('access.person_policy_for_use(uuid)') IS NOT NULL AND
            NOT EXISTS(SELECT FROM unnest(ARRAY['person','number','source','counter','terminal','identity_payload','evidence_payload','contact_payload','material','outbox','query','hold','disposition']) name WHERE to_regclass('personnel.'||name) IS NULL)))
@@ -571,6 +588,26 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
            AND to_regclass('personnel.contact_channel_primary') IS NOT NULL AND to_regclass('access.person_profile_fixture') IS NOT NULL
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.person_grant') AND attname='item_id' AND NOT attisdropped)
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.identity_payload') AND attname='basic' AND NOT attisdropped)))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=62 AND is_applied) OR (
+           EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.address_type') AND attname='valid_during' AND atttypid='daterange'::regtype AND attgenerated='s' AND NOT attisdropped)
+           AND EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('personnel.address_type') AND conname='address_type_period_bounds' AND convalidated)
+           AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.address_type_revision') AND attname='dated' AND NOT attisdropped)))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=61 AND is_applied) OR (
+           to_regclass('personnel.address_type_choices') IS NOT NULL AND to_regclass('personnel.address_type_revision') IS NOT NULL
+           AND to_regclass('personnel.address_type_not_applied') IS NOT NULL
+           AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('personnel.address_type_revision') AND tgname='immutable_revision' AND tgenabled='O')
+           AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.profile_item_payload') AND attname='address_type_revision' AND NOT attisdropped)))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=60 AND is_applied) OR (
+           to_regclass('configuration.plan_scope_version') IS NOT NULL AND to_regclass('compensation.plan') IS NOT NULL
+           AND to_regclass('compensation.plan_period') IS NOT NULL AND to_regclass('compensation.plan_version') IS NOT NULL
+           AND to_regclass('compensation.plan_revision') IS NOT NULL AND to_regclass('compensation.plan_rate_use') IS NOT NULL
+           AND to_regclass('compensation.plan_receipt') IS NOT NULL AND to_regclass('compensation.plan_outbox') IS NOT NULL))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=59 AND is_applied)
+         OR ($1 AND management.complete AND to_regnamespace('compensation') IS NULL AND to_regnamespace('configuration') IS NULL
+             AND NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id>59 AND is_applied)) OR (
+           to_regclass('compensation.grade_rate') IS NOT NULL AND to_regclass('compensation.grade_rate_outbox') IS NOT NULL
+           AND to_regclass('compensation.grade_rate_revision') IS NOT NULL AND to_regclass('compensation.grade_rate_period') IS NOT NULL
+           AND to_regclass('compensation.grade_rate_version') IS NOT NULL AND to_regclass('compensation.grade_rate_receipt') IS NOT NULL))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=58 AND is_applied) OR (
            to_regclass('access.bound_permission') IS NOT NULL AND to_regprocedure('access.valid_permission(uuid,text,uuid,text,text[],text[])') IS NOT NULL
            AND NOT EXISTS(SELECT FROM (VALUES
@@ -626,7 +663,8 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=20 AND is_applied) OR
          ((SELECT count(*)=6 FROM (VALUES ('grade_source','immutable_source'),('grade_revision','immutable_revision'),('job_grade_manifest','immutable_manifest'),('grade_ladder_grade_manifest','immutable_manifest'),('job_grade_member','immutable_member'),('grade_ladder_grade_member','immutable_member')) expected(table_name,trigger_name)
  JOIN pg_trigger t ON t.tgrelid=to_regclass('staffing.'||expected.table_name) AND t.tgname=expected.trigger_name
- WHERE t.tgenabled='O' AND t.tgfoid=to_regprocedure('staffing.immutable_fact()')) AND (SELECT count(*)=2 FROM pg_trigger WHERE tgrelid IN (to_regclass('staffing.job_grade_member'),to_regclass('staffing.grade_ladder_grade_member')) AND tgname='member_references' AND tgenabled='O' AND tgfoid=to_regprocedure('staffing.check_grade_member_references()'))))`, len(pending) > 0 && pending[0], staffingContract).Scan(&ok)
+ WHERE t.tgenabled='O' AND t.tgfoid=to_regprocedure('staffing.immutable_fact()')) AND (SELECT count(*)=2 FROM pg_trigger WHERE tgrelid IN (to_regclass('staffing.job_grade_member'),to_regclass('staffing.grade_ladder_grade_member')) AND tgname='member_references' AND tgenabled='O' AND tgfoid=to_regprocedure('staffing.check_grade_member_references()'))))
+ FROM (`+managementStorageSQL+`) management`, len(pending) > 0 && pending[0], staffingContract).Scan(&ok)
 	if e != nil || !ok {
 		return errors.New("current storage contract does not match this program")
 	}

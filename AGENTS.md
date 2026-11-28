@@ -1,11 +1,15 @@
 # CHNHCM 工作约定
 
-始终使用中文沟通。本仓是独立 China HCM 产品的全新实施，采用模块化单体，Go 是唯一权威领域内核；保留CubeBox的体验、业务及验证资产。[文档首页](docs/index.md) · [规范导航](docs/governance/README.md)。
+始终用中文沟通。本仓全新实施独立 China HCM 产品，采用模块化单体，Go 为唯一权威领域内核。保留 CubeBox 体验、业务及验证资产。
+
+- 查共享规则与对象差异，见[按问题查规范](docs/governance/README.md)。
+- 查具体业务、页面与技术合同，见[按模块查规格](docs/specs/README.md)。
+- 查在办计划、验收记录或历史归档，见[文档首页](docs/index.md)。
 
 ## 开始工作
 
-- 先核对当前用户指令、cwd、分支、HEAD、工作区、stash及[登记表](docs/governance/registry.json)，保护已有修改和未跟踪文件。固定工作树不得切换分支；路径以本机实际检出为准，规则见[005](docs/governance/005-branches-and-documents.md)。
-- 按本次任务读取现行合同、对应计划及最新交接；文档状态、计划执行状态和实际验收结果分别判断。旧批次摘要不能重新打开已关闭事项，也不能证明当前实现完成。
+- 先核对当前用户指令、cwd、分支、HEAD、工作区、stash 及[登记表](docs/governance/registry.json)，保护已有修改和未跟踪文件。固定工作树不得切换分支，以本机检出路径为准。[005]
+- 默认只检索现行规范。按需查计划及最新交接，区分文档状态、计划执行状态与实际验收结果。旧批次摘要不能重开已结事项或证明当前实现完成。
 - **保留用户验收环境**。`wt-dev-d` 日常使用[统一入口 4486](docs/verification/315-department-quota-allocation.md#6-统一验收环境-4486)（API 8486 / DB 54486）。原 45300 及岗位、部门专项库停机保留。`m03-manual-d` 的 4380（API 8380 / DB 54370）、`m03-grade-d` 的 4381（API 8381 / DB 54371）及 `m03-grade-g2-d` 的 4382（API 8382 / DB 54372）仍由本树负责，用户验收结束或下次更新时复查，禁止按自动测试结束回收。4383、4388、[4390](docs/verification/136-actions-publication.md#8-原4390固定环境更新与交接)、4627 等持久环境同样保护。[运行接续](docs/verification/307-m03-job-foundation-implementation.md#10-用户授权的独立页面验收环境)
 
 ## 页面与交互：实施前必读
@@ -13,7 +17,7 @@
 - 页面任务先读[012共享体验与表单](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-expression)、[列表与详情](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-list)、[动作](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-actions)、[历史](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-history)及该对象合同；按日对象同时核对[121接入矩阵](docs/specs/m02/121-dated-object-admission-matrix.md)的适用要求。
 - 先确定已符合标准的参考页面和共用实现。复用须覆盖主题、顶栏、控制区、正文滚动、列表/详情、表单、日期维护、操作入口、来源解释、未保存保护及返回上下文；仅使用同名基础组件不代表继承标准。业务差异应在对象合同中说明。
 - 直接呈现当前任务所需且有权操作的字段；更正带入原值并自动识别变化。可选修改不默认隐藏，不以展开、勾选或重复确认表达修改意图。辅助信息按需展开；内部机制、正常保证不成为常驻说明或额外步骤。
-- 现阶段以桌面浏览器为交付范围。普通页面在 1440×900、1440×540 的 100% 视口对照同构建参考页，实测布局、滚动和键盘操作。关键流程必测原生 200%，400% 按风险或客户要求专项验证。手机窄屏适配仅在明确立项时验收。详见[共享验收规范](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)。
+- 现阶段以桌面浏览器为交付范围。普通页面在 1440×900 的 100% 视口对照同构建参考页，实测布局、滚动和键盘操作。受影响的关键流程另测原生 200%。手机窄屏适配仅在明确立项时验收。详见[共享验收规范](docs/specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)。
 - 业务日期统一`YYYY-MM-DD`，记录时刻按北京时间显示`YYYY-MM-DD HH:mm:ss`并保留原始时刻；使用[026共享日期规范](docs/adr/026-date-display-and-input-format.md)。配置/主数据首次新建默认`1900-01-01`，允许显式修改；已有记录及后续维护不套用，见[202](docs/adr/202-master-data-default-effective-date.md)。
 
 ## 领域、数据与资产
@@ -36,7 +40,9 @@
 
 ## 入口维护
 
-- 本文件限 **8 KiB**，仅列关键约束、任务入口和保护提示。批次进展记入计划和验证记录，由文档入口导航。
-- 长期规则在对应合同维护并从此引用；冲突须明确适用范围和替代关系，不以文档较新自动覆盖旧约定。根目录Markdown仅保留本文件。
-- 新文档按[005编号](docs/governance/005-branches-and-documents.md)先登记，已用号不回收；分类、模板、稳定ID、生命周期与证据按[014](docs/governance/014-document-management.md)维护。纯结构检查不代替语义评审。
-- 按需查阅[入口整理记录](docs/verification/005-agents-entry-simplification.md)中的精简前原文、规则去向及暂存信息。
+- 根目录 Markdown 仅此一份，限 **8 KiB**。只列关键约束、任务入口和保护提示。批次进展归计划与验证记录。
+- 长期规则归对应合同，此处引用。冲突须明确适用范围和替代关系，新文不自动覆盖旧约定。
+- 新文档按[005]先登记，已用号不回收。分类、模板、稳定 ID、生命周期与证据遵循[014](docs/governance/014-document-management.md)。结构检查不能代替语义评审。
+- 精简前原文、规则去向及暂存信息见[入口整理记录](docs/verification/005-agents-entry-simplification.md)。
+
+[005]: docs/governance/005-branches-and-documents.md

@@ -23,6 +23,12 @@
         "source": "internal/contexts/personnel/infra/postgres/personal_profile.go",
         "entry": "/personnel/employees", "entry_source": "apps/web/src/features/personnel/api.ts",
         "evidence": "docs/verification/504-personal-profile-fourth-batch.md"
+      }, {
+        "module": "M01", "capability": "person-address-types", "state": "verified_slice",
+        "scope": "按客户实例维护地址类型的单个启用区间，人员以北京办理日选用。人员住址保存所选项、确切修订、采用日和原名称。",
+        "source": "internal/contexts/personnel/infra/postgres/address_types.go",
+        "entry": "/settings/personnel/address-types", "entry_source": "apps/web/src/features/personnel/api.ts",
+        "evidence": "docs/verification/317-person-address-types.md"
       }]
     },
     {
@@ -272,7 +278,29 @@
         "M09"
       ],
       "code_path": "internal/contexts/compensation",
-      "state": "planned"
+      "state": "partially_implemented",
+      "slices": [
+        {
+          "module": "M09",
+          "capability": "职级薪酬标准",
+          "state": "verified_slice",
+          "scope": "管理员按日维护共享职级定额或连续薪带，按现权查看来源、当期标准及历次修订。",
+          "entry": "/settings/compensation/grade-rates",
+          "entry_source": "apps/web/src/features/compensation/rates.ts",
+          "source": "internal/contexts/compensation/application/rates.go",
+          "evidence": "docs/verification/210-compensation-i1.md"
+        },
+        {
+          "module": "M09",
+          "capability": "按日维护薪酬计划及组成",
+          "state": "verified_slice",
+          "scope": "企业通用或指定范围的计划，计划内固定额、共享职级标准及目标比例，按当前授权返回历史与原采用。",
+          "entry": "/settings/compensation/plans",
+          "entry_source": "apps/web/src/features/compensation/plans.ts",
+          "source": "internal/contexts/compensation/infra/postgres/plan_write.go",
+          "evidence": "docs/verification/210-compensation-i2.md"
+        }
+      ]
     },
     {
       "name": "payroll",
@@ -347,7 +375,19 @@
         "X02"
       ],
       "code_path": "internal/contexts/configuration",
-      "state": "planned"
+      "state": "partially_implemented",
+      "slices": [
+        {
+          "module": "X02",
+          "capability": "薪酬计划显式适用范围",
+          "state": "verified_slice",
+          "scope": "在计划同笔保存企业通用或按法律实体、职务系列、职级允许及排除的版本，按维度判定适用性。",
+          "entry": "/settings/compensation/plans",
+          "entry_source": "apps/web/src/features/compensation/plans.ts",
+          "source": "internal/contexts/configuration/application/applicability.go",
+          "evidence": "docs/verification/210-compensation-i2.md"
+        }
+      ]
     },
     {
       "name": "access",

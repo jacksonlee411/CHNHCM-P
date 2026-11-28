@@ -93,7 +93,7 @@ html, body, #root { height: 100%; margin: 0; }
 .history-notice { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 12px; background: #e5f3f4; color: #174e55; border-bottom: 1px solid #accbd0; }
 .history-notice .MuiButton-root { flex-shrink: 0; color: inherit; }
 .record-control-main { flex-wrap: wrap; }
-@media (max-width: 599px), (max-height: 600px) {
+@media (max-width: 640px) {
   html, body, #root { height: auto; min-height: 100%; }
   .app-header.MuiAppBar-root { position: relative; }
   .app-content { height: auto; min-height: calc(100dvh - var(--chnhcm-header-height)); padding-top: 0; overflow: visible; }

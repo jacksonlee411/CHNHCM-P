@@ -327,6 +327,143 @@ type AccessSession struct {
 	RevokedAt         pgtype.Timestamptz
 }
 
+type CompensationGradeRate struct {
+	InstanceID   string
+	EnterpriseID string
+	ID           string
+	GradeID      string
+	Currency     string
+	Frequency    string
+	Unit         string
+	Places       int16
+	Head         string
+}
+
+type CompensationGradeRateOutbox struct {
+	InstanceID string
+	RateID     string
+	Version    string
+	Event      []byte
+}
+
+type CompensationGradeRatePeriod struct {
+	InstanceID  string
+	RateID      string
+	RecordID    string
+	Revision    string
+	StartDate   pgtype.Date
+	UntilDate   pgtype.Date
+	Active      bool
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationGradeRateReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	Result       []byte
+}
+
+type CompensationGradeRateRevision struct {
+	InstanceID string
+	RateID     string
+	RecordID   string
+	Revision   string
+	Fact       []byte
+}
+
+type CompensationGradeRateVersion struct {
+	InstanceID       string
+	RateID           string
+	ID               string
+	Predecessor      *string
+	Action           string
+	RecordID         string
+	Revision         string
+	PreviousRecordID *string
+	PreviousRevision *string
+	UntilDate        pgtype.Date
+	PreviousUntil    pgtype.Date
+	Operator         []byte
+	RecordedAt       pgtype.Timestamptz
+}
+
+type CompensationPlan struct {
+	InstanceID   string
+	EnterpriseID string
+	ID           string
+	Code         string
+	Head         string
+}
+
+type CompensationPlanOutbox struct {
+	InstanceID string
+	PlanID     string
+	Version    string
+	Event      []byte
+}
+
+type CompensationPlanPeriod struct {
+	InstanceID  string
+	PlanID      string
+	RecordID    string
+	Revision    string
+	Name        string
+	StartDate   pgtype.Date
+	UntilDate   pgtype.Date
+	Active      bool
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationPlanRateUse struct {
+	InstanceID  string
+	RateID      string
+	PlanID      string
+	RecordID    string
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationPlanReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	Result       []byte
+}
+
+type CompensationPlanRevision struct {
+	InstanceID string
+	PlanID     string
+	RecordID   string
+	Revision   string
+	Fact       []byte
+}
+
+type CompensationPlanVersion struct {
+	InstanceID       string
+	PlanID           string
+	ID               string
+	Predecessor      *string
+	Action           string
+	RecordID         string
+	Revision         string
+	PreviousRecordID *string
+	PreviousRevision *string
+	UntilDate        pgtype.Date
+	PreviousUntil    pgtype.Date
+	Operator         []byte
+	RecordedAt       pgtype.Timestamptz
+}
+
+type ConfigurationPlanScopeVersion struct {
+	InstanceID   string
+	EnterpriseID string
+	PlanID       string
+	Version      string
+	Policy       []byte
+}
+
 type MigrationBinding struct {
 	InstanceID    string
 	GrantID       string
@@ -1103,6 +1240,43 @@ type OrganizationStorageContract struct {
 	Contract  string
 }
 
+type PersonnelAddressType struct {
+	InstanceID    string
+	ItemID        string
+	Code          string
+	Name          string
+	SortOrder     int32
+	FirstDay      pgtype.Date
+	Head          string
+	LegacyLabel   *string
+	StopDay       pgtype.Date
+	ConfirmedFrom pgtype.Date
+	UndatedStop   bool
+	ValidDuring   pgtype.Range[pgtype.Date]
+}
+
+type PersonnelAddressTypeNotApplied struct {
+	InstanceID   string
+	ActorID      string
+	SubmissionID string
+}
+
+type PersonnelAddressTypeRevision struct {
+	InstanceID   string
+	ItemID       string
+	Revision     string
+	Name         string
+	SortOrder    int32
+	Selectable   bool
+	ActorID      *string
+	RecordedAt   pgtype.Timestamptz
+	SubmissionID *string
+	Digest       *string
+	Dated        bool
+	StopDay      pgtype.Date
+	UndatedStop  bool
+}
+
 type PersonnelBankAccount struct {
 	InstanceID string
 	PersonID   string
@@ -1216,19 +1390,22 @@ type PersonnelPerson struct {
 }
 
 type PersonnelProfileItemPayload struct {
-	InstanceID       string
-	PersonID         string
-	Version          string
-	Section          string
-	ItemID           string
-	Revision         string
-	Ordinal          int32
-	Fields           []byte
-	Adoptions        []byte
-	OrdinaryUntil    pgtype.Timestamptz
-	EvidenceUntil    pgtype.Timestamptz
-	CollectionPolicy string
-	AccountID        *string
+	InstanceID          string
+	PersonID            string
+	Version             string
+	Section             string
+	ItemID              string
+	Revision            string
+	Ordinal             int32
+	Fields              []byte
+	Adoptions           []byte
+	OrdinaryUntil       pgtype.Timestamptz
+	EvidenceUntil       pgtype.Timestamptz
+	CollectionPolicy    string
+	AccountID           *string
+	AddressTypeID       *string
+	AddressTypeRevision *string
+	AddressTypeDay      pgtype.Date
 }
 
 type PersonnelQuery struct {

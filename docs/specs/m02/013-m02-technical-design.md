@@ -19,7 +19,7 @@
 
 2026-11-02采纳[103位置新增/插入](../../adr/103-positioned-record-addition.md)：本稿单条普通新增的准备上下文及anchorRecordId已由[105](../../archive/plans/105-positioned-addition-and-coverage.md)同步OpenAPI、生成客户端和Go实现。既有报告保持原范围，不接受缺锚点旧写入格式。
 
-2026-11-08合同修订：[128](../../adr/128-authorization-evidence-removal.md)撤除逐次授权过程档案及业务终态对其依赖。本文件第2节、第3.1.3/3.1.4节、第4—6节和第8节有关完整授权证据的旧要求按128局部替代；第9节原批次描述及旧报告保留历史语境。下述128目标合同尚未实施，现行代码和固定库仍为原模型；不将当前权限、操作者身份快照或业务历史一并取消。
+第 2、3.1.3、3.1.4、4—6 和 8 节按[128 第 5 节](../../adr/128-authorization-evidence-removal.md#authorization-evidence-replacement)撤除逐次授权过程档案及业务终态对它的依赖。当前判权、请求绑定、原子提交、操作者身份快照和业务历史仍须保护。第 9 节保留各批次的受测范围，删除和原结果恢复的实测见[2026-11-08 实施记录](../../verification/128-implementation.md)。
 
 ## 1 需求映射与边界
 
@@ -168,7 +168,7 @@ BUState保存完整本源时间线及每成员修订的原操作者摘要；BUOp
 
 新增`request_expected_source_id`保存已严格解析的原预期来源：新维护请求的accepted/rejected/no_change必填，CREATE及not_applied为空。它是请求定位而非真实来源证明，拒绝请求可指向不存在的UUID，不一概建立事实外键；accepted须与本次来源的previous_source一致，no_change须与observed_source一致，由Go与来源关系共同核验。不得用查回时的当前头补填原依据。
 
-128目标合同：四种终态不再保存authorization_decision_id，不以历史X03访问判定作为完整性证明。M02自有强类型终态保存恢复真正需要的请求定位、摘要、锚点、声明字段/逐项定位及原结果，并在本域核验来源/修订归属和唯一性；缺失事实不能从当前头或当前授权配置补造。accepted/no_change仍须原命令当前获权，rejected区分授权拒绝与业务拒绝；not_applied仍只封闭本人提交身份，不补造未收到的正文。精确重试、resolve和历史读取均重新执行适用的当前权限规则，详见第6.3节及128第2.3节；此解耦尚待产品实施。
+四种终态按 128 第 2.3 节解除对 X03 历史判定的依赖，不保存 `authorization_decision_id`。M02 的强类型终态保存恢复所需的请求定位、摘要、锚点、声明字段、逐项定位及原结果，并在本域核验来源和修订的归属与唯一性。缺失的事实不得从当前头或当前授权配置补造。accepted/no_change 仍须原命令当前获权，rejected 区分授权拒绝与业务拒绝。not_applied 只封闭本人的提交身份，不补造未收到的正文。精确重试、resolve 和历史读取均按第 6.3 节重新核验适用的当前权限。
 
 | outcome | 请求绑定及定位 | 来源、修订及错误组合 |
 | --- | --- | --- |
@@ -195,7 +195,7 @@ BUOperation中的固定项只保存REVISE_TIMELINE中直接发生变化的项；
 
 强类型终态保存`request_items`及`item_outcomes`。前者存每项itemId、固定动作、原目标/修订、拟定日期、声明的修改面、`declaredFields`及授权所需原/新类型代码；完整业务输入仍由原request_digest绑定，不重复保存名称值。declaredFields是按字段名排序、去重的原请求显式业务字段集合，含同值输入及显式null，不从实际差异倒推：ADD固定含effectiveDate/operationType/operationReason，并加入changes中出现的name/nameEn；UPDATE将newEffectiveDate映射为effectiveDate，classification存在时含operationType和operationReason，再加入changes中的字段；DELETE为空数组。协议定位字段和itemId不属于业务字段写权。拟定日期只用于原请求定位，尤其无变化ADD的说明，不构成新的业务记录；原类型仅在准确目标可解析时由服务器填写，拒绝请求不得伪造原事实。
 
-item_outcomes按itemId保存accepted/no_change；不成为第二套业务事实。Go校验项集合完整覆盖、唯一性、声明面/字段集合与严格解析输入一致，不再与X03历史判定快照对照；128目标模型由M02终态保存所需原请求字段并执行本域完整性校验；请求绑定语义维持request_format_version=2，强类型编码及Go校验限定数组、动作和终态组合，DB保护独立终态封套与不可变根。可识别请求的rejected也保留declaredFields，用于原输入范围及审计；格式不可信的请求不生成终态绑定。拒绝输入可含不存在目标，不给request_items建事实外键。已存终态按原定位核验当前读取权限，不用declaredFields重建原写权限门槛，也不依赖反解摘要或直接读取X03内部表。
+item_outcomes按itemId保存accepted/no_change；不成为第二套业务事实。Go校验项集合完整覆盖、唯一性、声明面/字段集合与严格解析输入一致，不再与X03历史判定快照对照；M02 终态保存所需原请求字段并在本域执行完整性校验；请求绑定语义维持request_format_version=2，强类型编码及Go校验限定数组、动作和终态组合，DB保护独立终态封套与不可变根。可识别请求的rejected也保留declaredFields，用于原输入范围及审计；格式不可信的请求不生成终态绑定。拒绝输入可含不存在目标，不给request_items建事实外键。已存终态按原定位核验当前读取权限，不用declaredFields重建原写权限门槛，也不依赖反解摘要或直接读取X03内部表。
 
 | 联合终态 | 顶层定位与结果 | 逐项定位及完整性 |
 | --- | --- | --- |
@@ -310,7 +310,7 @@ source_version.recorded_at仍记录实际插入来源的时间，可以晚于eva
 
 T06及更正改日预览返回afterRecord、currentStatus/previousCurrentStatus及必要的newNoFactRange；固定首条后移明确新增无事实区间。这些字段执行当次读字段裁剪。完整timeline、beforeRecord、defaults、targetPreviousState、successorSnapshotsPreserved、writeFields及referenceCoverage退出当前BU预览DTO；详情办理context中的defaults仍由实际表单消费。
 
-单条删除的原适用期间与记录详情共用当前获权的日期。BU、企业将首条生效日后移时，预览的 `newNoFactRange` 同时返回起日、排他终点及 Go 计算的最后适用日。支持成对删除的对象在获准的资料变化区间中投影 `endInclusive`，页面按有限段或开放段显示。地点与法律实体删除成对记录时，按当前读权分别解析删除前后准确采用的国家名称和适用的区划路径。同一引用身份有可读标签变化时展示期间和前后值。两边可见资料相同则省略该段。失去日期读权时隐藏期间，有限段缺少最后适用日显示“期间不可用”。持久化影响与原回执继续使用既有半开区间。[实施与验收范围](../../plans/140-module-cohesion-roadmap.md)
+单条删除的原适用期间与记录详情共用当前获权的日期。BU、企业将首条生效日后移时，预览的 `newNoFactRange` 同时返回起日、排他终点及 Go 计算的最后适用日。支持成对删除的对象在获准的资料变化区间中投影 `endInclusive`，页面按有限段或开放段显示。地点与法律实体删除成对记录时，按当前读权分别解析删除前后准确采用的国家名称和适用的区划路径。同一引用身份有可读标签变化时展示期间和前后值。两边可见资料相同则省略该段。失去日期读权时隐藏期间，有限段缺少最后适用日显示“期间不可用”。持久化影响与原回执继续使用既有半开区间。[实施与验收范围](../../archive/plans/140-module-cohesion-roadmap.md)
 
 当前单条Preview返回readFields；已取得当前对象读授权的预览/提交4xx响应可携带同名字段，供页面清理受限缓存。该响应元数据来自当次bu.read，不存入不可变终态，不以历史读字段交集代替当前对象范围；原结果正文仍按对象及历史字段交集裁剪。未建立安全对象读范围的拒绝和依赖故障不返回此元数据。删除诊断无业务输入字段定位，保留安全整体错误及原拒绝终态。
 
@@ -514,7 +514,7 @@ source_change_item的processing_facets记录实际变化面，request_items记�
 
 `POST /business-units/{id}/lifecycle-pairs/delete`：expectedSourceVersion和两条准确recordId/revision。Go从当前来源重新定位相邻停用/恢复，必须与所确认两条完全相符；分别核验两类别删除权。无任意多选、保留名称、转换或补建字段。两请求成功均200；固定两条共用候选、引用守卫、原子事务、一个来源及原提交终态。
 
-`MaintainCommand`公开入口只接收InsertPair/DeletePair固定结构；REVISE_TIMELINE公开命令拒绝。旧timeline-revisions路由、JointInput/JointPreview输入和公开PreviewJoint退出。内部仍复用多记录来源及request_items/item_outcomes当前存储格式；技术来源action=REVISE_TIMELINE表示多记录原子来源，当前固定请求的授权kind=lifecycle-pair及两个实际权限要求，与历史旧通用判定均按原件读取。没有对调用方开放的通用编排、别名或回退。
+`MaintainCommand`公开入口只接收InsertPair/DeletePair固定结构；REVISE_TIMELINE公开命令拒绝。旧timeline-revisions路由、JointInput/JointPreview输入和公开PreviewJoint退出。内部仍复用多记录来源及request_items/item_outcomes当前存储格式；技术来源action=REVISE_TIMELINE表示多记录原子来源，当前固定请求采用 lifecycle-pair 授权类型，分别核验两个实际动作的权限。历史办理按 M02 原业务来源和已存终态读取。没有对调用方开放的通用编排、别名或回退。
 
 #### 4.2.2 专用上下文与结果保护
 
@@ -658,7 +658,7 @@ resolve 是有 CSRF 保护的 POST，使用与原命令完全相同的提交身�
 | 历史查询或结果查回暂时失败 | 保留原来源/提交身份，恢复后重新授权读取；不因读取失败重复创建事实或切换到最新来源 |
 | 原因选项移除/更名 | 新业务按当前目录；更正/改日/删除及原结果回读保留准确目标分类和名称快照 |
 | 当前授权撤销与写竞争 | 双方共享 X03 规则守卫，在线性化顺序中只能先获准完成或被撤权拒绝，不靠异步缓存失效 |
-| 既有BU已写新身份后返回409、5xx或取消 | 整个业务savepoint回滚；无孤立身份/半份来源/头推进，只有按协议确定提交的终态及安全判定可保留 |
+| 既有BU已写新身份后返回409、5xx或取消 | 整个业务savepoint回滚；无孤立身份/半份来源/头推进，只有按协议确定提交的终态及有明确用途的最小安全事件可保留 |
 | 原尝试整体回滚后另次重试或resolve先完成 | 原尝试只报告待确认；后续同锁读取或封闭，以已有终态为准，无整笔回滚后的rejected补写者 |
 | 拒绝响应丢失、项重排或刷新后查回 | 从持久诊断按原itemId/相对字段定位，不错配数组位置，不恢复表单值；权限收窄时不泄露诊断 |
 | 候选扫描或累计SQL超过整体时限 | 停止执行、回滚并有界清理；保存身份保留，是否成功只由确定终态证明 |
@@ -799,14 +799,14 @@ M02 成功审计与来源事实同事务，使用目标/前后修订计算差异
 
 按025使用一套当前模型和隔离的合成数据。启动顺序为PostgreSQL → upgrader迁移/受控初始化 → API → 页面；API不自动迁移，业务账号与迁移管理员分开。运行使用普通WAL、`synchronous_commit=on`、数据库UTC和业务Asia/Shanghai时区，无复制角色、逻辑槽或提交采集器；xid8及同事务封存保护保留。
 
-当前按025/128/130在隔离空库安装00001—00007开发迁移，存储标识为m02-compact-4；00001仅持有身份与必要认证/安全事件，00002持有BU紧凑历史，00003持有导出授权，00004持有账号身份字段，00005持有部门紧凑历史与关系，00006持有字典引用侧索引，00007持有由Go生成并合并相邻等内容的read-segment-3读取段，历史编码格式保持。018的旧采集设施退役结果保留在[018报告](../../verification/018-source-history-simplification.md)，不是当前升级路径。尚未对外交付的开发迁移可同步整理，现有持久库不自动迁移或清空；当前安装及测试按[017指南](../../guides/017-local-bu-development.md)。开发提交不等于正式发布。
+128、130 批次按 025 在隔离空库安装 00001—00007 开发迁移，当时的存储标识为 m02-compact-4；00001仅持有身份与必要认证/安全事件，00002持有BU紧凑历史，00003持有导出授权，00004持有账号身份字段，00005持有部门紧凑历史与关系，00006持有字典引用侧索引，00007持有由Go生成并合并相邻等内容的read-segment-3读取段，历史编码格式保持。018的旧采集设施退役结果保留在[018报告](../../verification/018-source-history-simplification.md)，不是当前升级路径。尚未对外交付的开发迁移可同步整理，现有持久库不自动迁移或清空；当前安装及测试按[017指南](../../guides/017-local-bu-development.md)。开发提交不等于正式发布。
 
 #### 7.2.1 当前存储与查询接线
 
-1. 在隔离空库初始化`m02-compact-4`当前布局及必要安全事件表，不建立授权过程内容表。稳定身份、业务日期、状态及公开协议保持，旧持久库不原地升级或清空。
+1. 按当前构建对应的迁移基线在隔离空库初始化布局及必要安全事件表，不建立授权过程内容表。稳定身份、业务日期、状态及公开协议保持，旧持久库不原地升级或清空。
 2. BU、部门分别使用独立history/dictionary/shape/terminal表及强类型适配。当前查询复用头块UUID池；历史/路径按确切来源解码。
 3. 第3.1节原提交、分类、前后修订、操作者、冻结路径、事件及审计同事务保护；任一故障整体回滚。同步sqlc和生成的定型编解码器，不引入通用业务解释器。
-4. 以真实DB/API反例、完整原案例回读、正常菜单浏览器和空间/延迟测量验收；130当前结果见[实施记录](../../verification/130-implementation.md)，126原测量见[原报告](../../verification/126-compact-history-implementation.md)。结构检查不代替业务验收。
+4. 以真实DB/API反例、完整原案例回读、正常菜单浏览器和空间/延迟测量验收；130 批次结果见[实施记录](../../verification/130-implementation.md)，126原测量见[原报告](../../verification/126-compact-history-implementation.md)。结构检查不代替业务验收。
 5. 字典回收只在明确归属并停写的自有维护窗口执行，dry-run与删除同一目标实例；锁全部history/terminal/read_segment引用表后按完整引用集清理。每次连接复查刷新PG统计快照，取消、连接重入或根变化则回滚；来源及原终态完整值不变。普通保存不调用回收，FULL另核验临时表/索引及WAL空间，不作为增长周期之间的维护手段。
 
 #### 7.2.2 当前程序与存储一致性
@@ -907,7 +907,7 @@ T07历史种子以逐条新增建立20条成员，再普通更正达到每BU50�
 26. AC022通用部分项目编辑退役；固定弹窗只有四字段/两目标确认。上下文失败可重试，不调用联合预览；缺原因/非法日期保存直接拒绝，成功两条均正式显示。
 27. AC023分别验证普通更正和固定两条的执行/结果读权分离，旧通用终态按原件裁剪，未终结旧编排仅能resolve封闭而不能再次执行。
 28. AC024在获得全部守卫后采样D，来源实际写入跨午夜；终态保存原evaluatedAt/evaluatedBusinessDate，recorded_at保持实际时间。之后推进日期、撤权/恢复或变更当前来源，原日期场景不重算；新请求仍重新采样；CREATE成功同样保存原采样，提前拒绝及not_applied不伪造原D。
-29. AC025在既有BU成功插入新effective_record后返回业务409，核对身份、来源/项/成员、修订、头、审计及Outbox均回到原值；各写阶段注入一次技术失败，并在共同清理入口补panic/取消代表例；不同清理分支另补反例，不要求阶段与异常类型全乘积。不能利用通用回调的4xx提交分支遗留业务行。分别验证savepoint清理失败、外层回滚和COMMIT不明，只有确定提交的技术终态/安全判定可留；回归创建嵌套写入及查询拒绝审计。
+29. AC025在既有BU成功插入新effective_record后返回业务409，核对身份、来源/项/成员、修订、头、审计及Outbox均回到原值；各写阶段注入一次技术失败，并在共同清理入口补panic/取消代表例；不同清理分支另补反例，不要求阶段与异常类型全乘积。不能利用通用回调的4xx提交分支遗留业务行。分别验证savepoint清理失败、外层回滚和COMMIT不明，只保留确定提交的终态及必要事件。回归创建嵌套写入和查询拒绝，普通判权不产生持久记录。
 30. AC026以真实多连接和屏障覆盖原事务保存rejected后迟到重试、整体回滚后重试accepted、整体回滚后resolve先封闭；每种只有一个终态，所有确定响应与其一致。原尝试整体失败只报告待确认，无另起事务补拒绝。检查异内容、resolve失权/超时及原外层COMMIT未知；唯一键与同锁约束须实际观测。
 31. AC027两项均声明name/nameEn而仅一项name非法；丢弃正文/响应、重排项、推进当前来源后，原failure_details仍定位同一itemId/changes.name。检查规范排序、错误白名单、原expectedSource、终态JSON组合和当前授权；CREATE与维护拒绝均有当前安全诊断，缺/未知格式安全失败，不重验当前资料或保存输入值。
 32. AC028用受控截止时间、屏障及真实DB观测长当前线单项扫描、累计SQL超限、正文/取锁取消、COMMIT断连和清理超时。标准排序前后检查并测量取消至本地停止的最大延迟，按第5.4节预算验收；只有超预算才要求优化算法。分别观测连接丢弃和DB锁释放，禁止无限WithoutCancel或只靠WriteTimeout；缺远端观测记未知。
@@ -973,11 +973,11 @@ Capabilities新增deactivate/reactivate及各自writeFields，表示进入表单
 
 2026-11-02 T08当前接线：统一ADD/UPDATE/DELETE最终候选、合并修改面和分类内修订，多目标request_items/item_outcomes、准确source_change_item、单一Outbox影响及当前授权恢复已接通。当前安装仍00001/00002，存储标识m02-timeline-7，Access目录版本3/判定算法版本2；此前标识仅为各日期实施沿革。新程序只接本任务新空库，旧持久库/程序保留。逐项安全声明与原X03记录核对，no_change日期绑定原请求或准确修订，COMMIT未确认保持待确认；实际分层证据和限制见[实施验证](../../verification/022-joint-implementation.md)。
 
-2026-11-02 T07补验：程序准入检查Goose各版本最新应用状态恰为当前00001/00002，缺履历不重建；单条和联合预览统一执行预算反馈。详情正文、所选记录和联合可办动作使用同一确切来源成员，禁止能力另读新head。当前详情在同一授权锁/BU/请求内对相同capability action及字段判定去重，仍保存该意图审计；不缓存跨请求许可、不替代新写入核验。结果补读将原后精确修订及source_change_item分别集合查询，仍逐项验证原来源成员、itemId/recordId、before/after、处理面、日期及集合完整性。
+2026-11-02 T07补验：程序准入检查Goose各版本最新应用状态恰为当前00001/00002，缺履历不重建；单条和联合预览统一执行预算反馈。详情正文、所选记录和联合可办动作使用同一确切来源成员，禁止能力另读新head。当时的详情在同一授权锁/BU/请求内对相同 capability action 及字段判定去重，仍保存意图审计（后由 128 撤除）。不缓存跨请求许可、不替代新写入核验。结果补读将原后精确修订及source_change_item分别集合查询，仍逐项验证原来源成员、itemId/recordId、before/after、处理面、日期及集合完整性。
 
 容量超预算后，常用无筛选编码排序先按有权BU计算总数和页码，再解析该页事实；名称/状态筛选及名称排序仍先解析适用资料。权限字段按scopeKind/id聚合后只在匹配同一BU的企业/对象授权间合并；全部步骤保持单SQL快照和确定排序。来源写入顺序为source → revision集合 → member集合 → 直接项集合，各集合通过jsonb_to_recordset传入；同一业务savepoint内保留逐行封口、复合FK及排斥约束，失败整笔回滚。所有最终修订先分配，停用准确绑定前序最终修订；删除修订保留但不入当前成员。未修改持久模型或放宽数量/执行预算。
 
-联合办理以一次joint-summary判定核验每项完整Requirements，保留全部itemId、原新分类、声明字段、处理面与逐grant匹配证据；X03返回首个拒绝项用于安全诊断，不再为同一要求重复写入单独判定。终态仍引用原完整判定，证据写入失败即失败关闭。此处是当前授权适配的收敛，不增加授权管理模块。池保持12连接；曾尝试20连接但冷测恶化，试验失败保留，不能记为改进。列表使用既有期间索引定位适用成员，首条前回到固定first_record_id作为未来展示，容量测量确认冷读开销后，把source_member已有日期唯一索引改为包含record_id/revision_id/valid_range的覆盖索引，唯一键和原FK/排斥约束不变；不并列保留重复辅助索引。读取使用同实例/BU/来源前缀的上下复合键范围和完整键排序，标准B-tree直接定位，再核对适用range或固定首条ID。当前空库直接安装此唯一索引，不新增旧库升级路径。最终冷热/取消与权限回归证据以T07记录为准。
+T07 当时的联合办理以一次 joint-summary 判定核验每项完整 Requirements，保留全部itemId、原新分类、声明字段、处理面与逐grant匹配证据；X03返回首个拒绝项用于安全诊断，不再为同一要求重复写入单独判定。当时终态引用原完整判定，证据写入失败会阻断办理。该机制已由[128 第 5 节](../../adr/128-authorization-evidence-removal.md#authorization-evidence-replacement)替代。这次适配不增加授权管理模块。池保持12连接；曾尝试20连接但冷测恶化，试验失败保留，不能记为改进。列表使用既有期间索引定位适用成员，首条前回到固定first_record_id作为未来展示，容量测量确认冷读开销后，把source_member已有日期唯一索引改为包含record_id/revision_id/valid_range的覆盖索引，唯一键和原FK/排斥约束不变；不并列保留重复辅助索引。读取使用同实例/BU/来源前缀的上下复合键范围和完整键排序，标准B-tree直接定位，再核对适用range或固定首条ID。当前空库直接安装此唯一索引，不新增旧库升级路径。最终冷热/取消与权限回归证据以T07记录为准。
 
 2026-11-02：按103明确普通新增additionContext、显式anchorRecordId、日期范围及默认、空changes无变化与输入基线保护；同步唯一合同的实施待办，未改OpenAPI/生成代码或现行Go，旧来源、幂等及联合语义保持。
 

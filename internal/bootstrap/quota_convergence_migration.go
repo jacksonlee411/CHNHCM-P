@@ -24,18 +24,7 @@ func quotaLineageMigration(files fs.FS, version int64) *goose.Migration {
 		if err := tx.QueryRowContext(ctx, "SELECT contract FROM staffing.storage_contract WHERE singleton FOR UPDATE").Scan(&contract); err != nil {
 			return err
 		}
-		run := func(name string) error {
-			raw, err := fs.ReadFile(files, name)
-			if err != nil {
-				return err
-			}
-			up, _, ok := strings.Cut(string(raw), "-- +goose Down")
-			if !ok {
-				return errors.New("missing migration boundary in " + name)
-			}
-			_, err = tx.ExecContext(ctx, up)
-			return err
-		}
+		run := func(name string) error { return runMigrationSQL(ctx, tx, files, name) }
 		reporting := func() error {
 			var datedPurposes bool
 			if err := tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT FROM pg_attribute WHERE attrelid='staffing.position_hierarchy'::regclass AND attname='purpose' AND NOT attisdropped)").Scan(&datedPurposes); err != nil {
@@ -127,18 +116,22 @@ func personnelLineageMigration(files fs.FS, name string, version int64) *goose.M
 		if err := tx.QueryRowContext(ctx, probe).Scan(&installed); err != nil || installed {
 			return err
 		}
-		raw, err := fs.ReadFile(files, name)
-		if err != nil {
-			return err
-		}
-		up, _, ok := strings.Cut(string(raw), "-- +goose Down")
-		if !ok {
-			return errors.New("incomplete personnel migration")
-		}
-		_, err = tx.ExecContext(ctx, up)
-		return err
+		return runMigrationSQL(ctx, tx, files, name)
 	}
 	return goose.NewGoMigration(version, &goose.GoFunc{RunTx: up}, &goose.GoFunc{RunTx: func(context.Context, *sql.Tx) error {
 		return errors.New("personnel history requires forward migration")
 	}})
+}
+
+func runMigrationSQL(ctx context.Context, tx *sql.Tx, files fs.FS, name string) error {
+	raw, err := fs.ReadFile(files, name)
+	if err != nil {
+		return err
+	}
+	up, _, ok := strings.Cut(string(raw), "-- +goose Down")
+	if !ok {
+		return errors.New("missing migration boundary in " + name)
+	}
+	_, err = tx.ExecContext(ctx, up)
+	return err
 }

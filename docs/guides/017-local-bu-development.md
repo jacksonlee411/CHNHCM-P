@@ -21,6 +21,8 @@ wt-dev-b当前日常开发与手工验证基准为[4390](http://127.0.0.1:4390)�
 
 每个 profile 按工作树路径和名称确定 Compose 项目、卷及仓外凭据目录。首次启动先检查三个端口，相同 profile 再启动沿用原端口、数据库和身份。新工作树在未指定环境时使用 `default`，未配置端口时使用 4380/8380/54370。T07 采用下文的独立配置。
 
+公共仓 `wt-dev-c` 的 `default` 现使用上述默认端口供薪酬配置验收。三份计划、两份职级薪标及办理历史已保存在本树独立的持久库。[4380 样例和重启复查](../verification/210-compensation-default-port.md)
+
 当前 `wt-dev-d` 日常使用 `m03-current-4486-d`，Web 4486、API 8486、DB 54486。在该工作树运行 `python3 scripts/local-bu.py connection` 可查看实际 profile 和端口，运行 `python3 scripts/local-bu.py verify` 可核实在线服务。指定 `CHNHCM_LOCAL_PROFILE` 始终优先。将一个已登记的持久环境设为本工作树默认值，可运行 `CHNHCM_LOCAL_PROFILE=环境名 python3 scripts/local-bu.py set-default`。选择保存在仓外，其他工作树沿用各自的配置。[4486 切换及原环境恢复](../verification/315-department-quota-allocation.md#6-统一验收环境-4486)
 
 日常开发每个工作树通常复用一个当前模型的持久profile；普通代码修改不逐批新建环境。`make smoke`默认新建独占临时profile、自动选择端口、启动当前模型空库和Web/API，验收结束后回收；不使用当前手工验证库。特定故障或容量现场确需留存时才另建持久profile。既有环境保持原分类，临时属性不能用于将已有持久库改成可删除。

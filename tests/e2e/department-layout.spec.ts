@@ -23,9 +23,10 @@ async function screens(page:Page,name:string,fixture:{url:string;code:string;nam
 async function setup(page:Page){
  await open(page);const bu=await apiBU(page,'跨地区管理事业部','1900-01-01'),p=await apiDepartment(page,bu.id,{name:'华东地区行政管理与专业支持服务中心'.repeat(3)}),name='人力资源及组织发展服务部门'.repeat(4),c=await apiDepartment(page,bu.id,{parent:p.id,name});return {url:'/settings/organization/departments/'+c.id,code:c.code,name};
 }
-test('部门七类页面桌面及短屏键盘布局',async({page})=>{
- test.setTimeout(180000);page.setDefaultTimeout(15000);mkdirSync(evidence,{recursive:true});const url=await setup(page),matrix=[];
- for(const [name,width,height] of [['desktop',1440,900],['short',1440,540]] as const){await page.setViewportSize({width,height});await expect(page.locator('[data-navigation-mode]')).toHaveAttribute('data-navigation-mode','desktop');matrix.push(...await screens(page,name,url));}
+test('部门七类页面桌面键盘布局',async({page})=>{
+ test.setTimeout(180000);page.setDefaultTimeout(15000);mkdirSync(evidence,{recursive:true});const url=await setup(page);
+ await expect(page.locator('[data-navigation-mode]')).toHaveAttribute('data-navigation-mode','desktop');
+ const matrix=await screens(page,'desktop',url);
  writeFileSync(`${evidence}/responsive.json`,JSON.stringify(matrix,null,2)+'\n');
 });
 test('部门七类页面Chromium 原生缩放',async()=>{
@@ -37,7 +38,7 @@ test('部门七类页面Chromium 原生缩放',async()=>{
   const actual=await browser.newContext({viewport:null,deviceScaleFactor:undefined,baseURL:connection.webOrigin}),view=await actual.newPage();view.setDefaultTimeout(15000);const url=await setup(view);
   const cdp=await actual.newCDPSession(view),{windowId}=await cdp.send('Browser.getWindowForTarget');const dimensions=()=>view.evaluate(()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,outer:[outerWidth,outerHeight]}));
   const zoom=(steps:number)=>execFileSync('python3',['docs/verification/data/100-ui-baseline/native-zoom.py',String(steps)],{env,stdio:'pipe'});zoom(0);const initial=await dimensions();await cdp.send('Browser.setWindowBounds',{windowId,bounds:{width:initial.outer[0]+1280-initial.width,height:initial.outer[1]+900-initial.height}});const matrix=[];
-  for(const [steps,dpr] of nativeZoomCases()){zoom(steps);await expect.poll(async()=>(await dimensions()).dpr).toBe(dpr);matrix.push(...await screens(view,`zoom-${dpr*100}`,url));}
+  for(const [steps,dpr] of nativeZoomCases){zoom(steps);await expect.poll(async()=>(await dimensions()).dpr).toBe(dpr);matrix.push(...await screens(view,`zoom-${dpr*100}`,url));}
   writeFileSync(`${evidence}/native-zoom.json`,JSON.stringify(matrix,null,2)+'\n');zoom(0);
  }finally{xvfb.kill('SIGTERM');await browser?.close();await new Promise<void>(resolve=>{if(xvfb.exitCode!==null)resolve();else xvfb.once('exit',()=>resolve())})}
 });

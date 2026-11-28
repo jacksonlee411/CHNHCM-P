@@ -49,6 +49,7 @@ func (a *API) Handler() http.Handler {
 	a.readinessRoutes(mux)
 	a.recruitingRoutes(mux)
 	a.staffingRoutes(mux)
+	a.compensationRoutes(mux)
 	mux.Handle("GET /healthz", Handler())
 	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
 		if a.Runtime.Ready(r.Context()) != nil {
@@ -441,6 +442,9 @@ func protocolFields(t reflect.Type) []reflect.StructField {
 
 // Match exact protocol names and presence; encoding/json alone accepts case-folded names and null strings.
 func strictShape(raw []byte, t reflect.Type) bool {
+	if t == planChangesType {
+		t = reflect.TypeFor[planChangesWire]()
+	}
 	if t.Kind() == reflect.Pointer {
 		if string(raw) == "null" {
 			return true

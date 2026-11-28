@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom';
 import { createContext, useContext, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type Ref, type RefObject } from 'react';
 import { Box, Button, Checkbox, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
 import {
-  DataGrid, GridPagination, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD, type GridApi, type GridColDef, type GridColumnVisibilityModel,
+  DataGrid, GridPagination, GridPreferencePanelsValue, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD, type GridApi, type GridColDef, type GridColumnVisibilityModel,
   type GridPaginationModel, type GridSortModel, type GridFilterModel, type GridSlotsComponent,
 } from '@mui/x-data-grid';
 
@@ -32,6 +32,8 @@ const ToolbarHost = createContext<HTMLElement | null>(null);
 const ToolbarContent = createContext<ReactNode>(null);
 // A stable slot type keeps search inputs, menus and the pager mounted during requests.
 function ListToolbar() { const content = useContext(ToolbarContent), host = useContext(ToolbarHost); return host ? createPortal(content, host) : <>{content}</>; }
+// When all business columns are hidden, their recovery control lives in the toolbar.
+function NoColumnsInGridBody() { return null; }
 type SelectionControl = { selectable?: (id: string) => boolean; ids: Set<string>; onChange: (ids: Set<string>) => void; count?: number; checked: boolean; mixed: boolean; total: number; disabled: boolean; all: () => void; clear: () => void };
 const SelectionContext = createContext<SelectionControl | undefined>(undefined);
 function FullSelectionHeader() {
@@ -61,7 +63,7 @@ export function DataGridPage<T extends { id: string }>({
 }) {
   const [toolbarHost, setToolbarHost] = useState<HTMLDivElement | null>(null);
   const compact = useMediaQuery('(max-width:899px)');
-  const naturalHeight = useMediaQuery('(max-width:599px), (max-height:600px)');
+  const naturalHeight = useMediaQuery('(max-width:640px)');
   const [desktopVisibility, setDesktopVisibility] = useState<GridColumnVisibilityModel>(() => Object.fromEntries((defaultHiddenColumns ?? []).map(field => [field, false])));
   // Keep one grid and all field identities mounted. Responsive visibility never overwrites
   // desktop preferences, native widths, the toolbar input, or the authorized query state.
@@ -72,6 +74,7 @@ export function DataGridPage<T extends { id: string }>({
   const visibility = useMemo(() => compact
     ? Object.fromEntries(gridColumns.map(column => [column.field, column.field === summaryColumn.field || column.field === GRID_CHECKBOX_SELECTION_FIELD]))
     : { ...desktopVisibility, [summaryColumn.field]: false }, [compact, gridColumns, summaryColumn.field, desktopVisibility]);
+  const allBusinessColumnsHidden = !compact && columns.length > 0 && columns.every(column => desktopVisibility[column.field] === false);
   const root = useRef<HTMLDivElement>(null);
   const pagerFocus = useRef<HTMLElement | null>(null);
   const focusedRow = useRef<{ id: string; link: boolean } | null>(null);
@@ -151,9 +154,9 @@ export function DataGridPage<T extends { id: string }>({
       onCellKeyDown={(_, event) => { if (selection && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a' && !(event.target as HTMLElement).closest('input:not([type=checkbox]), textarea, [contenteditable=true]')) { event.defaultMuiPrevented = true; event.preventDefault(); if (!selection.disabled) selection.all(); } }}
       disableRowSelectionOnClick
       disableColumnFilter={!filterModel} filterMode="server" filterModel={filterModel}
-      hideFooter showToolbar slots={{ ...slots, toolbar: ListToolbar }}
+      hideFooter showToolbar slots={{ ...(allBusinessColumnsHidden && { noColumnsOverlay: NoColumnsInGridBody }), ...slots, toolbar: ListToolbar }}
       localeText={{
-        noRowsLabel: empty,
+        noRowsLabel: empty, noColumnsOverlayLabel: '没有显示的列', noColumnsOverlayManageColumns: '管理列',
         checkboxSelectionHeaderName: '选择', checkboxSelectionSelectRow: `选择${label.replace(/列表$/, '')}`, checkboxSelectionUnselectRow: `取消选择${label.replace(/列表$/, '')}`,
         noResultsOverlayLabel: empty,
         columnHeaderSortIconLabel: '排序',
@@ -188,7 +191,10 @@ export function DataGridPage<T extends { id: string }>({
       } } }}
       sx={{ border: 0, borderRadius: 0, minHeight: 160, '--DataGrid-overlayHeight': '100px', '--DataGrid-containerBackground': '#fff' }}
     />;
-  return <SelectionContext.Provider value={selection}><ToolbarHost.Provider value={toolbarHost}><ToolbarContent.Provider value={<>{toolbar}{messages}</>}>
+  return <SelectionContext.Provider value={selection}><ToolbarHost.Provider value={toolbarHost}><ToolbarContent.Provider value={<>{toolbar}{messages}{allBusinessColumnsHidden && <Box className="list-applied-summary" role="status" sx={{px: 2}}>
+    <Typography component="span" variant="body2">没有显示的列</Typography>
+    <Button size="small" onClick={() => apiRef.current?.showPreferences(GridPreferencePanelsValue.columns)}>管理列</Button>
+  </Box>}</>}>
     {sidebar ? <Box className="list-with-sidebar" sx={{display:'flex',flexDirection:'column',flex:1,minWidth:0,minHeight:0}}>
       <Box ref={setToolbarHost} />
       <Box sx={{display:'flex',flex:1,minWidth:0,minHeight:160}}>{sidebar}<Box sx={{display:'flex',flexDirection:'column',flex:1,minWidth:0,minHeight:0}}>{grid}</Box></Box>

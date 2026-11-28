@@ -167,7 +167,6 @@ export const itemOptions: Record<string, string[]> = {
   educationType: Object.keys(educationLayout),
   credentialKind: ['职称', '职业资格', '职业技能等级', '执业许可', '专业认证'],
   completion: ['在读', '已毕业', '结业', '肄业'],
-  addressType: ['居住地址', '户籍地址', '通讯地址', '其他地址'],
   relationship: [
     '配偶',
     '父母',
@@ -196,6 +195,7 @@ export type Row = {
   masked?: string[];
   canRemove?: boolean;
   places?: Places;
+  addressType?: Models['PersonAddressTypeChoice'] | Models['PersonAddressTypeAdoption'];
   country?: Choice;
   fields: Fields;
   removed?: boolean;
@@ -252,6 +252,7 @@ function fromItem(x: Models['PersonProfileItem']): Row {
     canRemove: x.canRemove,
     fields: { ...x.fields },
     places: x.adoptions,
+    addressType: x.addressTypeAdoption,
   };
 }
 // Carry forward only edits that still have full read and write permission on this row.
@@ -272,7 +273,10 @@ export function reconcileItem(old: Row | undefined, edited: Row, current: Row, w
       fields[key] = edited.fields[key] || '';
     }
   }
-  return { ...current, fields, places, removed: !!edited.removed && !!current.canRemove };
+  const addressType = canWrite('addressType') && edited.addressType && !('date' in edited.addressType)
+    ? edited.addressType : current.addressType;
+  if (addressType === edited.addressType && addressType && canWrite('addressType')) fields.addressType = edited.fields.addressType;
+  return { ...current, fields, places, addressType, removed: !!edited.removed && !!current.canRemove };
 }
 function itemCommand(rows: Row[], original: Row[]) {
   const edits: Models['PersonProfileItemEdit'][] = [];
@@ -295,7 +299,10 @@ function itemCommand(rows: Row[], original: Row[]) {
       }
       if (prev && !next) fields[key] = row.fields[key] || '';
     }
-    if (Object.keys(choices).length || Object.keys(fields).length) edits.push({ ...item, fields, choices });
+    const addressTypeChoice = row.addressType && !('date' in row.addressType) ? row.addressType : undefined;
+    if (addressTypeChoice) delete fields.addressType;
+    if (addressTypeChoice || Object.keys(choices).length || Object.keys(fields).length)
+      edits.push({ ...item, fields, choices, addressTypeChoice });
   }
   return edits;
 }
