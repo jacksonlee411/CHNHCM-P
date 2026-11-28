@@ -1,1 +1,2 @@
 {"number":"00063","branch":"wt-dev-c","name":"assignment_base_pay","purpose":"CHNHCM-214 员工按任期定薪、调薪、更正与撤去","depends_on":["00060"],"status":"reserved","main":"ed11f04156e7909bc3f02e865b625d365e7a132d"}
+{"number":"00064","branch":"wt-dev-a","name":"access_management","purpose":"CHNHCM-027 T04 账号管理归属、委派上限与受控恢复","depends_on":["00058"],"status":"reserved","main":"ed11f04156e7909bc3f02e865b625d365e7a132d"}
