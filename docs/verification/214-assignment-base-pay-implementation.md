@@ -50,3 +50,9 @@
 | 薪酬及迁移实库 | `go test -tags=integration -timeout=40m ./internal/bootstrap -run '^TestCompensation' -v -count=1`。最终补充场景单跑 `TestCompensationAssignmentBasePayThroughHTTP`。迁移另跑 `TestT07ExactCurrentMigrationSetAdmission`、`TestCountry200SourceFieldRemovalMigration`、`TestT07FreshInstallMidMigrationFailureClosesBusiness`。 |
 | 生产构建桌面、短屏与原生缩放 | 在隔离 profile 中使用 `CHNHCM_LOCAL_PROFILE=pay214-retest corepack pnpm test:smoke compensation214.spec.ts --no-deps`。首期与人员回归另选 `first-hire.spec.ts`、`compensation210.spec.ts`、`compensation-plans210.spec.ts` 中的五项受影响场景。 |
 | 4380 持久化 | `python3 scripts/local-bu.py down`、`python3 scripts/local-bu.py up --fixed-web`、`python3 scripts/local-bu.py verify`，再从浏览器分别登录两种角色逐号比对。 |
+
+## 5 与已合并的地址类型版本对接
+
+主线 `d474520` 已分别用 00061、00062 交付地址类型和按日启停。4380 的首个二期版本 `9586806` 在独立的 00061 下已保存四份工资修订与回执。共同版将原薪酬 SQL 原样置于 00063，文件 SHA-256 为 `073c1eb03950c787733824cb0b4055941fd58e64f79be3b838a352164829b8d5`。upgrader 保留已应用的 00061 行，按实际存储结构补齐两类对象。[共同版接入规则](../../db/migrations/README.md) · [两类旧库升级用例](../../internal/bootstrap/t07_storage_admission_integration_test.go)
+
+首轮在 4380 的完整备份副本上发现，补建地址类型时初始四项带有待检的延迟外键，紧接着执行区间 DDL 会被 PostgreSQL 拒绝。共同版在同一迁移事务内验证这些外键后再执行 DDL。使用第二个全新备份副本连续执行两次 upgrader，原 1 至 61 的账本行、十一张薪酬、授权及人员表的行数与正文摘要完全相同，四份工资回执及其原修订一致，新建四个标准地址类型。隔离实库还验证了不可变回执触发器被关闭时拒绝升级，恢复保护后从 62 中间点重试成功。所有数据库操作均保留原业务历史。[原核定与回执号](data/214-assignment-base-pay/awards.json)

@@ -253,6 +253,15 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool, migrations fs.FS) error {
 			options = append(options, goose.WithGoMigrations(personnelLineageMigration(migrations, step.name, step.version)), goose.WithExcludeNames([]string{step.name}))
 		}
 	}
+	// Only the combined release adopts the historical salary layout at 61.
+	if _, err := fs.Stat(migrations, addressPeriodsFile); err == nil {
+		options = append(options, goose.WithGoMigrations(addressPeriodsAfterBasePay(migrations)),
+			goose.WithExcludeNames([]string{addressPeriodsFile}))
+	}
+	if _, err := fs.Stat(migrations, basePayFile); err == nil {
+		options = append(options, goose.WithGoMigrations(adoptBasePay(migrations)),
+			goose.WithExcludeNames([]string{basePayFile}))
+	}
 	provider, e := goose.NewProvider(goose.DialectPostgres, db, migrations, options...)
 	if e != nil {
 		return e
@@ -324,6 +333,9 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 		if e = staffingdb.InitializeFirstHireRule(ctx, tx, in.Instance, subject, cfg.Version, foundation.Period{From: cfg.From, Until: cfg.Until}); e != nil {
 			return e
 		}
+	}
+	if e = persondb.InitializeAddressTypes(ctx, tx, in.Instance); e != nil {
+		return e
 	}
 	if e = initializeAccountFixtures(ctx, tx, in, subject); e != nil {
 		return e
@@ -438,9 +450,15 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,61)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,63)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 60 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 62 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            -- Address-type releases 61 and 62 shipped on 58. A retry may already contain 59.
+            OR (last_version IN (61,62) AND 61=ANY(versions)
+                AND array_remove(array_remove(versions,61::bigint),62::bigint) IN
+                    (ARRAY(SELECT generate_series(1,58)::bigint), ARRAY(SELECT generate_series(1,59)::bigint))
+                AND (59=ANY(versions) OR to_regnamespace('compensation') IS NULL)
+                AND to_regnamespace('configuration') IS NULL)
             -- e shipped 32 (then 33) on 28. A retry may already have installed 29 or 30.
             OR (versions=ARRAY(SELECT generate_series(1,person_prefix)::bigint) || ARRAY(SELECT generate_series(32,least(last_version,33))::bigint)
                 AND person_prefix BETWEEN 28 AND 30 AND last_version IN (32,33)
@@ -541,7 +559,17 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
            AND to_regclass('personnel.contact_channel_primary') IS NOT NULL AND to_regclass('access.person_profile_fixture') IS NOT NULL
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.person_grant') AND attname='item_id' AND NOT attisdropped)
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.identity_payload') AND attname='basic' AND NOT attisdropped)))
-       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=61 AND is_applied) OR (to_regclass('access.base_pay_grant') IS NOT NULL AND to_regclass('compensation.award_timeline') IS NOT NULL AND to_regclass('compensation.award_revision') IS NOT NULL AND to_regclass('compensation.award_period') IS NOT NULL AND to_regclass('compensation.award_receipt') IS NOT NULL AND to_regclass('compensation.award_recovery') IS NOT NULL AND to_regclass('compensation.award_outbox') IS NOT NULL))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=63 AND is_applied) OR `+basePayLayout+`)
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=62 AND is_applied) OR (
+           EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.address_type') AND attname='valid_during' AND atttypid='daterange'::regtype AND attgenerated='s' AND NOT attisdropped)
+           AND EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('personnel.address_type') AND conname='address_type_period_bounds' AND convalidated)
+           AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.address_type_revision') AND attname='dated' AND NOT attisdropped)))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=61 AND is_applied)
+            OR ($1 AND `+legacyBasePay61+`) OR (
+           to_regclass('personnel.address_type_choices') IS NOT NULL AND to_regclass('personnel.address_type_revision') IS NOT NULL
+           AND to_regclass('personnel.address_type_not_applied') IS NOT NULL
+           AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('personnel.address_type_revision') AND tgname='immutable_revision' AND tgenabled='O')
+           AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.profile_item_payload') AND attname='address_type_revision' AND NOT attisdropped)))
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=60 AND is_applied) OR (
            to_regclass('configuration.plan_scope_version') IS NOT NULL AND to_regclass('compensation.plan') IS NOT NULL
            AND to_regclass('compensation.plan_period') IS NOT NULL AND to_regclass('compensation.plan_version') IS NOT NULL

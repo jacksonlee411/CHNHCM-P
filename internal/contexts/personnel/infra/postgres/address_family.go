@@ -75,6 +75,9 @@ func (r *request) projectItems(v snapshot, out *p.Detail, view string) {
 							x.Fields[k] = "********"
 						}
 					}
+					if k == "addressType" {
+						x.AddressType = row.AddressType
+					}
 					if a, ok := row.Adoptions[k]; ok {
 						a.Parents = nil
 						x.Adoptions[k] = a
@@ -165,6 +168,9 @@ func (r *request) checkItemFault(id string, in p.Correct, field string) error {
 	if !r.itemVisible(section, id, edit.ItemID) || !r.itemRead(section, id, edit.ItemID, key) {
 		return d.Denied()
 	}
+	if edit.AddressType != nil && !r.itemWrite(section, id, edit.ItemID, "addressType") {
+		return d.Denied()
+	}
 	for k := range edit.Fields {
 		if !r.itemWrite(section, id, edit.ItemID, k) {
 			return d.Denied()
@@ -242,7 +248,7 @@ func (r *request) applyItems(v *snapshot, s d.ItemSection, edits []p.ProfileItem
 		}
 		row := &v.profileItems[idx]
 		if edit.Remove {
-			if len(edit.Fields)+len(edit.Choices) != 0 {
+			if len(edit.Fields)+len(edit.Choices) != 0 || edit.AddressType != nil {
 				return d.Invalid(s.Name, "移除时只需选择原记录")
 			}
 			if !r.removable(s, v.ID, *row) {
@@ -386,9 +392,28 @@ func (r *request) resolvePlace(k string, c p.PlaceChoice, existing map[string]p.
 }
 
 func (r *request) editItemFields(s d.ItemSection, id string, n int, row *profileItem, edit p.ProfileItemEdit) error {
+	if edit.AddressType != nil {
+		if s.Name != d.Addresses.Name || !r.itemWrite(s, id, row.ItemID, "addressType") {
+			return d.Denied()
+		}
+		if _, raw := edit.Fields["addressType"]; raw {
+			return rowInputError(s.Name, n, "addressType", d.Invalid("addressType", "请只提交选中的地址类型"))
+		}
+		if err := r.adoptAddressType(id, row, edit.AddressType, ""); err != nil {
+			return rowInputError(s.Name, n, "addressType", err)
+		}
+	}
 	for k, value := range edit.Fields {
 		if !slices.Contains(s.Fields, k) || !r.itemWrite(s, id, row.ItemID, k) {
 			return d.Denied()
+		}
+		if k == "addressType" {
+			if value != row.Fields[k] {
+				if err := r.adoptAddressType(id, row, nil, strings.TrimSpace(value)); err != nil {
+					return rowInputError(s.Name, n, k, err)
+				}
+			}
+			continue
 		}
 		val, err := d.ProfileText(k, value)
 		if err != nil {

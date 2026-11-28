@@ -13,6 +13,14 @@ type AccessAppointmentIssuerFixture struct {
 	PrincipalID string
 }
 
+type AccessBasePayGrant struct {
+	InstanceID   string
+	PrincipalID  string
+	AssignmentID string
+	Action       string
+	PlanID       pgtype.UUID
+}
+
 type AccessBoundPermission struct {
 	InstanceID  string
 	GrantID     string
@@ -273,6 +281,62 @@ type AccessSession struct {
 	IdleExpiresAt     pgtype.Timestamptz
 	AbsoluteExpiresAt pgtype.Timestamptz
 	RevokedAt         pgtype.Timestamptz
+}
+
+type CompensationAwardOutbox struct {
+	InstanceID   string
+	AssignmentID string
+	AwardID      string
+	Revision     string
+}
+
+type CompensationAwardPeriod struct {
+	InstanceID   string
+	AssignmentID string
+	AwardID      string
+	Revision     string
+	StartDate    pgtype.Date
+	UntilDate    pgtype.Date
+	ValidPeriod  pgtype.Range[pgtype.Date]
+}
+
+type CompensationAwardReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	AwardID      string
+	Revision     string
+}
+
+type CompensationAwardRecovery struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Confirmation string
+	Digest       []byte
+}
+
+type CompensationAwardRevision struct {
+	InstanceID    string
+	AssignmentID  string
+	AwardID       string
+	Revision      string
+	EffectiveDate pgtype.Date
+	Amount        pgtype.Numeric
+	Previous      pgtype.UUID
+	Action        string
+	Reason        string
+	Note          string
+	Adoption      []byte
+	OperatorID    string
+	RecordedAt    pgtype.Timestamptz
+}
+
+type CompensationAwardTimeline struct {
+	InstanceID   string
+	AssignmentID string
+	Head         string
 }
 
 type CompensationGradeRate struct {
@@ -1188,6 +1252,43 @@ type OrganizationStorageContract struct {
 	Contract  string
 }
 
+type PersonnelAddressType struct {
+	InstanceID    string
+	ItemID        string
+	Code          string
+	Name          string
+	SortOrder     int32
+	FirstDay      pgtype.Date
+	Head          string
+	LegacyLabel   pgtype.Text
+	StopDay       pgtype.Date
+	ConfirmedFrom pgtype.Date
+	UndatedStop   bool
+	ValidDuring   pgtype.Range[pgtype.Date]
+}
+
+type PersonnelAddressTypeNotApplied struct {
+	InstanceID   string
+	ActorID      string
+	SubmissionID string
+}
+
+type PersonnelAddressTypeRevision struct {
+	InstanceID   string
+	ItemID       string
+	Revision     string
+	Name         string
+	SortOrder    int32
+	Selectable   bool
+	ActorID      pgtype.UUID
+	RecordedAt   pgtype.Timestamptz
+	SubmissionID pgtype.UUID
+	Digest       pgtype.Text
+	Dated        bool
+	StopDay      pgtype.Date
+	UndatedStop  bool
+}
+
 type PersonnelBankAccount struct {
 	InstanceID string
 	PersonID   string
@@ -1301,19 +1402,22 @@ type PersonnelPerson struct {
 }
 
 type PersonnelProfileItemPayload struct {
-	InstanceID       string
-	PersonID         string
-	Version          string
-	Section          string
-	ItemID           string
-	Revision         string
-	Ordinal          int32
-	Fields           []byte
-	Adoptions        []byte
-	OrdinaryUntil    pgtype.Timestamptz
-	EvidenceUntil    pgtype.Timestamptz
-	CollectionPolicy string
-	AccountID        pgtype.UUID
+	InstanceID          string
+	PersonID            string
+	Version             string
+	Section             string
+	ItemID              string
+	Revision            string
+	Ordinal             int32
+	Fields              []byte
+	Adoptions           []byte
+	OrdinaryUntil       pgtype.Timestamptz
+	EvidenceUntil       pgtype.Timestamptz
+	CollectionPolicy    string
+	AccountID           pgtype.UUID
+	AddressTypeID       pgtype.UUID
+	AddressTypeRevision pgtype.UUID
+	AddressTypeDay      pgtype.Date
 }
 
 type PersonnelQuery struct {

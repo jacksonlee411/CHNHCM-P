@@ -470,9 +470,10 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   await expect(page.getByRole('combobox', { name: /工作地点/ })).toHaveValue(locations[1].name);
   const releaseProfile = await holdRead(page, url => url.pathname === '/api/v1/persons/' + sample.id);
   await changeTo(locations[2].name);
-  await page.getByRole('button', { name: '数据更改 · 2027-05-01', exact: true }).click();
   const revisions = page.getByRole('button', { name: /查看修订/ });
   await expect(revisions).toHaveCount(2);
+  const currentEntry = await page.evaluate(() => history.state.key);
+  await page.getByRole('button', { name: '数据更改 · 2027-05-01', exact: true }).click();
   const firstRevision = page.getByRole('button', { name: /查看修订.*第 1 次$/ });
   await clickWhileReadCompletes(firstRevision, releaseProfile, page.getByRole('tab', {name:'个人资料'}));
   await expect(page.getByText(locations[0].name + ' → ' + locations[1].name, { exact: true })).toBeVisible();
@@ -480,6 +481,7 @@ async function assignmentJourney(page: Page, sample: Awaited<ReturnType<typeof s
   expect(new URL(versionURL).searchParams.get('adoptedRef')).toBeTruthy();
   await page.goBack();
   await expect(page.getByText(locations[0].name + ' → ' + locations[2].name, { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => history.state.key)).toBe(currentEntry);
   await page.goForward();
   await expect(page).toHaveURL(versionURL);
   await page.reload();

@@ -438,8 +438,9 @@ func checkPersonnelProfileBackup(t *testing.T, version int) {
 			var checksum string
 			projection := "to_jsonb(v)"
 			if table == "profile_item_payload" {
-				projection += " - 'account_id'"
-			} // 00039 adds a derived reference only for bank rows.
+				// Compare the columns present in the backup. 00040 and 00061 add references.
+				projection += " - 'account_id' - 'address_type_id' - 'address_type_revision' - 'address_type_day'"
+			}
 			must(t, db.QueryRow(f.ctx, "select md5(coalesce(string_agg(row_data,'|' order by row_data),'')) from (select ("+projection+")::text as row_data from personnel."+table+" v) original").Scan(&checksum))
 			values[table] = checksum
 		}
@@ -450,6 +451,12 @@ func checkPersonnelProfileBackup(t *testing.T, version int) {
 	must(t, bootstrap.Migrate(f.ctx, db, migrations.Files))
 	if !reflect.DeepEqual(before, fingerprint()) {
 		t.Fatal("prior profile data changed")
+	}
+	var inventedAdoption bool
+	must(t, db.QueryRow(f.ctx, `SELECT EXISTS (SELECT FROM personnel.profile_item_payload
+		WHERE address_type_id IS NOT NULL OR address_type_revision IS NOT NULL OR address_type_day IS NOT NULL)`).Scan(&inventedAdoption))
+	if inventedAdoption {
+		t.Fatal("upgrade assigned an address type adoption to a legacy row")
 	}
 	var instance string
 	var count, receipts, items int

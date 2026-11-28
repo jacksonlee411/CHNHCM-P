@@ -51,6 +51,48 @@ func (a *API) personnelRoutes(m *http.ServeMux) {
 			respond(w, 200, v, e)
 		})
 	}
+	const types = "/api/v1/person-address-types"
+	m.HandleFunc("GET "+types, func(w http.ResponseWriter, r *http.Request) {
+		if _, e := queryValues(r); e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := s.AddressTypes(r.Context(), credentials(r))
+		respond(w, 200, v, e)
+	})
+	m.HandleFunc("GET "+types+"/{typeId}", func(w http.ResponseWriter, r *http.Request) {
+		if _, e := queryValues(r); e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := s.AddressTypeDetail(r.Context(), credentials(r), r.PathValue("typeId"))
+		respond(w, 200, v, e)
+	})
+	m.HandleFunc("GET "+types+"/{typeId}/revisions/{revision}", func(w http.ResponseWriter, r *http.Request) {
+		if _, e := queryValues(r); e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := s.AddressTypeSource(r.Context(), credentials(r), r.PathValue("typeId"), r.PathValue("revision"))
+		respond(w, 200, v, e)
+	})
+	m.HandleFunc("POST "+types+"/submissions/{submission}/resolve", func(w http.ResponseWriter, r *http.Request) {
+		if _, e := queryValues(r); e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := s.AddressTypeReceipt(r.Context(), credentials(r), r.PathValue("submission"))
+		respond(w, 200, v, e)
+	})
+	m.HandleFunc("POST "+types, personPost(func(r *http.Request, in p.AddressTypeCommand) (p.AddressType, error) {
+		return s.SaveAddressType(r.Context(), credentials(r), in)
+	}))
+	get("/{id}/address-type-candidates", []string{"itemId"}, func(r *http.Request) (any, error) {
+		items, err := s.AddressTypeCandidates(r.Context(), credentials(r), r.PathValue("id"), r.URL.Query().Get("itemId"))
+		return struct {
+			Items []p.AddressTypeOption `json:"items"`
+		}{items}, err
+	})
 	get("/context", nil, func(r *http.Request) (any, error) { return s.Entry(r.Context(), credentials(r)) })
 	query := func(r *http.Request) (p.Query, error) {
 		q := r.URL.Query()
