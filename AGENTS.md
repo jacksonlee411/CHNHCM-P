@@ -2,13 +2,14 @@
 
 始终用中文沟通。本仓全新实施独立 China HCM 产品，采用模块化单体，Go 为唯一权威领域内核。保留 CubeBox 体验、业务及验证资产。
 
-- 查共享规则与对象差异，见[按问题查规范](docs/governance/README.md)。
-- 查具体业务、页面与技术合同，见[按模块查规格](docs/specs/README.md)。
-- 查在办计划、验收记录或历史归档，见[文档首页](docs/index.md)。
+- [共享规则与对象差异](docs/governance/README.md)
+- [各模块业务、页面与技术合同](docs/specs/README.md)
+- [在办计划、验收记录与历史归档](docs/index.md)
 
 ## 开始工作
 
 - 先核对当前用户指令、cwd、分支、HEAD、工作区、stash 及[登记表](docs/governance/registry.json)，保护已有修改和未跟踪文件。固定工作树不得切换分支，以本机检出路径为准。[005]
+- 一个源分支通常只保留一个开放 PR（含草稿）。[005]
 - 默认只检索现行规范。按需查计划及最新交接，区分文档状态、计划执行状态与实际验收结果。旧批次摘要不能重开已结事项或证明当前实现完成。
 - **保留用户验收环境**。`wt-dev-d` 日常使用[统一入口 4486](docs/verification/315-department-quota-allocation.md#6-统一验收环境-4486)（API 8486 / DB 54486）。原 45300 及岗位、部门专项库停机保留。`m03-manual-d` 的 4380（API 8380 / DB 54370）、`m03-grade-d` 的 4381（API 8381 / DB 54371）及 `m03-grade-g2-d` 的 4382（API 8382 / DB 54372）仍由本树负责，用户验收结束或下次更新时复查，禁止按自动测试结束回收。4383、4388、[4390](docs/verification/136-actions-publication.md#8-原4390固定环境更新与交接)等持久环境同样保护。[运行接续](docs/verification/307-m03-job-foundation-implementation.md#10-用户授权的独立页面验收环境)
 
