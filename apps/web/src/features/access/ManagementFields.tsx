@@ -9,6 +9,7 @@ import { ObjectDetailField, ObjectTextField, recordedTime } from '@chnhcm/ui';
 import {
   label,
   targetName,
+  managementRightName,
   versionName,
   version,
   type View,
@@ -57,7 +58,9 @@ function CheckList({
   values = [],
   options,
   change,
+  group,
 }: {
+  group?: string;
   title: string;
   values?: string[];
   options: Choice[];
@@ -66,25 +69,32 @@ function CheckList({
   return (
     <fieldset className="access-checklist">
       <legend>{title}</legend>
-      {options.map((o) => (
-        <FormControlLabel
-          key={o.id}
-          label={o.name}
-          control={
-            <Checkbox
-              size="small"
-              checked={values.includes(o.id)}
-              onChange={(e) =>
-                change(
-                  e.target.checked
-                    ? [...values, o.id]
-                    : values.filter((x) => x !== o.id),
-                )
-              }
-            />
-          }
-        />
-      ))}
+      <div className="security-check-options">
+        {options.map((o) => (
+          <FormControlLabel
+            key={o.id}
+            label={o.name}
+            control={
+              <Checkbox
+                size="small"
+                slotProps={{
+                  input: {
+                    'aria-label': group ? group + ' · ' + o.name : o.name,
+                  },
+                }}
+                checked={values.includes(o.id)}
+                onChange={(e) =>
+                  change(
+                    e.target.checked
+                      ? [...values, o.id]
+                      : values.filter((x) => x !== o.id),
+                  )
+                }
+              />
+            }
+          />
+        ))}
+      </div>
     </fieldset>
   );
 }
@@ -177,7 +187,7 @@ function PolicyChoice({
     role = d.version!;
   const choices = versionOptions(v, kind, 'role');
   if (v.rights?.includes('policy'))
-    choices.unshift({ id: 'new', name: '同时发布新' + name });
+    choices.unshift({ id: 'new', name: '新建' + name });
   const update = (p: Definition | undefined, ref?: string) =>
     set({ ...d, [key]: p, version: { ...role, [kind]: ref } });
   return (
@@ -312,15 +322,27 @@ export function ManagementFields({
           <FieldPolicy view={v} d={def} change={change} />
         ) : (
           <>
-            <CheckList
-              title="业务动作"
-              values={def.actions}
-              options={(v.actions ?? []).map((a) => ({
-                id: a.key,
-                name: a.menu + ' · ' + a.name,
-              }))}
-              change={(actions) => change({ ...def, actions })}
-            />
+            <div className="object-detail-columns security-policy-fields">
+              <div>
+                <PolicyChoice kind="scope" v={v} d={d} set={set} />
+              </div>
+              <div>
+                <PolicyChoice kind="fields" v={v} d={d} set={set} />
+              </div>
+            </div>
+            <h2 className="object-section-title">业务动作</h2>
+            {Array.from(new Set(v.actions?.map((a) => a.menu))).map((menu) => (
+              <CheckList
+                key={menu}
+                group={menu}
+                title={menu}
+                values={def.actions}
+                options={(v.actions ?? [])
+                  .filter((a) => a.menu === menu)
+                  .map((a) => ({ id: a.key, name: a.name }))}
+                change={(actions) => change({ ...def, actions })}
+              />
+            ))}
             <details>
               <summary>查看对应 API</summary>
               {(v.actions ?? [])
@@ -331,8 +353,6 @@ export function ManagementFields({
                   </div>
                 ))}
             </details>
-            <PolicyChoice kind="scope" v={v} d={d} set={set} />
-            <PolicyChoice kind="fields" v={v} d={d} set={set} />
           </>
         )}
       </>
@@ -374,7 +394,10 @@ export function ManagementFields({
                 <CheckList
                   title="可办理的管理事项"
                   values={l.rights}
-                  options={choices(v.rights ?? [])}
+                  options={(v.rights ?? []).map((id) => ({
+                    id,
+                    name: managementRightName(id),
+                  }))}
                   change={(rights) => patch({ limit: { ...l, rights } })}
                 />
               </>

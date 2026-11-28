@@ -50,6 +50,10 @@ async function login(page: Page, user: string) {
 }
 const click = (p: Page, n: string) =>
   p.getByRole('button', { name: n, exact: true }).click();
+async function more(p: Page, name: string) {
+  await click(p, '更多操作');
+  await p.getByRole('menuitem', { name, exact: true }).click();
+}
 const save = (p: Page) =>
   p.locator('button[type=submit][form=security-command-form]').click();
 async function menu(p: Page, name: string, part: string) {
@@ -97,8 +101,12 @@ async function journey(p: Page, adopt = false) {
     await login(clerk, user);
     expect((await clerk.request.get('/api/v1/departments')).status()).toBe(403);
     await menu(p, '角色', 'roles');
-    await click(p, '发布角色');
-    await p.getByLabel('角色名称').fill(role);
+    await click(p, '新建角色');
+    await expect(p.locator('.object-form')).not.toContainText('发布');
+    const nameField = p.getByLabel('角色名称');
+    await nameField.fill(role);
+    await nameField.press('Tab');
+    await expect(p.locator('.object-form select').first()).toBeFocused();
     await p
       .getByRole('checkbox', { name: '部门 · 查看部门', exact: true })
       .check();
@@ -113,7 +121,7 @@ async function journey(p: Page, adopt = false) {
       .getByLabel('字段策略', { exact: false })
       .first()
       .selectOption('new');
-    const fields = p.getByRole('group', { name: '可读字段' });
+    const fields = p.getByRole('group', { name: '可读字段', exact: true });
     await fields.getByRole('checkbox', { name: '编码', exact: true }).check();
     await fields.getByRole('checkbox', { name: '名称', exact: true }).check();
     await save(p);
@@ -122,11 +130,12 @@ async function journey(p: Page, adopt = false) {
     ).toBeVisible();
     await menu(p, '授权', 'grants');
     await p.getByLabel('搜索登录名或显示名').fill(user);
-    await click(p, '筛选');
+    await more(p, '列筛选…');
     await p.getByRole('dialog').getByRole('button', { name: '取消' }).click();
     await expect(p.getByLabel('搜索登录名或显示名')).toHaveValue(user);
-    await click(p, '筛选');
-    await p.getByRole('dialog').getByLabel('账号状态').selectOption('active');
+    await more(p, '列筛选…');
+    await p.getByRole('dialog').getByRole('combobox', { name: '值' }).click();
+    await p.getByRole('option', { name: '启用', exact: true }).click();
     await p
       .getByRole('dialog')
       .getByRole('button', { name: '应用' })
@@ -149,6 +158,27 @@ async function journey(p: Page, adopt = false) {
     await grant(false);
     await grant(true);
     const grants = p.locator('.access-grant');
+    await expect(grants).toHaveCount(2);
+    // State is returned by Go at read time. Query again when a recorded start is still ahead of that read.
+    if (await grants.filter({ hasText: '待生效' }).count()) {
+      await expect
+        .poll(
+          async () => {
+            const response = p.waitForResponse(
+              (r) =>
+                r.request().method() === 'GET' &&
+                r.url().includes('/api/v1/access/grants?subject=') &&
+                r.ok(),
+            );
+            await click(p, '查询');
+            await response;
+            await expect(grants).toHaveCount(2);
+            return grants.filter({ hasText: '生效中' }).count();
+          },
+          { timeout: 12000 },
+        )
+        .toBe(2);
+    }
     await expect(grants.filter({ hasText: '生效中' })).toHaveCount(2);
     expect((await clerk.request.get('/api/v1/departments')).status()).toBe(200);
     await expect(
@@ -159,7 +189,7 @@ async function journey(p: Page, adopt = false) {
       await p.getByLabel('搜索版本名称').fill(role);
       await click(p, '查询');
       await p.getByRole('link', { name: role + ' · V1', exact: true }).click();
-      await click(p, '查看引用此版本的授予');
+      await p.getByRole('tab', { name: '版本引用' }).click();
       const references = p.getByRole('link', { name: user, exact: true });
       await expect(references).toHaveCount(2);
       const referenceId = await references.first().getAttribute('id');
@@ -167,7 +197,7 @@ async function journey(p: Page, adopt = false) {
       await expect(p.getByRole('heading', { name: '授予明细' })).toBeVisible();
       await p.getByRole('link', { name: '返回版本引用' }).click();
       await expect(p.locator('#' + referenceId)).toBeFocused();
-      await click(p, '发布新版本');
+      await click(p, '新增版本');
       await p
         .getByRole('checkbox', { name: '部门 · 查看部门历史', exact: true })
         .check();
@@ -218,17 +248,41 @@ async function journey(p: Page, adopt = false) {
     await save(p);
     await expect(grants.filter({ hasText: '已撤销' })).toHaveCount(2);
     expect((await clerk.request.get('/api/v1/departments')).status()).toBe(403);
-    await p.getByRole('tab', { name: '管理变更' }).click();
-    const event = p.locator('.access-history li').first();
-    await expect(event.locator('.grant-event-heading')).toContainText('本职');
-    await event.getByText('变更明细', { exact: true }).click();
-    await expect(event.locator('details[open]')).toContainText('变更前');
-    await expect(event.locator('details[open]')).toContainText(
-      '变更后 · 已撤销',
+    await p.getByRole('tab', { name: '变更日志' }).click();
+    if (adopt) {
+      await click(p, '操作者列筛选');
+      await p
+        .getByRole('dialog')
+        .getByLabel('值', { exact: true })
+        .fill('missing-user');
+      await p.getByRole('dialog').getByRole('button', { name: '取消' }).click();
+      await click(p, '记录处理列筛选');
+      await p.getByRole('dialog').getByRole('combobox', { name: '值' }).click();
+      await p.getByRole('option', { name: '撤销授予' }).click();
+      await p.getByRole('dialog').getByRole('button', { name: '应用' }).click();
+      await expect(p.locator('.change-operation')).toHaveCount(2);
+      await p.reload();
+      await expect(p.locator('.change-operation')).toHaveCount(2);
+    }
+    const log = p.getByRole('table', { name: '变更日志', exact: true });
+    await expect(log.locator('th').filter({ hasText: '原值' })).toBeAttached();
+    const event = log.locator('tbody').first();
+    await expect(event.locator('[data-label="变更内容"]')).toContainText(
+      '本职',
+    );
+    await expect(event.locator('[data-label="原值"]')).toContainText(role);
+    await expect(event.locator('[data-label="新值"]')).toHaveText('已撤销');
+    await event.getByRole('button', { name: '来源明细' }).click();
+    await expect(event.locator('.change-source-detail')).toContainText(
+      '提交编号',
     );
     await event.getByRole('button', { name: '查看这份授予' }).click();
     await expect(p.getByRole('heading', { name: '授予明细' })).toBeVisible();
-    await click(p, '返回管理变更');
+    await click(p, '返回变更日志');
+    await expect(
+      p.getByRole('button', { name: '查看这份授予' }).first(),
+    ).toBeFocused();
+    if (adopt) await expect(p.locator('.change-operation')).toHaveCount(2);
     await p.getByRole('tab', { name: '业务授予' }).click();
     await p.reload();
     await expect(grants.filter({ hasText: '已撤销' })).toHaveCount(2);
@@ -497,15 +551,19 @@ test('027 T04 从账号页启停及重置，两个旧会话均失效', async ({
     for (const client of sessions)
       expect(await signIn(client, devPassword)).toBe(200);
     expect(await statuses()).toEqual([200, 200]);
-    await click(page, '停用账号');
+    await more(page, '停用账号');
     await save(page);
-    await expect(page.getByRole('button', { name: '启用账号' })).toBeVisible();
+    await expect(
+      page.locator('.object-identity-summary .MuiChip-label'),
+    ).toHaveText('停用');
     expect(await statuses()).toEqual([401, 401]);
     expect(await signIn(sessions[0], devPassword)).toBe(401);
 
-    await click(page, '启用账号');
+    await more(page, '启用账号');
     await save(page);
-    await expect(page.getByRole('button', { name: '停用账号' })).toBeVisible();
+    await expect(
+      page.locator('.object-identity-summary .MuiChip-label'),
+    ).toHaveText('启用');
     expect(await statuses()).toEqual([401, 401]);
     for (const client of sessions)
       expect(await signIn(client, devPassword)).toBe(200);
@@ -515,14 +573,17 @@ test('027 T04 从账号页启停及重置，两个旧会话均失效', async ({
     await click(page, '重置凭据');
     await page.getByLabel('新凭据').fill(changed);
     await save(page);
-    await expect(page.locator('.access-history li').first()).toContainText(
+    await page.getByRole('tab', { name: '变更日志' }).click();
+    await expect(page.locator('.change-operation').first()).toContainText(
       '重置凭据',
     );
     expect(await statuses()).toEqual([401, 401]);
     expect(await signIn(sessions[0], devPassword)).toBe(401);
     expect(await signIn(sessions[1], changed)).toBe(200);
     expect((await sessions[1].get('/api/v1/departments')).status()).toBe(403);
-    await expect(page.locator('.access-history')).not.toContainText(changed);
+    await expect(
+      page.getByRole('table', { name: '变更日志', exact: true }),
+    ).not.toContainText(changed);
   } finally {
     await Promise.all(sessions.map((c) => c.dispose()));
   }
@@ -537,7 +598,7 @@ test('027 T04 从角色页单独发布范围、字段策略并停用指定版本
   const tag = randomUUID().slice(0, 8);
   for (const kind of ['范围策略', '字段策略']) {
     await menu(page, '角色', 'roles');
-    await click(page, '发布' + kind);
+    await more(page, '新建' + kind);
     const name = kind + tag;
     await page.getByLabel(kind + '名称').fill(name);
     if (kind === '范围策略') {
@@ -554,24 +615,55 @@ test('027 T04 从角色页单独发布范围、字段策略并停用指定版本
     await expect(
       page.getByRole('heading', { name, exact: true }),
     ).toBeVisible();
-    await click(page, '发布新版本');
+    await click(page, '新增版本');
     await save(page);
     await expect(page.locator('.object-form')).toHaveCount(0);
     await menu(page, '角色', 'roles');
+    await more(page, '列筛选…');
+    await page
+      .getByRole('dialog')
+      .getByRole('combobox', { name: '值' })
+      .click();
+    await page.getByRole('option', { name: kind, exact: true }).click();
+    await page
+      .getByRole('dialog')
+      .getByRole('button', { name: '应用' })
+      .click();
+    await expect(
+      page.getByRole('button', { name: '新建' + kind, exact: true }),
+    ).toBeVisible();
     await page.getByLabel('搜索版本名称').fill(name);
     await click(page, '查询');
     await page.getByRole('link', { name: name + ' · V1', exact: true }).click();
-    await click(page, '停用版本');
+    await page.getByRole('button', { name: '上一个对象' }).click();
+    await expect(page.locator('.record-control-name')).toContainText('V2');
+    await page.getByRole('button', { name: '下一个对象' }).click();
+    await expect(page.locator('.record-control-name')).toContainText('V1');
+    await more(page, '停用版本');
     await save(page);
     await expect(page.getByText('已停用', { exact: true })).toBeVisible();
-    await expect(page.locator('.access-history li').first()).toContainText(
+    await page.getByRole('tab', { name: '变更日志' }).click();
+    await expect(page.locator('.change-operation').first()).toContainText(
       '停用版本',
     );
+    const changes = page.getByRole('table', { name: '变更日志', exact: true });
+    await expect(
+      changes.locator('tbody').first().locator('[data-label="原值"]'),
+    ).toHaveText('可用');
+    await expect(
+      changes.locator('tbody').first().locator('[data-label="新值"]'),
+    ).toHaveText('已停用');
+    await expect(
+      changes
+        .locator('tbody')
+        .filter({ hasText: '新建' + kind })
+        .locator('[data-label="新值"]'),
+    ).toHaveText(name + ' · V1');
     await menu(page, '角色', 'roles');
     await page.getByLabel('搜索版本名称').fill(name);
     await click(page, '查询');
     await page.getByRole('link', { name: name + ' · V2', exact: true }).click();
-    await expect(page.getByText('已发布', { exact: true })).toBeVisible();
+    await expect(page.getByText('可用', { exact: true })).toBeVisible();
   }
 });
 
@@ -587,9 +679,19 @@ test('029 从账号资料检索存量授予并恢复返回位置', async ({ page
   await page.getByRole('link', { name: '查看账号授权' }).click();
   const table = page.locator('.grant-table tbody tr');
   await expect(table).toHaveCount(20);
+  const fresh = page.waitForResponse(
+    (r) =>
+      r.request().method() === 'GET' &&
+      r.url().includes('/api/v1/access/grants?subject=') &&
+      r.ok(),
+  );
+  await click(page, '查询');
+  await fresh;
+  await expect(table).toHaveCount(20);
   await click(page, '下一页');
   await expect(page.locator('.grant-pager')).toContainText('21–40');
-  await page.getByLabel('每页条数').selectOption('50');
+  await page.locator('.grant-pager').getByRole('combobox').click();
+  await page.getByRole('option', { name: '50', exact: true }).click();
   await expect(table).toHaveCount(50);
   await page.getByLabel('搜索角色或业务范围').fill('岗位');
   await click(page, '筛选授予');

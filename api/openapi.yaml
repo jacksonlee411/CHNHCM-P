@@ -155,6 +155,14 @@ paths:
         name: panel
         schema: {type: string}
       - in: query
+        name: versionKind
+        description: 角色目录按版本类型筛选
+        schema: {type: string, enum: [role, scope, fields]}
+      - in: query
+        name: logField
+        description: 在变更日志中用 q 匹配操作者、操作代码或北京时间日期
+        schema: {type: string, enum: [actor, action, recordedAt]}
+      - in: query
         name: source
         schema: {type: string}
       - in: query

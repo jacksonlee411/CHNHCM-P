@@ -1,0 +1,925 @@
+{
+  "profile": "x03-manual-a",
+  "url": "http://127.0.0.1:4627",
+  "date": "2026-11-28",
+  "phase": "同库从正常菜单访问，改前及改后均未提交管理命令",
+  "before": {
+    "reference-list": {
+      "heading": "业务单元",
+      "columns": [
+        "",
+        "编码",
+        "名称",
+        "状态",
+        "生效日期"
+      ],
+      "buttons": [
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "reference-detail": {
+      "heading": "X03A · 甲业务单元",
+      "columns": [],
+      "buttons": [
+        "更多操作",
+        "新增记录",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "reference-history": {
+      "heading": "X03A · 甲业务单元",
+      "columns": [
+        "记录时间",
+        "操作者",
+        "记录处理",
+        "生效记录",
+        "变更字段",
+        "原值",
+        "新值",
+        "查看"
+      ],
+      "buttons": [
+        "更多操作",
+        "新增记录",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "accounts": {
+      "heading": "账号",
+      "columns": [
+        "账号",
+        "管理归属",
+        "账号状态"
+      ],
+      "buttons": [
+        "开户",
+        "筛选"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "account-detail": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [
+        "停用账号",
+        "变更管理归属",
+        "重置凭据"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "account-history": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [
+        "停用账号",
+        "变更管理归属",
+        "重置凭据"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "roles": {
+      "heading": "角色",
+      "columns": [
+        "版本名称",
+        "版本类型",
+        "版本状态"
+      ],
+      "buttons": [
+        "发布角色",
+        "发布范围策略",
+        "发布字段策略"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "role-detail": {
+      "heading": "T04 甲部门名录",
+      "columns": [],
+      "buttons": [
+        "发布新版本",
+        "停用版本"
+      ],
+      "tabs": [],
+      "scopeTop": 389.1875,
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "role-history": {
+      "heading": "T04 甲部门名录",
+      "columns": [],
+      "buttons": [
+        "发布新版本",
+        "停用版本"
+      ],
+      "tabs": [],
+      "scopeTop": 240.1875,
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "role-form": {
+      "heading": "发布角色",
+      "columns": [],
+      "buttons": [
+        "保存",
+        "取消"
+      ],
+      "tabs": [],
+      "scopeTop": 464,
+      "checkCount": 30,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540,
+      "nameToScopeTabs": 32
+    },
+    "grants": {
+      "heading": "授权",
+      "columns": [
+        "账号",
+        "管理归属",
+        "账号状态",
+        "生效授予（可见）"
+      ],
+      "buttons": [
+        "筛选"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "grant-detail": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [
+        "角色版本",
+        "业务范围",
+        "来源",
+        "有效期（北京时间）",
+        "授予状态",
+        "操作"
+      ],
+      "buttons": [
+        "授予权限"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "管理变更"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 399,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "one-grant": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [
+        "授予权限"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "管理变更"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "grant-history": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "管理变更"
+      ],
+      "checkCount": 0,
+      "historyRows": 3,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "grant-history-900": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "管理变更"
+      ],
+      "checkCount": 0,
+      "historyRows": 3,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "accounts-900": {
+      "heading": "账号",
+      "columns": [
+        "账号",
+        "管理归属",
+        "账号状态"
+      ],
+      "buttons": [
+        "开户",
+        "筛选"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 165,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "accounts-detail-900": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [
+        "停用账号",
+        "变更管理归属",
+        "重置凭据"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "roles-900": {
+      "heading": "角色",
+      "columns": [
+        "版本名称",
+        "版本类型",
+        "版本状态"
+      ],
+      "buttons": [
+        "发布角色",
+        "发布范围策略",
+        "发布字段策略"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 165,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "roles-detail-900": {
+      "heading": "T04 甲部门名录",
+      "columns": [],
+      "buttons": [
+        "发布新版本",
+        "停用版本"
+      ],
+      "tabs": [],
+      "scopeTop": 388.1875,
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "grants-900": {
+      "heading": "授权",
+      "columns": [
+        "账号",
+        "管理归属",
+        "账号状态",
+        "生效授予（可见）"
+      ],
+      "buttons": [
+        "筛选"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 165,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "grants-detail-900": {
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [
+        "角色版本",
+        "业务范围",
+        "来源",
+        "有效期（北京时间）",
+        "授予状态",
+        "操作"
+      ],
+      "buttons": [
+        "授予权限"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "管理变更"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 398,
+      "scrollWidth": 1440,
+      "viewport": 900
+    }
+  },
+  "after": {
+    "reference-list": {
+      "path": "/settings/organization/business-units",
+      "heading": "业务单元",
+      "columns": [
+        "",
+        "编码",
+        "名称",
+        "状态",
+        "生效日期"
+      ],
+      "buttons": [
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "reference-detail": {
+      "path": "/settings/organization/business-units/7d8c615b-3441-4282-ac09-0cbaf1c9e213?back=%2Fsettings%2Forganization%2Fbusiness-units%3Fpage%3D1%26selected%3D7d8c615b-3441-4282-ac09-0cbaf1c9e213",
+      "heading": "X03A · 甲业务单元",
+      "columns": [],
+      "buttons": [
+        "更多操作",
+        "新增记录",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "reference-history": {
+      "path": "/settings/organization/business-units/7d8c615b-3441-4282-ac09-0cbaf1c9e213?back=%2Fsettings%2Forganization%2Fbusiness-units%3Fpage%3D1%26selected%3D7d8c615b-3441-4282-ac09-0cbaf1c9e213&tab=history&logThrough=b12a7e52-df2a-4b81-babb-f1da4d2c8f72&logPage=1",
+      "heading": "X03A · 甲业务单元",
+      "columns": [
+        "记录时间",
+        "操作者",
+        "记录处理",
+        "生效记录",
+        "变更字段",
+        "原值",
+        "新值",
+        "查看"
+      ],
+      "buttons": [
+        "更多操作",
+        "新增记录",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540,
+      "sourceOpened": true
+    },
+    "accounts": {
+      "path": "/settings/security/accounts",
+      "heading": "账号",
+      "columns": [
+        "登录名",
+        "显示名",
+        "管理归属",
+        "账号状态"
+      ],
+      "buttons": [
+        "开户",
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "account-detail": {
+      "path": "/settings/security/accounts/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [
+        "更多操作",
+        "重置凭据",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "account-history": {
+      "path": "/settings/security/accounts/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1&tab=events",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [
+        "记录时间",
+        "操作者",
+        "记录处理",
+        "变更内容",
+        "原值",
+        "新值",
+        "查看"
+      ],
+      "buttons": [
+        "更多操作",
+        "重置凭据",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "roles": {
+      "path": "/settings/security/roles",
+      "heading": "角色",
+      "columns": [
+        "版本名称",
+        "版本类型",
+        "版本状态"
+      ],
+      "buttons": [
+        "新建角色",
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "role-detail": {
+      "path": "/settings/security/roles/5fc6e1b7-750d-43e9-b8a5-93818104ada3?q=T04+%E7%94%B2%E9%83%A8%E9%97%A8%E5%90%8D%E5%BD%95&page=0&fromList=1",
+      "heading": "T04 甲部门名录",
+      "columns": [],
+      "buttons": [
+        "更多操作",
+        "新增版本",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "版本引用",
+        "变更日志"
+      ],
+      "scopeTop": 356.1875,
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "role-history": {
+      "path": "/settings/security/roles/5fc6e1b7-750d-43e9-b8a5-93818104ada3?q=T04+%E7%94%B2%E9%83%A8%E9%97%A8%E5%90%8D%E5%BD%95&page=0&fromList=1&tab=events",
+      "heading": "T04 甲部门名录",
+      "columns": [
+        "记录时间",
+        "操作者",
+        "记录处理",
+        "变更内容",
+        "原值",
+        "新值",
+        "查看"
+      ],
+      "buttons": [
+        "更多操作",
+        "新增版本",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "版本引用",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 1,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540,
+      "savedVersion": "T04 甲部门名录 · V1"
+    },
+    "role-form": {
+      "path": "/settings/security/roles/new-role",
+      "heading": "新建角色",
+      "columns": [],
+      "buttons": [
+        "保存",
+        "取消"
+      ],
+      "tabs": [],
+      "scopeTop": 296.59375,
+      "checkCount": 30,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540,
+      "nameToScopeTabs": 1
+    },
+    "grants": {
+      "path": "/settings/security/grants",
+      "heading": "授权",
+      "columns": [
+        "登录名",
+        "显示名",
+        "管理归属",
+        "账号状态",
+        "生效授予（可见）"
+      ],
+      "buttons": [
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 166,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "grant-detail": {
+      "path": "/settings/security/grants/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [
+        "角色版本",
+        "业务范围",
+        "来源",
+        "有效期（北京时间）",
+        "授予状态",
+        "操作"
+      ],
+      "buttons": [
+        "授予权限",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 407,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "one-grant": {
+      "path": "/settings/security/grants/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1&grant=12d55328-acc6-4e14-ba1b-677003466a47&inspect=1",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [
+        "授予权限",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "grant-history": {
+      "path": "/settings/security/grants/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1&tab=events",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [
+        "记录时间",
+        "操作者",
+        "记录处理",
+        "变更内容",
+        "原值",
+        "新值",
+        "查看"
+      ],
+      "buttons": [
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 3,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 540
+    },
+    "grant-history-900": {
+      "path": "/settings/security/grants/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1&tab=events",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [
+        "记录时间",
+        "操作者",
+        "记录处理",
+        "变更内容",
+        "原值",
+        "新值",
+        "查看"
+      ],
+      "buttons": [
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 3,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "accounts-900": {
+      "path": "/settings/security/accounts",
+      "heading": "账号",
+      "columns": [
+        "登录名",
+        "显示名",
+        "管理归属",
+        "账号状态"
+      ],
+      "buttons": [
+        "开户",
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 165,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "accounts-detail-900": {
+      "path": "/settings/security/accounts/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [],
+      "buttons": [
+        "更多操作",
+        "重置凭据",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "roles-900": {
+      "path": "/settings/security/roles",
+      "heading": "角色",
+      "columns": [
+        "版本名称",
+        "版本类型",
+        "版本状态"
+      ],
+      "buttons": [
+        "新建角色",
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 165,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "roles-detail-900": {
+      "path": "/settings/security/roles/5fc6e1b7-750d-43e9-b8a5-93818104ada3?q=T04+%E7%94%B2%E9%83%A8%E9%97%A8%E5%90%8D%E5%BD%95&page=0&fromList=1",
+      "heading": "T04 甲部门名录",
+      "columns": [],
+      "buttons": [
+        "更多操作",
+        "新增版本",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "基本资料",
+        "版本引用",
+        "变更日志"
+      ],
+      "scopeTop": 355.1875,
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": null,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "grants-900": {
+      "path": "/settings/security/grants",
+      "heading": "授权",
+      "columns": [
+        "登录名",
+        "显示名",
+        "管理归属",
+        "账号状态",
+        "生效授予（可见）"
+      ],
+      "buttons": [
+        "更多操作"
+      ],
+      "tabs": [],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 165,
+      "scrollWidth": 1440,
+      "viewport": 900
+    },
+    "grants-detail-900": {
+      "path": "/settings/security/grants/8372e8ec-6482-4c4b-8ccb-36f68cd1facb?q=x03-t04-clerk&page=0&fromList=1",
+      "heading": "T04 甲部门经办人（x03-t04-clerk）",
+      "columns": [
+        "角色版本",
+        "业务范围",
+        "来源",
+        "有效期（北京时间）",
+        "授予状态",
+        "操作"
+      ],
+      "buttons": [
+        "授予权限",
+        "上一个对象",
+        "下一个对象"
+      ],
+      "tabs": [
+        "业务授予",
+        "管理职责",
+        "变更日志"
+      ],
+      "checkCount": 0,
+      "historyRows": 0,
+      "firstRowTop": 406,
+      "scrollWidth": 1440,
+      "viewport": 900
+    }
+  },
+  "retainedSamples": {
+    "before": {
+      "admin": {
+        "grants": 183,
+        "active": 162,
+        "events": 0,
+        "grantDigest": "48fbd212e86c2562cfaf3ec6a8712fc889dfe046e32c340861a6cc7913822c98",
+        "eventDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "x03-t04-clerk": {
+        "grants": 2,
+        "active": 1,
+        "events": 3,
+        "grantDigest": "4fa6e55a1626beb2ed45baad6ea557f4a32009a6bba85a95c8a3b76029e3ee61",
+        "eventDigest": "e500f24a2f746bdd62fe89d1dd46cf924f3d0079f541704986d8d7795378726a"
+      },
+      "x03-4627-1128": {
+        "grants": 3,
+        "active": 0,
+        "events": 6,
+        "grantDigest": "8373943ea829ce49c51fb8feec207f7cf171c60044c86a7065b5805bb2518a01",
+        "eventDigest": "50bc007135cddeeea9bd44ab9d1b5ca9ef7bb1dfd6ad239f185b2a7449579b7e"
+      }
+    },
+    "after": {
+      "admin": {
+        "grants": 183,
+        "active": 162,
+        "events": 0,
+        "grantDigest": "48fbd212e86c2562cfaf3ec6a8712fc889dfe046e32c340861a6cc7913822c98",
+        "eventDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "x03-t04-clerk": {
+        "grants": 2,
+        "active": 1,
+        "events": 3,
+        "grantDigest": "4fa6e55a1626beb2ed45baad6ea557f4a32009a6bba85a95c8a3b76029e3ee61",
+        "eventDigest": "e500f24a2f746bdd62fe89d1dd46cf924f3d0079f541704986d8d7795378726a"
+      },
+      "x03-4627-1128": {
+        "grants": 3,
+        "active": 0,
+        "events": 6,
+        "grantDigest": "8373943ea829ce49c51fb8feec207f7cf171c60044c86a7065b5805bb2518a01",
+        "eventDigest": "50bc007135cddeeea9bd44ab9d1b5ca9ef7bb1dfd6ad239f185b2a7449579b7e"
+      }
+    }
+  },
+  "fixedFrontend": {
+    "entry": "/assets/index-BmzLGXut.js",
+    "sha256": "e839476b7ea62273d5613b1a815b28923d0e35133bc8b47a6c9f9a126fa037a5"
+  },
+  "coverage": {
+    "browser": 8,
+    "dbAPI": 7,
+    "desktop": [
+      "1440x900",
+      "1440x540"
+    ],
+    "nativeZoom": "200%",
+    "fixedMenuScreens": 21,
+    "manualAccessCommands": 0
+  }
+}

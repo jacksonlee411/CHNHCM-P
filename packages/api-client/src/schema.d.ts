@@ -12325,6 +12325,10 @@ export interface operations {
                 subject?: string;
                 object?: string;
                 panel?: string;
+                /** @description 角色目录按版本类型筛选 */
+                versionKind?: "role" | "scope" | "fields";
+                /** @description 在变更日志中用 q 匹配操作者、操作代码或北京时间日期 */
+                logField?: "actor" | "action" | "recordedAt";
                 source?: string;
                 version?: string;
                 record?: string;

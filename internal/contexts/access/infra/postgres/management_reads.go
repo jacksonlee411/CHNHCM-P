@@ -4,6 +4,7 @@ import (
 	app "chnhcm.local/chnhcm/internal/contexts/access/application"
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 	"sort"
 	"strings"
@@ -327,7 +328,7 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 	if q.Subject == "" && q.Object == "" {
 		if q.Area == "roles" {
 			v.Versions = slices.DeleteFunc(v.Versions, func(d access.Definition) bool {
-				return !strings.Contains(strings.ToLower(d.Name), strings.ToLower(q.Search))
+				return (q.VersionKind != "" && d.Kind != q.VersionKind) || !strings.Contains(strings.ToLower(d.Name), strings.ToLower(q.Search))
 			})
 			v.Total = len(v.Versions)
 		} else {
@@ -351,6 +352,9 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 	}
 	if q.Area != "grants" && (q.Subject != "" || q.Object != "") {
 		v.Events, err = m.events(q, v)
+		if err == nil && q.Panel == "events" {
+			err = pageManagementEvents(q, v.Events, &v)
+		}
 	}
 	if err == nil && q.Area == "roles" && q.Panel == "references" {
 		var d access.Definition
@@ -369,11 +373,15 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 }
 func (m *manager) events(q access.ManagementQuery, v access.ManagementView) ([]access.ManagementEvent, error) {
 	ids := []string{}
+	var selectedVersion *access.Definition
 	switch q.Area {
 	case "roles":
-		for _, d := range v.Versions {
+		for i := range v.Versions {
+			d := &v.Versions[i]
 			if d.ID == q.Object {
+				selectedVersion = d
 				ids = append(ids, d.ID)
+				break
 			}
 		}
 	case "accounts":
@@ -405,6 +413,21 @@ func (m *manager) events(q access.ManagementQuery, v access.ManagementView) ([]a
 			if *owner != "" && !m.ownerScope("account", *owner) && !m.ownerScope("credential", *owner) {
 				*owner = ""
 			}
+		}
+		// Version identities are immutable. Use the definition named by this event,
+		// even when a newer version is now available or this one has been disabled.
+		switch event.Operation {
+		case "version.publish":
+			if selectedVersion != nil && selectedVersion.ID == event.Target {
+				event.Summary = "版本"
+				event.After = fmt.Sprintf("%s · V%d", selectedVersion.Name, selectedVersion.Number)
+			}
+		case "version.disable":
+			event.Summary, event.Before, event.After = "版本状态", "可用", "已停用"
+		case "account.disable":
+			event.Summary, event.Before, event.After = "账号状态", "启用", "停用"
+		case "account.enable":
+			event.Summary, event.Before, event.After = "账号状态", "停用", "启用"
 		}
 		return event, err
 	})

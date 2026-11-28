@@ -173,6 +173,7 @@
 
 | 关联编号 | 记录 | 日期 | 状态 |
 | --- | --- | --- | --- |
+| 029、028、012 | [CHNHCM-029 安全管理列表、详情与变更日志复核](../../verification/029-security-layout-recheck.md) | 2026-11-28 | final |
 | 029、028、012 | [CHNHCM-029 授权页面评审与实施复验](../../verification/029-grant-management-experience.md) | 2026-11-28 | final |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |

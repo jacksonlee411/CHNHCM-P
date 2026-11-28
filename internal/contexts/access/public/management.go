@@ -147,6 +147,7 @@ type ManagementView struct {
 type ManagementQuery struct {
 	Area, Subject, Search, Owner, State, Object string
 	Panel, Source, Version, Record, Request     string
+	VersionKind, LogField                       string
 	Choices, Filters                            bool
 	Page, PageSize                              int
 }

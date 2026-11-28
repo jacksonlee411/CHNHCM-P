@@ -24925,6 +24925,47 @@
         "limitations": [
           "远程 CI、生产与客户签收另计。"
         ]
+      },
+      {
+        "path": "docs/verification/029-security-layout-recheck.md",
+        "related_documents": [
+          "CHNHCM-029",
+          "CHNHCM-028",
+          "CHNHCM-012"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "7c23eecfbb39c5e25f93528a4bc2626e3a7305d9",
+        "working_tree": "dirty",
+        "change_description": "按共享列表、详情和日志重做三个入口的页面表达，区分新建、保存版本及授予。",
+        "environment": "本机 PostgreSQL 18.6、Go 与桌面 Chromium，固定 4627。",
+        "scope": "账号、角色、授权列表，单份授予及版本详情，三类变更日志和角色新建表单。",
+        "results": [
+          {
+            "check": "三类列表、详情及日志的前后画面，角色表单到范围策略的键盘路径由 32 次变为 1 次。",
+            "result": "passed",
+            "evidence": "docs/verification/data/029-security-layout/comparison.pdf"
+          },
+          {
+            "check": "首轮已保存版本在建立日志中缺少新值。",
+            "result": "failed",
+            "evidence": "docs/verification/data/029-security-layout/first-role-log.png"
+          },
+          {
+            "check": "复验准确版本、状态差异、筛选及焦点返回，固定原库的三个样例摘要一致。",
+            "result": "passed",
+            "evidence": "docs/verification/data/029-security-layout/observations.json"
+          },
+          {
+            "check": "make check、7 个 DB/API 和 8 个浏览器用例，含短屏及原生 200%。",
+            "result": "passed",
+            "evidence": "docs/verification/029-security-layout-recheck.md"
+          }
+        ],
+        "limitations": [
+          "远程 CI 和客户签收另计。"
+        ]
       }
     ]
   },

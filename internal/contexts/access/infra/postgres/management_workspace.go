@@ -8,6 +8,7 @@ import (
 	"time"
 
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	"chnhcm.local/chnhcm/internal/foundation"
 )
 
 func window(q access.ManagementQuery, total int) (int, int, int) {
@@ -17,6 +18,31 @@ func window(q access.ManagementQuery, total int) (int, int, int) {
 	}
 	page := min(max(0, q.Page), max(total-1, 0)/size)
 	return page * size, min((page+1)*size, total), page
+}
+
+// The caller supplies only events visible on the selected account, version or grant.
+func pageManagementEvents(q access.ManagementQuery, events []access.ManagementEvent, v *access.ManagementView) error {
+	value := strings.TrimSpace(q.Search)
+	switch q.LogField {
+	case "":
+	case "actor":
+		needle := strings.ToLower(value)
+		events = slices.DeleteFunc(events, func(e access.ManagementEvent) bool { return !strings.Contains(strings.ToLower(e.Actor), needle) })
+	case "action":
+		events = slices.DeleteFunc(events, func(e access.ManagementEvent) bool { return e.Operation != value })
+	case "recordedAt":
+		if !foundation.ValidDate(value) {
+			return invalidManagement("请输入有效的记录日期")
+		}
+		events = slices.DeleteFunc(events, func(e access.ManagementEvent) bool {
+			return e.At.In(foundation.Shanghai).Format(time.DateOnly) != value
+		})
+	default:
+		return invalidManagement("请选择有效的日志筛选列")
+	}
+	start, end, page := window(q, len(events))
+	v.Total, v.Page, v.Events = len(events), page, events[start:end]
+	return nil
 }
 
 func (m *manager) mandateState(d access.Mandate) string {
@@ -103,7 +129,7 @@ func (m *manager) grantLabel(g access.ManagedGrant) string {
 }
 
 func (m *manager) mandateLabel(l access.ManagementLimit) string {
-	names := map[string]string{"account": "账号管理", "credential": "凭据重置", "role": "角色发布", "policy": "策略管理", "assign": "业务授权", "delegate": "管理职责委派"}
+	names := map[string]string{"account": "账号管理", "credential": "凭据重置", "role": "角色管理", "policy": "策略管理", "assign": "业务授权", "delegate": "管理职责委派"}
 	rights := make([]string, 0, len(l.Rights))
 	for _, r := range l.Rights {
 		rights = append(rights, names[r])
@@ -253,8 +279,9 @@ func (m *manager) grantWorkspace(q access.ManagementQuery, a access.ManagedAccou
 		if q.Record != "" {
 			events = slices.DeleteFunc(events, func(e access.ManagementEvent) bool { return e.Target != q.Record })
 		}
-		start, end, page := window(q, len(events))
-		v.Total, v.Page, v.Events = len(events), page, events[start:end]
+		if err := pageManagementEvents(q, events, v); err != nil {
+			return err
+		}
 		if err := m.describeEvents(v.Events, grants, mandates, a.Owner); err != nil {
 			return err
 		}

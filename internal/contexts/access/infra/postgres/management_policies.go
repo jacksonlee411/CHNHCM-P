@@ -97,7 +97,7 @@ func (m *manager) changeVersion(in access.ManagementCommand) (string, error) {
 	case "version.publish":
 		if in.NewScope != nil || in.NewFields != nil {
 			if d.Kind != "role" {
-				return "", invalidManagement("仅角色可同时发布配套策略")
+				return "", invalidManagement("只有创建角色或新增角色版本时才可同时新建配套策略")
 			}
 			for _, p := range []struct {
 				value *access.Definition

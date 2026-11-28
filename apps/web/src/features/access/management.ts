@@ -61,7 +61,7 @@ export const captions: Record<string, string> = {
   'account.enable': '启用账号',
   'account.disable': '停用账号',
   'account.move': '变更管理归属',
-  'version.publish': '发布版本',
+  'version.publish': '新增版本',
   'version.disable': '停用版本',
   'grant.issue': '新增授予',
   'grant.revoke': '撤销授予',
@@ -74,6 +74,8 @@ export const captions: Record<string, string> = {
   'admin.handover.end': '结束原管理资格',
 };
 export const label = (value: string) => captions[value] ?? value;
+export const managementRightName = (right: string) =>
+  right === 'role' ? '角色管理' : label(right);
 export const pages = (rights: string[] = []) =>
   (Object.keys(areaNames) as Area[]).filter((area) =>
     ({

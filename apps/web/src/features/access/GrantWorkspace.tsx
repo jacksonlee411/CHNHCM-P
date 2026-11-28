@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -7,12 +7,14 @@ import {
   DialogTitle,
   Tab,
   Tabs,
+  TablePagination,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import {
   ObjectDetailField,
   ObjectDetailSection,
   SearchControl,
+  StatusChip,
   recordedTime,
 } from '@chnhcm/ui';
 import { useRead } from '../personnel/api';
@@ -21,6 +23,7 @@ import {
   read,
   label,
   targetName,
+  managementRightName,
   version,
   versionName,
   type Command,
@@ -28,12 +31,12 @@ import {
   type View,
 } from './management';
 
-type Change = (values: Record<string, string>) => void;
+export type Change = (values: Record<string, string>, focusId?: string) => void;
 type Open = (command: Command) => void;
 const panels: Record<string, string> = {
   grants: '业务授予',
   mandates: '管理职责',
-  events: '管理变更',
+  events: '变更日志',
 };
 export const grantState = (state: string) =>
   state === 'active'
@@ -52,16 +55,21 @@ export function GrantTabs({ v, change }: { v: View; change: Change }) {
       aria-label="账号授权栏目"
       value={v.panel}
       onChange={(_, tab: string) =>
-        change({
-          tab,
-          gp: '',
-          grant: '',
-          inspect: '',
-          eventFor: '',
-          eventOrigin: '',
-          originEvent: '',
-          eventPage: '',
-        })
+        change(
+          {
+            tab,
+            gp: '',
+            logField: '',
+            logValue: '',
+            grant: '',
+            inspect: '',
+            eventFor: '',
+            eventOrigin: '',
+            originEvent: '',
+            eventPage: '',
+          },
+          'grant-' + tab + '-tab',
+        )
       }
       variant="scrollable"
       scrollButtons="auto"
@@ -102,6 +110,12 @@ export function GrantFacts({
       <ObjectDetailField label="有效期（北京时间）">
         {term(g)}
       </ObjectDetailField>
+      <ObjectDetailField label="授予状态">
+        <StatusChip
+          label={grantState(g.state)}
+          color={g.state === 'active' ? 'success' : 'default'}
+        />
+      </ObjectDetailField>
       <ObjectDetailField label="授予编号">{g.id}</ObjectDetailField>
       {!compact && (
         <>
@@ -131,128 +145,52 @@ export function WorkspacePager({
   v,
   params,
   change,
+  unit = '条数',
 }: {
   v: View;
   params: URLSearchParams;
   change: Change;
+  unit?: string;
 }) {
-  const size = Number(params.get('gs')) || 20,
-    page = v.page ?? 0;
   return (
-    <div className="grant-pager" aria-label="分页">
-      <label>
-        每页{' '}
-        <select
-          aria-label="每页条数"
-          value={size}
-          onChange={(e) => change({ gs: e.target.value, gp: '', grant: '' })}
-        >
-          {[20, 50, 100].map((n) => (
-            <option key={n}>{n}</option>
-          ))}
-        </select>
-      </label>
-      <span>
-        {v.total
-          ? page * size + 1 + '–' + Math.min((page + 1) * size, v.total)
-          : '0'}{' '}
-        / {v.total}
-      </span>
-      <Button
-        size="small"
-        disabled={!page}
-        onClick={() => change({ gp: String(page - 1), grant: '' })}
-      >
-        上一页
-      </Button>
-      <Button
-        size="small"
-        disabled={(page + 1) * size >= v.total}
-        onClick={() => change({ gp: String(page + 1), grant: '' })}
-      >
-        下一页
-      </Button>
-    </div>
-  );
-}
-export function AccountFilters({
-  open,
-  onClose,
-  state,
-  owner,
-  v,
-  apply,
-  field,
-}: {
-  open: boolean;
-  field: string;
-  onClose: () => void;
-  state: string;
-  owner: string;
-  v?: View;
-  apply: (state: string, owner: string) => void;
-}) {
-  const [s, S] = useState(state),
-    [o, O] = useState(owner);
-  useEffect(() => {
-    if (open) {
-      S(state);
-      O(owner);
-    }
-  }, [open, state, owner]);
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="xs"
-      aria-labelledby="account-filter-title"
-    >
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          apply(s, o);
-          onClose();
-        }}
-      >
-        <DialogTitle id="account-filter-title">筛选账号</DialogTitle>
-        <DialogContent className="grant-filter-dialog">
-          <label>
-            账号状态{' '}
-            <select
-              autoFocus={field !== 'description'}
-              value={s}
-              onChange={(e) => S(e.target.value)}
-            >
-              <option value="">全部</option>
-              <option value="active">启用</option>
-              <option value="disabled">停用</option>
-            </select>
-          </label>
-          <label>
-            管理归属{' '}
-            <select
-              autoFocus={field === 'description'}
-              value={o}
-              onChange={(e) => O(e.target.value)}
-            >
-              <option value="">全部</option>
-              {v?.owners?.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {targetName(v, t.id)}
-                </option>
-              ))}
-            </select>
-          </label>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>取消</Button>
-          <Button type="submit" variant="contained">
-            应用
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+    <TablePagination
+      className="grant-pager"
+      component="div"
+      count={v.total}
+      page={v.page ?? 0}
+      rowsPerPage={Number(params.get('gs')) || 20}
+      rowsPerPageOptions={[20, 50, 100]}
+      slotProps={{
+        select: { SelectDisplayProps: { id: 'security-page-size' } },
+        displayedRows: {
+          id: 'security-page-count',
+          tabIndex: -1,
+          role: 'status',
+        },
+        actions: {
+          previousButton: { id: 'security-page-prev' },
+          nextButton: { id: 'security-page-next' },
+        },
+      }}
+      labelRowsPerPage={'每页' + unit}
+      labelDisplayedRows={({ from, to, count }) =>
+        from + '–' + to + ' / ' + count
+      }
+      getItemAriaLabel={(type) =>
+        ({
+          next: '下一页',
+          previous: '上一页',
+          first: '第一页',
+          last: '最后一页',
+        })[type]
+      }
+      onPageChange={(event, page) =>
+        change({ gp: String(page), grant: '' }, event?.currentTarget.id)
+      }
+      onRowsPerPageChange={(e) =>
+        change({ gs: e.target.value, gp: '', grant: '' }, 'security-page-size')
+      }
+    />
   );
 }
 export function GrantQuery({
@@ -293,12 +231,12 @@ export function GrantQuery({
   };
   return (
     <>
-      <div className="grant-query">
+      <div className="grant-query" id="grant-query" role="search" aria-label="业务授予查询" tabIndex={-1}>
         <SearchControl
           label="搜索角色或业务范围"
           value={input}
           onChange={setInput}
-          onSearch={() => change({ gq: input, gp: '', grant: '' })}
+          onSearch={() => change({ gq: input, gp: '', grant: '' }, 'grant-query')}
         />
         <Button onClick={open}>筛选授予</Button>
         <WorkspacePager v={v} params={params} change={change} />
@@ -469,7 +407,7 @@ export function BusinessGrants({
             )
           }
         >
-          {params.get('eventOrigin') === '1' ? '返回管理变更' : '返回业务授予'}
+          {params.get('eventOrigin') === '1' ? '返回变更日志' : '返回业务授予'}
         </Button>
         {operations(g)}
         <GrantFacts v={v} g={g} />
@@ -478,6 +416,9 @@ export function BusinessGrants({
             change({
               tab: 'events',
               eventFor: g.id,
+              logField: '',
+              logValue: '',
+              originEvent: '',
               grant: '',
               inspect: '',
               gp: '',
@@ -511,7 +452,9 @@ export function BusinessGrants({
                 '授予状态',
                 ...(canAct ? ['操作'] : []),
               ].map((h) => (
-                <th scope="col" key={h}>{h}</th>
+                <th scope="col" key={h}>
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
@@ -528,7 +471,11 @@ export function BusinessGrants({
                   data-selected={g.id === selected}
                 >
                   <td data-title="角色版本">
-                    <Link id={'detail-' + g.id} to={href(g.id)}>
+                    <Link
+                      className="object-name-link"
+                      id={'detail-' + g.id}
+                      to={href(g.id)}
+                    >
                       {r ? versionName(r) : '原角色'}
                     </Link>
                     {g.distinguish && <small>授予编号 {g.id}</small>}
@@ -538,7 +485,18 @@ export function BusinessGrants({
                   </td>
                   <td data-title="来源">{label(g.source)}</td>
                   <td data-title="有效期">{term(g)}</td>
-                  <td data-title="授予状态">{grantState(g.state)}</td>
+                  <td data-title="授予状态">
+                    <StatusChip
+                      label={grantState(g.state)}
+                      color={
+                        g.state === 'active'
+                          ? 'success'
+                          : g.state === 'future'
+                            ? 'info'
+                            : 'default'
+                      }
+                    />
+                  </td>
                   {canAct && <td data-title="操作">{operations(g)}</td>}
                 </tr>
               );
@@ -560,24 +518,119 @@ export function MandateFacts({
 }) {
   const l = m.limit;
   return (
-    <>
-      <strong>{l.rights.map(label).join('、')}</strong> ·{' '}
-      {targetName(v, l.owner)} · {grantState(m.state ?? 'active')}
-      <div>
-        {(['role', 'scope', 'fields'] as const)
-          .map((k) => {
-            const d = version(v, k, l[k]);
-            return d && versionName(d);
-          })
-          .filter(Boolean)
-          .join(' / ')}
-      </div>
-      <div>
-        代理期限上限 {l.maxProxyDays ? l.maxProxyDays + ' 天' : '无限制'} ·
-        职责到期 {l.until ? recordedTime(l.until) : '长期'}
-      </div>
-      <small>委派编号 {m.id}</small>
-    </>
+    <div className="grant-facts">
+      <ObjectDetailField label="管理职责">
+        {l.rights.map(managementRightName).join('、')}
+      </ObjectDetailField>
+      <ObjectDetailField label="管理归属">
+        {targetName(v, l.owner)}
+      </ObjectDetailField>
+      {(['role', 'scope', 'fields'] as const).map((k) => {
+        const d = version(v, k, l[k]);
+        return (
+          d && (
+            <ObjectDetailField key={k} label={label(k)}>
+              {versionName(d)}
+            </ObjectDetailField>
+          )
+        );
+      })}
+      <ObjectDetailField label="职责到期">
+        {l.until ? recordedTime(l.until) : '长期'}
+      </ObjectDetailField>
+      <ObjectDetailField label="代理期限上限">
+        {l.maxProxyDays ? l.maxProxyDays + ' 天' : '无限制'}
+      </ObjectDetailField>
+      <ObjectDetailField label="委派编号">{m.id}</ObjectDetailField>
+    </div>
+  );
+}
+export function Mandates({
+  v,
+  selected,
+  open,
+}: {
+  v: View;
+  selected: string | null;
+  open: Open;
+}) {
+  const [expanded, setExpanded] = useState(selected);
+  useEffect(() => setExpanded(selected), [selected]);
+  if (!v.mandates?.length) return <p role="status">暂无可见管理职责</p>;
+  return (
+    <table className="grant-table">
+      <thead>
+        <tr>
+          {['管理职责', '管理归属', '职责到期', '状态', '操作'].map((col) => (
+            <th scope="col" key={col}>
+              {col}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {v.mandates.map((m) => (
+          <Fragment key={m.id}>
+            <tr
+              id={'row-' + m.id}
+              className="access-grant"
+              tabIndex={-1}
+              data-selected={selected === m.id}
+            >
+              <td data-title="管理职责">
+                {m.limit.rights.map(managementRightName).join('、')}
+              </td>
+              <td data-title="管理归属">{targetName(v, m.limit.owner)}</td>
+              <td data-title="职责到期">
+                {m.limit.until ? recordedTime(m.limit.until) : '长期'}
+              </td>
+              <td data-title="状态">
+                <StatusChip
+                  label={m.state ? grantState(m.state) : '未登记'}
+                  color={m.state === 'active' ? 'success' : 'default'}
+                />
+              </td>
+              <td data-title="操作">
+                <Button
+                  size="small"
+                  aria-expanded={expanded === m.id}
+                  aria-controls={'mandate-' + m.id}
+                  onClick={() => setExpanded(expanded === m.id ? null : m.id)}
+                >
+                  职责明细
+                </Button>
+                {m.canRevoke && (
+                  <Button
+                    size="small"
+                    id={'mandate-revoke-' + m.id}
+                    onClick={() =>
+                      open({
+                        operation: 'mandate.revoke',
+                        subject: v.accounts?.[0]?.id,
+                        id: m.id,
+                      })
+                    }
+                  >
+                    撤销管理职责
+                  </Button>
+                )}
+              </td>
+            </tr>
+            {expanded === m.id && (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="security-mandate-facts"
+                  id={'mandate-' + m.id}
+                >
+                  <MandateFacts v={v} m={m} />
+                </td>
+              </tr>
+            )}
+          </Fragment>
+        ))}
+      </tbody>
+    </table>
   );
 }
 export function VersionReferences({

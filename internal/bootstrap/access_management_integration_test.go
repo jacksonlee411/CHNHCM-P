@@ -316,7 +316,9 @@ func TestAccessManagementDelegationAndSharedVersions(t *testing.T) {
 	m.cmd(limited, access.ManagementCommand{Operation: "account.create", Owner: b, Login: "outside", Password: id()}, 403)
 	m.cmd(limited, access.ManagementCommand{Operation: "account.reset", Subject: alice, Revision: 1, Password: id()}, 403)
 	m.cmd(limited, access.ManagementCommand{Operation: "grant.issue", Subject: limitedID, Role: r, Scope: def.Scope, Fields: def.Fields, Source: "duty"}, 403)
-	issue := access.ManagementCommand{Operation: "grant.issue", Subject: alice, Role: r, Scope: def.Scope, Fields: def.Fields, Source: "duty"}
+	// Directory counts in this scenario require a grant whose start is already past.
+	activeFrom := time.Now().UTC().Add(-time.Minute)
+	issue := access.ManagementCommand{Operation: "grant.issue", Subject: alice, Role: r, Scope: def.Scope, Fields: def.Fields, Source: "duty", From: &activeFrom}
 	own := m.cmd(limited, issue, 200)["target"].(string)
 	issue.Source = "proxy"
 	later := time.Now().Add(48 * time.Hour)
@@ -402,7 +404,12 @@ func TestAccessManagementDelegationAndSharedVersions(t *testing.T) {
 	}
 	lists := viewMgmt(t, m.root, "grants?q=alice").Accounts
 	if len(lists) != 1 || lists[0].ActiveGrants == nil || *lists[0].ActiveGrants != 1 {
-		t.Fatalf("grant directory: %+v", lists)
+		var count any
+		if len(lists) == 1 && lists[0].ActiveGrants != nil {
+			count = *lists[0].ActiveGrants
+		}
+		detail := viewMgmt(t, m.root, "grants?subject="+alice)
+		t.Fatalf("alice grant directory count %v (%d accounts), detail %+v", count, len(lists), detail.Grants)
 	}
 	old := viewMgmt(t, m.root, "grants?subject="+alice+"&source=proxy&state=revoked")
 	if old.Total != 1 || len(old.Grants) != 1 || old.Grants[0].ID != proxy || old.Grants[0].CanRevoke || old.Grants[0].Adoption != nil {
@@ -549,6 +556,52 @@ func TestAccessGrantWorkspacePagingAndOriginalReceipt(t *testing.T) {
 	events := viewMgmt(t, limited, path+"&panel=events")
 	if events.Total != 23 || len(events.Events) != 20 || events.Events[0].Request == firstRequest {
 		t.Fatal("invalid event page")
+	}
+	// Predicates cover the whole authorized history, including receipts on page two.
+	for _, filter := range []string{"action&q=grant.issue", "actor&q=GRANT-OPER"} {
+		last := viewMgmt(t, limited, path+"&panel=events&page=1&logField="+filter)
+		if last.Total != 23 || len(last.Events) != 3 || last.Events[2].Request != firstRequest {
+			t.Fatalf("filtered history lost original receipt: %s, total %d", filter, last.Total)
+		}
+	}
+	allEvents := viewMgmt(t, limited, path+"&panel=events&pageSize=100")
+	day := allEvents.Events[0].At.In(foundation.Shanghai).Format(time.DateOnly)
+	wantOnDay := []string{}
+	for _, event := range allEvents.Events {
+		if event.At.In(foundation.Shanghai).Format(time.DateOnly) == day {
+			wantOnDay = append(wantOnDay, event.ID)
+		}
+	}
+	onDay := viewMgmt(t, limited, path+"&panel=events&pageSize=100&logField=recordedAt&q="+day)
+	if onDay.Total != len(wantOnDay) || len(onDay.Events) != len(wantOnDay) {
+		t.Fatal("record-date condition did not match the authorized day", onDay.Total, len(wantOnDay))
+	}
+	for i, event := range onDay.Events {
+		if event.ID != wantOnDay[i] {
+			t.Fatal("wrong event on recorded date", event.ID)
+		}
+	}
+	if none := viewMgmt(t, limited, path+"&panel=events&logField=action&q=grant.revoke"); none.Total != 0 || len(none.Events) != 0 {
+		t.Fatal("nonmatching grant event returned")
+	}
+	scopes := viewMgmt(t, m.root, "roles?versionKind=scope")
+	if len(scopes.Versions) == 0 {
+		t.Fatal("created scope missing from scope directory")
+	}
+	for _, def := range scopes.Versions {
+		if def.Kind != "scope" {
+			t.Fatal("mixed definition kinds", def.Kind)
+		}
+	}
+	for _, detail := range []string{"accounts?subject=" + subject, "roles?object=" + role} {
+		all := viewMgmt(t, m.root, detail+"&panel=events")
+		if all.Total < 1 {
+			t.Fatal("missing object history", detail)
+		}
+		none := viewMgmt(t, m.root, detail+"&panel=events&logField=actor&q=absent-operator")
+		if len(none.Events) != 0 || none.Total != 0 {
+			t.Fatal("object history ignored filter", detail)
+		}
 	}
 	got := limited.call("POST", "/api/v1/access/submissions/"+firstRequest+"/resolve", nil, "", 200)
 	if got["target"] != original {

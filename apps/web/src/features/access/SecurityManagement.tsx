@@ -1,6 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import SecurityOutlined from '@mui/icons-material/SecurityOutlined';
+import PersonOutline from '@mui/icons-material/PersonOutline';
+import BadgeOutlined from '@mui/icons-material/BadgeOutlined';
+import {
+  SecurityActionsMenu,
+  type SecurityAction,
+} from './SecurityActionsMenu';
+import { SecurityHistory } from './SecurityHistory';
+import { SecurityRecordPager } from './SecurityRecordPager';
 import { useGridApiRef, type GridColDef } from '@mui/x-data-grid';
 import {
   Link,
@@ -14,6 +30,7 @@ import {
   DataGridPage,
   ListControl,
   ListPager,
+  StatusChip,
   SearchControl,
   ObjectDetailSheet,
   ObjectDetailSection,
@@ -30,6 +47,8 @@ import { useRead } from '../personnel/api';
 import { usePageTitle, useListReturn } from '../../shared/navigation';
 import {
   ColumnFilterEditor,
+  ColumnFilterDialog,
+  type FilterRequest,
   columnFilterSlots,
 } from '../../shared/dated/ColumnFilter';
 import { useDraftExit } from '../../shared/dated/useDraftExit';
@@ -52,11 +71,11 @@ import {
   type Definition,
 } from './management';
 import {
-  AccountFilters,
   BusinessGrants,
   GrantFacts,
   GrantTabs,
   MandateFacts,
+  Mandates,
   VersionReferences,
   WorkspacePager,
 } from './GrantWorkspace';
@@ -67,7 +86,8 @@ type Row = {
   name: string;
   description: string;
   state: string;
-  login?: string;
+  enabled: boolean;
+  display?: string;
   count?: number;
 };
 type Result = Awaited<ReturnType<typeof send>>;
@@ -100,15 +120,15 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
   const [input, setInput] = useState(params.get('q') ?? '');
   const applied = params.get('q') ?? '';
   useEffect(() => setInput(applied), [applied]);
-  const [filters, setFilters] = useState(false);
-  const [filterField, setFilterField] = useState('state');
-  const filterReturn = useRef<HTMLElement | null>(null);
+  const [filterRequest, setFilterRequest] = useState<FilterRequest>();
+  const versionKind = params.get('versionKind') ?? '';
   const page = Math.max(0, Number(params.get('page')) || 0),
     pageSize = Number(params.get('size')) || 20;
   const query = {
     q: params.get('q') ?? '',
     owner: params.get('owner') ?? '',
     state: params.get('state') ?? '',
+    ...(area === 'roles' && versionKind ? { versionKind } : {}),
     page,
     pageSize,
   };
@@ -125,12 +145,14 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
             id: d.id!,
             name: versionName(d),
             description: label(d.kind),
-            state: d.disabled ? '停用' : '已发布',
+            state: d.disabled ? '已停用' : '可用',
+            enabled: !d.disabled,
           }))
         : (v?.accounts ?? []).map((a) => ({
             id: a.id,
-            name: a.displayName || a.login,
-            login: a.displayName ? a.login : undefined,
+            name: a.login,
+            display: a.displayName,
+            enabled: a.state === 'active',
             count: a.activeGrants,
             description: targetName(v!, a.owner),
             state: label(a.state),
@@ -153,28 +175,47 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
       if (value) next.set(k, value);
       else next.delete(k);
     }
-    set(next);
+    if (next.toString() === params.toString()) data.refresh();
+    else set(next);
   };
-  const details = (id: string) => base + '/' + id + '?' + params;
+  const details = (id: string) => {
+    const next = new URLSearchParams(params);
+    if (!id.startsWith('new-')) next.set('fromList', '1');
+    return base + '/' + id + '?' + next;
+  };
   const cols: GridColDef<Row>[] = [
     {
       field: 'name',
       filterable: false,
-      headerName: area === 'roles' ? '版本名称' : '账号',
-      flex: 2,
+      headerName: area === 'roles' ? '版本名称' : '登录名',
+      flex: 1.25,
       minWidth: 165,
       sortable: false,
       renderCell: (p) => (
         <Link
+          className="object-name-link"
+          tabIndex={p.tabIndex}
           data-object-link
           to={details(p.row.id)}
           onClick={() => restore.rememberRow(p.row.id)}
         >
           {p.row.name}
-          {p.row.login && <small className="grant-login">{p.row.login}</small>}
         </Link>
       ),
     },
+    ...(area === 'roles'
+      ? []
+      : [
+          {
+            field: 'display',
+            headerName: '显示名',
+            flex: 1,
+            minWidth: 125,
+            sortable: false,
+            filterable: false,
+            renderCell: ({ row }: { row: Row }) => row.display || '—',
+          },
+        ]),
     {
       field: 'description',
       headerName: area === 'roles' ? '版本类型' : '管理归属',
@@ -187,6 +228,13 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
       headerName: area === 'roles' ? '版本状态' : '账号状态',
       width: 118,
       sortable: false,
+      filterable: area !== 'roles',
+      renderCell: ({ row }) => (
+        <StatusChip
+          label={row.state}
+          color={row.enabled ? 'success' : 'default'}
+        />
+      ),
     },
     ...(area === 'grants' && v?.rights?.includes('assign')
       ? [
@@ -202,43 +250,91 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
       : []),
   ];
   usePageTitle(title);
-  const add = (kind: string, text: string) => (
-    <Button
-      key={kind}
-      variant="contained"
-      onClick={() => navigate(details('new-' + kind))}
-    >
-      {text}
-    </Button>
-  );
-  const actions = (
-    <>
-      {area === 'accounts' &&
-        v?.rights?.includes('account') &&
-        add('account', '开户')}
-      {area === 'roles' &&
-        v?.rights?.includes('role') &&
-        add('role', '发布角色')}
-      {area === 'roles' && v?.rights?.includes('policy') && (
-        <>
-          {add('scope', '发布范围策略')}
-          {add('fields', '发布字段策略')}
-        </>
-      )}
-    </>
-  );
+  const create = (kind: string) => navigate(details('new-' + kind));
+  const createKinds =
+    area === 'roles'
+      ? [
+          ...(v?.rights?.includes('role') ? ['role'] : []),
+          ...(v?.rights?.includes('policy') ? ['scope', 'fields'] : []),
+        ]
+      : [];
+  const primaryKind = createKinds.includes(versionKind)
+    ? versionKind
+    : createKinds[0];
+  const more: SecurityAction[] = createKinds
+    .filter((k) => k !== primaryKind)
+    .map((k) => ({ label: '新建' + label(k), run: () => create(k) }));
+  const directoryFilters =
+    area === 'roles'
+      ? [
+          {
+            field: 'description',
+            param: 'versionKind',
+            label: '版本类型',
+            values: ['role', 'scope', 'fields'].map((value) => ({
+              value,
+              label: label(value),
+            })),
+          },
+        ]
+      : [
+          {
+            field: 'state',
+            param: 'state',
+            label: '账号状态',
+            values: ['active', 'disabled'].map((value) => ({
+              value,
+              label: label(value),
+            })),
+          },
+          {
+            field: 'description',
+            param: 'owner',
+            label: '管理归属',
+            values: (v?.owners ?? []).map((o) => ({
+              value: o.id,
+              label: targetName(v!, o.id),
+            })),
+          },
+        ];
+  const filterItems = directoryFilters.flatMap((c) => {
+    const value = params.get(c.param);
+    return value ? [{ field: c.field, operator: 'equals', value }] : [];
+  });
+  const openFilter = (source: HTMLElement, field?: string) =>
+    setFilterRequest({
+      source,
+      field: field ?? filterItems[0]?.field ?? directoryFilters[0].field,
+    });
+  more.push({ label: '列筛选…', run: (source) => openFilter(source) });
+  const actions =
+    area === 'accounts' && v?.rights?.includes('account') ? (
+      <Button
+        size="small"
+        variant="contained"
+        onClick={() => create('account')}
+      >
+        开户
+      </Button>
+    ) : (
+      primaryKind && (
+        <Button
+          size="small"
+          variant="contained"
+          onClick={() => create(primaryKind)}
+        >
+          新建{label(primaryKind)}
+        </Button>
+      )
+    );
   return (
     <div className="standard-page">
       <ColumnFilterEditor.Provider
-        value={({ field, source }) => {
-          filterReturn.current = source;
-          setFilterField(field ?? 'state');
-          setFilters(true);
-        }}
+        value={({ field, source }) => openFilter(source, field)}
       >
         <DataGridPage
-          slots={area === 'roles' ? undefined : columnFilterSlots}
-          filterModel={area === 'roles' ? undefined : { items: [] }}
+          slots={columnFilterSlots}
+          filterModel={{ items: filterItems.slice(0, 1) }}
           rows={rows}
           columns={cols}
           summaryColumn={{
@@ -249,16 +345,16 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
             renderCell: (p) => (
               <div>
                 <Link
+                  className="object-name-link"
+                  tabIndex={p.tabIndex}
                   data-object-link
                   to={details(p.row.id)}
                   onClick={() => restore.rememberRow(p.row.id)}
                 >
                   {p.row.name}
-                  {p.row.login && (
-                    <small className="grant-login">{p.row.login}</small>
-                  )}
                 </Link>
                 <div>
+                  {p.row.display && p.row.display + ' · '}
                   {p.row.description} · {p.row.state}
                   {p.row.count !== undefined &&
                     ' · 生效授予 ' + p.row.count + ' 份'}
@@ -294,19 +390,7 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
             <ListControl
               title={title}
               action={actions}
-              more={
-                area !== 'roles' && (
-                  <Button
-                    onClick={(e) => {
-                      filterReturn.current = e.currentTarget;
-                      setFilterField('state');
-                      setFilters(true);
-                    }}
-                  >
-                    筛选
-                  </Button>
-                )
-              }
+              more={<SecurityActionsMenu actions={more} />}
               pager={<ListPager />}
               search={
                 <SearchControl
@@ -319,30 +403,46 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
                 />
               }
             >
-              {area !== 'roles' && (query.state || query.owner) && (
-                <Button size="small" onClick={() => setFilters(true)}>
-                  {[
-                    query.state && label(query.state),
-                    query.owner && v && targetName(v, query.owner),
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </Button>
+              {input !== applied && (
+                <Typography className="list-query-summary" role="status">
+                  输入已修改，点击查询后生效。已应用关键词：{applied || '无'}
+                </Typography>
               )}
-              <AccountFilters
-                open={filters}
-                field={filterField}
-                onClose={() => {
-                  setFilters(false);
-                  requestAnimationFrame(() => filterReturn.current?.focus());
-                }}
-                state={query.state}
-                owner={query.owner}
-                v={v}
-                apply={(state, owner) =>
-                  update({ state, owner, q: input, page: '0' })
-                }
-              />
+              {filterItems.map((item) => {
+                const c = directoryFilters.find((c) => c.field === item.field)!;
+                return (
+                  <Button
+                    size="small"
+                    key={c.field}
+                    onClick={(e) => openFilter(e.currentTarget, c.field)}
+                  >
+                    {c.label} ·{' '}
+                    {c.values.find((option) => option.value === item.value)
+                      ?.label ?? item.value}
+                  </Button>
+                );
+              })}
+              {filterRequest && (
+                <ColumnFilterDialog
+                  request={filterRequest}
+                  columns={directoryFilters.map((c) => ({
+                    ...c,
+                    operators: [{ value: 'equals', label: '等于' }],
+                  }))}
+                  applied={{ items: filterItems }}
+                  onClose={() => {
+                    const source = filterRequest.source;
+                    setFilterRequest(undefined);
+                    requestAnimationFrame(
+                      () => source.isConnected && source.focus(),
+                    );
+                  }}
+                  onApply={(f, field) => {
+                    const c = directoryFilters.find((c) => c.field === field)!;
+                    update({ [c.param]: f.filterValue, page: '0', q: input });
+                  }}
+                />
+              )}
             </ListControl>
           }
         />
@@ -351,70 +451,6 @@ function ManagementList({ area, session }: { area: Area; session: Session }) {
   );
 }
 
-function History({
-  v,
-  follow,
-}: {
-  v: View;
-  follow?: (target: string, mandate: boolean, event: string) => void;
-}) {
-  return (
-    <ObjectDetailSection title={follow ? undefined : '管理变更'}>
-      {v.events?.length ? (
-        <ol
-          className={
-            follow ? 'access-history grant-event-list' : 'access-history'
-          }
-        >
-          {v.events.map((e) => (
-            <li key={e.id}>
-              <div className={follow ? 'grant-event-heading' : undefined}>
-                <strong>{label(e.operation)}</strong>
-                {e.summary && <span>{e.summary}</span>}
-                <span>{e.actor}</span>
-                <time dateTime={e.at}>{recordedTime(e.at)}</time>
-              </div>
-              {follow && (
-                <Button
-                  size="small"
-                  id={'event-' + e.id}
-                  onClick={() =>
-                    follow(e.target, e.operation.startsWith('mandate.'), e.id)
-                  }
-                >
-                  查看
-                  {e.operation.startsWith('mandate.') ? '这份职责' : '这份授予'}
-                </Button>
-              )}
-              {e.previousOwner && (
-                <div>原管理归属 · {targetName(v, e.previousOwner)}</div>
-              )}
-              {e.assignedOwner && (
-                <div>管理归属 · {targetName(v, e.assignedOwner)}</div>
-              )}
-              {!follow && e.reason && <div>{e.reason}</div>}
-              <details>
-                <summary>{follow ? '变更明细' : '提交身份'}</summary>
-                {e.before && <div>变更前 · {e.before}</div>}
-                {e.after && <div>变更后 · {e.after}</div>}
-                {follow && e.reason && <div>办理事由 · {e.reason}</div>}
-                {follow && (e.before || e.after) && (
-                  <small>
-                    业务范围名称按当前可见资料显示，版本取自当时的修订。
-                  </small>
-                )}
-                提交编号 {e.request}
-                {follow && <div>办理目标 {e.target}</div>}
-              </details>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <Typography>暂无管理变更</Typography>
-      )}
-    </ObjectDetailSection>
-  );
-}
 function ManagementDetail({
   id,
   area,
@@ -467,26 +503,41 @@ function ManagementDetail({
       choices: choicesNeeded ? '1' : '',
     });
   }
+  if (
+    panel === 'events' &&
+    !creating &&
+    draft?.operation !== 'version.disable'
+  ) {
+    Object.assign(detailQuery, {
+      panel: 'events',
+      q: params.get('logValue') ?? '',
+      logField: params.get('logField') ?? '',
+      page: Number(params.get('gp')) || 0,
+      pageSize: Number(params.get('gs')) || 20,
+    });
+  }
   const key =
     session.instanceId + session.subjectId + area + JSON.stringify(detailQuery);
   const data = useRead(key, () => read(area, detailQuery), 'fresh'),
     v = data.data;
   const account = v?.accounts?.find((a) => a.id === id),
     def = v?.versions?.find((d) => d.id === id);
-  const change = (values: Record<string, string>) => {
+  const origin = useRef(''),
+    focusAfter = useRef('');
+  const change = (values: Record<string, string>, focusId?: string) => {
+    if (focusId) focusAfter.current = focusId;
     const next = new URLSearchParams(params);
     for (const [k, value] of Object.entries(values)) {
       if (value) next.set(k, value);
       else next.delete(k);
     }
-    setParams(next);
+    if (next.toString() === params.toString()) data.refresh();
+    else setParams(next);
   };
-  const origin = useRef(''),
-    focusAfter = useRef('');
   useEffect(() => {
     if (!v) return;
     if (draft) {
-      formStart.current?.focus();
+      formStart.current?.focus({ preventScroll: true });
       return;
     }
     const requested =
@@ -503,9 +554,13 @@ function ManagementDetail({
                 ? 'ref-' + params.get('ref')
                 : '');
     if (requested) {
-      (
-        document.getElementById(requested) ??
-        document.getElementById('grant-panel-heading')
+      const target = document.getElementById(requested);
+      const fallback = requested.startsWith('security-page-')
+        ? 'security-page-count'
+        : 'grant-panel-heading';
+      (target && !target.matches(':disabled')
+        ? target
+        : document.getElementById(fallback)
       )?.focus();
       focusAfter.current = '';
     }
@@ -532,12 +587,15 @@ function ManagementDetail({
     'inspect',
     'eventFor',
     'eventOrigin',
+    'fromList',
     'fromAccount',
     'fromVersion',
     'returnQuery',
     'via',
     'eventPage',
     'originEvent',
+    'logField',
+    'logValue',
   ])
     back.delete(k);
   if (!creating) back.set('selected', id);
@@ -571,14 +629,20 @@ function ManagementDetail({
         return;
       }
       const message =
-        label(r.operation) +
-        '完成 · ' +
+        (r.operation === 'version.publish'
+          ? '版本已保存'
+          : label(r.operation) + '完成') +
+        ' · ' +
         recordedTime(r.at) +
         (r.operation === 'account.create' ? '。开户时业务授予为空。' : '');
       setNotice(message);
       data.refresh();
       const target = r.subject ?? r.target,
         next = new URLSearchParams(params);
+      if (r.operation === 'version.publish') {
+        for (const k of ['tab', 'ref', 'gp', 'logField', 'logValue'])
+          next.delete(k);
+      }
       if (area === 'grants') {
         next.set('grant', r.target);
         next.set(
@@ -611,15 +675,18 @@ function ManagementDetail({
       }
     },
   });
-  const open = (cmd: Command) => {
-    origin.current = (document.activeElement as HTMLElement)?.id ?? '';
+  const open = (cmd: Command, triggerId?: string) => {
+    origin.current =
+      triggerId ?? (document.activeElement as HTMLElement)?.id ?? '';
     flow.start();
     saved.current = false;
     setDraft(cmd);
     setDirty(false);
     setError('');
     setNotice('');
-    requestAnimationFrame(() => formStart.current?.focus());
+    requestAnimationFrame(() =>
+      formStart.current?.focus({ preventScroll: true }),
+    );
   };
   const initial = useRef(false);
   useEffect(() => {
@@ -749,14 +816,16 @@ function ManagementDetail({
   const title = creating
     ? kind === 'account'
       ? '开户'
-      : '发布' + label(kind)
+      : '新建' + label(kind)
     : account?.displayName
       ? account.displayName + '（' + account.login + '）'
       : (account?.login ?? def?.name ?? areaNames[area]);
   usePageTitle(title);
-  const button = (text: string, cmd: Command) => (
+  const button = (text: string, cmd: Command, primary = false) => (
     <Button
       key={text}
+      size="small"
+      variant={primary ? 'contained' : 'text'}
       id={cmd.operation + '-' + (cmd.id ?? id)}
       onClick={() => open(cmd)}
     >
@@ -769,76 +838,106 @@ function ManagementDetail({
     revision: account?.revision,
   });
   const choices = account?.options ?? [];
+  const canEditVersion = def?.options?.includes(
+    def.kind === 'role' ? 'role' : 'policy',
+  );
+  const showReferences =
+    area === 'roles' &&
+    v?.rights?.some((r) => r === 'assign' || r === 'delegate');
+  const detailTab =
+    panel === 'events'
+      ? 'events'
+      : panel === 'references' && showReferences
+        ? 'references'
+        : 'basic';
+  const more: SecurityAction[] = [];
+  const secondary = (text: string, cmd: Command) =>
+    more.push({ label: text, run: (source) => open(cmd, source.id) });
+  if (area === 'accounts' && choices.includes('account')) {
+    secondary('变更管理归属', accountCmd('move'));
+    secondary(
+      account?.state === 'active' ? '停用账号' : '启用账号',
+      accountCmd(account?.state === 'active' ? 'disable' : 'enable'),
+    );
+  }
+  if (area === 'roles' && def && canEditVersion && !def.disabled) {
+    secondary('停用版本', {
+      operation: 'version.disable',
+      version: { kind: def.kind, name: def.name },
+      id,
+      revision: def.number,
+    });
+  }
   const actions = !draft && v && (
     <>
-      {area === 'accounts' && (
-        <>
-          {choices.includes('account') && (
-            <>
-              {button(
-                account?.state === 'active' ? '停用账号' : '启用账号',
-                accountCmd(account?.state === 'active' ? 'disable' : 'enable'),
-              )}
-              {button('变更管理归属', accountCmd('move'))}
-            </>
-          )}
-          {choices.includes('credential') &&
-            button('重置凭据', accountCmd('reset'))}
-        </>
-      )}
+      {area === 'accounts' &&
+        choices.includes('credential') &&
+        button('重置凭据', accountCmd('reset'), true)}
       {area === 'roles' &&
-        def?.options?.includes(def.kind === 'role' ? 'role' : 'policy') && (
-          <>
-            {button('发布新版本', editVersion(def))}
-            {!def.disabled &&
-              button('停用版本', {
-                operation: 'version.disable',
-                version: { kind: def.kind, name: def.name },
-                id,
-                revision: def.number,
-              })}
-          </>
-        )}
+        def &&
+        canEditVersion &&
+        button('新增版本', editVersion(def), true)}
       {area === 'grants' &&
         v.panel === 'grants' &&
         choices.includes('assign') &&
-        button('授予权限', {
-          operation: 'grant.issue',
-          subject: id,
-          source: 'duty',
-        })}
+        button(
+          '授予权限',
+          {
+            operation: 'grant.issue',
+            subject: id,
+            source: 'duty',
+          },
+          true,
+        )}
       {area === 'grants' &&
         v.panel === 'mandates' &&
         choices.includes('delegate') &&
-        button('委派管理职责', {
-          operation: 'mandate.issue',
-          subject: id,
-          limit: {
-            rights: [],
-            owner: '',
-            role: '',
-            scope: '',
-            fields: '',
-            maxProxyDays: v?.suggestedProxyDays ?? 0,
+        button(
+          '委派管理职责',
+          {
+            operation: 'mandate.issue',
+            subject: id,
+            limit: {
+              rights: [],
+              owner: '',
+              role: '',
+              scope: '',
+              fields: '',
+              maxProxyDays: v?.suggestedProxyDays ?? 0,
+            },
           },
-        })}
+          true,
+        )}
     </>
   );
   return (
     <Box className="standard-page object-page">
       <RecordControl
         identity={
-          <RecordBackButton
-            component={Link}
-            to={backTo}
-            label={
-              fromAccount
-                ? '返回账号资料'
-                : fromVersion
-                  ? '返回版本引用'
-                  : '返回列表'
-            }
-          />
+          <>
+            <RecordBackButton
+              component={Link}
+              to={backTo}
+              label={
+                fromAccount
+                  ? '返回账号资料'
+                  : fromVersion
+                    ? '返回版本引用'
+                    : '返回列表'
+              }
+            />
+            {!creating && (
+              <Typography className="record-control-name">
+                {account?.login ?? (def && versionName(def))}
+              </Typography>
+            )}
+            {!draft && (
+              <SecurityActionsMenu
+                actions={more}
+                triggerId="security-record-more"
+              />
+            )}
+          </>
         }
         actions={
           draft && v && !lost ? (
@@ -880,7 +979,21 @@ function ManagementDetail({
             actions
           )
         }
-        navigation={null}
+        navigation={
+          !creating &&
+          !!v &&
+          !fromAccount &&
+          !fromVersion &&
+          params.get('fromList') === '1' && (
+            <SecurityRecordPager
+              area={area}
+              id={id}
+              params={back}
+              session={session}
+              disabled={!!draft}
+            />
+          )
+        }
       />
       <div
         className="page-scroll"
@@ -893,7 +1006,20 @@ function ManagementDetail({
         {data.error && (
           <Alert
             severity="error"
-            action={<Button onClick={data.refresh}>重试</Button>}
+            action={
+              <>
+                <Button onClick={data.refresh}>重试</Button>
+                {panel === 'events' && params.has('logField') && (
+                  <Button
+                    onClick={() =>
+                      change({ logField: '', logValue: '', gp: '' })
+                    }
+                  >
+                    清除日志筛选
+                  </Button>
+                )}
+              </>
+            }
           >
             {data.error}
           </Alert>
@@ -909,13 +1035,16 @@ function ManagementDetail({
                   change({
                     tab: 'events',
                     eventFor: resultTarget,
+                    logField: '',
+                    logValue: '',
+                    originEvent: '',
                     grant: '',
                     gp: '',
                     inspect: '',
                   })
                 }
               >
-                查看这次变更
+                查看该份变更
               </Button>
             )}
           </Alert>
@@ -929,13 +1058,48 @@ function ManagementDetail({
           <ObjectDetailSheet
             identity={
               <ObjectDetailIdentity
-                icon={<SecurityOutlined />}
+                icon={
+                  area === 'accounts' ? (
+                    <PersonOutline />
+                  ) : area === 'roles' ? (
+                    <BadgeOutlined />
+                  ) : (
+                    <SecurityOutlined />
+                  )
+                }
+                related={
+                  area === 'accounts' && account?.grantReadable && !draft ? (
+                    <Button
+                      component={Link}
+                      id="account-grants"
+                      to={
+                        accessPath +
+                        '/grants/' +
+                        id +
+                        '?' +
+                        new URLSearchParams({
+                          fromAccount: '1',
+                          returnQuery: params.toString(),
+                        })
+                      }
+                    >
+                      查看账号授权
+                    </Button>
+                  ) : undefined
+                }
                 title={title}
                 summary={
                   account ? (
                     <>
-                      管理归属 {targetName(v, account.owner)} · 账号状态{' '}
-                      {label(account.state)}
+                      {area === 'grants' && (
+                        <>管理归属 {targetName(v, account.owner)}</>
+                      )}
+                      <StatusChip
+                        label={label(account.state)}
+                        color={
+                          account.state === 'active' ? 'success' : 'default'
+                        }
+                      />
                       {area === 'grants' &&
                         'builtinSecurityAdmin' in account &&
                         account.builtinSecurityAdmin === true && (
@@ -946,13 +1110,56 @@ function ManagementDetail({
                         )}
                     </>
                   ) : def ? (
-                    versionName(def)
+                    <>
+                      {label(def.kind)} · V{def.number}{' '}
+                      <StatusChip
+                        label={def.disabled ? '已停用' : '可用'}
+                        color={def.disabled ? 'default' : 'success'}
+                      />
+                    </>
                   ) : undefined
                 }
               />
             }
             tabs={
-              area === 'grants' && !draft && <GrantTabs v={v} change={change} />
+              !draft &&
+              !creating &&
+              (area === 'grants' ? (
+                <GrantTabs v={v} change={change} />
+              ) : (
+                <Tabs
+                  aria-label={areaNames[area] + '栏目'}
+                  value={detailTab}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  onChange={(_, tab: string) =>
+                    change(
+                      {
+                        tab: tab === 'basic' ? '' : tab,
+                        gp: '',
+                        ref: '',
+                        logField: '',
+                        logValue: '',
+                      },
+                      'security-' + tab + '-tab',
+                    )
+                  }
+                >
+                  {[
+                    ['basic', '基本资料'],
+                    ...(showReferences ? [['references', '版本引用']] : []),
+                    ['events', '变更日志'],
+                  ].map(([tab, name]) => (
+                    <Tab
+                      key={tab}
+                      id={'security-' + tab + '-tab'}
+                      aria-controls={'security-' + tab + '-panel'}
+                      value={tab}
+                      label={name}
+                    />
+                  ))}
+                </Tabs>
+              ))
             }
           >
             {draft && !lost ? (
@@ -972,7 +1179,9 @@ function ManagementDetail({
                       void flow.submit(draft);
                   }}
                 >
-                  <ObjectDetailSection title={label(draft.operation)}>
+                  <ObjectDetailSection
+                    title={creating ? undefined : label(draft.operation)}
+                  >
                     {draft.operation === 'version.disable' && (
                       <VersionReferences
                         v={v}
@@ -992,6 +1201,11 @@ function ManagementDetail({
                       v.mandates
                         ?.filter((m) => m.id === draft.id)
                         .map((m) => <MandateFacts key={m.id} v={v} m={m} />)}
+                    {draft.operation === 'version.publish' && !creating && (
+                      <Typography variant="body2" color="text.secondary">
+                        保存后可为账号选择新版本，现有授予继续使用原版本。
+                      </Typography>
+                    )}
                     <ManagementFields
                       d={draft}
                       v={v}
@@ -1005,99 +1219,101 @@ function ManagementDetail({
               </ObjectForm>
             ) : (
               <>
-                {area === 'accounts' && account && (
-                  <ObjectDetailSection title="账号资料">
-                    <ObjectDetailField label="显示名">
-                      {account.displayName || '未填写'}
-                    </ObjectDetailField>
-                    <ObjectDetailField label="管理归属">
-                      {targetName(v, account.owner)}
-                    </ObjectDetailField>
-                    {account.grantReadable && (
-                      <Button
-                        component={Link}
-                        id="account-grants"
-                        to={
-                          accessPath +
-                          '/grants/' +
-                          id +
-                          '?' +
-                          new URLSearchParams({
-                            fromAccount: '1',
-                            returnQuery: params.toString(),
-                          })
-                        }
-                      >
-                        查看账号授权
-                      </Button>
+                {area !== 'grants' && (
+                  <ObjectTabPanel
+                    prefix="security"
+                    value={detailTab}
+                    selected={detailTab}
+                  >
+                    {detailTab === 'basic' &&
+                      area === 'accounts' &&
+                      account && (
+                        <ObjectDetailSection title="账号资料">
+                          <div className="object-detail-columns">
+                            <div>
+                              <ObjectDetailField label="登录名">
+                                {account.login}
+                              </ObjectDetailField>
+                              <ObjectDetailField label="显示名">
+                                {account.displayName || '未填写'}
+                              </ObjectDetailField>
+                            </div>
+                            <div>
+                              <ObjectDetailField label="管理归属">
+                                {targetName(v, account.owner)}
+                              </ObjectDetailField>
+                            </div>
+                          </div>
+                        </ObjectDetailSection>
+                      )}
+                    {detailTab === 'basic' && area === 'roles' && def && (
+                      <ObjectDetailSection title={label(def.kind) + '资料'}>
+                        {def.kind === 'role' && (
+                          <>
+                            <div className="object-detail-columns">
+                              <div>
+                                <ObjectDetailField label="业务动作">
+                                  {def.actions
+                                    ?.map(
+                                      (a) =>
+                                        v.actions?.find((x) => x.key === a)
+                                          ?.name ?? a,
+                                    )
+                                    .join('、')}
+                                </ObjectDetailField>
+                              </div>
+                              <div>
+                                <ObjectDetailField label="范围策略">
+                                  {version(v, 'scope', def.scope) &&
+                                    versionName(
+                                      version(v, 'scope', def.scope)!,
+                                    )}
+                                </ObjectDetailField>
+                                <ObjectDetailField label="字段策略">
+                                  {version(v, 'fields', def.fields) &&
+                                    versionName(
+                                      version(v, 'fields', def.fields)!,
+                                    )}
+                                </ObjectDetailField>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {def.kind === 'scope' && (
+                          <ObjectDetailField label="目标">
+                            {targetName(v, def.targetId ?? '')}
+                          </ObjectDetailField>
+                        )}
+                        {def.kind === 'fields' && (
+                          <>
+                            <ObjectDetailField label="可读字段">
+                              {def.readFields?.map(label).join('、') || '无'}
+                            </ObjectDetailField>
+                            <ObjectDetailField label="可写字段">
+                              {def.writeFields?.map(label).join('、') || '无'}
+                            </ObjectDetailField>
+                          </>
+                        )}
+                      </ObjectDetailSection>
                     )}
-                  </ObjectDetailSection>
-                )}
-                {area === 'roles' && def && (
-                  <ObjectDetailSection title={label(def.kind) + '资料'}>
-                    <ObjectDetailField label="版本状态">
-                      {def.disabled ? '已停用' : '已发布'}
-                    </ObjectDetailField>
-                    {def.kind === 'role' && (
-                      <>
-                        <ObjectDetailField label="业务动作">
-                          {def.actions
-                            ?.map(
-                              (a) =>
-                                v.actions?.find((x) => x.key === a)?.name ?? a,
-                            )
-                            .join('、')}
-                        </ObjectDetailField>
-                        <ObjectDetailField label="范围策略">
-                          {version(v, 'scope', def.scope)?.name}
-                        </ObjectDetailField>
-                        <ObjectDetailField label="字段策略">
-                          {version(v, 'fields', def.fields)?.name}
-                        </ObjectDetailField>
-                      </>
+                    {showReferences && detailTab === 'references' && (
+                      <VersionReferences
+                        v={v}
+                        params={params}
+                        change={change}
+                        returnTo={id}
+                      />
                     )}
-                    {def.kind === 'scope' && (
-                      <ObjectDetailField label="目标">
-                        {targetName(v, def.targetId ?? '')}
-                      </ObjectDetailField>
+                    {detailTab === 'events' && (
+                      <SecurityHistory
+                        area={area}
+                        v={v}
+                        def={def}
+                        params={params}
+                        change={change}
+                      />
                     )}
-                    {def.kind === 'fields' && (
-                      <>
-                        <ObjectDetailField label="可读字段">
-                          {def.readFields?.map(label).join('、') || '无'}
-                        </ObjectDetailField>
-                        <ObjectDetailField label="可写字段">
-                          {def.writeFields?.map(label).join('、') || '无'}
-                        </ObjectDetailField>
-                      </>
-                    )}
-                  </ObjectDetailSection>
-                )}
-                {area === 'roles' &&
-                  def &&
-                  v.rights?.some((r) => r === 'assign' || r === 'delegate') && (
-                    <Button
-                      id="version-refs"
-                      onClick={() =>
-                        change({
-                          tab: panel === 'references' ? '' : 'references',
-                          gp: '',
-                          ref: '',
-                        })
-                      }
-                    >
-                      {panel === 'references'
-                        ? '收起版本引用'
-                        : '查看引用此版本的授予'}
-                    </Button>
-                  )}
-                {area === 'roles' && panel === 'references' && (
-                  <VersionReferences
-                    v={v}
-                    params={params}
-                    change={change}
-                    returnTo={id}
-                  />
+                  </ObjectTabPanel>
                 )}
                 {area === 'grants' && v.panel && (
                   <ObjectTabPanel
@@ -1115,7 +1331,7 @@ function ManagementDetail({
                           {
                             grants: '业务授予',
                             mandates: '管理职责',
-                            events: '管理变更',
+                            events: '变更日志',
                           } as Record<string, string>
                         )[v.panel]
                       }
@@ -1141,62 +1357,42 @@ function ManagementDetail({
                               })
                             }
                           >
-                            返回管理变更
+                            返回变更日志
                           </Button>
                         )}
                         <WorkspacePager v={v} params={params} change={change} />
-                        {!v.mandates?.length && <p>暂无可见管理职责</p>}
-                        {v.mandates?.map((m) => (
-                          <section
-                            className="access-grant"
-                            tabIndex={-1}
-                            key={m.id}
-                            id={'row-' + m.id}
-                          >
-                            <MandateFacts v={v} m={m} />
-                            {m.canRevoke &&
-                              button('撤销管理职责', {
-                                operation: 'mandate.revoke',
-                                subject: id,
-                                id: m.id,
-                              })}
-                          </section>
-                        ))}
-                      </>
-                    )}
-                    {v.panel === 'events' && (
-                      <>
-                        <WorkspacePager v={v} params={params} change={change} />
-                        {params.get('eventFor') && (
-                          <Button
-                            onClick={() => change({ eventFor: '', gp: '' })}
-                          >
-                            查看全部变更
-                          </Button>
-                        )}
-                        <History
+                        <Mandates
                           v={v}
-                          follow={(target, mandate, event) =>
-                            change({
-                              eventPage: String(v.page ?? 0),
-                              originEvent: event,
-                              tab: mandate ? 'mandates' : 'grants',
-                              grant: target,
-                              inspect: mandate ? '' : '1',
-                              eventOrigin: '1',
-                              gstate: '',
-                              gq: '',
-                              gsource: '',
-                              gversion: '',
-                              gp: '',
-                            })
-                          }
+                          selected={params.get('grant')}
+                          open={open}
                         />
                       </>
                     )}
+                    {v.panel === 'events' && (
+                      <SecurityHistory
+                        area={area}
+                        params={params}
+                        change={change}
+                        v={v}
+                        follow={(target, mandate, event) =>
+                          change({
+                            eventPage: String(v.page ?? 0),
+                            originEvent: event,
+                            tab: mandate ? 'mandates' : 'grants',
+                            grant: target,
+                            inspect: mandate ? '' : '1',
+                            eventOrigin: '1',
+                            gstate: '',
+                            gq: '',
+                            gsource: '',
+                            gversion: '',
+                            gp: '',
+                          })
+                        }
+                      />
+                    )}
                   </ObjectTabPanel>
                 )}
-                {!creating && area !== 'grants' && <History v={v} />}
               </>
             )}
           </ObjectDetailSheet>
