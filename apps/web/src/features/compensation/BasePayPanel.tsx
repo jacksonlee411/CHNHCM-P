@@ -92,13 +92,16 @@ export function BasePayPanel({
       }
       return next;
     });
-  const [focusTarget,setFocusTarget]=useState('');
-  useLayoutEffect(()=>{
-    if(!focusTarget||edit||originalId||!data)return;
-    const target=document.getElementById(focusTarget);
-    if(target){target.focus();setFocusTarget('')}
-  },[focusTarget,edit,originalId,data]);
-  const focus=()=>setFocusTarget(opener.current);
+  const [focusTarget, setFocusTarget] = useState('');
+  useLayoutEffect(() => {
+    if (!focusTarget || edit || originalId || !data) return;
+    const target = document.getElementById(focusTarget);
+    if (target) {
+      target.focus();
+      setFocusTarget('');
+    }
+  }, [focusTarget, edit, originalId, data]);
+  const focus = () => setFocusTarget(opener.current);
   const start = (action: string, el: HTMLElement, award?: Award) => {
     opener.current = el.id;
     setNotice('');
@@ -136,7 +139,7 @@ export function BasePayPanel({
           opener.current = 'award-' + receipt.award.revision;
           setNotice('已保存 · 申请号 ' + receipt.submissionId);
           setQueryParams({ payDay: receipt.award.effectiveDate, award: undefined, awardRevision: undefined });
-          view.refresh();
+          view.invalidate();
           focus();
         }}
       />
@@ -149,7 +152,7 @@ export function BasePayPanel({
           label="返回核定记录"
           onReturn={() => {
             setQueryParams({ award: undefined, awardRevision: undefined, payFocus: undefined });
-            setFocusTarget('award-'+rev);
+            setFocusTarget('award-' + rev);
           }}
         />
         {original.error && <Alert severity="error">{original.error}</Alert>}

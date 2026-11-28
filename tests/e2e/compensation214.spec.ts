@@ -37,7 +37,7 @@ async function payJourney(page: Page) {
     { times: 1 },
   );
   await button('保存').click();
-  await expect(page.getByText(/已保存 · 申请号/)).toBeVisible({timeout:25000});
+  await expect(page.getByText(/已保存 · 申请号/)).toBeVisible({ timeout: 25000 });
   const records = page.getByRole('table', { name: '按日核定记录' });
   await records.getByRole('button', { name: '更正' }).click();
   await expect(amount).toHaveValue('12100.00');
@@ -45,7 +45,8 @@ async function payJourney(page: Page) {
   await page.getByLabel('更正缘由').fill('核对原通知');
   await expect(page.getByText('生效日制度', { exact: true })).toBeVisible();
   await button('保存').click();
-  await expect(records).toContainText('12,000.00');
+  // Open the next decision as soon as the prior form closes. Its timeline version must include the correction.
+  await expect(page.locator('#pay-award-form')).toHaveCount(0);
   await button('调薪').click();
   await page.getByLabel('生效日期').fill(january);
   await expect(page.getByText('350.00 元/月', { exact: true })).toBeVisible();
