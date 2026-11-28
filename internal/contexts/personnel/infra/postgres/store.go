@@ -143,45 +143,42 @@ func (r *request) load(id, version string) (snapshot, error) {
 	if kind != nil {
 		v.Evidence = &p.Evidence{Kind: *kind, Reference: *ref}
 	}
-	rows, e := r.tx.Query(r.ctx, `select item_id,revision,attributes || jsonb_build_object('documentKind',kind,'documentNumber',number),issuing_country_adoption,long_term,is_primary from personnel.document_payload where instance_id=$1 and person_id=$2 and version=$3 order by ordinal`, r.instance, id, v.Version)
-	if e != nil {
-		return v, e
-	}
-	v.docs, e = pgx.CollectRows(rows, func(row pgx.CollectableRow) (p.DocumentRow, error) {
-		var x p.DocumentRow
-		err := row.Scan(&x.ItemID, &x.Revision, &x.Fields, &x.IssuingCountry, &x.LongTerm, &x.Primary)
-		return x, err
+	// Read all payloads against the selected source version in one round trip.
+	payloads := &pgx.Batch{}
+	payloads.Queue(`select item_id,revision,attributes || jsonb_build_object('documentKind',kind,'documentNumber',number),issuing_country_adoption,long_term,is_primary from personnel.document_payload where instance_id=$1 and person_id=$2 and version=$3 order by ordinal`, r.instance, id, v.Version).Query(func(rows pgx.Rows) error {
+		var err error
+		v.docs, err = pgx.CollectRows(rows, func(row pgx.CollectableRow) (p.DocumentRow, error) {
+			var x p.DocumentRow
+			err := row.Scan(&x.ItemID, &x.Revision, &x.Fields, &x.IssuingCountry, &x.LongTerm, &x.Primary)
+			return x, err
+		})
+		return err
 	})
-	if e != nil {
+	if version == "" {
+		payloads.Queue(`select section,item_id,revision,fields,adoptions,
+            case when address_type_id is not null then jsonb_build_object('id',address_type_id,'revision',address_type_revision,'date',address_type_day) end,ordinary_until,evidence_until,collection_policy from personnel.profile_item_payload where instance_id=$1 and person_id=$2 and version=$3 and ordinary_until>$4 order by section,ordinal`, r.instance, id, v.Version, r.a.At).Query(func(rows pgx.Rows) error {
+			var err error
+			v.profileItems, err = pgx.CollectRows(rows, func(row pgx.CollectableRow) (profileItem, error) {
+				var x profileItem
+				err := row.Scan(&x.Section, &x.ItemID, &x.Revision, &x.Fields, &x.Adoptions, &x.AddressType, &x.ordinary, &x.evidence, &x.policy)
+				return x, err
+			})
+			return err
+		})
+	}
+	payloads.Queue(`select item_id,revision,kind,value,purpose,is_primary,ordinary_until,evidence_until,collection_policy from personnel.contact_payload where instance_id=$1 and person_id=$2 and version=$3 order by ordinal`, r.instance, id, v.Version).Query(func(rows pgx.Rows) error {
+		for rows.Next() {
+			var x item
+			if err := rows.Scan(&x.ItemID, &x.Revision, &x.Kind, &x.Value.Value, &x.Purpose, &x.Primary, &x.ordinary, &x.evidence, &x.policy); err != nil {
+				return err
+			}
+			v.items = append(v.items, x)
+		}
+		return rows.Err()
+	})
+	if e = r.tx.SendBatch(r.ctx, payloads).Close(); e != nil {
 		return v, e
 	}
 	v.PrimaryDocument = v.primaryValue()
-	if version == "" {
-		rows, e := r.tx.Query(r.ctx, `select section,item_id,revision,fields,adoptions,
-            case when address_type_id is not null then jsonb_build_object('id',address_type_id,'revision',address_type_revision,'date',address_type_day) end,ordinary_until,evidence_until,collection_policy from personnel.profile_item_payload where instance_id=$1 and person_id=$2 and version=$3 and ordinary_until>$4 order by section,ordinal`, r.instance, id, v.Version, r.a.At)
-		if e != nil {
-			return v, e
-		}
-		v.profileItems, e = pgx.CollectRows(rows, func(row pgx.CollectableRow) (profileItem, error) {
-			var x profileItem
-			err := row.Scan(&x.Section, &x.ItemID, &x.Revision, &x.Fields, &x.Adoptions, &x.AddressType, &x.ordinary, &x.evidence, &x.policy)
-			return x, err
-		})
-		if e != nil {
-			return v, e
-		}
-	}
-	rows, e = r.tx.Query(r.ctx, `select item_id,revision,kind,value,purpose,is_primary,ordinary_until,evidence_until,collection_policy from personnel.contact_payload where instance_id=$1 and person_id=$2 and version=$3 order by ordinal`, r.instance, id, v.Version)
-	if e != nil {
-		return v, e
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var x item
-		if e = rows.Scan(&x.ItemID, &x.Revision, &x.Kind, &x.Value.Value, &x.Purpose, &x.Primary, &x.ordinary, &x.evidence, &x.policy); e != nil {
-			return v, e
-		}
-		v.items = append(v.items, x)
-	}
-	return v, rows.Err()
+	return v, nil
 }
