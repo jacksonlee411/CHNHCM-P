@@ -27,18 +27,18 @@ func changedManagement() error {
 
 type definitionKey struct{ kind, id string }
 type manager struct {
-	store                      *Store
-	ctx                        context.Context
-	tx                         pgx.Tx
-	instance, actor, protected string
-	root                       bool
-	proxyDays                  int
-	checking                   bool
-	authorityUntil             time.Time
-	caps                       []app.ManagementCeiling
-	versions                   map[definitionKey]access.Definition
-	published                  map[definitionKey]bool
-	targets                    []access.Target
+	store                               *Store
+	ctx                                 context.Context
+	tx                                  pgx.Tx
+	instance, actor, protected, builtin string
+	root                                bool
+	proxyDays                           int
+	checking                            bool
+	authorityUntil                      time.Time
+	caps                                []app.ManagementCeiling
+	versions                            map[definitionKey]access.Definition
+	published                           map[definitionKey]bool
+	targets                             []access.Target
 }
 
 func lockManager(ctx context.Context, tx pgx.Tx, instance string, write bool) error {
@@ -112,7 +112,17 @@ func (s *Store) manager(ctx context.Context, tx pgx.Tx, c access.Credentials, cm
 	if e != nil && !errors.Is(e, pgx.ErrNoRows) {
 		return nil, nil, e
 	}
-	m.root = m.actor == m.protected
+	if m.protected != "" {
+		enterprise, e := s.EnterpriseID(m.ctx)
+		if e != nil {
+			return nil, nil, e
+		}
+		m.builtin, e = initializedAdminID(ctx, tx, s.Instance, enterprise)
+		if e != nil {
+			return nil, nil, e
+		}
+	}
+	m.root = m.isAdministrator(m.actor)
 	if !m.root {
 		caps, err := m.ceilings(m.actor)
 		if err != nil {
@@ -121,6 +131,10 @@ func (s *Store) manager(ctx context.Context, tx pgx.Tx, c access.Credentials, cm
 		m.caps = caps
 	}
 	return m, g, nil
+}
+
+func (m *manager) isAdministrator(subject string) bool {
+	return subject != "" && (subject == m.protected || subject == m.builtin)
 }
 
 const mandateFrom = ` FROM access.management_mandate m

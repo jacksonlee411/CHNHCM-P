@@ -11,6 +11,17 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// ManagementEnterpriseID identifies the enterprise in the original account initialization declaration.
+func (s *Store) ManagementEnterpriseID(ctx context.Context) (string, error) {
+	tx, ok := dbtx.From(ctx)
+	if !ok {
+		return "", errors.New("management directory requires a transaction")
+	}
+	var id string
+	err := tx.QueryRow(ctx, "SELECT enterprise_id::text FROM organization.enterprise WHERE instance_id=$1", s.Instance).Scan(&id)
+	return id, err
+}
+
 // ManagementTargets returns only the identification fields requested by X03's delegation directory.
 func (s *Store) ManagementTargets(ctx context.Context, ids []string) ([]access.Target, error) {
 	tx, ok := dbtx.From(ctx)

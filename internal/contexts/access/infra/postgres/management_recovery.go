@@ -3,20 +3,20 @@ package postgres
 import (
 	"context"
 	"crypto/hmac"
-	"crypto/rand"
 	"errors"
 	"strings"
 
 	"chnhcm.local/chnhcm/internal/contexts/access/domain"
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	"chnhcm.local/chnhcm/internal/foundation"
+	"chnhcm.local/chnhcm/internal/platform/dbtx"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // RecoverManagement is only wired to the deployment command using the instance owner's database identity.
 // expectedAdmin prevents a stale recovery or handover from replacing a later appointment.
-func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in access.RecoveryCommand) (v access.ManagementResult, err error) {
+func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in access.RecoveryCommand, enterpriseID func(context.Context) (string, error)) (v access.ManagementResult, err error) {
 	login, ok := domain.NormalizeLogin(in.Login)
 	if !ok || !foundation.ValidID(instance) || instance != in.Instance || !foundation.ValidID(in.Request) || strings.TrimSpace(in.Operator) == "" || len(in.Operator) > 180 || strings.TrimSpace(in.Reason) == "" || len(in.Reason) > 1000 || in.MaxProxyDays != nil && (*in.MaxProxyDays < 0 || *in.MaxProxyDays > 3650) {
 		return v, invalidManagement("请核对实例、目标账号、运维身份、事由及代理期限上限")
@@ -31,7 +31,8 @@ func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in
 	}
 	var current string
 	var days int
-	e = tx.QueryRow(ctx, "SELECT principal_id::text,max_proxy_days FROM access.management_root WHERE instance_id=$1", instance).Scan(&current, &days)
+	var appointed bool
+	e = tx.QueryRow(ctx, "SELECT principal_id::text,max_proxy_days,"+explicitAppointment+" FROM access.management_root WHERE instance_id=$1", instance).Scan(&current, &days, &appointed)
 	if e != nil && !errors.Is(e, pgx.ErrNoRows) {
 		return v, e
 	}
@@ -54,13 +55,25 @@ func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in
 			return v, e
 		}
 	}
+	enterprise, e := enterpriseID(dbtx.With(ctx, tx))
+	if e != nil {
+		return v, e
+	}
+	builtin, e := initializedAdminID(ctx, tx, instance, enterprise)
+	if e != nil {
+		return v, e
+	}
 	switch in.Operation {
 	case "bootstrap":
-		if current != "" || in.ExpectedAdmin != "" {
+		if appointed || current != "" && current != builtin || in.ExpectedAdmin != "" {
 			return v, changedManagement()
 		}
-	case "recover", "handover":
-		if current == "" || in.ExpectedAdmin != current {
+	case "recover":
+		if in.ExpectedAdmin == "" || in.ExpectedAdmin != current && in.ExpectedAdmin != builtin {
+			return v, changedManagement()
+		}
+	case "handover":
+		if !appointed || in.ExpectedAdmin != current {
 			return v, changedManagement()
 		}
 	default:
@@ -79,7 +92,7 @@ func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in
 	if e != nil {
 		return v, e
 	}
-	if in.Operation == "recover" && id != current || in.Operation == "handover" && id == current {
+	if in.Operation == "recover" && id != in.ExpectedAdmin || in.Operation == "handover" && id == current {
 		return v, changedManagement()
 	}
 	if e = LockManagement(ctx, tx, instance, current, id, access.VersionBinding{}, "", ""); e != nil {
@@ -95,18 +108,18 @@ func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in
 		return v, e
 	}
 	if current == "" {
-		key := make([]byte, 32)
-		if _, e = rand.Read(key); e != nil {
-			return v, e
-		}
-		_, e = tx.Exec(ctx, "INSERT INTO access.management_root(instance_id,principal_id,max_proxy_days,receipt_key) VALUES($1,$2,$3,$4)", instance, id, days, key)
+		e = insertManagementRoot(ctx, tx, instance, id, days)
 	} else {
-		_, e = tx.Exec(ctx, "UPDATE access.management_root SET principal_id=$2,max_proxy_days=$3 WHERE instance_id=$1", instance, id, days)
+		root := id
+		if in.Operation == "recover" {
+			root = current
+		}
+		_, e = tx.Exec(ctx, "UPDATE access.management_root SET principal_id=$2,max_proxy_days=$3 WHERE instance_id=$1", instance, root, days)
 	}
 	if e != nil {
 		return v, e
 	}
-	if current != "" && current != id {
+	if in.Operation == "handover" {
 		if _, e = tx.Exec(ctx, "UPDATE access.management_mandate SET revoked_at=clock_timestamp() WHERE instance_id=$1 AND principal_id=$2 AND revoked_at IS NULL", instance, current); e != nil {
 			return v, e
 		}
@@ -147,7 +160,7 @@ func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in
 // The same subject lock is held by the old deployment maintenance commands and by an appointment.
 func protectRecoveryAccount(ctx context.Context, tx pgx.Tx, instance, id string) error {
 	var held bool
-	err := tx.QueryRow(ctx, "SELECT EXISTS(SELECT FROM access.management_root WHERE instance_id=$1 AND principal_id=$2)", instance, id).Scan(&held)
+	err := tx.QueryRow(ctx, "SELECT EXISTS(SELECT FROM access.management_root WHERE instance_id=$1 AND principal_id=$2) AND "+explicitAppointment, instance, id).Scan(&held)
 	if err == nil && held {
 		return errors.New("受保护管理员须通过 access-admin 恢复或交接")
 	}

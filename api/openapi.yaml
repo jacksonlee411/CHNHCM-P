@@ -16811,6 +16811,9 @@ components:
       properties:
         grantReadable: {type: boolean}
         activeGrants: {type: integer, minimum: 0}
+        builtinSecurityAdmin:
+          type: boolean
+          description: 部署初始化的内置安全管理员，长期拥有本实例全部安全管理职责。
         id:
           type: string
         login:

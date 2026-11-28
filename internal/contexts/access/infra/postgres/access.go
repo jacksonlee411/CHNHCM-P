@@ -23,10 +23,11 @@ import (
 )
 
 type Store struct {
-	Targets     access.TargetDirectory
-	Pool        *pgxpool.Pool
-	Instance    string
-	AfterLogout func(context.Context, access.Principal)
+	Targets      access.TargetDirectory
+	EnterpriseID func(context.Context) (string, error)
+	Pool         *pgxpool.Pool
+	Instance     string
+	AfterLogout  func(context.Context, access.Principal)
 }
 type guard struct {
 	policyVersion int64
@@ -625,8 +626,7 @@ func InitializePrincipal(ctx context.Context, tx pgx.Tx, instance, enterprise, i
 	if !validLogin || len(password) < 12 || len(password) > 1024 {
 		return "", errors.New("initial account requires a 1-100 byte login and a 12-1024 byte password")
 	}
-	initial, _ := json.Marshal([]any{strings.ToLower(strings.TrimSpace(login)), enterprise, readOnly})
-	initialDigest := sha256.Sum256(initial)
+	initialDigest := initializationDigest(login, enterprise, readOnly)
 	q := generated.New(tx)
 	old, e := q.FindLogin(ctx, generated.FindLoginParams{InstanceID: instance, NormalizedLogin: strings.ToLower(strings.TrimSpace(login))})
 	if e == nil {
@@ -691,6 +691,11 @@ func InitializePrincipal(ctx context.Context, tx pgx.Tx, instance, enterprise, i
 		return "", err
 	}
 	return id, nil
+}
+
+func initializationDigest(login, enterprise string, readOnly bool) [32]byte {
+	initial, _ := json.Marshal([]any{strings.ToLower(strings.TrimSpace(login)), enterprise, readOnly})
+	return sha256.Sum256(initial)
 }
 
 // Development declarations run once when creating an explicit fixture principal.

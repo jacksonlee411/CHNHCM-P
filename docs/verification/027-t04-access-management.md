@@ -2,7 +2,7 @@
 
 ## 1 受测范围
 
-2026-11-27 在 `wt-dev-a` 的 T03 提交 `3c3dde7caab4bd367a9351b0f880a2e4247966dd` 上实施。用真实 PostgreSQL 18.6、Go HTTP 会话、Chromium 和部署命令核对账号、角色、授权与恢复。固定验收环境和登录样例见第 5 节。[业务合同](../specs/x03/028-local-account-and-authorization.md) · [实施计划](../plans/027-x03-local-access-rollout.md)
+2026-11-27 在 `wt-dev-a` 的 T03 提交 `3c3dde7caab4bd367a9351b0f880a2e4247966dd` 上实施。用真实 PostgreSQL 18.6、Go HTTP 会话、Chromium 和部署命令核对账号、角色、授权与恢复。固定验收环境和登录样例见第 5 节。[业务合同](../specs/x03/028-local-account-and-authorization.md) · [实施计划](../archive/plans/027-x03-local-access-rollout.md)
 
 统一 upgrader 从公共 00058 前向升级至 00059。公共账本的预留提交为 `bbe39c7ea7995f844b7af6f213af3d4c7eaa7e0a`。领号前的隔离演练使用 Go 文件映射。正式 SQL 与演练 SQL 只差文件末尾一个空行，正式文件 SHA-256 为 `642de72a804a5fdeaa5ea3e762f8d5c6d3c87f2e86f184c864519d1e62d6a7c9`。[公共领号记录](https://github.com/jacksonlee411/CHNHCM-P/commit/bbe39c7ea7995f844b7af6f213af3d4c7eaa7e0a) · [正式迁移](../../db/migrations/00059_access_management.sql)
 

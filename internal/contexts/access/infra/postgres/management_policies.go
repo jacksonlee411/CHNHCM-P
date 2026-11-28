@@ -166,6 +166,9 @@ func (m *manager) changeGrant(in access.ManagementCommand) (string, error) {
 		return "", managementDenied()
 	}
 	if strings.HasPrefix(in.Operation, "mandate.") {
+		if a.ID == m.builtin {
+			return "", managementDenied()
+		}
 		return m.changeMandate(in, a)
 	}
 	if !m.ownerScope("assign", a.Owner) {

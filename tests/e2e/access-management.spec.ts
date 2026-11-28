@@ -12,7 +12,7 @@ import { open as openBU } from './bu-support';
 const loginName = 't04-security',
   devPassword = 'admin1234567',
   directory = '/settings/security/';
-function bootstrap() {
+function requireTemporaryProfile() {
   const conn = localConnection();
   const profiles = JSON.parse(
     execFileSync('python3', ['scripts/local-bu.py', 'list'], {
@@ -26,6 +26,9 @@ function bootstrap() {
     )
   )
     throw new Error('管理走查需要自有临时实例');
+}
+function bootstrap() {
+  requireTemporaryProfile();
   execFileSync('python3', ['scripts/local-bu.py', 'access-admin'], {
     input: JSON.stringify({
       operation: 'bootstrap',
@@ -297,6 +300,22 @@ async function journey(p: Page, adopt = false) {
     await context.close();
   }
 }
+test('028 内置 admin 查看长期管理职责并从页面办理授权', async ({ page }) => {
+  test.setTimeout(120000);
+  requireTemporaryProfile();
+  await page.setViewportSize({ width: 1440, height: 540 });
+  await login(page, 'admin');
+  await menu(page, '授权', 'grants');
+  await page.getByLabel('搜索登录名或显示名').fill('admin');
+  await click(page, '查询');
+  await page.getByRole('link', { name: /^admin(?: ·|$)/ }).click();
+  await expect(
+    page.getByText('全部安全管理权限 · 长期', { exact: true }),
+  ).toBeInViewport();
+  await expect(page.getByRole('button', { name: '撤销管理职责' })).toHaveCount(0);
+  await journey(page, true);
+});
+
 for (const height of [900, 540])
   test(
     '027 T04 管理员开户、发布和逐份撤销 · 1440×' + height,

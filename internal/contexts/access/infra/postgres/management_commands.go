@@ -223,6 +223,9 @@ func createManagedAccount(ctx context.Context, tx pgx.Tx, instance, owner, login
 	if !ok || len(display) > 200 || !passwordOK(password) {
 		return "", invalidManagement("请核对登录名、显示名及初始凭据（12 至 1024 字节）")
 	}
+	if strings.ToLower(login) == "admin" {
+		return "", invalidManagement("admin 是保留登录名，请由部署初始化建立")
+	}
 	id := foundation.NewID()
 	// A managed account has a distinct creation identity and can never match a development initialization declaration.
 	_, e := tx.Exec(ctx, `INSERT INTO access.principal(instance_id,principal_id,login,normalized_login,display_name,state,initialization_digest,management_owner)

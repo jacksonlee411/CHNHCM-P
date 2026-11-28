@@ -1,0 +1,634 @@
+{
+  "profile": "x03-t05-acceptance-a",
+  "ports": {
+    "web": 4685,
+    "api": 8685,
+    "postgres": 54685
+  },
+  "oldDatabase": {
+    "source": "560cea88199c801ceb49a9cb81d4f4c1a2d0d68c",
+    "upSteps": [
+      "upgrader: migrate completed",
+      "upgrader: runtime-roles completed",
+      "upgrader: initialize completed",
+      "upgrader: initialize completed",
+      "upgrader: country-catalog completed",
+      "upgrader: geoarea-catalog completed",
+      "BU API ready: http://127.0.0.1:8685"
+    ],
+    "migration": 57,
+    "readerSubject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+    "originalReadGrants": [
+      {
+        "id": "dbe9151b-a87f-43f5-ad13-52c9f9c8d80f",
+        "action": "department.read",
+        "scopeKind": "enterprise",
+        "target": "e7cc624c-3124-44c0-b7a8-5577469e4547",
+        "read": [
+          "code",
+          "name",
+          "shortName",
+          "managementBuId",
+          "parentDepartmentId",
+          "departmentPath",
+          "status",
+          "effectiveDate",
+          "operationType",
+          "operationReason"
+        ],
+        "write": []
+      }
+    ],
+    "readerSaw": "甲部门",
+    "legacyDepartmentReceipt": {
+      "submissionId": "8134ffa5-8b6a-45fc-aaad-e11deb7787ae",
+      "outcome": "accepted",
+      "departmentId": "7ce3893c-6b33-42fe-be09-d5e5f614c6e3",
+      "sourceVersion": "b8eef333-e8a9-4147-86d3-b8970c92e848",
+      "targetRevision": "0e11d790-d285-48f3-a754-c2b6056bd57e",
+      "action": "CREATE",
+      "recordedAt": "2026-11-27T23:21:24.982828Z"
+    },
+    "upgradeSteps": [
+      "upgrader: migrate completed",
+      "upgrader: migrate completed",
+      "upgrader: runtime-roles completed",
+      "upgrader: initialize completed",
+      "upgrader: initialize completed",
+      "upgrader: country-catalog completed",
+      "upgrader: geoarea-catalog completed",
+      "BU runtime ready: http://127.0.0.1:4685 (API: http://127.0.0.1:8685)"
+    ]
+  },
+  "restart": {
+    "downCommand": "CHNHCM_LOCAL_PROFILE=x03-t05-acceptance-a python3 scripts/local-bu.py down",
+    "downSteps": [
+      "Stopped this checkout's runtime; database volume retained."
+    ],
+    "upCommand": "CHNHCM_LOCAL_PROFILE=x03-t05-acceptance-a python3 scripts/local-bu.py up --fixed-web",
+    "upSteps": [
+      "upgrader: migrate completed",
+      "upgrader: migrate completed",
+      "upgrader: runtime-roles completed",
+      "upgrader: initialize completed",
+      "upgrader: initialize completed",
+      "upgrader: country-catalog completed",
+      "upgrader: geoarea-catalog completed",
+      "BU runtime ready: http://127.0.0.1:4685 (API: http://127.0.0.1:8685)"
+    ],
+    "verify": "Verified this checkout's Web/API ownership and readiness.",
+    "container": {
+      "before": {
+        "id": "82cff05cdc3644d29b22c33a0032a2a26d790cf30017fdd97bd3ea9c0c3415e7",
+        "started": "2026-11-27T23:21:40.068514172Z",
+        "status": "running",
+        "volumes": [
+          "chnhcm-bu-6b227a77ff83_database"
+        ]
+      },
+      "stopped": {
+        "id": "82cff05cdc3644d29b22c33a0032a2a26d790cf30017fdd97bd3ea9c0c3415e7",
+        "started": "2026-11-27T23:21:40.068514172Z",
+        "status": "exited",
+        "volumes": [
+          "chnhcm-bu-6b227a77ff83_database"
+        ]
+      },
+      "after": {
+        "id": "82cff05cdc3644d29b22c33a0032a2a26d790cf30017fdd97bd3ea9c0c3415e7",
+        "started": "2026-11-27T23:27:34.9220021Z",
+        "status": "running",
+        "volumes": [
+          "chnhcm-bu-6b227a77ff83_database"
+        ]
+      }
+    },
+    "listenersWhenStopped": {
+      "4685": false,
+      "8685": false,
+      "54685": false
+    },
+    "pgBefore": {
+      "server": "18.6",
+      "pgStart": "2026-11-27T23:21:41.150265+00:00",
+      "migration": 59,
+      "databaseOid": "16384"
+    },
+    "pgAfter": {
+      "server": "18.6",
+      "pgStart": "2026-11-27T23:27:35.987289+00:00",
+      "migration": 59,
+      "databaseOid": "16384"
+    },
+    "beforePids": {
+      "api": {
+        "pid": 2474664,
+        "start": "62956961"
+      },
+      "web": {
+        "pid": 2475361,
+        "start": "62958263"
+      }
+    },
+    "afterPids": {
+      "api": {
+        "pid": 2496477,
+        "start": "62993258"
+      },
+      "web": {
+        "pid": 2497487,
+        "start": "62994648"
+      }
+    },
+    "buildBefore": {
+      "base": "44145442c415b107dd21a3aad33d802ae44196e8",
+      "api": "e650c1151ecadfc35d2e56df6a17bb560a30bfb22341bb65b31b3f7e3af3ee85",
+      "web": {
+        "assets/index-BqD5K2xg.js": "9a1591573cf47365df26cdbdd1f304849e04d5ad8a808fa16d8a498fd14b4498"
+      },
+      "runtimeSources": "ee433cee29a1466a5d9815be83b8db34ffd87cc6c9e25e4978c52ca7dea1c9a1"
+    },
+    "buildAfter": {
+      "base": "44145442c415b107dd21a3aad33d802ae44196e8",
+      "api": "e650c1151ecadfc35d2e56df6a17bb560a30bfb22341bb65b31b3f7e3af3ee85",
+      "web": {
+        "assets/index-BqD5K2xg.js": "9a1591573cf47365df26cdbdd1f304849e04d5ad8a808fa16d8a498fd14b4498"
+      },
+      "runtimeSources": "ee433cee29a1466a5d9815be83b8db34ffd87cc6c9e25e4978c52ca7dea1c9a1"
+    },
+    "runtimeWorktreeDiffBefore": "",
+    "runtimeWorktreeDiffAfter": ""
+  },
+  "readerBrowserAndAPI": {
+    "before": {
+      "at": "2026-11-27T23:27:18.396Z",
+      "subject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+      "departmentId": "7ce3893c-6b33-42fe-be09-d5e5f614c6e3",
+      "query": "X03DA",
+      "observedListRequests": [
+        {
+          "q": null,
+          "status": 403
+        },
+        {
+          "q": "X03DA",
+          "status": 403
+        },
+        {
+          "q": "X03DA",
+          "status": 403
+        }
+      ],
+      "listPage": [
+        "当前权限不允许此操作"
+      ],
+      "listStatus": 403,
+      "listCode": "ACCESS_DENIED",
+      "detailPage": [
+        "部门不存在或当前不可见重试"
+      ],
+      "detailPageStatus": 404,
+      "detailStatus": 404,
+      "detailCode": "M02_OBJECT_NOT_FOUND",
+      "visibleTarget": false
+    },
+    "after": {
+      "at": "2026-11-27T23:27:55.911Z",
+      "subject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+      "departmentId": "7ce3893c-6b33-42fe-be09-d5e5f614c6e3",
+      "query": "X03DA",
+      "observedListRequests": [
+        {
+          "q": null,
+          "status": 403
+        },
+        {
+          "q": "X03DA",
+          "status": 403
+        },
+        {
+          "q": "X03DA",
+          "status": 403
+        }
+      ],
+      "listPage": [
+        "当前权限不允许此操作"
+      ],
+      "listStatus": 403,
+      "listCode": "ACCESS_DENIED",
+      "detailPage": [
+        "部门不存在或当前不可见重试"
+      ],
+      "detailPageStatus": 404,
+      "detailStatus": 404,
+      "detailCode": "M02_OBJECT_NOT_FOUND",
+      "visibleTarget": false
+    },
+    "afterHistory": {
+      "at": "2026-11-27T23:29:17.246Z",
+      "changeStatus": 404,
+      "sourceStatus": 404,
+      "changeCode": "M02_OBJECT_NOT_FOUND",
+      "sourceCode": "M02_OBJECT_NOT_FOUND"
+    }
+  },
+  "reconciliation": {
+    "method": "同一数据库连接参数启用 default_transaction_read_only。每行按 to_jsonb(t)::text 的 UTF-8 SHA-256 求十六进制值，按该值排序、拼接后再求 SHA-256。access.security_event 取 event_kind = security_change。management_receipt 移除 command_seal。",
+    "tables": [
+      {
+        "table": "access.grant_assignment",
+        "before": {
+          "rows": 242,
+          "sha256": "50d432b9b450530c2f7d874a899b33612092c281c2b56da332e43b1829f7db4f"
+        },
+        "after": {
+          "rows": 242,
+          "sha256": "50d432b9b450530c2f7d874a899b33612092c281c2b56da332e43b1829f7db4f"
+        }
+      },
+      {
+        "table": "access.grant_revision",
+        "before": {
+          "rows": 255,
+          "sha256": "fbde17fb356ffcb8572e35a74a2a003d13307d38283c5f6251cc6f19883b046b"
+        },
+        "after": {
+          "rows": 255,
+          "sha256": "fbde17fb356ffcb8572e35a74a2a003d13307d38283c5f6251cc6f19883b046b"
+        }
+      },
+      {
+        "table": "access.policy_version",
+        "before": {
+          "rows": 259,
+          "sha256": "122bcdbfc908263d2f0b36df2f1d23b7e2ac57e7ef7184544e2b55cfcde2530c"
+        },
+        "after": {
+          "rows": 259,
+          "sha256": "122bcdbfc908263d2f0b36df2f1d23b7e2ac57e7ef7184544e2b55cfcde2530c"
+        }
+      },
+      {
+        "table": "access.management_receipt",
+        "before": {
+          "rows": 44,
+          "sha256": "0e2905fbd9b9ac94756123858c96e1a70cf3439c90866dea724cf147f1caf25d"
+        },
+        "after": {
+          "rows": 44,
+          "sha256": "0e2905fbd9b9ac94756123858c96e1a70cf3439c90866dea724cf147f1caf25d"
+        }
+      },
+      {
+        "table": "access.management_publication",
+        "before": {
+          "rows": 29,
+          "sha256": "d9ed32c6a4511b852d42bb22ea7c356e07bf60352a0d76bf461925bc2e571177"
+        },
+        "after": {
+          "rows": 29,
+          "sha256": "d9ed32c6a4511b852d42bb22ea7c356e07bf60352a0d76bf461925bc2e571177"
+        }
+      },
+      {
+        "table": "access.security_event",
+        "before": {
+          "rows": 62,
+          "sha256": "3373e13717d970c65d6ffa4f1651c0c48271a49e8e90f0bcf258bb7835432fc3"
+        },
+        "after": {
+          "rows": 62,
+          "sha256": "3373e13717d970c65d6ffa4f1651c0c48271a49e8e90f0bcf258bb7835432fc3"
+        }
+      },
+      {
+        "table": "organization.department_history",
+        "before": {
+          "rows": 3,
+          "sha256": "461f087d5cb641f84db60cf07c2fa1877e64fe1d287bc2c880f016a7b10be6da"
+        },
+        "after": {
+          "rows": 3,
+          "sha256": "461f087d5cb641f84db60cf07c2fa1877e64fe1d287bc2c880f016a7b10be6da"
+        }
+      },
+      {
+        "table": "organization.department_terminal",
+        "before": {
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "after": {
+          "rows": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "table": "staffing.quota_record",
+        "before": {
+          "rows": 4,
+          "sha256": "5de0b34a15a0cb2f84fbc2894853a7b0d4afcaf4707c790e6884a3e1e53d18ec"
+        },
+        "after": {
+          "rows": 4,
+          "sha256": "5de0b34a15a0cb2f84fbc2894853a7b0d4afcaf4707c790e6884a3e1e53d18ec"
+        }
+      },
+      {
+        "table": "staffing.quota_source",
+        "before": {
+          "rows": 4,
+          "sha256": "4edc280cab8229a3e1a6546a2a41c4603a7315d79ad11ddb0bf1fbf25256baa1"
+        },
+        "after": {
+          "rows": 4,
+          "sha256": "4edc280cab8229a3e1a6546a2a41c4603a7315d79ad11ddb0bf1fbf25256baa1"
+        }
+      },
+      {
+        "table": "staffing.quota_terminal",
+        "before": {
+          "rows": 4,
+          "sha256": "7194a74357389d220deeb3dbfccdc155938b5a14ab9a528e4635fbcc49fb6e9a"
+        },
+        "after": {
+          "rows": 4,
+          "sha256": "7194a74357389d220deeb3dbfccdc155938b5a14ab9a528e4635fbcc49fb6e9a"
+        }
+      }
+    ],
+    "readerEffectiveDepartmentReadBefore": 0,
+    "readerEffectiveDepartmentReadAfter": 0,
+    "equalReaderRevisionsBeforeAndAfter": [
+      {
+        "grant": "60f3671e-1262-4432-adc4-a3df0833e89b",
+        "source": "duty",
+        "revision": 1,
+        "operation": "issue",
+        "role": "01f77aa2-60fb-40bd-a638-b3d10658dded",
+        "scope": "55daead4-1bc9-48e8-ac46-40cdbf8c2356",
+        "fields": "252cfda2-083f-4bb7-88e4-88043b21b22b",
+        "actor": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+        "request": "943895a0-207e-45c4-9584-7ef04794c972",
+        "at": "2026-11-27T23:26:42.831005+00:00"
+      },
+      {
+        "grant": "60f3671e-1262-4432-adc4-a3df0833e89b",
+        "source": "duty",
+        "revision": 2,
+        "operation": "adopt",
+        "role": "a78df7d0-f323-4c4e-8e10-8e3199192c84",
+        "scope": "55daead4-1bc9-48e8-ac46-40cdbf8c2356",
+        "fields": "252cfda2-083f-4bb7-88e4-88043b21b22b",
+        "actor": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+        "request": "e4ec7855-9c30-4e88-82f4-9895646525e4",
+        "at": "2026-11-27T23:26:51.136123+00:00"
+      },
+      {
+        "grant": "60f3671e-1262-4432-adc4-a3df0833e89b",
+        "source": "duty",
+        "revision": 3,
+        "operation": "revoke",
+        "role": "a78df7d0-f323-4c4e-8e10-8e3199192c84",
+        "scope": "55daead4-1bc9-48e8-ac46-40cdbf8c2356",
+        "fields": "252cfda2-083f-4bb7-88e4-88043b21b22b",
+        "actor": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+        "request": "35d96f01-dc44-4f1d-833c-10118ab56bf1",
+        "at": "2026-11-27T23:26:56.517749+00:00"
+      },
+      {
+        "grant": "dbe9151b-a87f-43f5-ad13-52c9f9c8d80f",
+        "source": "migration",
+        "revision": 1,
+        "operation": "issue",
+        "role": "88bed778-b127-4290-80ef-07cdc0ed3c95",
+        "scope": "01d3e29f-9250-4e2f-9274-a4d50998c824",
+        "fields": "189275fd-81f9-4949-aae1-9ae1f5324035",
+        "actor": null,
+        "request": null,
+        "at": null
+      },
+      {
+        "grant": "dbe9151b-a87f-43f5-ad13-52c9f9c8d80f",
+        "source": "migration",
+        "revision": 2,
+        "operation": "revoke",
+        "role": "88bed778-b127-4290-80ef-07cdc0ed3c95",
+        "scope": "01d3e29f-9250-4e2f-9274-a4d50998c824",
+        "fields": "189275fd-81f9-4949-aae1-9ae1f5324035",
+        "actor": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+        "request": "affa8903-71df-4790-9c10-bc6505121f3a",
+        "at": "2026-11-27T23:26:57.316141+00:00"
+      },
+      {
+        "grant": "f0040d2a-1e1e-40e1-b3d0-30f8fb0779e8",
+        "source": "duty",
+        "revision": 1,
+        "operation": "issue",
+        "role": "2696915d-d92c-4921-8a8d-591e378c7fa7",
+        "scope": "117dfe0d-6ee0-4dd9-a3c5-1736b9caf025",
+        "fields": "22aefe60-6c1f-4efd-b5c3-d798317552e2",
+        "actor": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+        "request": "049ca035-5a3b-4936-a26f-0ea2abcf2af2",
+        "at": "2026-11-27T23:25:46.139146+00:00"
+      },
+      {
+        "grant": "f0040d2a-1e1e-40e1-b3d0-30f8fb0779e8",
+        "source": "duty",
+        "revision": 2,
+        "operation": "adopt",
+        "role": "7e06d8ee-866c-4408-b9cc-eb13d3d8702d",
+        "scope": "117dfe0d-6ee0-4dd9-a3c5-1736b9caf025",
+        "fields": "22aefe60-6c1f-4efd-b5c3-d798317552e2",
+        "actor": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+        "request": "7e8c80e5-900d-40cd-b15f-0316e9dba7f7",
+        "at": "2026-11-27T23:25:54.161375+00:00"
+      },
+      {
+        "grant": "f0040d2a-1e1e-40e1-b3d0-30f8fb0779e8",
+        "source": "duty",
+        "revision": 3,
+        "operation": "revoke",
+        "role": "7e06d8ee-866c-4408-b9cc-eb13d3d8702d",
+        "scope": "117dfe0d-6ee0-4dd9-a3c5-1736b9caf025",
+        "fields": "22aefe60-6c1f-4efd-b5c3-d798317552e2",
+        "actor": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+        "request": "c2ea7bf6-d98e-4859-9133-f925862cf3a0",
+        "at": "2026-11-27T23:26:39.017308+00:00"
+      }
+    ],
+    "quotaSourceBefore": {
+      "quota": "b2d6f164-0396-4ca9-b250-7588d9667689",
+      "source": "e32d9d4c-2d61-4ec4-a6e3-b01f636e23e1",
+      "number": 2,
+      "submission": "95bc13d9-ab76-4c17-a80e-dbb6c20a8884",
+      "actor": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+      "action": "adjust",
+      "recordedAt": "2026-11-27T23:23:09.860899+00:00"
+    },
+    "quotaSourceAfter": {
+      "quota": "b2d6f164-0396-4ca9-b250-7588d9667689",
+      "source": "e32d9d4c-2d61-4ec4-a6e3-b01f636e23e1",
+      "number": 2,
+      "submission": "95bc13d9-ab76-4c17-a80e-dbb6c20a8884",
+      "actor": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+      "action": "adjust",
+      "recordedAt": "2026-11-27T23:23:09.860899+00:00"
+    },
+    "allQuotaValues": {
+      "5be3db74-1bb9-4366-9d31-53a9ec65da69": 3,
+      "73afeca8-d7f6-46eb-a39d-9a10b45f88a3": 3,
+      "7ce3893c-6b33-42fe-be09-d5e5f614c6e3": 10
+    },
+    "beforeReceiptLookups": {
+      "at": "2026-11-27T23:27:23.332Z",
+      "businessReceipts": [
+        {
+          "who": "经办人原部门更正",
+          "submission": "523ab202-cf0a-4ad5-8d4b-989f7067ac70",
+          "status": 200,
+          "source": "fedff75e-589e-4363-b3e3-b011380cfd85",
+          "actor": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+          "action": "CORRECT"
+        },
+        {
+          "who": "经办人原单岗调整",
+          "submission": "95bc13d9-ab76-4c17-a80e-dbb6c20a8884",
+          "status": 200,
+          "source": "e32d9d4c-2d61-4ec4-a6e3-b01f636e23e1",
+          "actor": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+          "action": "adjust"
+        },
+        {
+          "who": "旧库原办理人创建",
+          "submission": "8134ffa5-8b6a-45fc-aaad-e11deb7787ae",
+          "status": 200,
+          "source": "b8eef333-e8a9-4147-86d3-b8970c92e848",
+          "actor": "5fe51677-97d0-435c-91b0-1bb5160e18bb",
+          "action": "CREATE"
+        }
+      ],
+      "managementReceipts": [
+        {
+          "request": "943895a0-207e-45c4-9584-7ef04794c972",
+          "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+          "operation": "grant.issue",
+          "at": "2026-11-28T07:26:42.836607+08:00"
+        },
+        {
+          "request": "e4ec7855-9c30-4e88-82f4-9895646525e4",
+          "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+          "operation": "grant.adopt",
+          "at": "2026-11-28T07:26:51.142028+08:00"
+        },
+        {
+          "request": "35d96f01-dc44-4f1d-833c-10118ab56bf1",
+          "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+          "operation": "grant.revoke",
+          "at": "2026-11-28T07:26:56.51984+08:00"
+        },
+        {
+          "request": "affa8903-71df-4790-9c10-bc6505121f3a",
+          "target": "dbe9151b-a87f-43f5-ad13-52c9f9c8d80f",
+          "operation": "grant.revoke",
+          "at": "2026-11-28T07:26:57.318214+08:00"
+        },
+        {
+          "request": "72b3f051-e0fc-4610-8028-66477d6a6480",
+          "target": "01f77aa2-60fb-40bd-a638-b3d10658dded",
+          "operation": "version.disable",
+          "at": "2026-11-28T07:26:52.883404+08:00"
+        }
+      ],
+      "activeReaderDepartmentGrants": []
+    },
+    "afterReceiptLookups": {
+      "at": "2026-11-27T23:27:59.057Z",
+      "businessReceipts": [
+        {
+          "who": "经办人原部门更正",
+          "submission": "523ab202-cf0a-4ad5-8d4b-989f7067ac70",
+          "status": 200,
+          "source": "fedff75e-589e-4363-b3e3-b011380cfd85",
+          "actor": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+          "action": "CORRECT"
+        },
+        {
+          "who": "经办人原单岗调整",
+          "submission": "95bc13d9-ab76-4c17-a80e-dbb6c20a8884",
+          "status": 200,
+          "source": "e32d9d4c-2d61-4ec4-a6e3-b01f636e23e1",
+          "actor": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+          "action": "adjust"
+        },
+        {
+          "who": "旧库原办理人创建",
+          "submission": "8134ffa5-8b6a-45fc-aaad-e11deb7787ae",
+          "status": 200,
+          "source": "b8eef333-e8a9-4147-86d3-b8970c92e848",
+          "actor": "5fe51677-97d0-435c-91b0-1bb5160e18bb",
+          "action": "CREATE"
+        }
+      ],
+      "managementReceipts": [
+        {
+          "request": "943895a0-207e-45c4-9584-7ef04794c972",
+          "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+          "operation": "grant.issue",
+          "at": "2026-11-28T07:26:42.836607+08:00"
+        },
+        {
+          "request": "e4ec7855-9c30-4e88-82f4-9895646525e4",
+          "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+          "operation": "grant.adopt",
+          "at": "2026-11-28T07:26:51.142028+08:00"
+        },
+        {
+          "request": "35d96f01-dc44-4f1d-833c-10118ab56bf1",
+          "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+          "operation": "grant.revoke",
+          "at": "2026-11-28T07:26:56.51984+08:00"
+        },
+        {
+          "request": "affa8903-71df-4790-9c10-bc6505121f3a",
+          "target": "dbe9151b-a87f-43f5-ad13-52c9f9c8d80f",
+          "operation": "grant.revoke",
+          "at": "2026-11-28T07:26:57.318214+08:00"
+        },
+        {
+          "request": "72b3f051-e0fc-4610-8028-66477d6a6480",
+          "target": "01f77aa2-60fb-40bd-a638-b3d10658dded",
+          "operation": "version.disable",
+          "at": "2026-11-28T07:26:52.883404+08:00"
+        }
+      ],
+      "activeReaderDepartmentGrants": []
+    }
+  },
+  "protectedManualContainer": {
+    "before": {
+      "id": "19629d9f5fd947e6ec617a73a7ebef835c15ade431a958d6f4b33af52b2c394a",
+      "started": "2026-11-27T09:18:33.818176538Z",
+      "status": "running",
+      "volumes": [
+        "chnhcm-bu-71853b221a7c_database"
+      ]
+    },
+    "duringStop": {
+      "id": "19629d9f5fd947e6ec617a73a7ebef835c15ade431a958d6f4b33af52b2c394a",
+      "started": "2026-11-27T09:18:33.818176538Z",
+      "status": "running",
+      "volumes": [
+        "chnhcm-bu-71853b221a7c_database"
+      ]
+    },
+    "after": {
+      "id": "19629d9f5fd947e6ec617a73a7ebef835c15ade431a958d6f4b33af52b2c394a",
+      "started": "2026-11-27T09:18:33.818176538Z",
+      "status": "running",
+      "volumes": [
+        "chnhcm-bu-71853b221a7c_database"
+      ]
+    }
+  }
+}

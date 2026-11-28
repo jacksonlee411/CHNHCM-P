@@ -8,7 +8,7 @@
 
 ## X03 本地账号与授权
 
-028 拟定首位客户管理员的引导与恢复、可委派范围和逐份授予规则，并以部门与单岗位核编给出正常菜单、例外处理和验收样例。当前处于文档评审阶段。[028 客户管理员合同](x03/028-local-account-and-authorization.md) · [027 分阶段实施计划](../plans/027-x03-local-access-rollout.md)
+028 拟定首位客户管理员的引导与恢复、可委派范围和逐份授予规则，并以部门与单岗位核编给出正常菜单、例外处理和验收样例。当前处于文档评审阶段。[028 客户管理员合同](x03/028-local-account-and-authorization.md) · [027 分阶段实施计划](../archive/plans/027-x03-local-access-rollout.md)
 
 ## M03职务基础
 

@@ -53,16 +53,16 @@ type Mandate struct {
 }
 
 type ManagedAccount struct {
-	GrantReadable bool `json:"grantReadable,omitempty"`
-	ActiveGrants  *int `json:"activeGrants,omitempty"`
-
-	ID       string   `json:"id"`
-	Login    string   `json:"login"`
-	Display  string   `json:"displayName"`
-	Owner    string   `json:"owner"`
-	State    string   `json:"state"`
-	Revision int64    `json:"revision"`
-	Options  []string `json:"options,omitempty"`
+	GrantReadable        bool     `json:"grantReadable,omitempty"`
+	ActiveGrants         *int     `json:"activeGrants,omitempty"`
+	BuiltinSecurityAdmin bool     `json:"builtinSecurityAdmin,omitempty"`
+	ID                   string   `json:"id"`
+	Login                string   `json:"login"`
+	Display              string   `json:"displayName"`
+	Owner                string   `json:"owner"`
+	State                string   `json:"state"`
+	Revision             int64    `json:"revision"`
+	Options              []string `json:"options,omitempty"`
 }
 
 type GrantAdoption struct {

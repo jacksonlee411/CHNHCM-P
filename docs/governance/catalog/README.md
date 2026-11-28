@@ -72,7 +72,6 @@
 
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
-| [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
 | [140 模块边界、日期显示与实施登记收敛路线图](../../plans/140-module-cohesion-roadmap.md) | active | in_progress | 原位 |
 
@@ -88,7 +87,7 @@
 
 | 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
 | --- | --- | --- | --- |
-| [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
+| [027 X03 本地账号与首批业务授权实施计划](../../archive/plans/027-x03-local-access-rollout.md) | in_review | completed | 物理归档 |
 | [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
@@ -103,6 +102,7 @@
 | [008 下一步：M02 四份详细文档](../../archive/plans/008-next-steps.md) | active | completed | 物理归档 |
 | [010 本版实施范围与计划](../../archive/plans/010-m02-scope-and-plan.md) | active | completed | 物理归档 |
 | [019 CubeBox共享体验迁移与页面对比计划](../../archive/plans/019-cubebox-experience-migration.md) | active | completed | 物理归档 |
+| [027 X03 本地账号与首批业务授权实施计划](../../archive/plans/027-x03-local-access-rollout.md) | in_review | completed | 物理归档 |
 | [029 X03 授权页面优化方案](../../archive/plans/029-grant-management-experience.md) | active | completed | 物理归档 |
 | [100 页面体验优化实施计划](../../archive/plans/100-ui-experience-improvement.md) | active | completed | 物理归档 |
 | [102 M02维护日志与专用表单体验修订](../../archive/plans/102-bu-maintenance-usability.md) | active | completed | 物理归档 |
@@ -175,6 +175,8 @@
 | --- | --- | --- | --- |
 | 029、028、012 | [CHNHCM-029 安全管理列表、详情与变更日志复核](../../verification/029-security-layout-recheck.md) | 2026-11-28 | final |
 | 029、028、012 | [CHNHCM-029 授权页面评审与实施复验](../../verification/029-grant-management-experience.md) | 2026-11-28 | final |
+| 028、013 | [CHNHCM-028 内置 admin 安全管理权限验证](../../verification/028-builtin-security-admin.md) | 2026-11-28 | final |
+| 027、028、013、118、313 | [CHNHCM-027 T05 开放前验收](../../verification/027-t05-opening-acceptance.md) | 2026-11-28 | final |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 027、028、013 | [CHNHCM-027 T04 客户管理入口与受控恢复](../../verification/027-t04-access-management.md) | 2026-11-27 | final |

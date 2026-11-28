@@ -101,6 +101,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 	}
 	a := &accessdb.Store{Pool: p, Instance: instance}
 	o := &orgdb.Store{Pool: p, Instance: instance, Guard: a.Guard}
+	a.EnterpriseID = o.ManagementEnterpriseID
 	st := &staffingdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Organization: o, PositionDirectory: o}
 	st.QuotaPolicies = st.PublishedQuotaPolicies
 	a.Targets = func(ctx context.Context, ids []string) ([]access.Target, error) {
@@ -266,6 +267,11 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool, migrations fs.FS) error {
 	if e != nil {
 		return e
 	}
+	if _, err := fs.Stat(migrations, "00059_access_management.sql"); err == nil {
+		if err := initializeExistingManagement(ctx, pool); err != nil {
+			return err
+		}
+	}
 	if _, err := fs.Stat(migrations, "00034_person_address_family.sql"); err == nil {
 		return persondb.DisposeDue(ctx, pool)
 	}
@@ -311,6 +317,18 @@ func Initialize(ctx context.Context, pool *pgxpool.Pool, in InitInput) error {
 	subject, created, e := accessdb.Initialize(ctx, tx, in.Instance, ent, in.Login, in.Password, in.ReadOnly, in.DevelopmentFixture)
 	if e != nil {
 		return e
+	}
+	if strings.ToLower(strings.TrimSpace(in.Login)) == "admin" {
+		// Historical upgrade fixtures also call Initialize on pre-management schemas.
+		var management bool
+		if e = tx.QueryRow(ctx, "SELECT to_regclass('access.management_root') IS NOT NULL").Scan(&management); e != nil {
+			return e
+		}
+		if management {
+			if e = accessdb.InitializeManagement(ctx, tx, in.Instance, ent); e != nil {
+				return e
+			}
+		}
 	}
 	if sample := in.NewAccountFixture; created && sample != nil {
 		in.SensitiveProfileFixture = in.SensitiveProfileFixture || sample.SensitiveProfile

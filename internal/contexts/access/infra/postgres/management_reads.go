@@ -121,7 +121,7 @@ func (m *manager) canDelegate(l access.ManagementLimit, accountOwner string) boo
 	})
 }
 func (m *manager) controls(a access.ManagedAccount, right string) (bool, error) {
-	if a.ID == m.actor || a.ID == m.protected || !m.ownerScope(right, a.Owner) {
+	if a.ID == m.actor || m.isAdministrator(a.ID) || !m.ownerScope(right, a.Owner) {
 		return false, nil
 	}
 	if m.root {
@@ -166,7 +166,7 @@ func (m *manager) options(a access.ManagedAccount) ([]string, error) {
 	}
 	if a.ID != m.actor && a.ID != m.protected {
 		for _, right := range areaRights["grants"] {
-			if m.ownerScope(right, a.Owner) {
+			if (right != "delegate" || a.ID != m.builtin) && m.ownerScope(right, a.Owner) {
 				out = append(out, right)
 			}
 		}
@@ -292,6 +292,7 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 		for i, a := range v.Accounts {
 			// Expose required-target controls only in the selected account. The candidate list contains identity and status.
 			if a.ID == q.Subject {
+				v.Accounts[i].BuiltinSecurityAdmin = a.ID == m.builtin
 				v.Accounts[i].GrantReadable = m.ownerScope("assign", a.Owner) || m.ownerScope("delegate", a.Owner)
 				v.Accounts[i].Options, err = m.options(a)
 				if err != nil {

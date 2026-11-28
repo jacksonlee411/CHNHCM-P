@@ -8079,6 +8079,8 @@ export interface components {
         AccessManagedAccount: {
             grantReadable?: boolean;
             activeGrants?: number;
+            /** @description 部署初始化的内置安全管理员，长期拥有本实例全部安全管理职责。 */
+            builtinSecurityAdmin?: boolean;
             id: string;
             login: string;
             displayName: string;

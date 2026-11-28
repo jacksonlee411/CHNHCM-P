@@ -1,0 +1,259 @@
+{
+  "date": "2026-11-28",
+  "profile": "x03-manual-a",
+  "worktree": "wt-dev-a",
+  "candidate": "44145442c415b107dd21a3aad33d802ae44196e8",
+  "loginOrigin": "http://127.0.0.1:4627",
+  "ports": {
+    "web": 4627,
+    "api": 8627,
+    "database": 54627
+  },
+  "database": {
+    "containerId": "19629d9f5fd947e6ec617a73a7ebef835c15ade431a958d6f4b33af52b2c394a",
+    "started": "2026-11-27T09:18:33.818176538Z",
+    "volume": "chnhcm-bu-71853b221a7c_database"
+  },
+  "viewport": {
+    "browser": "Chromium",
+    "width": 1440,
+    "height": 900
+  },
+  "checkoutPreference": {
+    "previouslyConfigured": false,
+    "command": "CHNHCM_LOCAL_PROFILE=x03-manual-a python3 scripts/local-bu.py set-default",
+    "verifiedWith": "python3 scripts/local-bu.py verify --origin http://127.0.0.1:4627"
+  },
+  "fixedExamples": {
+    "existingGrantPage": {
+      "at": "2026-11-28T00:06:12.786Z",
+      "step": "安全管理员查看原样例",
+      "menu": [
+        "账号",
+        "角色",
+        "授权"
+      ],
+      "user": "x03-t04-clerk",
+      "role": "T04 甲部门名录 · V1",
+      "activeDuty": "T04 甲部门名录 · V1 · 本职 · 生效中\nX03A · 甲业务单元 · T04 甲部门名录范围策略 · V1 · T04 甲部门名录字段策略 · V1 · 部门\n2026-11-27 21:15:53（北京时间 UTC+08:00） 至 长期\n授予身份及字段\n采用新版本撤销此份授予",
+      "revokedProxy": "T04 甲部门名录 · V1 · 限期代理 · 已撤销\nX03A · 甲业务单元 · T04 甲部门名录范围策略 · V1 · T04 甲部门名录字段策略 · V1 · 部门\n2026-11-27 21:15:53（北京时间 UTC+08:00） 至 2026-11-28 21:15:00（北京时间 UTC+08:00）\n授予身份及字段"
+    },
+    "existingClerk": {
+      "at": "2026-11-28T00:06:13.947Z",
+      "step": "原甲部门经办人查询",
+      "codes": [
+        "X03DA"
+      ],
+      "row": "X03DA\n甲部门\n无读取权限\n无读取权限\n无读取权限",
+      "http": 200
+    },
+    "originalDepartmentAfterCancel": {
+      "at": "2026-11-28T00:06:16.138Z",
+      "step": "甲部门更正表单取消及查回历史",
+      "twoCodes": [
+        "X03DA",
+        "X03DB"
+      ],
+      "observedName": "甲部门",
+      "oldNameFound": "甲部门筹备",
+      "sameSource": "5a2c4940-37dc-41e6-b9fa-6c2ffc7076dc",
+      "changeCount": 2
+    },
+    "originalPosition": {
+      "at": "2026-11-28T00:06:17.219Z",
+      "step": "reader 单岗及小计",
+      "http": 200,
+      "code": "X03P1",
+      "name": "甲部门经办岗",
+      "positionSummary": {
+        "total": 3
+      },
+      "departments": []
+    },
+    "originalHistory": {
+      "at": "2026-11-28T00:06:17.692Z",
+      "rowText": "2026-11-27 17:21:31（北京时间 UTC+08:00）\treader\t调编\t\n2026-04-01\n甲岗一追加一个名额\n直接修改\n\t生效日期\t未登记\t2026-04-01\t\n查看当次资料\n来源明细",
+      "source": "09112785-8316-47e7-bf49-de7cec048fe6"
+    }
+  },
+  "onSiteAccount": "x03-4627-1128",
+  "onSiteReadRole": "T04 甲部门名录 · V1",
+  "onSiteExportRole": "4627 页面验收独立导出 · V1",
+  "managementReceipts": [
+    {
+      "at": "2026-11-28T00:08:30.949Z",
+      "step": "从安全管理页面保存",
+      "key": "created",
+      "requestId": "f34a725f-fa52-4390-82b9-de69d7b7e903",
+      "operation": "account.create",
+      "target": "c85bf264-ed11-4024-9266-e7ffa98fb060",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T00:08:32.539Z",
+      "step": "从安全管理页面保存",
+      "key": "exportVersion",
+      "requestId": "ddeed07c-8af2-4988-a4fa-958599853719",
+      "operation": "version.publish",
+      "target": "c8a3b5c3-58db-446e-a192-ed8291acb384",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T00:08:33.320Z",
+      "step": "从安全管理页面保存",
+      "key": "duty",
+      "requestId": "4fb1d49a-fb06-428c-85ef-744fc9d75612",
+      "operation": "grant.issue",
+      "target": "a1aca1b2-f2cf-4a28-8d40-e52b1cc77604",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T00:08:34.070Z",
+      "step": "从安全管理页面保存",
+      "key": "proxy",
+      "requestId": "6ffffd3f-8168-4ffe-b4d6-7a8b53b062d6",
+      "operation": "grant.issue",
+      "target": "1c84af2c-591a-4bcc-ad41-ef336928c49b",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T00:09:03.168Z",
+      "step": "从安全管理页面保存",
+      "key": "export",
+      "requestId": "bb09995b-3fa3-4b63-8c92-e4021927a731",
+      "operation": "grant.issue",
+      "target": "632dbc9d-c9dd-4d1f-abd2-e83d2b2c0b70",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T00:09:04.890Z",
+      "step": "从安全管理页面保存",
+      "key": "proxyRevoked",
+      "requestId": "6c04c4d2-b305-4616-b861-553388bcf0bf",
+      "operation": "grant.revoke",
+      "target": "1c84af2c-591a-4bcc-ad41-ef336928c49b",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T00:09:07.461Z",
+      "step": "从安全管理页面保存",
+      "key": "dutyRevoked",
+      "requestId": "ce0be2c7-bd28-4f70-9418-e09313d5e3cf",
+      "operation": "grant.revoke",
+      "target": "a1aca1b2-f2cf-4a28-8d40-e52b1cc77604",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T00:09:08.438Z",
+      "step": "从安全管理页面保存",
+      "key": "exportRevoked",
+      "requestId": "32c4b743-9997-4fa8-ab23-79bd9359d737",
+      "operation": "grant.revoke",
+      "target": "632dbc9d-c9dd-4d1f-abd2-e83d2b2c0b70",
+      "http": 200
+    }
+  ],
+  "browserResults": [
+    {
+      "at": "2026-11-28T00:08:31.857Z",
+      "step": "新账号首次查询",
+      "code": "X03DA",
+      "http": 403,
+      "screen": "当前权限不允许此操作"
+    },
+    {
+      "at": "2026-11-28T00:09:02.329Z",
+      "step": "独立导出授予前",
+      "count": 1,
+      "canExport": false,
+      "visible": [
+        "X03DA"
+      ]
+    },
+    {
+      "at": "2026-11-28T00:09:04.110Z",
+      "step": "真实下载",
+      "http": 200,
+      "draft": "454b9106-86de-4a41-b9aa-6990acd9b3ce",
+      "rows": [
+        [
+          "编码",
+          "名称",
+          "简称",
+          "BU编码",
+          "BU名称",
+          "部门路径",
+          "状态",
+          "生效日期"
+        ],
+        [
+          "X03DA",
+          "甲部门",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "sha256": "c0c85fb7c2783ef18433baeb0365c801d422cb7318008ae693321006834e2a51"
+    },
+    {
+      "at": "2026-11-28T00:09:06.099Z",
+      "step": "撤代理后本职有效",
+      "http": 200,
+      "codes": [
+        "X03DA"
+      ]
+    },
+    {
+      "at": "2026-11-28T00:09:07.726Z",
+      "step": "撤尽读取后原全选下载",
+      "http": 403,
+      "draft": "f3b77538-a7e9-424b-9245-245da1e16f33",
+      "downloadEvents": 0,
+      "attachment": false
+    },
+    {
+      "at": "2026-11-28T00:09:09.510Z",
+      "step": "新账号全部撤销后的页面",
+      "user": "x03-4627-1128",
+      "http": 403,
+      "revoked": 3,
+      "originalClerk": "x03-t04-clerk"
+    },
+    {
+      "at": "2026-11-28T00:09:46.142Z",
+      "step": "从可分享的授权链接重新登录",
+      "user": "x03-security",
+      "path": "/settings/security/grants/c85bf264-ed11-4024-9266-e7ffa98fb060",
+      "revoked": 3
+    },
+    {
+      "at": "2026-11-28T00:09:46.902Z",
+      "step": "独立新会话登录撤权账号",
+      "user": "x03-4627-1128",
+      "http": 403,
+      "query": "X03DA",
+      "returnedRows": 0
+    }
+  ],
+  "firstObservations": [
+    {
+      "step": "授予后重新查询",
+      "first": "导航切换期间等待 X03D 的请求超时。",
+      "retest": "从首页重新选择部门菜单，等本次列表请求完成后查询，取得 200 和一行 X03DA。"
+    },
+    {
+      "step": "原 admin 的新建入口",
+      "first": "用按钮角色查找新建时没有匹配。",
+      "retest": "页面实际使用链接，当前原 admin 的该链接 aria-disabled 为 true。原样例以更正取消和历史查回核实。"
+    }
+  ],
+  "files": {
+    "4627-department.csv": "c0c85fb7c2783ef18433baeb0365c801d422cb7318008ae693321006834e2a51",
+    "4627-grants.png": "e7d7e38cb41ffd16dd8405d001c736136958d0d75308c6b078767d94ba296a98",
+    "4627-quota.png": "6831dd485a464f3da527d7970c6d137d1b4fe44d60a632b321ced7b92c2e329a"
+  }
+}

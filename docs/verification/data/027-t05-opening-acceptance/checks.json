@@ -1,0 +1,158 @@
+{
+  "candidate": "44145442c415b107dd21a3aad33d802ae44196e8",
+  "integration": {
+    "command": "go test -p 1 -tags=integration -timeout=20m -count=1 -json ./internal/bootstrap -run '^(TestAccess027AssignmentOrderAndExpiry|TestAccessManagementUpgradeRetainsRevokedAssignments|TestAccessManagementDelegationAndSharedVersions|TestAccessManagementScopedCredentialAndExpiry|TestDepartmentSelection131AtomicCaptureAndExport|TestDepartmentSelection131ExportPolicyBoundary|TestDepartmentSelection131PartialRevocationNeverExportsRemainder|TestStaffing315DepartmentAllocation)$'",
+    "roots": [
+      {
+        "Test": "TestAccess027AssignmentOrderAndExpiry",
+        "Action": "pass",
+        "Time": "2026-11-28T07:27:54.944856113+08:00",
+        "Elapsed": 10.93
+      },
+      {
+        "Test": "TestAccessManagementUpgradeRetainsRevokedAssignments",
+        "Action": "pass",
+        "Time": "2026-11-28T07:28:03.867343953+08:00",
+        "Elapsed": 8.92
+      },
+      {
+        "Test": "TestAccessManagementDelegationAndSharedVersions",
+        "Action": "pass",
+        "Time": "2026-11-28T07:28:11.724615639+08:00",
+        "Elapsed": 8.65
+      },
+      {
+        "Test": "TestAccessManagementScopedCredentialAndExpiry",
+        "Action": "pass",
+        "Time": "2026-11-28T07:28:22.924524548+08:00",
+        "Elapsed": 11.2
+      },
+      {
+        "Test": "TestDepartmentSelection131AtomicCaptureAndExport",
+        "Action": "pass",
+        "Time": "2026-11-28T07:28:55.491272671+08:00",
+        "Elapsed": 33.35
+      },
+      {
+        "Test": "TestDepartmentSelection131ExportPolicyBoundary",
+        "Action": "pass",
+        "Time": "2026-11-28T07:29:03.619562108+08:00",
+        "Elapsed": 8.13
+      },
+      {
+        "Test": "TestDepartmentSelection131PartialRevocationNeverExportsRemainder",
+        "Action": "pass",
+        "Time": "2026-11-28T07:29:19.081799151+08:00",
+        "Elapsed": 16.21
+      },
+      {
+        "Test": "TestStaffing315DepartmentAllocation",
+        "Action": "pass",
+        "Time": "2026-11-28T07:30:00.36960301+08:00",
+        "Elapsed": 42.07
+      }
+    ]
+  },
+  "smoke": {
+    "command": "python3 scripts/local-bu.py smoke --profile x03-t05-smoke-20261128 --fixed-web -- --project=chromium department-acceptance.spec.ts staffing315.spec.ts access-management.spec.ts --grep '027 (甲 BU|指定岗位|T04 管理员关键流程原生 200%)'",
+    "result": "passed",
+    "cases": [
+      {
+        "project": "enterprise-maintenance",
+        "case": "tests/e2e/enterprise304.spec.ts:79:1 › 140 企业首条后移预览跨闰日，取消后保留来源",
+        "elapsed": "7.0s"
+      },
+      {
+        "project": "enterprise-maintenance",
+        "case": "tests/e2e/enterprise304.spec.ts:96:1 › 304 正常菜单完整维护：首条、插入、更正、删除、固定期间、启停及历史",
+        "elapsed": "17.0s"
+      },
+      {
+        "project": "enterprise-maintenance",
+        "case": "tests/e2e/enterprise304.spec.ts:224:1 › 304 草稿取消、冲突重读和丢失响应查回",
+        "elapsed": "7.4s"
+      },
+      {
+        "project": "enterprise-maintenance",
+        "case": "tests/e2e/enterprise304.spec.ts:318:1 › 304 查询者在桌面查看唯一企业、记录与历史只读",
+        "elapsed": "4.9s"
+      },
+      {
+        "project": "enterprise-maintenance",
+        "case": "tests/e2e/enterprise304.spec.ts:361:1 › 304 企业更名保持部门当前及历史路径独立",
+        "elapsed": "7.3s"
+      },
+      {
+        "project": "chromium",
+        "case": "tests/e2e/access-management.spec.ts:238:1 › 027 T04 管理员关键流程原生 200%",
+        "elapsed": "11.9s"
+      },
+      {
+        "project": "chromium",
+        "case": "tests/e2e/department-acceptance.spec.ts:638:1 › 027 甲 BU 名称更正、乙 BU 只读、历史与固定选择逐份导出",
+        "elapsed": "13.7s"
+      },
+      {
+        "project": "chromium",
+        "case": "tests/e2e/staffing315.spec.ts:621:1 › 027 指定岗位的本职与代理、可见小计、旧表单和原调整",
+        "elapsed": "31.3s"
+      }
+    ],
+    "workers": 1,
+    "retries": 0
+  },
+  "protectedAndTemporaryResources": {
+    "acceptanceProject": "chnhcm-bu-6b227a77ff83",
+    "remaining": {
+      "volume": "",
+      "network": "",
+      "containers": ""
+    },
+    "taskRuntimeCheckoutRemoved": true,
+    "manual4627": {
+      "id": "19629d9f5fd947e6ec617a73a7ebef835c15ade431a958d6f4b33af52b2c394a",
+      "started": "2026-11-27T09:18:33.818176538Z",
+      "volume": "chnhcm-bu-71853b221a7c_database",
+      "verification": "Verified this checkout's Web/API ownership and readiness."
+    },
+    "smoke": {
+      "profile": "x03-t05-smoke-20261128",
+      "project": "chnhcm-bu-19370bd115e7",
+      "ports": [
+        48569,
+        47325,
+        45393
+      ],
+      "remaining": {
+        "containers": "",
+        "volumes": "",
+        "networks": ""
+      }
+    }
+  },
+  "quality": {
+    "command": "make check",
+    "exitCode": 0,
+    "docs": {
+      "unitTestsPassed": 189,
+      "repositoryChecks": "passed"
+    },
+    "boundaries": {
+      "goSourceFiles": 806,
+      "sqlOwnershipSourceFiles": 169,
+      "result": "passed"
+    },
+    "nodeRuntime": {
+      "passed": 32,
+      "skipped": 0
+    },
+    "otherChecksPassed": [
+      "python3 scripts/generate-name-tables.py --check",
+      "go run ./internal/contexts/organization/infra/history/generate --check",
+      "go test ./...",
+      "go vet ./...",
+      "corepack pnpm typecheck",
+      "git diff --check"
+    ]
+  }
+}

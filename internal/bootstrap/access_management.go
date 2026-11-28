@@ -1,13 +1,16 @@
 package bootstrap
 
 import (
-	accessdb "chnhcm.local/chnhcm/internal/contexts/access/infra/postgres"
-	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	"context"
 	"errors"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"net/http"
 	"strconv"
+
+	accessdb "chnhcm.local/chnhcm/internal/contexts/access/infra/postgres"
+	access "chnhcm.local/chnhcm/internal/contexts/access/public"
+	orgdb "chnhcm.local/chnhcm/internal/contexts/organization/infra/postgres"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func (a *API) accessRoutes(mux *http.ServeMux) {
@@ -45,5 +48,33 @@ func RecoverManagement(ctx context.Context, p *pgxpool.Pool, instance string, in
 	if !exists {
 		return access.ManagementResult{}, errors.New("客户实例尚未初始化")
 	}
-	return accessdb.RecoverManagement(ctx, p, instance, in)
+	org := &orgdb.Store{Instance: instance}
+	return accessdb.RecoverManagement(ctx, p, instance, in, org.ManagementEnterpriseID)
+}
+
+// Upgraded databases may already contain a deployment-initialized admin but
+// have never appointed a security administrator or run initialize again.
+func initializeExistingManagement(ctx context.Context, pool *pgxpool.Pool) error {
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	rows, err := tx.Query(ctx, `SELECT e.instance_id::text, e.enterprise_id::text FROM organization.enterprise e
+ WHERE EXISTS(SELECT FROM access.principal p WHERE p.instance_id=e.instance_id AND p.normalized_login='admin')
+ AND NOT EXISTS(SELECT FROM access.management_root m WHERE m.instance_id=e.instance_id) ORDER BY e.instance_id`)
+	if err != nil {
+		return err
+	}
+	type original struct{ Instance, Enterprise string }
+	entries, err := pgx.CollectRows(rows, pgx.RowToStructByPos[original])
+	if err != nil {
+		return err
+	}
+	for _, e := range entries {
+		if err := accessdb.InitializeManagement(ctx, tx, e.Instance, e.Enterprise); err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
 }

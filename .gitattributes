@@ -154,5 +154,8 @@ docs/verification/data/116-r5/browser-full.log -whitespace
 # Keep the 136 cost snapshot byte-identical to its recorded input hashes.
 docs/verification/data/136-actions-policy/jobs.csv -text -whitespace
 
+# Keep the original BOM and CRLF bytes of the 027 T05 browser downloads.
+docs/verification/data/027-t05-opening-acceptance/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
 # Preserve the upstream 204 raw Testcontainers diagnostic whitespace.
 docs/verification/data/204-location-region-picker/related-api.log -whitespace
