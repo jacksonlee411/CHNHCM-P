@@ -26727,6 +26727,41 @@
         ],
         "purpose": "acceptance",
         "conclusion": "个人资料地址类型维护、员工选用和历史回显通过。20 并发下整页保留及改选的 P95 分别为 1241.89 和 995.46 毫秒，均在临时 1500 毫秒内。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/317-main-address-types.md"
+      },
+      {
+        "path": "docs/verification/317-main-address-types.md",
+        "related_documents": [
+          "CHNHCM-317",
+          "CHNHCM-316",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "f7c1bed9ef8088b07926595e383afbdb00ba1678",
+        "working_tree": "dirty",
+        "change_description": "处理主线合并候选的整页容量首败，批量读取政策条款与同一修订明细。",
+        "environment": "本机 WSL2、PostgreSQL 18.6、Go，合成万名人员与二十份九栏样本。",
+        "scope": "1 与 20 会话的四条链路、首败、诊断和两次修正复验。",
+        "results": [
+          {
+            "check": "主线候选两条整页办理首次超过 1500 ms，CPU 采样诊断再次超限",
+            "result": "failed",
+            "evidence": "docs/verification/317-main-address-types.md"
+          },
+          {
+            "check": "修正后二十会话专项及一与二十会话的完整复验",
+            "result": "passed",
+            "evidence": "docs/verification/data/317-person-address-types/capacity.csv"
+          }
+        ],
+        "limitations": [
+          "本地合成样本。20 会话临时上限 1500 ms，保留原类型的专项 P95 为 1498.36 ms。"
+        ],
+        "purpose": "retest",
+        "conclusion": "合并候选整页办理超限。批量读取后两轮通过，最终 20 并发保留、改选 P95 为 1383.20、1321.42 毫秒，3200 次 HTTP 零失败。",
         "evidence_access": "repository"
       }
     ]

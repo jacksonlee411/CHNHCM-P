@@ -29,7 +29,7 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 [504 M01 个人资料扩展方案评审](504-personal-profile-review.md)记录九栏字段与办理边界。第一批实施前补充的七类弹框对照与教育记录三种布局见[弹框布局核对](504-personal-profile-dialog-layout.md)。 · [第一批三栏实测与验收地址](504-personal-profile-first-batch.md)
 
-个人资料地址类型按实例维护，已保存的住址保留原名与原修订。公共 P 仓在 45317 提供固定验收入口。[317 旧档、容量与菜单验收](317-person-address-types.md)
+个人资料地址类型按实例维护，已保存的住址保留原名与原修订。公共 P 仓在 45317 提供固定验收入口。[317 旧档、容量与菜单验收](317-person-address-types.md) · [主线容量首败与复验](317-main-address-types.md)
 
 [主要证件号码防重实施与人事试办](500-personnel-registration-trial.md)记录旧档案升级核对和从员工名录实际办理的结果。4380 已更新至新版。[原档案页面复查](500-personnel-registration-trial.md#personnel-4380-update)
 
