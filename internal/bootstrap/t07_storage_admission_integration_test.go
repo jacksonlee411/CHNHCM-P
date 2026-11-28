@@ -22,6 +22,7 @@ func restoreGrantPredecessor(f *fixture) {
 	// before restoring the older allowlist. Real profiles are never downgraded.
 	f.exec(`DROP SCHEMA IF EXISTS configuration CASCADE;
  DROP SCHEMA IF EXISTS compensation CASCADE;
+ DROP TABLE IF EXISTS access.base_pay_grant;
  ALTER TABLE personnel.profile_item_payload DROP COLUMN address_type_id, DROP COLUMN address_type_revision, DROP COLUMN address_type_day;
  DROP TABLE personnel.address_type_revision,personnel.address_type,personnel.address_type_not_applied;
  DROP FUNCTION personnel.initialize_address_types(uuid),personnel.reject_address_type_revision_change();
@@ -34,7 +35,7 @@ func restoreGrantPredecessor(f *fixture) {
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_plan_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61,62)`)
+ DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61,62,63)`)
 }
 
 func TestCompensationUpgradeFromReleasedLedgers(t *testing.T) {
@@ -44,12 +45,13 @@ func TestCompensationUpgradeFromReleasedLedgers(t *testing.T) {
 		addressVersion string
 		missing        int
 	}{
-		{"address_types_release", "00058", "00061", 3},
-		{"address_types_retry_after_grade_rates", "00059", "00061", 2},
-		{"compensation_plans_release", "00060", "", 2},
-		{"address_periods_release", "00058", "00062", 2},
-		{"address_periods_retry_after_grade_rates", "00059", "00062", 1},
-		{"combined_release_before_periods", "00061", "", 1},
+		{"address_types_release", "00058", "00061", 4},
+		{"address_types_retry_after_grade_rates", "00059", "00061", 3},
+		{"compensation_plans_release", "00060", "", 3},
+		{"address_periods_release", "00058", "00062", 3},
+		{"address_periods_retry_after_grade_rates", "00059", "00062", 2},
+		{"combined_release_before_periods", "00061", "", 2},
+		{"combined_address_periods", "00062", "", 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			pool := newStaffingMigrationPool(t)
@@ -75,6 +77,57 @@ func TestCompensationUpgradeFromReleasedLedgers(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// 4380's salary release used 61 before the address-type branch reached main.
+// A second upgrade covers both the saved 62 checkpoint and the converged installation.
+func TestCompensationUpgradeFromSalary61(t *testing.T) {
+	pool := newStaffingMigrationPool(t)
+	ctx := t.Context()
+	prior := hireMigrationSet(t, func(version string) bool { return version <= "00060" })
+	canonical := hireMigrationSet(t, func(version string) bool { return version == "00063" })
+	prior["00061_assignment_base_pay.sql"] = canonical["00063_assignment_base_pay.sql"]
+	must(t, bootstrap.Migrate(ctx, pool, prior))
+	_, err := pool.Exec(ctx, `INSERT INTO compensation.award_revision
+	 (instance_id,assignment_id,award_id,revision,effective_date,amount,action,reason,note,adoption,operator_id)
+	 SELECT instance,term,award,revision,'2026-11-30',12000,'FIRST','核定','','{"originalBand":15000}'::jsonb,gen_random_uuid()
+	 FROM (SELECT gen_random_uuid() instance,gen_random_uuid() term,gen_random_uuid() award,gen_random_uuid() revision) ids;
+	 INSERT INTO compensation.award_timeline SELECT instance_id,assignment_id,revision FROM compensation.award_revision;
+	 INSERT INTO compensation.award_period(instance_id,assignment_id,award_id,revision,start_date) SELECT instance_id,assignment_id,award_id,revision,effective_date FROM compensation.award_revision;
+	 INSERT INTO compensation.award_outbox SELECT instance_id,assignment_id,award_id,revision FROM compensation.award_revision;
+	 INSERT INTO compensation.award_receipt SELECT instance_id,operator_id,gen_random_uuid(),decode(repeat('ab',32),'hex'),award_id,revision FROM compensation.award_revision;
+	 CREATE TABLE public.prior_ledger AS TABLE public.goose_db_version;
+	 CREATE TABLE public.prior_award AS SELECT to_jsonb(r) original,r.xmin::text tx FROM compensation.award_revision r;
+	 CREATE TABLE public.prior_receipt AS TABLE compensation.award_receipt;
+	 ALTER TABLE compensation.award_receipt DISABLE TRIGGER immutable_receipt`)
+	must(t, err)
+	if bootstrap.CheckCurrentStorage(ctx, pool) == nil || bootstrap.Migrate(ctx, pool, migrations.Files) == nil {
+		t.Fatal("admitted the incomplete salary release")
+	}
+	_, err = pool.Exec(ctx, "ALTER TABLE compensation.award_receipt ENABLE TRIGGER immutable_receipt")
+	must(t, err)
+	if bootstrap.CheckCurrentStorage(ctx, pool) == nil {
+		t.Fatal("runtime admitted the old layout")
+	}
+	// Goose records the address backfill and periods in one transaction. A retry sees them both.
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00062" })))
+	for range 2 {
+		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
+		must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+		var ok bool
+		must(t, pool.QueryRow(ctx, `SELECT
+		 NOT EXISTS (TABLE public.prior_ledger EXCEPT ALL TABLE public.goose_db_version)
+		 AND (SELECT count(*) FROM public.goose_db_version) = (SELECT count(*)+2 FROM public.prior_ledger)
+		 AND (SELECT to_jsonb(r)=a.original AND r.xmin::text=a.tx FROM compensation.award_revision r CROSS JOIN public.prior_award a)
+		 AND NOT EXISTS(TABLE public.prior_receipt EXCEPT ALL TABLE compensation.award_receipt)
+		 AND (SELECT count(*)=1 FROM compensation.award_receipt)
+		 AND (SELECT count(*)=1 FROM compensation.award_period WHERE valid_period @> '2026-12-01'::date)
+		 AND (SELECT count(*)=1 FROM compensation.award_outbox)
+		 AND to_regclass('personnel.address_type_choices') IS NOT NULL`).Scan(&ok))
+		if !ok {
+			t.Fatal("old payroll facts, receipts, periods or ledger changed during upgrade")
+		}
 	}
 }
 

@@ -2,8 +2,8 @@ import { useLayoutEffect, useRef } from 'react';
 import { Tab, Tabs } from '@mui/material';
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
-export type PersonTab = 'profile' | 'job' | 'history';
-const labels: Record<PersonTab, string> = { profile: '个人资料', job: '职务信息', history: '变更日志' };
+export type PersonTab = 'profile' | 'job' | 'pay' | 'history';
+const labels: Record<PersonTab, string> = { profile: '个人资料', job: '职务信息', pay: '薪酬', history: '变更日志' };
 
 export function PersonTabs({
   selected,
@@ -34,7 +34,7 @@ export function PersonTabs({
         if (targets[tab]) navigate(targets[tab]!, { state: { focusPersonTab: tab } });
       }}
     >
-      {(['profile', 'job', 'history'] as const)
+      {(['profile', 'job', 'pay', 'history'] as const)
         .filter((tab) => targets[tab])
         .map((tab) => (
           <Tab

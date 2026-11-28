@@ -15,6 +15,7 @@ import {
   RecordPager,
   HistoryNotice,
 } from '@chnhcm/ui';
+import {payAccess} from '../compensation/basePay';
 import {PersonTabs} from './PersonTabs';
 import { employment } from "../hire/HirePage";
 import { OperationSummary } from '../../shared/dated/OperationLog';
@@ -94,6 +95,12 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const terms = hire.data?.terms || [];
   const requestedTerm=params.get('assignment');
   const assignment=requestedTerm || (terms.length===1?terms[0].assignment:undefined);
+  const payTerms = person.useRead(terms.length && !version && !mode ? JSON.stringify([id,terms.map(t=>t.assignment),assignment,params.get('assignmentDay')]) : undefined, async () => {
+    const choices = assignment ? terms.filter(t=>t.assignment===assignment) : terms;
+    const rights = await Promise.all(choices.map(t=>payAccess(t.assignment, assignment ? params.get('assignmentDay') || t.from : t.from)));
+    return choices.filter((_,i)=>rights[i].available);
+  });
+  const hasPay = !!payTerms.data?.length;
   const missingTerm=!!requestedTerm && !!hire.data && !terms.some(t=>t.assignment===requestedTerm);
   const hasJobTab = terms.length > 0;
   const listed = params.get('from') === 'directory';
@@ -118,7 +125,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   }, [log, data, mode, version, record.error, record.invalidate, checkingProfile]);
   const showHistory = !version && (data?.history || (checkingProfile && !data && !record.error));
   const hasTabs = showHistory || hasJobTab;
-  const selected = showHistory && log ? 'history' : hasJobTab && params.get('tab')==='job' ? 'job' : 'profile';
+  const selected = hasPay && params.get('tab')==='pay' ? 'pay' : showHistory && log ? 'history' : hasJobTab && params.get('tab')==='job' ? 'job' : 'profile';
   useEffect(() => {
     if (version) {
       wasSource.current = true;
@@ -188,6 +195,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
   const rehireParams=new URLSearchParams(hireParams);
   if(hire.data?.rehireFrom){rehireParams.set('rehireAction',hire.data.rehireFrom.action);rehireParams.set('rehireRevision',hire.data.rehireFrom.revision);}
   const assignmentPath = assignment ? personPath+'/assignments/'+assignment+'?'+jobParams : profilePath+'&tab=job';
+  const payTarget = payTerms.data?.length === 1 ? personPath+'/assignments/'+payTerms.data[0].assignment+'?'+jobParams+'&tab=pay' : profilePath+'&tab=pay';
   const back = person.path + '?' + backParams;
   const permitted =
     mode === 'register'
@@ -351,7 +359,7 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
             }
             tabs={
               hasTabs && (
-                <PersonTabs selected={selected} targets={{profile:profilePath,job:hasJobTab?assignmentPath:undefined,history:showHistory?profilePath+'&tab=history':undefined}} />
+                <PersonTabs selected={selected} targets={{profile:profilePath,job:hasJobTab?assignmentPath:undefined,pay:hasPay?payTarget:undefined,history:showHistory?profilePath+'&tab=history':undefined}} />
               )
             }
           >
@@ -370,6 +378,9 @@ function PersonDetailView({ session, creating = false }: DetailProps) {
                 )}
               </ObjectTabPanel>
             )}
+            {hasPay && <ObjectTabPanel prefix="person" value="pay" selected={selected}>
+              {selected==='pay' && <ObjectDetailSection title="选择任职">{payTerms.data?.map(term=><Button key={term.assignment} component={Link} to={personPath+'/assignments/'+term.assignment+'?'+jobParams+'&tab=pay'}>{term.recordNumber} 号{term.recordNumber===0?'主岗':'兼岗'} · {term.employerName} · {term.from} 起</Button>)}</ObjectDetailSection>}
+            </ObjectTabPanel>}
             {hasJobTab && <ObjectTabPanel prefix="person" value="job" selected={selected}>
               {selected==='job' && <ObjectDetailSection title="选择任职">{terms.map(term=>
                 <Button key={term.assignment} component={Link} to={personPath+'/assignments/'+term.assignment+'?'+detailParams}>

@@ -1,0 +1,49 @@
+{
+  "originals": {
+    "first": {
+      "amount": "12100.00",
+      "original": "88b861bebd714a3ba7a0612b8616e4ea19afddfcfa69b303dbce1491b24cb4df",
+      "receipt": "202701b8e7bd57c32c9df99b1b4a6fca946f6d2b6959eb078e202129a45b8edd"
+    },
+    "correct": {
+      "amount": "12000.00",
+      "original": "e50b055d07885b875a023a5dca5338aba4859ee7133435ee462263d38b9e4059",
+      "receipt": "0df571436287f1b588c914a376cd68932e0bb311fa0ece57ef4bd7394d6f826c"
+    },
+    "next": {
+      "amount": "13000.00",
+      "original": "06e5d682a38e45871cf2c452e783482af1f65b78adc7ef4b951e505596d9e346",
+      "receipt": "278f39352e0fc0bdee2345e2b7d135d6e4a1f98349176f6045a4291121675459"
+    },
+    "secondary": {
+      "amount": "11500.00",
+      "original": "c69100b03fdbf597d26aac11a2cab9b824e4c3724871ef6aaf4d8974d5e67eb2",
+      "receipt": "ca8282f64f3dfd114b8c7a433ae5fe7017e0ad647e0744a56ce243605e32e945"
+    }
+  },
+  "2026-11-29": {
+    "amount": null,
+    "max": null,
+    "allow": null
+  },
+  "2026-11-30": {
+    "amount": "12000.00",
+    "max": "15000.00",
+    "allow": "300.00"
+  },
+  "2026-12-01": {
+    "amount": "12000.00",
+    "max": "16000.00",
+    "allow": "300.00"
+  },
+  "2026-12-31": {
+    "amount": "12000.00",
+    "max": "16000.00",
+    "allow": "300.00"
+  },
+  "2027-01-01": {
+    "amount": "13000.00",
+    "max": "16000.00",
+    "allow": "350.00"
+  }
+}

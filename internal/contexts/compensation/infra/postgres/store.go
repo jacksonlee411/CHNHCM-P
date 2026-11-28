@@ -18,14 +18,16 @@ import (
 )
 
 type Store struct {
-	Pool          *pgxpool.Pool
-	Instance      string
-	Guard         func(context.Context, pgx.Tx, foundation.Credentials) (access.Guard, error)
-	Enterprise    org.EnterpriseFloor
-	Grades        st.CompensationGrades
-	LegalEntities org.CompensationLegalEntities
-	Scopes        cfg.Applicability
-	Clock         func() time.Time
+	Pool             *pgxpool.Pool
+	Instance         string
+	Guard            func(context.Context, pgx.Tx, foundation.Credentials) (access.Guard, error)
+	Enterprise       org.EnterpriseFloor
+	Grades           st.CompensationGrades
+	Assignments      st.PayAssignments
+	PayAccessControl access.BasePayAuthorizer
+	LegalEntities    org.CompensationLegalEntities
+	Scopes           cfg.Applicability
+	Clock            func() time.Time
 }
 
 type unit struct {

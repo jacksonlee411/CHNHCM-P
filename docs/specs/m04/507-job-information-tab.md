@@ -21,8 +21,8 @@
 
 | 从哪一行进入 | 身份区下的页签 | 正文示例 |
 | --- | --- | --- |
-| 0 号主岗 | 个人资料、**职务信息（默认）**、变更日志。资料及其日志各按 M01 授权显示。 | 产品部 · 产品经理，在 2026-04-01 打开入职原笔。再聘后从 0 号的获权时间轴可区分两段任期和中间的离职间隔。 |
-| 1 或 2 号兼岗 | 仅显示**职务信息**。任职办理历史在本页按权查看。 | 点 1 号直接看产品部评审员。其 2026-08-01 的地点更改记在 1 号下。只看得到培训部的读者点 2 号即展开讲师详情。 |
+| 0 号主岗 | 个人资料、**职务信息（默认）**、薪酬、变更日志。薪酬按当前任期和个人薪酬授权显示。资料及其日志各按 M01 授权显示。 | 产品部 · 产品经理，在 2026-04-01 打开入职原笔。再聘后从 0 号的获权时间轴可区分两段任期和中间的离职间隔。 |
+| 1 或 2 号兼岗 | 显示**职务信息**和获权的「薪酬」。个人基本工资绑定当前兼岗的实际任期。[薪酬办理](../m09/215-assignment-base-pay.md#pay-page) 任职办理历史在本页按权查看。 | 点 1 号直接看产品部评审员。其 2026-08-01 的地点更改记在 1 号下。只看得到培训部的读者点 2 号即展开讲师详情。 |
 
 从任职行、历史或原件链接进入时，保留指定任职、实际任期和办理。本人详情直接显示获权的职务信息页签。一份可见任职直接展开，多份在本人详情内按编号、单位及期间选择。明确目标已失权时显示不可用并可返回。无可见任职时显示「暂无可查看的任职」，仍有可查原单可从「办理历史」进入，有首聘办理权者可办理入职。有相应权限时从实际所属关系「新增兼岗」。读取失败在原区域重试。[既有首单办理](../../../apps/web/src/features/hire/HirePage.tsx) · [现有路由](../../../apps/web/src/app/App.tsx)
 
@@ -105,13 +105,13 @@
 
 | 任务 | 应对照的现有页面和共用实现 | 职务信息页签的验收差异 |
 | --- | --- | --- |
-| 整页、名录与面板 | [人员详情](../../../apps/web/src/features/personnel/Detail.tsx)、[职务详情](../../../apps/web/src/features/staffing/Detail.tsx)、[012 列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) | 沿用主题、顶栏、紧凑控制区、正文滚动和单一身份标题。页签支持方向键聚焦、Enter／空格激活，正文可滚动到底。主岗面板分别核权，兼岗详情使用同一布局，仅呈现职务信息。 |
+| 整页、名录与面板 | [人员详情](../../../apps/web/src/features/personnel/Detail.tsx)、[职务详情](../../../apps/web/src/features/staffing/Detail.tsx)、[012 列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) | 沿用主题、顶栏、紧凑控制区、正文滚动和单一身份标题。页签支持方向键聚焦、Enter／空格激活，正文可滚动到底。主岗面板分别核权，兼岗详情使用同一布局，按本任期的权限呈现职务信息及薪酬。 |
 | 任职行与时间轴 | [012 明细](../m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections)、[共享日期轴](../../../packages/ui/src/components/EffectiveDates.tsx)、[121 接入矩阵](../m02/121-dated-object-admission-matrix.md)、[124 跨域适用边界](../../guides/124-dated-object-admission-and-capacity.md#5-跨域适用边界) | 继承按日定位、当前／未来提示及准确来源。M04 同日可有多笔动作，采用 M04 的日期约束、任职身份和生命周期，保留关系级转正与各任职的独立履历。 |
 | 人事事务的查询与返回 | [职务列表](../../../apps/web/src/features/staffing/List.tsx)、[列表控制区](../../../packages/ui/src/components/Lists.tsx)、[返回定位](../../../apps/web/src/shared/navigation.ts) | 桌面和窄屏都从办理链接进入。分页、前后导航、返回焦点均按当前查询中的办理行计算。 |
 | 表单、记录动作与原件 | [012 表单](../m02/012-m02-functional-and-interaction-design.md#m02-ui-object-form)、[公共表单](../../../packages/ui/src/components/ObjectForm.tsx)、[草稿保护](../../../apps/web/src/shared/dated/useDraftExit.ts)、[首单表单与提交](../../../apps/web/src/features/hire/HirePage.tsx) | 桌面左标签、两列字段，窄屏按组单列。对照字号、输入高度、错误及保存落点。人事事务在本面板独立保存，个人资料九栏仍按原整页办理。 |
 
 <a id="m04-ac-016"></a>
-**M04-AC-016 页面验收。** 从人员名录进入 0 号仅呈现当前获权的资料、职务与日志，正号只呈现该任职的职务信息。从筛选后的 2 号返回应还焦原行；主动切签应还焦选中签，从日志原件后退应还焦原触发链接。分别核对两处消费者的权限和路由恢复。[共享页签](../m02/012-m02-functional-and-interaction-design.md#m02-ui-tabs) · [人员路由页签](../../../apps/web/src/features/personnel/PersonTabs.tsx) · [任职详情](../../../apps/web/src/features/hire/AssignmentPage.tsx) · [人员日志与返回](../m01/502-person-directory-interactions.md#m01-change-log)
+**M04-AC-016 页面验收。** 从人员名录进入 0 号按权呈现资料、职务、薪酬与日志，正号按权呈现该任职的职务信息及薪酬。从筛选后的 2 号返回应还焦原行；主动切签应还焦选中签，从日志原件后退应还焦原触发链接。分别核对两处消费者的权限和路由恢复。[共享页签](../m02/012-m02-functional-and-interaction-design.md#m02-ui-tabs) · [人员路由页签](../../../apps/web/src/features/personnel/PersonTabs.tsx) · [任职详情](../../../apps/web/src/features/hire/AssignmentPage.tsx) · [人员日志与返回](../m01/502-person-directory-interactions.md#m01-change-log)
 
 在同一候选构建，以经办人、只读者及仅见一个兼岗的读者从菜单实操。经办人完成地点变更新增／更正、历史补录、按类型合法删除、原件返回和取消草稿。只读者可读其获权任职与办理。另验有 M04 读权但无 M01 历史权、只有 M01 历史权、当前无有效行但可查撤销原单三种组合。授权变化后重进及回退均按当前范围。桌面视口与关键办理的原生缩放按 012 共享矩阵选取。记录视觉对照和键盘到达末字段、错误、保存、历史退出及返回行的结果。[业务验收样本](506-job-information-records.md#m04-ac-010) · [012 视口矩阵](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
 

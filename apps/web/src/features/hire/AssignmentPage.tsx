@@ -17,6 +17,8 @@ import { usePageTitle } from '../../shared/navigation';
 import { employment } from './HirePage';
 import PersonIcon from '@mui/icons-material/Person';
 import { PersonTabs } from '../personnel/PersonTabs';
+import { payAccess } from '../compensation/basePay';
+import { BasePayPanel } from '../compensation/BasePayPanel';
 import { JobInformation, type JobPageMode } from './JobInformation';
 import { employmentHistoryReturn, personnelReturn, profileReturn } from './jobLinks';
 
@@ -25,7 +27,7 @@ export function AssignmentPage({ session }: { session: Models['Principal'] }) {
     [params] = useSearchParams();
   return (
     <AssignmentDetail
-      key={assignment}
+      key={session.instanceId+session.subjectId+assignment}
       id={id}
       assignment={assignment}
       day={params.get('assignmentDay') ?? ''}
@@ -44,12 +46,15 @@ function AssignmentDetail({
   day: string;
   session: Models['Principal'];
 }) {
-  usePageTitle('职务信息');
+
   const navigate = useNavigate();
   const [actionSlot, setActionSlot] = useState<HTMLSpanElement | null>(null);
   const [historySlot, setHistorySlot] = useState<HTMLDivElement | null>(null);
   const [pageMode, setPageMode] = useState<JobPageMode>('browse');
   const [params, setParams] = useSearchParams();
+  const pay = params.get('tab') === 'pay' && !params.has('sourceVersion');
+  const tab = pay ? 'pay' : 'job';
+  usePageTitle(pay ? '薪酬' : '职务信息');
   const source = params.get('sourceVersion') || undefined;
   const view = person.useRead(JSON.stringify([assignment, day, source]), async () =>
     unwrap(
@@ -59,6 +64,8 @@ function AssignmentDetail({
     ),
   );
   const data = view.data?.person === id ? view.data : undefined;
+  const payAccessDay = day || undefined;
+  const payRight = person.useRead(data && !source ? JSON.stringify([assignment, payAccessDay, session.subjectId]) : undefined, () => payAccess(assignment, payAccessDay));
   const profile = person.useRead(data?.primaryJob ? id : undefined, () => person.profile(id));
   const history = person.useRead(data && !source ? id : undefined, () => employment(id));
   const otherTerms = history.data?.terms.filter((t) => t.assignment !== assignment);
@@ -117,14 +124,19 @@ function AssignmentDetail({
   legacy.set('view', 'history');
   const sourceAssignment = personnelReturn(path + '/assignments/' + assignment + '?' + params);
   if (sourceAssignment) legacy.set('returnTo', sourceAssignment);
-  const browsing = pageMode === 'browse' && !source;
-  const showRelatedTabs = pageMode !== 'history' && !source;
+  const browsing = !pay && pageMode === 'browse' && !source;
+  const showRelatedTabs = (pay || pageMode !== 'history') && !source;
   const dates = data?.effectiveDates || [];
-  const tabs = showRelatedTabs && !!profile.data;
+  const hasPay = !!payRight.data?.available;
+  const tabs = showRelatedTabs && (!!profile.data || hasPay);
+  const jobQuery = new URLSearchParams(params);
+  for (const key of ['tab','payDay','award','awardRevision','payFocus']) jobQuery.delete(key);
+  const payQuery = new URLSearchParams(jobQuery);
+  payQuery.set('tab', 'pay');
   const waitingForTabs = showRelatedTabs && data?.primaryJob && !profile.data && !profile.error;
   // A concurrent date adjustment may remove the node that opened a draft.
   // Keep its authorized conflict comparison visible until the user closes it.
-  const explicitUnavailable = pageMode === 'browse' && !!data && !!day && !source && !dates.includes(day);
+  const explicitUnavailable = !pay && pageMode === 'browse' && !!data && !!day && !source && !dates.includes(day);
   return (
     <Box className="standard-page object-page">
       <RecordControl
@@ -207,10 +219,11 @@ function AssignmentDetail({
               (tabs || waitingForTabs) && (
                 <Box sx={{ visibility: waitingForTabs ? 'hidden' : 'visible' }}>
                   <PersonTabs
-                    selected="job"
+                    selected={tab}
                     targets={{
                       profile: profile.data ? path + '?' + personQuery : undefined,
-                      job: location.pathname + location.search,
+                      job: location.pathname + '?' + jobQuery,
+                      pay: hasPay ? location.pathname + '?' + payQuery : undefined,
                       history: profile.data?.history ? path + '?' + personQuery + '&tab=history' : undefined,
                     }}
                   />
@@ -256,11 +269,12 @@ function AssignmentDetail({
               </Stack>
             )}
             <Box
+              hidden={pay}
               role={tabs ? 'tabpanel' : undefined}
               id="person-job-panel"
               aria-labelledby={tabs ? 'person-job-tab' : undefined}
             >
-              <ObjectForm>
+              {!pay && <ObjectForm>
                 <JobInformation
                   enabled={!!data}
                   current={{ ...view, data }}
@@ -272,15 +286,18 @@ function AssignmentDetail({
                   onModeChange={setPageMode}
                   onSave={view.refresh}
                 />
-              </ObjectForm>
+              </ObjectForm>}
             </Box>
+            {hasPay && <ObjectTabPanel prefix="person" value="pay" selected={tab}>{pay && <BasePayPanel assignment={assignment} day={day} session={session} host={actionSlot} onDenied={payRight.refresh}/>}</ObjectTabPanel>}
+            {pay && payRight.error && <Alert severity="error" action={<Button onClick={payRight.refresh}>重试</Button>}>{payRight.error}</Alert>}
+            {pay && payRight.data && !hasPay && <Alert severity="info">所选任职的薪酬不可用</Alert>}
             {tabs && (
-              <ObjectTabPanel prefix="person" value="profile" selected="job">
+              <ObjectTabPanel prefix="person" value="profile" selected={tab}>
                 {null}
               </ObjectTabPanel>
             )}
             {tabs && profile.data?.history && (
-              <ObjectTabPanel prefix="person" value="history" selected="job">
+              <ObjectTabPanel prefix="person" value="history" selected={tab}>
                 {null}
               </ObjectTabPanel>
             )}

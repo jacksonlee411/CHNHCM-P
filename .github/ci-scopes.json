@@ -36,6 +36,10 @@
   "domains": {
     "compensation": {
       "frontend": [
+        "apps/web/src/features/compensation/BasePayEditor.tsx",
+        "apps/web/src/features/compensation/BasePayFacts.tsx",
+        "apps/web/src/features/compensation/BasePayPanel.tsx",
+        "apps/web/src/features/compensation/basePay.ts",
         "apps/web/src/features/compensation/PlanDetail.tsx",
         "apps/web/src/features/compensation/PlanComponents.tsx",
         "apps/web/src/features/compensation/PlanScope.tsx",
@@ -54,7 +58,8 @@
       ],
       "browser_files": [
         "compensation210.spec.ts",
-        "compensation-plans210.spec.ts"
+        "compensation-plans210.spec.ts",
+        "compensation214.spec.ts"
       ],
       "backend_prefixes": [
         "internal/contexts/compensation/",
@@ -345,7 +350,7 @@
     }
   },
   "integration_prefixes": {
-    "compensation": ["Compensation"],
+    "compensation": ["Compensation", "AssignmentBasePay"],
     "recruiting": ["Recruiting"],
     "personnel": ["Personnel"],
     "businessunit": [

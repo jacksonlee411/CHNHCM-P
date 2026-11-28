@@ -38,6 +38,10 @@
 
 [薪酬体系配置业务方案与制度样例](m09/211-compensation-configuration.md) · [后台页面与交互设计](m09/212-compensation-configuration-pages.md) · [可点击桌面原型](m09/prototype/compensation-configuration.html) · [设计及实施路线图](../archive/plans/210-compensation-configuration-roadmap.md)
 
+## M09 员工首次定薪与按日调薪
+
+[个人基本工资办理与页面](m09/215-assignment-base-pay.md) · [准确采用、权限和并发合同](m09/216-assignment-base-pay-contract.md) · [二期实施计划](../archive/plans/214-assignment-base-pay-rollout.md)
+
 ## 实施与验证去向
 
 [在办计划](../governance/catalog/README.md#catalog-in-progress) · [待启动计划](../governance/catalog/README.md#catalog-not-started) · [待审文稿](../governance/catalog/README.md#catalog-review) · [按关联号查方案评审和实施验收](../governance/catalog/README.md#catalog-evidence)

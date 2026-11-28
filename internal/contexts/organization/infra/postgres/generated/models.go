@@ -13,6 +13,14 @@ type AccessAppointmentIssuerFixture struct {
 	PrincipalID string
 }
 
+type AccessBasePayGrant struct {
+	InstanceID   string
+	PrincipalID  string
+	AssignmentID string
+	Action       string
+	PlanID       *string
+}
+
 type AccessBoundPermission struct {
 	InstanceID  string
 	GrantID     string
@@ -273,6 +281,62 @@ type AccessSession struct {
 	IdleExpiresAt     pgtype.Timestamptz
 	AbsoluteExpiresAt pgtype.Timestamptz
 	RevokedAt         pgtype.Timestamptz
+}
+
+type CompensationAwardOutbox struct {
+	InstanceID   string
+	AssignmentID string
+	AwardID      string
+	Revision     string
+}
+
+type CompensationAwardPeriod struct {
+	InstanceID   string
+	AssignmentID string
+	AwardID      string
+	Revision     string
+	StartDate    pgtype.Date
+	UntilDate    pgtype.Date
+	ValidPeriod  pgtype.Range[pgtype.Date]
+}
+
+type CompensationAwardReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	AwardID      string
+	Revision     string
+}
+
+type CompensationAwardRecovery struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Confirmation string
+	Digest       []byte
+}
+
+type CompensationAwardRevision struct {
+	InstanceID    string
+	AssignmentID  string
+	AwardID       string
+	Revision      string
+	EffectiveDate pgtype.Date
+	Amount        pgtype.Numeric
+	Previous      *string
+	Action        string
+	Reason        string
+	Note          string
+	Adoption      []byte
+	OperatorID    string
+	RecordedAt    pgtype.Timestamptz
+}
+
+type CompensationAwardTimeline struct {
+	InstanceID   string
+	AssignmentID string
+	Head         string
 }
 
 type CompensationGradeRate struct {

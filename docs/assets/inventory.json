@@ -869,6 +869,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        },
+        {
+          "document": "CHNHCM-214",
+          "scope": "沿用从正常菜单找到原件再返回的验证方法，新增跨日边界、原笔更正及原回执的独立验收条件。",
+          "target_contracts": [
+            "CHNHCM-215",
+            "CHNHCM-216"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
         }
       ]
     },
@@ -2493,6 +2504,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        },
+        {
+          "document": "CHNHCM-215",
+          "scope": "将原笔前后值和准确来源用于同一任期的工资更正、插入与撤去，分别查询约定金额和制度依据。",
+          "target_contracts": [
+            "CHNHCM-215",
+            "CHNHCM-216"
+          ],
+          "implemented": true,
+          "verified": true,
+          "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
         }
       ]
     },
@@ -7527,6 +7549,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        },
+        {
+          "document": "CHNHCM-215",
+          "scope": "任职内的日期轴定位一笔个人核定，按工资查询日查看独立薪带，查完原件返回原日和链接。",
+          "target_contracts": [
+            "CHNHCM-215",
+            "CHNHCM-216"
+          ],
+          "implemented": true,
+          "verified": true,
+          "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
         }
       ]
     },
@@ -9103,6 +9136,21 @@
       "verified": true,
       "evidence": "docs/verification/138-geo-area-interactions.md",
       "complete_asset_verified": false
+    },
+    {
+      "id": "EXTERNAL-E215-COMPENSATION-TAB",
+      "document": "CHNHCM-215",
+      "source_record": "docs/verification/214-assignment-base-pay-design-review.md",
+      "source_repository": "Workday Worker Profile 与 Oracle PeopleSoft HCM Employee Snapshot",
+      "scope": "员工详情的薪酬入口与职务信息并列，主岗、兼岗及再聘按各自任期办理。",
+      "registered": true,
+      "extracted": false,
+      "implemented": true,
+      "verified": true,
+      "complete_asset_verified": false,
+      "design_evidence": "docs/verification/214-assignment-base-pay-design-review.md",
+      "adoption_scope": "从真实名录行进入同级薪酬，验证主兼岗、原件返回和再聘任期。",
+      "adoption_evidence": "docs/verification/214-assignment-base-pay-implementation.md"
     },
     {
       "id": "EXTERNAL-E507-JOB-DATA",

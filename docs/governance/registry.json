@@ -2960,6 +2960,85 @@
       "archive": null
     },
     {
+      "id": "CHNHCM-214",
+      "title": "员工首次定薪与按日调薪实施计划",
+      "path": "docs/archive/plans/214-assignment-base-pay-rollout.md",
+      "owner_branch": "wt-dev-c",
+      "owner_role": "薪酬经办、任职与交付维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": ["M09", "M04", "M03", "M02", "X02", "X03"],
+      "scope": "为一个实际任期交付人民币月基本工资的按日依据、逐人核定和跨日联验，规定依赖、阶段出口及环境交接。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 按用户委托评审二期方案并复核修订",
+        "scope": "产品三阶段、任职与授权依赖、独立实库与浏览器出口以及 4380 移交责任。",
+        "result": "accepted",
+        "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "三阶段交付，薪酬页签、任期核定、按日依据及持久环境重启实页复验完成。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "previous_path": "docs/plans/214-assignment-base-pay-rollout.md",
+        "reason": "215、216 承接业务、页面和技术合同，214 实施验证承接实测结果、全仓集成时限和固定环境责任。"
+      }
+    },
+    {
+      "id": "CHNHCM-215",
+      "title": "员工基本工资核定业务与页面方案",
+      "path": "docs/specs/m09/215-assignment-base-pay.md",
+      "owner_branch": "wt-dev-c",
+      "owner_role": "薪酬业务与人员体验维护者",
+      "owner": null,
+      "status": "active",
+      "type": "business_spec",
+      "modules": ["M09", "M04", "M03", "M02", "X02", "X03"],
+      "scope": "按实际任期和业务日选择月薪计划，办理首次定薪、调薪、更正与撤去，解释按日金额、原采用、页面和验收场景。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 按用户委托评审二期方案并复核修订",
+        "scope": "人民币基本月薪的选计划、首次定薪与调薪、补录与撤去、页面、六组场景和薪带边界反例。",
+        "result": "accepted",
+        "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-216",
+      "title": "员工基本工资核定技术合同",
+      "path": "docs/specs/m09/216-assignment-base-pay-contract.md",
+      "owner_branch": "wt-dev-c",
+      "owner_role": "Compensation、Staffing、配置及授权维护者",
+      "owner": null,
+      "status": "active",
+      "type": "technical_design",
+      "modules": ["M09", "M04", "M03", "M02", "X02", "X03"],
+      "scope": "定义个人核定、真实任职与制度采用、按日投影、原件、当前授权及同笔提交恢复的实现合同。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 按用户委托评审二期方案并复核修订",
+        "scope": "Go 跨域来源与准确采用、任期按日唯一、修订与回执、并发、撤权和历史保护。",
+        "result": "accepted",
+        "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
       "id": "CHNHCM-300",
       "title": "部门列表左侧部门树实施计划",
       "path": "docs/archive/plans/300-department-tree-implementation.md",
@@ -4139,6 +4218,108 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/214-assignment-base-pay-implementation.md",
+        "related_documents": [
+          "CHNHCM-214",
+          "CHNHCM-215",
+          "CHNHCM-216",
+          "CHNHCM-507"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "9586806099aa646fbdef4d9a7747171c3ced9232",
+        "working_tree": "clean",
+        "change_description": "固定构建使用该产品提交。Go 实库与五项既有浏览器场景使用相同后端和历史链接实现，最后一次前端修复后另跑三个二期场景。",
+        "environment": "wt-dev-c，Go 实库 HTTP、Chromium 生产构建及本树 default 固定环境。",
+        "scope": "从人员名录验证主兼岗、首次核定、跨日调薪、更正撤去、查回及失权。",
+        "results": [
+          {
+            "check": "全仓 make integration 两个包均达到其 20 分钟时限。",
+            "result": "interrupted",
+            "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
+          },
+          {
+            "check": "混用前后端构建、原件返回焦点及更正后立即继续办理的旧版本问题分别在浏览器与固定环境出现。",
+            "result": "failed",
+            "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
+          },
+          {
+            "check": "九项薪酬实库与三项迁移回归通过；增补双连接来源竞争及事务回滚后新核定用例独立通过。",
+            "result": "passed",
+            "evidence": "internal/bootstrap/compensation_award_integration_test.go"
+          },
+          {
+            "check": "三个薪酬视口及五项既有任职、薪标和计划浏览器回归通过。",
+            "result": "passed",
+            "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
+          },
+          {
+            "check": "四份个人核定修订和回执、五个主岗日期及首期十二个按日页面、八份原修订和八份原回执在 4380 重启后保持一致。",
+            "result": "passed",
+            "evidence": "docs/verification/data/214-assignment-base-pay/after-restart.json"
+          }
+        ],
+        "limitations": [
+          "全仓集成两个包达到20分钟时限。容量记录为小样本。业务人员的制度签收另记。"
+        ],
+        "purpose": "handoff",
+        "conclusion": "员工详情同级薪酬页签按实际任期办理。实库、三个视口、两角色正常菜单及 4380 重启比对通过。",
+        "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/214-assignment-base-pay-design-review.md",
+        "related_documents": [
+          "CHNHCM-214",
+          "CHNHCM-215",
+          "CHNHCM-216",
+          "CHNHCM-211",
+          "CHNHCM-213",
+          "CHNHCM-506"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "f1b9a79f8c1d1c9c56fa677a361aeb5549eb569b",
+        "working_tree": "dirty",
+        "change_description": "在首期 4380 记录基线上新增 214 至 216 方案、评审、文档登记和计划采用的资产入口。",
+        "environment": "wt-dev-c 工作树，Python 标准库、仓内 4380 合成制度留数和当前公开合同。",
+        "scope": "个人基本月薪的任职及计划匹配、金额与日期、原采用、权限、页面及实施出口的文档评审。",
+        "results": [
+          {
+            "check": "初稿对已排定首笔前的办理与同日决定冲突交代不全，自动带入的计划仍要求提交时检查其他候选。",
+            "result": "failed",
+            "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+          },
+          {
+            "check": "复核 4 项首轮问题，核对 6 组场景、跨域事实、权限、同笔提交及原回执的产品验收预期。",
+            "result": "passed",
+            "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+          },
+          {
+            "check": "使用首期留数及独立决定，复算薪带边界、计划内津贴和 7 个业务日的预期。",
+            "result": "passed",
+            "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+          },
+          {
+            "check": "make docs、文档本地链接与标题锚点、git diff --check 及新文档空白检查。",
+            "result": "passed",
+            "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+          },
+          {
+            "check": "实际个人核定的 Go、DB/API、浏览器、固定环境交接及业务签收。",
+            "result": "not_run",
+            "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+          }
+        ],
+        "limitations": [
+          "样本采用合成 PRO-M 制度，设计推演与独立金额复算仅验证方案。产品实测及业务人工签收归实施阶段。"
+        ],
+        "purpose": "review",
+        "conclusion": "二期方案评审通过。补齐更早决定及同日冲突处置，收敛候选重核范围。按 4380 留数复算薪带与七个日期预期，产品实施待启动。",
+        "evidence_access": "repository"
+      },
       {
         "path": "docs/verification/210-compensation-default-port.md",
         "related_documents": [

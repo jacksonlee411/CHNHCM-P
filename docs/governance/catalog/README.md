@@ -77,6 +77,7 @@
 | [205 G5地理联合验收与固定运行交付](../../archive/plans/205-g5-geography-acceptance-and-runtime.md) | active | completed | 物理归档 |
 | [206 法律实体分阶段实施计划](../../archive/plans/206-legal-entity-implementation.md) | active | completed | 物理归档 |
 | [210 薪酬体系配置实施路线图](../../archive/plans/210-compensation-configuration-roadmap.md) | active | completed | 物理归档 |
+| [214 员工首次定薪与按日调薪实施计划](../../archive/plans/214-assignment-base-pay-rollout.md) | active | completed | 物理归档 |
 | [300 部门列表左侧部门树实施计划](../../archive/plans/300-department-tree-implementation.md) | active | completed | 物理归档 |
 | [301 用户提示与异常恢复整改方案](../../archive/plans/301-user-feedback-and-recovery.md) | superseded | completed | 物理归档 |
 | [302 详情对象导航位置与响应整改](../../archive/plans/302-detail-navigation.md) | active | completed | 物理归档 |
@@ -122,7 +123,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（82）](#evidence-acceptance) · [问题复验（51）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
+[业务验收（82）](#evidence-acceptance) · [问题复验（51）](#evidence-retest) · [方案评审（108）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（23）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -277,6 +278,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 214、215、216、211、213、506 | [CHNHCM-214 员工首次定薪与按日调薪方案评审](../../verification/214-assignment-base-pay-design-review.md) | 2026-11-28 定稿 | 二期方案评审通过。补齐更早决定及同日冲突处置，收敛候选重核范围。按 4380 留数复算薪带与七个日期预期，产品实施待启动。 | 本仓报告 |
 | 316 | [CHNHCM-316 业务对象与配置数据建模规范评审记录](../../verification/316-object-and-configuration-review.md) | 2026-11-27 定稿 | 三轮评审通过，完成对象与配置选型、按日选用、并发维护及原采用的场景走查。 | 本仓报告 |
 | 213、210、211、212、003、012 | [CHNHCM-213 管理员维护生效与薪酬首期范围核对](../../verification/213-administrator-maintenance-and-compensation.md) | 2026-11-27 定稿 | 阶段规范明确单人维护、按日生效；原型核实计划内津贴、定额及连续薪带。持久化和真实授权由产品阶段验证。 [后续记录](../../verification/210-compensation-i3.md) | 本仓报告 |
 | 210、211、212 | [CHNHCM-210 薪酬体系业务方案与页面原型走查](../../verification/210-compensation-design-walkthrough.md) | 2026-11-27 定稿 | 两套合成制度完成桌面和键盘原型走查，记录金额、来源及日期切换；当时尚待业务决定和产品实测。 [后续记录](../../verification/210-compensation-design-review.md) | 本仓报告 |
@@ -457,6 +459,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 214、215、216、507 | [CHNHCM-214 员工薪酬页签与基本月薪实施验证](../../verification/214-assignment-base-pay-implementation.md) | 2026-11-28 定稿 | 员工详情同级薪酬页签按实际任期办理。实库、三个视口、两角色正常菜单及 4380 重启比对通过。 | 本仓报告 |
 | 210、211、212、213、017 | [CHNHCM-210 默认端口薪酬配置实页维护与留数验收](../../verification/210-compensation-default-port.md) | 2026-11-28 定稿 | 管理员从网页完成 12 次保存。重启整套服务后，三份计划的 12 个按日页面结果、八份薪酬原修订和八份原回执均与重启前一致。4380 保留运行供试用。 [后续记录](../../verification/142-retired-desktop-conditions.md) | 本仓报告 |
 | 210、211、212、213 | [CHNHCM-210 I3 薪酬体系联合验收与交接](../../verification/210-compensation-i3.md) | 2026-11-27 定稿 | 八组业务场景联验，768 次容量请求零错误，重启后 408 份原修订及回执一致。4521 已交接，业务签收及客户容量另记。 [后续记录](../../verification/210-compensation-list-retest.md) | 本仓报告 |
 | 400、401、402、403、404、137 | [CHNHCM-404　4496 原库升级与首单签收](../../verification/404-4496-acceptance.md) | 2026-11-26 定稿 | 4496 原库 162 表还原并升级至 00057，固定构建上完成限定日期的合成首单。占编竞争使用独立实库证据。 [后续记录](../../verification/404-pr30-browser-recheck.md) | 本仓报告，部分原件需权限 |

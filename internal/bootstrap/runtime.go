@@ -138,7 +138,7 @@ func openRuntime(ctx context.Context, dsn, instance string, tracer pgx.QueryTrac
 			slog.Warn("revoked staffing selection cleanup failed")
 		}
 	}
-	runtime := &Runtime{Compensation: &compdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Enterprise: o, Grades: st, LegalEntities: o, Scopes: &configdb.Store{Instance: instance}}, Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
+	runtime := &Runtime{Compensation: &compdb.Store{Pool: p, Instance: instance, Guard: a.Guard, Enterprise: o, Grades: st, Assignments: st, PayAccessControl: a, LegalEntities: o, Scopes: &configdb.Store{Instance: instance}}, Offers: recruitment, OfferTargets: st.OfferTargets, OfferArrangement: st.OfferArrangement, Hires: st, FirstHireRules: st, Personnel: people, LegalPurposes: o, AssignmentPolicies: st, Replenishments: st, Staffing: staffingapp.Service{Store: st, QuotaStore: st}, Pool: p, Instance: instance, Access: accessapp.Service{Port: a}, Organization: orgapp.Service{Store: o}, Department: departmentapp.Service{Store: o}, Location: locationapp.Service{Store: o}, LegalEntity: legalentityapp.Service{Store: o}, Country: countryapp.Service{Store: o}, Enterprise: enterpriseapp.Service{Store: o}, GeoArea: geoareaapp.Service{Store: o}}
 	if e = runtime.Ready(ctx); e != nil {
 		p.Close()
 		return nil, e
@@ -252,6 +252,15 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool, migrations fs.FS) error {
 		if _, err := fs.Stat(migrations, step.name); err == nil {
 			options = append(options, goose.WithGoMigrations(personnelLineageMigration(migrations, step.name, step.version)), goose.WithExcludeNames([]string{step.name}))
 		}
+	}
+	// Only the combined release adopts the historical salary layout at 61.
+	if _, err := fs.Stat(migrations, addressPeriodsFile); err == nil {
+		options = append(options, goose.WithGoMigrations(addressPeriodsAfterBasePay(migrations)),
+			goose.WithExcludeNames([]string{addressPeriodsFile}))
+	}
+	if _, err := fs.Stat(migrations, basePayFile); err == nil {
+		options = append(options, goose.WithGoMigrations(adoptBasePay(migrations)),
+			goose.WithExcludeNames([]string{basePayFile}))
 	}
 	provider, e := goose.NewProvider(goose.DialectPostgres, db, migrations, options...)
 	if e != nil {
@@ -441,9 +450,9 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
 	// exact current applied set. Only the upgrader admits the same-model prefix
 	// for explicit migrations; 00016 converts only location address representation.
 	e := p.QueryRow(ctx, `SELECT EXISTS(SELECT FROM organization.storage_contract WHERE singleton AND contract='m02-compact-5') AND
-     (SELECT (versions=ARRAY(SELECT generate_series(1,62)::bigint)
+     (SELECT (versions=ARRAY(SELECT generate_series(1,63)::bigint)
           OR ($1 AND (
-            (cardinality(versions) BETWEEN 2 AND 61 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
+            (cardinality(versions) BETWEEN 2 AND 62 AND versions=ARRAY(SELECT generate_series(1,cardinality(versions))::bigint))
             -- Address-type releases 61 and 62 shipped on 58. A retry may already contain 59.
             OR (last_version IN (61,62) AND 61=ANY(versions)
                 AND array_remove(array_remove(versions,61::bigint),62::bigint) IN
@@ -550,11 +559,13 @@ func checkStorage(ctx context.Context, p *pgxpool.Pool, pending ...bool) error {
            AND to_regclass('personnel.contact_channel_primary') IS NOT NULL AND to_regclass('access.person_profile_fixture') IS NOT NULL
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('access.person_grant') AND attname='item_id' AND NOT attisdropped)
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.identity_payload') AND attname='basic' AND NOT attisdropped)))
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=63 AND is_applied) OR `+basePayLayout+`)
        AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=62 AND is_applied) OR (
            EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.address_type') AND attname='valid_during' AND atttypid='daterange'::regtype AND attgenerated='s' AND NOT attisdropped)
            AND EXISTS(SELECT FROM pg_constraint WHERE conrelid=to_regclass('personnel.address_type') AND conname='address_type_period_bounds' AND convalidated)
            AND EXISTS(SELECT FROM pg_attribute WHERE attrelid=to_regclass('personnel.address_type_revision') AND attname='dated' AND NOT attisdropped)))
-       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=61 AND is_applied) OR (
+       AND (NOT EXISTS(SELECT FROM public.goose_db_version WHERE version_id=61 AND is_applied)
+            OR ($1 AND `+legacyBasePay61+`) OR (
            to_regclass('personnel.address_type_choices') IS NOT NULL AND to_regclass('personnel.address_type_revision') IS NOT NULL
            AND to_regclass('personnel.address_type_not_applied') IS NOT NULL
            AND EXISTS(SELECT FROM pg_trigger WHERE tgrelid=to_regclass('personnel.address_type_revision') AND tgname='immutable_revision' AND tgenabled='O')

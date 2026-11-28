@@ -3,9 +3,46 @@ import { matrixJourney309 } from './staffing309-journey';
 staffingPageSuite(['grade'], '309', matrixJourney309);
 import { test, expect } from './fixtures';
 import { open } from './bu-support';
+import { randomUUID } from 'node:crypto';
+import { desktopViewports } from './desktop-viewports.mjs';
 import { withPolicy } from './grants';
 import { request } from './dated-object-support';
 import { seed308, enter308, action308, click308, menu308 } from './staffing308-support';
+test('309 grade 新建等待操作原因后一次保存', async ({ page }) => {
+  const [width, height] = desktopViewports[0];
+  await page.setViewportSize({ width, height });
+  await open(page);
+  await menu308(page, 'grade');
+  const code = 'G309-' + randomUUID().slice(0, 8);
+  const name = '延迟加载 ' + code;
+  const save = page.getByRole('button', { name: '保存', exact: true });
+  const reasonRequest = '**/api/v1/grades/operation-reasons?operationType=CREATE';
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  await page.route(reasonRequest, async route => { await gate; await route.continue(); });
+  try {
+    await Promise.all([
+      page.waitForRequest(reasonRequest),
+      page.getByRole('link', { name: '新建', exact: true }).click(),
+    ]);
+    await page.getByRole('textbox', { name: '编码', exact: true }).fill(code);
+    await page.getByRole('textbox', { name: '名称', exact: true }).fill(name);
+    await page.getByLabel('生效日期').and(page.locator('input')).fill('2026-01-01');
+    await expect(save).toBeDisabled();
+  } finally {
+    release();
+  }
+  await expect(page.getByRole('combobox', { name: '操作原因', exact: true })).toHaveText('新设职级');
+  const [created] = await Promise.all([
+    page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/grades'),
+    save.click(),
+  ]);
+  expect(created.status()).toBe(201);
+  await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
+  const { objectId } = await created.json();
+  expect((await request(page, 'GET', '/api/v1/grades/' + objectId + '/changes')).body.total).toBe(1);
+});
+
   test(`309 grade 丢失保存响应自动查回且只写一份来源`, async ({ page }) => {
     await open(page);
     const o = { ...await seed308(page, 'grade'), path: '/api/v1/grades' };

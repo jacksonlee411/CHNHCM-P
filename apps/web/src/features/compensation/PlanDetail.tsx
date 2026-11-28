@@ -1,3 +1,4 @@
+import { payReturn } from './basePay';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
@@ -30,7 +31,8 @@ export function PlanDetailPage({ session, creating = false }: { session: Princip
   useLayoutEffect(() => setLeaving(undefined), [location.key]);
   const [params, setParams] = useMaintenanceSearchParams(planPath);
   const candidate = params.get('back') ?? planPath;
-  const back = candidate.split('?')[0] === planPath ? candidate : planPath;
+  const fromPay = payReturn(candidate);
+  const back = fromPay || candidate.split('?')[0] === planPath ? candidate : planPath;
   const selected = params.get('selectedRecordId') || undefined,
     source = params.get('sourceVersion') || undefined;
   const referenceDate = params.get('referenceDate') || undefined;
@@ -178,7 +180,7 @@ export function PlanDetailPage({ session, creating = false }: { session: Princip
       <RecordControl
         identity={
           <>
-            <RecordBackButton component={Link} to={back} />
+            <RecordBackButton component={Link} to={back} label={fromPay ? '返回员工薪酬' : undefined} />
             {visibleCode && <Typography>{visibleCode}</Typography>}
             {canEdit && !editing && (
               <IconButton
