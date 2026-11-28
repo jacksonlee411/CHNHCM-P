@@ -26,3 +26,9 @@
 ```sh
 CHNHCM_PERSONNEL_CAPACITY=1 go test -tags=integration -count=1 -timeout=20m -run '^TestPersonnelNineSectionsCapacity$' -v ./tests/integration
 ```
+
+## 4 旧库升级检查复核
+
+在 `2d054a7` 的远程集成第 2 片，00039 旧库连续执行两次升级后，原断言用已应用行数与最大版本号比较。当前交付文件为 00001 至 00058 和 00061，00059、00060 是独立薪酬工作的预留编号，实际应有 59 个正版本。相同测试在本地真实 PostgreSQL 复现。[远程首败](https://github.com/jacksonlee411/CHNHCM-P/actions/runs/46106158314/job/140861474430) · [迁移编号说明](../../db/migrations/README.md)
+
+修正后的用例单独核对原任职决定与 Outbox 事件，再将嵌入迁移包的编号清单与数据库全部正向应用行按序逐项比较。重复、缺少或额外的应用行都会使比较失败。00039 与 00037 旧库升级、00058 地址类型升级和精确存储准入四项实库复验通过。此次修正仅涉及升级测试及验证记录，前述容量复验与 45317 使用同一版本的产品代码。[升级用例](../../internal/bootstrap/hire_readiness_integration_test.go) · [存储准入用例](../../internal/bootstrap/t07_storage_admission_integration_test.go)
