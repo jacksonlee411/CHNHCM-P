@@ -50,6 +50,7 @@ for (const mode of ['1440×900', '1440×540', '原生200%']) {
       await namedMenu308(page, '地址类型', '人员配置', '/settings/personnel/address-types');
       const beforeCancel = (await request(page, 'GET', catalog)).body.items;
       await page.getByRole('link', { name: '新增' }).click();
+      await expect(page.getByRole('heading', { name: '新增地址类型', exact: true })).toBeVisible();
       const nameField = page.getByRole('textbox', { name: '名称', exact: true });
       await reach308(page, nameField);
       expect(
@@ -64,8 +65,13 @@ for (const mode of ['1440×900', '1440×540', '原生200%']) {
       await button('放弃修改').click();
       expect((await request(page, 'GET', catalog)).body.items).toEqual(beforeCancel);
       await page.getByRole('link', { name: '新增' }).click();
-      await expect(page.getByLabel('首次生效日')).toHaveValue('1900-01-01');
-      await page.getByRole('textbox', { name: '编码', exact: true }).fill('DORM-' + randomUUID().slice(0, 8));
+      await expect(page.getByRole('heading', { name: '新增地址类型', exact: true })).toBeVisible();
+      await expect(page.getByRole('textbox', { name: '首次生效日', exact: true })).toHaveValue(
+        '1900-01-01',
+      );
+      await page
+        .getByRole('textbox', { name: '编码', exact: true })
+        .fill('DORM-' + randomUUID().slice(0, 8));
       await page.getByRole('textbox', { name: '名称', exact: true }).fill(title);
       await page.getByRole('spinbutton', { name: '排序', exact: true }).fill('5');
       await button('取消').click();
@@ -87,7 +93,7 @@ for (const mode of ['1440×900', '1440×540', '原生200%']) {
       };
       const detailPage = page.getByRole('region', { name: '地址类型详情' });
       await button('停用').click();
-      await page.getByLabel('停用生效日').fill('2099-06-01');
+      await page.getByRole('textbox', { name: '停用生效日', exact: true }).fill('2099-06-01');
       await button('保存').click();
       await expect(detailPage).toContainText('2099-06-01');
       await selectDay('2099-06-01');
@@ -126,8 +132,10 @@ for (const mode of ['1440×900', '1440×540', '原生200%']) {
       await namedMenu308(page, '地址类型', '人员配置', '/settings/personnel/address-types');
       await page.getByRole('link', { name: title + '新名', exact: true }).click();
       await button('更正').click();
-      await expect(page.getByLabel('停用生效日')).toHaveValue('2099-06-01');
-      await page.getByLabel('停用生效日').fill('2001-01-01');
+      await expect(page.getByRole('textbox', { name: '停用生效日', exact: true })).toHaveValue(
+        '2099-06-01',
+      );
+      await page.getByRole('textbox', { name: '停用生效日', exact: true }).fill('2001-01-01');
       await button('保存').click();
       await expect(detailPage.locator('.object-identity-summary')).toContainText('停用');
       await menu(page);

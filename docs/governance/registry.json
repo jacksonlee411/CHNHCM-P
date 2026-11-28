@@ -3320,11 +3320,11 @@
       "scope": "跨模块选择业务对象、受控参考对象、轻量词表、规则配置与产品枚举，约定轻量配置的维护、采用、成本验证及演进。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-27",
-        "reviewer": "Codex 主代理分轮自审并修订",
-        "scope": "五类模型选型、最小数据、日期与并发采用、权限、历史、成本比较及存量演进。",
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理按模型、日期、迁移及正常办理入口分轮复核",
+        "scope": "单区间词表的日期边界、误停更正、旧项可核实期间、原修订及采用。",
         "result": "accepted",
-        "evidence": "docs/verification/316-object-and-configuration-review.md"
+        "evidence": "docs/verification/317-address-type-periods.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -3702,10 +3702,10 @@
       "format": "numbered",
       "review": {
         "date": "2026-11-28",
-        "reviewer": "Codex 主代理按现行合同和真实入口复核",
-        "scope": "既有 M02 采用守卫，新增 M01 地址类型、旧档及分权采用验收。",
+        "reviewer": "Codex 主代理按模型、日期、迁移及正常办理入口分轮复核",
+        "scope": "地址类型按北京办理日选用、同日边界、停用更正、旧修订与原采用。",
         "result": "accepted",
-        "evidence": "docs/verification/317-person-address-types.md"
+        "evidence": "docs/verification/317-address-type-periods.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -26782,7 +26782,7 @@
           "CHNHCM-505"
         ],
         "format": "numbered",
-        "status": "draft",
+        "status": "final",
         "date": "2026-11-28",
         "base_commit": "8b1f1c963ff6decd31498fc1be0308373df1462d",
         "working_tree": "dirty",
@@ -26794,13 +26794,38 @@
             "check": "业务日期边界与 00061 实库迁移的原项、原修订、回执摘要和未知期间",
             "result": "passed",
             "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "首次预检的 sqlc 模型缺少新增列，浏览器首轮定位必填标签及重进新增时的表头失败",
+            "result": "failed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "运行端口断言一次失败，独立 20 项和完整 make check 复验通过",
+            "result": "passed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "两组桌面与原生 200% 的业务单元对照和整笔地址操作",
+            "result": "passed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "45317 迁移前后七组原事实与权限相等，原员工只读和预排样本通过",
+            "result": "passed",
+            "evidence": "docs/verification/317-address-type-periods.md"
+          },
+          {
+            "check": "万名员工 1 和 20 会话四条链路，共 3200 次 HTTP，20 会话均在 1500 ms 内",
+            "result": "passed",
+            "evidence": "docs/verification/data/317-person-address-types/capacity.csv"
           }
         ],
         "limitations": [
           "旧词表未记录的业务停用日保持未知。"
         ],
         "purpose": "acceptance",
-        "conclusion": "地址类型按单个启用区间取值，实库迁移保护原修订与已知选用状态。",
+        "conclusion": "按日启停、误停更正、旧回执与原住址通过。20 会话四条链路 P95 最高 954.62 ms，45317 原七组事实对账一致。",
         "evidence_access": "repository"
       }
     ]
