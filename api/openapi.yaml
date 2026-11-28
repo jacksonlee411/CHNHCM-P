@@ -11386,6 +11386,22 @@ paths:
         content:
           application/json:
             schema: {$ref: '#/components/schemas/PersonAddressTypeCommand'}
+  /api/v1/person-address-types/{typeId}:
+    get:
+      operationId: getPersonAddressType
+      parameters:
+      - {in: path, name: typeId, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: 获权的目录项、当日状态与可核实的业务日期
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeDetail'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
   /api/v1/person-address-types/{typeId}/revisions/{revision}:
     get:
       operationId: getPersonAddressTypeRevision
@@ -14790,7 +14806,7 @@ components:
     PersonAddressTypeSource:
       type: object
       additionalProperties: false
-      required: [id, revision, code, name, sortOrder, firstDay, selectable, recordedAt]
+      required: [id, revision, code, name, sortOrder, firstDay, selectable, recordedAt, dated]
       properties:
         id: {type: string, format: uuid}
         revision: {type: string, format: uuid}
@@ -14799,6 +14815,11 @@ components:
         sortOrder: {type: integer, minimum: 0, maximum: 999999}
         firstDay: {type: string, format: date}
         selectable: {type: boolean}
+        stopDay: {type: string, format: date}
+        confirmedFrom: {type: string, format: date}
+        undatedStop: {type: boolean}
+        dated: {type: boolean}
+        previousRevision: {type: string, format: uuid}
         actorId: {type: string, format: uuid}
         recordedAt: {type: string, format: date-time}
     PersonAddressTypeReceipt:
@@ -14843,18 +14864,57 @@ components:
         sortOrder: {type: integer, minimum: 0, maximum: 999999}
         firstDay: {type: string, format: date}
         selectable: {type: boolean}
+        stopDay: {type: string, format: date}
+        confirmedFrom: {type: string, format: date}
+        undatedStop: {type: boolean}
+    PersonAddressTypeView:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name, sortOrder, firstDay, selectable, state]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
+        stopDay: {type: string, format: date}
+        confirmedFrom: {type: string, format: date}
+        undatedStop: {type: boolean}
+        state: {$ref: '#/components/schemas/PersonAddressTypeState'}
+    PersonAddressTypeState:
+      type: string
+      enum: [not_effective, active, inactive, unknown]
+    PersonAddressTypeDetail:
+      type: object
+      required: [item, businessDay, defaultStopDay, canMaintain, timeline, selectedDay]
+      properties:
+        item: {$ref: '#/components/schemas/PersonAddressTypeView'}
+        defaultStopDay: {type: string, format: date}
+        businessDay: {type: string, format: date}
+        canMaintain: {type: boolean}
+        selectedDay: {type: string, format: date}
+        timeline:
+          type: array
+          items:
+            type: object
+            required: [day, state]
+            properties:
+              day: {type: string, format: date}
+              state: {$ref: '#/components/schemas/PersonAddressTypeState'}
     PersonAddressTypeList:
       type: object
       additionalProperties: false
       required: [items, canMaintain, defaultFirstDay]
       properties:
-        items: {type: array, items: {$ref: '#/components/schemas/PersonAddressType'}}
+        items: {type: array, items: {$ref: '#/components/schemas/PersonAddressTypeView'}}
         canMaintain: {type: boolean}
         defaultFirstDay: {type: string, format: date}
     PersonAddressTypeCommand:
       type: object
       additionalProperties: false
-      required: [submissionId, name, sortOrder, selectable]
+      required: [submissionId, name, sortOrder]
       properties:
         submissionId: {type: string, format: uuid}
         id: {type: string, format: uuid}
@@ -14864,6 +14924,9 @@ components:
         sortOrder: {type: integer, minimum: 0, maximum: 999999}
         firstDay: {type: string, format: date}
         selectable: {type: boolean}
+        stopDay:
+          type: string
+          description: 停用生效日。空串明确撤销误停，编辑时省略沿用现有安排。与旧 selectable 参数互斥。
     PersonPlaceChoice:
       type: object
       additionalProperties: false

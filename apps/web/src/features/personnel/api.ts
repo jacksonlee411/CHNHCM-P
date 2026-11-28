@@ -12,6 +12,10 @@ const base = '/api/v1/persons';
 const headers = (s: Principal) => ({ 'X-CSRF-Token': s.csrf });
 export const addressTypePath = '/settings/personnel/address-types';
 export const addressTypes = async () => unwrap(await api.GET('/api/v1/person-address-types'));
+export const addressTypeDetail = async (typeId: string) =>
+  unwrap(await api.GET('/api/v1/person-address-types/{typeId}', { params: {path: {typeId}} }));
+export const addressTypeSource = async (typeId: string, revision: string) =>
+  unwrap(await api.GET('/api/v1/person-address-types/{typeId}/revisions/{revision}', {params:{path:{typeId,revision}}}));
 export const addressTypeOptions = async (id: string, itemId?: string) =>
   unwrap(await api.GET('/api/v1/persons/{id}/address-type-candidates', { params: { path: { id }, query: { itemId } } }));
 export const saveAddressType = async (s: Principal, body: Models['PersonAddressTypeCommand']) =>

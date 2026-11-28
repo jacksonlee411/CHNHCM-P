@@ -60,6 +60,14 @@ func (a *API) personnelRoutes(m *http.ServeMux) {
 		v, e := s.AddressTypes(r.Context(), credentials(r))
 		respond(w, 200, v, e)
 	})
+	m.HandleFunc("GET "+types+"/{typeId}", func(w http.ResponseWriter, r *http.Request) {
+		if _, e := queryValues(r); e != nil {
+			writeError(w, e)
+			return
+		}
+		v, e := s.AddressTypeDetail(r.Context(), credentials(r), r.PathValue("typeId"))
+		respond(w, 200, v, e)
+	})
 	m.HandleFunc("GET "+types+"/{typeId}/revisions/{revision}", func(w http.ResponseWriter, r *http.Request) {
 		if _, e := queryValues(r); e != nil {
 			writeError(w, e)

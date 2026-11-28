@@ -8857,7 +8857,7 @@
         },
         {
           "document": "CHNHCM-317",
-          "scope": "沿用个人资料地址弹框的字段次序、应用到草稿及整页保存。地址类型通过 M01 当前词表选择。",
+          "scope": "沿用个人资料地址弹框的字段次序、应用到草稿及整页保存。地址类型通过 M01 按北京办理日选用的实例词表选择，配置详情沿用共享详情与生效日期导航。",
           "target_files": [
             "apps/web/src/features/personnel/ProfileSections.tsx",
             "apps/web/src/features/personnel/profileDraft.ts",

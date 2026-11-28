@@ -3,6 +3,11 @@
 package bootstrap_test
 
 import (
+	"crypto/sha256"
+	"fmt"
+	"net/http/httptest"
+	"net/url"
+	"reflect"
 	"testing"
 
 	"chnhcm.local/chnhcm/db/migrations"
@@ -57,4 +62,79 @@ func TestPersonnelAddressTypeUpgrade(t *testing.T) {
 	if !ok {
 		t.Fatal("initializer reinstated revoked rights or changed revisions")
 	}
+}
+
+func TestPersonnelAddressTypePeriodUpgrade(t *testing.T) {
+	pool := newStaffingMigrationPool(t)
+	ctx := t.Context()
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00061" })))
+	instance := foundation.NewID()
+	init := bootstrap.InitInput{Instance: instance, EnterpriseCode: "LOCAL", EnterpriseName: "期间迁移", Login: "profile", Password: foundation.NewID(), PersonnelProfile: "registrar", PersonalProfileFixture: true}
+	must(t, bootstrap.Initialize(ctx, pool, init))
+	const catalog = "/api/v1/person-address-types"
+	var id, oldHead string
+	must(t, pool.QueryRow(ctx, "select item_id,head from personnel.address_type where instance_id=$1 and code='MAILING'", instance).Scan(&id, &oldHead))
+	submission := foundation.NewID()
+	// Exact JSON field order used for 00061 command digests.
+	originalJSON := fmt.Sprintf(`{"submissionId":"%s","id":"%s","expectedRevision":"%s","name":"通讯地址","sortOrder":30,"selectable":false}`, submission, id, oldHead)
+	digest := fmt.Sprintf("%x", sha256.Sum256([]byte(originalJSON)))
+	_, err := pool.Exec(ctx, `with changed as (update personnel.address_type set selectable=false,head=gen_random_uuid()
+ where instance_id=$1 and code='MAILING' returning *)
+ insert into personnel.address_type_revision(instance_id,item_id,revision,name,sort_order,selectable,actor_id,submission_id,digest)
+ select c.instance_id,item_id,head,name,sort_order,false,p.principal_id,$2,$3 from changed c
+ join access.principal p using(instance_id)`, instance, submission, digest)
+	must(t, err)
+	_, err = pool.Exec(ctx, `create schema expected;
+ create table expected.items as select item_id,head,code,first_day,selectable from personnel.address_type;
+ create table expected.revisions as select to_jsonb(v) original,xmin::text tx from personnel.address_type_revision v`)
+	must(t, err)
+	must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
+	var ok bool
+	must(t, pool.QueryRow(ctx, `select
+ (select count(*)=4 from personnel.address_type)
+ and (select count(*)=5 from personnel.address_type_revision)
+ and not exists(select from expected.items e left join personnel.address_type t using(item_id)
+   where t.head is distinct from e.head or t.first_day<>e.first_day or t.stop_day is not null
+   or t.confirmed_from is distinct from (now() at time zone 'Asia/Shanghai')::date
+   or t.undated_stop=e.selectable or (t.valid_during @> t.confirmed_from)<>e.selectable
+   or t.valid_during @> (t.confirmed_from-1))
+ and not exists(select from expected.revisions e where not exists
+   (select from personnel.address_type_revision v where not v.dated and e.tx=v.xmin::text
+    and e.original=(to_jsonb(v)-'dated'-'stop_day'-'undated_stop')))`).Scan(&ok))
+	if !ok {
+		t.Fatal("migration changed identities, receipts, original revisions or invented past availability")
+	}
+	apiPassword := foundation.NewID()
+	must(t, bootstrap.ConfigureLocalRoles(ctx, pool, apiPassword))
+	u, err := url.Parse(pool.Config().ConnConfig.ConnString())
+	must(t, err)
+	u.User = url.UserPassword("chnhcm_api", apiPassword)
+	runtime, err := bootstrap.Open(ctx, u.String(), instance)
+	must(t, err)
+	defer runtime.Close()
+	server := httptest.NewUnstartedServer(nil)
+	server.Config.Handler = (&bootstrap.API{Runtime: runtime, Origin: "http://" + server.Listener.Addr().String(), InsecureLocal: true}).Handler()
+	server.Start()
+	defer server.Close()
+	f := fixture{t: t, ctx: ctx, admin: pool, instance: instance, runtime: runtime, server: server}
+	admin := f.login(init.Login, init.Password)
+	receipt := admin.call("POST", catalog+"/submissions/"+submission+"/resolve", nil, "", 200)["item"].(map[string]any)
+	replay := admin.call("POST", catalog, map[string]any{"submissionId": submission, "id": id, "expectedRevision": oldHead, "name": "通讯地址", "sortOrder": 30, "selectable": false}, "", 200)
+	if !reflect.DeepEqual(replay, receipt) || receipt["selectable"] != false || receipt["stopDay"] != nil || receipt["confirmedFrom"] != nil {
+		t.Fatal("legacy receipt changed", receipt)
+	}
+	current := admin.call("GET", catalog+"/"+id, nil, "", 200)
+	item := current["item"].(map[string]any)
+	if item["state"] != "inactive" || item["undatedStop"] != true || item["stopDay"] != nil || current["timeline"].([]any)[0].(map[string]any)["state"] != "unknown" {
+		t.Fatal("invented legacy date", current)
+	}
+	corrected := admin.call("POST", catalog, map[string]any{"submissionId": foundation.NewID(), "id": id, "expectedRevision": item["revision"], "sortOrder": 30, "name": "通讯地址", "stopDay": ""}, "", 200)
+	if corrected["selectable"] != true || corrected["revision"] == item["revision"] || corrected["confirmedFrom"] != item["confirmedFrom"] {
+		t.Fatal("legacy correction lost known boundary")
+	}
+	history := admin.call("GET", catalog+"/"+id+"/revisions/"+corrected["revision"].(string), nil, "", 200)
+	if history["previousRevision"] != receipt["revision"] || history["dated"] != true {
+		t.Fatal("correction does not point to prior evidence", history)
+	}
+
 }

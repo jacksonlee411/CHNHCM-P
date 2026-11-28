@@ -22,7 +22,7 @@ func restoreGrantPredecessor(f *fixture) {
  DROP TABLE personnel.address_type_revision,personnel.address_type,personnel.address_type_not_applied;
  DROP FUNCTION personnel.initialize_address_types(uuid),personnel.reject_address_type_revision_change();
  ALTER TABLE access.person_grant DROP CONSTRAINT person_address_type_grant_scope;
- DELETE FROM public.goose_db_version WHERE version_id=61;
+ DELETE FROM public.goose_db_version WHERE version_id IN (61,62);
  DROP VIEW IF EXISTS access.subject_grant;
  CREATE TABLE access.subject_grant (LIKE fixture.prefix_grant INCLUDING ALL);
  INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission;
@@ -40,6 +40,7 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
 		{"foreign_in_progress_migration", `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(59,true),(60,true)`, `DELETE FROM public.goose_db_version WHERE version_id IN (59,60)`},
+		{"missing_address_period", `ALTER TABLE personnel.address_type RENAME COLUMN valid_during TO hidden_period`, `ALTER TABLE personnel.address_type RENAME COLUMN hidden_period TO valid_during`},
 		{"mutable_address_type_revision", `ALTER TABLE personnel.address_type_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE personnel.address_type_revision ENABLE TRIGGER immutable_revision`},
 		{"mutable_grant_revision", `ALTER TABLE access.grant_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE access.grant_revision ENABLE TRIGGER immutable_revision`},
 		{"missing_f_reserved_versions", `DELETE FROM public.goose_db_version WHERE version_id IN (32,33)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(32,true),(33,true)`},
