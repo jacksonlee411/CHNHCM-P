@@ -3426,6 +3426,64 @@
       }
     },
     {
+      "id": "CHNHCM-316",
+      "title": "业务对象与配置数据建模规范",
+      "path": "docs/architecture/316-object-and-configuration-models.md",
+      "owner_branch": "wt-dev-d",
+      "owner_role": "架构与各事实所属领域维护者",
+      "owner": null,
+      "status": "active",
+      "type": "architecture",
+      "modules": [],
+      "scope": "跨模块选择业务对象、受控参考对象、轻量词表、规则配置与产品枚举，约定轻量配置的维护、采用、成本验证及演进。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-27",
+        "reviewer": "Codex 主代理分轮自审并修订",
+        "scope": "五类模型选型、最小数据、日期与并发采用、权限、历史、成本比较及存量演进。",
+        "result": "accepted",
+        "evidence": "docs/verification/316-object-and-configuration-review.md"
+      },
+      "execution_status": null,
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
+      "id": "CHNHCM-317",
+      "title": "个人资料地址类型配置实施方案",
+      "path": "docs/archive/plans/317-person-address-types.md",
+      "owner_branch": "wt-dev-d",
+      "owner_role": "Personnel、Access 与体验维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "M01",
+        "X03"
+      ],
+      "scope": "实例共享的地址类型管理、地址新采用、旧档保护、权限及成本验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理分轮自审与实测",
+        "scope": "模型选择、旧档与权限、事务恢复、浏览器及成本。",
+        "result": "accepted",
+        "evidence": "docs/verification/317-person-address-types.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "M01 地址类型及个人资料采用通过本地技术验收，已在公共 P 仓 45317 交接。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "reason": "持续产品条款转交 505，试点成本及环境转交验证记录。",
+        "previous_path": "docs/plans/317-person-address-types.md"
+      }
+    },
+    {
       "id": "CHNHCM-400",
       "title": "M04 T02 入职规则与准备实施方案",
       "path": "docs/archive/plans/400-hire-readiness.md",
@@ -3761,11 +3819,11 @@
       "scope": "九栏字段和多条资料、同人共享、敏感字段授权、整页办理、事务边界与独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-27",
-        "reviewer": "Codex 按原评审逐项复核标准、实际写入点及验证证据",
-        "scope": "人员目录采用端口、M02 权限和事务内锁定准确来源、M01 存原采用及失败回滚。",
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理按现行合同和真实入口复核",
+        "scope": "既有 M02 采用守卫，新增 M01 地址类型、旧档及分权采用验收。",
         "result": "accepted",
-        "evidence": "docs/verification/004-architecture-review-remediation.md"
+        "evidence": "docs/verification/317-person-address-types.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -27047,6 +27105,157 @@
         "purpose": "governance",
         "conclusion": "从人员名录提炼列表、部门树和验收样本标准。勾选时序及跨页返回两轮首败均保留。第 21 人及第 21 份任职返回经隔离实库复验，4496 已更新。",
         "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/316-object-and-configuration-review.md",
+        "related_documents": [
+          "CHNHCM-316"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "新增 316 正文和评审记录，更新登记、规范导航与生成的分类目录。各轮正文摘要见报告。",
+        "environment": "wt-dev-d 本地工作树，Python 3.14.4，仓库文档检查。",
+        "scope": "316 跨模块架构规范与治理接入，按既有合同走查样本。",
+        "results": [
+          {
+            "check": "第一轮：选择后换版与补办日期依据不足",
+            "result": "failed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          },
+          {
+            "check": "第二轮：撤权草稿、期间排重及成本对照需补齐",
+            "result": "failed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          },
+          {
+            "check": "第三轮：两轮问题的语义复核与定稿走查",
+            "result": "passed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          },
+          {
+            "check": "make docs 的 189 项回归与仓库检查、覆盖新增文件的差异空白检查",
+            "result": "passed",
+            "evidence": "docs/verification/316-object-and-configuration-review.md"
+          }
+        ],
+        "limitations": [
+          "主代理自审。未实施产品，未执行数据库、浏览器或性能试验。"
+        ],
+        "purpose": "review",
+        "conclusion": "三轮评审通过，完成对象与配置选型、按日选用、并发维护及原采用的场景走查。",
+        "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/317-person-address-types.md",
+        "related_documents": [
+          "CHNHCM-317",
+          "CHNHCM-316",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "1807cc042f81631f75a149d61e75b414682d018e",
+        "working_tree": "dirty",
+        "change_description": "试点新增地址配置及地址采用。",
+        "environment": "本机 PostgreSQL 18.6、Go、Chromium；隔离样本与公共工作树手工环境。",
+        "scope": "管理、采用、旧档、并发、迁移、容量和菜单验收。",
+        "results": [
+          {
+            "check": "原版本整页更正二十会话超过原 500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "00038 旧版备份与 00058 旧地址、来源、回执、授权升级至 00061，准确账本准入",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "HTTP 配置维护与采用、停选后更正、撤权及故障回滚",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "两组桌面及原生 200% 的完整业务流程",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "优化前 00061 复测，20 会话两条整页链路超过 1500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "实库锁住国家读取角色，M01 独立配置可读，M02 正常等待",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "万名人员八组容量，二十并发临时 1500 ms 门槛",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "公共 P 仓固定 45317 的 218 表、16 序列对账及双角色正常菜单交接",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          }
+        ],
+        "limitations": [
+          "本地合成资料和当前试点数据规模，整页办理按本次 20 并发 1500 ms 临时目标验收。"
+        ],
+        "purpose": "acceptance",
+        "conclusion": "个人资料地址类型维护、员工选用和历史回显通过。20 并发下整页保留及改选的 P95 分别为 1241.89 和 995.46 毫秒，均在临时 1500 毫秒内。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/317-main-address-types.md"
+      },
+      {
+        "path": "docs/verification/317-main-address-types.md",
+        "related_documents": [
+          "CHNHCM-317",
+          "CHNHCM-316",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "f7c1bed9ef8088b07926595e383afbdb00ba1678",
+        "working_tree": "dirty",
+        "change_description": "处理主线合并候选的整页容量首败，批量读取政策条款与同一修订明细。",
+        "environment": "本机 WSL2、PostgreSQL 18.6、Go，合成万名人员与二十份九栏样本。",
+        "scope": "1 与 20 会话四条链路、容量首败及两轮复验，主线旧库升级检查。",
+        "results": [
+          {
+            "check": "主线候选两条整页办理首次超过 1500 ms，CPU 采样诊断再次超限",
+            "result": "failed",
+            "evidence": "docs/verification/317-main-address-types.md"
+          },
+          {
+            "check": "修正后二十会话专项及一与二十会话的完整复验",
+            "result": "passed",
+            "evidence": "docs/verification/data/317-person-address-types/capacity.csv"
+          },
+          {
+            "check": "原 00039 升级检查将预留编号误算为缺失，本地复现远程首败",
+            "result": "failed",
+            "evidence": "docs/verification/317-main-address-types.md"
+          },
+          {
+            "check": "按交付迁移逐项比较并核对原决定及事件，00037、00039、00058 升级与精确准入四项通过",
+            "result": "passed",
+            "evidence": "docs/verification/317-main-address-types.md"
+          }
+        ],
+        "limitations": [
+          "本地合成样本。20 会话临时上限 1500 ms，保留原类型的专项 P95 为 1498.36 ms。"
+        ],
+        "purpose": "retest",
+        "conclusion": "合并候选整页办理超限。批量读取后两轮通过，最终 20 并发保留、改选 P95 为 1383.20、1321.42 毫秒，3200 次 HTTP 零失败。",
+        "evidence_access": "public_ci"
       }
     ]
   },

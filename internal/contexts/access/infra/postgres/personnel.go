@@ -9,54 +9,55 @@ import (
 	"time"
 )
 
-func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.PersonnelGuard, error) {
 	return s.personnel(ctx, tx, c, false)
 }
 
 // PersonnelDirectory restricts the grant projection to ordinary identity reads.
 // A large per-person scope on unrelated profile or history rights is not needed
 // to authorize a directory search or its session-owned reference.
-func (s *Store) PersonnelDirectory(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+func (s *Store) PersonnelDirectory(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.PersonnelGuard, error) {
 	return s.personnel(ctx, tx, c, true)
 }
-func (s *Store) personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials, directoryOnly bool) (access.PersonAccess, access.Guard, error) {
+func (s *Store) personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials, directoryOnly bool) (access.PersonAccess, access.PersonnelGuard, error) {
 	var a access.PersonAccess
-	g, e := s.Guard(ctx, tx, c)
+	g, e := s.authenticatedGuard(ctx, tx, c, false)
 	if e != nil {
 		return a, nil, e
 	}
 	a.Principal = g.Principal()
-	var validUntil *time.Time
-	e = tx.QueryRow(ctx, `select version,ordinary_days,evidence_days,allow_permanent_decision,case when isfinite(valid_until) then valid_until else null end,material_days,material_evidence_days,contact_days,contact_evidence_days from access.person_policy_for_use($1)`, s.Instance).Scan(&a.Policy.Version, &a.Policy.OrdinaryDays, &a.Policy.EvidenceDays, &a.Policy.AllowPermanentDecision, &validUntil, &a.Policy.MaterialDays, &a.Policy.MaterialEvidenceDays, &a.Policy.ContactDays, &a.Policy.ContactEvidenceDays)
-	if validUntil != nil {
-		a.Policy.ValidUntil = *validUntil
-	}
-	if e != nil && !errors.Is(e, pgx.ErrNoRows) {
-		return a, nil, e
-	}
-	purposes, e := tx.Query(ctx, `select purpose,version,case when isfinite(valid_until) then valid_until end,ordinary_days,evidence_days from access.person_data_purposes_for_use($1)`, s.Instance)
-	if e != nil {
-		return a, nil, e
-	}
-	a.Purposes = map[string]access.PersonDataPurpose{}
-	for purposes.Next() {
-		var key string
-		var p access.PersonDataPurpose
-		var expiry *time.Time
-		if e = purposes.Scan(&key, &p.Version, &expiry, &p.OrdinaryDays, &p.EvidenceDays); e != nil {
-			purposes.Close()
-			return a, nil, e
+	// PostgreSQL takes the two policy locks in order. Sample the decision time
+	// after both reads, including any wait for a policy writer.
+	terms := &pgx.Batch{}
+	terms.Queue(`select version,ordinary_days,evidence_days,allow_permanent_decision,case when isfinite(valid_until) then valid_until else null end,material_days,material_evidence_days,contact_days,contact_evidence_days from access.person_policy_for_use($1)`, s.Instance).QueryRow(func(row pgx.Row) error {
+		var until *time.Time
+		err := row.Scan(&a.Policy.Version, &a.Policy.OrdinaryDays, &a.Policy.EvidenceDays, &a.Policy.AllowPermanentDecision, &until, &a.Policy.MaterialDays, &a.Policy.MaterialEvidenceDays, &a.Policy.ContactDays, &a.Policy.ContactEvidenceDays)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil
 		}
-		if expiry != nil {
-			p.ValidUntil = *expiry
+		if until != nil {
+			a.Policy.ValidUntil = *until
 		}
-		a.Purposes[key] = p
-	}
-	if e = purposes.Err(); e != nil {
-		return a, nil, e
-	}
-	// Both policy reads can wait for writers. Use the time at which their terms are available.
-	if e = tx.QueryRow(ctx, "select clock_timestamp()").Scan(&a.At); e != nil {
+		return err
+	})
+	terms.Queue(`select purpose,version,case when isfinite(valid_until) then valid_until end,ordinary_days,evidence_days from access.person_data_purposes_for_use($1)`, s.Instance).Query(func(rows pgx.Rows) error {
+		a.Purposes = map[string]access.PersonDataPurpose{}
+		for rows.Next() {
+			var key string
+			var p access.PersonDataPurpose
+			var until *time.Time
+			if err := rows.Scan(&key, &p.Version, &until, &p.OrdinaryDays, &p.EvidenceDays); err != nil {
+				return err
+			}
+			if until != nil {
+				p.ValidUntil = *until
+			}
+			a.Purposes[key] = p
+		}
+		return rows.Err()
+	})
+	terms.Queue("select clock_timestamp()").QueryRow(func(row pgx.Row) error { return row.Scan(&a.At) })
+	if e = tx.SendBatch(ctx, terms).Close(); e != nil {
 		return a, nil, e
 	}
 	rows, e := tx.Query(ctx, `select action,purpose,fields,person_ids::text[],denied,expires_at,coalesce(source_version::text,''),coalesce(item_id::text,'') from access.person_grant where instance_id=$1 and principal_id=$2 and (expires_at is null or expires_at>$3) and (not $4 or (action='read' and purpose='directory' and source_version is null and item_id is null))`, s.Instance, a.Principal.ID, a.At, directoryOnly)
@@ -129,6 +130,11 @@ func InitializePersonalProfileFixture(ctx context.Context, tx pgx.Tx, instance, 
 		fields := append([]string{}, access.PersonalProfileFields...)
 		actions := []string{"profile.read"}
 		if profile == "registrar" {
+			if _, err = tx.Exec(ctx, `insert into access.person_grant(instance_id,principal_id,action,purpose,fields)
+                select $1,$2,a,'address-types','{}' from unnest(array['address-type.read','address-type.maintain']) a
+                where exists (select from pg_constraint where conrelid='access.person_grant'::regclass and conname='person_address_type_grant_scope')`, instance, subject); err != nil {
+				return err
+			}
 			fields = append(fields, "documentNumber")
 			actions = append(actions, "profile.correct")
 		} else {

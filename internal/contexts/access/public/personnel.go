@@ -1,9 +1,17 @@
 package public
 
 import (
+	"context"
 	"slices"
 	"time"
 )
+
+// Personnel authorization uses its own purposes and field grants. Nested
+// catalog adoptions acquire their object guard in the bound transaction.
+type PersonnelGuard interface {
+	Bind(context.Context) context.Context
+	RecordSessionActivity(context.Context) error
+}
 
 type PersonScope struct {
 	All              bool
@@ -54,6 +62,8 @@ type PersonAccess struct {
 
 func PersonPurpose(action string) string {
 	switch action {
+	case "address-type.read", "address-type.maintain":
+		return "address-types"
 	case "bank.read", "bank.correct":
 		return "personal-bank"
 	case "health.read", "health.correct":

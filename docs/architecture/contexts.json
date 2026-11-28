@@ -23,6 +23,12 @@
         "source": "internal/contexts/personnel/infra/postgres/personal_profile.go",
         "entry": "/personnel/employees", "entry_source": "apps/web/src/features/personnel/api.ts",
         "evidence": "docs/verification/504-personal-profile-fourth-batch.md"
+      }, {
+        "module": "M01", "capability": "person-address-types", "state": "verified_slice",
+        "scope": "按客户实例维护地址类型。人员住址保存所选项、确切修订、采用日和原名称。",
+        "source": "internal/contexts/personnel/infra/postgres/address_types.go",
+        "entry": "/settings/personnel/address-types", "entry_source": "apps/web/src/features/personnel/api.ts",
+        "evidence": "docs/verification/317-person-address-types.md"
       }]
     },
     {
