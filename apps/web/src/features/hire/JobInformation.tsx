@@ -77,7 +77,7 @@ export function JobInformation({
       if (value) next.set(key, value);
       else next.delete(key);
     }
-    setParams(next, {replace});
+    if (next.toString() !== params.toString()) setParams(next, {replace});
   }
   const [contractDraft,setContractDraft]=useState<Models['EmploymentContractCommand']>();
   const contractInitial=useRef<Models['EmploymentContractCommand']|undefined>(undefined);
