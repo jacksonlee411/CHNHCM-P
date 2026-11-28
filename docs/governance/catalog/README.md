@@ -23,7 +23,9 @@
 
 ## 待启动计划
 
-当前登记为零。
+| 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
+| --- | --- | --- | --- |
+| [142 桌面短屏与原生 400% 开发内容清理计划](../../plans/142-retired-desktop-conditions.md) | in_review | not_started | 原位 |
 
 <a id="catalog-review"></a>
 
@@ -37,6 +39,7 @@
 | [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 | — |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 | [§7.2 部门选择与固定身份草稿 → 120 §4.6](../../specs/m02/120-dated-maintenance-technical-contract.md#46-r133-m1部门选择游标与锚点协议) · [§7.3 单请求游标与读取一致性 → 120 §11](../../specs/m02/120-dated-maintenance-technical-contract.md#11-r133主线读取协议的实施输入) · [§10 BU 完整预览的削减期间检查 → 120 §12](../../specs/m02/120-dated-maintenance-technical-contract.md#12-r129共用边界与日志按页装配) · [§15 单对象 20 条验收场景与模型 5 → 017 §19](../../guides/017-local-bu-development.md#19-保留模型5及20条正式场景) · [§16 部门大范围写入的阶段目标 → 120](../../specs/m02/120-dated-maintenance-technical-contract.md#department-broad-write-stage-target) |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 | [§8 单对象 20 条验收场景与模型 5 → 017 §19](../../guides/017-local-bu-development.md#19-保留模型5及20条正式场景) |
+| [142 桌面短屏与原生 400% 开发内容清理计划](../../plans/142-retired-desktop-conditions.md) | in_review | not_started | 原位 | — |
 
 <a id="catalog-closed"></a>
 

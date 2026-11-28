@@ -2554,6 +2554,30 @@
       }
     },
     {
+      "id": "CHNHCM-142",
+      "title": "桌面短屏与原生 400% 开发内容清理计划",
+      "path": "docs/plans/142-retired-desktop-conditions.md",
+      "owner_branch": "wt-dev-b",
+      "owner_role": "共享页面与浏览器验证维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "plan",
+      "modules": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M09"
+      ],
+      "scope": "清理薪酬离线原型、人员名录验收脚本和规格交接段残留的旧视口条件，保留原批证据及现行桌面操作。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": "not_started",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
       "id": "CHNHCM-200",
       "title": "国家地区行政区划与地点实施路线图",
       "path": "docs/archive/plans/200-geography-and-location-roadmap.md",
