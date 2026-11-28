@@ -94,7 +94,7 @@ export function App() {
   if(canRegister)sections.push({label:'人事事务',items:[{label:'办理记录',path:registerPath}]});
   if(recruiting.data?.canRead)sections.push({label:'招聘',items:[{label:'招聘录用',path:offerPath}]});
   const personnelApp:NavigationApp={id:'personnel',label:'人员',path:sections.length?undefined:person.path,sections};
-  const onAddressTypes = location.pathname === person.addressTypePath;
+  const onAddressTypes = location.pathname === person.addressTypePath || location.pathname.startsWith(person.addressTypePath + '/');
   const settingsSections = [...baseSettingsApp.sections];
   if (personAccess.data?.canReadAddressTypes) {
     settingsSections.push({label: '人员配置', items: [{label: '地址类型', path: person.addressTypePath}]});
@@ -287,7 +287,7 @@ export function App() {
             {staffingKinds.map(kind=><Route key={`${kind}-new`} path={`${staffingPaths[kind]}/new`} element={<StaffingDetail key={`${kind}-new`} kind={kind} session={session} creating/>}/>)}
             {staffingKinds.map(kind=><Route key={`${kind}-detail`} path={`${staffingPaths[kind]}/:id`} element={kind === "position" && invalidHierarchyLink ? missingPage : <StaffingDetail key={kind} kind={kind} session={session}/>}/>)}
             <Route path="/" element={<Navigate to={BU_PATH} replace />} />
-            <Route path={person.addressTypePath} element={<AddressTypes key={session.instanceId+session.subjectId} session={session}/>} />
+            <Route path={person.addressTypePath + "/:typeId?"} element={<AddressTypes key={session.instanceId+session.subjectId} session={session}/>} />
             <Route path={BU_PATH} element={<BusinessUnitList />} />
             <Route path={GEOAREA_PATH} element={<GeoAreaList />} /><Route path={`${GEOAREA_PATH}/:id`} element={<GeoAreaDetail session={session} />} /><Route path={ENTERPRISE_PATH} element={<EnterpriseEntry />} /><Route path={`${ENTERPRISE_PATH}/:id`} element={<EnterpriseDetail session={session} />} /><Route path={COUNTRY_PATH} element={<CountryList />} />
             <Route path={`${COUNTRY_PATH}/:id`} element={<CountryDetail session={session} />} />

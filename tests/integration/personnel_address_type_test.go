@@ -250,7 +250,7 @@ func TestPersonnelAddressTypes(t *testing.T) {
 	post(M{"addressTypeChoice": M{"id": foreignID, "revision": foreignHead}, "fields": M{"street": "一号", "addressCountry": "原文"}}, nil, 409)
 	exec("delete from access.person_grant where instance_id=$1 and principal_id=$2 and action='address-type.read'", f.instance, manager.subject)
 	manager.call("POST", receipt, nil, "", 403)
-	rows, err := f.admin.Query(f.ctx, "explain (analyze,costs off) select item_id,head,code,name from personnel.address_type where instance_id=$1 and selectable and first_day<=current_date order by sort_order,item_id", f.instance)
+	rows, err := f.admin.Query(f.ctx, "explain (analyze,costs off) select item_id,head,code,name from personnel.address_type where instance_id=$1 and valid_during @> current_date order by sort_order,item_id", f.instance)
 	must(t, err)
 	var plan []string
 	for rows.Next() {
@@ -310,4 +310,65 @@ func TestPersonnelAddressTypes(t *testing.T) {
 	exec("drop trigger test_address_type_failure on personnel.address_type_revision; drop function personnel.test_address_type_failure()")
 	manager.call("POST", catalog, failed, "", 200)
 
+}
+
+func TestPersonnelAddressTypePeriods(t *testing.T) {
+	f := personnelFixture(t)
+	admin, reader := f.login("admin", f.password), f.login("reader", f.readPassword)
+	const catalog = "/api/v1/person-address-types"
+	type M = map[string]any
+	person := admin.call("POST", persons, M{"submissionId": foundation.NewID(), "name": "期间样本"}, "", 200)
+	candidates := persons + "/" + person["id"].(string) + "/address-type-candidates"
+	today := time.Now().In(foundation.Shanghai)
+	stamp := func(offset int) string { return today.AddDate(0, 0, offset).Format("2006-01-02") }
+	create := M{"submissionId": foundation.NewID(), "code": "PERIOD", "name": "宿舍地址", "sortOrder": 1, "firstDay": stamp(-3), "stopDay": stamp(1)}
+	initial := admin.call("POST", catalog, create, "", 200)
+	uri := catalog + "/" + initial["id"].(string)
+	has := func() bool {
+		for _, o := range admin.call("GET", candidates, nil, "", 200)["items"].([]any) {
+			if o.(M)["id"] == initial["id"] {
+				return true
+			}
+		}
+		return false
+	}
+	read := func() M { return admin.call("GET", uri, nil, "", 200) }
+	edit := func(base M, day string, want int) M {
+		return admin.call("POST", catalog, M{"submissionId": foundation.NewID(), "id": base["id"], "expectedRevision": base["revision"], "name": base["name"], "sortOrder": 1, "stopDay": day}, "", want)
+	}
+	if v := read(); v["item"].(M)["state"] != "active" || v["selectedDay"] != stamp(-3) || v["timeline"].([]any)[1].(M)["state"] != "inactive" || !has() {
+		t.Fatal("future stop suppressed current adoption", v)
+	}
+	reader.call("GET", uri, nil, "", 403)
+	// Grant the observer catalog reads alone, including timeline, with no maintenance.
+	_, e := f.admin.Exec(f.ctx, "insert into access.person_grant(instance_id,principal_id,action,purpose,fields) values($1,$2,'address-type.read','address-types','{}')", f.instance, reader.subject)
+	must(t, e)
+	if v := reader.call("GET", uri, nil, "", 200); v["canMaintain"] != false || len(v["timeline"].([]any)) != 2 {
+		t.Fatal("read-only projection", v)
+	}
+	reader.call("POST", catalog, M{"submissionId": foundation.NewID(), "id": initial["id"], "expectedRevision": initial["revision"], "name": "越权", "sortOrder": 1, "stopDay": ""}, "", 403)
+	edit(initial, stamp(-4), 400)
+	edit(initial, "2027-02-30", 400)
+	stopped := edit(initial, stamp(0), 200)
+	if v := read(); v["item"].(M)["state"] != "inactive" || v["selectedDay"] != stamp(0) || has() {
+		t.Fatal("stop day included", v)
+	}
+	admin.call("POST", persons+"/"+person["id"].(string)+"/corrections", M{"submissionId": foundation.NewID(), "expectedSourceVersion": person["sourceVersion"],
+		"addresses": []M{{"fields": M{"addressCountry": "合成地区", "street": "一号"}, "addressTypeChoice": M{"id": initial["id"], "revision": stopped["revision"]}}}}, "", 409)
+	edit(initial, "", 409)
+	source := admin.call("GET", uri+"/revisions/"+initial["revision"].(string), nil, "", 200)
+	receipt := admin.call("POST", catalog+"/submissions/"+create["submissionId"].(string)+"/resolve", nil, "", 200)
+	if source["stopDay"] != stamp(1) || !reflect.DeepEqual(initial, receipt["item"]) {
+		t.Fatal("original scheduled stop lost")
+	}
+	corrected := edit(stopped, "", 200)
+	if v := read(); v["item"].(M)["state"] != "active" || v["item"].(M)["stopDay"] != nil || len(v["timeline"].([]any)) != 1 || !has() || corrected["id"] != initial["id"] {
+		t.Fatal("correction lost identity or period", v)
+	}
+	create["submissionId"], create["code"], create["firstDay"], create["stopDay"] = foundation.NewID(), "FUTURE-PERIOD", stamp(2), stamp(2)
+	future := admin.call("POST", catalog, create, "", 200)
+	v := admin.call("GET", catalog+"/"+future["id"].(string), nil, "", 200)
+	if v["item"].(M)["state"] != "not_effective" || len(v["timeline"].([]any)) != 1 || v["timeline"].([]any)[0].(M)["state"] != "inactive" {
+		t.Fatal("empty interval boundary", v)
+	}
 }

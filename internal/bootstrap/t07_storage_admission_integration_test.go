@@ -34,25 +34,28 @@ func restoreGrantPredecessor(f *fixture) {
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_plan_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61)`)
+ DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61,62)`)
 }
 
 func TestCompensationUpgradeFromReleasedLedgers(t *testing.T) {
 	for _, tc := range []struct {
-		name         string
-		prefix       string
-		addressTypes bool
-		missing      int
+		name           string
+		prefix         string
+		addressVersion string
+		missing        int
 	}{
-		{"address_types_release", "00058", true, 2},
-		{"address_types_retry_after_grade_rates", "00059", true, 1},
-		{"compensation_plans_release", "00060", false, 1},
+		{"address_types_release", "00058", "00061", 3},
+		{"address_types_retry_after_grade_rates", "00059", "00061", 2},
+		{"compensation_plans_release", "00060", "", 2},
+		{"address_periods_release", "00058", "00062", 2},
+		{"address_periods_retry_after_grade_rates", "00059", "00062", 1},
+		{"combined_release_before_periods", "00061", "", 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			pool := newStaffingMigrationPool(t)
 			ctx := t.Context()
 			prior := hireMigrationSet(t, func(version string) bool {
-				return version <= tc.prefix || (tc.addressTypes && version == "00061")
+				return version <= tc.prefix || (version >= "00061" && version <= tc.addressVersion)
 			})
 			must(t, bootstrap.Migrate(ctx, pool, prior))
 			if bootstrap.CheckCurrentStorage(ctx, pool) == nil {
@@ -82,6 +85,7 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	before := businessSnapshot(t, f)
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
+		{"missing_address_period", `ALTER TABLE personnel.address_type RENAME COLUMN valid_during TO hidden_period`, `ALTER TABLE personnel.address_type RENAME COLUMN hidden_period TO valid_during`},
 		{"missing_plan_rate_uses", `ALTER TABLE compensation.plan_rate_use RENAME TO hidden_uses`, `ALTER TABLE compensation.hidden_uses RENAME TO plan_rate_use`},
 		{"missing_grade_rate_periods", `ALTER TABLE compensation.grade_rate_period RENAME TO hidden_periods`, `ALTER TABLE compensation.hidden_periods RENAME TO grade_rate_period`},
 		{"unrecorded_compensation_migrations", `DELETE FROM public.goose_db_version WHERE version_id IN (59,60)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(59,true),(60,true)`},

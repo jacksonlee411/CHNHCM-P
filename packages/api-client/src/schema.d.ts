@@ -4564,6 +4564,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/person-address-types/{typeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPersonAddressType"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/person-address-types/{typeId}/revisions/{revision}": {
         parameters: {
             query?: never;
@@ -7945,6 +7961,14 @@ export interface components {
             /** Format: date */
             firstDay: string;
             selectable: boolean;
+            /** Format: date */
+            stopDay?: string;
+            /** Format: date */
+            confirmedFrom?: string;
+            undatedStop?: boolean;
+            dated: boolean;
+            /** Format: uuid */
+            previousRevision?: string;
             /** Format: uuid */
             actorId?: string;
             /** Format: date-time */
@@ -7988,9 +8012,49 @@ export interface components {
             /** Format: date */
             firstDay: string;
             selectable: boolean;
+            /** Format: date */
+            stopDay?: string;
+            /** Format: date */
+            confirmedFrom?: string;
+            undatedStop?: boolean;
+        };
+        PersonAddressTypeView: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+            code: string;
+            name: string;
+            sortOrder: number;
+            /** Format: date */
+            firstDay: string;
+            selectable: boolean;
+            /** Format: date */
+            stopDay?: string;
+            /** Format: date */
+            confirmedFrom?: string;
+            undatedStop?: boolean;
+            state: components["schemas"]["PersonAddressTypeState"];
+        };
+        /** @enum {string} */
+        PersonAddressTypeState: "not_effective" | "active" | "inactive" | "unknown";
+        PersonAddressTypeDetail: {
+            item: components["schemas"]["PersonAddressTypeView"];
+            /** Format: date */
+            defaultStopDay: string;
+            /** Format: date */
+            businessDay: string;
+            canMaintain: boolean;
+            /** Format: date */
+            selectedDay: string;
+            timeline: {
+                /** Format: date */
+                day: string;
+                state: components["schemas"]["PersonAddressTypeState"];
+            }[];
         };
         PersonAddressTypeList: {
-            items: components["schemas"]["PersonAddressType"][];
+            items: components["schemas"]["PersonAddressTypeView"][];
             canMaintain: boolean;
             /** Format: date */
             defaultFirstDay: string;
@@ -8007,7 +8071,9 @@ export interface components {
             sortOrder: number;
             /** Format: date */
             firstDay?: string;
-            selectable: boolean;
+            selectable?: boolean;
+            /** @description 停用生效日。空串明确撤销误停，编辑时省略沿用现有安排。与旧 selectable 参数互斥。 */
+            stopDay?: string;
         };
         PersonPlaceChoice: {
             /** Format: uuid */
@@ -24263,6 +24329,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonAddressType"];
+                };
+            };
+            /** @description 请求未获受理 */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonError"];
+                };
+            };
+        };
+    };
+    getPersonAddressType: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                typeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 获权的目录项、当日状态与可核实的业务日期 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonAddressTypeDetail"];
                 };
             };
             /** @description 请求未获受理 */

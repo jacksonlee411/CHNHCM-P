@@ -1189,15 +1189,18 @@ type OrganizationStorageContract struct {
 }
 
 type PersonnelAddressType struct {
-	InstanceID  string
-	ItemID      string
-	Code        string
-	Name        string
-	SortOrder   int32
-	FirstDay    pgtype.Date
-	Selectable  bool
-	Head        string
-	LegacyLabel pgtype.Text
+	InstanceID    string
+	ItemID        string
+	Code          string
+	Name          string
+	SortOrder     int32
+	FirstDay      pgtype.Date
+	Head          string
+	LegacyLabel   pgtype.Text
+	StopDay       pgtype.Date
+	ConfirmedFrom pgtype.Date
+	UndatedStop   bool
+	ValidDuring   pgtype.Range[pgtype.Date]
 }
 
 type PersonnelAddressTypeNotApplied struct {
@@ -1217,6 +1220,9 @@ type PersonnelAddressTypeRevision struct {
 	RecordedAt   pgtype.Timestamptz
 	SubmissionID pgtype.UUID
 	Digest       pgtype.Text
+	Dated        bool
+	StopDay      pgtype.Date
+	UndatedStop  bool
 }
 
 type PersonnelBankAccount struct {

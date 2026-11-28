@@ -8,6 +8,7 @@ import (
 // Service exposes people independently of work relationships and assignments.
 type Service interface {
 	AddressTypes(context.Context, foundation.Credentials) (AddressTypeList, error)
+	AddressTypeDetail(context.Context, foundation.Credentials, string) (AddressTypeDetail, error)
 	AddressTypeSource(context.Context, foundation.Credentials, string, string) (AddressTypeSource, error)
 	AddressTypeCandidates(context.Context, foundation.Credentials, string, string) ([]AddressTypeOption, error)
 	SaveAddressType(context.Context, foundation.Credentials, AddressTypeCommand) (AddressType, error)
