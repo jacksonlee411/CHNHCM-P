@@ -10,6 +10,14 @@ export type Result = Models['PersonResult'];
 export const channel = submissionChannel<'person', Result>('person', 'chnhcm-person-submissions');
 const base = '/api/v1/persons';
 const headers = (s: Principal) => ({ 'X-CSRF-Token': s.csrf });
+export const addressTypePath = '/settings/personnel/address-types';
+export const addressTypes = async () => unwrap(await api.GET('/api/v1/person-address-types'));
+export const addressTypeOptions = async (id: string, itemId?: string) =>
+  unwrap(await api.GET('/api/v1/persons/{id}/address-type-candidates', { params: { path: { id }, query: { itemId } } }));
+export const saveAddressType = async (s: Principal, body: Models['PersonAddressTypeCommand']) =>
+  unwrap(await api.POST('/api/v1/person-address-types', { params: { header: headers(s) }, body }));
+export const addressTypeReceipt = async (s: Principal, submission: string) =>
+  unwrap(await api.POST('/api/v1/person-address-types/submissions/{submission}/resolve', { params: { path: { submission }, header: headers(s) } }));
 export const entry = async () => unwrap(await api.GET('/api/v1/persons/context'));
 export const list = async (query: DirectoryQuery) => unwrap(await api.GET(base, { params: { query } }));
 export const queryRef = async (s: Principal, keyword: string) =>

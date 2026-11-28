@@ -215,7 +215,11 @@ func (r *request) save(v *snapshot, action, previous string) (p.Result, error) {
 		if !r.a.At.Before(x.ordinary) {
 			continue
 		}
-		payload.Queue(`insert into personnel.profile_item_payload(instance_id,person_id,version,section,item_id,revision,ordinal,fields,adoptions,ordinary_until,evidence_until,collection_policy) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`, r.instance, v.ID, version, x.Section, x.ItemID, x.Revision, i, x.Fields, x.Adoptions, x.ordinary, x.evidence, x.policy)
+		var typeID, typeRevision, typeDay any
+		if a := x.AddressType; a != nil {
+			typeID, typeRevision, typeDay = a.ID, a.Revision, a.Date
+		}
+		payload.Queue(`insert into personnel.profile_item_payload(instance_id,person_id,version,section,item_id,revision,ordinal,fields,adoptions,ordinary_until,evidence_until,collection_policy,address_type_id,address_type_revision,address_type_day) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`, r.instance, v.ID, version, x.Section, x.ItemID, x.Revision, i, x.Fields, x.Adoptions, x.ordinary, x.evidence, x.policy, typeID, typeRevision, typeDay)
 	}
 	if previous != "" {
 		payload.Queue("update personnel.document_payload set occupied=false where instance_id=$1 and person_id=$2 and version=$3 and occupied", r.instance, v.ID, previous)

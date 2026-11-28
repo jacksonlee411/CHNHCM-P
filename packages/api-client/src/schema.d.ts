@@ -4548,6 +4548,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/person-address-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPersonAddressTypes"];
+        put?: never;
+        post: operations["savePersonAddressType"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/person-address-types/{typeId}/revisions/{revision}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPersonAddressTypeRevision"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/person-address-types/submissions/{submission}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getPersonAddressTypeReceipt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/persons/{id}/address-type-candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPersonAddressTypeCandidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/persons/context": {
         parameters: {
             query?: never;
@@ -7224,6 +7288,81 @@ export interface components {
             longTerm?: boolean;
             primary?: boolean;
         };
+        PersonAddressTypeSource: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+            code: string;
+            name: string;
+            sortOrder: number;
+            /** Format: date */
+            firstDay: string;
+            selectable: boolean;
+            /** Format: uuid */
+            actorId?: string;
+            /** Format: date-time */
+            recordedAt: string;
+        };
+        PersonAddressTypeReceipt: {
+            /** @enum {string} */
+            outcome: "accepted" | "not_applied";
+            item?: components["schemas"]["PersonAddressType"];
+        };
+        PersonAddressTypeChoice: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+        };
+        PersonAddressTypeAdoption: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+            /** Format: date */
+            date: string;
+        };
+        PersonAddressTypeOption: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+            code: string;
+            name: string;
+        };
+        PersonAddressType: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            revision: string;
+            code: string;
+            name: string;
+            sortOrder: number;
+            /** Format: date */
+            firstDay: string;
+            selectable: boolean;
+        };
+        PersonAddressTypeList: {
+            items: components["schemas"]["PersonAddressType"][];
+            canMaintain: boolean;
+            /** Format: date */
+            defaultFirstDay: string;
+        };
+        PersonAddressTypeCommand: {
+            /** Format: uuid */
+            submissionId: string;
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            expectedRevision?: string;
+            code?: string;
+            name: string;
+            sortOrder: number;
+            /** Format: date */
+            firstDay?: string;
+            selectable: boolean;
+        };
         PersonPlaceChoice: {
             /** Format: uuid */
             id: string;
@@ -7240,6 +7379,7 @@ export interface components {
          *     credentials 使用 credentialKind、credentialName、credentialLevel、specialty、certificateNumber、
          *     awardingBody、issuedOn、validFrom、validUntil、indefinite。各标记使用 yes 或空串。未传字段沿用原值。目录字段可在 fields 中填写原文，或在 choices
          *     中选用目录版本。省州及地址地区的 ancestors 按国家到直接上级的顺序传递候选路径及版本。
+         *     地址类型新选用 addressTypeChoice，既有四项原文仅在预置项未换版时兼容。
          *     更新和移除已有行须带 itemId 与 expectedRevision。remove 为 true 时只传原行定位。
          */
         PersonProfileItemEdit: {
@@ -7249,6 +7389,7 @@ export interface components {
             expectedRevision?: string;
             remove?: boolean;
             fields?: components["schemas"]["ProfileFields"];
+            addressTypeChoice?: components["schemas"]["PersonAddressTypeChoice"];
             choices?: {
                 [key: string]: components["schemas"]["PersonPlaceChoice"];
             };
@@ -7259,6 +7400,7 @@ export interface components {
             /** Format: uuid */
             revision: string;
             fields: components["schemas"]["ProfileFields"];
+            addressTypeAdoption?: components["schemas"]["PersonAddressTypeAdoption"];
             adoptions?: {
                 [key: string]: components["schemas"]["PersonCountryAdoption"];
             };
@@ -7328,6 +7470,7 @@ export interface components {
             validUntil?: string;
         };
         PersonEntry: {
+            canReadAddressTypes?: boolean;
             canRead: boolean;
             canRegister: boolean;
             canRegisterDocument: boolean;
@@ -23411,6 +23554,170 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffingError"];
+                };
+            };
+        };
+    };
+    listPersonAddressTypes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 办理结果 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonAddressTypeList"];
+                };
+            };
+            /** @description 请求未获受理 */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonError"];
+                };
+            };
+        };
+    };
+    savePersonAddressType: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonAddressTypeCommand"];
+            };
+        };
+        responses: {
+            /** @description 办理结果 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonAddressType"];
+                };
+            };
+            /** @description 请求未获受理 */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonError"];
+                };
+            };
+        };
+    };
+    getPersonAddressTypeRevision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                typeId: string;
+                revision: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 指定地址类型的确切修订 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonAddressTypeSource"];
+                };
+            };
+            /** @description 请求未获受理 */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonError"];
+                };
+            };
+        };
+    };
+    getPersonAddressTypeReceipt: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                submission: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 办理结果 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonAddressTypeReceipt"];
+                };
+            };
+            /** @description 请求未获受理 */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonError"];
+                };
+            };
+        };
+    };
+    getPersonAddressTypeCandidates: {
+        parameters: {
+            query?: {
+                itemId?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 办理结果 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["PersonAddressTypeOption"][];
+                    };
+                };
+            };
+            /** @description 请求未获受理 */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonError"];
                 };
             };
         };

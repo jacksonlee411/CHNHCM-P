@@ -41,8 +41,8 @@
       "backend_consumers": ["recruiting", "staffing", "personnel", "legalentity"]
     },
     "personnel": {
-      "frontend": ["apps/web/src/features/personnel/Detail.tsx", "apps/web/src/features/personnel/Editor.tsx", "apps/web/src/features/personnel/List.tsx", "apps/web/src/features/personnel/Submission.tsx", "apps/web/src/features/personnel/api.ts", "apps/web/src/features/hire/HirePage.tsx", "apps/web/src/features/hire/Target.tsx"],
-      "browser_files": ["personnel.spec.ts", "first-hire.spec.ts"],
+      "frontend": ["apps/web/src/features/personnel/AddressTypes.tsx", "apps/web/src/features/personnel/ProfileSections.tsx", "apps/web/src/features/personnel/profileDraft.ts", "apps/web/src/features/personnel/Detail.tsx", "apps/web/src/features/personnel/Editor.tsx", "apps/web/src/features/personnel/List.tsx", "apps/web/src/features/personnel/Submission.tsx", "apps/web/src/features/personnel/api.ts", "apps/web/src/features/hire/HirePage.tsx", "apps/web/src/features/hire/Target.tsx"],
+      "browser_files": ["personnel.spec.ts", "personnel-address-types.spec.ts", "first-hire.spec.ts"],
       "backend_prefixes": ["internal/contexts/personnel/"],
       "backend_consumers": ["personnel", "recruiting"]
     },

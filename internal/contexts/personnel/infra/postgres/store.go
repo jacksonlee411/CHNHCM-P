@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-type authorizePersonnel func(context.Context, pgx.Tx, f.Credentials) (access.PersonAccess, access.Guard, error)
+type authorizePersonnel func(context.Context, pgx.Tx, f.Credentials) (access.PersonAccess, access.PersonnelGuard, error)
 type Store struct {
 	ProfileCatalog     org.ProfileCatalog
 	Pool               *pgxpool.Pool
@@ -78,6 +78,7 @@ func (r *request) visible(id string) bool {
 func (r *request) entry() p.Entry {
 	scope := r.a.Scope("read", "name", "number")
 	v := p.Entry{CanRead: requiredPolicy(r) == nil && scope.Available(), CanRegister: requiredPolicy(r) == nil && r.allowed("register", "", "name"), ContactKinds: []string{}}
+	v.CanReadAddressTypes = r.allowed("address-type.read", "")
 	v.CanRegisterDocument = v.CanRegister && r.allowed("register", "", "name", "document")
 	v.CanRegisterEvidence = v.CanRegister && r.allowed("register", "", "name", "evidence")
 	for _, k := range []string{"phone", "email"} {
@@ -156,13 +157,14 @@ func (r *request) load(id, version string) (snapshot, error) {
 	}
 	v.PrimaryDocument = v.primaryValue()
 	if version == "" {
-		rows, e := r.tx.Query(r.ctx, `select section,item_id,revision,fields,adoptions,ordinary_until,evidence_until,collection_policy from personnel.profile_item_payload where instance_id=$1 and person_id=$2 and version=$3 and ordinary_until>$4 order by section,ordinal`, r.instance, id, v.Version, r.a.At)
+		rows, e := r.tx.Query(r.ctx, `select section,item_id,revision,fields,adoptions,
+            case when address_type_id is not null then jsonb_build_object('id',address_type_id,'revision',address_type_revision,'date',address_type_day) end,ordinary_until,evidence_until,collection_policy from personnel.profile_item_payload where instance_id=$1 and person_id=$2 and version=$3 and ordinary_until>$4 order by section,ordinal`, r.instance, id, v.Version, r.a.At)
 		if e != nil {
 			return v, e
 		}
 		v.profileItems, e = pgx.CollectRows(rows, func(row pgx.CollectableRow) (profileItem, error) {
 			var x profileItem
-			err := row.Scan(&x.Section, &x.ItemID, &x.Revision, &x.Fields, &x.Adoptions, &x.ordinary, &x.evidence, &x.policy)
+			err := row.Scan(&x.Section, &x.ItemID, &x.Revision, &x.Fields, &x.Adoptions, &x.AddressType, &x.ordinary, &x.evidence, &x.policy)
 			return x, err
 		})
 		if e != nil {

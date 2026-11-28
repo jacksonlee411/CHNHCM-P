@@ -2921,6 +2921,40 @@
       "archive": null
     },
     {
+      "id": "CHNHCM-317",
+      "title": "个人资料地址类型配置实施方案",
+      "path": "docs/archive/plans/317-person-address-types.md",
+      "owner_branch": "wt-dev-d",
+      "owner_role": "Personnel、Access 与体验维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "M01",
+        "X03"
+      ],
+      "scope": "实例共享的地址类型管理、地址新采用、旧档保护、权限及成本验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理分轮自审与实测",
+        "scope": "模型选择、旧档与权限、事务恢复、浏览器及成本。",
+        "result": "accepted",
+        "evidence": "docs/verification/317-person-address-types.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "M01 地址类型及个人资料采用通过本地技术验收，已在公共 P 仓 45317 交接。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "reason": "持续产品条款转交 505，试点成本及环境转交验证记录。",
+        "previous_path": "docs/plans/317-person-address-types.md"
+      }
+    },
+    {
       "id": "CHNHCM-400",
       "title": "M04 T02 入职规则与准备实施方案",
       "path": "docs/archive/plans/400-hire-readiness.md",
@@ -3256,11 +3290,11 @@
       "scope": "九栏字段和多条资料、同人共享、敏感字段授权、整页办理、事务边界与独立验收。",
       "format": "numbered",
       "review": {
-        "date": "2026-11-27",
-        "reviewer": "Codex 按原评审逐项复核标准、实际写入点及验证证据",
-        "scope": "人员目录采用端口、M02 权限和事务内锁定准确来源、M01 存原采用及失败回滚。",
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理按现行合同和真实入口复核",
+        "scope": "既有 M02 采用守卫，新增 M01 地址类型、旧档及分权采用验收。",
         "result": "accepted",
-        "evidence": "docs/verification/004-architecture-review-remediation.md"
+        "evidence": "docs/verification/317-person-address-types.md"
       },
       "execution_status": null,
       "superseded_by": [],
@@ -24803,6 +24837,67 @@
         ],
         "limitations": [
           "主代理自审。未实施产品，未执行数据库、浏览器或性能试验。"
+        ]
+      },
+      {
+        "path": "docs/verification/317-person-address-types.md",
+        "related_documents": [
+          "CHNHCM-317",
+          "CHNHCM-316",
+          "CHNHCM-505"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "1807cc042f81631f75a149d61e75b414682d018e",
+        "working_tree": "dirty",
+        "change_description": "试点新增地址配置及地址采用。",
+        "environment": "本机 PostgreSQL 18.6、Go、Chromium；隔离样本与公共工作树手工环境。",
+        "scope": "管理、采用、旧档、并发、迁移、容量和菜单验收。",
+        "results": [
+          {
+            "check": "原版本整页更正二十会话超过原 500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "00038 旧版备份与 00058 旧地址、来源、回执、授权升级至 00061，准确账本准入",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "HTTP 配置维护与采用、停选后更正、撤权及故障回滚",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "两组桌面及原生 200% 的完整业务流程",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "优化前 00061 复测，20 会话两条整页链路超过 1500 ms",
+            "result": "failed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "实库锁住国家读取角色，M01 独立配置可读，M02 正常等待",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "万名人员八组容量，二十并发临时 1500 ms 门槛",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          },
+          {
+            "check": "公共 P 仓固定 45317 的 218 表、16 序列对账及双角色正常菜单交接",
+            "result": "passed",
+            "evidence": "docs/verification/317-person-address-types.md"
+          }
+        ],
+        "limitations": [
+          "本地合成资料和当前试点数据规模，整页办理按本次 20 并发 1500 ms 临时目标验收。"
         ]
       }
     ]

@@ -9,19 +9,19 @@ import (
 	"time"
 )
 
-func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+func (s *Store) Personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.PersonnelGuard, error) {
 	return s.personnel(ctx, tx, c, false)
 }
 
 // PersonnelDirectory restricts the grant projection to ordinary identity reads.
 // A large per-person scope on unrelated profile or history rights is not needed
 // to authorize a directory search or its session-owned reference.
-func (s *Store) PersonnelDirectory(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.Guard, error) {
+func (s *Store) PersonnelDirectory(ctx context.Context, tx pgx.Tx, c foundation.Credentials) (access.PersonAccess, access.PersonnelGuard, error) {
 	return s.personnel(ctx, tx, c, true)
 }
-func (s *Store) personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials, directoryOnly bool) (access.PersonAccess, access.Guard, error) {
+func (s *Store) personnel(ctx context.Context, tx pgx.Tx, c foundation.Credentials, directoryOnly bool) (access.PersonAccess, access.PersonnelGuard, error) {
 	var a access.PersonAccess
-	g, e := s.Guard(ctx, tx, c)
+	g, e := s.authenticatedGuard(ctx, tx, c, false)
 	if e != nil {
 		return a, nil, e
 	}
@@ -129,6 +129,11 @@ func InitializePersonalProfileFixture(ctx context.Context, tx pgx.Tx, instance, 
 		fields := append([]string{}, access.PersonalProfileFields...)
 		actions := []string{"profile.read"}
 		if profile == "registrar" {
+			if _, err = tx.Exec(ctx, `insert into access.person_grant(instance_id,principal_id,action,purpose,fields)
+                select $1,$2,a,'address-types','{}' from unnest(array['address-type.read','address-type.maintain']) a
+                where exists (select from pg_constraint where conrelid='access.person_grant'::regclass and conname='person_address_type_grant_scope')`, instance, subject); err != nil {
+				return err
+			}
 			fields = append(fields, "documentNumber")
 			actions = append(actions, "profile.correct")
 		} else {

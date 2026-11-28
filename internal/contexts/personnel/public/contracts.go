@@ -60,14 +60,15 @@ type DocumentEdit struct {
 
 // ProfileItem carries only the currently authorized fields of one personal profile item.
 type ProfileItem struct {
-	Masked    []string                   `json:"masked,omitempty"`
-	Hidden    []string                   `json:"hidden,omitempty"`
-	ItemID    string                     `json:"itemId"`
-	Revision  string                     `json:"revision"`
-	Fields    map[string]string          `json:"fields"`
-	Adoptions map[string]CountryAdoption `json:"adoptions,omitempty"`
-	Locked    []string                   `json:"locked,omitempty"`
-	CanRemove bool                       `json:"canRemove,omitempty"`
+	AddressType *AddressTypeAdoption       `json:"addressTypeAdoption,omitempty"`
+	Masked      []string                   `json:"masked,omitempty"`
+	Hidden      []string                   `json:"hidden,omitempty"`
+	ItemID      string                     `json:"itemId"`
+	Revision    string                     `json:"revision"`
+	Fields      map[string]string          `json:"fields"`
+	Adoptions   map[string]CountryAdoption `json:"adoptions,omitempty"`
+	Locked      []string                   `json:"locked,omitempty"`
+	CanRemove   bool                       `json:"canRemove,omitempty"`
 }
 type PlaceChoice struct {
 	ID            string          `json:"id"`
@@ -75,6 +76,7 @@ type PlaceChoice struct {
 	Ancestors     []CountryChoice `json:"ancestors,omitempty"`
 }
 type ProfileItemEdit struct {
+	AddressType      *AddressTypeChoice     `json:"addressTypeChoice,omitempty"`
 	ItemID           string                 `json:"itemId,omitempty"`
 	ExpectedRevision string                 `json:"expectedRevision,omitempty"`
 	Fields           map[string]string      `json:"fields,omitempty"`
@@ -159,6 +161,7 @@ type Summary struct {
 	Historical bool   `json:"historical,omitempty"`
 }
 type Entry struct {
+	CanReadAddressTypes bool     `json:"canReadAddressTypes,omitempty"`
 	CanRegisterDocument bool     `json:"canRegisterDocument"`
 	CanRegisterEvidence bool     `json:"canRegisterEvidence"`
 	CanRead             bool     `json:"canRead"`

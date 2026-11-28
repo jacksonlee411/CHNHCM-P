@@ -1051,6 +1051,37 @@ type OrganizationStorageContract struct {
 	Contract  string
 }
 
+type PersonnelAddressType struct {
+	InstanceID  string
+	ItemID      string
+	Code        string
+	Name        string
+	SortOrder   int32
+	FirstDay    pgtype.Date
+	Selectable  bool
+	Head        string
+	LegacyLabel *string
+}
+
+type PersonnelAddressTypeNotApplied struct {
+	InstanceID   string
+	ActorID      string
+	SubmissionID string
+}
+
+type PersonnelAddressTypeRevision struct {
+	InstanceID   string
+	ItemID       string
+	Revision     string
+	Name         string
+	SortOrder    int32
+	Selectable   bool
+	ActorID      *string
+	RecordedAt   pgtype.Timestamptz
+	SubmissionID *string
+	Digest       *string
+}
+
 type PersonnelBankAccount struct {
 	InstanceID string
 	PersonID   string
@@ -1164,19 +1195,22 @@ type PersonnelPerson struct {
 }
 
 type PersonnelProfileItemPayload struct {
-	InstanceID       string
-	PersonID         string
-	Version          string
-	Section          string
-	ItemID           string
-	Revision         string
-	Ordinal          int32
-	Fields           []byte
-	Adoptions        []byte
-	OrdinaryUntil    pgtype.Timestamptz
-	EvidenceUntil    pgtype.Timestamptz
-	CollectionPolicy string
-	AccountID        *string
+	InstanceID          string
+	PersonID            string
+	Version             string
+	Section             string
+	ItemID              string
+	Revision            string
+	Ordinal             int32
+	Fields              []byte
+	Adoptions           []byte
+	OrdinaryUntil       pgtype.Timestamptz
+	EvidenceUntil       pgtype.Timestamptz
+	CollectionPolicy    string
+	AccountID           *string
+	AddressTypeID       *string
+	AddressTypeRevision *string
+	AddressTypeDay      pgtype.Date
 }
 
 type PersonnelQuery struct {
