@@ -13,6 +13,8 @@
 
 ## 当前交付与规格
 
+员工首次定薪与按日调薪的方案、分阶段出口及审阅结论见[二期实施计划](plans/214-assignment-base-pay-rollout.md)和[方案评审](verification/214-assignment-base-pay-design-review.md)。
+
 按[在办计划](governance/catalog/README.md#catalog-in-progress)查询交付，按[模块规格](specs/README.md)查业务边界与验收条件。设计决策、采用范围及替代关系见[编号登记](governance/registry.json)。跨域开发从[模块化单体与领域边界](architecture/004-repository-layout.md)、[上下文登记](architecture/contexts.json)及[目标架构](architecture/target/README.md)进入。
 
 本地账号、部门授权与指定岗位核编授权见[027 实施计划](plans/027-x03-local-access-rollout.md)和[028 客户管理员合同](specs/x03/028-local-account-and-authorization.md)。存量授权迁入、撤权重启与旧回执查回见[00058 验证记录](verification/027-public-00058-grant-upgrade.md)。

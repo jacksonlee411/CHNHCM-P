@@ -869,6 +869,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        },
+        {
+          "document": "CHNHCM-214",
+          "scope": "沿用从正常菜单找到原件再返回的验证方法，新增跨日边界、原笔更正及原回执的独立验收条件。",
+          "target_contracts": [
+            "CHNHCM-215",
+            "CHNHCM-216"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
         }
       ]
     },
@@ -2493,6 +2504,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        },
+        {
+          "document": "CHNHCM-215",
+          "scope": "将原笔前后值和准确来源用于同一任期的工资更正、插入与撤去，分别查询约定金额和制度依据。",
+          "target_contracts": [
+            "CHNHCM-215",
+            "CHNHCM-216"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
         }
       ]
     },
@@ -7527,6 +7549,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        },
+        {
+          "document": "CHNHCM-215",
+          "scope": "任职内的日期轴定位一笔个人核定，按工资查询日查看独立薪带，查完原件返回原日和链接。",
+          "target_contracts": [
+            "CHNHCM-215",
+            "CHNHCM-216"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
         }
       ]
     },

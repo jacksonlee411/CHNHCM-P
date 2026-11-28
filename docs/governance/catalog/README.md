@@ -23,7 +23,9 @@
 
 ## 待启动计划
 
-当前登记为零。
+| 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
+| --- | --- | --- | --- |
+| [214 员工首次定薪与按日调薪实施计划](../../plans/214-assignment-base-pay-rollout.md) | active | not_started | 原位 |
 
 <a id="catalog-review"></a>
 
@@ -120,7 +122,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（80）](#evidence-acceptance) · [问题复验（48）](#evidence-retest) · [方案评审（106）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
+[业务验收（80）](#evidence-acceptance) · [问题复验（48）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -270,6 +272,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 214、215、216、211、213、506 | [CHNHCM-214 员工首次定薪与按日调薪方案评审](../../verification/214-assignment-base-pay-design-review.md) | 2026-11-28 定稿 | 二期方案评审通过。补齐更早决定及同日冲突处置，收敛候选重核范围。按 4380 留数复算薪带与七个日期预期，产品实施待启动。 | 本仓报告 |
 | 213、210、211、212、003、012 | [CHNHCM-213 管理员维护生效与薪酬首期范围核对](../../verification/213-administrator-maintenance-and-compensation.md) | 2026-11-27 定稿 | 阶段规范明确单人维护、按日生效；原型核实计划内津贴、定额及连续薪带。持久化和真实授权由产品阶段验证。 [后续记录](../../verification/210-compensation-i3.md) | 本仓报告 |
 | 210、211、212 | [CHNHCM-210 薪酬体系业务方案与页面原型走查](../../verification/210-compensation-design-walkthrough.md) | 2026-11-27 定稿 | 两套合成制度完成桌面和键盘原型走查，记录金额、来源及日期切换；当时尚待业务决定和产品实测。 [后续记录](../../verification/210-compensation-design-review.md) | 本仓报告 |
 | 210、211、212、213 | [CHNHCM-210 薪酬体系路线图与方案多轮评审](../../verification/210-compensation-design-review.md) | 2026-11-27 定稿 | 四轮核对项目规范和行业场景，修正新增与更正、比例基准、受限读及历史返回。修订后原型通过，业务签收另记。 [后续记录](../../verification/210-compensation-i1.md) | 本仓报告 |

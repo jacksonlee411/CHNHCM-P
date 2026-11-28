@@ -1,5 +1,7 @@
 # 验证记录
 
+员工首次定薪与按日调薪的[二期方案评审](214-assignment-base-pay-design-review.md)记录任期、计划选择、薪带反例、修订与原件的核对结果。
+
 查某批做过什么，从[全部验收记录](../governance/catalog/README.md#catalog-evidence)按用途或关联编号找报告。目录列出每批的结论、限制和证据位置。下列专题按各批受测时的情况叙述。查目前还要做什么，见[在办计划](../governance/catalog/README.md#catalog-in-progress)。查开发时应遵循的条款，见[现行规范](../governance/catalog/standards/README.md)。
 
 薪酬体系先评审两套制度和后台页面，再分别实施职级标准、薪酬计划及组成，最终在 4521 联验八组业务场景并交接。[设计复审](210-compensation-design-review.md) · [职级薪酬标准](210-compensation-i1.md) · [薪酬计划及组成](210-compensation-i2.md) · [八组联合验收](210-compensation-i3.md) · [4521 当日计划、按日来源与列表复验](210-compensation-list-retest.md) · [4380 默认端口实页维护与重启查回](210-compensation-default-port.md)
