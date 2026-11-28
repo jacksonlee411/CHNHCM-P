@@ -204,6 +204,8 @@ R4交接运行适用生成/边界/check/build、完整integration及受影响BU�
 
 ## 10 R5真实页面与评审映射
 
+下表对应原 R5 的基线与实测参数。后续对象准入和页面复验按[012 第 6.2 节](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)选择视口。
+
 基线545860a。R5-A为部门页面定义及共用模板，R5-B为双对象验收；各项实际结果见[R5报告](../../verification/116-r5-department-pages-and-acceptance.md)，R5-A/B已按本表实际映射完成限定复核，完整运行和布局补验分别记录。R4既有DB/API证据保留，最终完整integration覆盖本次后台增量。
 
 | 参数 | 独立预期与入口 | 执行资产 |
@@ -215,7 +217,7 @@ R4交接运行适用生成/边界/check/build、完整integration及受影响BU�
 | R5-05 | 122摘要独立日志读权；名称/路径/关系撤权后清理输入与缓存；跨类型来源拒绝 | department-acceptance.spec.ts及原BU权限集合 |
 | R5-06 | 稳定BU筛选、137全结果/跨页排除、八列CSV、祖先/BU更名及撤导出权使旧选择失效 | department-selection.spec.ts |
 | R5-07 | filter 引用只要求可读，核对形状、ID 标签解析、撤字段权及路径最后适用日。祖先名称按引用读权展示为文本，见[V128-10](../../adr/128-authorization-evidence-removal.md#26-取消关联快捷跳转及其专属机制) | 原 R5 用例 TestDepartmentR5FilterReferenceReadBoundary、TestDepartmentR5PathDisplayPeriodAndLinkRights，链接分权仅为原批次断言 |
-| R5-08 | 会话/类型恢复隔离、候选迟到、跨日范围与旧投影清理、390/320/短屏/键盘及真实200%/400% | department-acceptance.spec.ts、department-layout.spec.ts及TestDepartmentR5BusinessDayBrowser（双时区） |
+| R5-08 | 会话/类型恢复隔离、候选迟到、跨日范围与旧投影清理。原批另验 390/320 宽、短屏、键盘及原生 200%/400% | department-acceptance.spec.ts、department-layout.spec.ts及TestDepartmentR5BusinessDayBrowser（双时区） |
 | R5-09 | 部门撤status读权后重读503/断连，取消编辑不显示旧状态；单条辅助/保存及固定期间403未带字段列表也清理；BU按自身合同保留状态；恢复读权重读且业务来源不变 | department-review-fixes.spec.ts、test_dated_projection.mjs；本次补验见[R5评审修复](../../verification/116-r5-review-fixes.md) |
 | R5-10 | 无可选上级写权仍可正常菜单新建根部门；API对照与页面均成功；明确选择上级与更正null清除保持，旧来源不变 | department-review-fixes.spec.ts；本次补验见[R5评审修复](../../verification/116-r5-review-fixes.md) |
 | R5-11 | 关系候选真实403且无字段列表，编辑与父详情在重读返回前清理；上级503/断连、管理BU503后取消不恢复旧值；成功重读不循环，恢复授权可显式重试；来源/记录不变 | department-authorization-followup.spec.ts；独立结果见[授权复修](../../verification/116-r5-authorization-followup.md) |
@@ -225,7 +227,7 @@ R4交接运行适用生成/边界/check/build、完整integration及受影响BU�
 | R5-15 | 延迟真实辅助响应不抢输入焦点、不关闭关系候选；尚未选原因也能先选关系；主动保存后错误仍聚焦；BU与部门各自辅助响应合同保持 | dated-assistance-focus.spec.ts；结果见[多轮评审](../../verification/116-r5-multiround-review.md) |
 | R5-16 | 查询其他BU或上级时保留实际搜索输入；相同所选标签的新响应不重置输入，真实撤权/改名仍更新投影 | department-reference-projection.spec.ts；结果见[多轮评审](../../verification/116-r5-multiround-review.md) |
 | R5-17 | 部门新建/更正非法名称或简称返回获权字段位置，主动保存正确定位；原拒绝查回保持诊断，撤name读权后隐藏位置，业务来源不推进 | TestDepartmentNameValidationLocationAndRevokedRecovery、dated-assistance-focus.spec.ts；结果见[多轮评审](../../verification/116-r5-multiround-review.md) |
-| R5-18 | 布局截图先按固定样本编码查询，确认长名称行已加载且进入视口；加载中网格不能计为列表验收；桌面/390/320/短屏与原生200%/400%分别留证 | department-layout.spec.ts；结果见[多轮评审](../../verification/116-r5-multiround-review.md) |
+| R5-18 | 布局截图先按固定样本编码查询，确认长名称行已加载且进入视口；加载中网格不能计为列表验收。原批分别记录桌面、390/320 宽、短屏及原生 200%/400% | department-layout.spec.ts；结果见[多轮评审](../../verification/116-r5-multiround-review.md) |
 
 原 39 例中的菜单参数按 R5 实际运行登记，R4 后端结果只覆盖对应后端参数。大规模容量的首次实测及未达标项见[2026-11-06 R6 报告](../../verification/116-r6-standards-and-capacity.md)，人工业务签收另按实际记录查证。
 

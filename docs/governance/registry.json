@@ -2556,11 +2556,11 @@
     {
       "id": "CHNHCM-142",
       "title": "桌面短屏与原生 400% 开发内容清理计划",
-      "path": "docs/plans/142-retired-desktop-conditions.md",
+      "path": "docs/archive/plans/142-retired-desktop-conditions.md",
       "owner_branch": "wt-dev-b",
       "owner_role": "共享页面与浏览器验证维护者",
       "owner": null,
-      "status": "in_review",
+      "status": "active",
       "type": "plan",
       "modules": [
         "M01",
@@ -2571,11 +2571,24 @@
       ],
       "scope": "清理薪酬离线原型、人员名录验收脚本和规格交接段残留的旧视口条件，保留原批证据及现行桌面操作。",
       "format": "numbered",
-      "review": null,
-      "execution_status": "not_started",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理本地多轮复核",
+        "scope": "三处开发入口、历史原件、规格交接、标准桌面与关键流程原生 200%。",
+        "result": "accepted",
+        "evidence": "docs/verification/142-retired-desktop-conditions.md"
+      },
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "三处开发入口清理及 012、023、121 的历史交接完成，两轮浏览器实测及正式菜单复验通过。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "reason": "现行验收条件归 012 第 6.2 节，实施前原件、首败及复验已在同号验证记录交接。",
+        "previous_path": "docs/plans/142-retired-desktop-conditions.md"
+      }
     },
     {
       "id": "CHNHCM-200",
@@ -4165,7 +4178,8 @@
         ],
         "limitations": [
           "使用合成薪酬制度，本次范围为后台配置和默认端口持久化。"
-        ]
+        ],
+        "follow_up": "docs/verification/142-retired-desktop-conditions.md"
       },
       {
         "path": "docs/verification/210-compensation-list-retest.md",
@@ -4387,7 +4401,7 @@
           {
             "check": "三个视口的离线原型走查通过，核对计划津贴、两职级引用、保存时资料、权限返回及 192 个页面和来路组合。",
             "result": "passed",
-            "evidence": "docs/verification/data/210-compensation-design/walkthrough.mjs"
+            "evidence": "docs/verification/210-compensation-design-review.md"
           },
           {
             "check": "产品 Go、DB/API、真实授权、并发、日期切换及同构建业务页面验收。",
@@ -4475,7 +4489,7 @@
           {
             "check": "三个视口的浏览器走查及页面链接遍历，覆盖新建、组成行、两计划共用薪带、重复建标、七月调整、更正、原件、取消和只读样例。",
             "result": "passed",
-            "evidence": "docs/verification/data/210-compensation-design/walkthrough.mjs"
+            "evidence": "docs/verification/210-compensation-design-walkthrough.md"
           },
           {
             "check": "Go、数据库、真实授权和客户业务验收。",
@@ -5492,7 +5506,8 @@
         ],
         "purpose": "technical",
         "conclusion": "已取消短屏和 400% 专项。标准桌面与关键流程原生 200% 分批实测，18 项去重通过，4490 只读历史往返通过。",
-        "evidence_access": "mixed"
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/142-retired-desktop-conditions.md"
       },
       {
         "path": "docs/verification/510-personnel-page-remediation-implementation.md",
@@ -27174,7 +27189,8 @@
         ],
         "purpose": "governance",
         "conclusion": "从人员名录提炼列表、部门树和验收样本标准。勾选时序及跨页返回两轮首败均保留。第 21 人及第 21 份任职返回经隔离实库复验，4496 已更新。",
-        "evidence_access": "mixed"
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/142-retired-desktop-conditions.md"
       },
       {
         "path": "docs/verification/316-object-and-configuration-review.md",
@@ -27326,6 +27342,75 @@
         "purpose": "retest",
         "conclusion": "合并候选整页办理超限。批量读取后两轮通过，最终 20 并发保留、改选 P95 为 1383.20、1321.42 毫秒，3200 次 HTTP 零失败。",
         "evidence_access": "public_ci"
+      },
+      {
+        "path": "docs/verification/142-retired-desktop-conditions.md",
+        "related_documents": [
+          "CHNHCM-142",
+          "CHNHCM-012",
+          "CHNHCM-023",
+          "CHNHCM-121",
+          "CHNHCM-210",
+          "CHNHCM-212",
+          "CHNHCM-405"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "ea0c6acad8b2fe53f3b1ecc90035a5f6a2de775a",
+        "working_tree": "dirty",
+        "change_description": "移除薪酬原型和人员名录走查的旧条件，更新现行规格的历史交接定位。",
+        "environment": "本地 Chromium、独立临时 PostgreSQL 和同工作树服务。",
+        "scope": "原件可追溯性、两个浏览器入口、两个业务角色及 012、023、121 文档交接。",
+        "results": [
+          {
+            "check": "三份原件及评审前 ZIP 的两份输入摘要",
+            "result": "passed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          },
+          {
+            "check": "初版薪酬走查接受未知选项、名录接受多余参数且创建输出目录",
+            "result": "failed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          },
+          {
+            "check": "九组非法入口在启动前退出，既有输出文件保持原摘要",
+            "result": "passed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "薪酬和人员名录在标准桌面与真实原生 200% 的两轮业务走查",
+            "result": "passed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "四项正式菜单用例首轮三项通过，一项因临时库缺少冒烟权限夹具失败",
+            "result": "failed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "同一临时库补齐仓库权限夹具后原四项同组复跑",
+            "result": "passed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "完整浏览器清单发现与分配、历史原件核对及任务临时环境回收",
+            "result": "passed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          },
+          {
+            "check": "归档后的 make check、四十处交接链接与三个受测源文件摘要",
+            "result": "passed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          }
+        ],
+        "limitations": [
+          "650 项为发现与分配清单。浏览器实际执行范围为定向业务走查和四项正式用例。",
+          "离线原型使用预置错误样例。HTTP 422 单独在正式菜单验实，本轮未执行远程 CI 或人工业务签收。"
+        ],
+        "purpose": "retest",
+        "conclusion": "移除薪酬原型及两份脚本的旧视口入口。标准桌面、原生 200%、九组参数反例及正式菜单四项复验通过，历史原件可追溯。",
+        "evidence_access": "repository"
       }
     ]
   },

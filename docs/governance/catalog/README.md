@@ -23,9 +23,7 @@
 
 ## 待启动计划
 
-| 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
-| --- | --- | --- | --- |
-| [142 桌面短屏与原生 400% 开发内容清理计划](../../plans/142-retired-desktop-conditions.md) | in_review | not_started | 原位 |
+当前登记为零。
 
 <a id="catalog-review"></a>
 
@@ -39,7 +37,6 @@
 | [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 | — |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 | [§7.2 部门选择与固定身份草稿 → 120 §4.6](../../specs/m02/120-dated-maintenance-technical-contract.md#46-r133-m1部门选择游标与锚点协议) · [§7.3 单请求游标与读取一致性 → 120 §11](../../specs/m02/120-dated-maintenance-technical-contract.md#11-r133主线读取协议的实施输入) · [§10 BU 完整预览的削减期间检查 → 120 §12](../../specs/m02/120-dated-maintenance-technical-contract.md#12-r129共用边界与日志按页装配) · [§15 单对象 20 条验收场景与模型 5 → 017 §19](../../guides/017-local-bu-development.md#19-保留模型5及20条正式场景) · [§16 部门大范围写入的阶段目标 → 120](../../specs/m02/120-dated-maintenance-technical-contract.md#department-broad-write-stage-target) |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 | [§8 单对象 20 条验收场景与模型 5 → 017 §19](../../guides/017-local-bu-development.md#19-保留模型5及20条正式场景) |
-| [142 桌面短屏与原生 400% 开发内容清理计划](../../plans/142-retired-desktop-conditions.md) | in_review | not_started | 原位 | — |
 
 <a id="catalog-closed"></a>
 
@@ -73,6 +70,7 @@
 | [139 岗位列表、岗位关系与结构视图实施方案](../../archive/plans/139-position-workspace.md) | active | completed | 物理归档 |
 | [140 模块边界、日期显示与实施登记收敛路线图](../../archive/plans/140-module-cohesion-roadmap.md) | active | completed | 物理归档 |
 | [141 本地预检结果与生成物核对优化计划](../../archive/plans/141-local-preflight.md) | active | completed | 物理归档 |
+| [142 桌面短屏与原生 400% 开发内容清理计划](../../archive/plans/142-retired-desktop-conditions.md) | active | completed | 物理归档 |
 | [200 国家地区行政区划与地点实施路线图](../../archive/plans/200-geography-and-location-roadmap.md) | active | completed | 物理归档 |
 | [203 G3必要行政区划接入实施方案](../../archive/plans/203-g3-geo-area-admission.md) | active | completed | 物理归档 |
 | [204 G4地点纵向交付实施方案](../../archive/plans/204-g4-location-implementation.md) | active | completed | 物理归档 |
@@ -124,7 +122,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（81）](#evidence-acceptance) · [问题复验（49）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
+[业务验收（81）](#evidence-acceptance) · [问题复验（50）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -222,6 +220,7 @@
 | --- | --- | --- | --- | --- |
 | 317、316、505 | [CHNHCM-317 个人资料地址类型主线容量复验](../../verification/317-main-address-types.md) | 2026-11-28 定稿 | 合并候选整页办理超限。批量读取后两轮通过，最终 20 并发保留、改选 P95 为 1383.20、1321.42 毫秒，3200 次 HTTP 零失败。 | 本仓报告及公开 CI |
 | 210、211、212、012、003 | [CHNHCM-210 薪酬列表、按日来源及当日样本复验](../../verification/210-compensation-list-retest.md) | 2026-11-28 定稿 | 两个薪酬菜单的 15 项浏览器场景通过，短屏列恢复和来源按日返回均已复验。4521 七个对象的原件、回执和按日资料一致，人工签收另记。 [后续记录](../../verification/210-compensation-default-port.md) | 本仓报告 |
+| 142、012、023、121、210、212、405 | [CHNHCM-142 桌面旧视口清理实施与复验](../../verification/142-retired-desktop-conditions.md) | 2026-11-28 定稿 | 移除薪酬原型及两份脚本的旧视口入口。标准桌面、原生 200%、九组参数反例及正式菜单四项复验通过，历史原件可追溯。 | 本仓报告 |
 | 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 定稿 | 人员名录七项问题复验通过。4496 原库保留原人员、办理和回执，并补验五级部门、在任及未来样本。实测业务日为 2026-11-27。 [后续记录](../../verification/405-list-standards-review.md) | 本仓报告，部分原件需权限 |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 定稿 | PR #30 远程首轮 4 项失败。修复后本地 5 项前置、8 项 Chromium 业务用例通过，4496 已更新。远程终验另查 PR。 | 本仓报告及公开 CI |
 | 140、004、013、026、120、201、207、014 | [CHNHCM-140 地点与法律实体删除回执验证及计划交接](../../verification/140-history-receipt-closeout.md) | 2026-11-27 定稿 | 地点和法律实体的删除回执首轮均指错记录，修复后两对象、原号查回、升级前原件和 4490 菜单复验通过。原有回执按原样保留。 | 本仓报告，部分原件需权限 |
@@ -401,7 +400,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
-| 012、023、124、137 | [CHNHCM-012 标准桌面与关键流程放大验收](../../verification/012-standard-desktop-validation.md) | 2026-11-28 定稿 | 已取消短屏和 400% 专项。标准桌面与关键流程原生 200% 分批实测，18 项去重通过，4490 只读历史往返通过。 | 本仓报告，部分原件需权限 |
+| 012、023、124、137 | [CHNHCM-012 标准桌面与关键流程放大验收](../../verification/012-standard-desktop-validation.md) | 2026-11-28 定稿 | 已取消短屏和 400% 专项。标准桌面与关键流程原生 200% 分批实测，18 项去重通过，4490 只读历史往返通过。 [后续记录](../../verification/142-retired-desktop-conditions.md) | 本仓报告，部分原件需权限 |
 | 141、137、136 | [CHNHCM-141 本地预检设施验证](../../verification/141-local-preflight.md) | 2026-11-23 定稿 | 本地预检能区分候选、首败与复验，空分片和目标遮蔽反例保留。远程门禁及托管成本未验。 | 本仓报告，部分原件需权限 |
 | 136、137 | [CHNHCM-136 正常交付的 Actions 成本观察](../../verification/136-actions-observation.md) | 2026-11-23 定稿 | 10 次交付、34 次运行共估算 5693 runner 分钟。可比业务样本不足以确认整体节省 25% 至 33%，无实付账单。 | 本仓报告，部分原件需权限 |
 | 136、137 | [CHNHCM-136 一次性 runner 与 GitHub 托管分钟试点](../../verification/136-hosted-minutes-pilot.md) | 2026-11-22 草稿 | 试点分区和逐片复用以历史运行回放核对，保留当轮未选中的一次偶发失败。80% 目标仍待自然交付测量。 [后续记录](../../verification/136-206-plan-archive.md) | 本仓报告，部分原件需权限 |
@@ -456,7 +455,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
-| 210、211、212、213、017 | [CHNHCM-210 默认端口薪酬配置实页维护与留数验收](../../verification/210-compensation-default-port.md) | 2026-11-28 定稿 | 管理员从网页完成 12 次保存。重启整套服务后，三份计划的 12 个按日页面结果、八份薪酬原修订和八份原回执均与重启前一致。4380 保留运行供试用。 | 本仓报告 |
+| 210、211、212、213、017 | [CHNHCM-210 默认端口薪酬配置实页维护与留数验收](../../verification/210-compensation-default-port.md) | 2026-11-28 定稿 | 管理员从网页完成 12 次保存。重启整套服务后，三份计划的 12 个按日页面结果、八份薪酬原修订和八份原回执均与重启前一致。4380 保留运行供试用。 [后续记录](../../verification/142-retired-desktop-conditions.md) | 本仓报告 |
 | 210、211、212、213 | [CHNHCM-210 I3 薪酬体系联合验收与交接](../../verification/210-compensation-i3.md) | 2026-11-27 定稿 | 八组业务场景联验，768 次容量请求零错误，重启后 408 份原修订及回执一致。4521 已交接，业务签收及客户容量另记。 [后续记录](../../verification/210-compensation-list-retest.md) | 本仓报告 |
 | 400、401、402、403、404、137 | [CHNHCM-404　4496 原库升级与首单签收](../../verification/404-4496-acceptance.md) | 2026-11-26 定稿 | 4496 原库 162 表还原并升级至 00057，固定构建上完成限定日期的合成首单。占编竞争使用独立实库证据。 [后续记录](../../verification/404-pr30-browser-recheck.md) | 本仓报告，部分原件需权限 |
 | 005、014、307、308 | [CHNHCM-005 三份M03历史stash处置](../../verification/005-stash-disposition.md) | 2026-11-17 定稿 | 三份历史 stash 的 24 个差异路径逐项核对并保留仓外恢复副本，本轮未重验产品或数据库。 | 本仓报告，部分原件需权限 |
@@ -485,7 +484,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
-| 405、012、119、003、502、124 | [CHNHCM-405 从人员名录提炼列表标准的评审与复验](../../verification/405-list-standards-review.md) | 2026-11-27 定稿 | 从人员名录提炼列表、部门树和验收样本标准。勾选时序及跨页返回两轮首败均保留。第 21 人及第 21 份任职返回经隔离实库复验，4496 已更新。 | 本仓报告，部分原件需权限 |
+| 405、012、119、003、502、124 | [CHNHCM-405 从人员名录提炼列表标准的评审与复验](../../verification/405-list-standards-review.md) | 2026-11-27 定稿 | 从人员名录提炼列表、部门树和验收样本标准。勾选时序及跨页返回两轮首败均保留。第 21 人及第 21 份任职返回经隔离实库复验，4496 已更新。 [后续记录](../../verification/142-retired-desktop-conditions.md) | 本仓报告，部分原件需权限 |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 定稿 | 400、404 归档后条款与责任可追溯，主线 5 项实库测试通过。4496 持久卷与页面沿用原签收基线。 | 本仓报告 |
 | 014 | [CHNHCM-014 验收记录目录与历史接续复验](../../verification/014-verification-catalog.md) | 2026-11-27 定稿 | 312 份原记录已补齐用途、结论及证据位置，原报告和原有字段保留。默认检索仍仅命中现行规范，本轮只验文档。 | 本仓报告 |
 | 014、308、310、312、313、012、026、121、123 | [CHNHCM-014 M03 模块合同与共享条款导航复核](../../verification/014-m03-shared-clause-navigation.md) | 2026-11-27 定稿 | 5 类办理对象可从 M03 入口查到 4 份对象合同及共享条款。41 处链接均可定位，默认检索仍为 55 份现行规范。本次只验文档。 | 本仓报告 |

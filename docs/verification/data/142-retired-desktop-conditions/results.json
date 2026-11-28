@@ -1,0 +1,267 @@
+{
+  "baseCommit": "ea0c6acad8b2fe53f3b1ecc90035a5f6a2de775a",
+  "sourceSHA256": {
+    "docs/specs/m09/prototype/compensation-configuration.html": "a7e78bab5f6067d69e44248264eccf9369e725e23794115858fb153fea1c0817",
+    "docs/verification/data/210-compensation-design/walkthrough.mjs": "bb3f94779607af9cfd0e50f9713096eace07c18a40db7c8aa578789eb4ffe99f",
+    "docs/verification/data/405-personnel-directory/verify.cjs": "22b41b6e535d919fa51fe740803fb36cd4bd33333d93831c11d66dc603a15fd1"
+  },
+  "prototype": {
+    "prototype-desktop-r1": {
+      "browser": "140.0.7339.186",
+      "metrics": [
+        {
+          "width": 1440,
+          "height": 900,
+          "clientWidth": 1440,
+          "contentWidth": 1440
+        }
+      ],
+      "sampleRoutes": 192,
+      "issues": []
+    },
+    "prototype-native-r1": {
+      "browser": "140.0.7339.186",
+      "metrics": [
+        {
+          "width": 1440,
+          "height": 900,
+          "clientWidth": 1440,
+          "contentWidth": 1440
+        },
+        {
+          "width": 640,
+          "height": 450,
+          "clientWidth": 640,
+          "contentWidth": 640
+        }
+      ],
+      "sampleRoutes": 192,
+      "issues": []
+    },
+    "prototype-desktop-r2": {
+      "browser": "140.0.7339.186",
+      "metrics": [
+        {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "clientWidth": 1440,
+          "contentWidth": 1440
+        }
+      ],
+      "sampleRoutes": 192,
+      "issues": []
+    },
+    "prototype-native-r2": {
+      "browser": "140.0.7339.186",
+      "metrics": [
+        {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "clientWidth": 1440,
+          "contentWidth": 1440
+        },
+        {
+          "width": 640,
+          "height": 450,
+          "dpr": 2,
+          "clientWidth": 640,
+          "contentWidth": 640
+        }
+      ],
+      "sampleRoutes": 192,
+      "issues": []
+    }
+  },
+  "personnelDirectory": {
+    "directory-desktop-r1": {
+      "viewport": [
+        1440,
+        900,
+        1
+      ],
+      "control": 64,
+      "sidebar": 220
+    },
+    "directory-native-r1": {
+      "viewport": [
+        640,
+        450,
+        2
+      ],
+      "control": 100.5,
+      "sidebar": 0
+    },
+    "directory-explicit-r2": {
+      "viewport": [
+        1440,
+        900,
+        1
+      ],
+      "control": 64,
+      "sidebar": 220
+    },
+    "directory-native-r2": {
+      "viewport": [
+        640,
+        450,
+        2
+      ],
+      "control": 100.5,
+      "sidebar": 0
+    }
+  },
+  "cliRejections": [
+    [
+      "directory",
+      [
+        "short"
+      ],
+      1
+    ],
+    [
+      "directory",
+      [
+        "400"
+      ],
+      1
+    ],
+    [
+      "directory",
+      [
+        "zoom400"
+      ],
+      1
+    ],
+    [
+      "directory",
+      [
+        "200x"
+      ],
+      1
+    ],
+    [
+      "directory",
+      [
+        ""
+      ],
+      1
+    ],
+    [
+      "directory",
+      [
+        "desktop",
+        "short"
+      ],
+      1
+    ],
+    [
+      "prototype",
+      [
+        "--zoom400"
+      ],
+      1
+    ],
+    [
+      "prototype",
+      [
+        "short"
+      ],
+      1
+    ],
+    [
+      "prototype",
+      [
+        "--native-zoom",
+        "--native-zoom"
+      ],
+      1
+    ]
+  ],
+  "officialBrowser": {
+    "first": [
+      {
+        "case": "210 职级薪标原生 200% 菜单与表单保存",
+        "result": "passed",
+        "elapsed": "9.5s"
+      },
+      {
+        "case": "210 重复建标返回原件、错误取消、仅目录角色及撤权后保存",
+        "result": "failed",
+        "elapsed": "9.3s"
+      },
+      {
+        "case": "人员名录重试失败的查询步骤并保留后来输入的草稿",
+        "result": "passed",
+        "elapsed": "1.9s"
+      },
+      {
+        "case": "人员名录跨页选择、排除及集合变动",
+        "result": "passed",
+        "elapsed": "3.1s"
+      }
+    ],
+    "fixtureError": "relation \"access.subject_grant\" does not exist",
+    "repeat": [
+      {
+        "case": "210 职级薪标原生 200% 菜单与表单保存",
+        "result": "passed",
+        "elapsed": "9.4s"
+      },
+      {
+        "case": "210 重复建标返回原件、错误取消、仅目录角色及撤权后保存",
+        "result": "passed",
+        "elapsed": "11.3s"
+      },
+      {
+        "case": "人员名录重试失败的查询步骤并保留后来输入的草稿",
+        "result": "passed",
+        "elapsed": "2.0s"
+      },
+      {
+        "case": "人员名录跨页选择、排除及集合变动",
+        "result": "passed",
+        "elapsed": "3.1s"
+      }
+    ]
+  },
+  "ciInventory": {
+    "unique_tests": 650,
+    "executions": 730,
+    "shard_counts": [
+      10,
+      34,
+      37,
+      46,
+      45,
+      47,
+      56,
+      33,
+      32,
+      42,
+      64,
+      29,
+      60,
+      41,
+      56,
+      56,
+      42
+    ],
+    "inventory_sha256": "8ff7f4d499b48be512326d26b0d4194b968efd5e31403d0b755dae398b8cfdc2"
+  },
+  "originalEvidence": {
+    "base": "ea0c6acad8b2fe53f3b1ecc90035a5f6a2de775a",
+    "unchangedTrackedFiles": 532,
+    "scope": [
+      "docs/verification",
+      "docs/archive",
+      "docs/assets/inventory.json",
+      ".github/workflows/README.md"
+    ],
+    "except": [
+      "docs/verification/data/210-compensation-design/walkthrough.mjs",
+      "docs/verification/data/405-personnel-directory/verify.cjs"
+    ]
+  }
+}

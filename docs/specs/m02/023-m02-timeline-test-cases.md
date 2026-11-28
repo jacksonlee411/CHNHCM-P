@@ -750,7 +750,7 @@ T05实际覆盖与未完成参数见[分类删除验证](../../verification/020-
 <a id="m02-list-pro-cases"></a>
 ## 21 Community列表目标与交互回归
 
-上游为[113 Community决定](../../adr/113-bu-list-community-adoption.md)、[110剩余交互](../../adr/110-bu-list-and-datagrid.md)、[012列表目标](012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[013接线](013-m02-technical-design.md#m02-tech-list-pro)，执行归[111](../../archive/plans/111-bu-list-experience-upgrade.md)。TL-323—334共12例沿用稳定ID，本次更新Community目标，不新增编号或通过数；当前Community T01/T02代码及定向组件/合成HTTP检查见[本轮报告](../../verification/111-community-t01-t02.md)；旧Pro T02报告仅说明原基线，当前12例真实业务参数及七组条件另见[111 T03](../../verification/111-community-t03.md)，不跨批累加旧通过数。旧T07/019/100/109的通过不能迁入，复用既有BR/SCN/AC。历史带pro锚点保留追踪身份，不代表组件选择。
+上游为[113 Community决定](../../adr/113-bu-list-community-adoption.md)、[110剩余交互](../../adr/110-bu-list-and-datagrid.md)、[012列表目标](012-m02-functional-and-interaction-design.md#m02-ui-list-pro)及[013接线](013-m02-technical-design.md#m02-tech-list-pro)，执行归[111](../../archive/plans/111-bu-list-experience-upgrade.md)。TL-323—334共12例沿用稳定ID，本次更新Community目标，不新增编号或通过数；当前Community T01/T02代码及定向组件/合成HTTP检查见[本轮报告](../../verification/111-community-t01-t02.md)；旧Pro T02报告仅说明原基线，原批 12 例业务参数及当时七组视口见[111 T03](../../verification/111-community-t03.md)。后续列表改动按[012 第 6.2 节](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)验收。旧T07/019/100/109的通过不能迁入，复用既有BR/SCN/AC。历史带pro锚点保留追踪身份，不代表组件选择。
 
 夹具使用任务自有合成BU，至少73个可分页对象，包含未生效首条、长名称/编码、三种状态及读字段受限身份；验证者独立给出排序预期，编码/名称顺序按013而非拼音。页面从正常菜单进入。安装/类型/构建及依赖图另按111 T01验收；实际页面须无Pro许可水印或许可console提示，不过滤或遮挡。主B负责界面及真实请求/响应，权限/一致计数的实际API断言复用同基线已有检查；只在本批新增业务查询时补A，不为第三方通用算法重建单元测试。以下范围和期望是合同，不是执行通过记录。
 
@@ -974,7 +974,7 @@ BU实际通过必须来自当前接入后的真实DB/API；共用端口使用其
 
 沿用原创建/维护/启停/删除/改日/固定两条、未保存保护、未知提交和会话竞争参数，不增加同义业务案例。R3-A独立补验原正文不可变、同类型阻塞/跨类型集合及事件隔离、查回与在途重试竞争、存储异常；强类型合成对象只计机制验证。R3-B从正常BU菜单执行全套现行Chromium用例，覆盖第25/26章122/123以及列表选择/CSV/返回上下文，保持日期/分类错误定位和字段撤权清理。
 
-共享表单和列表受影响视口含桌面、短屏、390/320窄屏及真实200%/400%缩放；实际执行参数和失败复验分别留证，不把类型检查或部分复验写为整轮通过。当前394/350/44编号统计不变，部门TL-394及39个产品样本仍not_run。分批结果见[121](121-dated-object-admission-matrix.md)与[R3报告](../../verification/116-r3-frontend-workflow.md)。
+原 R3 对共享表单和列表采用当时的桌面、短屏、390/320 宽及原生 200%/400% 条件。原批执行参数、首次失败及分批复验见本段报告，后续改页按[012 第 6.2 节](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)验收。当前394/350/44编号统计不变，部门TL-394及39个产品样本仍not_run。分批结果见[121](121-dated-object-admission-matrix.md)与[R3报告](../../verification/116-r3-frontend-workflow.md)。
 
 R3-09补充未保存保护参数：管理员从正常菜单更正日期后确认退出，分别注入退出503及网络中断；原编辑器仍挂载时重新输入名称，取消、路由离开及真实浏览器关闭均重新保护，继续编辑保留新草稿，原来源不变。补验新建失败退出后的新草稿、明确放弃仅完成本次路由，以及固定两条既有取消/原引用恢复；实现见dated-workflow.spec.ts，结果见[评审修复](../../verification/116-r3-review-fixes.md)。不增加同义TL编号，不将修复前187项结果称为修复后整轮通过。
 
@@ -994,6 +994,6 @@ R5沿用现行标准维护案例，department-journeys.spec.ts与department-acce
 
 TL-394菜单参数由部门父子关系/祖先分段/同头显式来源、停用后原上级转BU再恢复、未来首条读取查回承担；TL-367—386适用页面参数检验所选修订摘要、独立日志读权、行内准确来源及撤权清理。跨日授权另用TestDepartmentR5BusinessDayBrowser真实服务和两个浏览器时区；137项全结果选择/排除/八列CSV及路径依赖失效由department-selection.spec.ts承担。后台全量S/P/F、H45和关系竞争仍以R4资产在本轮完整integration的结果为准，不将代表性页面旅程说成每个后端参数都从菜单重跑。
 
-部门新增七类页面的桌面、390/320、短屏、键盘及真实200%/400%由department-layout.spec.ts留证，共用BU既有Chromium集合另做完整回归。394个稳定编号、350现行、44退役不变，实际输入、首次失败、修复复验及分层边界见[R5报告](../../verification/116-r5-department-pages-and-acceptance.md)与[121第10节](121-dated-object-admission-matrix.md)。R6容量及真实外域消费者不计入本轮。
+原 R5 的七类部门页面按当时视口和倍率留证，共用 BU 的 Chromium 集合另行复验。后续七类页面按[012 第 6.2 节](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)检查键盘、布局与真实缩放。394个稳定编号、350现行、44退役不变，实际输入、首次失败、修复复验及分层边界见[R5报告](../../verification/116-r5-department-pages-and-acceptance.md)与[121第10节](121-dated-object-admission-matrix.md)。R6容量及真实外域消费者不计入本轮。
 
 2026-11-06 R5多轮补充：121追加R5-13—18，覆盖当前所选引用投影与候选资格分离、200撤权及失败重读保护、三种维护动作省略空关系补丁、异步辅助与主动保存的焦点区别、搜索词保持、名称错误定位及真实加载后的布局截图。沿原授权、错误定位及草稿保护场景补参数，不增加同义TL编号；实际逐轮结果见[多轮评审](../../verification/116-r5-multiround-review.md)。
