@@ -13,6 +13,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/pressly/goose/v3"
 	"io/fs"
 	"maps"
 	"net/http"
@@ -508,13 +509,22 @@ func TestPublic39UpgradeToBankHealth(t *testing.T) {
 	for range 2 {
 		must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
 	}
-	// The positive applied rows must contain every version exactly once.
-	// CheckCurrentStorage below verifies the required final version and layout.
 	var preserved bool
-	must(t, pool.QueryRow(ctx, `select exists(select from staffing.appointment_version v join staffing.appointment_outbox o using(instance_id,source,version) where v.version=$1 and number='合成决定39')
-	 and (select count(*)=max(version_id) and count(distinct version_id)=max(version_id) from goose_db_version where is_applied and version_id>0)`, decision).Scan(&preserved))
+	must(t, pool.QueryRow(ctx, `select exists(select from staffing.appointment_version v join staffing.appointment_outbox o using(instance_id,source,version) where v.version=$1 and number='合成决定39')`, decision).Scan(&preserved))
 	if !preserved {
-		t.Fatal("prior decision, event or continuous ledger changed")
+		t.Fatal("prior decision or outbox event changed")
+	}
+	files, err := fs.Glob(migrations.Files, "*.sql")
+	must(t, err)
+	var shipped, applied []int64
+	for _, name := range files {
+		version, err := goose.NumericComponent(name)
+		must(t, err)
+		shipped = append(shipped, version)
+	}
+	must(t, pool.QueryRow(ctx, `select array_agg(version_id order by version_id) from goose_db_version where is_applied and version_id>0`).Scan(&applied))
+	if !reflect.DeepEqual(shipped, applied) {
+		t.Fatalf("applied migrations %v, want each shipped migration once: %v", applied, shipped)
 	}
 	must(t, bootstrap.CheckCurrentStorage(ctx, pool))
 }
