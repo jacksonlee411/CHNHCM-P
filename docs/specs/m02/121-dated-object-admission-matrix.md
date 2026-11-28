@@ -6,13 +6,13 @@
 
 2026-11-14用户明确纠正单对象10000条生效记录的不合理验收场景，正式采用单个BU／部门各20条记录，并保留模型5（m02-compact-5／read-segment-4／query-seal /3，迁移00001—00008）。10000条专用保存P95／分页及其驱动的模型6改造退出当前任务，不再列为待修复容量项；原测量和失败仍保留为历史证据。20条是验收场景，不是产品硬上限，不缩减企业对象总量、完整来源历史或并发规模；原500ms目标及125其他容量P1保持。 本条覆盖下文旧阶段的单对象超长时间线要求，历史数字不回填；见[采纳记录](../../verification/135-model5-and-20-record-adoption.md)。
 
-登记信息：[registry.json](../../governance/registry.json)。适用范围：116 R0的规则映射、基线及独立预期设计；执行按R1—R6分别记录。上游为[117决定](../../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118部门业务](118-department-business-requirements.md)、[119页面](119-department-functional-design.md)、[120技术](120-dated-maintenance-technical-contract.md)及[023当前BU案例](023-m02-timeline-test-cases.md)。本矩阵不是产品测试通过报告。
+本矩阵规定 BU 与部门接入时须验证的业务规则、受测条件及独立预期。上游为[117 决定](../../adr/117-m02-dated-maintenance-and-department-boundary.md)、[118 部门业务](118-department-business-requirements.md)、[119 页面](119-department-functional-design.md)、[120 技术](120-dated-maintenance-technical-contract.md)及[023 BU 案例](023-m02-timeline-test-cases.md)。各批执行结果见对应的日期记录，文档元数据见[登记表](../../governance/registry.json)。
 
 当前日期/记录/路径合同按[123](../../adr/123-current-maintenance-and-dated-query-boundary.md)调整。部门后端与页面的实际结果分别由第9节R4、第10节R5及对应报告登记；131后续验证见第14—17节。原R0设计时点与未运行样本保持，不将设计映射本身视为产品验收。
 
 R1起始实施基线为4f4fc0e，继承[122评审修复](../../verification/122-operation-summary-review-fixes.md)与123已实现的BU行为：所选修订操作者摘要独立于日志读权；日志按当前历史/字段权投影；当次资料、删除前原件、固定窗口及失权清理保持；普通维护按所选记录。各批实际复核见[R1报告](../../verification/116-r1-kernel-and-directory.md)，部门后端对应验证已进入第9节R4实际映射，正常菜单实际结果进入第10节R5映射。
 
-2026-11-08验收边界修订：[128](../../adr/128-authorization-evidence-removal.md)撤除永久授权过程档案，第11节R6-08中的逐次判权存证预期按V128-01—06替代。删除实施与分层验证已完成，实际范围、分轮结果及未通过的容量见[128实施记录](../../verification/128-implementation.md)，不在本矩阵重新计数。旧表格保留原批次受测要求与结果，不作为保留已取消机制的依据；当前判权/撤权、业务来源及R4-V09操作者身份快照保护继续有效。
+第 11 节 R6-08 的逐次判权存证要求按[128 第 5 节](../../adr/128-authorization-evidence-removal.md#authorization-evidence-replacement)替代。现行预期按 V128-01—06 核对当前范围和字段权限、撤权、原结果恢复及完整查询，保留业务来源和 R4-V09 操作者身份快照。原 R6 批次的实测见[2026-11-06 容量记录](../../verification/116-r6-standards-and-capacity.md)，删除机制后的验证见[2026-11-08 实施记录](../../verification/128-implementation.md)。
 
 133-M1当前部门选择/父候选/路径及共用邻居验证以第18节为准；下述R4—R6与131阶段记录保留原执行口径，不能将退役的集合版本或精确候选总数作为当前准入条件。BU选择继续114规则。
 
@@ -214,7 +214,7 @@ R4交接运行适用生成/边界/check/build、完整integration及受影响BU�
 | R5-04 | 根/子部门、跨BU不自动清空上级、Go资格错误、有效重选；祖先变动不推进子源，显式同头仍按原路径 | department-acceptance.spec.ts |
 | R5-05 | 122摘要独立日志读权；名称/路径/关系撤权后清理输入与缓存；跨类型来源拒绝 | department-acceptance.spec.ts及原BU权限集合 |
 | R5-06 | 稳定BU筛选、137全结果/跨页排除、八列CSV、祖先/BU更名及撤导出权使旧选择失效 | department-selection.spec.ts |
-| R5-07 | filter引用仅readable、无写权可用、严格形状/ID标签解析、撤字段权；路径最后适用日与链接分权 | TestDepartmentR5FilterReferenceReadBoundary、TestDepartmentR5PathDisplayPeriodAndLinkRights |
+| R5-07 | filter 引用只要求可读，核对形状、ID 标签解析、撤字段权及路径最后适用日。祖先名称按引用读权展示为文本，见[V128-10](../../adr/128-authorization-evidence-removal.md#26-取消关联快捷跳转及其专属机制) | 原 R5 用例 TestDepartmentR5FilterReferenceReadBoundary、TestDepartmentR5PathDisplayPeriodAndLinkRights，链接分权仅为原批次断言 |
 | R5-08 | 会话/类型恢复隔离、候选迟到、跨日范围与旧投影清理、390/320/短屏/键盘及真实200%/400% | department-acceptance.spec.ts、department-layout.spec.ts及TestDepartmentR5BusinessDayBrowser（双时区） |
 | R5-09 | 部门撤status读权后重读503/断连，取消编辑不显示旧状态；单条辅助/保存及固定期间403未带字段列表也清理；BU按自身合同保留状态；恢复读权重读且业务来源不变 | department-review-fixes.spec.ts、test_dated_projection.mjs；本次补验见[R5评审修复](../../verification/116-r5-review-fixes.md) |
 | R5-10 | 无可选上级写权仍可正常菜单新建根部门；API对照与页面均成功；明确选择上级与更正null清除保持，旧来源不变 | department-review-fixes.spec.ts；本次补验见[R5评审修复](../../verification/116-r5-review-fixes.md) |
@@ -227,7 +227,7 @@ R4交接运行适用生成/边界/check/build、完整integration及受影响BU�
 | R5-17 | 部门新建/更正非法名称或简称返回获权字段位置，主动保存正确定位；原拒绝查回保持诊断，撤name读权后隐藏位置，业务来源不推进 | TestDepartmentNameValidationLocationAndRevokedRecovery、dated-assistance-focus.spec.ts；结果见[多轮评审](../../verification/116-r5-multiround-review.md) |
 | R5-18 | 布局截图先按固定样本编码查询，确认长名称行已加载且进入视口；加载中网格不能计为列表验收；桌面/390/320/短屏与原生200%/400%分别留证 | department-layout.spec.ts；结果见[多轮评审](../../verification/116-r5-multiround-review.md) |
 
-检查范围按实际运行登记。没有执行的原39例菜单参数不能借R4后端通过自动关闭；R6大规模容量及人工业务签收仍后置。
+原 39 例中的菜单参数按 R5 实际运行登记，R4 后端结果只覆盖对应后端参数。大规模容量的首次实测及未达标项见[2026-11-06 R6 报告](../../verification/116-r6-standards-and-capacity.md)，人工业务签收另按实际记录查证。
 
 ## 11 R6标准、容量及回归映射
 
@@ -242,14 +242,14 @@ R6工作区基线587667a。以下是本轮参数与独立预期，实际结果�
 | R6-05 | 100层路径完整；2000后代下祖先改名不推进子源且当前/原路径分别正确；1000来源下准确读取第25及1000源 | fixtures.go、special.go，固定身份、DB来源号、HTTP只读标识及路径对照 |
 | R6-06 | 同一列表版本下跨七页选137个身份，解析137项，CSV含表头138行且8列，路径值存在 | special.go/csv137，CSV摘要/行数/列名与单独耗时 |
 | R6-07 | 外部真实持共同守卫，取消请求后释放等待、头不变、来源/终态为零，原身份查回not_applied | cancellation.go，pg_blocking_pids屏障与独立SQL检查 |
-| R6-08 | 完整当前读权每次重判，缓存不越BU范围或保留撤权字段；集合版本变化，允许与拒绝均有确切证据 | TestDepartmentReadProjectionCurrentScopeFieldsAndEvidence、TestDepartmentR5BusinessDayBrowser双时区专项及选择/历史回归 |
+| R6-08 | 每次重判当前范围及字段读权。缓存不得跨 BU 范围或保留撤权字段。BU 选择按 114 核对集合版本，部门按[第 18 节](#18-r133-m1适用验证增量)核对固定身份草稿和当前权限。普通允许和拒绝均不写完整判权过程 | 现行预期见[V128-01—06](../../adr/128-authorization-evidence-removal.md#42-可执行验收条件)。原用例 TestDepartmentReadProjectionCurrentScopeFieldsAndEvidence、TestDepartmentR5BusinessDayBrowser 双时区及选择和历史回归见[2026-11-06 报告](../../verification/116-r6-standards-and-capacity.md) |
 | R6-09 | 依赖包含受影响后代与原新祖先，不扩大到无关兄弟；索引替换不污染原快照，收窄集合不得保留旧索引 | domain/department/index_test.go、原真实共同守卫/资格及TestDepartmentAssistanceHistoryAndSelection |
 | R6-10 | 即使测试关闭PG锁计时，BU及部门提交身份锁仍受Go单调预算；空体GET不受已无读取对象的5秒截止时间误伤，连接可复用 | TestSubmissionBudgetWithoutDatabaseLockTimer、TestBodyDeadlineEndsBeforeApplicationAndKeepAlive |
 | R6-11 | 记录完整输入、首轮失败和精确复验范围，资源采样归属自有API/数据库，收尾仅回收自有临时环境 | data/116-r6、observe.go、R6报告；最终哈希核对旧证据 |
 
 跨域适用性见124第5节：M03需先独立明确组织资格/占用/审批；M04同日多动作默认不能继承本内核。上述评估不自动授权跨域代码提炼或第三对象接入。
 
-R6本批实测已交付：R6-01标准、R6-02规模/完整性、R6-04最终冷清理、R6-05关系/准确源语义、R6-06 CSV、R6-07取消及R6-08—11所列保护均有实际证据；R6-03容量目标未通过，R6-05中的深层/大扇出详情同样超标。两轮浏览器失败与复验、原身份恢复、全部指标及未关闭R6-P01/P02见R6报告，不能将语义通过扩展为全部容量通过。
+2026-11-06 的 R6 批次记录了 R6-01 标准、R6-02 规模与完整性、R6-04 最终冷清理、R6-05 关系与准确来源、R6-06 CSV、R6-07 取消及当时 R6-08—11 的观测结果。R6-03 容量未达标，R6-05 深层和大扇出详情也超标。两轮浏览器失败与复验、原身份恢复和各项实测值见[当批报告](../../verification/116-r6-standards-and-capacity.md)。R6-P01/P02 的后续责任见[125 容量整改计划](../../plans/125-r6-capacity-remediation.md)。
 
 ## 12 125整改验证参数
 

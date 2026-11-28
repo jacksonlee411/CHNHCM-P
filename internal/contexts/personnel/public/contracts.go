@@ -155,10 +155,11 @@ type NumberDecision struct {
 	Until  string `json:"validUntil,omitempty"`
 }
 type Summary struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	Number     string `json:"number"`
-	Historical bool   `json:"historical,omitempty"`
+	SourceVersion string `json:"-"`
+	ID            string `json:"id"`
+	Name          string `json:"name"`
+	Number        string `json:"number"`
+	Historical    bool   `json:"historical,omitempty"`
 }
 type Entry struct {
 	CanReadAddressTypes bool     `json:"canReadAddressTypes,omitempty"`
@@ -197,6 +198,7 @@ type DirectoryLookup interface {
 	Renew(context.Context) error
 	Candidates(ids []string) ([]Summary, string, error)
 	Page(keys []DirectoryKey, anchor string) (IndexedDirectory, error)
+	SelectionState(keys []DirectoryKey, ids []string) (version string, matched int, err error)
 }
 
 type IndexedPerson struct {

@@ -212,21 +212,34 @@ func TestLegalEntity206Recovery(t *testing.T) {
 	if e == nil {
 		t.Fatal("rollback missing")
 	}
+	checkSubmission140(t, f, "legal_entity", cmd.Create.Code, cmd.SubmissionID, 0, 0, "")
 	v, e := svc.Resolve(f.ctx, c, cmd.SubmissionID)
 	must(t, e)
 	if v.Outcome != "not_applied" {
 		t.Fatal(v)
 	}
+	if _, err := svc.Maintain(f.ctx, c, cmd); err == nil || err.Error() != "M02_REQUEST_CLOSED" {
+		t.Fatal("rolled-back submission reopened", err)
+	}
+	checkSubmission140(t, f, "legal_entity", cmd.Create.Code, cmd.SubmissionID, 0, 0, "not_applied")
 	cmd = command("LOST206")
 	_, e = (app.Service{Store: legalFault206{Store: svc.Store, lostAck: true}}).Maintain(f.ctx, c, cmd)
 	if e == nil {
 		t.Fatal("lost ack missing")
 	}
+	checkSubmission140(t, f, "legal_entity", cmd.Create.Code, cmd.SubmissionID, 1, 1, "")
 	v, e = svc.Resolve(f.ctx, c, cmd.SubmissionID)
 	must(t, e)
 	if v.Outcome != "accepted" {
 		t.Fatal(v)
 	}
+	retry, err := svc.Maintain(f.ctx, c, cmd)
+	must(t, err)
+	if !retry.Replayed || retry.SourceVersion == nil || *retry.SourceVersion != *v.SourceVersion {
+		t.Fatal("lost acknowledgement created another source")
+	}
+	checkSubmission140(t, f, "legal_entity", cmd.Create.Code, cmd.SubmissionID, 1, 1, "")
+
 	before := legalSnapshot206(t, f)
 	restartTimelineReceipts(t, f, h.b, []string{cmd.SubmissionID}, "legalentity")
 	if !reflect.DeepEqual(before, legalSnapshot206(t, f)) {

@@ -10,7 +10,8 @@ SELECTION_KEYS = ('scope', 'reason', 'integration_filter', 'integration_shards',
 
 
 def docs_path(path):
-    if path in {'AGENTS.md', 'README.md', '.github/workflows/README.md', 'docs/governance/registry.json', 'docs/assets/inventory.json'}:
+    if path in {'AGENTS.md', 'README.md', '.github/workflows/README.md', 'docs/.ignore',
+                'docs/governance/registry.json', 'docs/assets/inventory.json'}:
         return True
     p = PurePosixPath(path)
     return (p.suffix == '.md' and len(p.parts) >= 2 and p.parts[0] == 'docs'
