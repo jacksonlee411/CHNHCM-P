@@ -183,7 +183,7 @@ try {
   await expect(page).toHaveURL(url => url.searchParams.get('sort') === 'name_desc' && url.searchParams.get('page') === '1');
   check('narrow sorting uses server whitelist and applied URL');
   await open('排序：名称降序');
-  await page.setViewportSize({ width: 1000, height: 540 });
+  await page.setViewportSize({ width: 1000, height: 900 });
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(more).toBeFocused();
   check('breakpoint transition closes panel and restores an available trigger');

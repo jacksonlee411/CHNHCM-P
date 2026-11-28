@@ -91,7 +91,7 @@ export function useListReturn({ key, ready, apiRef, selected, rows, pageOffset }
     const api = apiRef.current;
     if (!api?.scroll) { fallback(); return; }
     const documentScroll = document.scrollingElement as HTMLElement;
-    const natural = matchMedia('(max-width:599px), (max-height:600px)').matches;
+    const natural = matchMedia('(max-width:640px)').matches;
     const restoreTop = () => {
       if (natural) documentScroll.scrollTop = Math.max(0, saved?.documentTop ?? 0);
       else api.scroll({ top: Math.max(0, saved?.gridTop ?? 0) });

@@ -34,13 +34,13 @@ async function sample(page: Page) {
   return { name, path };
 }
 
-for (const mode of ['1440×900', '1440×540', '原生200%']) {
+for (const mode of ['1440×900', '原生200%']) {
   test('317 地址类型配置与个人资料整页保存 ' + mode, async ({ page: standard }) => {
     test.setTimeout(180000);
     const zoom = mode === '原生200%' ? await nativeZoomBrowser() : undefined;
     const page = zoom?.page || standard;
     try {
-      if (!zoom) await page.setViewportSize({ width: 1440, height: mode === '1440×540' ? 540 : 900 });
+      if (!zoom) await page.setViewportSize({ width: 1440, height: 900 });
       const { path, name } = await sample(page);
       if (zoom) await zoom.setZoom(2);
       await reference308(page, 'admin');
@@ -87,6 +87,11 @@ for (const mode of ['1440×900', '1440×540', '原生200%']) {
         if (await compact.isVisible()) {
           await compact.click();
           await page.getByRole('menuitem', { name: day, exact: true }).click();
+        } else if (day === '1900-01-01') {
+          await timeline.getByRole('button', { name: '2099-06-01', exact: true }).press('Home');
+          await page.evaluate(() => new Promise<void>(done => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
+          await expect(timeline.getByRole('button', { name: day, exact: true })).toBeFocused();
+          await page.keyboard.press('Enter');
         } else {
           await timeline.getByRole('button', { name: day, exact: true }).press('Enter');
         }

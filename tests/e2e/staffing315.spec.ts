@@ -317,8 +317,6 @@ staffingZoomCases(
     expect(receipt.status).toBe(200);
     return sample;
   },
-  // The position quota form previously lost input between two lookups at 400%.
-  role => role === 'admin',
 );
 
 test('315 两位管理员从同一未核编表单分别保存', async ({ page, browser, baseURL }) => {

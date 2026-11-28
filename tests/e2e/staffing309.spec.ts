@@ -4,11 +4,13 @@ staffingPageSuite(['grade'], '309', matrixJourney309);
 import { test, expect } from './fixtures';
 import { open } from './bu-support';
 import { randomUUID } from 'node:crypto';
+import { desktopViewports } from './desktop-viewports.mjs';
 import { withPolicy } from './grants';
 import { request } from './dated-object-support';
 import { seed308, enter308, action308, click308, menu308 } from './staffing308-support';
 test('309 grade 新建等待操作原因后一次保存', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 540 });
+  const [width, height] = desktopViewports[0];
+  await page.setViewportSize({ width, height });
   await open(page);
   await menu308(page, 'grade');
   const code = 'G309-' + randomUUID().slice(0, 8);

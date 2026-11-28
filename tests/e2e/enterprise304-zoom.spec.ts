@@ -29,7 +29,7 @@ test('304 企业详情和更正表单原生缩放', async () => {
     const observations = [];
     zoom(0);
     await calibrateDesktopWindow(page);
-    for (const [steps, dpr] of nativeZoomCases()) {
+    for (const [steps, dpr] of nativeZoomCases) {
       zoom(steps);
       await expect.poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio])).toEqual([1280 / dpr, 900 / dpr, dpr]);
       await expect(page.getByRole('tab', {name:'基本资料',exact:true})).toBeVisible();

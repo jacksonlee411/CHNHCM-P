@@ -224,13 +224,12 @@ test('T03 原人补证后放弃入职', async ({ page }) => {
   const current = await request(page, 'GET', '/api/v1/persons/' + sample.id + '?view=edit');
   expect(current.body.documents).toHaveLength(1);
 });
-for (const [width, height] of desktopViewports) {
-  test('T03 首单入职与未来撤销 ' + width + '×' + height, async ({ page }) => {
+for (const source of ['名单行', '个人决定，回执中断'] as const) {
+  test('T03 首单入职与未来撤销 · ' + source, async ({ page }) => {
     test.setTimeout(110000);
     await signIn(page);
     const sample = await seed(page);
-    await page.setViewportSize({ width, height });
-    await journey(page, sample, height === 540, height === 900);
+    await journey(page, sample, source === '个人决定，回执中断', source === '名单行');
   });
 }
 async function native200(run: (page: Page, sample: Awaited<ReturnType<typeof seed>>) => Promise<void>,prepare:(page:Page)=>ReturnType<typeof seed>=seed) {
@@ -1322,7 +1321,7 @@ async function lifecycleJourney(page:Page,sample:Awaited<ReturnType<typeof seed>
 for(const [width,height] of desktopViewports){
   test(`M04 实际汇报离职及原记录再聘 ${width}x${height}`,async({page})=>{
     test.setTimeout(180000);await signIn(page);const sample=await seed(page);
-    await page.setViewportSize({width,height});await lifecycleJourney(page,sample,height === 540);
+    await page.setViewportSize({width,height});await lifecycleJourney(page,sample,true);
   });
 }
 test('M04 从本人历史再聘，回执中断后查回并返回原离职办理',async({page})=>{
@@ -2037,7 +2036,6 @@ test('M04 人员名录的延迟响应保留姓名草稿及搜索返回位置',as
   await signIn(page);
   const sample=await seed(page);
   await hireAtLocation(page,sample);
-  await page.setViewportSize({width:1440,height:540});
   await openPersonnel(page);
   const input=page.getByRole('textbox',{name:'姓名或人员编号'});
   await input.fill(sample.name);
@@ -2362,7 +2360,6 @@ test('M05 交接应答在按下和松开之间到达时仍打开改期', async (
   test.setTimeout(90000);
   await signIn(page);
   const person = await seed(page);
-  await page.setViewportSize({ width: 1440, height: 540 });
 
   await withCountedPolicies(page, async () => {
     const { position } = await recruitingJourney(page, person);

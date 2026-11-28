@@ -33,7 +33,6 @@ for (const role of ['admin', 'reader']) test(`302 ${role}详情位置总数、�
   }
   expect(listReads).toHaveLength(0);
   await expect(page.getByRole('button', { name: '下一个对象', exact: true })).toBeDisabled();
-  await page.setViewportSize({ width: 1440, height: 540 });
   await expect(pager.getByLabel('第22个，共22个匹配对象', { exact: true })).toBeVisible();
   expect(await pager.evaluate(el => el.getBoundingClientRect().right <= innerWidth)).toBe(true);
   await page.setViewportSize({ width: 1440, height: 900 });

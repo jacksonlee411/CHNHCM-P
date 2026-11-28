@@ -3,7 +3,11 @@ const { chromium, expect } = require('@playwright/test');
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs'),
   path = require('node:path');
-const [origin, output, mode = 'desktop'] = process.argv.slice(2);
+const [origin, output, mode = 'desktop', ...extra] = process.argv.slice(2);
+if (!origin || !output || extra.length || !['desktop', '200'].includes(mode)) {
+  console.error('用法：verify.cjs <本机地址> <输出目录> [模式]。模式须为 desktop 或 200。');
+  process.exit(1);
+}
 if (new URL(origin).hostname !== '127.0.0.1') throw Error('请使用本机验收地址');
 fs.mkdirSync(output, { recursive: true });
 const zoom = mode === '200';
@@ -14,7 +18,7 @@ const zoom = mode === '200';
   let p;
   try {
     const ctx = await browser.newContext({
-      viewport: zoom ? null : { width: 1440, height: mode === 'short' ? 540 : 900 },
+      viewport: zoom ? null : { width: 1440, height: 900 },
     });
     p = await ctx.newPage();
     p.setDefaultTimeout(12000);
@@ -73,6 +77,7 @@ const zoom = mode === '200';
       control: document.querySelector('.list-control').getBoundingClientRect().height,
       sidebar: document.querySelector('.department-tree-panel')?.getBoundingClientRect().width ?? 0,
     }));
+    expect(dims.viewport).toEqual(zoom ? [640, 450, 2] : [1440, 900, 1]);
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     if (!zoom) {
       expect(dims.control).toBe(64);
@@ -85,7 +90,7 @@ const zoom = mode === '200';
     await input.fill('示例陈舒');
     await input.press('Enter');
     await expect(p.getByText('3 份任职，1 人', { exact: true })).toBeVisible();
-    if (zoom) await button('打开部门树').click();
+    if (zoom) await button('打开部门树').press('Enter');
     for (const [i, n] of ['示例运营总部', '华东区域', '客户服务中心', '服务交付部', '一线服务组'].entries())
       await expect(tree(n)).toHaveAttribute('aria-level', String(i + 1));
     await tree('示例运营总部').focus();
@@ -156,7 +161,7 @@ const zoom = mode === '200';
     await expect(link).toBeFocused();
     await expect(input).toHaveValue('示例陈舒');
     const expiredAddress = p.url();
-    if (!zoom && mode === 'desktop') {
+    if (!zoom) {
       await input.fill('甲'.repeat(201));
       await input.press('Enter');
       await expect(p.getByRole('alert')).toBeVisible();
@@ -213,6 +218,10 @@ const zoom = mode === '200';
     await expect(p.getByText('0 份任职，1 人', { exact: true })).toBeVisible();
     await snap('reader');
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    if (zoom) {
+      execFileSync('python3', ['docs/verification/data/100-ui-baseline/native-zoom.py', '0']);
+      await expect.poll(() => p.evaluate(() => [innerWidth, innerHeight, devicePixelRatio])).toEqual([1280, 900, 1]);
+    }
     fs.writeFileSync(path.join(output, mode + '.json'), JSON.stringify(dims));
     console.log(mode, JSON.stringify(dims), '业务验证通过');
   } catch (error) {

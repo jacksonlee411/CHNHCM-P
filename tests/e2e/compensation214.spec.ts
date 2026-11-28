@@ -1,5 +1,6 @@
 import { expect, test, type Page } from './fixtures';
 import { openPersonnel } from './app-navigation';
+import { desktopViewports } from './desktop-viewports.mjs';
 import { signIn } from './hire-fixture';
 import { calibrateDesktopWindow, nativeZoomBrowser } from './native-zoom-support';
 import { request } from './dated-object-support';
@@ -74,10 +75,10 @@ async function payJourney(page: Page) {
   await page.getByRole('link', { name: '返回人员' }).click();
   await expect(page.locator('a[data-object-link][href*="' + sample.assignment + '"]')).toBeFocused();
 }
-for (const height of [900, 540]) {
-  test('214 人员名录同级薪酬、断线查回及跨日原件 1440×' + height, async ({ page }) => {
+for (const [width, height] of desktopViewports) {
+  test(`214 人员名录同级薪酬、断线查回及跨日原件 ${width}×${height}`, async ({ page }) => {
     test.setTimeout(120000);
-    await page.setViewportSize({ width: 1440, height });
+    await page.setViewportSize({ width, height });
     await signIn(page);
     await payJourney(page);
   });
