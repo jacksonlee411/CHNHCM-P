@@ -2,6 +2,19 @@
 
 公共仓库提供产品构建、合成测试及可分发的依赖。客户实库记录、历史运行包和仅供本地使用的来源包留在私有原仓。下文的私仓链接需要原仓访问权限。
 
+<a id="compensation-configuration-benchmark"></a>
+
+**薪酬配置对标。** 2026-11-27 核对 Oracle 产品文档及中国企业薪酬设计资料，用于界定首期适用的制度。
+
+| 对标问题 | Oracle Fusion Cloud HCM | PeopleSoft HCM 9.2.055 |
+| --- | --- | --- |
+| 固定津贴怎样表达 | 薪资可由独立金额或派生费率组成。官方样例分别给出按基薪比例计算的住房津贴和按职级确定金额的津贴。[薪资费率组成](https://docs.oracle.com/en/cloud/saas/readiness/hcm/24c/comp-24c/24C-compensation-wn-f31840.htm) | 薪酬费率代码可选固定金额或百分比，并记录币种和频率。[费率代码](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-compensation/setting-rate-codes.html) |
+| 职级内是否必须设档 | 职级费率可定义区间，也可供无薪档的职级阶梯使用。区间可以有下限、中点和上限。[职级费率](https://docs.oracle.com/en/cloud/saas/human-resources/fagrl/overview-of-grade-rates.html) | 先给薪酬计划配置职级。在职级内增设薪档并指定各档薪酬组成及金额是可选步骤。[计划、职级与薪档](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-manage-base-compensation-and-budgeting/setting-salary-plans-grades-steps.html) |
+
+Fusion 允许同一职级出现在多份费率中。PeopleSoft 将预算矩阵和逐级设档列为可选。专业计划的固定津贴归属本计划、同口径薪带跨计划共用，均来自本项目当前制度。[Fusion 职级费率](https://docs.oracle.com/en/cloud/saas/human-resources/fagrl/overview-of-grade-rates.html) · [PeopleSoft 薪酬计划](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-manage-base-compensation-and-budgeting/setting-salary-plans-grades-steps.html)
+
+人力资源社会保障部办公厅《技能人才薪酬分配指引》（人社厅发〔2021〕7 号，第十三至十六条、第二十条）供中国企业设计技能人才制度时参考。企业可组合岗位、绩效和津贴，也有在同一岗级内按档晋薪的制度。本期用前者检验组成项设计。客户若使用明确档额或晋档条件，应单列后续需求，连续薪带无法表达逐档金额及晋档资格。[指引原文](https://rsj.sh.gov.cn/trlzyhshbzbgz_17256/20211130/t0035_1404121.html) · [薪酬首期取舍](../specs/m09/211-compensation-configuration.md#policy-decisions)
+
 职务信息的来源索引定位 PeopleSoft 的任职编号、原 0 号再聘示例及关系内主次字段、Odoo 员工表单、本地 Bugs-And-Blossoms 的生命周期合同及兼岗验收。采用范围和本项目的独立预期分别见设计复核与规格。[506 来源索引](506-job-information-sources.json) · [业务与体验对照](../verification/506-job-information-design-review.md)
 
 人员登记与名录 T00 留存了 CubeBox 任职列表和多值资料设计的两份原文。501/502 记录采用范围，资产台账保留规格提炼与产品接线的区别。[人员来源包](https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/reference/sources/cubebox-personnel-074fe044.zip) · [T00 评审](../verification/500-t00-personnel-specifications.md) · [资产台账](../assets/inventory.json)

@@ -67,7 +67,7 @@ func TestPersonnelAddressTypeUpgrade(t *testing.T) {
 func TestPersonnelAddressTypePeriodUpgrade(t *testing.T) {
 	pool := newStaffingMigrationPool(t)
 	ctx := t.Context()
-	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00061" })))
+	must(t, bootstrap.Migrate(ctx, pool, hireMigrationSet(t, func(v string) bool { return v <= "00058" || v == "00061" })))
 	instance := foundation.NewID()
 	init := bootstrap.InitInput{Instance: instance, EnterpriseCode: "LOCAL", EnterpriseName: "期间迁移", Login: "profile", Password: foundation.NewID(), PersonnelProfile: "registrar", PersonalProfileFixture: true}
 	must(t, bootstrap.Initialize(ctx, pool, init))

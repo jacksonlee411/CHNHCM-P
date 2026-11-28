@@ -45,6 +45,9 @@
 | [201 国家/地区目录、行政区划目录与企业地点维护技术合同](../../../specs/m02/201-country-region-geo-area-and-location-maintenance-contract.md) | — | — |
 | [202 配置与主数据默认生效日期](../../../adr/202-master-data-default-effective-date.md) | — | — |
 | [207 法律实体基础维护合同](../../../specs/m02/207-legal-entity-design.md) | [法律实体基础验收](../../../specs/m02/207-legal-entity-design.md#legal-entity-l1-acceptance) · [主体用途与真实采用](../../../specs/m02/207-legal-entity-design.md#legal-entity-purpose-handoff) | — |
+| [211 薪酬体系配置业务方案](../../../specs/m09/211-compensation-configuration.md) | [薪酬计划和职级标准的办理规则](../../../specs/m09/211-compensation-configuration.md#m09-br-007) | — |
+| [212 薪酬配置后台页面与交互设计](../../../specs/m09/212-compensation-configuration-pages.md) | — | — |
+| [213 本阶段管理员维护与业务生效](../../../adr/213-administrator-maintenance-and-effectivity.md) | — | — |
 | [308 职类、职务系列与职务基础合同](../../../specs/m03/308-job-foundation-contract.md) | [职务逐页对照](../../../specs/m03/308-job-foundation-contract.md#m03-page-inheritance) · [308 容量分组](../../../specs/m03/308-job-foundation-contract.md#job-capacity-matrix) · [字段与办理差异](../../../specs/m03/308-job-foundation-contract.md#m03-page-differences) · [308 职类与双维分类](../../../specs/m03/308-job-foundation-contract.md#m03-job-function) · [职类菜单、查找与导出](../../../specs/m03/308-job-foundation-contract.md#m03-br-032) | — |
 | [310 职级与职级阶梯对象接入合同](../../../specs/m03/310-grade-ladder-contract.md) | [逐页继承](../../../specs/m03/310-grade-ladder-contract.md#m03-br-023) · [成员顺序与集合维护差异](../../../specs/m03/310-grade-ladder-contract.md#82-有依据的业务差异) | — |
 | [312 岗位定义与岗位层级对象接入合同](../../../specs/m03/312-position-contract.md) | [页面接入与岗位差异](../../../specs/m03/312-position-contract.md#4-页面接入) · [岗位工作区与管理汇报入口](../../../specs/m03/312-position-contract.md#6-岗位工作区接续) | — |

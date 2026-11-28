@@ -6,6 +6,7 @@
 
 | 要解决的问题 | 现行约定 | 对象、实现或查证入口 |
 | --- | --- | --- |
+| 本阶段由谁维护业务，保存后何时生效 | [管理员维护与业务生效](../adr/213-administrator-maintenance-and-effectivity.md) · [项目阶段](../adr/003-implementation-stages.md) | [薪酬计划和职级标准的办理规则](../specs/m09/211-compensation-configuration.md#m09-br-007) |
 | 业务对象是谁，什么条件下可以办理、更正或撤销 | [领域与事实归属](../architecture/004-repository-layout.md) · [各模块业务规格](../specs/README.md) · [术语命名](015-terminology-naming.md) | [人员登记及防重](../specs/m01/501-person-registration-requirements.md#m01-registration-examples) · [任职编号与再聘](../specs/m04/506-job-information-records.md#m04-br-009) |
 | 新数据用业务对象、配置项、规则版本还是固定枚举 | [业务对象与配置数据建模规范](../architecture/316-object-and-configuration-models.md#model-choice) · [轻量配置项最小合同](../architecture/316-object-and-configuration-models.md#item-contract) | [日期口径](../architecture/316-object-and-configuration-models.md#selection-date) · [接入样本与成本比较](../architecture/316-object-and-configuration-models.md#cost-and-acceptance) |
 | 业务日、记录时刻、历史修订和采用来源各指什么 | [日期显示与输入](../adr/026-date-display-and-input-format.md) · [主数据首次新建](../adr/202-master-data-default-effective-date.md) · [按日维护及准确来源](../specs/m02/120-dated-maintenance-technical-contract.md) | [普通维护与专项按日查询](../adr/123-current-maintenance-and-dated-query-boundary.md) · [同日人事办理](../specs/m04/506-job-information-records.md#m04-scn-018) |

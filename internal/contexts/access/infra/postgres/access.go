@@ -704,6 +704,8 @@ func initializeDepartmentGrants(batch *pgx.Batch, instance, enterprise, subject 
 	initializeLocationGrants(batch, instance, enterprise, subject, readOnly)
 	initializeLegalEntityGrants(batch, instance, enterprise, subject, readOnly)
 	initializeStaffingGrants(batch, instance, enterprise, subject, readOnly)
+	initializeGradeRateGrants(batch, instance, enterprise, subject, readOnly)
+	initializeCompensationPlanGrants(batch, instance, enterprise, subject, readOnly)
 	for _, kind := range []string{"legalpurpose", "assignmentpolicy"} {
 		actions := []string{"read", "history.read", "check"}
 		if !readOnly {

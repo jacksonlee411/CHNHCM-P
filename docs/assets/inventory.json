@@ -831,7 +831,46 @@
         "implemented": false,
         "verified": false
       },
-      "new_evidence": []
+      "new_evidence": [],
+      "adoptions": [
+        {
+          "document": "CHNHCM-210",
+          "scope": "薪标经办人从真实菜单打开更正前的原件，核对上限并返回所选标准。",
+          "target_files": [
+            "tests/e2e/compensation210.spec.ts",
+            "apps/web/src/features/compensation/RateDetail.tsx"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i1.md"
+        },
+        {
+          "document": "CHNHCM-210",
+          "scope": "计划经办人从变更日志与组成行打开计划或职级标准原件，再返回原行或所查业务日。",
+          "target_files": [
+            "tests/e2e/compensation-plans210.spec.ts",
+            "apps/web/src/features/compensation/PlanDetail.tsx"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i2.md"
+        }
+      ],
+      "planned_adoptions": [
+        {
+          "document": "CHNHCM-210",
+          "scope": "把既有从正常入口选择原件、查看旧资料和返回的验证方式用于两类薪酬配置的设计场景。金额和日期预期见 211。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        }
+      ]
     },
     {
       "id": "ASSET-0029",
@@ -2403,6 +2442,31 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/122-operation-summary-implementation.md",
           "verification_limit": "原实施报告与122评审修复报告合读；补闭S/P/F主层参数，不提升原资产整项状态。"
+        },
+        {
+          "document": "CHNHCM-211",
+          "scope": "Go 按确切原修订和结果列出获权薪标字段、来源及经办时间。",
+          "target_files": [
+            "internal/contexts/compensation/infra/postgres/rate_read.go",
+            "apps/web/src/features/compensation/RateLog.tsx",
+            "internal/bootstrap/compensation_grade_rate_integration_test.go"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i1.md"
+        },
+        {
+          "document": "CHNHCM-211",
+          "scope": "将计划组成、范围及同笔采用保留在变更前后原件中，按当前权限重读时可解释十月津贴及保存时的薪标。",
+          "target_files": [
+            "internal/contexts/compensation/infra/postgres/plan_projection.go",
+            "internal/bootstrap/compensation_plan_integration_test.go"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i2.md"
         }
       ],
       "planned_adoptions": [
@@ -2418,6 +2482,17 @@
           "implemented": false,
           "verified": false,
           "evidence": "docs/verification/122-operation-summary-contract-review.md"
+        },
+        {
+          "document": "CHNHCM-211",
+          "scope": "提炼变更前后值与确切修订的业务意图，薪带新增、误录更正和原计划采用由 M09 的对象合同定义。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
         }
       ]
     },
@@ -5123,6 +5198,19 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/019-cubebox-experience-migration.md"
         }
+      ],
+      "planned_adoptions": [
+        {
+          "document": "CHNHCM-212",
+          "scope": "职级标准与薪酬计划沿用对象详情、紧凑资料分组及当前授权的控制区，组成项作为计划内资料。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
+        }
       ]
     },
     {
@@ -7401,6 +7489,44 @@
           "verified": true,
           "complete_asset_verified": false,
           "evidence": "docs/verification/206-legal-entity-implementation.md"
+        },
+        {
+          "document": "CHNHCM-212",
+          "scope": "薪标使用共用日期轴和维护入口，桌面、短屏及放大流程按同一后台菜单办理。",
+          "target_files": [
+            "apps/web/src/features/compensation/RateDetail.tsx",
+            "apps/web/src/features/compensation/RateEditor.tsx",
+            "tests/e2e/compensation210.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i1.md"
+        },
+        {
+          "document": "CHNHCM-212",
+          "scope": "计划日期轴定位真实计划记录，十月调整后沿一月记录查回原额。",
+          "target_files": [
+            "apps/web/src/features/compensation/PlanDetail.tsx",
+            "tests/e2e/compensation-plans210.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/210-compensation-i2.md"
+        }
+      ],
+      "planned_adoptions": [
+        {
+          "document": "CHNHCM-212",
+          "scope": "薪标和计划按日选择当前和未来记录，日志打开确切历史并返回所选记录。",
+          "target_contracts": [
+            "CHNHCM-211",
+            "CHNHCM-212"
+          ],
+          "implemented": false,
+          "verified": false,
+          "evidence": "docs/verification/210-compensation-design-walkthrough.md"
         }
       ]
     },

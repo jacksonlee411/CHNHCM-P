@@ -18,18 +18,64 @@ func restoreGrantPredecessor(f *fixture) {
 	if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('access.bound_permission')") == 0 {
 		return
 	}
-	f.exec(`ALTER TABLE personnel.profile_item_payload DROP COLUMN address_type_id, DROP COLUMN address_type_revision, DROP COLUMN address_type_day;
+	// The fixture models the pre-M09 product. Remove its synthetic rate grants
+	// before restoring the older allowlist. Real profiles are never downgraded.
+	f.exec(`DROP SCHEMA IF EXISTS configuration CASCADE;
+ DROP SCHEMA IF EXISTS compensation CASCADE;
+ ALTER TABLE personnel.profile_item_payload DROP COLUMN address_type_id, DROP COLUMN address_type_revision, DROP COLUMN address_type_day;
  DROP TABLE personnel.address_type_revision,personnel.address_type,personnel.address_type_not_applied;
  DROP FUNCTION personnel.initialize_address_types(uuid),personnel.reject_address_type_revision_change();
  ALTER TABLE access.person_grant DROP CONSTRAINT person_address_type_grant_scope;
- DELETE FROM public.goose_db_version WHERE version_id IN (61,62);
  DROP VIEW IF EXISTS access.subject_grant;
  CREATE TABLE access.subject_grant (LIKE fixture.prefix_grant INCLUDING ALL);
- INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission;
+ INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission WHERE action NOT LIKE 'graderate.%' AND action NOT LIKE 'compplan.%';
  DROP VIEW access.bound_permission;
  DROP TABLE access.grant_assignment,access.grant_revision,access.policy_version;
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id=58`)
+ DROP FUNCTION IF EXISTS access.valid_pre_plan_permission(uuid,text,uuid,text,text[],text[]);
+ DROP FUNCTION IF EXISTS access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[]);
+ DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61,62)`)
+}
+
+func TestCompensationUpgradeFromReleasedLedgers(t *testing.T) {
+	for _, tc := range []struct {
+		name           string
+		prefix         string
+		addressVersion string
+		missing        int
+	}{
+		{"address_types_release", "00058", "00061", 3},
+		{"address_types_retry_after_grade_rates", "00059", "00061", 2},
+		{"compensation_plans_release", "00060", "", 2},
+		{"address_periods_release", "00058", "00062", 2},
+		{"address_periods_retry_after_grade_rates", "00059", "00062", 1},
+		{"combined_release_before_periods", "00061", "", 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			pool := newStaffingMigrationPool(t)
+			ctx := t.Context()
+			prior := hireMigrationSet(t, func(version string) bool {
+				return version <= tc.prefix || (version >= "00061" && version <= tc.addressVersion)
+			})
+			must(t, bootstrap.Migrate(ctx, pool, prior))
+			if bootstrap.CheckCurrentStorage(ctx, pool) == nil {
+				t.Fatal("runtime admitted an incomplete release")
+			}
+			_, err := pool.Exec(ctx, "CREATE TABLE public.prior_ledger AS TABLE public.goose_db_version")
+			must(t, err)
+			for range 2 {
+				must(t, bootstrap.Migrate(ctx, pool, migrations.Files))
+				must(t, bootstrap.CheckCurrentStorage(ctx, pool))
+				var preserved bool
+				must(t, pool.QueryRow(ctx, `SELECT
+					NOT EXISTS (TABLE public.prior_ledger EXCEPT ALL TABLE public.goose_db_version)
+					AND (SELECT count(*) FROM public.goose_db_version) = (SELECT count(*) FROM public.prior_ledger) + $1`, tc.missing).Scan(&preserved))
+				if !preserved {
+					t.Fatal("upgrade changed a previous ledger row or recorded a migration more than once")
+				}
+			}
+		})
+	}
 }
 
 func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
@@ -39,8 +85,10 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	before := businessSnapshot(t, f)
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
-		{"foreign_in_progress_migration", `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(59,true),(60,true)`, `DELETE FROM public.goose_db_version WHERE version_id IN (59,60)`},
 		{"missing_address_period", `ALTER TABLE personnel.address_type RENAME COLUMN valid_during TO hidden_period`, `ALTER TABLE personnel.address_type RENAME COLUMN hidden_period TO valid_during`},
+		{"missing_plan_rate_uses", `ALTER TABLE compensation.plan_rate_use RENAME TO hidden_uses`, `ALTER TABLE compensation.hidden_uses RENAME TO plan_rate_use`},
+		{"missing_grade_rate_periods", `ALTER TABLE compensation.grade_rate_period RENAME TO hidden_periods`, `ALTER TABLE compensation.hidden_periods RENAME TO grade_rate_period`},
+		{"unrecorded_compensation_migrations", `DELETE FROM public.goose_db_version WHERE version_id IN (59,60)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(59,true),(60,true)`},
 		{"mutable_address_type_revision", `ALTER TABLE personnel.address_type_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE personnel.address_type_revision ENABLE TRIGGER immutable_revision`},
 		{"mutable_grant_revision", `ALTER TABLE access.grant_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE access.grant_revision ENABLE TRIGGER immutable_revision`},
 		{"missing_f_reserved_versions", `DELETE FROM public.goose_db_version WHERE version_id IN (32,33)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(32,true),(33,true)`},
