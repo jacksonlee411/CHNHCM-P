@@ -80,7 +80,9 @@
 
 ## 待启动计划
 
-当前登记为零。
+| 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
+| --- | --- | --- | --- |
+| [029 X03 授权页面优化方案](../../plans/029-grant-management-experience.md) | in_review | not_started | 原位 |
 
 <a id="catalog-review"></a>
 
@@ -90,6 +92,7 @@
 | --- | --- | --- | --- |
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 |
+| [029 X03 授权页面优化方案](../../plans/029-grant-management-experience.md) | in_review | not_started | 原位 |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
 

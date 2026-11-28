@@ -854,6 +854,26 @@
       "archive": null
     },
     {
+      "id": "CHNHCM-029",
+      "title": "X03 授权页面优化方案",
+      "path": "docs/plans/029-grant-management-experience.md",
+      "owner_branch": "wt-dev-a",
+      "owner_role": "Access、客户管理员体验及验证维护者",
+      "owner": null,
+      "status": "in_review",
+      "type": "plan",
+      "modules": [
+        "X03"
+      ],
+      "scope": "账号授权概览、逐份业务授予、管理职责、版本影响与变更查回的页面设计、实施顺序和用户验收。",
+      "format": "numbered",
+      "review": null,
+      "execution_status": "not_started",
+      "superseded_by": [],
+      "closure": null,
+      "archive": null
+    },
+    {
       "id": "CHNHCM-100",
       "title": "页面体验优化实施计划",
       "path": "docs/archive/plans/100-ui-experience-improvement.md",
