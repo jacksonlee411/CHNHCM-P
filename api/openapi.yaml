@@ -13862,6 +13862,222 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/compensation/assignments/{assignmentId}/base-pay/access:
+    get:
+      operationId: getBasePayAccess
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: assignmentId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: businessAt
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Authorized base pay result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasePayAccess'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/assignments/{assignmentId}/base-pay/context:
+    get:
+      operationId: prepareBasePay
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: assignmentId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: businessAt
+        schema:
+          type: string
+          format: date
+      - {in: query, name: candidatePage, schema: {type: integer, minimum: 1}}
+      - {in: query, name: planId, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Authorized base pay result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayDetail'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/assignments/{assignmentId}/base-pay:
+    get:
+      operationId: getBasePay
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: assignmentId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: businessAt
+        schema:
+          type: string
+          format: date
+      - {in: query, name: candidatePage, schema: {type: integer, minimum: 1}}
+      - {in: query, name: planId, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Authorized base pay result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayDetail'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: confirmAward
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: assignmentId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: X-CSRF-Token
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: X-Award-Confirmation
+        schema: {type: string, format: uuid}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmAward'
+      responses:
+        '200':
+          description: Authorized base pay result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AwardReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/awards/{awardId}/revisions/{revision}:
+    get:
+      operationId: getAwardOriginal
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: awardId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: revision
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized base pay result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayAward'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/award-receipts/{submissionId}:
+    get:
+      operationId: getAwardReceipt
+      security:
+      - session: []
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Authorized base pay result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AwardReceipt'
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/compensation/award-receipts/{submissionId}/resolve:
+    post:
+      operationId: resolveAwardReceipt
+      security: [{session: []}]
+      parameters:
+        - {in: path, name: submissionId, required: true, schema: {type: string, format: uuid}}
+        - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AwardRecoveryInput'}
+      responses:
+        '200':
+          description: Authorized recovery of the original submission
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AwardResolution'}
+        default:
+          description: Request rejected or unavailable
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Error'}
 components:
   securitySchemes:
     session:
@@ -13869,6 +14085,215 @@ components:
       in: cookie
       name: chnhcm_session
   schemas:
+    PayAllowance:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        amount:
+          type: string
+      required:
+      - name
+      - amount
+    PayBasis:
+      type: object
+      additionalProperties: false
+      properties:
+        planId:
+          type: string
+        planName:
+          type: string
+        planCode:
+          type: string
+        planSource:
+          type: string
+        planRecord:
+          type: string
+        planRevision:
+          type: string
+        scopeVersion:
+          type: string
+        componentId:
+          type: string
+        componentName:
+          type: string
+        rateId:
+          type: string
+        rateSource:
+          type: string
+        rateRecord:
+          type: string
+        rateRevision:
+          type: string
+        grade:
+          type: string
+        minimum:
+          type: string
+        guidance:
+          type: string
+        maximum:
+          type: string
+        allowances:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayAllowance'
+        token:
+          type: string
+    PayAward:
+      type: object
+      additionalProperties: false
+      properties:
+        awardId:
+          type: string
+        revision:
+          type: string
+        assignmentId:
+          type: string
+        effectiveDate:
+          type: string
+        action:
+          type: string
+        amount:
+          type: string
+        reason:
+          type: string
+        note:
+          type: string
+        recordedAt:
+          type: string
+        operator:
+          type: string
+        basis:
+          $ref: '#/components/schemas/PayBasis'
+        previous:
+          type: string
+        restoration:
+          type: object
+          additionalProperties: false
+          properties:
+            amount: {type: string}
+        current:
+          type: boolean
+      required:
+      - awardId
+      - revision
+      - assignmentId
+      - effectiveDate
+      - action
+      - amount
+      - reason
+      - recordedAt
+      - current
+    PayDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        candidateCount: {type: integer}
+        candidatePage: {type: integer}
+        candidatePageSize: {type: integer}
+        selectedBasis: {$ref: '#/components/schemas/PayBasis'}
+        assignmentId:
+          type: string
+        businessAt:
+          type: string
+        active:
+          type: boolean
+        version:
+          type: string
+        actions:
+          type: array
+          items:
+            type: string
+        current:
+          $ref: '#/components/schemas/PayAward'
+        policy:
+          $ref: '#/components/schemas/PayBasis'
+        message:
+          type: string
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayBasis'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayAward'
+      required:
+      - candidateCount
+      - candidatePage
+      - candidatePageSize
+      - assignmentId
+      - businessAt
+      - active
+      - version
+      - actions
+      - candidates
+      - items
+    ConfirmAward:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+        effectiveDate:
+          type: string
+        expectedVersion:
+          type: string
+        awardId:
+          type: string
+        expectedRevision:
+          type: string
+        planId:
+          type: string
+        componentId:
+          type: string
+        basisToken:
+          type: string
+        amount:
+          type: string
+        reason:
+          type: string
+        note:
+          type: string
+      required:
+      - action
+      - effectiveDate
+      - expectedVersion
+    AwardReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        submissionId:
+          type: string
+        award:
+          $ref: '#/components/schemas/PayAward'
+      required:
+      - submissionId
+      - award
+    AwardRecoveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        assignmentId: {type: string, format: uuid}
+        command: {$ref: '#/components/schemas/ConfirmAward'}
+    AwardResolution:
+      type: object
+      additionalProperties: false
+      required: [submissionId, outcome]
+      properties:
+        submissionId: {type: string, format: uuid}
+        outcome: {type: string, enum: [accepted, not_applied]}
+        award: {$ref: '#/components/schemas/PayAward'}
+        confirmation: {type: string, format: uuid}
+    BasePayAccess:
+      type: object
+      additionalProperties: false
+      properties:
+        available:
+          type: boolean
+      required:
+      - available
     CompensationScopeChoice:
       type: object
       additionalProperties: false

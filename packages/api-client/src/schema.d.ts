@@ -6070,10 +6070,199 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/compensation/assignments/{assignmentId}/base-pay/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getBasePayAccess"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/assignments/{assignmentId}/base-pay/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["prepareBasePay"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/assignments/{assignmentId}/base-pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getBasePay"];
+        put?: never;
+        post: operations["confirmAward"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/awards/{awardId}/revisions/{revision}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAwardOriginal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/award-receipts/{submissionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAwardReceipt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compensation/award-receipts/{submissionId}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolveAwardReceipt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        PayAllowance: {
+            name: string;
+            amount: string;
+        };
+        PayBasis: {
+            planId?: string;
+            planName?: string;
+            planCode?: string;
+            planSource?: string;
+            planRecord?: string;
+            planRevision?: string;
+            scopeVersion?: string;
+            componentId?: string;
+            componentName?: string;
+            rateId?: string;
+            rateSource?: string;
+            rateRecord?: string;
+            rateRevision?: string;
+            grade?: string;
+            minimum?: string;
+            guidance?: string;
+            maximum?: string;
+            allowances?: components["schemas"]["PayAllowance"][];
+            token?: string;
+        };
+        PayAward: {
+            awardId: string;
+            revision: string;
+            assignmentId: string;
+            effectiveDate: string;
+            action: string;
+            amount: string;
+            reason: string;
+            note?: string;
+            recordedAt: string;
+            operator?: string;
+            basis?: components["schemas"]["PayBasis"];
+            previous?: string;
+            restoration?: {
+                amount?: string;
+            };
+            current: boolean;
+        };
+        PayDetail: {
+            candidateCount: number;
+            candidatePage: number;
+            candidatePageSize: number;
+            selectedBasis?: components["schemas"]["PayBasis"];
+            assignmentId: string;
+            businessAt: string;
+            active: boolean;
+            version: string;
+            actions: string[];
+            current?: components["schemas"]["PayAward"];
+            policy?: components["schemas"]["PayBasis"];
+            message?: string;
+            candidates: components["schemas"]["PayBasis"][];
+            items: components["schemas"]["PayAward"][];
+        };
+        ConfirmAward: {
+            action: string;
+            effectiveDate: string;
+            expectedVersion: string;
+            awardId?: string;
+            expectedRevision?: string;
+            planId?: string;
+            componentId?: string;
+            basisToken?: string;
+            amount?: string;
+            reason?: string;
+            note?: string;
+        };
+        AwardReceipt: {
+            submissionId: string;
+            award: components["schemas"]["PayAward"];
+        };
+        AwardRecoveryInput: {
+            /** Format: uuid */
+            assignmentId?: string;
+            command?: components["schemas"]["ConfirmAward"];
+        };
+        AwardResolution: {
+            /** Format: uuid */
+            submissionId: string;
+            /** @enum {string} */
+            outcome: "accepted" | "not_applied";
+            award?: components["schemas"]["PayAward"];
+            /** Format: uuid */
+            confirmation?: string;
+        };
+        BasePayAccess: {
+            available: boolean;
+        };
         CompensationScopeChoice: {
             /** @enum {string} */
             dimension: "legalEntity" | "jobFamily" | "grade";
@@ -27768,6 +27957,248 @@ export interface operations {
                     "application/json": {
                         applicable: boolean;
                     };
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getBasePayAccess: {
+        parameters: {
+            query?: {
+                businessAt?: string;
+            };
+            header?: never;
+            path: {
+                assignmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized base pay result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BasePayAccess"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    prepareBasePay: {
+        parameters: {
+            query?: {
+                businessAt?: string;
+                candidatePage?: number;
+                planId?: string;
+            };
+            header?: never;
+            path: {
+                assignmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized base pay result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayDetail"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getBasePay: {
+        parameters: {
+            query?: {
+                businessAt?: string;
+                candidatePage?: number;
+                planId?: string;
+            };
+            header?: never;
+            path: {
+                assignmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized base pay result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayDetail"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    confirmAward: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+                "Idempotency-Key": string;
+                "X-Award-Confirmation"?: string;
+            };
+            path: {
+                assignmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmAward"];
+            };
+        };
+        responses: {
+            /** @description Authorized base pay result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardReceipt"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getAwardOriginal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                awardId: string;
+                revision: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized base pay result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayAward"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getAwardReceipt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                submissionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized base pay result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardReceipt"];
+                };
+            };
+            /** @description Request rejected or unavailable */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    resolveAwardReceipt: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                submissionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AwardRecoveryInput"];
+            };
+        };
+        responses: {
+            /** @description Authorized recovery of the original submission */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardResolution"];
                 };
             };
             /** @description Request rejected or unavailable */

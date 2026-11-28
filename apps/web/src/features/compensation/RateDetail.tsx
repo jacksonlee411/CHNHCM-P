@@ -1,3 +1,4 @@
+import { payReturn } from './basePay';
 import { useEffect, useRef, useState } from 'react';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -43,7 +44,8 @@ export function RateDetailPage({ session, creating = false }: { session: Princip
   const [params, setParams] = useMaintenanceSearchParams(ratePath);
   const candidate = params.get('back') ?? ratePath;
   const fromPlan = /^\/settings\/compensation\/plans\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(candidate.split('?')[0]);
-  const back = candidate.split('?')[0] === ratePath || fromPlan ? candidate : ratePath;
+  const fromPay = payReturn(candidate);
+  const back = fromPay || candidate.split('?')[0] === ratePath || fromPlan ? candidate : ratePath;
   const selected = params.get('selectedRecordId') || undefined, source = params.get('sourceVersion') || undefined;
   const [edit, setEdit] = useState<Action>(), [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [host, setHost] = useState<HTMLDivElement | null>(null), [notice, setNotice] = useState('');
@@ -106,7 +108,7 @@ export function RateDetailPage({ session, creating = false }: { session: Princip
   }, [data, edit]);
   const time = snapshot?.recordedAt;
   return <Box className="standard-page object-page" aria-busy={!valid && !errors}>
-    <RecordControl identity={<><RecordBackButton component={Link} to={back} label={fromPlan ? '返回薪酬计划' : undefined} />{current?.grade?.code && <Typography>{current.grade.code}</Typography>}
+    <RecordControl identity={<><RecordBackButton component={Link} to={back} label={fromPay ? '返回员工薪酬' : fromPlan ? '返回薪酬计划' : undefined} />{current?.grade?.code && <Typography>{current.grade.code}</Typography>}
       {canEdit && !editing && <IconButton aria-label="更多操作" aria-haspopup="menu" aria-expanded={!!anchor} onClick={e => { opener.current = e.currentTarget; setAnchor(e.currentTarget); }}><MoreVertIcon /></IconButton>}</>}
       actions={editing ? <Box ref={setHost} sx={{ display:'flex', gap:1, flexWrap:'wrap' }} /> :
         canEdit && data.actions.ADD && <Button variant="contained" disabled={window?.available === false} onClick={e => start('ADD', e.currentTarget)}>{addLabel}</Button>}

@@ -22,6 +22,7 @@ func restoreGrantPredecessor(f *fixture) {
 	// before restoring the older allowlist. Real profiles are never downgraded.
 	f.exec(`DROP SCHEMA IF EXISTS configuration CASCADE;
  DROP SCHEMA IF EXISTS compensation CASCADE;
+ DROP TABLE IF EXISTS access.base_pay_grant;
  DROP VIEW IF EXISTS access.subject_grant;
  CREATE TABLE access.subject_grant (LIKE fixture.prefix_grant INCLUDING ALL);
  INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission WHERE action NOT LIKE 'graderate.%' AND action NOT LIKE 'compplan.%';
@@ -30,7 +31,7 @@ func restoreGrantPredecessor(f *fixture) {
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_plan_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60)`)
+ DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61)`)
 }
 
 func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {

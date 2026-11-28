@@ -111,10 +111,10 @@ export class SubmissionFlow<C, R extends Outcome, Wire> {
     this.clearPayload(); this.submittedId = undefined; this.busy = false; this.unknown = false;
     this.saved = result.outcome === 'accepted' || result.outcome === 'no_change'; this.ports.changed(); return true;
   }
-  async submit(command: C): Promise<Completion<R>> {
+  async submit(command: C, confirmedSubmissionId?:string): Promise<Completion<R>> {
     if (this.busy || this.saved) return { kind: 'ignored' };
     const current = this.ports.current(), wasUnknown = this.unknown;
-    const attempt = this.attempt ?? { id: this.ports.uuid(), command: structuredClone(command) };
+    const attempt = this.attempt ?? { id: confirmedSubmissionId ?? this.ports.uuid(), command: structuredClone(command) };
     const reference = this.reference(attempt.id);
     try {
       if (!this.attempt && this.ports.channel.read().some(p => ownedReference(p, this.ports.owner))) {

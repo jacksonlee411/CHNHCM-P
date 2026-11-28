@@ -2941,7 +2941,7 @@
         "result": "accepted",
         "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
       },
-      "execution_status": "not_started",
+      "execution_status": "in_progress",
       "superseded_by": [],
       "closure": null,
       "archive": null
@@ -4116,6 +4116,36 @@
     "legacy_documents": [],
     "migration_note": "初次迁移基线为 220f9c6a60ca2869bad73add866d7a1d70289c99。按本次要求取消 001—009 的旧格式及 active 审阅豁免，所有编号文档统一为 numbered 并逐份复核；legacy_documents 必须为空。具体审阅范围以文档条目为准，历史迁移与既往结论保留在 Git、原报告和原输入摘要中。个人 owner 未指派时仍为 null，历史验证记录不补造受测状态。",
     "verification_records": [
+      {
+        "path": "docs/verification/214-assignment-base-pay-implementation.md",
+        "related_documents": [
+          "CHNHCM-214",
+          "CHNHCM-215",
+          "CHNHCM-216",
+          "CHNHCM-507"
+        ],
+        "format": "numbered",
+        "status": "draft",
+        "date": "2026-11-28",
+        "base_commit": "a07582923dbd308870322c5913289cad72d99aae",
+        "working_tree": "dirty",
+        "change_description": "在员工详情接入同级薪酬页签、M04 任期事实与 M09 个人月薪核定。",
+        "environment": "wt-dev-c，Go 实库 HTTP、Chromium 生产构建及本树 default 固定环境。",
+        "scope": "从人员名录验证主兼岗、首次核定、跨日调薪、更正撤去、查回及失权。",
+        "results": [
+          {
+            "check": "两会话竞争首次核定、原号恢复、跨日金额、兼岗和再聘。",
+            "result": "passed",
+            "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
+          }
+        ],
+        "limitations": [
+          "业务人员的制度签收与产品实施分别记录。"
+        ],
+        "purpose": "handoff",
+        "conclusion": "实库核定和并发恢复已实测，浏览器及固定环境交接继续验证。",
+        "evidence_access": "repository"
+      },
       {
         "path": "docs/verification/214-assignment-base-pay-design-review.md",
         "related_documents": [

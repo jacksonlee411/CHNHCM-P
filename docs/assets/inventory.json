@@ -9124,6 +9124,19 @@
       "complete_asset_verified": false
     },
     {
+      "id": "EXTERNAL-E215-COMPENSATION-TAB",
+      "document": "CHNHCM-215",
+      "source_record": "docs/verification/214-assignment-base-pay-design-review.md",
+      "source_repository": "Workday Worker Profile 与 Oracle PeopleSoft HCM Employee Snapshot",
+      "scope": "员工详情的薪酬入口与职务信息并列，主岗、兼岗及再聘按各自任期办理。",
+      "registered": true,
+      "extracted": false,
+      "implemented": false,
+      "verified": false,
+      "complete_asset_verified": false,
+      "design_evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+    },
+    {
       "id": "EXTERNAL-E507-JOB-DATA",
       "document": "CHNHCM-507",
       "source_record": "docs/reference/506-job-information-sources.json",

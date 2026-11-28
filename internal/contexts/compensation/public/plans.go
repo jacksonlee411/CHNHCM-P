@@ -150,6 +150,7 @@ type PlanService interface {
 	PlanApplicable(context.Context, foundation.Credentials, string, string, map[string]string) (bool, error)
 }
 type ConfigurationService interface {
+	AwardService
 	RateService
 	PlanService
 }

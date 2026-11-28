@@ -80,3 +80,9 @@ print("PRO-M 薪带、津贴和七个业务日的个人金额预期均相符")
 | 214 | `4696426dfaa70898ddeeee9bae59526a9db02cce1c7aa04937bc4ce5c98cde4a` |
 | 215 | `8e2352a2d990fb8cf55b3eb047a4aaa36164f33f4558c9f741a4bfe7ade42689` |
 | 216 | `18225b43b5a18af6b44aa1c8a5d6b4eeb7175b4db5e91565fcc8a54c83296eaf` |
+
+## 6 同级薪酬页签复核
+
+用户选定员工详情同级「薪酬」页签。以本树 a075829 为基线，自审 214、215、216 和 507 的修订。从主岗行进入后按当次授权显示薪酬，从 2 号兼岗行切签保留该任期，再聘即使沿用 0 号也按新的实际任期读取。首笔前有读权可见「尚未定薪」，经办权决定是否出现首次定薪。仅有任职或配置权限者不能由页签、旧链接或原回执发现个人金额。切签的键盘焦点、已修改草稿、原件返回日期和离开后的原名录行均有现行合同和实施出口。已修订 507 对兼岗页签范围的旧限定。此次设计复核通过，程序和实库结果另记。[员工详情](../specs/m04/507-job-information-tab.md#job-tab-layout) · [核定页面](../specs/m09/215-assignment-base-pay.md#pay-page)
+
+Workday 在员工档案配置中提供 Job 和 Compensation 分组。PeopleSoft 经理可以从员工快照查看薪酬，HR 维护时在同一任职流程中通过 Job Information 和 Salary and Compensation 两个独立步骤核对职务和薪资。此处采用薪酬独立可发现、办理绑定任职的导航方式。[Workday 档案配置](https://doc.workday.com/admin-guide/en-us/manage-workday/tenant-configuration/navigation/dan1370796360650.html) · [Oracle 员工快照](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-eprofile-manager-desktop/viewing-snapshot-compensation-review-tiles-pages.html) · [Oracle Manage Job 办理步骤](https://docs.oracle.com/en/applications/peoplesoft/human-capital-management/9.2.055/peoplesoft-human-resources-administer-workforce/fluid-updating-job-data.html)
