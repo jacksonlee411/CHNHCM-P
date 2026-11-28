@@ -27410,7 +27410,8 @@
         ],
         "purpose": "retest",
         "conclusion": "移除薪酬原型及两份脚本的旧视口入口。标准桌面、原生 200%、九组参数反例及正式菜单四项复验通过，历史原件可追溯。",
-        "evidence_access": "repository"
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/142-main-sync.md"
       },
       {
         "path": "docs/verification/317-address-type-periods.md",
@@ -27465,6 +27466,56 @@
         "purpose": "acceptance",
         "conclusion": "按日启停、误停更正、旧回执和原住址通过。整合薪酬主线后六种实库路径通过，45317 八组原事实相同。20 会话四条链路 P95 最高 1009.80 ms。",
         "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/142-main-sync.md",
+        "related_documents": [
+          "CHNHCM-142",
+          "CHNHCM-012",
+          "CHNHCM-317",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "60ba237ec5a01a28a745f003885bc22945af76e4",
+        "working_tree": "dirty",
+        "change_description": "同步主线后修复共享生效日期组件的延迟焦点回移，补查地址类型的键盘换日。",
+        "environment": "本地 Chromium、独立 PostgreSQL、4490 原固定前端基线。",
+        "scope": "两份自动合并用例、日期键盘焦点、原生缩放、薪酬原型、名录与登记接续。",
+        "results": [
+          {
+            "check": "初轮八项正式菜单复验，桌面地址类型换回首次生效日失败。",
+            "result": "failed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "用原组件和键盘时序重现旧日期取回焦点，修改后下一次 Enter 采用已移入的日期。",
+            "result": "passed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "固定前端和数据库同组八项菜单复验、项目检查及 650 项浏览器清单。",
+            "result": "passed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "4490 首次在详情重读期间操作旧日期条，焦点观测失败。",
+            "result": "failed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "4490 等待详情读取完成后在三条地点日期间换日，两种保留视口的历史返回及输出文件复核。",
+            "result": "passed",
+            "evidence": "docs/verification/142-main-sync.md"
+          }
+        ],
+        "limitations": [
+          "本地八项正式菜单及两个名录角色定向复验。650 项为发现清单。4490 的键盘验收从该次详情读取完成后开始。"
+        ],
+        "purpose": "retest",
+        "conclusion": "修复共享日期条的延迟焦点回移。八项正式菜单同组复验通过，4490 读者核对地点键盘换日与历史返回。",
+        "evidence_access": "mixed"
       }
     ]
   },

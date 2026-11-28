@@ -87,6 +87,11 @@ for (const mode of ['1440×900', '原生200%']) {
         if (await compact.isVisible()) {
           await compact.click();
           await page.getByRole('menuitem', { name: day, exact: true }).click();
+        } else if (day === '1900-01-01') {
+          await timeline.getByRole('button', { name: '2099-06-01', exact: true }).press('Home');
+          await page.evaluate(() => new Promise<void>(done => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
+          await expect(timeline.getByRole('button', { name: day, exact: true })).toBeFocused();
+          await page.keyboard.press('Enter');
         } else {
           await timeline.getByRole('button', { name: day, exact: true }).press('Enter');
         }
