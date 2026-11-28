@@ -121,6 +121,7 @@ export function StaffingEditor({
   const [reasons, setReasons] = useState<Models['StaffingReasons']['items']>([]),
     [stopReasons, setStopReasons] = useState<Models['StaffingReasons']['items']>([]),
     [startReasons, setStartReasons] = useState<Models['StaffingReasons']['items']>([]),
+    [loadedReasonKey, setLoadedReasonKey] = useState(''),
     [reasonError, setReasonError] = useState(''),
     [retry, setRetry] = useState(0);
   const [fieldError, setFieldError] = useState(''),
@@ -227,11 +228,15 @@ export function StaffingEditor({
   }, [k, action, detail, code, date, type, reason, values, touched, stop, start, stopReason, startReason, gradeIds, gradesDirty, gradesRestricted, fields]);
   const signature = JSON.stringify(body);
   useEffect(() => setPreview(undefined), [signature]);
+  const needsReasons = !deleting && action !== 'REDATE' && (pair || fields.includes('operationReason'));
+  const reasonKey = JSON.stringify([k, action, type, retry]);
+  const reasonsPending = needsReasons && loadedReasonKey !== reasonKey;
   useEffect(() => {
     if (deleting || action === 'REDATE') return;
     const a = new AbortController(),
       own = ++reasonGeneration.current;
     setReasonError('');
+    setLoadedReasonKey('');
     if (pair) {
       void Promise.all([staff.reasons(k, 'DEACTIVATE', a.signal), staff.reasons(k, 'REACTIVATE', a.signal)])
         .then(([x, y]) => {
@@ -240,6 +245,7 @@ export function StaffingEditor({
           setStartReasons(y.items);
           if (!stopReason && x.items.length === 1) setStopReason(x.items[0].code);
           if (!startReason && y.items.length === 1) setStartReason(y.items[0].code);
+          setLoadedReasonKey(reasonKey);
         })
         .catch(() => {
           if (!a.signal.aborted) setReasonError('业务原因加载失败，请重试。');
@@ -251,13 +257,14 @@ export function StaffingEditor({
           if (a.signal.aborted || own !== reasonGeneration.current) return;
           setReasons(v.items);
           if (!reason && v.items.length === 1) setReason(v.items[0].code);
+          setLoadedReasonKey(reasonKey);
         })
         .catch(() => {
           if (!a.signal.aborted) setReasonError('业务原因加载失败，请重试。');
         });
     }
     return () => a.abort();
-  }, [k, type, pair, deleting, action, retry]);
+  }, [k, type, pair, deleting, action, reasonKey]);
   const requestPreview = async () => {
     if (!detail) return;
     const same = sessionGuard();
@@ -275,7 +282,7 @@ export function StaffingEditor({
   const submit = async () => {
     setError('');
     setFieldError('');
-    if (!form.current?.reportValidity()) return;
+    if (reasonsPending || reasonError || !form.current?.reportValidity()) return;
     const v = await flow.submit(body);
     if (v.kind === 'saved') finish(v.result);
     else if (v.kind === 'failed') {
@@ -303,7 +310,7 @@ export function StaffingEditor({
         variant="contained"
         type="submit"
         form={formId}
-        disabled={disabled || !!reasonError || (submission.pending && !flow.attempt)}
+        disabled={disabled || reasonsPending || !!reasonError || (submission.pending && !flow.attempt)}
       >
         {flow.inFlight ? '正在保存…' : deleting ? '确认删除' : '保存'}
       </Button>
@@ -465,7 +472,7 @@ export function StaffingEditor({
                 label="操作原因"
                 required
                 value={reason}
-                disabled={disabled}
+                disabled={disabled || reasonsPending}
                 onChange={(e) => {
                   setReasonTouched(true);
                   setReason(e.target.value);
@@ -495,7 +502,7 @@ export function StaffingEditor({
                   label="停用原因"
                   required
                   value={stopReason}
-                  disabled={disabled}
+                  disabled={disabled || reasonsPending}
                   onChange={(e) => {
                     setReasonTouched(true);
                     setStopReason(e.target.value);
@@ -521,7 +528,7 @@ export function StaffingEditor({
                   label="重新启用原因"
                   required
                   value={startReason}
-                  disabled={disabled}
+                  disabled={disabled || reasonsPending}
                   onChange={(e) => {
                     setReasonTouched(true);
                     setStartReason(e.target.value);
