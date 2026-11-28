@@ -99,11 +99,11 @@ test('TL356/357/361 真实权限变化、同数来源变化及只读导出分权
   });
   await page.getByRole('button', { name: '退出', exact: true }).click(); await expect(page.getByLabel('登录名')).toBeVisible(); await login(page, true); await query(page, prefix); await head(page).check(); await selected(page, 137); await expect(page.getByRole('button', { name: '导出所选', exact: true })).toBeDisabled();
 });
-test('TL365 Space、Shift、网格全选、摘要列和短屏', async ({ page }) => {
+test('TL365 Space、Shift、网格全选、摘要列', async ({ page }) => {
   await rowBox(page).focus(); await page.keyboard.press('Space'); await selected(page, 1);
   await rowBox(page, 3).click({ modifiers: ['Shift'] }); await selected(page, 4);
   await page.keyboard.press('Control+a'); await selected(page, 137);
-  for (const size of [{ width: 1440, height: 540 }, { width: 800, height: 900 }, { width: 1440, height: 900 }]) {
+  for (const size of [{ width: 800, height: 900 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(size); await selected(page, 137); await expect(head(page)).toBeVisible(); await expect(page.getByRole('button', { name: '取消选择', exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
@@ -115,7 +115,7 @@ test('TL365 Chromium 原生缩放，选择和操作可达', async () => {
   try {
     await login(page); await query(page, prefix); await head(page).check(); await selected(page, 137);
     const dimensions = () => page.evaluate(() => ({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio, outer: [outerWidth, outerHeight] }));
-    for (const [, dpr] of nativeZoomCases()) {
+    for (const [, dpr] of nativeZoomCases) {
       await native.setZoom(dpr); await selected(page,137);
       await head(page).scrollIntoViewIfNeeded(); await expect(head(page)).toBeInViewport();
       const clear = page.getByRole('button', { name: '取消选择', exact: true }); await clear.scrollIntoViewIfNeeded(); await expect(clear).toBeInViewport();

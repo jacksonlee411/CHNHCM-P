@@ -115,7 +115,6 @@ test('140 BU 首条后移跨闰日，受限查询者看不到期间', async ({pa
   await open(page);
   const code = await create(page, '2024-02-28');
   const before = await read(page);
-  await page.setViewportSize({width:1440,height:540});
   await openMoreActions(page);
   await cancelLeapDayPreview(page);
   expect((await read(page)).headSourceVersion).toBe(before.headSourceVersion);

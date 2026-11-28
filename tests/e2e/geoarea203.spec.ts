@@ -232,22 +232,19 @@ test('区划138 澳门目录可切换层级并清除列条件', async ({page}) =
     await dialog.getByRole('button',{name:'清除条件'}).click();
     await apply('',3630);
 });
-test('区划203 桌面及短屏显示字段和更正表单', async ({ page }) => {
+test('区划203 桌面显示字段和更正表单', async ({ page }) => {
     await open(page);
-    for (const size of [{ width: 1440, height: 900 }, { width: 1440, height: 540 }]) {
-        await page.setViewportSize(size);
-        await menu(page, '110109');
-        await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
-        await geoField(page, '代码方案').filter({hasText: 'CN-MCA'}).scrollIntoViewIfNeeded();
-        await expect(geoField(page, '代码方案').filter({hasText: 'CN-MCA'})).toBeVisible();
-        await openMoreActions(page);
-        await page.getByRole('menuitem', { name: '更正记录', exact: true }).click();
-        await page.getByRole('textbox', { name: '英文名称', exact: true }).scrollIntoViewIfNeeded();
-        await expect(page.getByRole('textbox', { name: '英文名称', exact: true })).toBeVisible();
-        await page.getByRole('button', { name: '保存', exact: true }).scrollIntoViewIfNeeded();
-        await expect(page.getByRole('button', { name: '保存', exact: true })).toBeInViewport();
-        await page.getByRole('button', { name: '取消编辑', exact: true }).click();
-    }
+    await menu(page, '110109');
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    await geoField(page, '代码方案').filter({hasText: 'CN-MCA'}).scrollIntoViewIfNeeded();
+    await expect(geoField(page, '代码方案').filter({hasText: 'CN-MCA'})).toBeVisible();
+    await openMoreActions(page);
+    await page.getByRole('menuitem', { name: '更正记录', exact: true }).click();
+    await page.getByRole('textbox', { name: '英文名称', exact: true }).scrollIntoViewIfNeeded();
+    await expect(page.getByRole('textbox', { name: '英文名称', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: '保存', exact: true }).scrollIntoViewIfNeeded();
+    await expect(page.getByRole('button', { name: '保存', exact: true })).toBeInViewport();
+    await page.getByRole('button', { name: '取消编辑', exact: true }).click();
 });
 
 test('区划203 香港两种性质、省直连县和台湾同名路径', async ({ page }) => {

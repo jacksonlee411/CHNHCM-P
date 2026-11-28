@@ -229,7 +229,7 @@ test('300Chromium 原生缩放下抽屉与范围操作',async()=>{
   const native=await nativeZoomBrowser(),page=native.page;
   try {
     await open(page);const bu=await apiBU(page),root=await apiDepartment(page,bu.id,{name:'缩放部门树'+Date.now()});await menu(page,departmentKind);
-    for(const [, factor] of nativeZoomCases()) {
+    for(const [, factor] of nativeZoomCases) {
       await native.setZoom(factor);
       const trigger=page.getByRole('button',{name:'打开部门树',exact:true});await expect(trigger).toBeInViewport();await trigger.click();
       await page.getByRole('textbox',{name:'定位树中部门',exact:true}).fill(root.code);

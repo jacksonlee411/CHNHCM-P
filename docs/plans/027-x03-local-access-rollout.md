@@ -67,7 +67,7 @@
 | --- | --- |
 | 一份授权能做什么，哪些组合要拒绝？ | 用 Go 表驱动用例验证委派上限、完整授权、字段不可跨授予拼接、拒绝优先、时刻边界。用对应入口的允许、拒绝用例检查可授予项有消费者、独立受保护分支确实判权。同一共用规则可由一组用例覆盖。[028 业务条目](../specs/x03/028-local-account-and-authorization.md#5-验收条目) |
 | 保存和撤权相遇时，谁先发生？ | 用两个真实 PostgreSQL 连接控制相冲突的守卫，验证业务先提交能保留、撤权先提交则无业务写入。对主体撤权、共享版本停用和等待中到期覆盖各自不同的生效路径。另由真实 API 检查旧会话失效、管理越界、结果未知重试及原子失败。[并发验收](../specs/x03/028-local-account-and-authorization.md#x03-ac-005) |
-| 客户在正常菜单看到什么？ | 用 028 的[跨 BU](../specs/x03/028-local-account-and-authorization.md#x03-scn-001)、[单岗及重叠授予](../specs/x03/028-local-account-and-authorization.md#x03-scn-002)、[共享版本及重启](../specs/x03/028-local-account-and-authorization.md#x03-scn-003)三组样例，查看页面及相应响应、实际 CSV 和核编小计。页面走查覆盖各自独立的显示、提交与拒绝路径。共用布局和操作复用代表流程的视口结果，按 [012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)检查五种 100% 视口、关键流程原生 200%，满足触发条件再做 400% |
+| 客户在正常菜单看到什么？ | 用 028 的[跨 BU](../specs/x03/028-local-account-and-authorization.md#x03-scn-001)、[单岗及重叠授予](../specs/x03/028-local-account-and-authorization.md#x03-scn-002)、[共享版本及重启](../specs/x03/028-local-account-and-authorization.md#x03-scn-003)三组样例，查看页面及相应响应、实际 CSV 和核编小计。页面走查覆盖各自独立的显示、提交与拒绝路径。共用布局和操作复用代表流程的视口结果，按 [012](../specs/m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)检查标准桌面 100% 及关键流程原生 200% |
 | 升级是否改变了权限或使已撤权限复生？ | 直接引用第 4 节的全量权限对账、原回执查回及一次真实重启结果。成功的普通读取沿用 128 的零逐次授权审计写入回归 |
 | 授权查询或锁是否拖慢业务？ | 对受本次变更影响的高频查询和保存，用相同业务输入比较前后表现，已有容量目标的路径按原专项分组复测。低频开户、授予、撤销先验证操作结果。若发现慢查询、锁竞争或客户已有时延要求，再测相应路径。原组织容量专项继续按 [125](125-r6-capacity-remediation.md) 跟踪 |
 

@@ -25,7 +25,6 @@ const effectiveDate = '2027-04-01';
 
 test('139 查询者聚焦结构日期后收到默认日期仍可输入并查询', async ({page}) => {
   await open(page,'reader');
-  await page.setViewportSize({width:1440,height:540});
   let release!:()=>void;
   const pending=new Promise<void>(resolve=>{release=resolve});
   await page.route('**/position-hierarchies/reporting/structure?**',async route=>{

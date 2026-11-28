@@ -123,7 +123,7 @@ try {
           }
           row.calibration = await dimensions(); assert.equal(row.calibration.width, 1280); assert.equal(row.calibration.height, 900);
           zoom(steps); await pause(200); row.dimensions = await dimensions();
-          assert.equal(row.dimensions.dpr, steps === 5 ? 2 : 4); assert.deepEqual(row.dimensions.outer, row.calibration.outer); assert.equal(row.dimensions.visualScale, 1);
+          assert.equal(row.dimensions.dpr, 2); assert.deepEqual(row.dimensions.outer, row.calibration.outer); assert.equal(row.dimensions.visualScale, 1);
           execFileSync('python3', [xshot, path.join(out, label + '-browser.png'), String(row.dimensions.outer[0]), String(row.dimensions.outer[1])]);
         }
         await loginAndOpen(!created); created = true;

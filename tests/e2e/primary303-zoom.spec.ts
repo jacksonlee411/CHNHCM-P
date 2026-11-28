@@ -25,7 +25,7 @@ test('303 一级菜单原生缩放、顺序与直接进入', async () => {
     const observations = [];
     zoom(0);
     await calibrateDesktopWindow(page);
-    for (const [steps, dpr] of nativeZoomCases()) {
+    for (const [steps, dpr] of nativeZoomCases) {
       zoom(steps);
       await expect.poll(() => page.evaluate(() => [innerWidth, innerHeight, devicePixelRatio])).toEqual([1280 / dpr, 900 / dpr, dpr]);
       await page.getByRole('button', { name: '打开导航', exact: true }).click();

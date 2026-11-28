@@ -1273,7 +1273,6 @@ test('504 原文、目录采用与跨栏错误定位后整页保存', async ({ p
   await btn('应用').click();
   await btn('保存').click();
   await expect(page.getByRole('dialog')).toBeVisible();
-  await page.setViewportSize({ width: 1440, height: 540 });
   const error = page.getByText('到期日期须不早于签发日期，长期有效时请清空到期日期', { exact: true }).last();
   await expect(error).toBeVisible();
   await error.scrollIntoViewIfNeeded();
@@ -1960,22 +1959,23 @@ for (const [width, height] of desktopViewports) {
     await expect(bank).toHaveCount(0);
     await expect(page.getByText('健康信息', { exact: true })).toHaveCount(0);
     await expect(page.getByText('合成摘要甲')).toHaveCount(0);
-    const maskedNumberOnly = height === 540;
-    const grant = randomUUID(), sql = personnelSQL();
-    expect(saved.id).toMatch(/^[0-9a-f-]{36}$/);
-    try {
-      sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id)
-        select instance_id,principal_id,'bank.read','personal-bank',${maskedNumberOnly ? "array['accountNumber.masked']" : "array['bankName','accountNumber.masked']"},array['${saved.id}'::uuid],'${grant}' from access.principal where login='reader'`);
-      await page.reload();
-      const restrictedOpener = maskedNumberOnly ? button('查看 · 银行账户') : opener;
-      await restrictedOpener.press('Enter');
-      await expect(dlg.locator('.object-field-label')).toHaveText(maskedNumberOnly ? ['银行账号'] : ['银行名称', '银行账号']);
-      await expect(dlg).toContainText('********');
-      await expect(dlg.getByRole('button', {name: '查看完整号码'})).toHaveCount(0);
-      await expect(dlg).not.toContainText('000abc504');
-      await page.keyboard.press('Escape');
-      await expect(restrictedOpener).toBeFocused();
-    } finally { sql(`delete from access.person_grant where grant_id='${grant}'`); }
+    for (const maskedNumberOnly of [false, true]) {
+      const grant = randomUUID(), sql = personnelSQL();
+      expect(saved.id).toMatch(/^[0-9a-f-]{36}$/);
+      try {
+        sql(`insert into access.person_grant(instance_id,principal_id,action,purpose,fields,person_ids,grant_id)
+          select instance_id,principal_id,'bank.read','personal-bank',${maskedNumberOnly ? "array['accountNumber.masked']" : "array['bankName','accountNumber.masked']"},array['${saved.id}'::uuid],'${grant}' from access.principal where login='reader'`);
+        await page.reload();
+        const restrictedOpener = maskedNumberOnly ? button('查看 · 银行账户') : opener;
+        await restrictedOpener.press('Enter');
+        await expect(dlg.locator('.object-field-label')).toHaveText(maskedNumberOnly ? ['银行账号'] : ['银行名称', '银行账号']);
+        await expect(dlg).toContainText('********');
+        await expect(dlg.getByRole('button', {name: '查看完整号码'})).toHaveCount(0);
+        await expect(dlg).not.toContainText('000abc504');
+        await page.keyboard.press('Escape');
+        await expect(restrictedOpener).toBeFocused();
+      } finally { sql(`delete from access.person_grant where grant_id='${grant}'`); }
+    }
   });
 }
 

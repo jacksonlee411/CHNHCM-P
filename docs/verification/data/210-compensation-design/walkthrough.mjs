@@ -3,12 +3,17 @@ import assert from 'node:assert/strict';
 import { chromium, expect } from '@playwright/test';
 
 const prototype = new URL('../../../specs/m09/prototype/compensation-configuration.html', import.meta.url);
+const options = process.argv.slice(2);
+if (options.length > 1 || (options.length === 1 && options[0] !== '--native-zoom')) {
+  console.error('薪酬原型走查仅支持可选参数 --native-zoom。');
+  process.exit(1);
+}
 const issues = [];
 const routes = [];
 const metrics = [];
 const browser = await chromium.launch();
 
-async function walk(page, checkFrame) {
+async function walk(page, expectedViewport) {
   page.on('pageerror', error => issues.push(error.message));
   const main = page.getByRole('main');
   const heading = name => expect(main.getByRole('heading', { level: 1 })).toHaveText(name);
@@ -272,6 +277,27 @@ async function walk(page, checkFrame) {
   await expect(main.getByRole('alert')).toContainText('16,000.00');
   await expect(main.getByLabel('指导值')).toHaveValue('17,000.00');
   await expect(main.getByLabel('指导值')).toHaveAccessibleDescription(/11,000.00/);
+  if (expectedViewport[2] === 2) {
+    const pane = main.locator('.scroll');
+    const bounds = await pane.boundingBox();
+    const before = await pane.evaluate(element => element.scrollTop);
+    const contentHeight = await pane.evaluate(element => element.scrollHeight);
+    await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+    await page.mouse.wheel(0, contentHeight);
+    await expect.poll(() => pane.evaluate(element => element.scrollTop)).toBeGreaterThan(before);
+    await expect(main.getByLabel('办理原因')).toBeInViewport();
+  }
+  await press('查看改正样例');
+  await main.getByLabel('指导值').fill('13,500.00');
+  await page.keyboard.press('Tab');
+  await expect(main.getByLabel('上限')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(main.getByLabel('办理原因')).toBeFocused();
+  await expect(main.getByLabel('办理原因')).toBeInViewport();
+  page.once('dialog', dialog => dialog.accept());
+  await main.getByRole('link', { name: '取消', exact: true }).press('Enter');
+  await heading('P5 月薪标准');
+  await expect(main.getByText('12,500.00', { exact:true })).toBeVisible();
   await sample('薪酬只读');
   await expect(main.getByRole('link', { name: /更正记录|新增记录/ })).toHaveCount(0);
   await press('返回列表');
@@ -301,44 +327,40 @@ async function walk(page, checkFrame) {
   await page.keyboard.press('Enter');
   await heading('P5 月薪标准');
   const dimensions = await page.evaluate(() => ({
-    width: innerWidth, height: innerHeight, clientWidth: document.documentElement.clientWidth,
+    width: innerWidth, height: innerHeight, dpr: devicePixelRatio, clientWidth: document.documentElement.clientWidth,
     contentWidth: document.documentElement.scrollWidth
   }));
   assert.equal(dimensions.contentWidth, dimensions.clientWidth);
   assert.ok(dimensions.clientWidth <= dimensions.width);
-  checkFrame(dimensions);
+  assert.deepEqual([dimensions.width, dimensions.height, dimensions.dpr], expectedViewport);
   metrics.push(dimensions);
 }
 
 try {
-  for (const height of [900, 540]) {
-    const page = await browser.newPage({ viewport: { width: 1440, height } });
-    await walk(page, d => assert.deepEqual([d.width, d.height], [1440, height]));
-    // Every fragment exposed by any example should name a real prototype screen.
-    if (height === 900) {
-      const queue = ['plans'];
-      const seen = new Set();
-      while (queue.length) {
-        const route = queue.shift();
-        if (seen.has(route)) continue;
-        seen.add(route);
-        // Role samples have their own tab. Their grants persist on ordinary links and reload.
-        const roleSample = ['reader','unavailable'].includes(route);
-        const routePage = roleSample ? await browser.newPage({viewport:page.viewportSize()}) : page;
-        await routePage.goto(prototype.href + '#' + route);
-        await routePage.waitForFunction(hash => document.querySelector('main').dataset.route === hash, route);
-        if (route.split('?')[0] !== 'unavailable') {
-          assert.notEqual(await routePage.locator('main h1').textContent(), '资料不可用', route);
-        }
-        const targets = await routePage.locator('a[href^="#"]').evaluateAll(links => links.map(link => link.hash.slice(1)));
-        queue.push(...targets.filter(target => !seen.has(target)));
-        if (roleSample) await routePage.close();
-      }
-      routes.push(...seen);
+  const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await walk(desktop, [1440, 900, 1]);
+  // Every fragment exposed by any example should name a real prototype screen.
+  const queue = ['plans'];
+  const seen = new Set();
+  while (queue.length) {
+    const route = queue.shift();
+    if (seen.has(route)) continue;
+    seen.add(route);
+    // Role samples have their own tab. Their grants persist on ordinary links and reload.
+    const roleSample = ['reader','unavailable'].includes(route);
+    const routePage = roleSample ? await browser.newPage({viewport:desktop.viewportSize()}) : desktop;
+    await routePage.goto(prototype.href + '#' + route);
+    await routePage.waitForFunction(hash => document.querySelector('main').dataset.route === hash, route);
+    if (route.split('?')[0] !== 'unavailable') {
+      assert.notEqual(await routePage.locator('main h1').textContent(), '资料不可用', route);
     }
-    await page.close();
+    const targets = await routePage.locator('a[href^="#"]').evaluateAll(links => links.map(link => link.hash.slice(1)));
+    queue.push(...targets.filter(target => !seen.has(target)));
+    if (roleSample) await routePage.close();
   }
-  if (process.argv.includes('--native-zoom')) {
+  routes.push(...seen);
+  await desktop.close();
+  if (options.length) {
     const profile = await chromium.launchPersistentContext('', {
       headless: false, viewport: null, args: ['--window-size=1320,1000', '--lang=en-US']
     });
@@ -370,7 +392,7 @@ try {
       await zoom.selectOption('2');
       await page.bringToFront();
       await expect.poll(() => page.evaluate(() => [innerWidth, innerHeight])).toEqual([640, 450]);
-      await walk(page, d => assert.deepEqual([d.width, d.height], [640, 450]));
+      await walk(page, [640, 450, 2]);
       assert.deepEqual(await page.evaluate(() => [outerWidth, outerHeight]), frame);
       await zoom.selectOption('1');
       await expect.poll(() => page.evaluate(() => [innerWidth, innerHeight])).toEqual([1280, 900]);

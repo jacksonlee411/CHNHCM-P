@@ -56,7 +56,7 @@
   .object-page .object-identity-icon > img { width: 36px; height: 36px; }
   .object-page .object-identity-related-trigger { align-self: start; color: #087f7b; }
 }
-@media (max-width: 899px) and (max-height: 560px) {
+@media (max-width: 640px) {
   .object-page .record-control { padding-block: 6px; gap: 4px; }
   .object-page .record-control-main { gap: 4px 8px; }
   .object-page .object-detail-identity { padding: 10px 12px; }

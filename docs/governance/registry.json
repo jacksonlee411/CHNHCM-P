@@ -415,7 +415,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "规定 M02 菜单、列表详情及维护交互。记录维护按 020—022、101、103，普通日期表达按 026，固定启停按 109。紧凑控制沿用 110，Community、查询草稿与已应用条件、名称链接及列表摘要按 113，全结果选择与导出按 114。详情字段分组、获权摘要和行入口见第 2.4.1 节，桌面视口、原生缩放和手机端专项范围见第 6.2 节。更正记录的分类单组按权显示，保留原值及差异保护。 跨对象列表准入见第 3.1 节。",
+      "scope": "规定 M02 菜单、列表详情及维护交互。记录维护按 020—022、101、103，普通日期表达按 026，固定启停按 109。紧凑控制沿用 110，Community、查询草稿与已应用条件、名称链接及列表摘要按 113，全结果选择与导出按 114。详情字段分组、获权摘要和行入口见第 2.4.1 节，1440×900 桌面、关键流程原生 200% 和手机端立项范围见第 6.2 节。更正记录的分类单组按权显示，保留原值及差异保护。 跨对象列表准入见第 3.1 节。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -2554,6 +2554,43 @@
       }
     },
     {
+      "id": "CHNHCM-142",
+      "title": "桌面短屏与原生 400% 开发内容清理计划",
+      "path": "docs/archive/plans/142-retired-desktop-conditions.md",
+      "owner_branch": "wt-dev-b",
+      "owner_role": "共享页面与浏览器验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M09"
+      ],
+      "scope": "清理薪酬离线原型、人员名录验收脚本和规格交接段残留的旧视口条件，保留原批证据及现行桌面操作。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理本地多轮复核",
+        "scope": "三处开发入口、历史原件、规格交接、标准桌面与关键流程原生 200%。",
+        "result": "accepted",
+        "evidence": "docs/verification/142-retired-desktop-conditions.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "三处开发入口清理及 012、023、121 的历史交接完成，两轮浏览器实测及正式菜单复验通过。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "reason": "现行验收条件归 012 第 6.2 节，实施前原件、首败及复验已在同号验证记录交接。",
+        "previous_path": "docs/plans/142-retired-desktop-conditions.md"
+      }
+    },
+    {
       "id": "CHNHCM-200",
       "title": "国家地区行政区划与地点实施路线图",
       "path": "docs/archive/plans/200-geography-and-location-roadmap.md",
@@ -4141,7 +4178,8 @@
         ],
         "limitations": [
           "使用合成薪酬制度，本次范围为后台配置和默认端口持久化。"
-        ]
+        ],
+        "follow_up": "docs/verification/142-retired-desktop-conditions.md"
       },
       {
         "path": "docs/verification/210-compensation-list-retest.md",
@@ -4363,7 +4401,7 @@
           {
             "check": "三个视口的离线原型走查通过，核对计划津贴、两职级引用、保存时资料、权限返回及 192 个页面和来路组合。",
             "result": "passed",
-            "evidence": "docs/verification/data/210-compensation-design/walkthrough.mjs"
+            "evidence": "docs/verification/210-compensation-design-review.md"
           },
           {
             "check": "产品 Go、DB/API、真实授权、并发、日期切换及同构建业务页面验收。",
@@ -4451,7 +4489,7 @@
           {
             "check": "三个视口的浏览器走查及页面链接遍历，覆盖新建、组成行、两计划共用薪带、重复建标、七月调整、更正、原件、取消和只读样例。",
             "result": "passed",
-            "evidence": "docs/verification/data/210-compensation-design/walkthrough.mjs"
+            "evidence": "docs/verification/210-compensation-design-walkthrough.md"
           },
           {
             "check": "Go、数据库、真实授权和客户业务验收。",
@@ -5422,7 +5460,54 @@
         ],
         "purpose": "retest",
         "conclusion": "桌面和缩放调整后按用例名去重有 47 项实测通过。678 项为收集清单，全套浏览器及远程 CI 未运行。",
-        "evidence_access": "public_ci"
+        "evidence_access": "public_ci",
+        "follow_up": "docs/verification/012-standard-desktop-validation.md"
+      },
+      {
+        "path": "docs/verification/012-standard-desktop-validation.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-023",
+          "CHNHCM-124",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "f7b47b9b09d0f117c4a3c16b04c565dc55d44009",
+        "working_tree": "dirty",
+        "change_description": "移除桌面短屏和原生 400% 的布局及验证入口，按标准桌面及原生 200% 办理。",
+        "environment": "公共仓 wt-dev-b，两套临时 PostgreSQL 与 Chromium，持久环境 m02-manual-public-b 的 4490。",
+        "scope": "共享列表、表单、导航、业务用例、CI 视口选择和固定环境的列表与历史返回。",
+        "results": [
+          {
+            "check": "项目检查及构建、同 73 个入口的用例收集从 701 项降至 650 项、16 片完整分配",
+            "result": "passed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          },
+          {
+            "check": "浏览器首轮 18 项中通过 17 项，首聘名单行等待登录框超时",
+            "result": "failed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          },
+          {
+            "check": "固定构建复验首聘两条路径均通过，两轮去重共 18 项取得通过结果",
+            "result": "passed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          },
+          {
+            "check": "4490 标准桌面地点与原生 200% 法律实体从删除前原件返回原列表行",
+            "result": "passed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          }
+        ],
+        "limitations": [
+          "650 项为收集清单，未运行完整浏览器套件或远程 CI。4490 使用原 API 与数据库，仅应用本次前端变更。"
+        ],
+        "purpose": "technical",
+        "conclusion": "已取消短屏和 400% 专项。标准桌面与关键流程原生 200% 分批实测，18 项去重通过，4490 只读历史往返通过。",
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/142-retired-desktop-conditions.md"
       },
       {
         "path": "docs/verification/510-personnel-page-remediation-implementation.md",
@@ -27104,7 +27189,8 @@
         ],
         "purpose": "governance",
         "conclusion": "从人员名录提炼列表、部门树和验收样本标准。勾选时序及跨页返回两轮首败均保留。第 21 人及第 21 份任职返回经隔离实库复验，4496 已更新。",
-        "evidence_access": "mixed"
+        "evidence_access": "mixed",
+        "follow_up": "docs/verification/142-retired-desktop-conditions.md"
       },
       {
         "path": "docs/verification/316-object-and-configuration-review.md",
@@ -27258,6 +27344,76 @@
         "evidence_access": "public_ci"
       },
       {
+        "path": "docs/verification/142-retired-desktop-conditions.md",
+        "related_documents": [
+          "CHNHCM-142",
+          "CHNHCM-012",
+          "CHNHCM-023",
+          "CHNHCM-121",
+          "CHNHCM-210",
+          "CHNHCM-212",
+          "CHNHCM-405"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "ea0c6acad8b2fe53f3b1ecc90035a5f6a2de775a",
+        "working_tree": "dirty",
+        "change_description": "移除薪酬原型和人员名录走查的旧条件，更新现行规格的历史交接定位。",
+        "environment": "本地 Chromium、独立临时 PostgreSQL 和同工作树服务。",
+        "scope": "原件可追溯性、两个浏览器入口、两个业务角色及 012、023、121 文档交接。",
+        "results": [
+          {
+            "check": "三份原件及评审前 ZIP 的两份输入摘要",
+            "result": "passed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          },
+          {
+            "check": "初版薪酬走查接受未知选项、名录接受多余参数且创建输出目录",
+            "result": "failed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          },
+          {
+            "check": "九组非法入口在启动前退出，既有输出文件保持原摘要",
+            "result": "passed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "薪酬和人员名录在标准桌面与真实原生 200% 的两轮业务走查",
+            "result": "passed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "四项正式菜单用例首轮三项通过，一项因临时库缺少冒烟权限夹具失败",
+            "result": "failed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "同一临时库补齐仓库权限夹具后原四项同组复跑",
+            "result": "passed",
+            "evidence": "docs/verification/data/142-retired-desktop-conditions/results.json"
+          },
+          {
+            "check": "完整浏览器清单发现与分配、历史原件核对及任务临时环境回收",
+            "result": "passed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          },
+          {
+            "check": "归档后的 make check、四十处交接链接与三个受测源文件摘要",
+            "result": "passed",
+            "evidence": "docs/verification/142-retired-desktop-conditions.md"
+          }
+        ],
+        "limitations": [
+          "650 项为发现与分配清单。浏览器实际执行范围为定向业务走查和四项正式用例。",
+          "离线原型使用预置错误样例。HTTP 422 单独在正式菜单验实，本轮未执行远程 CI 或人工业务签收。"
+        ],
+        "purpose": "retest",
+        "conclusion": "移除薪酬原型及两份脚本的旧视口入口。标准桌面、原生 200%、九组参数反例及正式菜单四项复验通过，历史原件可追溯。",
+        "evidence_access": "repository",
+        "follow_up": "docs/verification/142-main-sync.md"
+      },
+      {
         "path": "docs/verification/317-address-type-periods.md",
         "related_documents": [
           "CHNHCM-317",
@@ -27310,6 +27466,56 @@
         "purpose": "acceptance",
         "conclusion": "按日启停、误停更正、旧回执和原住址通过。整合薪酬主线后六种实库路径通过，45317 八组原事实相同。20 会话四条链路 P95 最高 1009.80 ms。",
         "evidence_access": "repository"
+      },
+      {
+        "path": "docs/verification/142-main-sync.md",
+        "related_documents": [
+          "CHNHCM-142",
+          "CHNHCM-012",
+          "CHNHCM-317",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "60ba237ec5a01a28a745f003885bc22945af76e4",
+        "working_tree": "dirty",
+        "change_description": "同步主线后修复共享生效日期组件的延迟焦点回移，补查地址类型的键盘换日。",
+        "environment": "本地 Chromium、独立 PostgreSQL、4490 原固定前端基线。",
+        "scope": "两份自动合并用例、日期键盘焦点、原生缩放、薪酬原型、名录与登记接续。",
+        "results": [
+          {
+            "check": "初轮八项正式菜单复验，桌面地址类型换回首次生效日失败。",
+            "result": "failed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "用原组件和键盘时序重现旧日期取回焦点，修改后下一次 Enter 采用已移入的日期。",
+            "result": "passed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "固定前端和数据库同组八项菜单复验、项目检查及 650 项浏览器清单。",
+            "result": "passed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "4490 首次在详情重读期间操作旧日期条，焦点观测失败。",
+            "result": "failed",
+            "evidence": "docs/verification/142-main-sync.md"
+          },
+          {
+            "check": "4490 等待详情读取完成后在三条地点日期间换日，两种保留视口的历史返回及输出文件复核。",
+            "result": "passed",
+            "evidence": "docs/verification/142-main-sync.md"
+          }
+        ],
+        "limitations": [
+          "本地八项正式菜单及两个名录角色定向复验。650 项为发现清单。4490 的键盘验收从该次详情读取完成后开始。"
+        ],
+        "purpose": "retest",
+        "conclusion": "修复共享日期条的延迟焦点回移。八项正式菜单同组复验通过，4490 读者核对地点键盘换日与历史返回。",
+        "evidence_access": "mixed"
       }
     ]
   },

@@ -43,7 +43,11 @@ try {
         await cdp.send('Browser.setWindowBounds',{windowId,bounds:{width:1280,height:1039+900-d.height,left:0,top:0}});await pause(150);
         row.baseline=await dimensions(page);assert.equal(row.baseline.width,1280);assert.equal(row.baseline.height,900);
         zoom(steps);await pause(200);row.dimensions=await dimensions(page);
-        assert.equal(row.dimensions.width,steps===5?640:320);assert.equal(row.dimensions.height,steps===5?450:225);assert.deepEqual(row.dimensions.outer,row.baseline.outer);assert.equal(row.dimensions.visualScale,1);
+        assert.equal(row.dimensions.width,640);
+        assert.equal(row.dimensions.height,450);
+        assert.equal(row.dimensions.dpr,2);
+        assert.deepEqual(row.dimensions.outer,row.baseline.outer);
+        assert.equal(row.dimensions.visualScale,1);
         // Native browser menu shows the actual percentage before any credentials are entered.
         await page.keyboard.press('Alt+f');await pause(150);
         execFileSync('python3',['docs/verification/data/100-ui-baseline/x11-shot.py',path.join(out,label+'-browser-menu.png'),'1400','1100'],{stdio:'pipe'});

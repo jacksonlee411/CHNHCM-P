@@ -37,7 +37,7 @@ test('区划203 Chromium 原生缩放布局及键盘', async () => {
         const first = await dims();
         await cdp.send('Browser.setWindowBounds', { windowId, bounds: { width: first.outer[0] + 1280 - first.width, height: first.outer[1] + 900 - first.height } });
         const matrix = [];
-        for (const [steps, dpr] of nativeZoomCases()) {
+        for (const [steps, dpr] of nativeZoomCases) {
             zoom(steps);
             await expect.poll(async () => (await dims()).dpr).toBe(dpr);
             if (await page.getByRole('button', { name: '打开导航', exact: true }).isVisible()) {
