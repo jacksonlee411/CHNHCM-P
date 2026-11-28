@@ -1,2 +1,1 @@
-{"number":"00058","branch":"wt-dev-a","name":"access_grant_versions","purpose":"CHNHCM-027 T02 逐份授予、固定策略版本与存量授权迁移","depends_on":["00057"],"status":"reserved","main":"560cea88199c801ceb49a9cb81d4f4c1a2d0d68c"}
-{"number":"00059","branch":"wt-dev-a","name":"access_management","purpose":"CHNHCM-027 T04 账号管理归属、委派上限与受控恢复","depends_on":["00058"],"status":"reserved","main":"f71400f9039402333c5b7e86dd3a6d953c8b929c"}
+{"number":"00063","branch":"wt-dev-c","name":"assignment_base_pay","purpose":"CHNHCM-214 员工按任期定薪、调薪、更正与撤去","depends_on":["00060"],"status":"reserved","main":"ed11f04156e7909bc3f02e865b625d365e7a132d"}

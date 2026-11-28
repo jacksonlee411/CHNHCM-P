@@ -1,5 +1,5 @@
 {
-  "main": "560cea88199c801ceb49a9cb81d4f4c1a2d0d68c",
+  "main": "ed11f04156e7909bc3f02e865b625d365e7a132d",
   "migrations": [
     {
       "number": "00001",
@@ -285,6 +285,36 @@
       "number": "00057",
       "name": "manager_decision_starts",
       "blob": "6c40893b2140fdd8c439fd02527c2c6c717d3046"
+    },
+    {
+      "number": "00058",
+      "name": "access_grant_versions",
+      "blob": "ca502914b95ab63e796b51768c9caffb83f72b72",
+      "branch": "wt-dev-a",
+      "purpose": "CHNHCM-027 T02 逐份授予、固定策略版本与存量授权迁移",
+      "depends_on": [
+        "00057"
+      ]
+    },
+    {
+      "number": "00059",
+      "name": "compensation_grade_rate",
+      "blob": "0bdf8134bb0cb463d929f84fb5bd4ae0ecc752fe"
+    },
+    {
+      "number": "00060",
+      "name": "compensation_plans",
+      "blob": "03df584534ccadea476e9af0e36c9d00f134b20c"
+    },
+    {
+      "number": "00061",
+      "name": "person_address_types",
+      "blob": "359594de86e8a57b512fbe7c3186224a75d57928"
+    },
+    {
+      "number": "00062",
+      "name": "person_address_type_periods",
+      "blob": "267a0e355b418a71a9bf47cc40956361cc941378"
     }
   ]
 }

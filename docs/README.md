@@ -28,3 +28,11 @@ python3 registry.py mark --branch wt-dev-a --number 00058 --status merged
 初始盘点记录在 `baseline.json`，对应公共 main 的已合入 SQL、文件名及 Git 对象 ID。历史负责人与依赖沿用原仓记录。启用后的领取、合入、取消均向 `events.jsonl` 追加一行，每次一个提交。若 main 出现账外迁移、错名、已合入 SQL 被改动，工具停止领号，由维护者对照实际提交核对账本。
 
 远端规则仅匹配 `refs/heads/migration-registry`，要求线性历史、禁止强推与删除。具有写权限的协作者按上述命令登记。Git 的快进检查保护提交历史，登记字段、状态及依赖由工具校验。其他主机尚未推送的迁移须先在这里领号，再进入公共交付。
+
+## 2026-11-28 编号校准
+
+主线已交付 00058 的逐份授权、00059 的职级薪标、00060 的薪酬方案，以及 00061、00062 的人员地址类型和区间。登记工具首次停在 00059 名称冲突。此次按主线 `ed11f04156e7909bc3f02e865b625d365e7a132d` 核对全部 62 份 SQL 的 Git 对象，已交付的内容和编号沿用主线。[主线迁移目录](https://github.com/jacksonlee411/CHNHCM-P/tree/ed11f04156e7909bc3f02e865b625d365e7a132d/db/migrations)
+
+原基线和两条领取事件按原字节封存在本分支。00058 的原负责分支、用途和依赖已随合入记录保留。00059 曾由 wt-dev-a 领取用于安全管理，4627 实际使用的旧 SQL 对象为 `d037b33d034e77e6516069b1113fa93666096e88`。安全管理需重新领号，产品合并时须验证此前按原登记安装的库可保留授权、回执与旧账本升级。[原基线](../history/2026-11-28-00059/baseline.json) · [原始领取记录](../history/2026-11-28-00059/events.jsonl) · [原登记提交](https://github.com/jacksonlee411/CHNHCM-P/commit/bbe39c7ea7995f844b7af6f213af3d4c7eaa7e0a)
+
+00063 为 C 已提交的按任期定薪迁移，状态为在途；核对 PR 头 `fb0088e3524862bea0c40af6384e51749d2b75de` 的 SQL 对象 `09e2106136282794c29f9de76c896dfcbdb0a53e`。合入后由责任方按实际主线登记。之后新增迁移继续运行本工具普通领号。[C 的 PR #43](https://github.com/jacksonlee411/CHNHCM-P/pull/43)
