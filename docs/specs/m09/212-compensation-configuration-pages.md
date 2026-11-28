@@ -69,7 +69,7 @@
 | 结果未知或重复点击 | 正在提交时保护本次输入。响应丢失后沿原提交号查回。先确定原结果，再恢复适用的办理入口。 |
 | 从列表进入，切原件、后退 | 保存定位实际新增或更正的记录。取消返回原选择。回列表恢复已应用的条件、页码和可见焦点。只读历史始终可以返回当前获权资料。 |
 
-正式页面在 1440×900 和 1440×540 的桌面 100% 下对照同构建职级页面。关键路径另在原生 200% 检查表单末项、错误、保存/取消、历史短条、滚轮及 Tab、Shift+Tab、Enter、Escape。按 012 的触发条件安排 400% 专项。[共享视口矩阵](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) · [历史与权限](../m02/012-m02-functional-and-interaction-design.md#m02-ui-history)
+正式页面在 1440×900 的桌面 100% 下对照同构建职级页面。关键路径另在原生 200% 检查表单末项、错误、保存/取消、历史短条、滚轮及 Tab、Shift+Tab、Enter、Escape。[共享视口矩阵](../m02/012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) · [历史与权限](../m02/012-m02-functional-and-interaction-design.md#m02-ui-history)
 
 <a id="prototype-walk"></a>
 

@@ -12,7 +12,7 @@ const target = await browser.newPage(), source = await browser.newPage();
 const errors = [];
 target.on('pageerror', error => errors.push(error.message));
 const evidence = { sourceCommit: '2deaf9276086f68e07aaa0c2cf7f35025046a9ee', targetBase, pages: [], checks: [], limitations: ['Fixed CubeBox prototype reference, not external business acceptance.', 'Target uses real Go/PostgreSQL for create/query only.'] };
-const sizes = [{ name: 'desktop', width: 1440, height: 900 }, { name: 'short', width: 1440, height: 540 }, { name: 'narrow', width: 390, height: 844 }];
+const sizes = [{ name: 'desktop', width: 1440, height: 900 }, { name: 'narrow', width: 390, height: 844 }];
 async function capture(page, side, screen) {
   for (const size of sizes) {
     await page.setViewportSize(size);

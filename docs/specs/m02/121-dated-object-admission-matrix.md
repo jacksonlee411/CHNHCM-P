@@ -363,7 +363,7 @@ R129-V01—V05回归BU合法无变化、覆盖不变、覆盖变化、共同守�
 | <a id="m02-ac-051"></a>M02-AC-051 权限与取消 | [BR038](118-department-business-requirements.md#m02-br-038)、[SCN032](119-department-functional-design.md#m02-scn-032) | 按[118权限矩阵](118-department-business-requirements.md#m02-br-038)逐字段／动作核验；A→B→C中仅引用B可定位C、无B引用则不泄漏链，范围遍历不因B无完整read漏C；箭头不披露隐藏子项；403后503／断连不复活内容；退出／换账号／D不一致的迟到响应失效 | DB/API、浏览器 |
 | <a id="m02-ac-052"></a>M02-AC-052 维护、导航与返回 | [SCN031](119-department-functional-design.md#m02-scn-031) | 新建、合法更名／改上级／改BU、删除记录／改日后重新定位；不匹配安全提示；锚点退出今日层级不扩大查询、不重捕获原草稿；前后导航绑定原范围；取消及未保存保护、原来源／提交恢复保持 | Go、DB/API、浏览器 |
 | <a id="m02-ac-053"></a>M02-AC-053 一致事实和损坏拒绝 | [BR038](118-department-business-requirements.md#m02-br-038)、[BR039](118-department-business-requirements.md#m02-br-039) | 单请求并发关系变化、字典回收、取消及必要事实损坏不返回拼接／半页成功；跨请求移动后刷新收敛、已观察新父后旧响应不能重复挂载，未观察变化不宣称快照；历史来源字节与真实首条身份不被树读取修改 | 真实DB并发及浏览器乱序反例 |
-| <a id="m02-ac-054"></a>M02-AC-054 桌面、缩放和键盘 | [SCN028](119-department-functional-design.md#m02-scn-028)、[SCN029](119-department-functional-design.md#m02-scn-029) | 核对共享桌面视口、1000×900 和 900／899 边界。用原生 200% 完成长名称、深链定位及抽屉关闭后的焦点返回。原生 400% 按共享规范触发专项 | 桌面 Chromium，[012 视口与缩放](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) |
+| <a id="m02-ac-054"></a>M02-AC-054 桌面、缩放和键盘 | [SCN028](119-department-functional-design.md#m02-scn-028)、[SCN029](119-department-functional-design.md#m02-scn-029) | 核对共享桌面视口、1000×900 和 900／899 边界。用原生 200% 完成长名称、深链定位及抽屉关闭后的焦点返回 | 桌面 Chromium，[012 视口与缩放](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix) |
 | <a id="m02-ac-055"></a>M02-AC-055 共用流程回归 | [BR037](118-department-business-requirements.md#m02-br-037) | BU无树参数／入口；两对象列表、筛选、选择、CSV、详情导航、返回和未保存保护通过；树展开／折叠不发列表请求、不建立选择草稿 | 定向Go／DB、浏览器 |
 | <a id="m02-ac-056"></a>M02-AC-056 容量与资源 | [300容量与资源要求](../../archive/plans/300-department-tree-implementation.md#62-数据规模和性能口径) | 规定组别和全部尝试结果可追溯；错误计入分母，新增写放大可解释；超过缓存预算可淘汰后重读，链长／DOM／请求并发分别计量，非截断结果；自有资源按责任收尾，保留用途和复查节点明确 | 容量、数据库及运行核验 |
 
@@ -397,7 +397,7 @@ BU 与部门由现行规格持有以下独立预期。按当前授权从正常�
 
 ## 24 页面标准继承与M03接入映射
 
-本矩阵的共用维护行为不能单独证明页面一致性。接入过程按[124页面准入](../../guides/124-dated-object-admission-and-capacity.md#page-standard-admission)，表式按[接入模板](../../templates/dated-object-admission.md#page-inheritance)，页面规范仍由[012](012-m02-functional-and-interaction-design.md#m02-ui-expression)及026拥有。每种列表／详情／表单／日期与操作／日志来源／返回保护须有标准、参照、接线、差异及独立验收，不把基础组件复用等同整页继承。后续接入按关键流程选取原生 200% 的代表对象与角色，原生 400% 按触发条件专项复验。[012 视口与缩放](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
+本矩阵的共用维护行为不能单独证明页面一致性。接入过程按[124页面准入](../../guides/124-dated-object-admission-and-capacity.md#page-standard-admission)，表式按[接入模板](../../templates/dated-object-admission.md#page-inheritance)，页面规范仍由[012](012-m02-functional-and-interaction-design.md#m02-ui-expression)及026拥有。每种列表／详情／表单／日期与操作／日志来源／返回保护须有标准、参照、接线、差异及独立验收，不把基础组件复用等同整页继承。后续接入按关键流程选取原生 200% 的代表对象与角色。[012 视口与缩放](012-m02-functional-and-interaction-design.md#m02-ui-viewport-matrix)
 
 M03的[308继承表](../m03/308-job-foundation-contract.md#m03-page-inheritance)映射当前BU页面和公共原语；[差异表](../m03/308-job-foundation-contract.md#m03-page-differences)保留企业内分类、系列全期间引用、恢复资料及固定选择等对象语义，不继承部门树／BU权限。M03自己的[新增验收](../m03/308-job-foundation-contract.md#m03-page-acceptance)由308定义，28个尺寸角色单元及权限专项待执行；不在本M02矩阵重复定义M03稳定ID。
 

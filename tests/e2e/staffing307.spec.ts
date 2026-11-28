@@ -414,7 +414,7 @@ test('Staffing307 候选迟到和失败不覆盖新日期及已有输入', async
 import { nativeZoomBrowser } from './native-zoom-support';
 import { mkdirSync, writeFileSync } from 'node:fs';
 for (const role of ['admin', 'reader']) {
-  test(`Staffing307 ${role} 双对象桌面和短屏布局及取消`, async ({ page, browser }) => {
+  test(`Staffing307 ${role} 双对象桌面布局及取消`, async ({ page, browser }) => {
     await open(page);
     const f = await apiObject(page, 'jobfamily'),
       j = await apiObject(page, 'job', { family: f.id });
@@ -426,7 +426,7 @@ for (const role of ['admin', 'reader']) {
       await open(p, 'reader');
     }
     try {
-      await p.setViewportSize({ width: 1440, height: 540 });
+      await p.setViewportSize({ width: 1440, height: 900 });
       await menu308(p, 'jobfamily');
       await menu308(p, 'job');
       for (const o of [f, j])
@@ -472,7 +472,7 @@ for (const role of ['admin', 'reader']) {
     const matrix = [];
     try {
       await open(p, role);
-      for (const [, factor] of nativeZoomCases()) {
+      for (const [, factor] of nativeZoomCases) {
         await p.goto(f.web);
         await native.setZoom(factor);
         for (const o of [f, j]) {

@@ -13,8 +13,7 @@ export function staffingZoomSuite(kinds: readonly Kind308[], batch: string, jour
 }
 export function staffingZoomCases<Kind extends string, Sample>(kinds: readonly Kind[], batch: string,
   journey: (page: Page, sample: Sample, family: Awaited<ReturnType<typeof seed308>>, role: string) => Promise<void>,
-  seed: (page: Page, kind: Kind, family: string) => Promise<Sample>,
-  riskAt400?: (role: string) => boolean) {
+  seed: (page: Page, kind: Kind, family: string) => Promise<Sample>) {
 for (const kind of kinds)
   for (const role of ['admin', 'reader'])
     test(`${batch} ${kind} ${role} 原生缩放`, async () => {
@@ -57,9 +56,7 @@ for (const kind of kinds)
         page.setDefaultTimeout(15000);
         await open(page);
         const family = await seed308(page, 'jobfamily');
-        const zoomCases = nativeZoomCases(riskAt400?.(role));
-        const samples: Sample[] = [];
-        for (let i = 0; i < zoomCases.length; i++) samples.push(await seed(page, kind, family.id));
+        const sample = await seed(page, kind, family.id);
         if (role === 'reader') {
           await context.clearCookies();
           await open(page, 'reader');
@@ -81,7 +78,7 @@ for (const kind of kinds)
           .poll(() => page.evaluate(() => ({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio })))
           .toEqual({ width: 1280, height: 900, dpr: 1 });
         const evidence = [];
-        for (const [index, [steps, factor]] of zoomCases.entries()) {
+        for (const [steps, factor] of nativeZoomCases) {
           zoom(steps);
           await expect.poll(() => page.evaluate(() => devicePixelRatio)).toBe(factor);
           const actual = await page.evaluate(() => ({
@@ -94,7 +91,7 @@ for (const kind of kinds)
           expect(actual.width).toBe(1280 / factor);
           expect(actual.height).toBe(900 / factor);
           try {
-            await journey(page, samples[index], family, role);
+            await journey(page, sample, family, role);
           } catch (error) {
             await page.screenshot({
               path: test.info().outputPath('native-failure.png'),

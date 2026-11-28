@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from './fixtures';
 import { open } from './bu-support';
@@ -43,7 +44,7 @@ async function createRate(page: Page, code: string) {
   await expect(page.getByText('15,000.00', { exact: true })).toBeVisible();
 }
 test.describe.configure({ timeout: 160000 });
-for (const height of [900,540]) {
+for (const [, height] of desktopViewports) {
   test('210 职级薪标正常菜单、未来调整、更正撤去与原件 ' + height, async ({ page }) => {
     await page.setViewportSize({width:1440, height}); await open(page);
     const code = 'G210' + randomUUID().slice(0,8).toUpperCase();
@@ -256,7 +257,7 @@ test('210 薪标列表独立金额列、组合条件、取消还焦及受限投�
     await expect(page.getByRole('link', { name: code + ' 薪标验收职级' })).toBeVisible();
     await expect(header('maximum')).toHaveCount(0);
     await expect(header('minimum')).toBeVisible();
-    await page.setViewportSize({ width: 800, height: 540 });
+    await page.setViewportSize({ width: 800, height: 900 });
     await expect(page.getByRole('grid')).toContainText('指导值 12,500.00');
     await expect(page.getByRole('grid')).not.toContainText('15,000.00');
     await more(page, '列筛选…');

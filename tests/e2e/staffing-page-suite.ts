@@ -165,7 +165,7 @@ for (const kind of kinds) {
     await click308(page, page.getByRole('menuitem', { name: '列筛选…', exact: true }));
     await choose(page, '列', '名称');
     await page.getByRole('textbox', { name: '值', exact: true }).fill(tag);
-    await page.setViewportSize({ width: 1200, height: 540 });
+    await page.setViewportSize({ width: 1200, height: 900 });
     await expect(page.getByRole('textbox', { name: '值', exact: true })).toHaveValue(tag);
     // 012 §3.1.5 closes the local panel draft across 900px. A and search D remain.
     await page.setViewportSize({ width: 899, height: 900 });

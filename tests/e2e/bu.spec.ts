@@ -1,3 +1,4 @@
+import { calibrateDesktopWindow, nativeZoomBrowser } from './native-zoom-support';
 import { lazyCredentials } from './credentials.mjs';
 import { deferAutomaticConfirmation } from './fixtures';
 import { applyListOption,recordRange, readCurrentDate,  test, expect, expectCurrentDate, type Page } from "./fixtures";
@@ -245,7 +246,7 @@ test("响应丢失后刷新查回原结果，并阻止新标识重复提交", as
   await expectCurrentDate(page, date);
 });
 
-test("未保存输入保护、正常取消、只读账号与短屏退出", async ({ page }) => {
+test("未保存输入保护、正常取消、只读账号与退出", async ({ page }) => {
   await login(page);
   await page.getByRole("link", { name: "新建", exact: true }).click();
   await page
@@ -262,7 +263,6 @@ test("未保存输入保护、正常取消、只读账号与短屏退出", async
   await page.getByRole("button", { name: "放弃修改" }).click();
   await page.getByRole("button", { name: "退出", exact: true }).click();
   await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
-  await page.setViewportSize({ width: 1440, height: 540 });
   await login(page, true);
   await expect(
     page.getByRole("link", { name: "新建", exact: true }),
@@ -271,10 +271,20 @@ test("未保存输入保护、正常取消、只读账号与短屏退出", async
   await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
 });
 
-test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查看", async ({ page }) => {
-  await login(page);
+test("原生 200% 下真实滚轮、取消、详情日志和列表焦点返回", async () => {
+  const browser = await nativeZoomBrowser();
+  try {
+    await login(browser.page);
+    await calibrateDesktopWindow(browser.page);
+    await browser.setZoom(2);
+    await verifyScrollReturn(browser.page);
+  } finally {
+    await browser.close();
+  }
+});
+
+async function verifyScrollReturn(page: Page) {
   const date = await readCurrentDate(page);
-  await page.setViewportSize({ width: 1440, height: 540 });
   const prefix = "SCROLL_" + randomUUID().slice(0, 6);
   const session = await (await page.request.get("/api/v1/session")).json();
   // Independent fixture rows, saved through the same real Go command and database.
@@ -350,7 +360,6 @@ test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查�
   // Wait for actual log content so its restoration cannot overwrite the wheel.
   await expect(page.getByRole("table", { name: "变更日志", exact: true })).toBeVisible();
   await expect(page.getByRole("region",{name:"业务单元详情正文"})).toHaveAttribute("data-page-scroll-ready","true");
-  await page.setViewportSize({ width: 1440, height: 360 });
   // Use a real log control rather than fixed coordinates or the tab strip.
   await page.getByRole("button", { name: "刷新日志", exact: true }).hover();
   const beforeLogWheel = await page.getByRole("region", { name: "业务单元详情正文" }).evaluate(e => (['auto', 'scroll'].includes(getComputedStyle(e).overflowY) ? e : document.scrollingElement!).scrollTop);
@@ -373,7 +382,6 @@ test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查�
   await expect(page.getByRole('tab', { name: '变更日志', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('link', { name: '查看当次资料', exact: true })).toBeVisible();
   await expect.poll(() => page.getByRole('region', { name: '业务单元详情正文' }).evaluate(e => (['auto', 'scroll'].includes(getComputedStyle(e).overflowY) ? e : document.scrollingElement!).scrollTop)).toBe(detailScroll);
-  await page.setViewportSize({ width: 1440, height: 540 });
   await page.getByRole("link", { name: "返回列表" }).click();
   await expect(page.locator('.list-return-selected')).toContainText(
     prefix + "_12",
@@ -384,7 +392,7 @@ test("真实滚轮与列表滚动、焦点返回，详情日志可以滚动查�
   await expect(
     page.getByRole("link", { name: prefix + "_12 单元", exact: true }),
   ).toBeFocused();
-});
+}
 
 test("依赖加载可原地重试，退出失败后放弃输入不会锁死表单", async ({ page }) => {
   await login(page);

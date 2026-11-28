@@ -415,7 +415,7 @@
       "modules": [
         "M02"
       ],
-      "scope": "规定 M02 菜单、列表详情及维护交互。记录维护按 020—022、101、103，普通日期表达按 026，固定启停按 109。紧凑控制沿用 110，Community、查询草稿与已应用条件、名称链接及列表摘要按 113，全结果选择与导出按 114。详情字段分组、获权摘要和行入口见第 2.4.1 节，桌面视口、原生缩放和手机端专项范围见第 6.2 节。更正记录的分类单组按权显示，保留原值及差异保护。 跨对象列表准入见第 3.1 节。",
+      "scope": "规定 M02 菜单、列表详情及维护交互。记录维护按 020—022、101、103，普通日期表达按 026，固定启停按 109。紧凑控制沿用 110，Community、查询草稿与已应用条件、名称链接及列表摘要按 113，全结果选择与导出按 114。详情字段分组、获权摘要和行入口见第 2.4.1 节，1440×900 桌面、关键流程原生 200% 和手机端立项范围见第 6.2 节。更正记录的分类单组按权显示，保留原值及差异保护。 跨对象列表准入见第 3.1 节。",
       "owner": null,
       "format": "numbered",
       "review": {
@@ -5422,7 +5422,53 @@
         ],
         "purpose": "retest",
         "conclusion": "桌面和缩放调整后按用例名去重有 47 项实测通过。678 项为收集清单，全套浏览器及远程 CI 未运行。",
-        "evidence_access": "public_ci"
+        "evidence_access": "public_ci",
+        "follow_up": "docs/verification/012-standard-desktop-validation.md"
+      },
+      {
+        "path": "docs/verification/012-standard-desktop-validation.md",
+        "related_documents": [
+          "CHNHCM-012",
+          "CHNHCM-023",
+          "CHNHCM-124",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "f7b47b9b09d0f117c4a3c16b04c565dc55d44009",
+        "working_tree": "dirty",
+        "change_description": "移除桌面短屏和原生 400% 的布局及验证入口，按标准桌面及原生 200% 办理。",
+        "environment": "公共仓 wt-dev-b，两套临时 PostgreSQL 与 Chromium，持久环境 m02-manual-public-b 的 4490。",
+        "scope": "共享列表、表单、导航、业务用例、CI 视口选择和固定环境的列表与历史返回。",
+        "results": [
+          {
+            "check": "项目检查及构建、同 73 个入口的用例收集从 701 项降至 650 项、16 片完整分配",
+            "result": "passed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          },
+          {
+            "check": "浏览器首轮 18 项中通过 17 项，首聘名单行等待登录框超时",
+            "result": "failed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          },
+          {
+            "check": "固定构建复验首聘两条路径均通过，两轮去重共 18 项取得通过结果",
+            "result": "passed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          },
+          {
+            "check": "4490 标准桌面地点与原生 200% 法律实体从删除前原件返回原列表行",
+            "result": "passed",
+            "evidence": "docs/verification/012-standard-desktop-validation.md"
+          }
+        ],
+        "limitations": [
+          "650 项为收集清单，未运行完整浏览器套件或远程 CI。4490 使用原 API 与数据库，仅应用本次前端变更。"
+        ],
+        "purpose": "technical",
+        "conclusion": "已取消短屏和 400% 专项。标准桌面与关键流程原生 200% 分批实测，18 项去重通过，4490 只读历史往返通过。",
+        "evidence_access": "mixed"
       },
       {
         "path": "docs/verification/510-personnel-page-remediation-implementation.md",

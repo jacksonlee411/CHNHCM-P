@@ -1,3 +1,4 @@
+import { desktopViewports } from './desktop-viewports.mjs';
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from './fixtures';
 import { open } from './bu-support';
@@ -57,7 +58,7 @@ async function more(page: Page, action: string) {
   await button(page, '更多操作').click();
   await page.getByRole('menuitem', { name: action, exact: true }).click();
 }
-for (const height of [900, 540]) {
+for (const [, height] of desktopViewports) {
   test('210 薪酬计划企业通用、十月津贴、取消与原件 ' + height, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height });
     await open(page);
@@ -359,7 +360,7 @@ test('210 薪酬计划对照本构建的职级阶梯控制区、正文与键盘�
   await fixed(page, '300');
   await save(page);
   const own = page.url();
-  for (const height of [900, 540]) {
+  for (const [, height] of desktopViewports) {
     await page.setViewportSize({ width: 1440, height });
     const tops: number[] = [];
     for (const ref of [true, false]) {
@@ -373,7 +374,6 @@ test('210 薪酬计划对照本构建的职级阶梯控制区、正文与键盘�
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
       await body.focus();
       await page.keyboard.press('PageDown');
-      if (height === 540) await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
       await button(page, '更多操作').focus();
       await page.keyboard.press('Enter');
       await expect(page.getByRole('menuitem', { name: '更正记录', exact: true })).toBeVisible();
@@ -425,7 +425,6 @@ test('210 计划撤去金额权后保留可维护的名称与原津贴', async (
 });
 
 test('210 计划列表按状态查询、失败重试与保留搜索草稿', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 540 });
   await open(page);
   const code = code210('LP'), name = '列表计划 ' + code;
   await start(page, code, name);

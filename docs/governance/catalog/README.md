@@ -121,7 +121,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（81）](#evidence-acceptance) · [问题复验（49）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
+[业务验收（81）](#evidence-acceptance) · [问题复验（49）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -226,7 +226,7 @@
 | 004、002、025、313、505 | [CHNHCM-004 架构、技术栈与数据归属整改复验](../../verification/004-architecture-review-remediation.md) | 2026-11-27 定稿 | 越界 SQL 反例、录用与核编接口、七张架构图已复验。远期招聘需求和交接能力未在本批验收。 | 本仓报告 |
 | 012、123、500、502、507、510 | [CHNHCM-510 人员页面整改实施与实页复验](../../verification/510-personnel-page-remediation-implementation.md) | 2026-11-26 定稿 | 500 的 20 项页面问题逐项复验，4386 原 131 表对账相符。本地全量曾中断，按影响补验，后续固定版本已核对全量 CI 的产品输入。 [后续记录](../../verification/012-desktop-page-acceptance.md) | 本仓报告，部分原件需权限 |
 | 404、400、401、402、403、500、137 | [CHNHCM-404 主线同步后直接入职复评](../../verification/404-main-sync-reassessment.md) | 2026-11-26 定稿 | 主线合入后 8 个实库根及 3 个首单页面场景复验，覆盖暂停竞争和旧岗升级，4496 原卷更新留给后续签收。 [后续记录](../../verification/404-4496-acceptance.md) | 本仓报告及公开 CI |
-| 012、023、121、124、308、310、312、315、402、500、501、502、505、507 | [CHNHCM-012 桌面页面验收范围调整](../../verification/012-desktop-page-acceptance.md) | 2026-11-26 定稿 | 桌面和缩放调整后按用例名去重有 47 项实测通过。678 项为收集清单，全套浏览器及远程 CI 未运行。 | 本仓报告及公开 CI |
+| 012、023、121、124、308、310、312、315、402、500、501、502、505、507 | [CHNHCM-012 桌面页面验收范围调整](../../verification/012-desktop-page-acceptance.md) | 2026-11-26 定稿 | 桌面和缩放调整后按用例名去重有 47 项实测通过。678 项为收集清单，全套浏览器及远程 CI 未运行。 [后续记录](../../verification/012-standard-desktop-validation.md) | 本仓报告及公开 CI |
 | 012、403、500、506、507、508、509 | [CHNHCM-509 在职变动、结束与再聘产品修复验证](../../verification/509-t04-remediation-implementation.md) | 2026-11-25 定稿 | 27 项在职、结束与再聘整改完成验证，49 项实库回归及 4386 原库对账通过，原生 400% 未测。 | 本仓报告，部分原件需权限 |
 | 403、500、506、507、508 | [CHNHCM-508 人员职务信息修复实施验证](../../verification/508-job-information-implementation.md) | 2026-11-25 定稿 | 六项职务信息反例完成修复，末轮 136 项菜单通过，固定 f 的 29 张表对账一致。首轮失败保留，原生 400% 未测。 | 本仓报告，部分原件需权限 |
 | 140、004、013、201、207 | [CHNHCM-140 阶段评审修复与复验](../../verification/140-module-cohesion-review-fixes.md) | 2026-11-22 定稿 | SQL 归属漏报、误报及成对删除缺名称已复现修复，实库及窄屏名称专项通过，未验全量和容量。 [后续记录](../../verification/140-history-receipt-closeout.md) | 本仓报告，部分原件需权限 |
@@ -398,6 +398,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 012、023、124、137 | [CHNHCM-012 标准桌面与关键流程放大验收](../../verification/012-standard-desktop-validation.md) | 2026-11-28 定稿 | 已取消短屏和 400% 专项。标准桌面与关键流程原生 200% 分批实测，18 项去重通过，4490 只读历史往返通过。 | 本仓报告，部分原件需权限 |
 | 141、137、136 | [CHNHCM-141 本地预检设施验证](../../verification/141-local-preflight.md) | 2026-11-23 定稿 | 本地预检能区分候选、首败与复验，空分片和目标遮蔽反例保留。远程门禁及托管成本未验。 | 本仓报告，部分原件需权限 |
 | 136、137 | [CHNHCM-136 正常交付的 Actions 成本观察](../../verification/136-actions-observation.md) | 2026-11-23 定稿 | 10 次交付、34 次运行共估算 5693 runner 分钟。可比业务样本不足以确认整体节省 25% 至 33%，无实付账单。 | 本仓报告，部分原件需权限 |
 | 136、137 | [CHNHCM-136 一次性 runner 与 GitHub 托管分钟试点](../../verification/136-hosted-minutes-pilot.md) | 2026-11-22 草稿 | 试点分区和逐片复用以历史运行回放核对，保留当轮未选中的一次偶发失败。80% 目标仍待自然交付测量。 [后续记录](../../verification/136-206-plan-archive.md) | 本仓报告，部分原件需权限 |

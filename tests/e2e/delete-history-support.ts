@@ -37,7 +37,6 @@ export async function checkMiddleDelete(
     await expect(p.getByText('2022-01-01 至 2022-12-31', {exact: true})).toBeVisible();
   }
   await page.goto(path);
-  await page.setViewportSize({width: 1440, height: 540});
   let deleteRequests = 0;
   page.on('request', req => { if (req.method() === 'POST' && new URL(req.url()).pathname === deletion) deleteRequests++; });
   await editDelete(page);

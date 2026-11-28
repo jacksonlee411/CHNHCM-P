@@ -63,7 +63,7 @@ export function DataGridPage<T extends { id: string }>({
 }) {
   const [toolbarHost, setToolbarHost] = useState<HTMLDivElement | null>(null);
   const compact = useMediaQuery('(max-width:899px)');
-  const naturalHeight = useMediaQuery('(max-width:599px), (max-height:600px)');
+  const naturalHeight = useMediaQuery('(max-width:640px)');
   const [desktopVisibility, setDesktopVisibility] = useState<GridColumnVisibilityModel>(() => Object.fromEntries((defaultHiddenColumns ?? []).map(field => [field, false])));
   // Keep one grid and all field identities mounted. Responsive visibility never overwrites
   // desktop preferences, native widths, the toolbar input, or the authorized query state.

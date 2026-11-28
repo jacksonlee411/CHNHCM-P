@@ -170,7 +170,6 @@ export async function checkAdoptedLabelOnPairDelete(page: Page, segment: 'legal-
   expect(label(changes[0].before)).toBe(renamedLabel);
   expect(label(changes[0].after)).toBe(originalLabel);
 
-  if (area) await page.setViewportSize({width: 1440, height: 540});
   const openDelete = async () => {
     await page.goto(route + selection);
     await openMoreActions(page);

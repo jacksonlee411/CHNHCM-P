@@ -105,7 +105,7 @@
 
 | 任务 | 应对照的现有页面和共用实现 | 职务信息页签的验收差异 |
 | --- | --- | --- |
-| 整页、名录与面板 | [人员详情](../../../apps/web/src/features/personnel/Detail.tsx)、[职务详情](../../../apps/web/src/features/staffing/Detail.tsx)、[012 列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) | 沿用主题、顶栏、紧凑控制区、正文滚动和单一身份标题。页签支持方向键聚焦、Enter／空格激活，短屏自然滚动到底。主岗面板分别核权，兼岗详情使用同一布局，仅呈现职务信息。 |
+| 整页、名录与面板 | [人员详情](../../../apps/web/src/features/personnel/Detail.tsx)、[职务详情](../../../apps/web/src/features/staffing/Detail.tsx)、[012 列表与详情](../m02/012-m02-functional-and-interaction-design.md#m02-ui-list) | 沿用主题、顶栏、紧凑控制区、正文滚动和单一身份标题。页签支持方向键聚焦、Enter／空格激活，正文可滚动到底。主岗面板分别核权，兼岗详情使用同一布局，仅呈现职务信息。 |
 | 任职行与时间轴 | [012 明细](../m02/012-m02-functional-and-interaction-design.md#m02-ui-detail-sections)、[共享日期轴](../../../packages/ui/src/components/EffectiveDates.tsx)、[121 接入矩阵](../m02/121-dated-object-admission-matrix.md)、[124 跨域适用边界](../../guides/124-dated-object-admission-and-capacity.md#5-跨域适用边界) | 继承按日定位、当前／未来提示及准确来源。M04 同日可有多笔动作，采用 M04 的日期约束、任职身份和生命周期，保留关系级转正与各任职的独立履历。 |
 | 人事事务的查询与返回 | [职务列表](../../../apps/web/src/features/staffing/List.tsx)、[列表控制区](../../../packages/ui/src/components/Lists.tsx)、[返回定位](../../../apps/web/src/shared/navigation.ts) | 桌面和窄屏都从办理链接进入。分页、前后导航、返回焦点均按当前查询中的办理行计算。 |
 | 表单、记录动作与原件 | [012 表单](../m02/012-m02-functional-and-interaction-design.md#m02-ui-object-form)、[公共表单](../../../packages/ui/src/components/ObjectForm.tsx)、[草稿保护](../../../apps/web/src/shared/dated/useDraftExit.ts)、[首单表单与提交](../../../apps/web/src/features/hire/HirePage.tsx) | 桌面左标签、两列字段，窄屏按组单列。对照字号、输入高度、错误及保存落点。人事事务在本面板独立保存，个人资料九栏仍按原整页办理。 |
