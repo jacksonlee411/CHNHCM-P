@@ -27875,6 +27875,62 @@
         "purpose": "retest",
         "conclusion": "修复后可从已建立版本的日志核对准确新值。三类目录、历史、焦点和 4627 原样例通过。",
         "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/027-main-00064-convergence.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-029",
+          "CHNHCM-142",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "e26a9d3f242eb3e10618d2375ef8b4d792862af3",
+        "working_tree": "dirty",
+        "change_description": "将 A 的逐份授权与安全管理接入最新主线，在公共登记校准后用 00064 保留原安全管理 00059 存量库。",
+        "environment": "A 固定工作树、独立 PostgreSQL 18.6、从 4627 备份恢复的试验库、真实 Chromium 与固定 4627 原卷。",
+        "scope": "旧安全管理及薪酬主线的迁移和重试，授权业务与回执，管理菜单、委派、部门和岗位范围。",
+        "results": [
+          {
+            "check": "公共工具检测到 00059 与主线错名，停止领号。",
+            "result": "failed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "公共登记校准全部 62 份已合入 SQL，保留原登记和 C 的 00063，远端分配 A 的 00064。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "旧 00058 的样例初始化写入新动作被拒，新增升级用例首次引导遗漏实例被拒。",
+            "result": "failed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "8 项授权及升级实库用例、3 项 T03 与公共授权用例、7 个主线和历史旧账本场景、准入及新库失败重试通过。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "15 项正式 Chromium 用例通过，包括 5 项企业前置、关键办理原生 200% 和 3 项部门及岗位范围走查。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "4627 整库备份恢复演练、原容器原卷实际升级及原账本和九张安全表对账通过。固定入口实测管理员和只读者。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          }
+        ],
+        "limitations": [
+          "本记录覆盖本地预检前的产品、真实浏览器和固定环境。正式 PR 与合并后的 main 门禁依其 GitHub 运行核验。"
+        ],
+        "purpose": "retest",
+        "conclusion": "完整旧库可前向升级并重试。原回执和逐份授权保留。4627 原卷更新后的管理与只读入口符合当前权限。",
+        "evidence_access": "mixed"
       }
     ]
   },

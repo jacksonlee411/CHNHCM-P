@@ -123,7 +123,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（86）](#evidence-acceptance) · [问题复验（53）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
+[业务验收（86）](#evidence-acceptance) · [问题复验（54）](#evidence-retest) · [方案评审（107）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（48）](#evidence-technical) · [环境与交付交接（22）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -230,6 +230,7 @@
 | 142、012、317、137 | [CHNHCM-142 主线同步及日期键盘复验](../../verification/142-main-sync.md) | 2026-11-28 定稿 | 修复共享日期条的延迟焦点回移。八项正式菜单同组复验通过，4490 读者核对地点键盘换日与历史返回。 | 本仓报告，部分原件需权限 |
 | 029、028、012 | [CHNHCM-029 安全管理列表、详情与变更日志复核](../../verification/029-security-layout-recheck.md) | 2026-11-28 定稿 | 修复后可从已建立版本的日志核对准确新值。三类目录、历史、焦点和 4627 原样例通过。 | 本仓报告，部分原件需权限 |
 | 029、028、012 | [CHNHCM-029 授权页面评审与实施复验](../../verification/029-grant-management-experience.md) | 2026-11-28 定稿 | 验证逐份撤销、角色换版、引用限制和查询返回。4627 三个账号的授权及管理记录摘要一致。 | 本仓报告，部分原件需权限 |
+| 027、028、029、142、137 | [CHNHCM-027 安全管理旧库与主线迁移合流复验](../../verification/027-main-00064-convergence.md) | 2026-11-28 定稿 | 完整旧库可前向升级并重试。原回执和逐份授权保留。4627 原卷更新后的管理与只读入口符合当前权限。 | 本仓报告，部分原件需权限 |
 | 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 定稿 | 人员名录七项问题复验通过。4496 原库保留原人员、办理和回执，并补验五级部门、在任及未来样本。实测业务日为 2026-11-27。 [后续记录](../../verification/405-list-standards-review.md) | 本仓报告，部分原件需权限 |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 定稿 | PR #30 远程首轮 4 项失败。修复后本地 5 项前置、8 项 Chromium 业务用例通过，4496 已更新。远程终验另查 PR。 | 本仓报告及公开 CI |
 | 140、004、013、026、120、201、207、014 | [CHNHCM-140 地点与法律实体删除回执验证及计划交接](../../verification/140-history-receipt-closeout.md) | 2026-11-27 定稿 | 地点和法律实体的删除回执首轮均指错记录，修复后两对象、原号查回、升级前原件和 4490 菜单复验通过。原有回执按原样保留。 | 本仓报告，部分原件需权限 |
