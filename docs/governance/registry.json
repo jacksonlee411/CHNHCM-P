@@ -1055,7 +1055,7 @@
     {
       "id": "CHNHCM-027",
       "title": "X03 本地账号与首批业务授权实施计划",
-      "path": "docs/plans/027-x03-local-access-rollout.md",
+      "path": "docs/archive/plans/027-x03-local-access-rollout.md",
       "owner_branch": "wt-dev-a",
       "owner_role": "Access、Organization、Staffing、体验及验证维护者",
       "owner": null,
@@ -1069,10 +1069,17 @@
       "scope": "客户实例本地账号管理、部门与岗位核编人工授权的分批交付、事务判权、存量迁移、权限工具和开放验收。Casbin 和 OPA 暂缓。",
       "format": "numbered",
       "review": null,
-      "execution_status": "in_progress",
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null,
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "T01 至 T05 本地实施与验收完成。T05 三组管理与业务菜单、旧库读权撤尽后的同卷重启及原回执查回见 027-t05-opening-acceptance。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "reason": "首批账号、业务授权和历史保护已交接 013、025、028 及部门、核编对象合同，逐节去向见 T05 第 7 节。",
+        "previous_path": "docs/plans/027-x03-local-access-rollout.md"
+      },
       "clause_routes": {
         "3-同一业务事务内的当前权限": {
           "主体与角色版本在业务事务内的加锁顺序": "CHNHCM-013#612-守卫粒度与事务顺序"
@@ -1093,13 +1100,46 @@
         "M02",
         "M03"
       ],
-      "scope": "首位管理员、账号管理边界、角色版本与逐份授予、授权选择、正常菜单、异常及历史处理和可复核业务场景。",
+      "scope": "内置 admin 的六项长期安全管理权、客户指定管理员及交接、账号管理边界、角色版本与逐份授予、授权选择、正常菜单、异常及历史处理和可复核业务场景。",
       "format": "numbered",
       "review": null,
       "execution_status": null,
       "superseded_by": [],
       "closure": null,
       "archive": null
+    },
+    {
+      "id": "CHNHCM-029",
+      "title": "X03 授权页面优化方案",
+      "path": "docs/archive/plans/029-grant-management-experience.md",
+      "owner_branch": "wt-dev-a",
+      "owner_role": "Access、客户管理员体验及验证维护者",
+      "owner": null,
+      "status": "active",
+      "type": "plan",
+      "modules": [
+        "X03"
+      ],
+      "scope": "账号授权概览、逐份业务授予、管理职责、版本影响与变更查回的页面设计、实施顺序和用户验收。",
+      "format": "numbered",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理，按 012 与 028 对照真实页面和源码复核",
+        "scope": "逐份撤销、历史修订、版本反查、完整委派与停用范围。",
+        "result": "accepted",
+        "evidence": "docs/verification/029-grant-management-experience.md"
+      },
+      "execution_status": "completed",
+      "superseded_by": [],
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "逐份办理、分页、历史和版本引用已在实库与浏览器复验，固定 4627 完成交接。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "reason": "实施已完成，长期规则交由 028 和 012 维护，验证记录保存固定环境与客户复查入口。",
+        "previous_path": "docs/plans/029-grant-management-experience.md"
+      }
     },
     {
       "id": "CHNHCM-100",
@@ -27515,6 +27555,381 @@
         ],
         "purpose": "retest",
         "conclusion": "修复共享日期条的延迟焦点回移。八项正式菜单同组复验通过，4490 读者核对地点键盘换日与历史返回。",
+        "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/028-builtin-security-admin.md",
+        "related_documents": [
+          "CHNHCM-028",
+          "CHNHCM-013"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "44145442c415b107dd21a3aad33d802ae44196e8",
+        "working_tree": "dirty",
+        "change_description": "在 T04 基线及 T05 验收文档工作树上，更新 Go 内置管理身份判定、部署初始化及恢复、管理页授权来源与回归。",
+        "environment": "自有临时 PostgreSQL 18.6、Go API、固定前端 Chromium，原卷 x03-manual-a 4627 / 8627 / 54627。",
+        "scope": "内置 admin 拥有全部安全管理权，账号来源、交接、业务权限独立、同卷重启和普通账号对照。",
+        "results": [
+          {
+            "check": "隔离实例验证六项权限、客户指定及受控交接与恢复、原业务撤权及旧同名账号边界。",
+            "result": "passed",
+            "evidence": "docs/verification/data/028-builtin-security-admin/results.json"
+          },
+          {
+            "check": "4627 原地址更新前 admin 的三个管理接口为 403，更新后为 200。实际开户、授撤及停用经办人，四笔原回执可查。",
+            "result": "passed",
+            "evidence": "docs/verification/data/028-builtin-security-admin/results.json"
+          },
+          {
+            "check": "授权详情 1440×540 首屏可直接查看内置管理资格。",
+            "result": "passed",
+            "evidence": "docs/verification/data/028-builtin-security-admin/admin-540.png"
+          },
+          {
+            "check": "固定原卷实际停启，逐表核对原授予、修订及回执，复查既有管理员与单岗样例。",
+            "result": "passed",
+            "evidence": "docs/verification/data/028-builtin-security-admin/results.json"
+          }
+        ],
+        "limitations": [
+          "本次为本地桌面 Chromium 和受影响的对账及集成用例。未执行全仓集成、远程 CI 或客户生产验证。"
+        ],
+        "purpose": "acceptance",
+        "conclusion": "内置 admin 的六项管理权限和四笔回执通过，4627 同卷重启对账通过。",
+        "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/027-t05-opening-acceptance.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-013",
+          "CHNHCM-118",
+          "CHNHCM-313"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "44145442c415b107dd21a3aad33d802ae44196e8",
+        "working_tree": "clean",
+        "change_description": "T05 在 T04 提交的干净隔离检出运行，交付差异为计划关闭与实测记录。",
+        "environment": "任务自有 4685 / 8685 / 54685，真实旧版 00057 启动后同卷升级至 00059，PostgreSQL 18.6、Go API、Chromium 固定前端。",
+        "scope": "三组安全管理和正常业务菜单，字段及 CSV、重叠授予、共享版本、旧账号撤尽后的完整停启和原件查回。",
+        "results": [
+          {
+            "check": "只有管理权的管理员开户。新主体无业务授予，甲可更正、乙只读，列表、详情和历史按对象及字段裁剪。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/walkthrough.json"
+          },
+          {
+            "check": "独立导出授予前为 403，授权后实际下载两行，乙仅编码和名称有值。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/cross-bu.csv"
+          },
+          {
+            "check": "首轮定时等待后读取仍为 200，请求发出时刻未记录；越权详情和旧表单的测试预期也误设为 403。",
+            "result": "failed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/walkthrough.json"
+          },
+          {
+            "check": "单岗额度和可见小计从 2 至 3。逐份撤销及按数据库时钟自然到期后，原表单均被拒，原办理人可查回。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/walkthrough.json"
+          },
+          {
+            "check": "只有显式采用者取得新增记录权并沿用原全选下载。停留在 V1 的新账号收到 403、零文件，原表单 404 并清空。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/walkthrough.json"
+          },
+          {
+            "check": "从授权页面撤回 V2 及旧启动脚本创建的默认读权，同卷完整停启并重新登录，同一部门列表 403、详情 404。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/restart.json"
+          },
+          {
+            "check": "11 张表 906 行摘要一致，逐份授予的原修订、三份业务回执和五份管理回执分别对账。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/restart.json"
+          },
+          {
+            "check": "8 个真实 DB/API 集成用例、8 个固定前端浏览器用例及 make check 通过，两个任务实例均已回收。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/checks.json"
+          },
+          {
+            "check": "固定端口 4627 补验。管理员从页面开户、发布角色并逐份授撤，现场账号实际下载一行并在失权后收到 403。原经办人和 reader 按原权限复查部门及单岗历史。",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t05-opening-acceptance/4627-browser.json"
+          }
+        ],
+        "limitations": [
+          "客户生产部署、真实管理责任指定及组织容量专项目标仍由相应责任方验证。",
+          "本次为本地三组验收。远程 PR 门禁及全量浏览器分片未执行。历史覆盖及条件跳过按 T03、T04 原报告。"
+        ],
+        "purpose": "acceptance",
+        "conclusion": "三组菜单场景和旧账号撤权后的同卷重启通过，11 张表的 906 行数据摘要一致。",
+        "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/027-t04-access-management.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-013"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "3c3dde7caab4bd367a9351b0f880a2e4247966dd",
+        "working_tree": "dirty",
+        "change_description": "实施三个安全管理菜单、逐项管理职责、受控引导、恢复及交接。",
+        "environment": "公共 wt-dev-a，隔离 PostgreSQL 18.6、Go API、Chromium 固定构建和原生缩放。",
+        "scope": "T04 客户管理员的账号、角色、授权和部署恢复。",
+        "results": [
+          {
+            "check": "首次接口回归将 RFC3339 截止时刻误拒为输入错误，首次新账号页面读回遇到空 UUID",
+            "result": "failed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "首次短屏定位及原生缩放夹具失败，修复后开户、发布角色和逐份撤销在三种视口分别通过",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "服务端检查全部当前和待生效引用、原会话及凭据、部署交接、原操作者和撤权",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "从 00058 升级中途失败回滚，重试及原初始化后逐表对账",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "真实委派账号的归属候选、直接 API 和打开表单后的失权",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          },
+          {
+            "check": "首轮两个整包及前三个 bootstrap 分片达到 20 分钟上限",
+            "result": "interrupted",
+            "evidence": "docs/verification/data/027-t04-access-management/results.json"
+          },
+          {
+            "check": "DB/API 分批完成 432 个通过根，全部根和条件跳过项均有记录",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t04-access-management/results.json"
+          },
+          {
+            "check": "三个临时实例分批通过 16 条不同浏览器用例，含本切片全部 6 条及正常菜单复验",
+            "result": "passed",
+            "evidence": "docs/verification/data/027-t04-access-management/results.json"
+          },
+          {
+            "check": "4627 原卷保留 17 张表的 1,245 行原记录和 230 份原授予，甲样例撤代理后仍可按本职读取",
+            "result": "passed",
+            "evidence": "docs/verification/027-t04-access-management.md"
+          }
+        ],
+        "limitations": [
+          "22 个 DB/API 根按仓内条件跳过，原因见逐根清单。远程 PR 门禁待执行。",
+          "T05 的跨角色业务与撤尽旧部门读权后的实际进程重启另行验收。"
+        ],
+        "purpose": "acceptance",
+        "conclusion": "432 个 DB/API 根和 16 条浏览器用例分批通过。22 个 DB/API 根条件跳过，初次超时已留证。",
+        "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/027-t03-department-and-position-access.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-119",
+          "CHNHCM-313"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-27",
+        "base_commit": "1284f50e32c16d7191d6ea8f375c2e4b67aa7941",
+        "working_tree": "dirty",
+        "change_description": "部门树延迟定位、指定岗位可见小计、API 模型及业务回归。",
+        "environment": "公共 wt-dev-a，真实 PostgreSQL 18.6、Go API、桌面 Chromium 及独立手工验收环境。",
+        "scope": "部门跨 BU 维护、固定选择与 CSV，逐份授予的单岗办理、历史和可见统计。",
+        "results": [
+          {
+            "check": "基线单岗缺少可见小计，首次定位在日期上下文晚到时未执行，字段不足的同部门详情仍返回局部合计",
+            "result": "failed",
+            "evidence": "docs/verification/027-t03-department-and-position-access.md"
+          },
+          {
+            "check": "21 个 DB/API 根和 54 项 Chromium 按影响通过，分配根补验混合授权和导航",
+            "result": "passed",
+            "evidence": "docs/verification/027-t03-department-and-position-access.md"
+          },
+          {
+            "check": "首次额外空库冒烟 6 过 1 败，代理初次读原件得到 403，首轮未观测相对截止时刻",
+            "result": "failed",
+            "evidence": "docs/verification/027-t03-department-and-position-access.md"
+          },
+          {
+            "check": "额外三次重复首组的第三次仍见一岗，原截图未记录该次统计响应",
+            "result": "failed",
+            "evidence": "docs/verification/027-t03-department-and-position-access.md"
+          },
+          {
+            "check": "空库原组 7 项通过，最终单岗完整流程独立连续 3 次通过，同笔提交后 60 次新授和 60 次撤回复核",
+            "result": "passed",
+            "evidence": "docs/verification/027-t03-department-and-position-access.md"
+          },
+          {
+            "check": "基线对照、OpenAPI 再生成、构建及 4627 双角色菜单与原件",
+            "result": "passed",
+            "evidence": "docs/verification/027-t03-department-and-position-access.md"
+          }
+        ],
+        "limitations": [
+          "本轮本地按影响验证。正式 PR 的全量分片另行执行。",
+          "T04 管理页面和受控恢复、T05 撤尽后的全程重启登录另行验收。"
+        ],
+        "purpose": "acceptance",
+        "conclusion": "跨 BU、单岗历史及授权隔离通过。单岗首轮读权与观察时序失败，后续用原组和两类授权变更复验。",
+        "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/029-grant-management-experience.md",
+        "related_documents": [
+          "CHNHCM-029",
+          "CHNHCM-028",
+          "CHNHCM-012"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "e11050e970276788aec1fec689a0bbc59d2e93fb",
+        "working_tree": "dirty",
+        "change_description": "评审并实施授权目录、账号内的逐份授予、变更日志及确切版本引用。",
+        "environment": "本地 PostgreSQL 18.6、Go API、桌面 Chromium 和固定 4627。",
+        "scope": "授权目录及详情、只撤代理、换版与停用、旧记录可见范围、回执及正常菜单返回。",
+        "results": [
+          {
+            "check": "同一角色两份授予、越界裁剪、引用变化后停用冲突和指定授予查回。",
+            "result": "passed",
+            "evidence": "docs/verification/029-grant-management-experience.md"
+          },
+          {
+            "check": "固定环境从正常菜单按 20 行浏览 183 份授权，三个账号的授予及管理记录摘要一致。",
+            "result": "passed",
+            "evidence": "docs/verification/data/029-grant-management/results.json"
+          }
+        ],
+        "limitations": [
+          "远程 CI、生产与客户签收另计。"
+        ],
+        "purpose": "retest",
+        "conclusion": "验证逐份撤销、角色换版、引用限制和查询返回。4627 三个账号的授权及管理记录摘要一致。",
+        "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/029-security-layout-recheck.md",
+        "related_documents": [
+          "CHNHCM-029",
+          "CHNHCM-028",
+          "CHNHCM-012"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "7c23eecfbb39c5e25f93528a4bc2626e3a7305d9",
+        "working_tree": "dirty",
+        "change_description": "按共享列表、详情和日志重做三个入口的页面表达，区分新建、保存版本及授予。",
+        "environment": "本机 PostgreSQL 18.6、Go 与桌面 Chromium，固定 4627。",
+        "scope": "账号、角色、授权列表，单份授予及版本详情，三类变更日志和角色新建表单。",
+        "results": [
+          {
+            "check": "三类列表、详情及日志的前后画面，角色表单到范围策略的键盘路径由 32 次变为 1 次。",
+            "result": "passed",
+            "evidence": "docs/verification/data/029-security-layout/comparison.pdf"
+          },
+          {
+            "check": "首轮已保存版本在建立日志中缺少新值。",
+            "result": "failed",
+            "evidence": "docs/verification/data/029-security-layout/first-role-log.png"
+          },
+          {
+            "check": "复验准确版本、状态差异、筛选及焦点返回，固定原库的三个样例摘要一致。",
+            "result": "passed",
+            "evidence": "docs/verification/data/029-security-layout/observations.json"
+          },
+          {
+            "check": "make check、7 个 DB/API 和 8 个浏览器用例，含短屏及原生 200%。",
+            "result": "passed",
+            "evidence": "docs/verification/029-security-layout-recheck.md"
+          }
+        ],
+        "limitations": [
+          "远程 CI 和客户签收另计。"
+        ],
+        "purpose": "retest",
+        "conclusion": "修复后可从已建立版本的日志核对准确新值。三类目录、历史、焦点和 4627 原样例通过。",
+        "evidence_access": "mixed"
+      },
+      {
+        "path": "docs/verification/027-main-00064-convergence.md",
+        "related_documents": [
+          "CHNHCM-027",
+          "CHNHCM-028",
+          "CHNHCM-029",
+          "CHNHCM-142",
+          "CHNHCM-137"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "e26a9d3f242eb3e10618d2375ef8b4d792862af3",
+        "working_tree": "dirty",
+        "change_description": "将 A 的逐份授权与安全管理接入最新主线，在公共登记校准后用 00064 保留原安全管理 00059 存量库。",
+        "environment": "A 固定工作树、独立 PostgreSQL 18.6、从 4627 备份恢复的试验库、真实 Chromium 与固定 4627 原卷。",
+        "scope": "旧安全管理及薪酬主线的迁移和重试，授权业务与回执，管理菜单、委派、部门和岗位范围。",
+        "results": [
+          {
+            "check": "公共工具检测到 00059 与主线错名，停止领号。",
+            "result": "failed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "公共登记校准全部 62 份已合入 SQL，保留原登记和 C 的 00063，远端分配 A 的 00064。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "旧 00058 的样例初始化写入新动作被拒，新增升级用例首次引导遗漏实例被拒。",
+            "result": "failed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "8 项授权及升级实库用例、3 项 T03 与公共授权用例、7 个主线和历史旧账本场景、准入及新库失败重试通过。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "15 项正式 Chromium 用例通过，包括 5 项企业前置、关键办理原生 200% 和 3 项部门及岗位范围走查。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          },
+          {
+            "check": "4627 整库备份恢复演练、原容器原卷实际升级及原账本和九张安全表对账通过。固定入口实测管理员和只读者。",
+            "result": "passed",
+            "evidence": "docs/verification/027-main-00064-convergence.md"
+          }
+        ],
+        "limitations": [
+          "本记录覆盖本地预检前的产品、真实浏览器和固定环境。正式 PR 与合并后的 main 门禁依其 GitHub 运行核验。"
+        ],
+        "purpose": "retest",
+        "conclusion": "完整旧库可前向升级并重试。原回执和逐份授权保留。4627 原卷更新后的管理与只读入口符合当前权限。",
         "evidence_access": "mixed"
       }
     ]

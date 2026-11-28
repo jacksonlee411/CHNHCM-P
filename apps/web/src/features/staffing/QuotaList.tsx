@@ -8,6 +8,10 @@ import { usePageTitle, useListReturn } from '../../shared/navigation';
 import { QuotaDepartmentLookup } from './QuotaDepartmentLookup';
 import { positionQuotaPath, quotaPath, quotaLabel, quotaTotals, type Position } from './quotaApi';
 
+function showsDepartmentRows(list: Models['StaffingQuotaList'], departmentId: string, search: string) {
+  return !departmentId && !search.trim() && !list.positionSummary && (list.departments.length > 0 || list.canBrowseDepartments);
+}
+
 export function QuotaList() {
   usePageTitle('部门编制统计');
   const [params, setParams] = useSearchParams(),
@@ -65,10 +69,7 @@ export function QuotaList() {
       .then((list) => {
         if (!abort.signal.aborted && same()) {
           setData({ key, list });
-          lastTotal.current =
-            !dep && !querySearch && (list.departments.length > 0 || list.canBrowseDepartments)
-              ? list.departments.length
-              : list.totalCount;
+          lastTotal.current = showsDepartmentRows(list, dep, querySearch) ? list.departments.length : list.totalCount;
         }
       })
       .catch((e) => {
@@ -89,7 +90,7 @@ export function QuotaList() {
   }, [group, location, dep]);
   const search = draftSearch ?? querySearch;
   type Row = Partial<Position> & { id: string; summary?: Models['StaffingQuotaDepartment'] };
-  const grouped = !dep && !querySearch && (!!view?.departments.length || !!view?.canBrowseDepartments);
+  const grouped = view && showsDepartmentRows(view, dep, querySearch);
   const offset = (page - 1) * pageSize;
   // The response carries the complete authorized department totals for the selector.
   const rows: Row[] = grouped
@@ -223,7 +224,7 @@ export function QuotaList() {
         loading={!view && !error}
         empty={grouped ? '没有可见的部门编制统计' : '没有匹配的岗位'}
         paginationModel={{ page: page - 1, pageSize }}
-        rowCount={lastTotal.current}
+        rowCount={error ? 0 : lastTotal.current}
         onPaginationModelChange={(p) => {
           if (view && (page !== p.page + 1 || pageSize !== p.pageSize))
             patch({ page: String(p.page + 1), pageSize: String(p.pageSize) });
@@ -302,6 +303,9 @@ export function QuotaList() {
                       部门编制
                     </Button>
                   </Stack>
+                )}
+                {view?.positionSummary?.total !== undefined && (
+                  <Typography>{quotaTotals.visible} {view.positionSummary.total}</Typography>
                 )}
               </Stack>
             </ObjectForm>

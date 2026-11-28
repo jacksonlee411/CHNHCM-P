@@ -3,6 +3,7 @@ package main
 import (
 	"chnhcm.local/chnhcm/db/migrations"
 	"chnhcm.local/chnhcm/internal/bootstrap"
+
 	access "chnhcm.local/chnhcm/internal/contexts/access/public"
 	"chnhcm.local/chnhcm/internal/foundation"
 	"context"
@@ -16,7 +17,7 @@ import (
 )
 
 func main() {
-	mode := flag.String("mode", "migrate", "migrate, initialize, runtime-roles, access-change, local-password, country-catalog, geoarea-catalog, personnel-retention, probation-reconcile, t04-reconcile; inputs are JSON on stdin")
+	mode := flag.String("mode", "migrate", "migrate, initialize, runtime-roles, access-admin, access-change, local-password, country-catalog, geoarea-catalog, personnel-retention, probation-reconcile, t04-reconcile; inputs are JSON on stdin")
 	apply := flag.Bool("apply", false, "apply the selected reconciliation; defaults to preview")
 	optionalCatalog := flag.Bool("skip-unauthorized-catalog", false, "during local startup, skip a catalog when the account lacks current access")
 	flag.Parse()
@@ -98,6 +99,20 @@ func main() {
 				fail("development fixtures require an explicit temporary local instance")
 			}
 			err = bootstrap.Initialize(ctx, p, in)
+		}
+	case "access-admin":
+		var in access.RecoveryCommand
+		d := json.NewDecoder(os.Stdin)
+		d.DisallowUnknownFields()
+		if err = d.Decode(&in); err == nil {
+			var result access.ManagementResult
+			result, err = bootstrap.RecoverManagement(ctx, p, os.Getenv("CHNHCM_INSTANCE_ID"), in)
+			if err == nil {
+				err = json.NewEncoder(os.Stdout).Encode(result)
+				if err == nil {
+					return
+				}
+			}
 		}
 	case "access-change":
 		var in bootstrap.AccessChange

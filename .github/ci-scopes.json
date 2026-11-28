@@ -34,6 +34,12 @@
     "enterprise-maintenance"
   ],
   "domains": {
+    "access_management": {
+      "frontend": ["apps/web/src/features/access/management.ts", "apps/web/src/features/access/ManagementFields.tsx", "apps/web/src/features/access/SecurityManagement.tsx", "apps/web/src/features/access/security.css"],
+      "browser_files": ["access-management.spec.ts"],
+      "backend_prefixes": [],
+      "backend_consumers": ["access_management"]
+    },
     "compensation": {
       "frontend": [
         "apps/web/src/features/compensation/PlanDetail.tsx",
@@ -345,6 +351,7 @@
     }
   },
   "integration_prefixes": {
+    "access_management": ["AccessManagement"],
     "compensation": ["Compensation"],
     "recruiting": ["Recruiting"],
     "personnel": ["Personnel"],

@@ -138,6 +138,57 @@ type AccessHireIdentityFixture struct {
 	PrincipalID string
 }
 
+type AccessManagementMandate struct {
+	InstanceID   string
+	ID           string
+	PrincipalID  string
+	OwnerID      string
+	Rights       []string
+	RoleID       string
+	ScopeID      string
+	FieldsID     string
+	RoleKind     pgtype.Text
+	ScopeKind    pgtype.Text
+	FieldsKind   pgtype.Text
+	MaxProxyDays int32
+	ValidUntil   pgtype.Timestamptz
+	RevokedAt    pgtype.Timestamptz
+}
+
+type AccessManagementPublication struct {
+	InstanceID string
+	Kind       string
+	VersionID  string
+	Name       string
+	ScopeID    pgtype.UUID
+	FieldsID   pgtype.UUID
+	ScopeKind  pgtype.Text
+	FieldsKind pgtype.Text
+}
+
+type AccessManagementReceipt struct {
+	ReceiptOrder  pgtype.Int8
+	InstanceID    string
+	RequestID     string
+	ActorID       pgtype.UUID
+	OperatorName  pgtype.Text
+	Operation     string
+	TargetID      string
+	SubjectID     pgtype.UUID
+	RecordedAt    pgtype.Timestamptz
+	Reason        string
+	CommandSeal   []byte
+	PreviousOwner pgtype.UUID
+	AssignedOwner pgtype.UUID
+}
+
+type AccessManagementRoot struct {
+	InstanceID   string
+	PrincipalID  string
+	MaxProxyDays int32
+	ReceiptKey   []byte
+}
+
 type AccessOfferFixture struct {
 	InstanceID  string
 	PrincipalID string
@@ -247,6 +298,7 @@ type AccessPrincipal struct {
 	CreatedAt            pgtype.Timestamptz
 	DisplayName          pgtype.Text
 	PrincipalKind        string
+	ManagementOwner      pgtype.UUID
 }
 
 type AccessSecurityEvent struct {

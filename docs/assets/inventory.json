@@ -4546,6 +4546,19 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/123-current-maintenance.md",
           "verification_limit": "仅123报告所列当前BU样本及分层复验；不把旧日期交互、未运行部门路径或整个来源资产计为通过。"
+        },
+        {
+          "document": "CHNHCM-029",
+          "scope": "授权目录、逐份办理及按原查询返回；Go 按当前权限裁剪。",
+          "target_files": [
+            "apps/web/src/features/access/SecurityManagement.tsx",
+            "apps/web/src/features/access/GrantWorkspace.tsx",
+            "tests/e2e/access-management.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/029-grant-management-experience.md"
         }
       ]
     },
@@ -5235,6 +5248,7 @@
         "verified": false
       },
       "new_evidence": [
+        "docs/verification/027-t04-access-management.md",
         "docs/verification/019-cubebox-experience-migration.md",
         "docs/verification/012-record-form-consistency.md",
         "docs/verification/012-ui-expression-simplification.md",
@@ -6098,6 +6112,19 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/302-detail-navigation.md",
           "verification_limit": "仅302限定结果，不计整体容量P1或整个来源资产完成。"
+        },
+        {
+          "document": "CHNHCM-029",
+          "scope": "授权目录、逐份办理及按原查询返回；Go 按当前权限裁剪。",
+          "target_files": [
+            "apps/web/src/features/access/SecurityManagement.tsx",
+            "apps/web/src/features/access/GrantWorkspace.tsx",
+            "tests/e2e/access-management.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/029-grant-management-experience.md"
         }
       ]
     },
@@ -10264,7 +10291,8 @@
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/300-closeout/current-capacity-summary.json",
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/300-closeout/history-comparison.json",
         "https://github.com/jacksonlee411/CHNHCM/blob/061d28105966bd10eb1e3b0032cf2976a6448de4/docs/verification/data/300-closeout/resource-closeout.json",
-        "docs/verification/125-path-stage-target-adoption.md"
+        "docs/verification/125-path-stage-target-adoption.md",
+        "docs/verification/027-t03-department-and-position-access.md"
       ],
       "target_files": [
         "internal/bootstrap/department_tree300_prototype_integration_test.go",
@@ -11110,7 +11138,8 @@
         "verified": true
       },
       "new_evidence": [
-        "docs/verification/315-department-quota-allocation.md"
+        "docs/verification/315-department-quota-allocation.md",
+        "docs/verification/027-t03-department-and-position-access.md"
       ],
       "target_files": [
         "internal/contexts/staffing/domain/allocation_test.go",
@@ -11144,7 +11173,8 @@
         "verified": true
       },
       "new_evidence": [
-        "docs/verification/315-position-quota-implementation.md"
+        "docs/verification/315-position-quota-implementation.md",
+        "docs/verification/027-t03-department-and-position-access.md"
       ],
       "target_files": [
         "internal/contexts/staffing/domain/quota_test.go",
@@ -11435,6 +11465,37 @@
         "internal/bootstrap/first_hire_integration_test.go",
         "internal/bootstrap/appointment_decision_integration_test.go",
         "tests/e2e/first-hire.spec.ts"
+      ]
+    },
+    {
+      "id": "NATIVE-V029-GRANTS",
+      "category": "verification",
+      "document": "CHNHCM-029",
+      "source": {
+        "repository": "CHNHCM",
+        "commit": "44145442c415b107dd21a3aad33d802ae44196e8",
+        "path": "docs/verification/data/027-t04-access-management/results.json",
+        "excerpt": "原 027 T04 账号及逐份授权办理、取消、撤销和真实业务复验记录（完整文件）",
+        "file_sha256": "2583ea751967b294a34e43bfe12e9874bc779f519ed6013b7783b0ee8923c63d",
+        "sha256": "2583ea751967b294a34e43bfe12e9874bc779f519ed6013b7783b0ee8923c63d"
+      },
+      "preserved_in": {
+        "file": "docs/verification/data/027-t04-access-management/results.json"
+      },
+      "target_owner": "X03-access",
+      "disposition": "沿用原实办路径与回执预期，增加逐份撤权焦点、可见计数、跨页日志和版本影响冲突。",
+      "state": {
+        "registered": true,
+        "extracted": true,
+        "implemented": true,
+        "verified": true
+      },
+      "new_evidence": [
+        "docs/verification/029-grant-management-experience.md"
+      ],
+      "target_files": [
+        "tests/e2e/access-management.spec.ts",
+        "internal/bootstrap/access_management_integration_test.go"
       ]
     }
   ]

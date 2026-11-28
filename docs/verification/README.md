@@ -8,6 +8,8 @@
 
 404 的按岗免占编首单先在主线同步后复验，再在 4496 原卷升级至 00057 时签收。该批确认旧单及私人回执可查，新首单实岗一份、常规占编零。后续 PR #30 的记录保留远程首败、本地复验和当批 4496 构建。[原方案评审](404-position-exempt-first-hire-review.md) · [同步复评](404-main-sync-reassessment.md) · [4496 原库验收](400-first-hire-integration.md#decision-first-hire) · [4496 原卷签收](404-4496-acceptance.md) · [PR #30 浏览器复验](404-pr30-browser-recheck.md) · [400、404 归档及主线复验](400-404-plan-archive.md)
 
+[029 安全管理三个入口的布局、操作用语与实页对照](029-security-layout-recheck.md)
+
 [004 架构、技术栈与数据归属整改复验](004-architecture-review-remediation.md)
 
 [025 业务实现唯一性、岗位核编旧接口退出与历史查回复验](025-position-quota-interface-retirement.md)
@@ -45,6 +47,14 @@ M04 T02 的主体用途、仅按职务政策、分支账本和 2a／2d 消费合
 
 人员路线图的第五稿通过了方案评审。原评审保留页面继承、授权交集和撤销后重送的算例，关闭记录列出了八个场景的现行定义和剩余事项的接收方。[500 方案评审](500-personnel-roadmap-review.md) · [归档路线图](../archive/plans/500-personnel-roadmap.md) · [500 关闭与场景交接](500-personnel-roadmap-closeout.md)
 
+
+内置 `admin` 的六项安全管理权、客户管理员交接及固定 4627 的实页结果见 [028 内置管理员验证](028-builtin-security-admin.md)。
+
+027 T05 记录跨 BU 部门导出、单岗代理到期及共享角色停用，以及管理页面撤尽旧库读权后的同卷重启与原回执查回。[开放前验收](027-t05-opening-acceptance.md)
+
+[027 T04 客户管理入口与受控恢复](027-t04-access-management.md)记录三个菜单、委派边界、旧库升级和部署恢复的分层实测。
+
+[027 T03 部门与指定岗位授权](027-t03-department-and-position-access.md)记录甲可维护乙只读、固定选择导出、单岗小计与 4627 双角色手工入口。
 
 [公共 00057 升至登记号 00058](027-public-00058-grant-upgrade.md)记录按主体对账、旧回执和撤尽重启，以及录用授权在提交前到期的回归。
 

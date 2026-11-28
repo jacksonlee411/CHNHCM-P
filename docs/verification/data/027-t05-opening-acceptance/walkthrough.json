@@ -1,0 +1,598 @@
+{
+  "candidate": "44145442c415b107dd21a3aad33d802ae44196e8",
+  "browser": "Chromium 140.0.7339.186",
+  "profile": "x03-t05-acceptance-a",
+  "viewportsAt100Percent": {
+    "经办人": [
+      1440,
+      900
+    ],
+    "安全管理员": [
+      1440,
+      540
+    ]
+  },
+  "fixture": {
+    "a": "d77ac775-d366-40f1-9e9e-7b59db7ba625",
+    "b": "f9d3cf33-fb5c-48f1-a2fd-186aa9801a30",
+    "c": "5500b591-0b59-4217-a061-44e4038c5106",
+    "da": "7ce3893c-6b33-42fe-be09-d5e5f614c6e3",
+    "db": "7a2c4c37-a7d5-410e-b136-845203603d1e",
+    "dc": "4be9b697-0a6d-4925-b56b-e04bb6543d85",
+    "p1": "5be3db74-1bb9-4366-9d31-53a9ec65da69",
+    "p2": "73afeca8-d7f6-46eb-a39d-9a10b45f88a3",
+    "reader": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+    "admin": "5fe51677-97d0-435c-91b0-1bb5160e18bb"
+  },
+  "authorization": {
+    "securitySubject": "0af72fc1-f77b-4354-b155-4edb5dc1e699",
+    "clerkSubject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+    "clerkObservedAt": "2026-11-27T23:22:40.170Z",
+    "security": {
+      "assignments": 0,
+      "person_grant": 0,
+      "employment_grant": 0,
+      "offer_grant": 0
+    },
+    "clerk": {
+      "assignments": 0,
+      "person_grant": 0,
+      "employment_grant": 0,
+      "offer_grant": 0
+    },
+    "readerAfterRevokeActiveReadSources": 0,
+    "managementRootSubject": "0af72fc1-f77b-4354-b155-4edb5dc1e699"
+  },
+  "SCN-001": {
+    "开户首次登录": {
+      "at": "2026-11-27T23:22:40.170Z",
+      "clerk": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+      "clerkDepartments": 403,
+      "clerkTarget": 404,
+      "quota": 403,
+      "accountManagement": 403,
+      "securityDepartments": 403,
+      "securityQuota": 403,
+      "page": "新建\n部门\n​\n查询\n\n每页\n\n20\n\n尚无查询结果\n\n当前权限不允许此操作\n重试\n\n部门\n\n定位树中部门\n定位树中部门\n全部\n加载根部门\n\n含子部门\n\n编码\n名称\n管理业务单元\n部门路径\n状态\n生效日期\n请重新查询"
+    },
+    "跨 BU 列表和乙详情": {
+      "at": "2026-11-27T23:22:47.087Z",
+      "list": [
+        {
+          "code": "X03DA",
+          "fields": [
+            "code",
+            "effectiveDate",
+            "id",
+            "name",
+            "path",
+            "status"
+          ],
+          "state": "active",
+          "date": "2026-01-01"
+        },
+        {
+          "code": "X03DB",
+          "fields": [
+            "code",
+            "id",
+            "name",
+            "path"
+          ]
+        }
+      ],
+      "pageRows": [
+        "编码名称管理业务单元部门路径状态生效日期",
+        "X03DA甲部门无读取权限无读取权限启用2026-01-01",
+        "X03DB乙部门无读取权限无读取权限无读取权限"
+      ],
+      "detailFields": [
+        "deleted",
+        "name",
+        "operationSummary",
+        "recordId",
+        "revision"
+      ],
+      "history": 403,
+      "write": 403,
+      "versionBeforeAndAfter": "33247dd6-6bf2-4acf-b220-d30d1838c035"
+    },
+    "甲取消": {
+      "at": "2026-11-27T23:22:48.175Z",
+      "source": "b8eef333-e8a9-4147-86d3-b8970c92e848",
+      "changesBeforeAndAfter": 1,
+      "detailFields": [
+        "deleted",
+        "effectiveDate",
+        "endExclusive",
+        "endInclusive",
+        "name",
+        "operationSummary",
+        "recordId",
+        "revision",
+        "state"
+      ]
+    },
+    "甲更正和历史": {
+      "at": "2026-11-27T23:22:49.072Z",
+      "receipt": "523ab202-cf0a-4ad5-8d4b-989f7067ac70",
+      "source": "fedff75e-589e-4363-b3e3-b011380cfd85",
+      "actor": {
+        "subjectId": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "displayName": "甲部门经办人",
+        "login": "x03-t05-clerk",
+        "kind": "human",
+        "identityEvidence": "captured"
+      },
+      "fields": [
+        "code",
+        "name"
+      ],
+      "diffs": [
+        {
+          "field": "name",
+          "before": {
+            "kind": "text",
+            "text": "甲部门"
+          },
+          "after": {
+            "kind": "text",
+            "text": "甲部门核算"
+          }
+        }
+      ],
+      "oldName": "甲部门",
+      "original": "b8eef333-e8a9-4147-86d3-b8970c92e848"
+    },
+    "独立导出授予前": {
+      "at": "2026-11-27T23:22:49.407Z",
+      "draft": "a91e96b9-dd48-49e8-9d02-bf21def9b4dd",
+      "disabled": true,
+      "http": 403,
+      "attachment": null
+    },
+    "独立导出授予后": {
+      "at": "2026-11-27T23:22:51.018Z",
+      "draft": "5d13eb68-eeb1-409e-b8fa-ed40335c6d0f",
+      "name": "chnhcm-departments-2026-11-28.csv",
+      "rows": [
+        [
+          "编码",
+          "名称",
+          "简称",
+          "BU编码",
+          "BU名称",
+          "部门路径",
+          "状态",
+          "生效日期"
+        ],
+        [
+          "X03DA",
+          "甲部门核算",
+          "",
+          "",
+          "",
+          "",
+          "启用",
+          "2026-01-01"
+        ],
+        [
+          "X03DB",
+          "乙部门",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "sha256": "39c697fcbdc55d02ed6e1c73295eee94dafda84eecf7d0ad491e4557a7608d3d"
+    },
+    "授权页面的授予": [
+      {
+        "target": "3c0a8f70-11a2-484f-8682-acd1d87f53c8",
+        "operation": "grant.issue",
+        "requestId": "7a3b6c6f-3be2-4296-92af-4ec99f32b458",
+        "at": "2026-11-28T07:22:41.885048+08:00"
+      },
+      {
+        "target": "5730f67d-100a-4f3e-96e4-29fb6ad3778b",
+        "operation": "grant.issue",
+        "requestId": "4fa65d89-dcda-420c-a115-fbd4f446047d",
+        "at": "2026-11-28T07:22:43.324005+08:00"
+      },
+      {
+        "target": "fefdf3f8-e0b5-48c6-a541-7fc77cef49f3",
+        "operation": "grant.issue",
+        "requestId": "d6cedc1a-017c-4724-abdc-dbe177370672",
+        "at": "2026-11-28T07:22:44.778688+08:00"
+      },
+      {
+        "target": "cdab9f8c-9989-47d9-b216-d921fd52f534",
+        "operation": "grant.issue",
+        "requestId": "5369cc98-43f8-4daa-96d8-6c7146612b78",
+        "at": "2026-11-28T07:22:50.81292+08:00"
+      }
+    ]
+  },
+  "SCN-002": {
+    "先撤代理，本职保存": {
+      "at": "2026-11-27T23:23:10.022Z",
+      "status": 200,
+      "submission": "95bc13d9-ab76-4c17-a80e-dbb6c20a8884",
+      "source": "e32d9d4c-2d61-4ec4-a6e3-b01f636e23e1",
+      "db": {
+        "5be3db74-1bb9-4366-9d31-53a9ec65da69": 3,
+        "73afeca8-d7f6-46eb-a39d-9a10b45f88a3": 3,
+        "7ce3893c-6b33-42fe-be09-d5e5f614c6e3": 10
+      }
+    },
+    "再撤本职，已开表单拒绝": {
+      "at": "2026-11-27T23:23:11.401Z",
+      "save": 403,
+      "statistics": 403,
+      "history": 403,
+      "amounts": {
+        "5be3db74-1bb9-4366-9d31-53a9ec65da69": 3,
+        "73afeca8-d7f6-46eb-a39d-9a10b45f88a3": 3,
+        "7ce3893c-6b33-42fe-be09-d5e5f614c6e3": 10
+      }
+    },
+    "到期复验定时器唤醒": {
+      "at": "2026-11-27T23:25:05.556Z",
+      "node": "2026-11-27T23:25:05.446Z",
+      "db": {
+        "now": "2026-11-27T23:25:05.552202+00:00",
+        "until": "2026-11-27T23:25:06+00:00"
+      }
+    },
+    "到期后请求发出前": {
+      "at": "2026-11-27T23:25:06.073Z",
+      "node": "2026-11-27T23:25:06.073Z",
+      "db": {
+        "now": "2026-11-27T23:25:06.069112+00:00",
+        "until": "2026-11-27T23:25:06+00:00"
+      }
+    },
+    "先撤本职，代理自然到期与原表单": {
+      "at": "2026-11-27T23:25:06.260Z",
+      "proxy": "803b987d-004d-400c-8847-42133e17eab5",
+      "until": "2026-11-27T23:25:06.000Z",
+      "before200": "2026-11-27T23:24:35.958Z",
+      "after403": "2026-11-27T23:25:06.100Z",
+      "save": 403,
+      "amount": 3
+    },
+    "重授读取与历史查原调整": {
+      "at": "2026-11-27T23:25:42.346Z",
+      "readQuota": 200,
+      "resolveStatus": 200,
+      "originalSubmission": "95bc13d9-ab76-4c17-a80e-dbb6c20a8884",
+      "source": "e32d9d4c-2d61-4ec4-a6e3-b01f636e23e1",
+      "operator": {
+        "subjectId": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "displayName": "甲部门经办人",
+        "login": "x03-t05-clerk",
+        "kind": "human",
+        "identityEvidence": "captured"
+      },
+      "diffs": [
+        {
+          "field": "quota",
+          "before": {
+            "kind": "missing"
+          },
+          "after": {
+            "kind": "text",
+            "text": "3"
+          }
+        }
+      ],
+      "pageHistorical": true
+    },
+    "页面触发的统计响应": [
+      {
+        "at": "2026-11-27T23:23:08.882Z",
+        "amount": 2,
+        "items": [
+          {
+            "positionId": "5be3db74-1bb9-4366-9d31-53a9ec65da69",
+            "positionCode": "X03P1",
+            "keys": [
+              "active",
+              "code",
+              "name",
+              "positionId",
+              "quota",
+              "quotaState",
+              "readFields",
+              "recordId"
+            ]
+          }
+        ],
+        "positionSummary": {
+          "total": 2
+        },
+        "departments": [],
+        "pageLabel": "可见范围 · 岗位核定小计 2",
+        "restrictedValuesDisplayed": false
+      },
+      {
+        "at": "2026-11-27T23:25:41.866Z",
+        "amount": 3,
+        "items": [
+          {
+            "positionId": "5be3db74-1bb9-4366-9d31-53a9ec65da69",
+            "positionCode": "X03P1",
+            "keys": [
+              "active",
+              "code",
+              "name",
+              "positionId",
+              "quota",
+              "quotaState",
+              "readFields",
+              "recordId"
+            ]
+          }
+        ],
+        "positionSummary": {
+          "total": 3
+        },
+        "departments": [],
+        "pageLabel": "可见范围 · 岗位核定小计 3",
+        "restrictedValuesDisplayed": false
+      }
+    ],
+    "单岗角色版本": "55767daa-2a9d-4e99-8122-b673ab659a36",
+    "授予及撤销": {
+      "qDuty": {
+        "requestId": "4074c116-0b42-45e5-a0d9-7c55cfe49e1c",
+        "operation": "grant.issue",
+        "target": "9cd9d2db-fd3e-44ac-ba6c-5fdb2dc2bb56",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:23:07.843192+08:00"
+      },
+      "qProxy": {
+        "requestId": "a73f35b0-d331-43b4-aefc-f277a3fc9aac",
+        "operation": "grant.issue",
+        "target": "16857b83-e21c-4333-9f50-c786ce919b1c",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:23:08.561013+08:00"
+      },
+      "qProxyRevoke": {
+        "requestId": "0078f349-b0d0-44fb-af93-ab591d584db9",
+        "operation": "grant.revoke",
+        "target": "16857b83-e21c-4333-9f50-c786ce919b1c",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:23:09.791147+08:00"
+      },
+      "qDutyRevoke": {
+        "requestId": "be353be2-7012-4c29-b94a-2929159b9e77",
+        "operation": "grant.revoke",
+        "target": "9cd9d2db-fd3e-44ac-ba6c-5fdb2dc2bb56",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:23:11.197232+08:00"
+      },
+      "qDutyRerun": {
+        "requestId": "96cd109c-bf7f-4ccd-ab74-ea7528ee5145",
+        "operation": "grant.issue",
+        "target": "db65c414-d089-49b0-926e-b9b812d7365e",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:24:33.910003+08:00"
+      },
+      "qProxyRerun": {
+        "requestId": "ca965fc5-d266-42a5-82ab-946176c3690f",
+        "operation": "grant.issue",
+        "target": "803b987d-004d-400c-8847-42133e17eab5",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:24:35.176259+08:00"
+      },
+      "qDutyRerunRevoke": {
+        "requestId": "0f2c48cd-f2cf-46f9-a7d8-297bd1e8d087",
+        "operation": "grant.revoke",
+        "target": "db65c414-d089-49b0-926e-b9b812d7365e",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:24:35.908049+08:00"
+      },
+      "qHistory": {
+        "requestId": "b9082c41-a3cd-4fc4-87f5-cfbc3c9e5fa7",
+        "operation": "grant.issue",
+        "target": "e023d4c2-25cf-4d96-9a76-792684045324",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:25:08.307354+08:00"
+      }
+    }
+  },
+  "SCN-003": {
+    "两人原全选、历史来源及已开更正": {
+      "at": "2026-11-27T23:26:49.589Z",
+      "newDraft": "14e23e78-4f64-4b54-9d71-c526d230067e",
+      "oldDraft": "d38bbc2e-4f7e-4a4a-8bc0-79c689745fbf",
+      "pinnedSource": "fedff75e-589e-4363-b3e3-b011380cfd85",
+      "availableBeforePublication": [
+        false,
+        false
+      ]
+    },
+    "V2 发布，两份 V1 不扩权": {
+      "at": "2026-11-27T23:26:50.425Z",
+      "newAdd": false,
+      "readerAdd": false,
+      "v2": "a78df7d0-f323-4c4e-8e10-8e3199192c84"
+    },
+    "仅旧经办人显式采用": {
+      "at": "2026-11-27T23:26:52.211Z",
+      "newAdd": false,
+      "readerAdd": true,
+      "readerOpenedNewRecord": true,
+      "unadoptedGrant": "0dad6748-d8a4-4043-b101-997ff89a3e42",
+      "adoptedGrant": "60f3671e-1262-4432-adc4-a3df0833e89b"
+    },
+    "V2 原固定选择实际下载": {
+      "at": "2026-11-27T23:26:52.993Z",
+      "draft": "d38bbc2e-4f7e-4a4a-8bc0-79c689745fbf",
+      "name": "chnhcm-departments-2026-11-28.csv",
+      "rows": [
+        [
+          "编码",
+          "名称",
+          "简称",
+          "BU编码",
+          "BU名称",
+          "部门路径",
+          "状态",
+          "生效日期"
+        ],
+        [
+          "X03DA",
+          "甲部门核算",
+          "甲简称",
+          "X03A",
+          "甲业务单元",
+          "甲部门核算",
+          "启用",
+          "2026-01-01"
+        ]
+      ],
+      "sha256": "1086d4e0fcbe87e4fb5e5ba9c5a5ea47e48ccf3891040715a9cd7f1a34c9d7db"
+    },
+    "V1 停用后原下载、旧表单和历史": {
+      "at": "2026-11-27T23:26:53.678Z",
+      "draft": "14e23e78-4f64-4b54-9d71-c526d230067e",
+      "exportStatus": 403,
+      "mime": "application/json; charset=utf-8",
+      "disposition": null,
+      "files": [],
+      "save": 404,
+      "cleared": true,
+      "unadoptedHistory": 404,
+      "adoptedHistory": 200,
+      "headAfter": "fedff75e-589e-4363-b3e3-b011380cfd85"
+    },
+    "撤尽前旧账号的全部部门读取来源": {
+      "at": "2026-11-27T23:26:55.860Z",
+      "before": [
+        {
+          "id": "60f3671e-1262-4432-adc4-a3df0833e89b",
+          "source": "duty",
+          "rev": 2,
+          "role": "a78df7d0-f323-4c4e-8e10-8e3199192c84"
+        },
+        {
+          "id": "dbe9151b-a87f-43f5-ad13-52c9f9c8d80f",
+          "source": "migration",
+          "rev": 1,
+          "role": "88bed778-b127-4290-80ef-07cdc0ed3c95"
+        }
+      ]
+    },
+    "授权页面撤尽两份部门读取": {
+      "at": "2026-11-27T23:26:57.420Z",
+      "remainingDepartmentRead": [],
+      "unrelatedActiveGrants": 45,
+      "subject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213"
+    },
+    "共享角色和两人采用": {
+      "shared1": {
+        "requestId": "decb1f59-76f1-4433-b68b-7176e8e47682",
+        "operation": "version.publish",
+        "target": "01f77aa2-60fb-40bd-a638-b3d10658dded",
+        "at": "2026-11-28T07:26:41.379803+08:00"
+      },
+      "sharedNew": {
+        "requestId": "9f28b87f-18ca-4579-9aef-b97e295bf77f",
+        "operation": "grant.issue",
+        "target": "0dad6748-d8a4-4043-b101-997ff89a3e42",
+        "subject": "2c7aa3f9-f0da-44ee-84aa-8fc9425d5621",
+        "at": "2026-11-28T07:26:42.126649+08:00"
+      },
+      "sharedOld": {
+        "requestId": "943895a0-207e-45c4-9584-7ef04794c972",
+        "operation": "grant.issue",
+        "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+        "subject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+        "at": "2026-11-28T07:26:42.836607+08:00"
+      },
+      "shared2": {
+        "requestId": "5a0291e2-030e-4ec1-ade9-2b7e99fd3608",
+        "operation": "version.publish",
+        "target": "a78df7d0-f323-4c4e-8e10-8e3199192c84",
+        "at": "2026-11-28T07:26:50.334476+08:00"
+      },
+      "sharedAdopt": {
+        "requestId": "e4ec7855-9c30-4e88-82f4-9895646525e4",
+        "operation": "grant.adopt",
+        "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+        "subject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+        "at": "2026-11-28T07:26:51.142028+08:00"
+      },
+      "sharedDisabled": {
+        "requestId": "72b3f051-e0fc-4610-8028-66477d6a6480",
+        "operation": "version.disable",
+        "target": "01f77aa2-60fb-40bd-a638-b3d10658dded",
+        "at": "2026-11-28T07:26:52.883404+08:00"
+      },
+      "oldV2Revoke": {
+        "requestId": "35d96f01-dc44-4f1d-833c-10118ab56bf1",
+        "operation": "grant.revoke",
+        "target": "60f3671e-1262-4432-adc4-a3df0833e89b",
+        "subject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+        "at": "2026-11-28T07:26:56.51984+08:00"
+      },
+      "oldDefaultRevoke": {
+        "requestId": "affa8903-71df-4790-9c10-bc6505121f3a",
+        "operation": "grant.revoke",
+        "target": "dbe9151b-a87f-43f5-ad13-52c9f9c8d80f",
+        "subject": "229c90b1-a2db-4ec4-b081-2b1e9aed7213",
+        "at": "2026-11-28T07:26:57.318214+08:00"
+      }
+    }
+  },
+  "firstObservations": [
+    {
+      "step": "旧库就绪及登录",
+      "first": "目录初始化中首次连接 8685 被拒，未发送业务命令。登录页按纯字段名精确匹配时没有匹配带必填标志的控件。",
+      "retest": "等待旧启动链就绪，按实际可访问标签登录，00057 创建样例并确认 reader 可读取 X03DA。"
+    },
+    {
+      "step": "新账号读取不可见的甲部门",
+      "expectedByDriver": 403,
+      "actual": 404,
+      "code": "M02_OBJECT_NOT_FOUND",
+      "retest": "列表 403，详情 404，开户后尚无业务授予。"
+    },
+    {
+      "step": "第二种撤销顺序的首轮到期检查",
+      "proxy": "90e059fb-ee6a-485b-94e1-142d3a0f5c49",
+      "persistedUntil": "2026-11-27T23:23:46Z",
+      "afterOneTimerRead": 200,
+      "requestTimestampAtFirstFailure": null,
+      "laterRead": {
+        "at": "2026-11-27T23:24:17.969Z",
+        "status": 403,
+        "grant": "90e059fb-ee6a-485b-94e1-142d3a0f5c49"
+      },
+      "retest": "新授同角色和同岗位的本职和代理，依据数据库时钟分别在截止前后断言。"
+    },
+    {
+      "step": "核编历史中的办理人",
+      "first": "页面已经显示原办理人。夹具按名为「变更日志」的 table 定位失败。",
+      "retest": "按「变更日志表格」定位实际的表容器，从其原件链接核对来源。"
+    },
+    {
+      "step": "V1 停用后原更正表单",
+      "expectedByDriver": 403,
+      "actual": 404,
+      "firstV1": "2696915d-d92c-4921-8a8d-591e378c7fa7",
+      "firstV2": "7e06d8ee-866c-4408-b9cc-eb13d3d8702d",
+      "retest": "先由页面撤回旧账号首轮 V2 授予。发布另一组共享版本，两名原经办人从菜单重走两份全选、历史、更正和下载。"
+    },
+    {
+      "step": "撤尽后的部门查询",
+      "first": "页面尚在切换时连续两次打开部门，期望已提交的关键词，没有进入断言所需的查询地址。",
+      "retest": "等待部门列表显示本次授权拒绝，再提交 X03DA，实际页面请求返回 403，并用原详情链接核对 404。"
+    }
+  ]
+}

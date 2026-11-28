@@ -113,12 +113,14 @@ export function OperationCells({
 
 export function DifferenceCells({
   difference,
+  fieldLabel = '变更字段',
 }: {
+  fieldLabel?: string;
   difference?: { field: ReactNode; before: ReactNode; after: ReactNode };
 }) {
   return difference ? (
     <>
-      <TableCell data-label="变更字段">{difference.field}</TableCell>
+      <TableCell data-label={fieldLabel}>{difference.field}</TableCell>
       <TableCell data-label="原值">{difference.before}</TableCell>
       <TableCell data-label="新值">{difference.after}</TableCell>
     </>
@@ -130,6 +132,7 @@ export function DifferenceCells({
 export function OperationRows({
   source,
   previous,
+  sourceIdentity,
   recordedAt,
   columns,
   details,
@@ -137,6 +140,7 @@ export function OperationRows({
 }: {
   source: string;
   previous?: string | null;
+  sourceIdentity?: ReactNode;
   recordedAt: string;
   columns: number;
   details?: ReactNode;
@@ -161,8 +165,10 @@ export function OperationRows({
         <TableRow>
           <TableCell colSpan={columns}>
             <Box id={panelId} className="change-source-detail">
-              <div>来源版本：{source}</div>
-              <div>前一来源：{previous ?? '无'}</div>
+              {sourceIdentity ?? <>
+                <div>来源版本：{source}</div>
+                <div>前一来源：{previous ?? '无'}</div>
+              </>}
               <div>原始时刻：{recordedAt}</div>
               {details}
             </Box>

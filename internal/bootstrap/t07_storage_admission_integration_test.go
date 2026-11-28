@@ -18,9 +18,12 @@ func restoreGrantPredecessor(f *fixture) {
 	if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('access.bound_permission')") == 0 {
 		return
 	}
-	// The fixture models the pre-M09 product. Remove its synthetic rate grants
-	// before restoring the older allowlist. Real profiles are never downgraded.
-	f.exec(`DROP SCHEMA IF EXISTS configuration CASCADE;
+	// Restore the original 00057 tables in this test-owned database, removing
+	// later foreign keys before the prior grants are loaded.
+	f.exec(`DROP TABLE IF EXISTS access.management_mandate,access.management_publication,access.management_receipt,access.management_root;
+ DROP FUNCTION IF EXISTS access.protect_management_mandate();
+ ALTER TABLE access.principal DROP COLUMN IF EXISTS management_owner;
+ DROP SCHEMA IF EXISTS configuration CASCADE;
  DROP SCHEMA IF EXISTS compensation CASCADE;
  ALTER TABLE personnel.profile_item_payload DROP COLUMN address_type_id, DROP COLUMN address_type_revision, DROP COLUMN address_type_day;
  DROP TABLE personnel.address_type_revision,personnel.address_type,personnel.address_type_not_applied;
@@ -34,7 +37,7 @@ func restoreGrantPredecessor(f *fixture) {
  DROP FUNCTION access.check_binding(),access.protect_assignment_terms(),access.protect_policy_version(),access.valid_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_plan_permission(uuid,text,uuid,text,text[],text[]);
  DROP FUNCTION IF EXISTS access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[]);
- DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61,62)`)
+ DELETE FROM public.goose_db_version WHERE version_id IN (58,59,60,61,62,64)`)
 }
 
 func TestCompensationUpgradeFromReleasedLedgers(t *testing.T) {
@@ -44,12 +47,13 @@ func TestCompensationUpgradeFromReleasedLedgers(t *testing.T) {
 		addressVersion string
 		missing        int
 	}{
-		{"address_types_release", "00058", "00061", 3},
-		{"address_types_retry_after_grade_rates", "00059", "00061", 2},
-		{"compensation_plans_release", "00060", "", 2},
-		{"address_periods_release", "00058", "00062", 2},
-		{"address_periods_retry_after_grade_rates", "00059", "00062", 1},
-		{"combined_release_before_periods", "00061", "", 1},
+		{"address_types_release", "00058", "00061", 4},
+		{"address_types_retry_after_grade_rates", "00059", "00061", 3},
+		{"compensation_plans_release", "00060", "", 3},
+		{"address_periods_release", "00058", "00062", 3},
+		{"address_periods_retry_after_grade_rates", "00059", "00062", 2},
+		{"combined_release_before_periods", "00061", "", 2},
+		{"main_before_security_management", "00062", "", 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			pool := newStaffingMigrationPool(t)
@@ -85,6 +89,8 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	before := businessSnapshot(t, f)
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
+		{"mutable_management_receipt", `ALTER TABLE access.management_receipt DISABLE TRIGGER immutable_management_receipt`, `ALTER TABLE access.management_receipt ENABLE TRIGGER immutable_management_receipt`},
+		{"missing_management_root", `ALTER TABLE access.management_root RENAME TO t04_hidden_root`, `ALTER TABLE access.t04_hidden_root RENAME TO management_root`},
 		{"missing_address_period", `ALTER TABLE personnel.address_type RENAME COLUMN valid_during TO hidden_period`, `ALTER TABLE personnel.address_type RENAME COLUMN hidden_period TO valid_during`},
 		{"missing_plan_rate_uses", `ALTER TABLE compensation.plan_rate_use RENAME TO hidden_uses`, `ALTER TABLE compensation.hidden_uses RENAME TO plan_rate_use`},
 		{"missing_grade_rate_periods", `ALTER TABLE compensation.grade_rate_period RENAME TO hidden_periods`, `ALTER TABLE compensation.hidden_periods RENAME TO grade_rate_period`},

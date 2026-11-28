@@ -38,6 +38,7 @@ type API struct {
 
 func (a *API) Handler() http.Handler {
 	mux := http.NewServeMux()
+	a.accessRoutes(mux)
 	a.personnelRoutes(mux)
 	a.departmentRoutes(mux)
 	a.enterpriseRoutes(mux)
@@ -452,6 +453,10 @@ func strictShape(raw []byte, t reflect.Type) bool {
 	}
 	if string(raw) == "null" {
 		return false
+	}
+	if t == reflect.TypeFor[time.Time]() {
+		var moment time.Time
+		return json.Unmarshal(raw, &moment) == nil
 	}
 	if t.Kind() == reflect.Struct {
 		var obj map[string]json.RawMessage

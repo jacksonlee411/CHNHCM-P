@@ -23,9 +23,11 @@ import (
 )
 
 type Store struct {
-	Pool        *pgxpool.Pool
-	Instance    string
-	AfterLogout func(context.Context, access.Principal)
+	Targets      access.TargetDirectory
+	EnterpriseID func(context.Context) (string, error)
+	Pool         *pgxpool.Pool
+	Instance     string
+	AfterLogout  func(context.Context, access.Principal)
 }
 type guard struct {
 	policyVersion int64
@@ -85,6 +87,16 @@ func token() (string, []byte) {
 func digest(s string) []byte { h := sha256.Sum256([]byte(s)); return h[:] }
 func denied() error          { return foundation.Fail(401, "AUTH_REQUIRED", "请登录后继续") }
 
+func validateSession(session generated.ReadSessionRow, c access.Credentials, now time.Time) (string, error) {
+	if session.State != "active" || session.RevokedAt.Valid || !now.Before(session.IdleExpiresAt.Time) || !now.Before(session.AbsoluteExpiresAt.Time) {
+		return "", denied()
+	}
+	csrf := base64.RawURLEncoding.EncodeToString(session.CsrfValue)
+	if c.Write && subtle.ConstantTimeCompare([]byte(csrf), []byte(c.CSRF)) != 1 {
+		return "", foundation.Fail(403, "AUTH_REQUEST_VALIDATION_FAILED", "登录状态需要刷新")
+	}
+	return csrf, nil
+}
 func (s *Store) Guard(ctx context.Context, tx pgx.Tx, c access.Credentials) (access.Guard, error) {
 	return s.authenticatedGuard(ctx, tx, c, true)
 }
@@ -126,12 +138,9 @@ func (s *Store) authenticatedGuard(ctx context.Context, tx pgx.Tx, c access.Cred
 	if err = tx.QueryRow(ctx, "SELECT clock_timestamp()").Scan(&now); err != nil {
 		return nil, err
 	}
-	if session.State != "active" || session.RevokedAt.Valid || !now.Before(session.IdleExpiresAt.Time) || !now.Before(session.AbsoluteExpiresAt.Time) {
-		return nil, denied()
-	}
-	csrf := base64.RawURLEncoding.EncodeToString(session.CsrfValue)
-	if c.Write && subtle.ConstantTimeCompare([]byte(csrf), []byte(c.CSRF)) != 1 {
-		return nil, foundation.Fail(403, "AUTH_REQUEST_VALIDATION_FAILED", "登录状态需要刷新")
+	csrf, err := validateSession(session, c, now)
+	if err != nil {
+		return nil, err
 	}
 	g := &guard{policyVersion: version, tx: tx, p: access.Principal{ID: id, SessionID: session.SessionID, Login: session.Login, CSRF: csrf, InstanceID: s.Instance}, now: now}
 	for _, r := range rows {
@@ -342,6 +351,9 @@ func Change(ctx context.Context, pool *pgxpool.Pool, instance, login, operation,
 		return e
 	}
 	if operation == "disable" {
+		if e = protectRecoveryAccount(ctx, tx, instance, p.PrincipalID); e != nil {
+			return e
+		}
 		if _, e = tx.Exec(ctx, "UPDATE access.principal SET state='disabled' WHERE instance_id=$1 AND principal_id=$2", instance, p.PrincipalID); e != nil {
 			return e
 		}
@@ -573,6 +585,9 @@ func ChangeLocalPassword(ctx context.Context, pool *pgxpool.Pool, instance, logi
 	if subtle.ConstantTimeCompare(current, account.PasswordHash) == 1 {
 		return nil
 	}
+	if e = protectRecoveryAccount(ctx, tx, instance, account.PrincipalID); e != nil {
+		return e
+	}
 	previous, _ := pbkdf2.Key(sha256.New, previousPassword, account.Salt, int(account.Iterations), 32)
 	if subtle.ConstantTimeCompare(previous, account.PasswordHash) != 1 {
 		return errors.New("previous local password does not match")
@@ -609,14 +624,19 @@ func InitializePrincipal(ctx context.Context, tx pgx.Tx, instance, enterprise, i
 	if !validLogin || len(password) < 12 || len(password) > 1024 {
 		return "", errors.New("initial account requires a 1-100 byte login and a 12-1024 byte password")
 	}
-	initial, _ := json.Marshal([]any{strings.ToLower(strings.TrimSpace(login)), enterprise, readOnly})
-	initialDigest := sha256.Sum256(initial)
+	initialDigest := initializationDigest(login, enterprise, readOnly)
 	q := generated.New(tx)
 	old, e := q.FindLogin(ctx, generated.FindLoginParams{InstanceID: instance, NormalizedLogin: strings.ToLower(strings.TrimSpace(login))})
 	if e == nil {
 		got, _ := pbkdf2.Key(sha256.New, password, old.Salt, int(old.Iterations), 32)
 		if subtle.ConstantTimeCompare(got, old.PasswordHash) != 1 {
-			return "", errors.New("initial account differs; refusing overwrite")
+			var rotated bool
+			if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT FROM access.security_event WHERE instance_id=$1 AND target_subject_id=$2 AND reason_code=$3 AND action IN ('account.reset','admin.bootstrap','admin.recover','admin.handover'))`, instance, old.PrincipalID, rotatedCredentialReason).Scan(&rotated); err != nil {
+				return "", err
+			}
+			if !rotated {
+				return "", errors.New("initial account differs; refusing overwrite")
+			}
 		}
 		var recorded []byte
 		if e = tx.QueryRow(ctx, "SELECT initialization_digest FROM access.principal WHERE instance_id=$1 AND principal_id=$2", instance, old.PrincipalID).Scan(&recorded); e != nil {
@@ -665,10 +685,29 @@ func InitializePrincipal(ctx context.Context, tx pgx.Tx, instance, enterprise, i
 		queueDevelopmentGrant(&batch, instance, id, "enterprise", enterprise, a, fields, write)
 	}
 	initializeDepartmentGrants(&batch, instance, enterprise, id, readOnly)
+	// Predecessor fixtures may already have versioned grants but still use
+	// the pre-salary action allowlist. Only seed the installed declarations.
+	var gradeRates, compensationPlans bool
+	if err := tx.QueryRow(ctx, `SELECT
+		to_regprocedure('access.valid_pre_compensation_permission(uuid,text,uuid,text,text[],text[])') IS NOT NULL,
+		to_regprocedure('access.valid_pre_plan_permission(uuid,text,uuid,text,text[],text[])') IS NOT NULL`).Scan(&gradeRates, &compensationPlans); err != nil {
+		return "", err
+	}
+	if gradeRates {
+		initializeGradeRateGrants(&batch, instance, enterprise, id, readOnly)
+	}
+	if compensationPlans {
+		initializeCompensationPlanGrants(&batch, instance, enterprise, id, readOnly)
+	}
 	if err := tx.SendBatch(ctx, &batch).Close(); err != nil {
 		return "", err
 	}
 	return id, nil
+}
+
+func initializationDigest(login, enterprise string, readOnly bool) [32]byte {
+	initial, _ := json.Marshal([]any{strings.ToLower(strings.TrimSpace(login)), enterprise, readOnly})
+	return sha256.Sum256(initial)
 }
 
 // Development declarations run once when creating an explicit fixture principal.
@@ -704,8 +743,6 @@ func initializeDepartmentGrants(batch *pgx.Batch, instance, enterprise, subject 
 	initializeLocationGrants(batch, instance, enterprise, subject, readOnly)
 	initializeLegalEntityGrants(batch, instance, enterprise, subject, readOnly)
 	initializeStaffingGrants(batch, instance, enterprise, subject, readOnly)
-	initializeGradeRateGrants(batch, instance, enterprise, subject, readOnly)
-	initializeCompensationPlanGrants(batch, instance, enterprise, subject, readOnly)
 	for _, kind := range []string{"legalpurpose", "assignmentpolicy"} {
 		actions := []string{"read", "history.read", "check"}
 		if !readOnly {

@@ -58,6 +58,8 @@ import { usePageScrollRestoration } from '../shared/navigation';
 import {QuotaList} from '../features/staffing/QuotaList';
 import {QuotaDepartment} from '../features/staffing/QuotaDepartment';
 import {QuotaDetail} from '../features/staffing/QuotaDetail';
+import {SecurityManagement} from '../features/access/SecurityManagement';
+import {accessPath,areaNames,read as readAccess,pages as securityPages,type Area} from '../features/access/management';
 import {QuotaRecovery} from '../features/staffing/QuotaRecovery';
 import {quotaPath} from '../features/staffing/quotaApi';
 
@@ -82,6 +84,10 @@ export function App() {
   const personAccess = person.useRead(session ? session.instanceId + session.subjectId : undefined, person.entry);
   const registerAccess=person.useRead(session ? session.instanceId+session.subjectId : undefined,async()=>unwrap(await api.GET('/api/v1/employment-actions/context')));
   const recruiting=person.useRead(session?session.instanceId+session.subjectId:undefined,()=>offerAccess());
+  const securityPage = location.pathname.startsWith(accessPath + '/');
+  const securitySection = securityPage ? location.pathname : location.pathname.startsWith('/settings') ? 'settings' : 'applications';
+  const security = person.useRead(session ? session.instanceId + session.subjectId + securitySection : undefined, () => readAccess('context'), 'fresh');
+  const secureItems = securityPages(security.data?.rights).map(area => ({label:areaNames[area], path:accessPath+'/'+area}));
   const compensation = person.useRead(session ? session.instanceId + session.subjectId : undefined, compensationAccess);
   const compensationItems = [...(compensation.data?.plans ? [{label:planTitle, path:planPath}] : []),
     ...(compensation.data?.gradeRates ? [{label:rateTitle, path:ratePath}] : [])];
@@ -100,13 +106,14 @@ export function App() {
     settingsSections.push({label: '人员配置', items: [{label: '地址类型', path: person.addressTypePath}]});
   }
   settingsSections.push(...compensationSection);
+  if (secureItems.length) settingsSections.push({label:'安全管理', items:secureItems});
   const settingsApp: NavigationApp = {...baseSettingsApp, sections: settingsSections};
   const activeApp = personPage ? personnelApp : departmentPage ? departmentApp : settingsApp;
-  const activeSection = compensationPage ? '薪酬配置' : onAddressTypes ? '人员配置' : onOffer ? '招聘' : onRegister ? '人事事务' : personPage ? '人员' : location.pathname.startsWith("/settings/staffing/") ? "职务配置" : departmentPage ? undefined : (location.pathname.startsWith(GEOAREA_PATH) || location.pathname.startsWith(COUNTRY_PATH)) ? "基础资料" : "组织配置";
+  const activeSection = securityPage ? '安全管理' : compensationPage ? '薪酬配置' : onAddressTypes ? '人员配置' : onOffer ? '招聘' : onRegister ? '人事事务' : personPage ? '人员' : location.pathname.startsWith("/settings/staffing/") ? "职务配置" : departmentPage ? undefined : (location.pathname.startsWith(GEOAREA_PATH) || location.pathname.startsWith(COUNTRY_PATH)) ? "基础资料" : "组织配置";
   const apps = canArchive || canRegister || recruiting.data?.canRead ? [departmentApp, personnelApp, settingsApp] : [departmentApp, settingsApp];
   useEffect(() => {
     if (!session) document.title = "登录 · CHNHCM";
-    else if (!onAddressTypes && !personPage && !compensationPage && !location.pathname.startsWith("/settings/staffing/") && !location.pathname.startsWith(LEGAL_ENTITY_PATH) && !location.pathname.startsWith(LOCATION_PATH) && !location.pathname.startsWith(BU_PATH) && !location.pathname.startsWith(DEPARTMENT_PATH) && !location.pathname.startsWith(COUNTRY_PATH) && !location.pathname.startsWith(GEOAREA_PATH) && !location.pathname.startsWith(ENTERPRISE_PATH) && location.pathname !== "/") document.title = "页面不存在 · CHNHCM";
+    else if (!securityPage && !onAddressTypes && !personPage && !compensationPage && !location.pathname.startsWith("/settings/staffing/") && !location.pathname.startsWith(LEGAL_ENTITY_PATH) && !location.pathname.startsWith(LOCATION_PATH) && !location.pathname.startsWith(BU_PATH) && !location.pathname.startsWith(DEPARTMENT_PATH) && !location.pathname.startsWith(COUNTRY_PATH) && !location.pathname.startsWith(GEOAREA_PATH) && !location.pathname.startsWith(ENTERPRISE_PATH) && location.pathname !== "/") document.title = "页面不存在 · CHNHCM";
   }, [session, location.pathname]);
   const sessionRef = useRef(session); sessionRef.current = session;
   const [loading, setLoading] = useState(true);
@@ -219,7 +226,7 @@ export function App() {
   return (
     <SessionRecoveryContext.Provider value={Boolean(session && (loading || sessionError))}>
     <AppShell
-      navigation={session ? <AppNavigation apps={apps} activeApp={activeApp} activeSection={activeSection} activePath={onAddressTypes?person.addressTypePath:compensationPage?(location.pathname.startsWith(planPath)?planPath:ratePath):onOffer?offerPath:onRegister?registerPath:personPage?person.path:location.pathname===policyPath?policyPath:location.pathname.startsWith(quotaPath)?quotaPath:location.pathname===hierarchyPath||location.pathname.startsWith(staffingPaths.position)?staffingPaths.position:location.pathname.startsWith(staffingPaths.gradeladder)?staffingPaths.gradeladder:location.pathname.startsWith(staffingPaths.grade)?staffingPaths.grade:location.pathname.startsWith(staffingPaths.jobfunction)?staffingPaths.jobfunction:location.pathname.startsWith(staffingPaths.jobfamily)?staffingPaths.jobfamily:location.pathname.startsWith(staffingPaths.job)?staffingPaths.job:location.pathname.startsWith(LEGAL_ENTITY_PATH)?LEGAL_ENTITY_PATH:location.pathname.startsWith(ENTERPRISE_PATH)?ENTERPRISE_PATH:location.pathname.startsWith(LOCATION_PATH)?LOCATION_PATH:location.pathname.startsWith(GEOAREA_PATH)?GEOAREA_PATH:location.pathname.startsWith(COUNTRY_PATH) ? COUNTRY_PATH : departmentPage ? DEPARTMENT_PATH : BU_PATH} desktop={desktop} go={navigate} /> : undefined}
+      navigation={session ? <AppNavigation apps={apps} activeApp={activeApp} activeSection={activeSection} activePath={securityPage?accessPath+'/'+location.pathname.split('/')[3]:onAddressTypes?person.addressTypePath:compensationPage?(location.pathname.startsWith(planPath)?planPath:ratePath):onOffer?offerPath:onRegister?registerPath:personPage?person.path:location.pathname===policyPath?policyPath:location.pathname.startsWith(quotaPath)?quotaPath:location.pathname===hierarchyPath||location.pathname.startsWith(staffingPaths.position)?staffingPaths.position:location.pathname.startsWith(staffingPaths.gradeladder)?staffingPaths.gradeladder:location.pathname.startsWith(staffingPaths.grade)?staffingPaths.grade:location.pathname.startsWith(staffingPaths.jobfunction)?staffingPaths.jobfunction:location.pathname.startsWith(staffingPaths.jobfamily)?staffingPaths.jobfamily:location.pathname.startsWith(staffingPaths.job)?staffingPaths.job:location.pathname.startsWith(LEGAL_ENTITY_PATH)?LEGAL_ENTITY_PATH:location.pathname.startsWith(ENTERPRISE_PATH)?ENTERPRISE_PATH:location.pathname.startsWith(LOCATION_PATH)?LOCATION_PATH:location.pathname.startsWith(GEOAREA_PATH)?GEOAREA_PATH:location.pathname.startsWith(COUNTRY_PATH) ? COUNTRY_PATH : departmentPage ? DEPARTMENT_PATH : BU_PATH} desktop={desktop} go={navigate} /> : undefined}
       account={session && <><Typography className="app-account-name">{session.login}</Typography><Button color="inherit" onClick={() => void exit()}>退出</Button></>}
       notices={session && <>{loading && <Alert severity="info">正在恢复登录状态…</Alert>}{sessionError && <Alert severity="error" action={<Button disabled={loading} onClick={() => void refresh()}>重试</Button>}>{sessionError}</Alert>}{error && <Alert severity="error">{error}</Alert>}<CompensationRecovery key={"rate"+session.instanceId+session.subjectId} session={session} kind="rate"/><CompensationRecovery key={"plan"+session.instanceId+session.subjectId} session={session} kind="plan"/><QuotaRecovery key={session.instanceId+session.subjectId} session={session}/><StaffingRecovery session={session}/><Recovery key={`recovery:${session.instanceId}:${session.subjectId}`} session={session} /><GeoAreaRecovery key={`geoarea-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LegalEntityRecovery key={`legalentity-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><EnterpriseRecovery key={`enterprise-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><LocationRecovery key={`location-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><CountryRecovery key={`country-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><PersonRecovery key={`person-recovery:${session.instanceId}:${session.subjectId}`} session={session} /><DepartmentRecovery key={`department-recovery:${session.instanceId}:${session.subjectId}`} session={session} /></>}
     >
@@ -263,6 +270,7 @@ export function App() {
       ) : (
         <>
           <Routes key={`routes:${session.instanceId}:${session.subjectId}`}>
+            {(Object.keys(areaNames) as Area[]).map(area=><Route key={area} path={accessPath+'/'+area+'/:id?'} element={<SecurityManagement area={area} session={session}/>}/>)}
             <Route path={planPath} element={<PlanList session={session}/>}/>
             <Route path={planPath + '/new'} element={<PlanDetailPage key="new-plan" creating session={session}/>}/>
             <Route path={planPath + '/:id'} element={<PlanDetailPage key={location.pathname} session={session}/>}/>

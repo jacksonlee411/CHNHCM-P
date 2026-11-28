@@ -381,3 +381,45 @@ test('300树撤权后503及迟到成功均不能恢复已清除内容',async({pa
     await expect(page.getByText('受控暂时失败',{exact:true})).toHaveCount(0);
   } finally {release();await page.unrouteAll({behavior:'ignoreErrors'});}
 });
+
+test('027 首次定位保留在部门上下文就绪前输入的最后一个编码', async ({ page }) => {
+  await open(page);
+  const bu = await apiBU(page);
+  const department = await apiDepartment(page, bu.id);
+  let signalReady!: () => void, release!: () => void;
+  const received = new Promise<void>(resolve => { signalReady = resolve; });
+  const resume = new Promise<void>(resolve => { release = resolve; });
+  const calls: string[] = [];
+  page.on('request', request => {
+    const url = new URL(request.url());
+    if (url.pathname === '/api/v1/departments/tree/search') calls.push(url.searchParams.get('q') ?? '');
+  });
+  const endpoint = '**/api/v1/departments/context';
+  await page.route(endpoint, async route => {
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    signalReady();
+    await resume;
+    await route.fulfill({ response });
+  });
+  try {
+    await menu(page, departmentKind);
+    await received;
+    const input = page.getByRole('textbox', { name: '定位树中部门', exact: true });
+    await page.clock.install();
+    await input.fill('已替换');
+    await input.fill(department.code);
+    await page.clock.runFor(350);
+    expect(calls).toEqual([]);
+    release();
+    const candidate = page.getByRole('option').filter({ hasText: department.code });
+    await expect(candidate).toHaveCount(1);
+    expect(calls).toEqual([department.code]);
+    await input.press('Tab');
+    await candidate.click();
+    await expect(input).toHaveValue('');
+  } finally {
+    release();
+    await page.unrouteAll({ behavior: 'wait' });
+  }
+});

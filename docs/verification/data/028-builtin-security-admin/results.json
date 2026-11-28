@@ -1,0 +1,766 @@
+{
+  "date": "2026-11-28",
+  "profile": "x03-manual-a",
+  "worktree": "wt-dev-a",
+  "web": "http://127.0.0.1:4627",
+  "apiPort": 8627,
+  "dbPort": 54627,
+  "volume": "chnhcm-bu-71853b221a7c_database",
+  "containerId": "19629d9f5fd947e6ec617a73a7ebef835c15ade431a958d6f4b33af52b2c394a",
+  "postgres": "18.6",
+  "schemaVersion": 59,
+  "fixedBuild": {
+    "before": {
+      "baseCommit": "3c3dde7caab4bd367a9351b0f880a2e4247966dd",
+      "serverSHA256": "36b7961b2858be5bd4ff65ffafa1cccd1c70b1dd2e5b31dcf3999b859a199832",
+      "webEntry": "assets/index-BqD5K2xg.js",
+      "webEntrySHA256": "9a1591573cf47365df26cdbdd1f304849e04d5ad8a808fa16d8a498fd14b4498"
+    },
+    "after": {
+      "baseCommit": "44145442c415b107dd21a3aad33d802ae44196e8",
+      "serverSHA256": "39d1f5cf22d3c4c49a0c6237cc6643ea296b1e3cb6f4c7a4620ccb23b9396e9a",
+      "webEntry": "assets/index-7dmeFc0k.js",
+      "webEntrySHA256": "b3c864bce306a92a94d3983a96d6f8642343d1e1bd7724f5c981cf4b8592fed4"
+    },
+    "servedEntry": {
+      "script": "/assets/index-7dmeFc0k.js",
+      "httpSHA256": "b3c864bce306a92a94d3983a96d6f8642343d1e1bd7724f5c981cf4b8592fed4",
+      "matchesFixedBuild": true,
+      "sourceDifferenceAfterBuild": [
+        "internal/bootstrap/access_builtin_admin_integration_test.go"
+      ]
+    }
+  },
+  "fixedRestart": {
+    "profile": "x03-manual-a",
+    "commands": [
+      "python3 scripts/local-bu.py down",
+      "python3 scripts/local-bu.py up --fixed-web",
+      "python3 scripts/local-bu.py verify --origin http://127.0.0.1:4627"
+    ],
+    "postgresStartedAt": "2026-11-28T06:49:13.546023237Z",
+    "stages": [
+      "migrate",
+      "runtime-roles",
+      "initialize admin",
+      "initialize reader",
+      "country-catalog",
+      "geoarea-catalog"
+    ],
+    "finalLayoutUpdate": "python3 scripts/local-bu.py up --fixed-web",
+    "preservation": [
+      {
+        "snapshot": [
+          "before-db",
+          "after-db"
+        ],
+        "rowCount": 1308,
+        "tables": {
+          "access.principal": {
+            "beforeRows": 5,
+            "afterRows": 5,
+            "sameDigest": true
+          },
+          "access.credential": {
+            "beforeRows": 5,
+            "afterRows": 5,
+            "sameDigest": true
+          },
+          "access.management_root": {
+            "beforeRows": 1,
+            "afterRows": 1,
+            "sameDigest": true
+          },
+          "access.policy_guard": {
+            "beforeRows": 5,
+            "afterRows": 5,
+            "sameDigest": false
+          },
+          "access.policy_version": {
+            "beforeRows": 696,
+            "afterRows": 696,
+            "sameDigest": true
+          },
+          "access.grant_assignment": {
+            "beforeRows": 235,
+            "afterRows": 235,
+            "sameDigest": true
+          },
+          "access.grant_revision": {
+            "beforeRows": 306,
+            "afterRows": 306,
+            "sameDigest": true
+          },
+          "access.management_mandate": {
+            "beforeRows": 0,
+            "afterRows": 0,
+            "sameDigest": true
+          },
+          "access.management_publication": {
+            "beforeRows": 6,
+            "afterRows": 6,
+            "sameDigest": true
+          },
+          "access.management_receipt": {
+            "beforeRows": 14,
+            "afterRows": 14,
+            "sameDigest": true
+          },
+          "access.security_event": {
+            "beforeRows": 18,
+            "afterRows": 18,
+            "sameDigest": true
+          },
+          "organization.department": {
+            "beforeRows": 2,
+            "afterRows": 2,
+            "sameDigest": true
+          },
+          "organization.department_history": {
+            "beforeRows": 2,
+            "afterRows": 2,
+            "sameDigest": true
+          },
+          "organization.department_terminal": {
+            "beforeRows": 0,
+            "afterRows": 0,
+            "sameDigest": true
+          },
+          "staffing.quota": {
+            "beforeRows": 3,
+            "afterRows": 3,
+            "sameDigest": true
+          },
+          "staffing.quota_record": {
+            "beforeRows": 4,
+            "afterRows": 4,
+            "sameDigest": true
+          },
+          "staffing.quota_source": {
+            "beforeRows": 4,
+            "afterRows": 4,
+            "sameDigest": true
+          },
+          "staffing.quota_terminal": {
+            "beforeRows": 2,
+            "afterRows": 2,
+            "sameDigest": true
+          }
+        }
+      },
+      {
+        "snapshot": [
+          "before-ui-update-db",
+          "after-ui-update-db"
+        ],
+        "rowCount": 1322,
+        "tables": {
+          "access.principal": {
+            "beforeRows": 6,
+            "afterRows": 6,
+            "sameDigest": true
+          },
+          "access.credential": {
+            "beforeRows": 6,
+            "afterRows": 6,
+            "sameDigest": true
+          },
+          "access.management_root": {
+            "beforeRows": 1,
+            "afterRows": 1,
+            "sameDigest": true
+          },
+          "access.policy_guard": {
+            "beforeRows": 6,
+            "afterRows": 6,
+            "sameDigest": false
+          },
+          "access.policy_version": {
+            "beforeRows": 696,
+            "afterRows": 696,
+            "sameDigest": true
+          },
+          "access.grant_assignment": {
+            "beforeRows": 236,
+            "afterRows": 236,
+            "sameDigest": true
+          },
+          "access.grant_revision": {
+            "beforeRows": 308,
+            "afterRows": 308,
+            "sameDigest": true
+          },
+          "access.management_mandate": {
+            "beforeRows": 0,
+            "afterRows": 0,
+            "sameDigest": true
+          },
+          "access.management_publication": {
+            "beforeRows": 6,
+            "afterRows": 6,
+            "sameDigest": true
+          },
+          "access.management_receipt": {
+            "beforeRows": 18,
+            "afterRows": 18,
+            "sameDigest": true
+          },
+          "access.security_event": {
+            "beforeRows": 22,
+            "afterRows": 22,
+            "sameDigest": true
+          },
+          "organization.department": {
+            "beforeRows": 2,
+            "afterRows": 2,
+            "sameDigest": true
+          },
+          "organization.department_history": {
+            "beforeRows": 2,
+            "afterRows": 2,
+            "sameDigest": true
+          },
+          "organization.department_terminal": {
+            "beforeRows": 0,
+            "afterRows": 0,
+            "sameDigest": true
+          },
+          "staffing.quota": {
+            "beforeRows": 3,
+            "afterRows": 3,
+            "sameDigest": true
+          },
+          "staffing.quota_record": {
+            "beforeRows": 4,
+            "afterRows": 4,
+            "sameDigest": true
+          },
+          "staffing.quota_source": {
+            "beforeRows": 4,
+            "afterRows": 4,
+            "sameDigest": true
+          },
+          "staffing.quota_terminal": {
+            "beforeRows": 2,
+            "afterRows": 2,
+            "sameDigest": true
+          }
+        }
+      }
+    ],
+    "guardNote": "首轮 admin 的 policy_no 由 34 变为 36，其余四位原主体相同。国家及行政区划目录分别登录和退出，退出递增会话守卫。两轮的主体、凭据、管理配置、业务授予、修订、安全变更、业务历史和回执摘要均相同。"
+  },
+  "managementBefore": {
+    "admin": {
+      "rights": [],
+      "http": {
+        "context": 200,
+        "accounts": 403,
+        "roles": 403,
+        "grants": 403
+      }
+    },
+    "x03-security": {
+      "rights": [
+        "account",
+        "credential",
+        "role",
+        "policy",
+        "assign",
+        "delegate"
+      ],
+      "http": {
+        "context": 200,
+        "accounts": 200,
+        "roles": 200,
+        "grants": 200
+      }
+    },
+    "reader": {
+      "rights": [],
+      "http": {
+        "context": 200,
+        "accounts": 403,
+        "roles": 403,
+        "grants": 403
+      }
+    }
+  },
+  "managementAfter": {
+    "admin": {
+      "rights": [
+        "account",
+        "credential",
+        "role",
+        "policy",
+        "assign",
+        "delegate"
+      ],
+      "http": {
+        "context": 200,
+        "accounts": 200,
+        "roles": 200,
+        "grants": 200
+      }
+    },
+    "x03-security": {
+      "rights": [
+        "account",
+        "credential",
+        "role",
+        "policy",
+        "assign",
+        "delegate"
+      ],
+      "http": {
+        "context": 200,
+        "accounts": 200,
+        "roles": 200,
+        "grants": 200
+      }
+    },
+    "reader": {
+      "rights": [],
+      "http": {
+        "context": 200,
+        "accounts": 403,
+        "roles": 403,
+        "grants": 403
+      }
+    }
+  },
+  "browser": [
+    {
+      "at": "2026-11-28T06:51:22.389Z",
+      "step": "从登录页登录",
+      "user": "admin",
+      "origin": "http://127.0.0.1:4627",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:22.712Z",
+      "step": "接口权限",
+      "login": "admin",
+      "rights": [
+        "account",
+        "credential",
+        "role",
+        "policy",
+        "assign",
+        "delegate"
+      ],
+      "http": {
+        "context": 200,
+        "accounts": 200,
+        "roles": 200,
+        "grants": 200
+      }
+    },
+    {
+      "at": "2026-11-28T06:51:23.549Z",
+      "step": "内置资格",
+      "login": "admin",
+      "detail": "/settings/security/grants/1d003ed4-e19d-44e6-838c-b22cb0a30a05",
+      "ui": "全部安全管理权限 · 长期",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "id": "1d003ed4-e19d-44e6-838c-b22cb0a30a05"
+    },
+    {
+      "at": "2026-11-28T06:51:24.424Z",
+      "step": "既有部门范围",
+      "login": "admin",
+      "status": 200,
+      "codes": [
+        "X03DA",
+        "X03DB"
+      ]
+    },
+    {
+      "at": "2026-11-28T06:51:25.992Z",
+      "step": "管理页面保存",
+      "login": "admin",
+      "operation": "account.create",
+      "requestId": "2de0c8ae-b02a-4d27-8ded-d7e194dcfe6c",
+      "target": "cf9e65cc-a555-4673-9f39-6cacec07f645",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:26.518Z",
+      "step": "从登录页登录",
+      "user": "x03-admin-check-1128",
+      "origin": "http://127.0.0.1:4627",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:26.663Z",
+      "step": "本次新账号首次查询",
+      "login": "x03-admin-check-1128",
+      "http": 403
+    },
+    {
+      "at": "2026-11-28T06:51:27.438Z",
+      "step": "管理页面保存",
+      "login": "admin",
+      "operation": "grant.issue",
+      "requestId": "15b22639-6900-49cf-a0d3-2ad9a8b2728c",
+      "target": "eb7a7ee9-e90e-43de-8753-8610fa6738c5",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:28.178Z",
+      "step": "按份授予后从部门菜单查询",
+      "login": "x03-admin-check-1128",
+      "http": 200,
+      "codes": [
+        "X03DA"
+      ]
+    },
+    {
+      "at": "2026-11-28T06:51:28.945Z",
+      "step": "管理页面保存",
+      "login": "admin",
+      "operation": "grant.revoke",
+      "requestId": "7e979e65-8e26-4313-861a-f59771664253",
+      "target": "eb7a7ee9-e90e-43de-8753-8610fa6738c5",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:29.723Z",
+      "step": "撤销后经办人原菜单查询",
+      "login": "x03-admin-check-1128",
+      "http": 403
+    },
+    {
+      "at": "2026-11-28T06:51:30.753Z",
+      "step": "管理页面保存",
+      "login": "admin",
+      "operation": "account.disable",
+      "requestId": "535ed17b-ff73-4576-abe0-ce7165ddb5e1",
+      "target": "cf9e65cc-a555-4673-9f39-6cacec07f645",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:30.798Z",
+      "step": "原提交查回",
+      "op": "create",
+      "request": "2de0c8ae-b02a-4d27-8ded-d7e194dcfe6c",
+      "http": 200,
+      "target": "cf9e65cc-a555-4673-9f39-6cacec07f645"
+    },
+    {
+      "at": "2026-11-28T06:51:30.826Z",
+      "step": "原提交查回",
+      "op": "grant",
+      "request": "15b22639-6900-49cf-a0d3-2ad9a8b2728c",
+      "http": 200,
+      "target": "eb7a7ee9-e90e-43de-8753-8610fa6738c5"
+    },
+    {
+      "at": "2026-11-28T06:51:30.850Z",
+      "step": "原提交查回",
+      "op": "revoke",
+      "request": "7e979e65-8e26-4313-861a-f59771664253",
+      "http": 200,
+      "target": "eb7a7ee9-e90e-43de-8753-8610fa6738c5"
+    },
+    {
+      "at": "2026-11-28T06:51:30.870Z",
+      "step": "原提交查回",
+      "op": "disable",
+      "request": "535ed17b-ff73-4576-abe0-ce7165ddb5e1",
+      "http": 200,
+      "target": "cf9e65cc-a555-4673-9f39-6cacec07f645"
+    },
+    {
+      "at": "2026-11-28T06:51:31.664Z",
+      "step": "从登录页登录",
+      "user": "x03-security",
+      "origin": "http://127.0.0.1:4627",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:31.970Z",
+      "step": "接口权限",
+      "login": "x03-security",
+      "rights": [
+        "account",
+        "credential",
+        "role",
+        "policy",
+        "assign",
+        "delegate"
+      ],
+      "http": {
+        "context": 200,
+        "accounts": 200,
+        "roles": 200,
+        "grants": 200
+      }
+    },
+    {
+      "at": "2026-11-28T06:51:32.643Z",
+      "step": "原验收授予",
+      "login": "x03-4627-1128",
+      "revoked": 3
+    },
+    {
+      "at": "2026-11-28T06:51:33.272Z",
+      "step": "从登录页登录",
+      "user": "reader",
+      "origin": "http://127.0.0.1:4627",
+      "http": 200
+    },
+    {
+      "at": "2026-11-28T06:51:33.521Z",
+      "step": "接口权限",
+      "login": "reader",
+      "rights": [],
+      "http": {
+        "context": 200,
+        "accounts": 403,
+        "roles": 403,
+        "grants": 403
+      }
+    },
+    {
+      "at": "2026-11-28T06:51:32.451Z",
+      "step": "原单岗样例",
+      "login": "reader",
+      "http": 200,
+      "codes": [
+        "X03P1"
+      ],
+      "subtotal": 3
+    },
+    {
+      "at": "2026-11-28T06:55:03.004Z",
+      "step": "授权详情首屏",
+      "height": 540,
+      "width": 1440,
+      "requestedPath": "/settings/security/grants/1d003ed4-e19d-44e6-838c-b22cb0a30a05",
+      "loginLanded": "/settings/security/grants/1d003ed4-e19d-44e6-838c-b22cb0a30a05",
+      "y": 313,
+      "bottom": 345,
+      "noHorizontalScroll": true
+    },
+    {
+      "at": "2026-11-28T06:55:04.004Z",
+      "step": "授权详情首屏",
+      "height": 900,
+      "width": 1440,
+      "requestedPath": "/settings/security/grants/1d003ed4-e19d-44e6-838c-b22cb0a30a05",
+      "loginLanded": "/settings/security/grants/1d003ed4-e19d-44e6-838c-b22cb0a30a05",
+      "y": 312,
+      "bottom": 344,
+      "noHorizontalScroll": true
+    },
+    {
+      "at": "2026-11-28T06:55:04.098Z",
+      "step": "最终构建原回执",
+      "key": "create",
+      "operation": "account.create",
+      "http": 200,
+      "requestId": "2de0c8ae-b02a-4d27-8ded-d7e194dcfe6c"
+    },
+    {
+      "at": "2026-11-28T06:55:04.114Z",
+      "step": "最终构建原回执",
+      "key": "grant",
+      "operation": "grant.issue",
+      "http": 200,
+      "requestId": "15b22639-6900-49cf-a0d3-2ad9a8b2728c"
+    },
+    {
+      "at": "2026-11-28T06:55:04.130Z",
+      "step": "最终构建原回执",
+      "key": "revoke",
+      "operation": "grant.revoke",
+      "http": 200,
+      "requestId": "7e979e65-8e26-4313-861a-f59771664253"
+    },
+    {
+      "at": "2026-11-28T06:55:04.144Z",
+      "step": "最终构建原回执",
+      "key": "disable",
+      "operation": "account.disable",
+      "http": 200,
+      "requestId": "535ed17b-ff73-4576-abe0-ce7165ddb5e1"
+    }
+  ],
+  "finalCheckAccount": {
+    "login": "x03-admin-check-1128",
+    "state": "disabled",
+    "lastGrantOperation": "revoke",
+    "sqlReceiptActor": "admin",
+    "commands": {
+      "create": {
+        "operation": "account.create",
+        "requestId": "2de0c8ae-b02a-4d27-8ded-d7e194dcfe6c",
+        "target": "cf9e65cc-a555-4673-9f39-6cacec07f645",
+        "http": 200
+      },
+      "grant": {
+        "operation": "grant.issue",
+        "requestId": "15b22639-6900-49cf-a0d3-2ad9a8b2728c",
+        "target": "eb7a7ee9-e90e-43de-8753-8610fa6738c5",
+        "http": 200
+      },
+      "revoke": {
+        "operation": "grant.revoke",
+        "requestId": "7e979e65-8e26-4313-861a-f59771664253",
+        "target": "eb7a7ee9-e90e-43de-8753-8610fa6738c5",
+        "http": 200
+      },
+      "disable": {
+        "operation": "account.disable",
+        "requestId": "535ed17b-ff73-4576-abe0-ce7165ddb5e1",
+        "target": "cf9e65cc-a555-4673-9f39-6cacec07f645",
+        "http": 200
+      }
+    }
+  },
+  "tests": {
+    "management": [
+      {
+        "test": "TestBuiltinAdminKeepsManagementAcrossAppointmentAndRecovery",
+        "result": "pass"
+      },
+      {
+        "test": "TestBuiltinAdminUpgradeRequiresDeploymentIdentity",
+        "result": "pass"
+      },
+      {
+        "test": "TestAccessManagementUpgradeRetainsRevokedAssignments",
+        "result": "pass"
+      },
+      {
+        "test": "TestAccessManagementAccountsAndRecovery",
+        "result": "pass"
+      },
+      {
+        "test": "TestAccessManagementDelegationAndSharedVersions",
+        "result": "pass"
+      },
+      {
+        "test": "TestAccessManagementScopedCredentialAndExpiry",
+        "result": "pass"
+      },
+      {
+        "test": "TestLocalDevelopmentPasswordChange",
+        "result": "pass"
+      }
+    ],
+    "handoverFromBuiltin": [
+      {
+        "test": "TestBuiltinAdminKeepsManagementAcrossAppointmentAndRecovery",
+        "result": "pass"
+      },
+      {
+        "test": "TestBuiltinAdminUpgradeRequiresDeploymentIdentity",
+        "result": "pass"
+      }
+    ],
+    "business": [
+      {
+        "test": "TestBUCurrentAuthorizationAndSession",
+        "result": "pass"
+      },
+      {
+        "test": "TestStaffing308LogCurrentGrantsAndDeletedOriginal",
+        "result": "pass"
+      },
+      {
+        "test": "TestDepartmentV23AuthorizationGuardBothOrders",
+        "result": "pass"
+      }
+    ],
+    "managementBrowser": {
+      "cases": [
+        [
+          "enterprise-maintenance",
+          "tests/e2e/enterprise304.spec.ts:79:1 › 140 企业首条后移预览跨闰日，取消后保留来源"
+        ],
+        [
+          "enterprise-maintenance",
+          "tests/e2e/enterprise304.spec.ts:96:1 › 304 正常菜单完整维护：首条、插入、更正、删除、固定期间、启停及历史"
+        ],
+        [
+          "enterprise-maintenance",
+          "tests/e2e/enterprise304.spec.ts:224:1 › 304 草稿取消、冲突重读和丢失响应查回"
+        ],
+        [
+          "enterprise-maintenance",
+          "tests/e2e/enterprise304.spec.ts:318:1 › 304 查询者在桌面查看唯一企业、记录与历史只读"
+        ],
+        [
+          "enterprise-maintenance",
+          "tests/e2e/enterprise304.spec.ts:361:1 › 304 企业更名保持部门当前及历史路径独立"
+        ],
+        [
+          "chromium",
+          "tests/e2e/access-management.spec.ts:229:1 › 028 内置 admin 查看长期管理职责并从页面办理授权"
+        ],
+        [
+          "chromium",
+          "tests/e2e/access-management.spec.ts:253:34 › 027 T04 管理员开户、发布和逐份撤销 · 1440×900"
+        ],
+        [
+          "chromium",
+          "tests/e2e/access-management.spec.ts:253:34 › 027 T04 管理员开户、发布和逐份撤销 · 1440×540"
+        ],
+        [
+          "chromium",
+          "tests/e2e/access-management.spec.ts:265:1 › 027 T04 管理员关键流程原生 200%"
+        ],
+        [
+          "chromium",
+          "tests/e2e/access-management.spec.ts:320:1 › 027 T04 委派管理员仅见获管归属，撤去职责后旧表单和直接请求均拒绝"
+        ],
+        [
+          "chromium",
+          "tests/e2e/access-management.spec.ts:451:1 › 027 T04 从账号页启停及重置，两个旧会话均失效"
+        ],
+        [
+          "chromium",
+          "tests/e2e/access-management.spec.ts:518:1 › 027 T04 从角色页单独发布范围、字段策略并停用指定版本"
+        ]
+      ],
+      "summary": [
+        "\n  12 passed (1.8m)"
+      ],
+      "profileReclaimed": true,
+      "exitCode": 0
+    },
+    "commands": [
+      "go test -tags=integration -count=1 ./internal/bootstrap -run '^(TestBuiltinAdmin.*|TestAccessManagement.*|TestLocalDevelopmentPasswordChange|TestT07RejectsIncompatibleStorage)$'",
+      "go test -tags=integration -count=1 ./tests/integration ./internal/bootstrap -run '^(TestBUCurrentAuthorizationAndSession|TestDepartmentV23AuthorizationGuardBothOrders|TestStaffing308LogCurrentGrantsAndDeletedOriginal)$'",
+      "go test -tags=integration -count=1 ./internal/bootstrap -run '^TestBuiltinAdmin'",
+      "python3 scripts/local-bu.py smoke --profile x03-builtin-visible-1128 --fixed-web -- --project=chromium access-management.spec.ts"
+    ],
+    "checks": {
+      "make check build": "passed",
+      "pythonScriptTests": 189,
+      "nodeScriptTests": 32,
+      "boundaries": "808 Go files, 170 SQL source files",
+      "openapiGeneration": "independent openapi-typescript output matched checked-in client byte for byte",
+      "gitDiffCheck": "passed"
+    },
+    "earlierBrowserRuns": [
+      {
+        "profile": "x03-builtin-admin-1128",
+        "playwrightPassed": 8,
+        "outerSessionExit": 143,
+        "profileReclaimed": true
+      },
+      {
+        "profile": "x03-builtin-fnl-1128",
+        "playwrightPassed": 12,
+        "outerSessionExit": 0,
+        "profileReclaimed": true
+      }
+    ]
+  }
+}

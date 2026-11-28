@@ -10,7 +10,7 @@
 
 - 先核对当前用户指令、cwd、分支、HEAD、工作区、stash 及[登记表](docs/governance/registry.json)，保护已有修改和未跟踪文件。固定工作树不得切换分支，以本机检出路径为准。[005]
 - 默认只检索现行规范。按需查计划及最新交接，区分文档状态、计划执行状态与实际验收结果。旧批次摘要不能重开已结事项或证明当前实现完成。
-- **保留用户验收环境**。`wt-dev-d` 日常使用[统一入口 4486](docs/verification/315-department-quota-allocation.md#6-统一验收环境-4486)（API 8486 / DB 54486）。原 45300 及岗位、部门专项库停机保留。`m03-manual-d` 的 4380（API 8380 / DB 54370）、`m03-grade-d` 的 4381（API 8381 / DB 54371）及 `m03-grade-g2-d` 的 4382（API 8382 / DB 54372）仍由本树负责，用户验收结束或下次更新时复查，禁止按自动测试结束回收。4383、4388、[4390](docs/verification/136-actions-publication.md#8-原4390固定环境更新与交接)等持久环境同样保护。[运行接续](docs/verification/307-m03-job-foundation-implementation.md#10-用户授权的独立页面验收环境)
+- **保留用户验收环境**。`wt-dev-d` 日常使用[统一入口 4486](docs/verification/315-department-quota-allocation.md#6-统一验收环境-4486)（API 8486 / DB 54486）。原 45300 及岗位、部门专项库停机保留。`m03-manual-d` 的 4380（API 8380 / DB 54370）、`m03-grade-d` 的 4381（API 8381 / DB 54371）及 `m03-grade-g2-d` 的 4382（API 8382 / DB 54372）仍由本树负责，用户验收结束或下次更新时复查，禁止按自动测试结束回收。4383、4388、[4390](docs/verification/136-actions-publication.md#8-原4390固定环境更新与交接)、4627 等持久环境同样保护。[运行接续](docs/verification/307-m03-job-foundation-implementation.md#10-用户授权的独立页面验收环境)
 
 ## 页面与交互：实施前必读
 
@@ -25,7 +25,7 @@
 - 金额、日期、状态转换、权限及业务不变量由Go判定；前端只负责布局、交互、输入辅助和API调用，不复制业务引擎或引入旧DemoState、transition。
 - 按[上下文登记](docs/architecture/contexts.json)和[004目录边界](docs/architecture/004-repository-layout.md)开发：跨域只用公开合同/端口，组合根接线；领域不依赖存储、HTTP或别域聚合。X01仅共享小型值/协议；源域拥有事实与Outbox，消费者拥有采用与Inbox；X04/X05承载设施。M02不维护岗位层级、税费账户或授权决策。
 - 同一事实一域负责，模型、存储、API和消息各一套。替换时默认撤下旧接口，例外见[025](docs/adr/025-greenfield-implementation-policy.md#single-current-implementation)。保留持久库、真实历史、不可变修订、准确来源、必要审计、原采用、幂等结果及原验证证据。仅明确可丢弃的数据可重建。
-- SQL归表所属上下文，sqlc产物置于对应infra；goose全局补零编号，由upgrader统一迁移，API/Worker不各自迁移。已正式交付的迁移不得原地改写，开发基线整理按025执行。
+- SQL归表所属域，sqlc产物归其infra。goose全局补零，[领号](db/migrations/README.md)随实施授权，无需另行确认。仅upgrader迁移。已交付迁移不得原地改写，开发基线按025整理。
 - 按日有效期与独立修订分开，DB用`daterange [start,end)`；区分`businessAt/sourceVersion/adoptedRef`并按当前权限读取，不用同日序号。范围、默认来源、访问权限分开，不用SetID/TableSet；合同见[120](docs/specs/m02/120-dated-maintenance-technical-contract.md)。
 - 体验、业务、验证资产登记到[inventory.json](docs/assets/inventory.json)，保留来源及采用证据。构建/运行/测试必须自足，不依赖相邻仓、外部node_modules、源仓服务或软链接；离线来源不进入构建，许可见[NOTICE.txt](NOTICE.txt)。
 - 客户应用、DB及附件独立，厂商平台不集中持有员工/工资明细。不得在仓内（含忽略目录）保存真实凭据、令牌、私钥或敏感数据；外部组织原件只放在仓外私有目录，见[134规则](docs/guides/134-parallel-development-baseline.md)。`.local/`只放非敏感构建/检查输出。
