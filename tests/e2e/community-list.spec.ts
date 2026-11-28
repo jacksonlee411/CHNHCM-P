@@ -164,7 +164,7 @@ test('TL333 原生显隐列宽及恢复仅改变展示，A/D与摘要保持', as
   const resized = await codeHeader.evaluate(e => e.getBoundingClientRect().width);
   await menu('名称'); await page.getByRole('menuitem', { name: '隐藏列', exact: true }).click();
   await panel(page, '列设置…'); await page.getByRole('checkbox', { name: '显示/隐藏全部', exact: true }).check(); await page.getByRole('checkbox', { name: '显示/隐藏全部', exact: true }).uncheck(); await page.keyboard.press('Escape'); await expect(page.getByRole('columnheader').filter({ hasNot: page.getByRole('checkbox') })).toHaveCount(0); await expect(page.getByRole('checkbox', { name: /全选查询结果/ })).toBeVisible();
-  await panel(page, '列设置…'); await page.getByRole('button', { name: '重置', exact: true }).click(); await page.keyboard.press('Escape'); await expect(page.getByRole('columnheader').filter({ hasNot: page.getByRole('checkbox') })).toHaveCount(4);
+  await page.getByRole('button', { name: '管理列', exact: true }).click(); await page.getByRole('button', { name: '重置', exact: true }).click(); await page.keyboard.press('Escape'); await expect(page.getByRole('columnheader').filter({ hasNot: page.getByRole('checkbox') })).toHaveCount(4);
   expect(reads).toBe(0); expect(writes).toBe(0);
   await page.getByLabel('搜索编码或名称').fill('保留草稿'); await expect.poll(() => codeHeader.evaluate(e => e.getBoundingClientRect().width)).toBe(resized);
   await query(page, fixture.items[0].code); await expect.poll(() => codeHeader.evaluate(e => e.getBoundingClientRect().width)).toBe(resized);

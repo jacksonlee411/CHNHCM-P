@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>薪酬配置 · 页面原型</title>
+  <style>
+    :root { color-scheme: light; font: 15px/1.55 Inter, "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif; color:#203333; background:#f8fafb; }
+    * { box-sizing:border-box; }
+    body { margin:0; height:100dvh; display:flex; flex-direction:column; }
+    header { min-height:64px; background:#066b68; color:#fff; display:flex; align-items:center; gap:1.1rem; padding:.65rem clamp(1rem,3vw,3rem); flex-wrap:wrap; }
+    header strong { font-size:1.15rem; letter-spacing:.045em; }
+    header details { position:relative; }
+    header summary { cursor:pointer; padding:.3rem; }
+    header nav { position:absolute; z-index:3; min-width:14rem; padding:.5rem; background:white; box-shadow:0 4px 16px #24414138; border:1px solid #d4dddd; border-radius:6px; color:#203333; }
+    header nav a { display:block; padding:.45rem .65rem; }
+    header nav b { display:block; padding:.45rem .65rem .15rem; color:#536666; font-size:.85rem; }
+    header .samples { margin-left:auto; }
+    header .samples nav { right:0; }
+    main { flex:1; min-height:0; display:flex; flex-direction:column; }
+    .toolbar { background:#fff; border-bottom:1px solid #d7e0df; padding:.8rem max(1rem,calc((100vw - 1200px)/2)); display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1rem; }
+    .toolbar h1 { font-size:1.25rem; margin:0 auto 0 0; }
+    .toolbar a, .toolbar button, .actions a, .actions button { display:inline-block; padding:.35rem .7rem; border-radius:5px; line-height:1.5; }
+    .primary { background:#066b68; color:white; text-decoration:none; }
+    a { color:#066b68; text-underline-offset:3px; }
+    a:hover { text-decoration:underline; }
+    :focus-visible { outline:3px solid #c17419; outline-offset:2px; }
+    .scroll { overflow:auto; flex:1; padding:1.15rem max(1rem,calc((100vw - 1200px)/2)) 3rem; }
+    .card { background:#fff; border:1px solid #dbe3e3; border-radius:8px; padding:1rem 1.25rem; margin:0 0 1rem; }
+    h2 { font-size:1.08rem; margin:0 0 .75rem; }
+    h3 { font-size:.98rem; }
+    p { margin:.45rem 0; }
+    .muted, small { color:#506363; }
+    .bar, .actions, .dates, .tabs { display:flex; gap:.55rem 1rem; flex-wrap:wrap; align-items:center; }
+    .dates, .tabs { margin:0 0 1rem; }
+    .dates a, .dates span, .tabs a, .tabs strong { padding:.3rem .6rem; border-bottom:2px solid transparent; }
+    .dates [aria-current], .tabs strong { color:#075552; background:#e4f3f1; border-bottom-color:#087f7b; }
+    .strip { background:#e7f3f2; padding:.55rem max(1rem,calc((100vw - 1200px)/2)); display:flex; flex-wrap:wrap; align-items:center; gap:1rem; }
+    .table-wrap { overflow:auto; }
+    table { border-collapse:collapse; width:100%; text-align:left; }
+    th, td { padding:.55rem .7rem; border-bottom:1px solid #e1e8e7; vertical-align:top; }
+    th { font-size:.88rem; background:#f1f6f5; }
+    td { font-variant-numeric:tabular-nums; }
+    .money { text-align:right; }
+    dl, .fields { margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem 2rem; }
+    dl div, .field { display:grid; grid-template-columns:minmax(5.4rem,7rem) 1fr; align-items:baseline; gap:.35rem; }
+    dt, label { color:#405555; font-size:.9rem; }
+    dd { margin:0; }
+    button, input, select { font:inherit; }
+    button { border:1px solid #becdca; background:#fff; color:#065f5c; cursor:pointer; }
+    input, select { min-width:0; max-width:100%; background:#fff; color:#183432; border:0; border-bottom:1px solid #809694; padding:.22rem .15rem; }
+    .field input, .field select { width:100%; }
+    .field:is([data-field="下限"],[data-field="上限"],[data-field="指导值"],[data-field="金额"],[data-field="目标比例（%）"]) input { text-align:right; font-variant-numeric:tabular-nums; }
+    label.search input { margin:0 .5rem; min-width:11rem; }
+    .composition { border-top:1px solid #dbe3e3; padding:.6rem 0; margin:.6rem 0; }
+    .error { color:#952624; border-left:3px solid #b13430; padding-left:.65rem; }
+    .note { font-size:.85rem; color:#4d6262; }
+    [hidden] { display:none!important; }
+    @media (max-width:760px) {
+      dl, .fields { grid-template-columns:1fr; }
+      .toolbar { padding:.6rem 1rem; }
+      header { gap:.3rem .6rem; }
+    }
+    @media (max-height:580px) {
+      body { height:auto; min-height:100dvh; }
+      main { display:block; }
+      .scroll { overflow:visible; }
+      .strip { position:sticky; top:0; z-index:1; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>CHNHCM</strong>
+    <details id="settings"><summary>设置</summary><nav aria-label="设置菜单">
+      <b>薪酬配置</b><a href="#plans">薪酬计划</a><a href="#rates">职级薪酬标准</a>
+    </nav></details>
+    <details class="samples"><summary>设计样例</summary><nav aria-label="独立设计样例">
+      <a href="#professional">专业人员月薪计划</a><a href="#management">管理人员年薪计划</a>
+      <a href="#plans?case=allowance">两计划同名津贴</a>
+      <a href="#professional-edit?case=grades">一份计划覆盖两个职级</a>
+      <a href="#rate-add">新增七月薪带</a><a href="#mistyped">七月上限误录</a>
+      <a href="#duplicate-rate">重复建立 P5 月薪带</a>
+      <a href="#invalid">指导值超出薪带</a><a href="#reader">薪酬只读</a><a href="#unavailable">仅有职级目录权</a>
+    </nav></details>
+    <span>配置设计原型</span>
+  </header>
+  <main id="screen"></main>
+  <script>
+    // Each route is a prepared design state. The prototype has no API or persistence.
+    const screen = document.getElementById('screen');
+    const searchTerms = new Map();
+    const focusByRoute = new Map();
+    const scrollByRoute = new Map();
+    let lastRoute = '';
+    let draftBaseline = '';
+    // The example picker changes this tab's synthetic persona. Normal navigation keeps it.
+    let persona = sessionStorage.getItem('compensation-demo-persona') || 'admin';
+    let allowanceCase = false;
+    const draftValues = () => JSON.stringify([...screen.querySelectorAll('.fields input,.fields select')]
+      .map(input => [input.closest('.field').dataset.field, input.value]));
+    const hasEdits = () => draftValues() !== draftBaseline;
+    const link = (to, label, primary = false) =>
+      `<a href="#${to}"${primary ? ' class="primary"' : ''}>${label}</a>`;
+    const card = (title, body) => `<section class="card"><h2>${title}</h2>${body}</section>`;
+    const facts = rows => '<dl>' + rows.map(([name, value]) =>
+      `<div><dt>${name}</dt><dd>${value}</dd></div>`).join('') + '</dl>';
+    const table = (headers, rows) => `<div class="table-wrap" tabindex="0" aria-label="资料表格"><table>
+      <thead><tr>${headers.map(h => '<th scope="col"'+(h==='定额或区间'?' class="money"':'')+'>' + h + '</th>').join('')}</tr></thead>
+      <tbody>${rows.map(row => '<tr>' + row.map((cell,i) => '<td'+(headers[i]==='定额或区间'?' class="money"':'')+'>' + cell + '</td>').join('') + '</tr>').join('')}</tbody></table></div>`;
+    let controlId = 0;
+    function field(label, value, options, readOnly = false, invalid = false) {
+      const id = 'field-' + ++controlId;
+      const control = options ? `<select id="${id}">${options.map(v =>
+        `<option${v === value ? ' selected' : ''}>${v}</option>`).join('')}</select>` :
+        `<input id="${id}" value="${value}"${readOnly ? ' readonly' : ''}${invalid ? ' aria-invalid="true" aria-describedby="guide-error"' : ''}>`;
+      return `<div class="field" data-field="${label}"><label for="${id}">${label}</label><div>${control}${invalid ? '<small id="guide-error" class="error" role="alert">指导值应在 11,000.00 与 16,000.00 元之间。</small>' : ''}</div></div>`;
+    }
+    const fields = items => '<div class="fields">' + items.join('') + '</div>';
+    function layout(title, controls, body, strip = '') {
+      return `<div class="toolbar"><h1 id="heading" tabindex="-1">${title}</h1>${controls}</div>
+        ${strip && '<div class="strip">' + strip + '</div>'}<div class="scroll">${body}</div>`;
+    }
+    const plans = {
+      professional: { code:'PRO-M', name:'专业人员月薪计划', family:'专业', type:'月薪薪带', rate:'monthly',
+        second:['ALLOW', '岗位津贴', '固定额', '300.00 元/月'] },
+      operations: { code:'OPS-M', name:'运营人员月薪计划', family:'运营', type:'月薪薪带', rate:'monthly' },
+      management: { code:'MGT-Y', name:'管理人员年薪计划', family:'管理', type:'年薪定额', rate:'annual',
+        second:['BONUS', '目标绩效奖金', '目标比例', '基本工资年额 × 12.50%，目标 22,500.00 元/年'] }
+    };
+    function planAt(id, october = false) {
+      if (id === 'professional' && october) return {...plans[id], second:['ALLOW','岗位津贴','固定额','350.00 元/月']};
+      if (id === 'operations' && allowanceCase) return {...plans[id], second:['ALLOW','岗位津贴','固定额','200.00 元/月']};
+      return plans[id];
+    }
+    const originPlanId = route => route && (Object.hasOwn(plans,route) ? route :
+      ['professional-jan','professional-oct'].includes(route) ? 'professional' : null);
+    const rates = {
+      monthly: {title:'P5 月薪标准', start:'2027-01-01', period:'自 2027-01-01 起', low:'10,000.00', mid:'12,500.00', high:'15,000.00'},
+      annual: {title:'P5 年薪标准', start:'2027-01-01', period:'自 2027-01-01 起', amount:'180,000.00'}
+    };
+    const july = {title:'P5 月薪标准', start:'2027-07-01', period:'自 2027-07-01 起', low:'11,000.00', mid:'13,500.00', high:'16,000.00'};
+    const wrong = {...july, high:'16,500.00'};
+    const june = {...rates.monthly, period:'2027-01-01 至 2027-06-30'};
+    const editorNote = '<p class="note">表单可试填。结果入口展示预置样例，输入仅在本页保留。</p>';
+    const tab = (log) => `<div class="tabs"><strong>基本资料</strong>${link(log,'变更日志')}</div>`;
+    function listPage(kind) {
+      const isPlan = kind === 'plans';
+      const title = isPlan ? '薪酬计划' : '职级薪酬标准';
+      const headers = isPlan ? ['计划编码','名称','适用对象','生效日期','状态'] :
+        ['职级','标准','币种 / 频率','定额或区间','生效日期','状态'];
+      const rows = isPlan ? Object.entries(plans).map(([id,p]) =>
+        [p.code,link(id,p.name),'甲公司 · '+p.family+'系列 · P5','2027-01-01','启用']) : [
+        ['P5',link('monthly','P5 月薪标准'),'人民币 / 月','10,000.00–15,000.00 元/月','2027-01-01','启用'],
+        ['P5',link('annual','P5 年薪标准'),'人民币 / 年','180,000.00 元/年','2027-01-01','启用']];
+      const controls = (persona === 'admin' ? link(isPlan ? 'plan-new' : 'rate-new','新建',true) : '') +
+        '<form id="search" role="search"><label class="search">搜索<input name="q" placeholder="' +
+        (isPlan ? '计划编码或名称' : '职级或频率')+'"></label><button>查询</button></form>';
+      return layout(title,controls,card('配置列表',table(headers,rows) +
+        '<p id="empty-result" hidden>没有符合条件的记录</p><small id="count"></small>'));
+    }
+    function planPage(id, record) {
+      const october = record === 'oct', dated = october || record === 'jan';
+      const p = planAt(id,october), selected = dated ? id+'-'+record : id;
+      const start = october ? '2027-10-01' : '2027-01-01';
+      const period = record==='jan' ? '2027-01-01 至 2027-09-30' : '自 '+start+' 起';
+      const info = facts([['计划编码',p.code],['适用期间',period],['状态',october ? '尚未生效' : '启用'],['适用对象','甲公司 · '+p.family+'系列 · P5']]);
+      const standard = october ? 'july' : dated ? 'june' : p.rate;
+      const rows = [['BASIC','基本工资','职级标准',link(standard+'?from='+selected,'P5 · '+p.type)]];
+      if (p.second) rows.push(p.second);
+      const dates = '<div class="dates" aria-label="生效记录">'+
+        (october ? link(id+'-jan','2027-01-01') : '<span aria-current="date">2027-01-01</span>')+
+        (october ? '<span aria-current="date">2027-10-01</span>' : dated ? link(id+'-oct','2027-10-01') : '')+'</div>';
+      const actions = id === 'professional' && !dated ? link(id+'-add','新增记录',true) : '';
+      const correction = link(selected+'-edit','更正记录');
+      return layout(p.name,link('plans','返回列表')+actions+correction,
+        tab(selected+'-log') + dates + card('基本资料',info) + card('薪酬组成',table(['项编码','组成项','取值方式','约定'],rows)) +
+        card('保存时依据',link((october?'july-source':'origin-'+p.rate)+'?from='+selected,'查看保存时引用的 P5 标准')));
+    }
+    function gradeOptions(frequency) {
+      const options = [''];
+      if (frequency === '月') {
+        if (new URLSearchParams(location.hash.split('?')[1]).get('case') === 'grades') options.push('P4 · 月薪薪带');
+        options.push('P5 · 月薪薪带');
+      }
+      if (frequency === '年') options.push('P5 · 年薪定额');
+      return options;
+    }
+    function gradeChoice(value, frequency) {
+      return '<div class="grade-choice">'+field('职级及引用标准',value,gradeOptions(frequency))+'<button type="button" data-remove-grade>移除此职级</button></div>';
+    }
+    function termFields(mode, value, frequency) {
+      if (mode === '职级标准') return '<div class="grade-choices">'+gradeChoice(value,frequency)+'</div><button type="button" data-add-grade>添加职级标准</button>';
+      if (mode === '目标比例') return field('目标比例（%）',value)+field('基准项','',[''])+
+        field('目标舍入','四舍五入至分');
+      return field('金额',value);
+    }
+    let itemSequence = 0;
+    function componentRow(name, code, mode, value, annual, baseCode = '') {
+      return `<section class="composition" data-item="item-${++itemSequence}" data-base="${baseCode}"><h3>${name}</h3>${fields([field('名称',name),field('项编码',code),
+        field('性质',name === '基本工资' ? name : annual ? '奖金' : '津贴补贴',['基本工资','津贴补贴','绩效工资','奖金']),
+        field('取值方式',mode,['固定额','职级标准','目标比例']),field('币种','人民币'),field('约定频率',annual ? '年' : '月',['月','年','小时','一次性']),field('约定单位',annual ? '元/年' : '元/月')])}
+        <div class="fields method-fields">${termFields(mode,value,annual?'年':'月')}</div>
+        <div class="actions"><button type="button" data-move="up">上移</button><button type="button" data-move="down">下移</button>
+        <button type="button" data-remove>移除此项</button></div></section>`;
+    }
+    function refreshBaseOptions() {
+      const items = [...screen.querySelectorAll('.composition')];
+      const value = (row,label) => row.querySelector('[data-field="'+label+'"] input').value.trim();
+      for (const item of items) {
+        const select = item.querySelector('[data-field="基准项"] select');
+        if (!select) continue;
+        const previous = select.value;
+        select.replaceChildren(new Option('',''));
+        for (const other of items) {
+          const code = value(other,'项编码'), name = value(other,'名称');
+          if (other === item || !code || !name) continue;
+          const key = other.dataset.item;
+          const opt = new Option(code+' · '+name,key);
+          select.add(opt);
+          if (key === previous || (item.dataset.base && code === item.dataset.base)) opt.selected = true;
+        }
+        delete item.dataset.base;
+      }
+    }
+    function planEdit(id, action, record = '') {
+      const blank = action === 'new', creating = blank || action === 'filled', adding = action === 'add';
+      const october = record === 'oct', p = planAt(id,october), annual = id === 'management';
+      const selected = record ? id+'-'+record : id;
+      const effective = blank ? '1900-01-01' : october || adding ? '2027-10-01' : '2027-01-01';
+      const meta = fields([field('计划编码',blank?'':p.code,null,!creating),field('名称',blank?'':p.name),field('说明',''),field('生效日期',effective,null,!creating && !adding),
+        field('适用范围',blank?'':'指定范围',['','企业通用','指定范围']),field('法律实体',blank?'':'甲公司'),field('职务系列',blank?'':p.family),
+        field('适用职级',blank?'':'P5'),field('办理原因',blank?'':adding||october?'岗位津贴调整':'建立制度',['','建立制度','岗位津贴调整'])]);
+      const second = p.second ? componentRow(p.second[1],p.second[0],p.second[2],annual ? '12.50' : p.second[3].split(' ')[0],annual,annual?'BASIC':'') : '';
+      const items = blank ? '' : componentRow('基本工资','BASIC','职级标准','P5 · '+p.type,annual) + second;
+      const next = blank ? link('professional-filled','月薪计划填写样例',true)+link('management-filled','年薪计划填写样例') : link(adding?id+'-oct':selected,'查看保存结果样例',true);
+      return layout(blank ? '新建薪酬计划' : creating ? '新建薪酬计划 · 已填样例' : adding ? '新增计划生效记录' : '更正计划记录',
+        next+link(creating ? 'plans' : selected,'取消'),
+        card('基本资料',meta) + card('薪酬组成','<div id="components">'+items+'</div><button type="button" id="add-component">添加固定额组成项</button>') + editorNote);
+    }
+    function planLog(id, record) {
+      const p = plans[id];
+      const selected = record ? id+'-'+record : id;
+      const sourceContext = record ? '?via='+selected+'-log' : '';
+      const rows = [['2027-01-01','新建','制度经办人',link((record?id+'-jan':id)+'-source'+sourceContext,'查看保存时的计划')]];
+      if (record) rows.unshift(['2027-10-01','新增记录','制度经办人',link(id+'-oct-source'+sourceContext,'查看十月保存的计划')]);
+      return layout(p.name+' · 变更日志',link(selected,'返回基本资料'),card('办理记录',table(['生效日期','操作','办理人','资料'],rows)));
+    }
+    function rateFacts(r) {
+      const data = [['职级','P5'],['适用期间',r.period],['币种','人民币'],['约定频率',r.amount ? '年' : '月'],
+        ['标准形式',r.amount ? '定额' : '薪带'],['计量单位',r.amount ? '元/年' : '元/月']];
+      if (r.amount) data.push(['定额',r.amount]);
+      else data.push(['下限',r.low],['指导值',r.mid],['上限',r.high]);
+      return facts(data);
+    }
+    const historyStrip = (back, label) => '<strong>只读历史</strong>'+link(back,label);
+    function ratePage(route, origin) {
+      const fromPlan = originPlanId(origin);
+      const suffix = fromPlan ? '?from='+origin : '';
+      const back = fromPlan ? link(origin,'返回'+plans[fromPlan].name) : link('rates','返回列表');
+      const after = ['june','june-wrong','june-corrected','july','mistyped','corrected'].includes(route);
+      const isAnnual = route === 'annual';
+      const r = route === 'mistyped' ? wrong : ['july','corrected'].includes(route) ? july :
+        route.startsWith('june') ? june : isAnnual ? rates.annual : rates.monthly;
+      const reader = persona === 'reader';
+      const actions = reader ? '' : route === 'annual' ? link('annual-edit'+suffix,'更正记录',true) : route === 'monthly' ? link('rate-add'+suffix,'新增记录',true) :
+        route === 'mistyped' ? link('rate-correct'+suffix,'更正记录',true) : '';
+      const date = (key, label, active) => active ? '<span aria-current="date">'+label+'</span>' : link(key+suffix,label);
+      const hasMistake = route==='mistyped' || route==='june-wrong';
+      const hasCorrection = route==='corrected' || route==='june-corrected';
+      const earlier = hasMistake ? 'june-wrong' : hasCorrection ? 'june-corrected' : after ? 'june' : isAnnual ? 'annual' : 'monthly';
+      const later = hasMistake ? 'mistyped' : hasCorrection ? 'corrected' : 'july';
+      const dates = '<div class="dates" aria-label="生效记录">'+date(earlier,'2027-01-01',r.start==='2027-01-01')+
+        (after ? date(later,'2027-07-01',r.start==='2027-07-01') : '')+'</div>';
+      const log = hasCorrection ? 'correction-log' : hasMistake ? 'mistyped-log' : isAnnual ? 'annual-log' :
+        after ? 'july-log' : 'monthly-log';
+      return layout(r.title,back+actions,(reader ? '<p>薪酬查询者 · 只读</p>' : tab(log+suffix))+dates+
+        card(r.start==='2027-07-01' ? '基本资料 · 尚未生效' : '基本资料',rateFacts(r)));
+    }
+    function rateEdit(route, origin) {
+      const suffix = originPlanId(origin) ? '?from='+origin : '';
+      const annual = route==='rate-first-annual' || route==='annual-edit';
+      const creating = ['rate-new','rate-first-filled','rate-first-annual'].includes(route), correcting = ['rate-correct','annual-edit'].includes(route), invalid = route==='invalid';
+      const r = annual ? rates.annual : creating || route==='rate-add' ? rates.monthly : correcting ? wrong : july;
+      const effective = route==='rate-new' ? '1900-01-01' : route==='rate-add' ? july.start : r.start;
+      const body = fields([field('职级','P5',null,!creating),field('币种','人民币',null,!creating),field('约定频率',annual?'年':'月',null,!creating),field('计量单位',annual?'元/年':'元/月',null,!creating),
+        field('标准形式',annual?'定额':'薪带',creating?['薪带','定额']:null,!creating),field('生效日期',effective,null,correcting),
+        ...(annual ? [field('金额',r.amount)] : [field('下限',route==='rate-new'?'':r.low),field('指导值',route==='rate-new'?'':invalid?'17,000.00':r.mid,null,false,invalid),field('上限',route==='rate-new'?'':r.high)]),
+        field('办理原因',route==='rate-new'?'':creating||annual?'建立标准':'薪酬制度调整',['','建立标准','薪酬制度调整'])]);
+      const intro = creating ? '<p>本例职级自 2027-01-01 起有效。</p>' : '';
+      const dest = annual ? 'annual' : creating ? 'monthly' : correcting ? 'corrected' : 'july';
+      const next = route==='rate-new' ? link('rate-first-filled','月薪薪带填写样例',true)+link('rate-first-annual','年薪定额填写样例') :
+        link((invalid ? 'rate-add' : dest)+suffix,invalid ? '查看改正样例' : '查看保存结果样例',true);
+      return layout(creating ? '新建职级薪酬标准' : annual ? '更正年薪记录' : correcting ? '更正七月记录' : '新增七月记录',
+        next+link((creating?'rates':annual?'annual':correcting?'mistyped':'monthly')+suffix,'取消'),
+        card('记录资料',intro+body)+editorNote);
+    }
+    function rateLog(route, origin) {
+      const suffix = originPlanId(origin) ? '?from='+origin : '';
+      const annual = route==='annual-log', correction = route==='correction-log', mistake = route==='mistyped-log';
+      const after = correction || mistake || route==='july-log';
+      const sourceQuery = '?via='+route+(originPlanId(origin)?'&from='+origin:'');
+      const rows = [];
+      if (correction) rows.push(['2027-07-01','更正','上限 16,500.00 → 16,000.00',link('wrong-source'+sourceQuery,'更正前原件')]);
+      if (after) rows.push(['2027-07-01','新增记录',correction||mistake?'上限 16,500.00':'上限 16,000.00',link((correction||mistake?'wrong-source':'july-source')+sourceQuery,'办理时资料')]);
+      rows.push(['2027-01-01','新建',annual?'定额 180,000.00':'上限 15,000.00',link((annual?'origin-annual':'origin-monthly')+sourceQuery,'办理时资料')]);
+      return layout('职级薪酬标准 · 变更日志',link((correction?'corrected':mistake?'mistyped':after?'july':annual?'annual':'monthly')+suffix,'返回基本资料'),
+        card('办理记录',table(['生效日期','操作','金额变化（元）','来源'],rows)));
+    }
+    function sourcePage(route, origin, via, planLogRoute) {
+      const standard = route==='wrong-source' ? wrong : route==='july-source' ? july : route==='origin-annual' ? rates.annual : rates.monthly;
+      const logs = ['monthly-log','annual-log','july-log','mistyped-log','correction-log'];
+      const cameFromPlanSource = via && via.endsWith('-source') && originPlanId(via.slice(0,-7));
+      const back = logs.includes(via) ? via+(originPlanId(origin)?'?from='+origin:'') :
+        cameFromPlanSource ? via+(planLogRoute?'?via='+planLogRoute:'') : originPlanId(origin) ? origin : 'monthly-log';
+      const label = logs.includes(via) ? '返回变更日志' : via ? '返回计划原件' : '返回原计划';
+      return layout(standard.title+' · 办理时资料','',card('原件',rateFacts(standard)),historyStrip(back,label));
+    }
+    function render() {
+      const [route='plans',query=''] = (location.hash.slice(1)||'plans').split('?');
+      const params = new URLSearchParams(query);
+      allowanceCase = params.get('case') === 'allowance';
+      const origin = persona === 'admin' ? params.get('from') : null;
+      const [planId, first, second] = route.split('-');
+      const record = planId === 'professional' && ['jan','oct'].includes(first) ? first : '';
+      const planAction = record ? second : first;
+      const requestedLog = params.get('via');
+      const planLogRoute = ['professional-jan-log','professional-oct-log'].includes(requestedLog) ? requestedLog : '';
+      const back = params.get('back');
+      const sourceLog = ['professional-jan-log','professional-oct-log'].includes(back) ? back : '';
+      controlId=0;
+      let html;
+      const unavailable = () => layout('资料不可用','',card('访问结果','<p>所选资料不可用。</p>'));
+      if (persona === 'directory' || (persona === 'reader' && !['reader','rates','monthly','annual','june','july'].includes(route))) html=unavailable();
+      else if (route==='plans'||route==='rates') html=listPage(route);
+      else if (Object.hasOwn(plans,planId) && !planAction) html=planPage(planId,record);
+      else if (route==='plan-new') html=planEdit('professional','new');
+      else if (Object.hasOwn(plans,planId) && ['filled','edit','add'].includes(planAction)) html=planEdit(planId,planAction,record);
+      else if (Object.hasOwn(plans,planId) && planAction==='log') html=planLog(planId,record);
+      else if (Object.hasOwn(plans,planId) && planAction==='source') {
+        const october=record==='oct', p=planAt(planId,october);
+        const selected=record ? planId+'-'+record : planId;
+        const rows=[['计划编码',p.code],['生效日期',october?'2027-10-01':'2027-01-01'],['适用范围','甲公司 · '+p.family+'系列 · P5'],
+          ['基本工资',link((october?'july-source':'origin-'+p.rate)+'?via='+route+(planLogRoute?'&back='+planLogRoute:''),'查看保存时引用的 P5 标准')]];
+        if (p.second) rows.push([p.second[1],p.second[3]]);
+        html=layout(p.name+' · 保存时的计划','',card('办理时资料',facts(rows)),historyStrip(planLogRoute||selected+'-log','返回变更日志'));
+      }
+      else if (['monthly','annual','june','june-wrong','june-corrected','july','mistyped','corrected','reader'].includes(route)) html=ratePage(route,origin);
+      else if (['rate-new','rate-first-filled','rate-first-annual','rate-add','rate-correct','annual-edit','invalid'].includes(route)) html=rateEdit(route,origin);
+      else if (['monthly-log','annual-log','july-log','mistyped-log','correction-log'].includes(route)) html=rateLog(route,origin);
+      else if (['origin-monthly','origin-annual','wrong-source','july-source'].includes(route)) html=sourcePage(route,origin,requestedLog,sourceLog);
+      else if (route==='duplicate-rate') html=layout('新建职级薪酬标准',link('monthly','打开已有 P5 月薪标准',true)+link('rates','返回列表'),
+        card('同口径薪带已存在','<p role="alert" class="error">2027-01-01 已有 P5 人民币月薪带，计量单位为元/月。专业、运营计划均可选用同一标准。</p>'+
+          facts([['拟新增薪带','12,000.00–18,000.00 元/月'],['已有薪带','10,000.00–15,000.00 元/月']])));
+      else html=unavailable();
+      screen.innerHTML=html;
+      screen.dataset.route=route+(query?'?'+query:'');
+      const settings=document.getElementById('settings');
+      settings.hidden=persona==='directory';
+      const menuLinks=settings.querySelectorAll('a');
+      menuLinks[0].hidden=persona!=='admin';
+      menuLinks[0].href='#plans';
+      menuLinks[1].href='#rates';
+      if (allowanceCase) {
+        for (const anchor of [...menuLinks,...screen.querySelectorAll('a[href^="#"]')]) {
+          anchor.setAttribute('href',anchor.hash+(anchor.hash.includes('?')?'&':'?')+'case=allowance');
+        }
+      }
+      document.querySelectorAll('header details[open]').forEach(menu=>menu.removeAttribute('open'));
+      const key=location.hash||'#plans';
+      const anchors=[...screen.querySelectorAll('a[href]')];
+      const focusIndex=focusByRoute.get(key);
+      (anchors[focusIndex]||document.getElementById('heading')).focus({preventScroll:true});
+      lastRoute=key;
+      const form=document.getElementById('search');
+      const scope=screen.querySelector('[data-field="适用范围"] select');
+      if (scope) updateScope(scope);
+      refreshBaseOptions();
+      draftBaseline=draftValues();
+      const savedScroll=scrollByRoute.get(key);
+      window.scrollTo(0,savedScroll?.page||0);
+      screen.querySelector('.scroll').scrollTop=savedScroll?.body||0;
+      if (form) {
+        form.elements.q.value=searchTerms.get(route)||'';
+        function filter() {
+          const query=form.elements.q.value.trim().toLowerCase();
+          searchTerms.set(route,form.elements.q.value);
+          const rows=[...screen.querySelectorAll('tbody tr')];
+          rows.forEach(row=>{row.hidden=!row.textContent.toLowerCase().includes(query);});
+          const count=rows.filter(row=>!row.hidden).length;
+          document.getElementById('count').textContent='共 '+count+' 条';
+          document.getElementById('empty-result').hidden=count>0;
+        }
+        form.addEventListener('submit',event=>{event.preventDefault();filter();});
+        filter();
+      }
+    }
+    document.addEventListener('click',event=>{
+      const a=event.target.closest('a[href^="#"]');
+      if (a) {
+        if (a.textContent!=='查看保存结果样例' && hasEdits() && !confirm('放弃本页试填内容，打开所选样例？')) {event.preventDefault();return;}
+        if (a.closest('.samples')) {
+          persona = a.hash==='#reader' ? 'reader' : a.hash==='#unavailable' ? 'directory' : 'admin';
+          sessionStorage.setItem('compensation-demo-persona',persona);
+        }
+        if (a.hash===location.hash) {
+          event.preventDefault();
+          render();
+          return;
+        }
+        draftBaseline=draftValues();
+        scrollByRoute.set(lastRoute,{page:window.scrollY,body:screen.querySelector('.scroll').scrollTop});
+        const i=[...screen.querySelectorAll('a[href]')].indexOf(a);
+        if (i>=0) focusByRoute.set(lastRoute,i);
+      }
+      const remove=event.target.closest('[data-remove]');
+      if (remove) {remove.closest('.composition').remove();refreshBaseOptions();document.getElementById('add-component').focus();}
+      const addGrade=event.target.closest('[data-add-grade]');
+      if (addGrade) {
+        const row=addGrade.closest('.composition'), choices=row.querySelector('.grade-choices');
+        choices.insertAdjacentHTML('beforeend',gradeChoice('',row.querySelector('[data-field="约定频率"] select').value));
+        choices.lastElementChild.querySelector('select').focus();
+      }
+      const removeGrade=event.target.closest('[data-remove-grade]');
+      if (removeGrade) {
+        const row=removeGrade.closest('.composition');
+        removeGrade.closest('.grade-choice').remove();
+        row.querySelector('[data-add-grade]').focus();
+      }
+      const move=event.target.closest('[data-move]');
+      if (move) {
+        const row=move.closest('.composition');
+        if(move.dataset.move==='up' && row.previousElementSibling) row.previousElementSibling.before(row);
+        if(move.dataset.move==='down' && row.nextElementSibling) row.nextElementSibling.after(row);
+        move.focus();
+      }
+      if (event.target.id==='add-component') {
+        const group=document.getElementById('components');
+        group.insertAdjacentHTML('beforeend',componentRow('新增组成项','','固定额','',location.hash.includes('management')));
+        group.lastElementChild.querySelector('input').focus();
+      }
+    });
+    function updateScope(input) {
+      for (const name of ['法律实体','职务系列','适用职级']) {
+        const row=screen.querySelector('[data-field="'+name+'"]');
+        row.hidden=input.value!=='指定范围';
+      }
+    }
+    screen.addEventListener('focusin',event=>{
+      if (event.target.tagName==='SELECT') event.target.dataset.original=event.target.value;
+    });
+    screen.addEventListener('change',event=>{
+      if(event.target.closest('[data-field="适用范围"]')) updateScope(event.target);
+      if(event.target.closest('.composition') && event.target.closest('[data-field="名称"],[data-field="项编码"]')) refreshBaseOptions();
+      const component=event.target.closest('.composition');
+      if (component && event.target.closest('[data-field="约定频率"]')) {
+        const options=gradeOptions(event.target.value);
+        for (const select of component.querySelectorAll('[data-field="职级及引用标准"] select')) {
+          const previous=select.value;
+          select.replaceChildren(...options.map(value=>new Option(value,value)));
+          if (previous && !options.includes(previous)) {
+            const mismatch=new Option(previous+'（频率不符，请重选）',previous);
+            mismatch.disabled=true;
+            select.add(mismatch);
+          }
+          select.value=previous;
+        }
+      }
+      if(event.target.closest('[data-field="取值方式"]')) {
+        const part=event.target.closest('.composition').querySelector('.method-fields');
+        const losesValue = [...part.querySelectorAll('input,select')].some(input =>
+          input.closest('.field').dataset.field === '目标舍入' ? input.value !== input.defaultValue : input.value !== '');
+        if (losesValue && !confirm('切换取值方式会清除本项原取值，继续切换？')) {
+          event.target.value=event.target.dataset.original;return;
+        }
+        event.target.dataset.original=event.target.value;
+        part.innerHTML=termFields(event.target.value,'',event.target.closest('.composition').querySelector('[data-field="约定频率"] select').value);
+        refreshBaseOptions();
+      }
+      if(event.target.closest('[data-field="标准形式"]')) {
+        const grid=event.target.closest('.fields');
+        const amounts=[...grid.querySelectorAll('[data-field="金额"],[data-field="下限"],[data-field="指导值"],[data-field="上限"]')];
+        if (amounts.some(row=>row.querySelector('input').value) && !confirm('切换标准形式会清除原金额，继续切换？')) {
+          event.target.value=event.target.dataset.original;return;
+        }
+        event.target.dataset.original=event.target.value;
+        amounts.forEach(row=>row.remove());
+        const labels=event.target.value==='定额'?['金额']:['下限','指导值','上限'];
+        grid.querySelector('[data-field="办理原因"]').insertAdjacentHTML('beforebegin',labels.map(label=>field(label,'')).join(''));
+      }
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape') document.querySelectorAll('header details[open]').forEach(menu=>{menu.open=false;menu.querySelector('summary').focus();});
+    });
+    window.addEventListener('hashchange',()=>{
+      if(hasEdits() && !confirm('放弃本页试填内容，打开所选样例？')) {history.pushState(null,'',lastRoute);return;}
+      render();
+    });
+    if(!location.hash) history.replaceState(null,'','#plans');
+    if(location.hash==='#unavailable' || (location.hash==='#reader' && persona!=='directory')) {
+      persona=location.hash==='#unavailable'?'directory':'reader';
+      sessionStorage.setItem('compensation-demo-persona',persona);
+    }
+    render();
+  </script>
+</body>
+</html>

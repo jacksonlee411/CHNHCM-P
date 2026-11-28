@@ -33,6 +33,8 @@
 
 [待审文稿](governance/catalog/README.md#catalog-review)按文稿状态检索，计划是否已关闭另见执行状态。
 
+薪酬管理员从「设置 → 薪酬配置」维护薪酬计划和职级标准。管理员与查询者可查看当日有效的企业通用月薪计划，再按日期核对专业月薪、运营月薪和管理年薪。[业务方案](specs/m09/211-compensation-configuration.md) · [后台页面](specs/m09/212-compensation-configuration-pages.md) · [实施路线图](archive/plans/210-compensation-configuration-roadmap.md) · [八组联合验收](verification/210-compensation-i3.md) · [固定环境当日样例](verification/210-compensation-list-retest.md)
+
 ## 历次设计与实施记录
 
 [验证专题](verification/README.md) · [4496 入职原单与岗位验收](verification/404-4496-acceptance.md) · [已关闭计划](governance/catalog/README.md#catalog-closed) · [全部编号与原始登记](governance/registry.json)

@@ -10,6 +10,7 @@
 !/specs/m02/
 !/specs/m03/
 !/specs/m04/
+!/specs/m09/
 !/adr/002-technology-stack.md
 !/adr/003-implementation-stages.md
 !/adr/009-mainland-organization-terms.md
@@ -31,6 +32,7 @@
 !/adr/123-current-maintenance-and-dated-query-boundary.md
 !/adr/128-authorization-evidence-removal.md
 !/adr/202-master-data-default-effective-date.md
+!/adr/213-administrator-maintenance-and-effectivity.md
 !/architecture/004-repository-layout.md
 !/architecture/007-m02-entry.md
 !/architecture/316-object-and-configuration-models.md
@@ -66,3 +68,5 @@
 !/specs/m04/506-job-information-records.md
 !/specs/m04/507-job-information-tab.md
 !/specs/m04/512-employment-contracts.md
+!/specs/m09/211-compensation-configuration.md
+!/specs/m09/212-compensation-configuration-pages.md

@@ -404,3 +404,7 @@ M03的[308继承表](../m03/308-job-foundation-contract.md#m03-page-inheritance)
 原M02／307结果保持各自批次范围，后续公共页面提炼须回归实际M02消费者；本次文档核对不宣称M03页面整改、M02回归或自动门禁通过。实际范围见[308文档记录](../../verification/308-job-page-admission-contract.md)。
 
 后续308产品整改及正式发布已完成，实际执行范围见[发布接续](../../verification/308-job-page-standard-implementation.md#m03-308-publication)，上文待执行为原合同批次时点。第二批Grade／GradeLadder与Job可用集合按[310适用矩阵](../m03/310-grade-ladder-contract.md#4-日期状态与121适用性)逐组决定，页面采用、业务差异及新验收由310持有；G1实际执行见[职级记录](../../verification/309-grade-g1-implementation.md)，G2未运行；不复用原M02或308结果填入新对象。
+
+## 25 薪酬体系配置接入映射
+
+职级薪酬标准对照职级，薪酬计划对照含成员的职级阶梯。两类对象共用按日维护、独立修订和回执原则，分别验证金额权限、跨计划共享、适用范围、当日标准和保存时依据。八项业务预期由 211 持有，桌面及原生缩放的页面继承由 212 持有。合成容量、重启恢复和实际菜单结果可按对象复查。[业务场景](../m09/211-compensation-configuration.md#design-cases) · [页面继承](../m09/212-compensation-configuration-pages.md#reference-pages) · [两类对象联验](../../verification/210-compensation-i3.md)

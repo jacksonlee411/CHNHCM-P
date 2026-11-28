@@ -275,6 +275,143 @@ type AccessSession struct {
 	RevokedAt         pgtype.Timestamptz
 }
 
+type CompensationGradeRate struct {
+	InstanceID   string
+	EnterpriseID string
+	ID           string
+	GradeID      string
+	Currency     string
+	Frequency    string
+	Unit         string
+	Places       int16
+	Head         string
+}
+
+type CompensationGradeRateOutbox struct {
+	InstanceID string
+	RateID     string
+	Version    string
+	Event      []byte
+}
+
+type CompensationGradeRatePeriod struct {
+	InstanceID  string
+	RateID      string
+	RecordID    string
+	Revision    string
+	StartDate   pgtype.Date
+	UntilDate   pgtype.Date
+	Active      bool
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationGradeRateReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	Result       []byte
+}
+
+type CompensationGradeRateRevision struct {
+	InstanceID string
+	RateID     string
+	RecordID   string
+	Revision   string
+	Fact       []byte
+}
+
+type CompensationGradeRateVersion struct {
+	InstanceID       string
+	RateID           string
+	ID               string
+	Predecessor      pgtype.UUID
+	Action           string
+	RecordID         string
+	Revision         string
+	PreviousRecordID pgtype.UUID
+	PreviousRevision pgtype.UUID
+	UntilDate        pgtype.Date
+	PreviousUntil    pgtype.Date
+	Operator         []byte
+	RecordedAt       pgtype.Timestamptz
+}
+
+type CompensationPlan struct {
+	InstanceID   string
+	EnterpriseID string
+	ID           string
+	Code         string
+	Head         string
+}
+
+type CompensationPlanOutbox struct {
+	InstanceID string
+	PlanID     string
+	Version    string
+	Event      []byte
+}
+
+type CompensationPlanPeriod struct {
+	InstanceID  string
+	PlanID      string
+	RecordID    string
+	Revision    string
+	Name        string
+	StartDate   pgtype.Date
+	UntilDate   pgtype.Date
+	Active      bool
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationPlanRateUse struct {
+	InstanceID  string
+	RateID      string
+	PlanID      string
+	RecordID    string
+	ValidPeriod pgtype.Range[pgtype.Date]
+}
+
+type CompensationPlanReceipt struct {
+	InstanceID   string
+	SubjectID    string
+	SubmissionID string
+	Digest       []byte
+	Result       []byte
+}
+
+type CompensationPlanRevision struct {
+	InstanceID string
+	PlanID     string
+	RecordID   string
+	Revision   string
+	Fact       []byte
+}
+
+type CompensationPlanVersion struct {
+	InstanceID       string
+	PlanID           string
+	ID               string
+	Predecessor      pgtype.UUID
+	Action           string
+	RecordID         string
+	Revision         string
+	PreviousRecordID pgtype.UUID
+	PreviousRevision pgtype.UUID
+	UntilDate        pgtype.Date
+	PreviousUntil    pgtype.Date
+	Operator         []byte
+	RecordedAt       pgtype.Timestamptz
+}
+
+type ConfigurationPlanScopeVersion struct {
+	InstanceID   string
+	EnterpriseID string
+	PlanID       string
+	Version      string
+	Policy       []byte
+}
+
 type MigrationBinding struct {
 	InstanceID    string
 	GrantID       string
