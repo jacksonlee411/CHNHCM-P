@@ -18,6 +18,7 @@ type Target struct {
 type TargetDirectory func(context.Context, []string) ([]Target, error)
 
 type Definition struct {
+	ActionNames  []string `json:"actionNames,omitempty"`
 	Options      []string `json:"options,omitempty"`
 	Kind         string   `json:"kind"`
 	Name         string   `json:"name"`
@@ -44,12 +45,17 @@ type ManagementLimit struct {
 	Until        *time.Time `json:"until,omitempty"`
 }
 type Mandate struct {
-	ID      string          `json:"id"`
-	Limit   ManagementLimit `json:"limit"`
-	Revoked bool            `json:"revoked"`
+	State     string          `json:"state"`
+	CanRevoke bool            `json:"canRevoke,omitempty"`
+	ID        string          `json:"id"`
+	Limit     ManagementLimit `json:"limit"`
+	Revoked   bool            `json:"revoked"`
 }
 
 type ManagedAccount struct {
+	GrantReadable bool `json:"grantReadable,omitempty"`
+	ActiveGrants  *int `json:"activeGrants,omitempty"`
+
 	ID       string   `json:"id"`
 	Login    string   `json:"login"`
 	Display  string   `json:"displayName"`
@@ -59,7 +65,16 @@ type ManagedAccount struct {
 	Options  []string `json:"options,omitempty"`
 }
 
+type GrantAdoption struct {
+	Role   string `json:"role"`
+	Scope  string `json:"scope"`
+	Fields string `json:"fields"`
+}
 type ManagedGrant struct {
+	Distinguish bool           `json:"distinguish,omitempty"`
+	CanRevoke   bool           `json:"canRevoke,omitempty"`
+	Adoption    *GrantAdoption `json:"adoption,omitempty"`
+
 	ID       string     `json:"id"`
 	Subject  string     `json:"subject"`
 	Role     string     `json:"role"`
@@ -79,6 +94,10 @@ type CatalogAction struct {
 	API  string `json:"api"`
 }
 type ManagementEvent struct {
+	Summary string `json:"summary,omitempty"`
+	Before  string `json:"before,omitempty"`
+	After   string `json:"after,omitempty"`
+
 	PreviousOwner string    `json:"previousOwner,omitempty"`
 	AssignedOwner string    `json:"assignedOwner,omitempty"`
 	ID            string    `json:"id"`
@@ -89,7 +108,28 @@ type ManagementEvent struct {
 	At            time.Time `json:"at"`
 	Request       string    `json:"request"`
 }
+type VersionReference struct {
+	ID      string `json:"id"`
+	Subject string `json:"subject"`
+	Account string `json:"account"`
+	Kind    string `json:"kind"`
+	Summary string `json:"summary"`
+	State   string `json:"state"`
+}
+type VersionImpact struct {
+	References []VersionReference `json:"references,omitempty"`
+	Accounts   int                `json:"accounts"`
+	Grants     int                `json:"grants"`
+	Mandates   int                `json:"mandates"`
+	Token      string             `json:"token,omitempty"`
+}
 type ManagementView struct {
+	ProxyDays int            `json:"proxyDays,omitempty"`
+	Panel     string         `json:"panel,omitempty"`
+	Panels    []string       `json:"panels,omitempty"`
+	Page      int            `json:"page"`
+	Impact    *VersionImpact `json:"impact,omitempty"`
+
 	SuggestedProxyDays int               `json:"suggestedProxyDays,omitempty"`
 	Total              int               `json:"total"`
 	Rights             []string          `json:"rights,omitempty"`
@@ -106,32 +146,35 @@ type ManagementView struct {
 }
 type ManagementQuery struct {
 	Area, Subject, Search, Owner, State, Object string
+	Panel, Source, Version, Record, Request     string
+	Choices, Filters                            bool
 	Page, PageSize                              int
 }
 
 type ManagementCommand struct {
-	Request   string           `json:"requestId"`
-	Instance  string           `json:"instanceId"`
-	Operation string           `json:"operation"`
-	Subject   string           `json:"subject,omitempty"`
-	ID        string           `json:"id,omitempty"`
-	Revision  int64            `json:"revision,omitempty"`
-	Login     string           `json:"login,omitempty"`
-	Display   string           `json:"displayName,omitempty"`
-	Password  string           `json:"password,omitempty"`
-	Owner     string           `json:"owner,omitempty"`
-	Reason    string           `json:"reason,omitempty"`
-	Version   *Definition      `json:"version,omitempty"`
-	NewScope  *Definition      `json:"newScope,omitempty"`
-	NewFields *Definition      `json:"newFields,omitempty"`
-	Role      string           `json:"role,omitempty"`
-	Scope     string           `json:"scope,omitempty"`
-	Fields    string           `json:"fields,omitempty"`
-	Source    string           `json:"source,omitempty"`
-	Purpose   string           `json:"purpose,omitempty"`
-	From      *time.Time       `json:"from,omitempty"`
-	Until     *time.Time       `json:"until,omitempty"`
-	Limit     *ManagementLimit `json:"limit,omitempty"`
+	ImpactToken string           `json:"impactToken,omitempty"`
+	Request     string           `json:"requestId"`
+	Instance    string           `json:"instanceId"`
+	Operation   string           `json:"operation"`
+	Subject     string           `json:"subject,omitempty"`
+	ID          string           `json:"id,omitempty"`
+	Revision    int64            `json:"revision,omitempty"`
+	Login       string           `json:"login,omitempty"`
+	Display     string           `json:"displayName,omitempty"`
+	Password    string           `json:"password,omitempty"`
+	Owner       string           `json:"owner,omitempty"`
+	Reason      string           `json:"reason,omitempty"`
+	Version     *Definition      `json:"version,omitempty"`
+	NewScope    *Definition      `json:"newScope,omitempty"`
+	NewFields   *Definition      `json:"newFields,omitempty"`
+	Role        string           `json:"role,omitempty"`
+	Scope       string           `json:"scope,omitempty"`
+	Fields      string           `json:"fields,omitempty"`
+	Source      string           `json:"source,omitempty"`
+	Purpose     string           `json:"purpose,omitempty"`
+	From        *time.Time       `json:"from,omitempty"`
+	Until       *time.Time       `json:"until,omitempty"`
+	Limit       *ManagementLimit `json:"limit,omitempty"`
 }
 type ManagementResult struct {
 	Request   string    `json:"requestId"`

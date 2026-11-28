@@ -15,7 +15,7 @@ func (a *API) accessRoutes(mux *http.ServeMux) {
 		q := r.URL.Query()
 		page, _ := strconv.Atoi(q.Get("page"))
 		size, _ := strconv.Atoi(q.Get("pageSize"))
-		v, e := a.Runtime.Management.ManagementView(r.Context(), credentials(r), access.ManagementQuery{Area: r.PathValue("area"), Page: page, PageSize: size, Subject: q.Get("subject"), Search: q.Get("q"), Owner: q.Get("owner"), State: q.Get("state"), Object: q.Get("object")})
+		v, e := a.Runtime.Management.ManagementView(r.Context(), credentials(r), access.ManagementQuery{Area: r.PathValue("area"), Page: page, PageSize: size, Subject: q.Get("subject"), Search: q.Get("q"), Owner: q.Get("owner"), State: q.Get("state"), Object: q.Get("object"), Panel: q.Get("panel"), Source: q.Get("source"), Version: q.Get("version"), Record: q.Get("record"), Choices: q.Get("choices") == "1", Filters: q.Get("choices") == "filters"})
 		respond(w, 200, v, e)
 	})
 	mux.HandleFunc("POST /api/v1/access/commands", func(w http.ResponseWriter, r *http.Request) {

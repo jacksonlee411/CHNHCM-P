@@ -40,3 +40,179 @@
   margin-block: 0.5rem;
   overflow-wrap: anywhere;
 }
+.grant-query,
+.grant-pager {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.grant-query {
+  justify-content: space-between;
+  margin-block: 0.6rem;
+}
+.grant-query form {
+  flex: 1 1 15rem;
+  max-width: 32rem;
+}
+.grant-pager {
+  justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+.grant-query select,
+.grant-pager select,
+.grant-filter-dialog select {
+  font: inherit;
+  max-width: 100%;
+  padding: 0.25rem;
+}
+.grant-filter-dialog label,
+.grant-login,
+.grant-table small {
+  display: block;
+}
+.grant-filter-dialog label {
+  margin-block: 0.7rem;
+}
+.grant-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  text-align: start;
+}
+.grant-table :is(th, td) {
+  border-bottom: 1px solid var(--mui-palette-divider, #d6dee0);
+  text-align: start;
+  overflow-wrap: anywhere;
+  padding: 0.45rem 0.6rem;
+  vertical-align: middle;
+}
+.grant-table th {
+  font-size: 0.875rem;
+}
+.grant-table td {
+  height: 39px;
+}
+.grant-table small {
+  font-size: 0.75rem;
+  color: var(--mui-palette-text-secondary, #485459);
+}
+.grant-table .MuiButton-root {
+  padding-inline: 0;
+  text-align: start;
+}
+.grant-table [data-selected='true'] {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+.grant-form-columns,
+.grant-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 1.5rem;
+  overflow-wrap: anywhere;
+}
+.grant-form-columns > section {
+  min-width: 0;
+}
+.grant-form-columns .grant-facts {
+  display: block;
+}
+@media (max-width: 899px) {
+  .grant-table,
+  .grant-table tbody,
+  .grant-table tr {
+    display: block;
+  }
+  .grant-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .grant-table td {
+    display: grid;
+    grid-template-columns: 6.8rem minmax(0, 1fr);
+    height: auto;
+    min-height: 2rem;
+    border: 0;
+    align-items: center;
+  }
+  .grant-table td::before {
+    content: attr(data-title);
+    font-weight: 600;
+  }
+  .grant-table td small {
+    grid-column: 2;
+  }
+  .grant-form-columns,
+  .grant-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.grant-query {
+  justify-content: flex-start;
+}
+.grant-query .grant-pager {
+  margin-inline-start: auto;
+}
+.grant-table a {
+  color: var(--mui-palette-primary-main, #087b78);
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+#grant-panel-heading:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  margin: 0;
+}
+.grant-event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.grant-event-list li {
+  padding-block: 0.65rem;
+  border-bottom: 1px solid var(--mui-palette-divider, #d6dee0);
+}
+.grant-event-heading {
+  display: grid;
+  grid-template-columns: 7rem minmax(12rem, 1fr) minmax(5rem, 0.3fr) auto;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+.access-history li > div:first-child:not(.grant-event-heading) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+.grant-event-list details {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline-start: 0.6rem;
+}
+.grant-event-list details[open] {
+  display: block;
+  margin: 0.3rem 0;
+}
+.grant-event-list summary {
+  cursor: pointer;
+  color: var(--mui-palette-primary-main, #087b78);
+}
+.grant-event-list small {
+  display: block;
+}
+@media (max-width: 899px) {
+  .business-grants colgroup {
+    display: none;
+  }
+  .grant-event-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+  }
+}

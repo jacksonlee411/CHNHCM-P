@@ -152,6 +152,21 @@ paths:
         schema:
           type: string
       - in: query
+        name: panel
+        schema: {type: string}
+      - in: query
+        name: source
+        schema: {type: string}
+      - in: query
+        name: version
+        schema: {type: string}
+      - in: query
+        name: record
+        schema: {type: string}
+      - in: query
+        name: choices
+        schema: {type: string}
+      - in: query
         name: page
         schema: {type: integer}
       - in: query
@@ -16699,6 +16714,7 @@ components:
       type: object
       additionalProperties: false
       properties:
+        actionNames: {type: array, items: {type: string}, readOnly: true}
         options:
           type: array
           items: {type: string}
@@ -16769,6 +16785,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        state: {type: string}
+        canRevoke: {type: boolean}
         id:
           type: string
         limit:
@@ -16783,6 +16801,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        grantReadable: {type: boolean}
+        activeGrants: {type: integer, minimum: 0}
         id:
           type: string
         login:
@@ -16806,10 +16826,42 @@ components:
       - owner
       - state
       - revision
+    AccessGrantAdoption:
+      type: object
+      additionalProperties: false
+      properties:
+        role: {type: string}
+        scope: {type: string}
+        fields: {type: string}
+      required: [role, scope, fields]
+    AccessVersionReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id: {type: string}
+        subject: {type: string}
+        account: {type: string}
+        kind: {type: string}
+        summary: {type: string}
+        state: {type: string}
+      required: [id, subject, account, kind, summary, state]
+    AccessVersionImpact:
+      type: object
+      additionalProperties: false
+      properties:
+        references: {type: array, items: {$ref: '#/components/schemas/AccessVersionReference'}}
+        accounts: {type: integer}
+        grants: {type: integer}
+        mandates: {type: integer}
+        token: {type: string}
+      required: [accounts, grants, mandates]
     AccessManagedGrant:
       type: object
       additionalProperties: false
       properties:
+        distinguish: {type: boolean}
+        canRevoke: {type: boolean}
+        adoption: {$ref: '#/components/schemas/AccessGrantAdoption'}
         id:
           type: string
         subject:
@@ -16865,6 +16917,9 @@ components:
       type: object
       additionalProperties: false
       properties:
+        summary: {type: string}
+        before: {type: string}
+        after: {type: string}
         previousOwner: {type: string, format: uuid}
         assignedOwner: {type: string, format: uuid}
         id:
@@ -16894,6 +16949,11 @@ components:
       type: object
       additionalProperties: false
       properties:
+        panel: {type: string}
+        panels: {type: array, items: {type: string}}
+        page: {type: integer}
+        impact: {$ref: '#/components/schemas/AccessVersionImpact'}
+        proxyDays: {type: integer, minimum: 0}
         suggestedProxyDays: {type: integer, minimum: 0, description: 当前委派职责可采用的代理天数初值}
         total: {type: integer}
         rights:
@@ -16940,10 +17000,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccessManagementEvent'
+      required: [page, total]
     AccessManagementCommand:
       type: object
       additionalProperties: false
       properties:
+        impactToken: {type: string}
         requestId:
           type: string
         instanceId:

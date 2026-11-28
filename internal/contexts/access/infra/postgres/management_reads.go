@@ -58,10 +58,17 @@ func (m *manager) accounts(q access.ManagementQuery) ([]access.ManagedAccount, e
 	return pgx.CollectRows(rows, func(row pgx.CollectableRow) (access.ManagedAccount, error) { return accountScan(row) })
 }
 func (m *manager) grants(subject, kind, version string) ([]access.ManagedGrant, error) {
+	var subjects []string
+	if subject != "" {
+		subjects = []string{subject}
+	}
+	return m.grantRows(subjects, kind, version)
+}
+func (m *manager) grantRows(subjects []string, kind, version string) ([]access.ManagedGrant, error) {
 	rows, e := m.tx.Query(m.ctx, `SELECT a.grant_id::text,a.principal_id::text,b.role_id::text,b.scope_id::text,b.fields_id::text,a.revision,a.source,a.purpose,a.valid_from,a.valid_until,b.operation
  FROM access.grant_assignment a JOIN access.grant_revision b USING(instance_id,grant_id,revision)
- WHERE a.instance_id=$1 AND ($2::uuid IS NULL OR a.principal_id=$2) AND ($3='' OR (CASE $3 WHEN 'role' THEN b.role_id WHEN 'scope' THEN b.scope_id WHEN 'fields' THEN b.fields_id END)=$4::uuid)
- ORDER BY a.grant_id`, m.instance, nullable(subject), kind, nullable(version))
+ WHERE a.instance_id=$1 AND ($2::uuid[] IS NULL OR a.principal_id=ANY($2)) AND ($3='' OR (CASE $3 WHEN 'role' THEN b.role_id WHEN 'scope' THEN b.scope_id WHEN 'fields' THEN b.fields_id END)=$4::uuid)
+ ORDER BY a.grant_id`, m.instance, subjects, kind, nullable(version))
 	if e != nil {
 		return nil, e
 	}
@@ -96,6 +103,7 @@ func (m *manager) mandates(subject string) ([]access.Mandate, error) {
 		var v access.Mandate
 		l := &v.Limit
 		e := r.Scan(&v.ID, &l.Owner, &l.Rights, &l.Role, &l.Scope, &l.Fields, &l.MaxProxyDays, &l.Until, &v.Revoked)
+		v.State = m.mandateState(v)
 		return v, e
 	})
 }
@@ -235,7 +243,7 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 			v.Targets = append(v.Targets, t)
 		}
 	}
-	if q.Area == "roles" || q.Area == "grants" {
+	if q.Area == "roles" || q.Area == "grants" && q.Choices && q.Subject != "" {
 		for _, d := range m.versions {
 			if slices.ContainsFunc(areaRights[q.Area], func(r string) bool { return m.definitionVisible(d, r) }) {
 				for _, r := range app.ManagementRights {
@@ -272,13 +280,18 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 		return v, managementDenied()
 	}
 	if q.Area != "roles" && q.Object == "" {
-		v.Accounts, err = m.accounts(q)
+		identityQuery := q
+		if q.Subject != "" {
+			identityQuery.Search, identityQuery.State, identityQuery.Owner = "", "", ""
+		}
+		v.Accounts, err = m.accounts(identityQuery)
 		if err != nil {
 			return v, err
 		}
 		for i, a := range v.Accounts {
 			// Expose required-target controls only in the selected account. The candidate list contains identity and status.
 			if a.ID == q.Subject {
+				v.Accounts[i].GrantReadable = m.ownerScope("assign", a.Owner) || m.ownerScope("delegate", a.Owner)
 				v.Accounts[i].Options, err = m.options(a)
 				if err != nil {
 					return v, err
@@ -295,30 +308,11 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 			return v, err
 		}
 		if q.Area == "grants" {
-			records, err := m.grants(a.ID, "", "")
-			if err != nil {
+			if err = m.grantWorkspace(q, a, &v); err != nil {
 				return v, err
-			}
-			for _, g := range records {
-				if m.allowedTerm("assign", m.terms(g, a.Owner)) {
-					v.Grants = append(v.Grants, g)
-					for _, k := range []definitionKey{{"role", g.Role}, {"scope", g.Scope}, {"fields", g.Fields}} {
-						if !slices.ContainsFunc(v.Versions, func(d access.Definition) bool { return d.Kind == k.kind && d.ID == k.id }) {
-							v.Versions = append(v.Versions, m.versions[k])
-						}
-					}
-				}
-			}
-			mand, err := m.mandates(a.ID)
-			if err != nil {
-				return v, err
-			}
-			for _, d := range mand {
-				if m.canDelegate(d.Limit, a.Owner) {
-					v.Mandates = append(v.Mandates, d)
-				}
 			}
 		}
+
 	}
 	sort.Slice(v.Versions, func(i, j int) bool {
 		a, b := v.Versions[i], v.Versions[j]
@@ -339,22 +333,37 @@ func (m *manager) view(q access.ManagementQuery) (v access.ManagementView, err e
 		} else {
 			v.Total = len(v.Accounts)
 		}
-		size := q.PageSize
-		if size != 50 && size != 100 {
-			size = 20
-		}
-		start := min(max(q.Page, 0), v.Total/size) * size
-		end := min(start+size, v.Total)
+		start, end, page := window(q, v.Total)
+		v.Page = page
 		if q.Area == "roles" {
 			v.Versions = v.Versions[start:end]
 		} else {
 			v.Accounts = v.Accounts[start:end]
+			if q.Area == "grants" {
+				if err = m.countVisibleGrants(v.Accounts); err != nil {
+					return v, err
+				}
+				v.Versions, v.Targets = nil, nil
+			}
 		}
 	} else if q.Subject != "" {
 		v.Accounts = slices.DeleteFunc(v.Accounts, func(a access.ManagedAccount) bool { return a.ID != q.Subject })
 	}
-	if q.Subject != "" || q.Object != "" {
+	if q.Area != "grants" && (q.Subject != "" || q.Object != "") {
 		v.Events, err = m.events(q, v)
+	}
+	if err == nil && q.Area == "roles" && q.Panel == "references" {
+		var d access.Definition
+		for _, def := range v.Versions {
+			if def.ID == q.Object {
+				d = def
+				break
+			}
+		}
+		if d.ID == "" {
+			return v, managementDenied()
+		}
+		v.Impact, v.Total, v.Page, err = m.versionImpact(d, q)
 	}
 	return v, err
 }
@@ -385,12 +394,13 @@ func (m *manager) events(q access.ManagementQuery, v access.ManagementView) ([]a
  LEFT JOIN access.principal p ON (h.instance_id,h.actor_id)=(p.instance_id,p.principal_id)
  CROSS JOIN LATERAL (SELECT CASE WHEN e.action LIKE 'version.%' OR e.action LIKE 'assignment.%' THEN e.reason_code
  WHEN e.action='admin.handover.end' THEN e.target_subject_id::text ELSE h.target_id::text END AS id) obj
- WHERE h.instance_id=$1 AND obj.id=ANY($2::text[]) ORDER BY h.receipt_order DESC,e.occurred_at DESC,e.event_id`, m.instance, ids)
+ WHERE h.instance_id=$1 AND obj.id=ANY($2::text[]) AND ($3='' OR h.request_id::text=$3) ORDER BY h.receipt_order DESC,e.occurred_at DESC,e.event_id`, m.instance, ids, q.Request)
 	if e != nil {
 		return nil, e
 	}
 	return pgx.CollectRows(rows, func(row pgx.CollectableRow) (access.ManagementEvent, error) {
-		event, err := pgx.RowToStructByPos[access.ManagementEvent](row)
+		var event access.ManagementEvent
+		err := row.Scan(&event.PreviousOwner, &event.AssignedOwner, &event.ID, &event.Actor, &event.Target, &event.Operation, &event.Reason, &event.At, &event.Request)
 		for _, owner := range []*string{&event.PreviousOwner, &event.AssignedOwner} {
 			if *owner != "" && !m.ownerScope("account", *owner) && !m.ownerScope("credential", *owner) {
 				*owner = ""

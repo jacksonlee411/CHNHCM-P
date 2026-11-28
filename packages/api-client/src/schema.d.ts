@@ -8043,6 +8043,7 @@ export interface components {
             name: string;
         };
         AccessDefinition: {
+            readonly actionNames?: string[];
             options?: string[];
             kind: string;
             name: string;
@@ -8069,11 +8070,15 @@ export interface components {
             until?: string;
         };
         AccessMandate: {
+            state?: string;
+            canRevoke?: boolean;
             id: string;
             limit: components["schemas"]["AccessManagementLimit"];
             revoked: boolean;
         };
         AccessManagedAccount: {
+            grantReadable?: boolean;
+            activeGrants?: number;
             id: string;
             login: string;
             displayName: string;
@@ -8082,7 +8087,30 @@ export interface components {
             revision: number;
             options?: string[];
         };
+        AccessGrantAdoption: {
+            role: string;
+            scope: string;
+            fields: string;
+        };
+        AccessVersionReference: {
+            id: string;
+            subject: string;
+            account: string;
+            kind: string;
+            summary: string;
+            state: string;
+        };
+        AccessVersionImpact: {
+            references?: components["schemas"]["AccessVersionReference"][];
+            accounts: number;
+            grants: number;
+            mandates: number;
+            token?: string;
+        };
         AccessManagedGrant: {
+            distinguish?: boolean;
+            canRevoke?: boolean;
+            adoption?: components["schemas"]["AccessGrantAdoption"];
             id: string;
             subject: string;
             role: string;
@@ -8104,6 +8132,9 @@ export interface components {
             api: string;
         };
         AccessManagementEvent: {
+            summary?: string;
+            before?: string;
+            after?: string;
             /** Format: uuid */
             previousOwner?: string;
             /** Format: uuid */
@@ -8118,9 +8149,14 @@ export interface components {
             request: string;
         };
         AccessManagementView: {
+            panel?: string;
+            panels?: string[];
+            page: number;
+            impact?: components["schemas"]["AccessVersionImpact"];
+            proxyDays?: number;
             /** @description 当前委派职责可采用的代理天数初值 */
             suggestedProxyDays?: number;
-            total?: number;
+            total: number;
             rights?: string[];
             owners?: components["schemas"]["AccessTarget"][];
             targets?: components["schemas"]["AccessTarget"][];
@@ -8134,6 +8170,7 @@ export interface components {
             events?: components["schemas"]["AccessManagementEvent"][];
         };
         AccessManagementCommand: {
+            impactToken?: string;
             requestId: string;
             instanceId: string;
             operation: string;
@@ -12287,6 +12324,11 @@ export interface operations {
                 state?: string;
                 subject?: string;
                 object?: string;
+                panel?: string;
+                source?: string;
+                version?: string;
+                record?: string;
+                choices?: string;
                 page?: number;
                 pageSize?: number;
             };

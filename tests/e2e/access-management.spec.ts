@@ -50,7 +50,8 @@ async function login(page: Page, user: string) {
 }
 const click = (p: Page, n: string) =>
   p.getByRole('button', { name: n, exact: true }).click();
-const save = (p: Page) => click(p, '保存');
+const save = (p: Page) =>
+  p.locator('button[type=submit][form=security-command-form]').click();
 async function menu(p: Page, name: string, part: string) {
   await namedMenu308(p, name, '安全管理', directory + part);
 }
@@ -121,10 +122,19 @@ async function journey(p: Page, adopt = false) {
     ).toBeVisible();
     await menu(p, '授权', 'grants');
     await p.getByLabel('搜索登录名或显示名').fill(user);
-    await click(p, '查询');
+    await click(p, '筛选');
+    await p.getByRole('dialog').getByRole('button', { name: '取消' }).click();
+    await expect(p.getByLabel('搜索登录名或显示名')).toHaveValue(user);
+    await click(p, '筛选');
+    await p.getByRole('dialog').getByLabel('账号状态').selectOption('active');
+    await p
+      .getByRole('dialog')
+      .getByRole('button', { name: '应用' })
+      .press('Enter');
+    await expect(p).toHaveURL(new RegExp('q=' + user));
     await p.getByRole('link', { name: user, exact: true }).click();
     async function grant(proxy: boolean) {
-      await click(p, '新增授予');
+      await click(p, '授予权限');
       await p.getByLabel('角色版本').selectOption({ label: role + ' · V1' });
       if (proxy) {
         await p.getByLabel('授予来源').selectOption('proxy');
@@ -141,11 +151,22 @@ async function journey(p: Page, adopt = false) {
     const grants = p.locator('.access-grant');
     await expect(grants.filter({ hasText: '生效中' })).toHaveCount(2);
     expect((await clerk.request.get('/api/v1/departments')).status()).toBe(200);
+    await expect(
+      grants.getByRole('button', { name: '采用新版本' }),
+    ).toHaveCount(0);
     if (adopt) {
       await menu(p, '角色', 'roles');
       await p.getByLabel('搜索版本名称').fill(role);
       await click(p, '查询');
       await p.getByRole('link', { name: role + ' · V1', exact: true }).click();
+      await click(p, '查看引用此版本的授予');
+      const references = p.getByRole('link', { name: user, exact: true });
+      await expect(references).toHaveCount(2);
+      const referenceId = await references.first().getAttribute('id');
+      await references.first().click();
+      await expect(p.getByRole('heading', { name: '授予明细' })).toBeVisible();
+      await p.getByRole('link', { name: '返回版本引用' }).click();
+      await expect(p.locator('#' + referenceId)).toBeFocused();
       await click(p, '发布新版本');
       await p
         .getByRole('checkbox', { name: '部门 · 查看部门历史', exact: true })
@@ -174,6 +195,16 @@ async function journey(p: Page, adopt = false) {
       .filter({ hasText: '限期代理' })
       .getByRole('button', { name: '撤销此份授予' })
       .click();
+    const confirm = p.locator('#security-command-form');
+    await expect(confirm).toContainText('限期代理');
+    await expect(confirm).toContainText('授予编号');
+    await expect(confirm).toContainText(role);
+    await click(p, '取消');
+    const revokeProxy = grants
+      .filter({ hasText: '限期代理' })
+      .getByRole('button', { name: '撤销此份授予' });
+    await expect(revokeProxy).toBeFocused();
+    await revokeProxy.press('Enter');
     await save(p);
     await expect(grants.filter({ hasText: '限期代理' })).toContainText(
       '已撤销',
@@ -187,6 +218,18 @@ async function journey(p: Page, adopt = false) {
     await save(p);
     await expect(grants.filter({ hasText: '已撤销' })).toHaveCount(2);
     expect((await clerk.request.get('/api/v1/departments')).status()).toBe(403);
+    await p.getByRole('tab', { name: '管理变更' }).click();
+    const event = p.locator('.access-history li').first();
+    await expect(event.locator('.grant-event-heading')).toContainText('本职');
+    await event.getByText('变更明细', { exact: true }).click();
+    await expect(event.locator('details[open]')).toContainText('变更前');
+    await expect(event.locator('details[open]')).toContainText(
+      '变更后 · 已撤销',
+    );
+    await event.getByRole('button', { name: '查看这份授予' }).click();
+    await expect(p.getByRole('heading', { name: '授予明细' })).toBeVisible();
+    await click(p, '返回管理变更');
+    await p.getByRole('tab', { name: '业务授予' }).click();
     await p.reload();
     await expect(grants.filter({ hasText: '已撤销' })).toHaveCount(2);
     await expect
@@ -530,4 +573,40 @@ test('027 T04 从角色页单独发布范围、字段策略并停用指定版本
     await page.getByRole('link', { name: name + ' · V2', exact: true }).click();
     await expect(page.getByText('已发布', { exact: true })).toBeVisible();
   }
+});
+
+test('029 从账号资料检索存量授予并恢复返回位置', async ({ page }) => {
+  test.setTimeout(100000);
+  bootstrap();
+  await login(page, loginName);
+  await page.setViewportSize({ width: 1440, height: 540 });
+  await menu(page, '账号', 'accounts');
+  await page.getByLabel('搜索登录名或显示名').fill('admin');
+  await click(page, '查询');
+  await page.getByRole('link', { name: /^admin(?: ·|$)/ }).click();
+  await page.getByRole('link', { name: '查看账号授权' }).click();
+  const table = page.locator('.grant-table tbody tr');
+  await expect(table).toHaveCount(20);
+  await click(page, '下一页');
+  await expect(page.locator('.grant-pager')).toContainText('21–40');
+  await page.getByLabel('每页条数').selectOption('50');
+  await expect(table).toHaveCount(50);
+  await page.getByLabel('搜索角色或业务范围').fill('岗位');
+  await click(page, '筛选授予');
+  await page
+    .getByRole('dialog')
+    .getByLabel('授予来源')
+    .selectOption('development');
+  await page.getByRole('dialog').getByRole('button', { name: '应用' }).click();
+  await expect(table.first()).toContainText('岗位');
+  await table.first().getByRole('link').click();
+  await expect(page.getByRole('heading', { name: '授予明细' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: '授予明细' })).toBeVisible();
+  await click(page, '返回业务授予');
+  await expect(page.getByLabel('搜索角色或业务范围')).toHaveValue('岗位');
+  await page.getByRole('link', { name: '返回账号资料' }).click();
+  await expect(page.getByRole('link', { name: '查看账号授权' })).toBeFocused();
+  await page.getByRole('link', { name: '返回列表' }).click();
+  await expect(page.getByLabel('搜索登录名或显示名')).toHaveValue('admin');
 });

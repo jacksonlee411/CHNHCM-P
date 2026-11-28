@@ -346,6 +346,14 @@ func TestAccessManagementDelegationAndSharedVersions(t *testing.T) {
 	m.cmd(limited, issue, 403)
 	m.cmd(m.root, issue, 200)
 	disable := access.ManagementCommand{Operation: "version.disable", Version: &access.Definition{Kind: "role"}, ID: r, Revision: 1}
+	visible := viewMgmt(t, limited, "roles?object="+r+"&panel=references&state=impact").Impact
+	if visible == nil || visible.Token != "" || len(visible.References) != 1 || visible.References[0].Subject != alice {
+		t.Fatalf("reference boundary: %+v", visible)
+	}
+	ceilingImpact := viewMgmt(t, m.root, "roles?object="+ceilingRole+"&panel=references&state=impact").Impact
+	if ceilingImpact == nil || ceilingImpact.Mandates != 1 || ceilingImpact.Grants != 0 || ceilingImpact.References[0].ID != mandate {
+		t.Fatalf("missing management mandate: %+v", ceilingImpact)
+	}
 	m.cmd(limited, disable, 403)
 	for _, pair := range [][2]string{{"scope", def.Scope}, {"fields", def.Fields}} {
 		other := disable
@@ -368,6 +376,38 @@ func TestAccessManagementDelegationAndSharedVersions(t *testing.T) {
 	}
 	// A local account manager cannot reset/disable an account whose new role exceeds their ceiling.
 	m.cmd(limited, access.ManagementCommand{Operation: "account.disable", Subject: alice, Revision: 5}, 403)
+	impactView := func(who *browser) *access.VersionImpact {
+		return viewMgmt(t, who, "roles?object="+r+"&panel=references&state=impact").Impact
+	}
+	scoped := impactView(limited)
+	if scoped == nil || scoped.Token != "" || scoped.Accounts != 0 {
+		t.Fatalf("restricted impact disclosed: %+v", scoped)
+	}
+	current := impactView(m.root)
+	if current == nil || current.Accounts != 1 || current.Grants != 1 || current.Token == "" {
+		t.Fatalf("incorrect impact: %+v", current)
+	}
+	disable.ImpactToken = current.Token
+	issue.Subject = m.create("third", b, id())
+	m.cmd(m.root, issue, 200)
+	m.cmd(m.root, disable, 409)
+	current = impactView(m.root)
+	if current.Grants != 2 || current.Accounts != 2 || current.Token == disable.ImpactToken {
+		t.Fatalf("impact did not follow second assignment: %+v", current)
+	}
+	disable.ImpactToken = current.Token
+	events := viewMgmt(t, m.root, "grants?subject="+alice+"&panel=events&record="+own)
+	if len(events.Events) != 2 || events.Events[0].Before == "" || !strings.Contains(events.Events[0].Summary, "V2") || !strings.Contains(events.Events[0].After, "V2") || !strings.Contains(events.Events[1].After, "V1") {
+		t.Fatalf("lost historical terms: %+v", events.Events)
+	}
+	lists := viewMgmt(t, m.root, "grants?q=alice").Accounts
+	if len(lists) != 1 || lists[0].ActiveGrants == nil || *lists[0].ActiveGrants != 1 {
+		t.Fatalf("grant directory: %+v", lists)
+	}
+	old := viewMgmt(t, m.root, "grants?subject="+alice+"&source=proxy&state=revoked")
+	if old.Total != 1 || len(old.Grants) != 1 || old.Grants[0].ID != proxy || old.Grants[0].CanRevoke || old.Grants[0].Adoption != nil {
+		t.Fatalf("unusable history: %+v", old.Grants)
+	}
 	m.cmd(m.root, disable, 200)
 	limited.call("GET", "/api/v1/access/accounts", nil, "", 200)
 	if m.scalar("SELECT count(*) FROM access.bound_permission WHERE principal_id=$1 AND action='department.read'", bob) != 0 {
@@ -460,4 +500,72 @@ func TestAccessManagementScopedCredentialAndExpiry(t *testing.T) {
 	if status != 403 || rows != 0 {
 		t.Fatalf("after stored deadline: HTTP %d, committed accounts %d", status, rows)
 	}
+}
+
+func TestAccessGrantWorkspacePagingAndOriginalReceipt(t *testing.T) {
+	m := managed(t)
+	id := foundation.NewID
+	pwd := id()
+	operator := m.create("grant-operator", m.instance, pwd)
+	subject := m.create("grant-recipient", m.instance, id())
+	var enterprise string
+	for _, a := range viewMgmt(t, m.root, "roles").Targets {
+		if a.Kind == "enterprise" {
+			enterprise = a.ID
+		}
+	}
+	role := m.cmd(m.root, access.ManagementCommand{Operation: "version.publish", Version: &access.Definition{Kind: "role", Name: "同名授予", Actions: []string{"department.read"}}, NewScope: &access.Definition{Kind: "scope", Name: "企业范围", TargetKind: "enterprise", TargetID: enterprise}, NewFields: &access.Definition{Kind: "fields", Name: "编码", Read: []string{"code"}}}, 200)["target"].(string)
+	var published access.Definition
+	for _, d := range viewMgmt(t, m.root, "roles?object="+role).Versions {
+		if d.ID == role {
+			published = d
+		}
+	}
+	m.cmd(m.root, access.ManagementCommand{Operation: "mandate.issue", Subject: operator, Limit: &access.ManagementLimit{Owner: m.instance, Rights: []string{"assign"}, Role: role, Scope: published.Scope, Fields: published.Fields, MaxProxyDays: 1}}, 200)
+	limited := m.login("grant-operator", pwd)
+	from := time.Now().UTC().Truncate(time.Second)
+	cmd := access.ManagementCommand{Operation: "grant.issue", Subject: subject, Role: role, Scope: published.Scope, Fields: published.Fields, Source: "duty", From: &from}
+	firstRequest := id()
+	cmd.Request = firstRequest
+	original := m.cmd(limited, cmd, 200)["target"].(string)
+	for range 22 {
+		cmd.Request = id()
+		m.cmd(limited, cmd, 200)
+	}
+	path := "grants?subject=" + subject
+	visible := viewMgmt(t, limited, path)
+	if visible.Total != 23 || len(visible.Grants) != 20 || !visible.Grants[0].Distinguish || len(visible.Events) != 0 || len(visible.Versions) != 3 {
+		t.Fatalf("unbounded or ambiguous first page: %d/%d", len(visible.Grants), visible.Total)
+	}
+	second := viewMgmt(t, limited, path+"&page=1")
+	if second.Total != 23 || second.Page != 1 || len(second.Grants) != 3 {
+		t.Fatal("invalid final page", second.Page, second.Total, len(second.Grants))
+	}
+	anchor := second.Grants[2].ID
+	located := viewMgmt(t, limited, path+"&record="+anchor)
+	if located.Page != 1 || located.Grants[2].ID != anchor {
+		t.Fatal("record link did not locate its page")
+	}
+	events := viewMgmt(t, limited, path+"&panel=events")
+	if events.Total != 23 || len(events.Events) != 20 || events.Events[0].Request == firstRequest {
+		t.Fatal("invalid event page")
+	}
+	got := limited.call("POST", "/api/v1/access/submissions/"+firstRequest+"/resolve", nil, "", 200)
+	if got["target"] != original {
+		t.Fatal("original receipt outside the visible page disappeared")
+	}
+	limited.call("GET", "/api/v1/access/"+path+"&panel=mandates", nil, "", 403)
+	delegateID := m.create("mandates-only", m.instance, pwd)
+	m.cmd(m.root, access.ManagementCommand{Operation: "mandate.issue", Subject: delegateID, Limit: &access.ManagementLimit{Owner: m.instance, Rights: []string{"delegate"}, Role: role, Scope: published.Scope, Fields: published.Fields, MaxProxyDays: 1}}, 200)
+	delegate := m.login("mandates-only", pwd)
+	directory := viewMgmt(t, delegate, "grants?q=grant-recipient")
+	workspace := viewMgmt(t, delegate, path)
+	if len(directory.Accounts) != 1 || directory.Accounts[0].ActiveGrants != nil || workspace.Panel != "mandates" || len(workspace.Grants) != 0 || workspace.Total != 0 {
+		t.Fatal("delegate-only administrator received business grants or counts")
+	}
+	delegate.call("GET", "/api/v1/access/"+path+"&panel=grants", nil, "", 403)
+	if history := viewMgmt(t, delegate, path+"&panel=events"); history.Total != 0 {
+		t.Fatal("business-grant history disclosed to mandate manager")
+	}
+
 }

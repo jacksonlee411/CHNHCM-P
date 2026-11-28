@@ -80,9 +80,7 @@
 
 ## 待启动计划
 
-| 编号与正文 | 文档状态 | 执行状态 | 保存位置 |
-| --- | --- | --- | --- |
-| [029 X03 授权页面优化方案](../../plans/029-grant-management-experience.md) | in_review | not_started | 原位 |
+当前登记为零。
 
 <a id="catalog-review"></a>
 
@@ -92,7 +90,6 @@
 | --- | --- | --- | --- |
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [028 X03 客户管理员首批账号与授权合同](../../specs/x03/028-local-account-and-authorization.md) | in_review | — | 原位 |
-| [029 X03 授权页面优化方案](../../plans/029-grant-management-experience.md) | in_review | not_started | 原位 |
 | [132 交互查询与必要校验边界纠正决定](../../adr/132-query-and-validation-boundary.md) | in_review | — | 原位 |
 | [135 真实对象头产品接入与验收计划](../../archive/plans/135-real-head-product-integration.md) | in_review | completed | 物理归档 |
 
@@ -106,6 +103,7 @@
 | [008 下一步：M02 四份详细文档](../../archive/plans/008-next-steps.md) | active | completed | 物理归档 |
 | [010 本版实施范围与计划](../../archive/plans/010-m02-scope-and-plan.md) | active | completed | 物理归档 |
 | [019 CubeBox共享体验迁移与页面对比计划](../../archive/plans/019-cubebox-experience-migration.md) | active | completed | 物理归档 |
+| [029 X03 授权页面优化方案](../../archive/plans/029-grant-management-experience.md) | active | completed | 物理归档 |
 | [100 页面体验优化实施计划](../../archive/plans/100-ui-experience-improvement.md) | active | completed | 物理归档 |
 | [102 M02维护日志与专用表单体验修订](../../archive/plans/102-bu-maintenance-usability.md) | active | completed | 物理归档 |
 | [104 统一更正记录入口实施](../../archive/plans/104-unified-record-correction.md) | active | completed | 物理归档 |
@@ -175,6 +173,7 @@
 
 | 关联编号 | 记录 | 日期 | 状态 |
 | --- | --- | --- | --- |
+| 029、028、012 | [CHNHCM-029 授权页面评审与实施复验](../../verification/029-grant-management-experience.md) | 2026-11-28 | final |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 | final |
 | 400、404、401、402、403、313、014 | [CHNHCM-400、CHNHCM-404 首次入职计划归档与主线复验](../../verification/400-404-plan-archive.md) | 2026-11-27 | final |
 | 027、028、013 | [CHNHCM-027 T04 客户管理入口与受控恢复](../../verification/027-t04-access-management.md) | 2026-11-27 | final |

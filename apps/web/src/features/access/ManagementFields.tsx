@@ -16,6 +16,7 @@ import {
   type Definition,
 } from './management';
 import { useId } from 'react';
+import { GrantFacts } from './GrantWorkspace';
 
 type Choice = { id: string; name: string };
 export function Pick({
@@ -337,10 +338,7 @@ export function ManagementFields({
       </>
     );
   }
-  if (op === 'version.disable')
-    return (
-      <Typography>停用此版本后，仍引用它的授予将停止提供权限。</Typography>
-    );
+  if (op === 'version.disable') return <></>;
   const mandate = op === 'mandate.issue',
     adopting = op === 'grant.adopt';
   if (mandate || op === 'grant.issue' || adopting) {
@@ -361,137 +359,161 @@ export function ManagementFields({
     );
     return (
       <>
-        {mandate && l && (
-          <>
-            <Pick
-              title="获管账号归属"
-              required
-              value={l.owner}
-              options={ownerOptions('delegate')}
-              change={(owner) => patch({ limit: { ...l, owner } })}
-            />
-            <CheckList
-              title="可办理的管理事项"
-              values={l.rights}
-              options={choices(v.rights ?? [])}
-              change={(rights) => patch({ limit: { ...l, rights } })}
-            />
-          </>
-        )}
-        <Pick
-          title={mandate ? '可委派业务的角色上限' : '角色版本'}
-          required
-          value={bound?.role}
-          options={versionOptions(v, 'role', right, old('role'))}
-          change={(role) => {
-            const r = version(v, 'role', role);
-            // A role can change its suggested policies. Adoption stays within
-            // the definitions already assigned to this individual grant.
-            const policy = (kind: 'scope' | 'fields') =>
-              !adopting ||
-              version(v, kind, r?.[kind])?.definitionId === old(kind)
-                ? r?.[kind]
-                : bound?.[kind];
-            selectBinding({
-              role,
-              scope: policy('scope'),
-              fields: policy('fields'),
-            });
-          }}
-        />
-        {selected && (
-          <>
-            <Pick
-              title="范围版本"
-              required
-              value={bound?.scope}
-              options={versionOptions(v, 'scope', right, old('scope'))}
-              change={(scope) => selectBinding({ scope })}
-            />
-            <ObjectDetailField label="业务目标">
-              {targetName(v, version(v, 'scope', bound?.scope)?.targetId ?? '')}
-            </ObjectDetailField>
-            <Pick
-              title="字段版本"
-              required
-              value={bound?.fields}
-              options={versionOptions(v, 'fields', right, old('fields'))}
-              change={(fields) => selectBinding({ fields })}
-            />
-            <ObjectDetailField label="可读字段">
-              {version(v, 'fields', bound?.fields)
-                ?.readFields?.map(label)
-                .join('、') || '无'}
-            </ObjectDetailField>
-            <ObjectDetailField label="可写字段">
-              {version(v, 'fields', bound?.fields)
-                ?.writeFields?.map(label)
-                .join('、') || '无'}
-            </ObjectDetailField>
-          </>
-        )}
-        {mandate && l ? (
-          <>
-            <ObjectTextField
-              label="代理期限上限（天，0 为无上限）"
-              type="number"
-              value={l.maxProxyDays}
-              onChange={(e) =>
-                patch({ limit: { ...l, maxProxyDays: Number(e.target.value) } })
-              }
-            />
-            <MomentInput
-              title="管理职责到期"
-              value={l.until}
-              change={(until) => patch({ limit: { ...l, until } })}
-            />
-          </>
-        ) : (
-          !adopting && (
-            <>
-              {purposes.length > 1 ? (
+        <div className="grant-form-columns">
+          <section>
+            <h3>{mandate ? '委派内容' : '授予内容'}</h3>
+            {mandate && l && (
+              <>
                 <Pick
-                  title="用途"
+                  title="获管账号归属"
                   required
-                  options={choices(purposes)}
-                  value={d.purpose}
-                  change={(purpose) => patch({ purpose })}
+                  value={l.owner}
+                  options={ownerOptions('delegate')}
+                  change={(owner) => patch({ limit: { ...l, owner } })}
                 />
-              ) : (
-                purposes.length === 1 && (
-                  <ObjectDetailField label="用途">
-                    {label(purposes[0])}
-                  </ObjectDetailField>
-                )
-              )}
-              <Pick
-                title="授予来源"
-                value={d.source}
-                required
-                options={choices(['duty', 'proxy'])}
-                change={(source) => patch({ source })}
-              />
-              <MomentInput
-                title="开始，留空即生效"
-                value={d.from}
-                change={(from) => patch({ from })}
-              />
-              <MomentInput
-                title={d.source === 'proxy' ? '代理到期' : '到期，留空为长期'}
-                value={d.until}
-                required={d.source === 'proxy'}
-                change={(until) => patch({ until })}
-              />
-            </>
-          )
-        )}
+                <CheckList
+                  title="可办理的管理事项"
+                  values={l.rights}
+                  options={choices(v.rights ?? [])}
+                  change={(rights) => patch({ limit: { ...l, rights } })}
+                />
+              </>
+            )}
+            <Pick
+              title={mandate ? '可委派业务的角色上限' : '角色版本'}
+              required
+              value={bound?.role}
+              options={versionOptions(v, 'role', right, old('role'))}
+              change={(role) => {
+                const r = version(v, 'role', role);
+                // A role can change its suggested policies. Adoption stays within
+                // the definitions already assigned to this individual grant.
+                const policy = (kind: 'scope' | 'fields') =>
+                  !adopting ||
+                  version(v, kind, r?.[kind])?.definitionId === old(kind)
+                    ? r?.[kind]
+                    : bound?.[kind];
+                selectBinding({
+                  role,
+                  scope: policy('scope'),
+                  fields: policy('fields'),
+                });
+              }}
+            />
+            {selected && (
+              <>
+                <Pick
+                  title="范围版本"
+                  required
+                  value={bound?.scope}
+                  options={versionOptions(v, 'scope', right, old('scope'))}
+                  change={(scope) => selectBinding({ scope })}
+                />
+                <ObjectDetailField label="业务目标">
+                  {targetName(
+                    v,
+                    version(v, 'scope', bound?.scope)?.targetId ?? '',
+                  )}
+                </ObjectDetailField>
+                <Pick
+                  title="字段版本"
+                  required
+                  value={bound?.fields}
+                  options={versionOptions(v, 'fields', right, old('fields'))}
+                  change={(fields) => selectBinding({ fields })}
+                />
+                <ObjectDetailField label="可读字段">
+                  {version(v, 'fields', bound?.fields)
+                    ?.readFields?.map(label)
+                    .join('、') || '无'}
+                </ObjectDetailField>
+                <ObjectDetailField label="可写字段">
+                  {version(v, 'fields', bound?.fields)
+                    ?.writeFields?.map(label)
+                    .join('、') || '无'}
+                </ObjectDetailField>
+              </>
+            )}
+            {selected && (
+              <ObjectDetailField label="业务动作">
+                {selected.actionNames?.join('、') || '原动作名称未登记'}
+              </ObjectDetailField>
+            )}
+          </section>
+          <section>
+            <h3>{adopting ? '原授予' : mandate ? '委派期限' : '来源与期限'}</h3>
+            {adopting && grant && <GrantFacts v={v} g={grant} />}
+            {mandate && l ? (
+              <>
+                <ObjectTextField
+                  label="代理期限上限（天，0 为无上限）"
+                  type="number"
+                  value={l.maxProxyDays}
+                  onChange={(e) =>
+                    patch({
+                      limit: { ...l, maxProxyDays: Number(e.target.value) },
+                    })
+                  }
+                />
+                <MomentInput
+                  title="管理职责到期"
+                  value={l.until}
+                  change={(until) => patch({ limit: { ...l, until } })}
+                />
+              </>
+            ) : (
+              !adopting && (
+                <>
+                  {purposes.length > 1 ? (
+                    <Pick
+                      title="用途"
+                      required
+                      options={choices(purposes)}
+                      value={d.purpose}
+                      change={(purpose) => patch({ purpose })}
+                    />
+                  ) : (
+                    purposes.length === 1 && (
+                      <ObjectDetailField label="用途">
+                        {label(purposes[0])}
+                      </ObjectDetailField>
+                    )
+                  )}
+                  <Pick
+                    title="授予来源"
+                    value={d.source}
+                    required
+                    options={choices(['duty', 'proxy'])}
+                    change={(source) => patch({ source })}
+                  />
+                  <MomentInput
+                    title="开始，留空即生效"
+                    value={d.from}
+                    change={(from) => patch({ from })}
+                  />
+                  <MomentInput
+                    title={
+                      d.source === 'proxy' ? '代理到期' : '到期，留空为长期'
+                    }
+                    value={d.until}
+                    required={d.source === 'proxy'}
+                    change={(until) => patch({ until })}
+                  />
+                </>
+              )
+            )}
+            {d.source === 'proxy' && !!v.proxyDays && (
+              <p>本次可选职责的代理期限上限 {v.proxyDays} 天</p>
+            )}
+          </section>
+        </div>
       </>
     );
   }
   return (
     <Box>
       <ObjectTextField
-        label="办理事由"
+        label="办理事由（选填）"
         value={d.reason ?? ''}
         onChange={(e) => patch({ reason: e.target.value })}
       />

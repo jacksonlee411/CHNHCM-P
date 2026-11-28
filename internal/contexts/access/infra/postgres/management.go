@@ -194,6 +194,10 @@ func (m *manager) prepare() error {
 	defer rows.Close()
 	m.versions = map[definitionKey]access.Definition{}
 	m.published = map[definitionKey]bool{}
+	names := map[string]string{}
+	for _, a := range app.ManagementCatalog() {
+		names[a.Key] = a.Name
+	}
 	for rows.Next() {
 		var v access.Definition
 		if e = rows.Scan(&v.Kind, &v.ID, &v.DefinitionID, &v.Number, &v.Name, &v.Actions, &v.TargetKind, &v.TargetID, &v.Read, &v.Write, &v.Disabled, &v.Scope, &v.Fields); e != nil {
@@ -201,12 +205,22 @@ func (m *manager) prepare() error {
 		}
 		key := definitionKey{v.Kind, v.ID}
 		m.published[key] = v.Name != ""
+		for _, action := range v.Actions {
+			name := names[action]
+			if name == "" {
+				name = app.ManagementActionName(action)
+			}
+			v.ActionNames = append(v.ActionNames, name)
+		}
 		if v.Name == "" {
 			switch v.Kind {
 			case "role":
-				v.Name = strings.Join(v.Actions, "、")
+				v.Name = strings.Join(v.ActionNames, "、")
 			case "scope":
-				v.Name = v.TargetKind
+				v.Name = map[string]string{"bu": "业务单元范围", "enterprise": "企业范围", "position": "岗位范围", "department": "部门范围", "instance": "实例范围"}[v.TargetKind]
+				if v.Name == "" {
+					v.Name = "原范围策略"
+				}
 			case "fields":
 				v.Name = "原字段策略"
 			}

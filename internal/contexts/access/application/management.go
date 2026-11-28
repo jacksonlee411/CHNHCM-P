@@ -48,6 +48,44 @@ func ManagementCatalog() []access.CatalogAction {
 	return items
 }
 
+// Legacy grants can contain business actions outside the publication catalog.
+// These names are for reading their original binding. Publication still uses ManagementCatalog.
+func ManagementActionName(key string) string {
+	object, operation, _ := strings.Cut(key, ".")
+	objects := map[string]string{"enterprise": "企业", "bu": "业务单元", "department": "部门", "legalentity": "法律实体", "location": "地点", "jobfunction": "职类", "jobfamily": "职务系列", "job": "职务", "grade": "职级", "gradeladder": "职级阶梯", "position": "岗位", "positionhierarchy": "岗位层级", "country": "国家/地区", "geoarea": "行政区划", "replenishment": "岗位补员", "assignmentpolicy": "任职与占编规则", "legalpurpose": "法律实体用途", "staffingquota": "岗位核编"}
+	name := objects[object]
+	if name == "" {
+		return key
+	}
+	verbs := map[string]string{"read": "查看", "export": "导出", "create": "新建", "deactivate": "停用", "reactivate": "启用", "maintain": "维护", "check": "核对", "publish": "发布"}
+	if verb := verbs[operation]; verb != "" {
+		return verb + name
+	}
+	switch operation {
+	case "history.read":
+		return "查看" + name + "历史"
+	case "lifecycle.pair":
+		return "维护" + name + "启停记录"
+	}
+	part, action, _ := strings.Cut(operation, ".")
+	records := map[string]string{"first": "首条记录", "record": "记录", "deactivation": "停用记录", "reactivation": "启用记录"}
+	if record := records[part]; record != "" {
+		switch action {
+		case "add":
+			return "新增" + name + record
+		case "correct":
+			return "更正" + name + record
+		case "delete":
+			return "删除" + name + record
+		case "redate":
+			return "调整" + name + record + "日期"
+		case "reclassify":
+			return "更正" + name + record + "分类"
+		}
+	}
+	return key
+}
+
 // A mandate is one complete ceiling. Authorization never forms a Cartesian product of different mandates.
 type ManagementCeiling struct {
 	access.ManagementLimit

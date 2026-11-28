@@ -856,22 +856,35 @@
     {
       "id": "CHNHCM-029",
       "title": "X03 授权页面优化方案",
-      "path": "docs/plans/029-grant-management-experience.md",
+      "path": "docs/archive/plans/029-grant-management-experience.md",
       "owner_branch": "wt-dev-a",
       "owner_role": "Access、客户管理员体验及验证维护者",
       "owner": null,
-      "status": "in_review",
+      "status": "active",
       "type": "plan",
       "modules": [
         "X03"
       ],
       "scope": "账号授权概览、逐份业务授予、管理职责、版本影响与变更查回的页面设计、实施顺序和用户验收。",
       "format": "numbered",
-      "review": null,
-      "execution_status": "not_started",
+      "review": {
+        "date": "2026-11-28",
+        "reviewer": "Codex 主代理，按 012 与 028 对照真实页面和源码复核",
+        "scope": "逐份撤销、历史修订、版本反查、完整委派与停用范围。",
+        "result": "accepted",
+        "evidence": "docs/verification/029-grant-management-experience.md"
+      },
+      "execution_status": "completed",
       "superseded_by": [],
-      "closure": null,
-      "archive": null
+      "closure": {
+        "date": "2026-11-28",
+        "reason": "逐份办理、分页、历史和版本引用已在实库与浏览器复验，固定 4627 完成交接。"
+      },
+      "archive": {
+        "date": "2026-11-28",
+        "reason": "实施已完成，长期规则交由 028 和 012 维护，验证记录保存固定环境与客户复查入口。",
+        "previous_path": "docs/plans/029-grant-management-experience.md"
+      }
     },
     {
       "id": "CHNHCM-100",
@@ -24880,6 +24893,37 @@
         ],
         "limitations": [
           "4496 既有管理员无办理记录列表权限，获权的名单查询和跨页原件使用独立验收库。最终远程汇总按 PR 当前提交核验。"
+        ]
+      },
+      {
+        "path": "docs/verification/029-grant-management-experience.md",
+        "related_documents": [
+          "CHNHCM-029",
+          "CHNHCM-028",
+          "CHNHCM-012"
+        ],
+        "format": "numbered",
+        "status": "final",
+        "date": "2026-11-28",
+        "base_commit": "e11050e970276788aec1fec689a0bbc59d2e93fb",
+        "working_tree": "dirty",
+        "change_description": "评审并实施授权目录、账号内的逐份授予、变更日志及确切版本引用。",
+        "environment": "本地 PostgreSQL 18.6、Go API、桌面 Chromium 和固定 4627。",
+        "scope": "授权目录及详情、只撤代理、换版与停用、旧记录可见范围、回执及正常菜单返回。",
+        "results": [
+          {
+            "check": "同一角色两份授予、越界裁剪、引用变化后停用冲突和指定授予查回。",
+            "result": "passed",
+            "evidence": "docs/verification/029-grant-management-experience.md"
+          },
+          {
+            "check": "固定环境从正常菜单按 20 行浏览 183 份授权，三个账号的授予及管理记录摘要一致。",
+            "result": "passed",
+            "evidence": "docs/verification/data/029-grant-management/results.json"
+          }
+        ],
+        "limitations": [
+          "远程 CI、生产与客户签收另计。"
         ]
       }
     ]

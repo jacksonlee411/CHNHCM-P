@@ -126,55 +126,15 @@ func (m *manager) changeVersion(in access.ManagementCommand) (string, error) {
 		if v.Disabled || in.Revision != v.Number {
 			return "", changedManagement()
 		}
-		// LockManagement already holds this version exclusively. All issues/adoptions lock it too.
-		refs, e := m.grants("", v.Kind, v.ID)
+		impact, _, _, e := m.versionImpact(v, access.ManagementQuery{State: "impact"})
 		if e != nil {
 			return "", e
 		}
-		for _, g := range refs {
-			if g.State != "active" && g.State != "future" {
-				continue
-			}
-			a, e := m.account(g.Subject)
-			if e != nil {
-				return "", e
-			}
-			if a.ID == m.protected || a.ID == m.actor || !m.allowedTerm("assign", m.terms(g, a.Owner)) {
-				return "", managementDenied()
-			}
+		if impact.Token == "" {
+			return "", managementDenied()
 		}
-		rows, e := m.tx.Query(m.ctx, `SELECT DISTINCT principal_id::text FROM access.management_mandate WHERE instance_id=$1 AND revoked_at IS NULL AND (valid_until IS NULL OR valid_until>clock_timestamp()) AND
-   (CASE $2 WHEN 'role' THEN role_id WHEN 'scope' THEN scope_id WHEN 'fields' THEN fields_id END)=$3::uuid`, m.instance, v.Kind, v.ID)
-		if e != nil {
-			return "", e
-		}
-		var subjects []string
-		for rows.Next() {
-			var subject string
-			if e = rows.Scan(&subject); e != nil {
-				rows.Close()
-				return "", e
-			}
-			subjects = append(subjects, subject)
-		}
-		rows.Close()
-		if e = rows.Err(); e != nil {
-			return "", e
-		}
-		for _, id := range subjects {
-			a, e := m.account(id)
-			if e != nil {
-				return "", e
-			}
-			caps, e := m.ceilings(id)
-			if e != nil {
-				return "", e
-			}
-			for _, cap := range caps {
-				if (v.Kind == "role" && cap.Role == v.ID || v.Kind == "scope" && cap.Scope == v.ID || v.Kind == "fields" && cap.Fields == v.ID) && (id == m.actor || !m.canDelegate(cap.ManagementLimit, a.Owner)) {
-					return "", managementDenied()
-				}
-			}
+		if in.ImpactToken != impact.Token {
+			return "", foundation.Fail(409, "ACCESS_CONFLICT", "版本引用已变化，请重新核对停用影响")
 		}
 		return v.ID, DisableVersion(m.ctx, m.tx, m.instance, m.actor, in.Request, v.Kind, v.ID)
 	}

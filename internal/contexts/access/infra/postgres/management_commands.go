@@ -60,7 +60,10 @@ func (m *manager) canReadResult(v access.ManagementResult) error {
 			return managementDenied()
 		}
 	}
-	q := access.ManagementQuery{Area: areaFor(v.Operation), Subject: v.Subject}
+	q := access.ManagementQuery{Area: areaFor(v.Operation), Subject: v.Subject, Request: v.Request}
+	if q.Area == "grants" {
+		q.Panel = "events"
+	}
 	if q.Area == "roles" {
 		q.Object = v.Target
 	}

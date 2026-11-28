@@ -1,0 +1,187 @@
+{
+  "date": "2026-11-28",
+  "baseline": "e11050e970276788aec1fec689a0bbc59d2e93fb",
+  "profile": "x03-manual-a",
+  "origin": "http://127.0.0.1:4627",
+  "apiPort": 8627,
+  "dbPort": 54627,
+  "sameContainerAndVolume": true,
+  "before": {
+    "admin": {
+      "id": "1d003ed4-e19d-44e6-838c-b22cb0a30a05",
+      "total": 183,
+      "first": 183,
+      "active": 162,
+      "events": 0,
+      "grantDigest": "01cedd1d045c7d4c8a7cb23fccd14c2d19ed193e0c3bedb01c899659dc988a8c",
+      "eventDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 214945
+    },
+    "x03-4627-1128": {
+      "id": "c85bf264-ed11-4024-9266-e7ffa98fb060",
+      "total": 3,
+      "first": 3,
+      "active": 0,
+      "events": 6,
+      "grantDigest": "52b847d82e2370fab9d32b0762b628e5073db7095cf5cb40c3374aa9d33c58da",
+      "eventDigest": "5a8f0dad2d89512f408d8241ffeeef097b5fb4f58ef023730cbafa8c04c2adee",
+      "bytes": 11075
+    },
+    "x03-t04-clerk": {
+      "id": "8372e8ec-6482-4c4b-8ccb-36f68cd1facb",
+      "total": 2,
+      "first": 2,
+      "active": 1,
+      "events": 3,
+      "grantDigest": "7ff576c8424a4a3c21124245cd0021712509166dbe4c2e49385de9aa64332d29",
+      "eventDigest": "7982acc3ccbbbc41ee9f36ebea3602c852256c27a7b5af971e036353c6bc119f",
+      "bytes": 9926
+    },
+    "assetSHA256": "b3c864bce306a92a94d3983a96d6f8642343d1e1bd7724f5c981cf4b8592fed4"
+  },
+  "after": {
+    "admin": {
+      "id": "1d003ed4-e19d-44e6-838c-b22cb0a30a05",
+      "total": 183,
+      "first": 20,
+      "active": 162,
+      "events": 0,
+      "grantDigest": "01cedd1d045c7d4c8a7cb23fccd14c2d19ed193e0c3bedb01c899659dc988a8c",
+      "eventDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 77513
+    },
+    "x03-4627-1128": {
+      "id": "c85bf264-ed11-4024-9266-e7ffa98fb060",
+      "total": 3,
+      "first": 3,
+      "active": 0,
+      "events": 6,
+      "grantDigest": "52b847d82e2370fab9d32b0762b628e5073db7095cf5cb40c3374aa9d33c58da",
+      "eventDigest": "5a8f0dad2d89512f408d8241ffeeef097b5fb4f58ef023730cbafa8c04c2adee",
+      "bytes": 3928
+    },
+    "x03-t04-clerk": {
+      "id": "8372e8ec-6482-4c4b-8ccb-36f68cd1facb",
+      "total": 2,
+      "first": 2,
+      "active": 1,
+      "events": 3,
+      "grantDigest": "7ff576c8424a4a3c21124245cd0021712509166dbe4c2e49385de9aa64332d29",
+      "eventDigest": "7982acc3ccbbbc41ee9f36ebea3602c852256c27a7b5af971e036353c6bc119f",
+      "bytes": 2480
+    },
+    "assetSHA256": "02906990e2be32a35db432948dcfe02ebbed908a0839ae5f9d20f68065280109"
+  },
+  "firstLayout": {
+    "browser": "140.0.7339.186",
+    "width": 1440,
+    "records": [
+      {
+        "height": 900,
+        "control": {
+          "top": 64,
+          "height": 64,
+          "width": 1440
+        },
+        "reference": {
+          "top": 64,
+          "height": 64,
+          "width": 1440
+        },
+        "firstPage": 20,
+        "fullyVisibleRows": 9,
+        "readOnlyActionColumns": 1,
+        "permanentAuthorityVisible": true,
+        "bodyWidth": 1440,
+        "pager": "1–20 / 183"
+      },
+      {
+        "height": 540,
+        "control": {
+          "top": 65,
+          "height": 64,
+          "width": 1440
+        },
+        "reference": {
+          "top": 65,
+          "height": 64,
+          "width": 1440
+        },
+        "firstPage": 20,
+        "fullyVisibleRows": 1,
+        "readOnlyActionColumns": 1,
+        "permanentAuthorityVisible": true,
+        "bodyWidth": 1440,
+        "pager": "1–20 / 183"
+      }
+    ],
+    "events": 6,
+    "originalGrantLink": true
+  },
+  "apiSHA256": "c027213540b606345b8dc797012823c91917d45b2b16ad59e0884f80ef0db493",
+  "browser": {
+    "browser": "140.0.7339.186",
+    "width": 1440,
+    "records": [
+      {
+        "height": 900,
+        "control": {
+          "top": 64,
+          "height": 64,
+          "width": 1440
+        },
+        "reference": {
+          "top": 64,
+          "height": 64,
+          "width": 1440
+        },
+        "firstPage": 20,
+        "fullyVisibleRows": 12,
+        "readOnlyActionColumns": 0,
+        "permanentAuthorityVisible": true,
+        "bodyWidth": 1440,
+        "pager": "1–20 / 183"
+      },
+      {
+        "height": 540,
+        "control": {
+          "top": 65,
+          "height": 64,
+          "width": 1440
+        },
+        "reference": {
+          "top": 65,
+          "height": 64,
+          "width": 1440
+        },
+        "firstPage": 20,
+        "fullyVisibleRows": 3,
+        "readOnlyActionColumns": 0,
+        "permanentAuthorityVisible": true,
+        "bodyWidth": 1440,
+        "pager": "1–20 / 183"
+      }
+    ],
+    "events": 6,
+    "originalGrantLink": true
+  },
+  "checks": {
+    "candidateDBAPI": 7,
+    "candidateChromiumWithPrerequisites": 13,
+    "finalChromiumAccess": 8,
+    "isolatedCommitDBAPI": 2
+  },
+  "scope": "本机工作树的固定验收构建包含原先的 028 内置管理员变更。洁净提交另外复核代码、文档和两项 DB/API 用例。",
+  "sameTestedWebAssets": true,
+  "sameTestedAPIBinary": true,
+  "commands": [
+    "make check",
+    "go test -tags=integration -timeout=10m ./internal/bootstrap -run 'TestAccessManagement|TestAccessGrantWorkspace|TestBuiltinAdmin' -count=1 -v",
+    "python3 scripts/local-bu.py smoke --profile x03-029-accept-a --fixed-web -- --no-deps --project=chromium access-management.spec.ts",
+    "go test -tags=integration -timeout=6m ./internal/bootstrap -run 'TestAccessManagementDelegationAndSharedVersions|TestAccessGrantWorkspacePagingAndOriginalReceipt' -count=1 -v",
+    "CHNHCM_LOCAL_PROFILE=x03-manual-a python3 scripts/local-bu.py up --fixed-web",
+    "CHNHCM_LOCAL_PROFILE=x03-manual-a python3 scripts/local-bu.py verify --origin http://127.0.0.1:4627",
+    "make docs",
+    "git diff --check"
+  ]
+}
