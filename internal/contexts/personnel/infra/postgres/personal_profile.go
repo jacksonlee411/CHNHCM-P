@@ -322,7 +322,7 @@ func (r *request) resolveCountry(c p.CountryChoice) (*p.CountryAdoption, string,
 
 func rowInputError(group string, index int, field string, err error) error {
 	var fault *f.Fault
-	if !errors.As(err, &fault) || (fault.Status != 400 && fault.Code != "PERSON_PLACE_CHANGED" && fault.Code != "PERSON_COUNTRY_CHANGED" && fault.Code != "PERSON_DOCUMENT_USED") {
+	if !errors.As(err, &fault) || (fault.Status != 400 && fault.Code != "PERSON_ADDRESS_TYPE_CHANGED" && fault.Code != "PERSON_PLACE_CHANGED" && fault.Code != "PERSON_COUNTRY_CHANGED" && fault.Code != "PERSON_DOCUMENT_USED") {
 		return err
 	}
 	detail := *fault

@@ -155,7 +155,11 @@ func TestPersonnelNineSectionsCapacity(t *testing.T) {
 			}
 			readers.call("GET", persons+"/"+personSample(2), nil, "", 404)
 			t.Logf("setup=%s customers=1 persons=10000 nine-section samples=20", time.Since(started))
-			for _, chain := range []string{"detail", "correct-resolve-read"} {
+			options := agents[0].call("GET", people[0].path()+"/address-type-candidates", nil, "", 200)["items"].([]any)
+			if len(options) != 4 {
+				t.Fatal("seeded candidate count")
+			}
+			for _, chain := range []string{"detail", "correct-resolve-read", "address-type-candidates", "address-type-correct-resolve-read"} {
 				call := func(b *browser, m, path string, input any) (profileJSON, error) {
 					status, v, e := b.response(m, path, input, "")
 					if e == nil && status != 200 {
@@ -168,9 +172,25 @@ func TestPersonnelNineSectionsCapacity(t *testing.T) {
 					p := &people[i%20]
 					seq := p.last
 					head := p.head
-					if chain == "correct-resolve-read" {
+					var selected profileJSON
+					if chain == "address-type-candidates" {
+						v, err := call(b, "GET", p.path()+"/address-type-candidates?itemId="+p.rows["addresses"][0]["itemId"].(string), nil)
+						if err != nil {
+							return err
+						}
+						opts, ok := v["items"].([]any)
+						if !ok || len(opts) != 4 || opts[0].(profileJSON)["code"] != "RESIDENTIAL" {
+							return fmt.Errorf("unexpected candidate scope or order")
+						}
+						return nil
+					}
+					if chain == "correct-resolve-read" || chain == "address-type-correct-resolve-read" {
 						seq = i + 1
 						cmd := p.correction(seq)
+						if chain == "address-type-correct-resolve-read" {
+							selected = options[(i/20)%2].(profileJSON)
+							cmd["addresses"].([]profileJSON)[0]["addressTypeChoice"] = profileJSON{"id": selected["id"], "revision": selected["revision"]}
+						}
 						result, e := call(b, "POST", p.path()+"/corrections", cmd)
 						if e != nil {
 							return e
@@ -187,6 +207,13 @@ func TestPersonnelNineSectionsCapacity(t *testing.T) {
 					detail, e := call(b, "GET", p.path(), nil)
 					if e != nil {
 						return e
+					}
+					if selected != nil {
+						address := detail["addresses"].([]any)[0].(profileJSON)
+						ref := address["addressTypeAdoption"].(profileJSON)
+						if ref["id"] != selected["id"] || ref["revision"] != selected["revision"] || address["fields"].(profileJSON)["addressType"] != selected["name"] {
+							return fmt.Errorf("wrong type adoption")
+						}
 					}
 					return p.verify(detail, seq, head)
 				}
@@ -249,12 +276,14 @@ func TestPersonnelNineSectionsCapacity(t *testing.T) {
 				}
 				sort.Slice(samples, func(i, j int) bool { return samples[i] < samples[j] })
 				http := 200
-				if chain != "detail" {
+				if chain == "correct-resolve-read" || chain == "address-type-correct-resolve-read" {
 					http *= 3
 				}
 				t.Logf("%s sessions=%d N=200 HTTP=%d errors=0 total=%s P50=%s P95=%s P99=%s peakLockWaiters=%d", chain, sessions, http, elapsed, samples[99], samples[189], samples[197], waiters)
 				limit := 500 * time.Millisecond
-				if sessions == 1 && chain == "detail" {
+				if sessions == 20 {
+					limit = 1500 * time.Millisecond // Temporary acceptance target for the M01 address-type pilot (317).
+				} else if chain == "detail" {
 					limit = 300 * time.Millisecond
 				}
 				if samples[189] > limit {

@@ -11352,6 +11352,91 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/StaffingSelectionInput'
+  /api/v1/person-address-types:
+    get:
+      operationId: listPersonAddressTypes
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeList'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+    post:
+      operationId: savePersonAddressType
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressType'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PersonAddressTypeCommand'}
+  /api/v1/person-address-types/{typeId}/revisions/{revision}:
+    get:
+      operationId: getPersonAddressTypeRevision
+      parameters:
+      - {in: path, name: typeId, required: true, schema: {type: string, format: uuid}}
+      - {in: path, name: revision, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: 指定地址类型的确切修订
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeSource'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+  /api/v1/person-address-types/submissions/{submission}/resolve:
+    post:
+      operationId: getPersonAddressTypeReceipt
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonAddressTypeReceipt'}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+      parameters:
+      - {in: header, name: X-CSRF-Token, required: true, schema: {type: string}}
+      - {in: path, name: submission, required: true, schema: {type: string, format: uuid}}
+  /api/v1/persons/{id}/address-type-candidates:
+    get:
+      operationId: getPersonAddressTypeCandidates
+      responses:
+        '200':
+          description: 办理结果
+          content:
+            application/json:
+              schema: {type: object, required: [items], properties: {items: {type: array, items: {$ref: '#/components/schemas/PersonAddressTypeOption'}}}}
+        default:
+          description: 请求未获受理
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PersonError'}
+      parameters:
+      - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      - {in: query, name: itemId, schema: {type: string, format: uuid}}
   /api/v1/persons/context:
     get:
       operationId: personEntry
@@ -14702,6 +14787,83 @@ components:
         fields: {$ref: '#/components/schemas/ProfileFields'}
         longTerm: {type: boolean}
         primary: {type: boolean}
+    PersonAddressTypeSource:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name, sortOrder, firstDay, selectable, recordedAt]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
+        actorId: {type: string, format: uuid}
+        recordedAt: {type: string, format: date-time}
+    PersonAddressTypeReceipt:
+      type: object
+      required: [outcome]
+      properties:
+        outcome: {type: string, enum: [accepted, not_applied]}
+        item: {$ref: '#/components/schemas/PersonAddressType'}
+    PersonAddressTypeChoice:
+      type: object
+      additionalProperties: false
+      required: [id, revision]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+    PersonAddressTypeAdoption:
+      type: object
+      additionalProperties: false
+      required: [id, revision, date]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        date: {type: string, format: date}
+    PersonAddressTypeOption:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+    PersonAddressType:
+      type: object
+      additionalProperties: false
+      required: [id, revision, code, name, sortOrder, firstDay, selectable]
+      properties:
+        id: {type: string, format: uuid}
+        revision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
+    PersonAddressTypeList:
+      type: object
+      additionalProperties: false
+      required: [items, canMaintain, defaultFirstDay]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/PersonAddressType'}}
+        canMaintain: {type: boolean}
+        defaultFirstDay: {type: string, format: date}
+    PersonAddressTypeCommand:
+      type: object
+      additionalProperties: false
+      required: [submissionId, name, sortOrder, selectable]
+      properties:
+        submissionId: {type: string, format: uuid}
+        id: {type: string, format: uuid}
+        expectedRevision: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        sortOrder: {type: integer, minimum: 0, maximum: 999999}
+        firstDay: {type: string, format: date}
+        selectable: {type: boolean}
     PersonPlaceChoice:
       type: object
       additionalProperties: false
@@ -14720,6 +14882,7 @@ components:
         credentials 使用 credentialKind、credentialName、credentialLevel、specialty、certificateNumber、
         awardingBody、issuedOn、validFrom、validUntil、indefinite。各标记使用 yes 或空串。未传字段沿用原值。目录字段可在 fields 中填写原文，或在 choices
         中选用目录版本。省州及地址地区的 ancestors 按国家到直接上级的顺序传递候选路径及版本。
+        地址类型新选用 addressTypeChoice，既有四项原文仅在预置项未换版时兼容。
         更新和移除已有行须带 itemId 与 expectedRevision。remove 为 true 时只传原行定位。
       type: object
       additionalProperties: false
@@ -14728,6 +14891,7 @@ components:
         expectedRevision: {type: string, format: uuid}
         remove: {type: boolean}
         fields: {$ref: '#/components/schemas/ProfileFields'}
+        addressTypeChoice: {$ref: '#/components/schemas/PersonAddressTypeChoice'}
         choices: {type: object, additionalProperties: {$ref: '#/components/schemas/PersonPlaceChoice'}}
     PersonProfileItem:
       type: object
@@ -14737,6 +14901,7 @@ components:
         itemId: {type: string, format: uuid}
         revision: {type: string, format: uuid}
         fields: {$ref: '#/components/schemas/ProfileFields'}
+        addressTypeAdoption: {$ref: '#/components/schemas/PersonAddressTypeAdoption'}
         adoptions: {type: object, additionalProperties: {$ref: '#/components/schemas/PersonCountryAdoption'}}
         locked: {type: array, items: {type: string}}
         hidden: {type: array, items: {type: string}}
@@ -14856,6 +15021,7 @@ components:
       type: object
       additionalProperties: false
       properties:
+        canReadAddressTypes: {type: boolean}
         canRead:
           type: boolean
         canRegister:

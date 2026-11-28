@@ -86,6 +86,7 @@
 | [311 M03岗位定义与岗位层级实施方案](../../archive/plans/311-m03-positions.md) | active | completed | 物理归档 |
 | [314 M03 职类实施批次路线图](../../archive/plans/314-m03-job-function-roadmap.md) | active | completed | 物理归档 |
 | [315 部门与岗位编制后台实施计划](../../archive/plans/315-staffing-quota-administration.md) | active | completed | 物理归档 |
+| [317 个人资料地址类型配置实施方案](../../archive/plans/317-person-address-types.md) | active | completed | 物理归档 |
 | [400 M04 T02 入职规则与准备实施方案](../../archive/plans/400-hire-readiness.md) | active | completed | 物理归档 |
 | [404 T03 按岗位免占编首次入职实施方案](../../archive/plans/404-position-exempt-first-hire.md) | active | completed | 物理归档 |
 | [405 人员名录交互、部门层级与验收样本整改](../../archive/plans/405-personnel-directory.md) | active | completed | 物理归档 |
@@ -119,7 +120,7 @@
 
 证据位置标明本仓能读到什么。仅有摘要时，公开结论取自登记，逐项核对原报告和附件需要原仓权限。标有公开 CI 的记录可从报告打开运行结果。
 
-[业务验收（78）](#evidence-acceptance) · [问题复验（47）](#evidence-retest) · [方案评审（103）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
+[业务验收（79）](#evidence-acceptance) · [问题复验（48）](#evidence-retest) · [方案评审（104）](#evidence-review) · [实施评审与问题排查（4）](#evidence-assessment) · [技术验证（47）](#evidence-technical) · [环境与交付交接（20）](#evidence-handoff) · [治理检查（20）](#evidence-governance)
 
 <a id="evidence-acceptance"></a>
 
@@ -127,6 +128,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 317、316、505 | [CHNHCM-317 个人资料地址类型验证](../../verification/317-person-address-types.md) | 2026-11-28 定稿 | 个人资料地址类型维护、员工选用和历史回显通过。20 并发下整页保留及改选的 P95 分别为 1241.89 和 995.46 毫秒，均在临时 1500 毫秒内。 [后续记录](../../verification/317-main-address-types.md) | 本仓报告 |
 | 027、028、137 | [CHNHCM-027 公共 00057 升至逐份授予 00058](../../verification/027-public-00058-grant-upgrade.md) | 2026-11-26 定稿 | 00057 升至 00058 的 273 份授权逐值相符。录用提交前到期修复后返回 403，25 个实库根和 7 个浏览器专项通过，远程未跑。 | 本仓报告 |
 | 106、313、400、401、403、500、506、507 | [CHNHCM-500 职务信息实施步骤与依赖复核](../../verification/500-job-information-delivery-review.md) | 2026-11-25 定稿 | 职务信息分阶段验了办理、旧单查回、4386 原库和各候选及主线门禁，范围限 500 第 6.3 节。 | 本仓报告及公开 CI |
 | 003、012、502、504、505 | [CHNHCM-504 M01 教育经历与专业凭证实施验收](../../verification/504-personal-profile-third-batch.md) | 2026-11-24 定稿 | 教育和凭证首败修复后原仓 34 项浏览器通过，公共基线另过 17 个实库根及 12 项 Chromium，九栏容量另验。 | 本仓报告，部分原件需权限 |
@@ -212,6 +214,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 317、316、505 | [CHNHCM-317 个人资料地址类型主线容量复验](../../verification/317-main-address-types.md) | 2026-11-28 定稿 | 合并候选整页办理超限。批量读取后两轮通过，最终 20 并发保留、改选 P95 为 1383.20、1321.42 毫秒，3200 次 HTTP 零失败。 | 本仓报告及公开 CI |
 | 405、502、507、012、119 | [CHNHCM-405 人员名录整改问题记录、评审及复验](../../verification/405-personnel-directory.md) | 2026-11-27 定稿 | 人员名录七项问题复验通过。4496 原库保留原人员、办理和回执，并补验五级部门、在任及未来样本。实测业务日为 2026-11-27。 [后续记录](../../verification/405-list-standards-review.md) | 本仓报告，部分原件需权限 |
 | 404、507、012、137 | [CHNHCM-404 PR #30 浏览器首败复验与 4496 更新](../../verification/404-pr30-browser-recheck.md) | 2026-11-27 定稿 | PR #30 远程首轮 4 项失败。修复后本地 5 项前置、8 项 Chromium 业务用例通过，4496 已更新。远程终验另查 PR。 | 本仓报告及公开 CI |
 | 140、004、013、026、120、201、207、014 | [CHNHCM-140 地点与法律实体删除回执验证及计划交接](../../verification/140-history-receipt-closeout.md) | 2026-11-27 定稿 | 地点和法律实体的删除回执首轮均指错记录，修复后两对象、原号查回、升级前原件和 4490 菜单复验通过。原有回执按原样保留。 | 本仓报告，部分原件需权限 |
@@ -266,6 +269,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
+| 316 | [CHNHCM-316 业务对象与配置数据建模规范评审记录](../../verification/316-object-and-configuration-review.md) | 2026-11-27 定稿 | 三轮评审通过，完成对象与配置选型、按日选用、并发维护及原采用的场景走查。 | 本仓报告 |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案评审](../../verification/511-project-standards-review.md) | 2026-11-26 定稿 | 初评核对 291 份定稿报告的直接引用，发现现行冲突、稳定 ID、组件交付及入口验收四项待修，限于方案。 [后续记录](../../verification/511-project-standards-rereview.md) | 本仓报告 |
 | 511 | [CHNHCM-511 项目规范体系建设与文档治理方案复评](../../verification/511-project-standards-rereview.md) | 2026-11-26 定稿 | 复评确认四项初评问题的修订，仍用 135 复现部分承接路径缺口，方案尚需修订。 [后续记录](../../verification/511-project-standards-acceptance.md) | 本仓报告 |
 | 511 | [CHNHCM-511 项目规范体系建设方案修订验收](../../verification/511-project-standards-acceptance.md) | 2026-11-26 定稿 | 511 方案经修订获采纳，135 可逐项交接，缺整份审阅时提升原文状态被拒。页面实测另验。 | 本仓报告 |

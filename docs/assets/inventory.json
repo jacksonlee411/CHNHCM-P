@@ -8854,6 +8854,20 @@
           "complete_asset_verified": false,
           "evidence": "docs/verification/504-personal-profile-fourth-batch.md",
           "verification_limit": "七类弹框 21/21，九栏普通资料维护与按权读取。真实任职共享由 T04 联验。"
+        },
+        {
+          "document": "CHNHCM-317",
+          "scope": "沿用个人资料地址弹框的字段次序、应用到草稿及整页保存。地址类型通过 M01 当前词表选择。",
+          "target_files": [
+            "apps/web/src/features/personnel/ProfileSections.tsx",
+            "apps/web/src/features/personnel/profileDraft.ts",
+            "tests/e2e/personnel-address-types.spec.ts"
+          ],
+          "implemented": true,
+          "verified": true,
+          "complete_asset_verified": false,
+          "evidence": "docs/verification/317-person-address-types.md",
+          "verification_limit": "覆盖桌面两种高度与原生 200% 下的改选、更名冲突、停选后更正和取消。"
         }
       ]
     }

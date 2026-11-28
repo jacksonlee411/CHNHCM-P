@@ -30,9 +30,6 @@ func (s ItemSection) Validate(fields map[string]string) error {
 	case Credentials.Name:
 		return validateCredential(fields)
 	case Addresses.Name:
-		if !slices.Contains([]string{"居住地址", "户籍地址", "通讯地址", "其他地址"}, fields["addressType"]) {
-			return Invalid("addressType", "请选择有效的地址类型")
-		}
 		return nil
 	}
 	if !slices.Contains([]string{"配偶", "父母", "父亲", "母亲", "子女", "子", "女", "兄弟姐妹", "祖父母", "其他亲属", "朋友", "其他"}, fields["relationship"]) {

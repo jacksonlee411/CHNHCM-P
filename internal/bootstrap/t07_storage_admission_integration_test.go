@@ -18,7 +18,12 @@ func restoreGrantPredecessor(f *fixture) {
 	if f.scalar("SELECT count(*) FROM pg_class WHERE oid=to_regclass('access.bound_permission')") == 0 {
 		return
 	}
-	f.exec(`DROP VIEW IF EXISTS access.subject_grant;
+	f.exec(`ALTER TABLE personnel.profile_item_payload DROP COLUMN address_type_id, DROP COLUMN address_type_revision, DROP COLUMN address_type_day;
+ DROP TABLE personnel.address_type_revision,personnel.address_type,personnel.address_type_not_applied;
+ DROP FUNCTION personnel.initialize_address_types(uuid),personnel.reject_address_type_revision_change();
+ ALTER TABLE access.person_grant DROP CONSTRAINT person_address_type_grant_scope;
+ DELETE FROM public.goose_db_version WHERE version_id=61;
+ DROP VIEW IF EXISTS access.subject_grant;
  CREATE TABLE access.subject_grant (LIKE fixture.prefix_grant INCLUDING ALL);
  INSERT INTO access.subject_grant SELECT instance_id,grant_id,principal_id,scope_kind,scope_id,action,read_fields,write_fields FROM access.bound_permission;
  DROP VIEW access.bound_permission;
@@ -34,6 +39,8 @@ func TestT07ExactCurrentMigrationSetAdmission(t *testing.T) {
 	before := businessSnapshot(t, f)
 	dsn := f.runtime.Pool.Config().ConnConfig.ConnString()
 	for _, tc := range []struct{ name, setup, restore string }{
+		{"foreign_in_progress_migration", `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(59,true),(60,true)`, `DELETE FROM public.goose_db_version WHERE version_id IN (59,60)`},
+		{"mutable_address_type_revision", `ALTER TABLE personnel.address_type_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE personnel.address_type_revision ENABLE TRIGGER immutable_revision`},
 		{"mutable_grant_revision", `ALTER TABLE access.grant_revision DISABLE TRIGGER immutable_revision`, `ALTER TABLE access.grant_revision ENABLE TRIGGER immutable_revision`},
 		{"missing_f_reserved_versions", `DELETE FROM public.goose_db_version WHERE version_id IN (32,33)`, `INSERT INTO public.goose_db_version(version_id,is_applied) VALUES(32,true),(33,true)`},
 		{"missing_person_profile_table", `ALTER TABLE personnel.document_payload RENAME TO t07_hidden_documents`, `ALTER TABLE personnel.t07_hidden_documents RENAME TO document_payload`},

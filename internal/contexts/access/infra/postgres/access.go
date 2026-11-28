@@ -86,6 +86,10 @@ func digest(s string) []byte { h := sha256.Sum256([]byte(s)); return h[:] }
 func denied() error          { return foundation.Fail(401, "AUTH_REQUIRED", "请登录后继续") }
 
 func (s *Store) Guard(ctx context.Context, tx pgx.Tx, c access.Credentials) (access.Guard, error) {
+	return s.authenticatedGuard(ctx, tx, c, true)
+}
+
+func (s *Store) authenticatedGuard(ctx context.Context, tx pgx.Tx, c access.Credentials, objectGrants bool) (access.Guard, error) {
 	q := generated.New(tx)
 	if c.Token == "" {
 		return nil, denied()
@@ -104,9 +108,12 @@ func (s *Store) Guard(ctx context.Context, tx pgx.Tx, c access.Credentials) (acc
 	if err != nil {
 		return nil, err
 	}
-	rows, err := q.ReadGrants(ctx, generated.ReadGrantsParams{InstanceID: s.Instance, PrincipalID: id})
-	if err != nil {
-		return nil, err
+	var rows []generated.ReadGrantsRow
+	if objectGrants {
+		rows, err = q.ReadGrants(ctx, generated.ReadGrantsParams{InstanceID: s.Instance, PrincipalID: id})
+		if err != nil {
+			return nil, err
+		}
 	}
 	session, err := q.ReadSession(ctx, generated.ReadSessionParams{InstanceID: s.Instance, TokenDigest: digest(c.Token)})
 	if errors.Is(err, pgx.ErrNoRows) {

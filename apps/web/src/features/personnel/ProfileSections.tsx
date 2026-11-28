@@ -103,20 +103,31 @@ function RowDialog({
     write = (data.editable || []).filter((k) => !s.row.locked?.includes(k));
   const [country, setCountry] = useState(view ? undefined : s.row.country);
   const [places, setPlaces] = useState<Places>(view ? {} : s.row.places || {});
+  const [addressType, setAddressType] = useState(view ? undefined : s.row.addressType);
+  const canChooseType = !view && s.group === 'addresses' && write.includes('addressType') && !s.row.hidden?.includes('addressType');
+  const options = person.useRead(canChooseType ? JSON.stringify([data.id, s.row.key, scope]) : undefined,
+    () => person.addressTypeOptions(data.id, s.row.revision ? s.row.key : undefined), 'fresh');
+  const savedAddress = data.addresses?.find((row) => row.itemId === s.row.key);
+  const chosenType = options.data?.items.find((item) => item.id === addressType?.id && item.revision === addressType.revision);
+  const pendingType = !!addressType && !('date' in addressType);
+  useEffect(() => {
+    if (canChooseType && (options.status === 403 || options.status === 404)) recheck();
+  }, [canChooseType, options.status, recheck]);
   const [basis, setBasis] = useState({ scope, row: view ? undefined : s.row });
   if (basis.scope !== scope) {
     setBasis({ scope, row: view ? undefined : s.row });
     if (basis.row && !view && isProfileItem(s.group)) {
-      const current = reconcileItem(basis.row, { ...basis.row, fields: inputs, places }, s.row, write);
+      const current = reconcileItem(basis.row, { ...basis.row, fields: inputs, places, addressType }, s.row, write);
       set(current.fields);
       setPlaces(current.places || {});
+      setAddressType(current.addressType);
       setError('');
       setDiscard(false);
     }
   }
   const dirty =
     !view &&
-    (JSON.stringify(places) !== JSON.stringify(s.row.places || {}) ||
+    (addressType?.revision !== s.row.addressType?.revision || JSON.stringify(places) !== JSON.stringify(s.row.places || {}) ||
       JSON.stringify(fields) !== JSON.stringify(s.row.fields) ||
       country?.id !== s.row.country?.id ||
       country?.sourceVersion !== s.row.country?.sourceVersion);
@@ -201,6 +212,7 @@ function RowDialog({
     else close();
   }
   function submit() {
+    if (canChooseType && pendingType && !chosenType) { setError('addressType'); document.getElementById('row-addressType')?.focus(); return; }
     const key = required.find(
       (k) => !fields[k] && (!s.row.revision || write.includes(k) || k === 'value' || k === 'kind'),
     );
@@ -217,7 +229,7 @@ function RowDialog({
           else delete submitted[k];
         }
     }
-    apply({ ...s.row, fields: submitted, country, places });
+    apply({ ...s.row, fields: submitted, country, places, addressType });
   }
   return (
     <>
@@ -280,6 +292,33 @@ function RowDialog({
                       {k === numberField && full.error && <span role="alert">{full.error}</span>}
                     </ObjectDetailField>
                   );
+                if (k === 'addressType') {
+                  const original = savedAddress?.fields.addressType;
+                  const items = options.data?.items || [];
+                  const names = new Set<string>(), repeated = new Set<string>();
+                  for (const item of items) {
+                    if (names.has(item.name)) repeated.add(item.name);
+                    names.add(item.name);
+                  }
+                  const showOriginal = original && !items.some((item) => item.revision === savedAddress?.addressTypeAdoption?.revision);
+                  const current = chosenType?.revision || (original && !pendingType ? 'original' : '');
+                  const stale = pendingType && options.data && !chosenType;
+                  return <ObjectTextField key={k} id="row-addressType" label={label} select required value={current}
+                    error={!!options.error || !!stale || error === k}
+                    helperText={options.error || (stale ? '地址类型已变化，请重新选择' : error === k ? s.error?.message || '请选择地址类型' : undefined)}
+                    onChange={(event) => {
+                      const next = options.data?.items.find((item) => item.revision === event.target.value);
+                      const previous = !next || next.revision === savedAddress?.addressTypeAdoption?.revision;
+                      setAddressType(previous ? savedAddress?.addressTypeAdoption : { id: next.id, revision: next.revision });
+                      update(k, previous ? original || '' : next.name);
+                    }}>
+                    {showOriginal &&
+                      <MenuItem value="original">{original}（原记录）</MenuItem>}
+                    {items.map((item) => <MenuItem key={item.id} value={item.revision}>
+                      {repeated.has(item.name) ? item.name + '（' + item.code + '）' : item.name}
+                    </MenuItem>)}
+                  </ObjectTextField>;
+                }
                 if (k === 'issuingCountry' || ['addressCountry', 'province', 'area'].includes(k))
                   return (
                     <ProfileCountry
