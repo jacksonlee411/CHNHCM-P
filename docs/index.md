@@ -13,7 +13,7 @@
 
 ## 当前交付与规格
 
-员工首次定薪与按日调薪的方案、分阶段出口及审阅结论见[二期实施计划](plans/214-assignment-base-pay-rollout.md)和[方案评审](verification/214-assignment-base-pay-design-review.md)。
+员工详情的「薪酬」页签按任期办理首次定薪、调薪、更正与撤去。参见[业务与页面](specs/m09/215-assignment-base-pay.md)、[二期归档计划](archive/plans/214-assignment-base-pay-rollout.md)与[固定环境验收](verification/214-assignment-base-pay-implementation.md)。
 
 按[在办计划](governance/catalog/README.md#catalog-in-progress)查询交付，按[模块规格](specs/README.md)查业务边界与验收条件。设计决策、采用范围及替代关系见[编号登记](governance/registry.json)。跨域开发从[模块化单体与领域边界](architecture/004-repository-layout.md)、[上下文登记](architecture/contexts.json)及[目标架构](architecture/target/README.md)进入。
 

@@ -40,7 +40,7 @@
 
 ## M09 员工首次定薪与按日调薪
 
-[个人基本工资办理与页面](m09/215-assignment-base-pay.md) · [准确采用、权限和并发合同](m09/216-assignment-base-pay-contract.md) · [二期实施计划](../plans/214-assignment-base-pay-rollout.md)
+[个人基本工资办理与页面](m09/215-assignment-base-pay.md) · [准确采用、权限和并发合同](m09/216-assignment-base-pay-contract.md) · [二期实施计划](../archive/plans/214-assignment-base-pay-rollout.md)
 
 ## 实施与验证去向
 

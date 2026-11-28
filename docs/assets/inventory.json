@@ -2512,9 +2512,9 @@
             "CHNHCM-215",
             "CHNHCM-216"
           ],
-          "implemented": false,
-          "verified": false,
-          "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+          "implemented": true,
+          "verified": true,
+          "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
         }
       ]
     },
@@ -7557,9 +7557,9 @@
             "CHNHCM-215",
             "CHNHCM-216"
           ],
-          "implemented": false,
-          "verified": false,
-          "evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+          "implemented": true,
+          "verified": true,
+          "evidence": "docs/verification/214-assignment-base-pay-implementation.md"
         }
       ]
     },
@@ -9131,10 +9131,12 @@
       "scope": "员工详情的薪酬入口与职务信息并列，主岗、兼岗及再聘按各自任期办理。",
       "registered": true,
       "extracted": false,
-      "implemented": false,
-      "verified": false,
+      "implemented": true,
+      "verified": true,
       "complete_asset_verified": false,
-      "design_evidence": "docs/verification/214-assignment-base-pay-design-review.md"
+      "design_evidence": "docs/verification/214-assignment-base-pay-design-review.md",
+      "adoption_scope": "从真实名录行进入同级薪酬，验证主兼岗、原件返回和再聘任期。",
+      "adoption_evidence": "docs/verification/214-assignment-base-pay-implementation.md"
     },
     {
       "id": "EXTERNAL-E507-JOB-DATA",

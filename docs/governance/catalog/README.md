@@ -18,7 +18,6 @@
 | --- | --- | --- | --- |
 | [027 X03 本地账号与首批业务授权实施计划](../../plans/027-x03-local-access-rollout.md) | in_review | in_progress | 原位 |
 | [125 R6容量整改方案与实施计划](../../plans/125-r6-capacity-remediation.md) | active | in_progress | 原位 |
-| [214 员工首次定薪与按日调薪实施计划](../../plans/214-assignment-base-pay-rollout.md) | active | in_progress | 原位 |
 
 <a id="catalog-not-started"></a>
 
@@ -77,6 +76,7 @@
 | [205 G5地理联合验收与固定运行交付](../../archive/plans/205-g5-geography-acceptance-and-runtime.md) | active | completed | 物理归档 |
 | [206 法律实体分阶段实施计划](../../archive/plans/206-legal-entity-implementation.md) | active | completed | 物理归档 |
 | [210 薪酬体系配置实施路线图](../../archive/plans/210-compensation-configuration-roadmap.md) | active | completed | 物理归档 |
+| [214 员工首次定薪与按日调薪实施计划](../../archive/plans/214-assignment-base-pay-rollout.md) | active | completed | 物理归档 |
 | [300 部门列表左侧部门树实施计划](../../archive/plans/300-department-tree-implementation.md) | active | completed | 物理归档 |
 | [301 用户提示与异常恢复整改方案](../../archive/plans/301-user-feedback-and-recovery.md) | superseded | completed | 物理归档 |
 | [302 详情对象导航位置与响应整改](../../archive/plans/302-detail-navigation.md) | active | completed | 物理归档 |
@@ -450,7 +450,7 @@
 
 | 关联编号 | 记录 | 日期与稿态 | 本次结论及限制 | 证据位置 |
 | --- | --- | --- | --- | --- |
-| 214、215、216、507 | [CHNHCM-214 员工薪酬页签与基本月薪实施验证](../../verification/214-assignment-base-pay-implementation.md) | 2026-11-28 草稿 | 实库核定和并发恢复已实测，浏览器及固定环境交接继续验证。 | 本仓报告 |
+| 214、215、216、507 | [CHNHCM-214 员工薪酬页签与基本月薪实施验证](../../verification/214-assignment-base-pay-implementation.md) | 2026-11-28 定稿 | 员工详情同级薪酬页签按实际任期办理。实库、三个视口、两角色正常菜单及 4380 重启比对通过。 | 本仓报告 |
 | 210、211、212、213、017 | [CHNHCM-210 默认端口薪酬配置实页维护与留数验收](../../verification/210-compensation-default-port.md) | 2026-11-28 定稿 | 管理员从网页完成 12 次保存。重启整套服务后，三份计划的 12 个按日页面结果、八份薪酬原修订和八份原回执均与重启前一致。4380 保留运行供试用。 | 本仓报告 |
 | 210、211、212、213 | [CHNHCM-210 I3 薪酬体系联合验收与交接](../../verification/210-compensation-i3.md) | 2026-11-27 定稿 | 八组业务场景联验，768 次容量请求零错误，重启后 408 份原修订及回执一致。4521 已交接，业务签收及客户容量另记。 [后续记录](../../verification/210-compensation-list-retest.md) | 本仓报告 |
 | 400、401、402、403、404、137 | [CHNHCM-404　4496 原库升级与首单签收](../../verification/404-4496-acceptance.md) | 2026-11-26 定稿 | 4496 原库 162 表还原并升级至 00057，固定构建上完成限定日期的合成首单。占编竞争使用独立实库证据。 [后续记录](../../verification/404-pr30-browser-recheck.md) | 本仓报告，部分原件需权限 |

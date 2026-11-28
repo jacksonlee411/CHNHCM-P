@@ -1,6 +1,6 @@
 # 验证记录
 
-员工首次定薪与按日调薪的[二期方案评审](214-assignment-base-pay-design-review.md)记录任期、计划选择、薪带反例、修订与原件的核对结果。
+员工首次定薪与按日调薪的[二期方案评审](214-assignment-base-pay-design-review.md)记录任期、计划选择、薪带反例、修订与原件的核对结果。管理员和查询者的菜单、日期及实测结果见[员工薪酬页签与基本月薪实施验证](214-assignment-base-pay-implementation.md)。
 
 查某批做过什么，从[全部验收记录](../governance/catalog/README.md#catalog-evidence)按用途或关联编号找报告。目录列出每批的结论、限制和证据位置。下列专题按各批受测时的情况叙述。查目前还要做什么，见[在办计划](../governance/catalog/README.md#catalog-in-progress)。查开发时应遵循的条款，见[现行规范](../governance/catalog/standards/README.md)。
 

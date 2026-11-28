@@ -2,7 +2,7 @@
 
 ## 1 审阅对象与基线
 
-2026-11-28，Codex 按用户委托评审 [214 实施计划](../plans/214-assignment-base-pay-rollout.md)、[215 业务与页面](../specs/m09/215-assignment-base-pay.md)、[216 技术合同](../specs/m09/216-assignment-base-pay-contract.md)。受评基线为 `wt-dev-c` 的 `f1b9a79f8c1d1c9c56fa677a361aeb5549eb569b`，基线外为本次方案及登记。制度输入取[4380 重启后结果](data/210-default-port/after-restart.json)，其 SHA-256 为 `04730b3c45dafe3cb919dbde4ee27529cbc6233019011c6293745a46f3e67db5`。范围为方案、来源及验收预期的书面评审。[登记表](../governance/registry.json)
+2026-11-28，Codex 按用户委托评审 [214 实施计划](../archive/plans/214-assignment-base-pay-rollout.md)、[215 业务与页面](../specs/m09/215-assignment-base-pay.md)、[216 技术合同](../specs/m09/216-assignment-base-pay-contract.md)。受评基线为 `wt-dev-c` 的 `f1b9a79f8c1d1c9c56fa677a361aeb5549eb569b`，基线外为本次方案及登记。制度输入取[4380 重启后结果](data/210-default-port/after-restart.json)，其 SHA-256 为 `04730b3c45dafe3cb919dbde4ee27529cbc6233019011c6293745a46f3e67db5`。范围为方案、来源及验收预期的书面评审。[登记表](../governance/registry.json)
 
 ## 2 首轮发现与修订复查
 
@@ -71,7 +71,7 @@ print("PRO-M 薪带、津贴和七个业务日的个人金额预期均相符")
 
 ## 5 结论与接续
 
-**方案评审通过，可按 214 启动产品实施。** 六组验收场景覆盖个人首次核定与真实调薪、薪带版本边界、任职及候选、误录处置、授权和恢复。按第三节复算，15,500 在十一月被旧带排除，十二月落入新带。七个查询日的金额与插入、撤去预期一致。个人核定的 Go、数据库、浏览器、持久环境升级与业务人员签收由 [214 三个实施阶段](../plans/214-assignment-base-pay-rollout.md#2-实施顺序与出口) 接续。本次工作读取首期留存证据，未创建运行资源。
+**方案评审通过，可按 214 启动产品实施。** 六组验收场景覆盖个人首次核定与真实调薪、薪带版本边界、任职及候选、误录处置、授权和恢复。按第三节复算，15,500 在十一月被旧带排除，十二月落入新带。七个查询日的金额与插入、撤去预期一致。个人核定的 Go、数据库、浏览器、持久环境升级与业务人员签收由 [214 三个实施阶段](../archive/plans/214-assignment-base-pay-rollout.md#2-实施顺序与出口) 接续。本次工作读取首期留存证据，未创建运行资源。
 
 送审定稿按下列 SHA-256 定位。在工作树运行 `make docs`，195 项检查用例及仓库文档检查通过。`git diff --check` 及四份新文档的空白、末尾换行核对通过。另逐条核对四份文档的本地链接与标题锚点。
 

@@ -1,0 +1,30 @@
+{
+  "first": {
+    "submissionId": "bd091fb7-94ea-491f-bc69-8b9534329d46",
+    "awardId": "e81f5362-9ed5-4da5-943f-499df7085c08",
+    "revision": "fcf204a6-fa2c-4cd4-895d-ffefe60a1c0e",
+    "day": "2026-11-30",
+    "amount": "12100.00"
+  },
+  "correct": {
+    "submissionId": "6e6f4415-bda3-4ac8-ae56-8fd0eb88af68",
+    "awardId": "e81f5362-9ed5-4da5-943f-499df7085c08",
+    "revision": "22fd8d84-a17a-4335-bd1e-850c3b00295c",
+    "day": "2026-11-30",
+    "amount": "12000.00"
+  },
+  "next": {
+    "submissionId": "31fa8320-61fd-4f0a-bc50-efeeeafe1d00",
+    "awardId": "c8ef897a-9806-4b14-b520-1afff2474b5c",
+    "revision": "051d1bc2-2d2e-4086-8b0d-51e2c8624f1f",
+    "day": "2027-01-01",
+    "amount": "13000.00"
+  },
+  "secondary": {
+    "submissionId": "dc1da212-e0c5-44f2-9031-45bda51dca2e",
+    "awardId": "9c8fbfbe-5c30-44f4-a690-9c40ac7b5453",
+    "revision": "2dd6c3c6-2adb-4d9a-9078-5245078100b8",
+    "day": "2026-11-20",
+    "amount": "11500.00"
+  }
+}
